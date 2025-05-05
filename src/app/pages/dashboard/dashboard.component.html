@@ -1,0 +1,9 @@
+<div class="dashboard-container">
+  <app-side-nav></app-side-nav>
+  <div class="dashboard-body">
+    <app-dashboard-top
+      [onCtrlFPresed]="ctrlFPressed.asObservable()"
+    ></app-dashboard-top>
+    <app-dashboard-body class="flex-grow-1" />
+  </div>
+</div>

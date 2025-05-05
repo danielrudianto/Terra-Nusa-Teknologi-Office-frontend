@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+@import "fonts";
+@import "input";
+@import "buttons";
+
+:root {
+  --background-color: white;
+  --base-color: #f7f7f7;
+  --on-base-color: #333333;
+  --primary-color: #0d152e;
+  --accent-color: #f2711a;
+  --disabled-color: #b0b0b0;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  background-color: var(--background-color);
+}

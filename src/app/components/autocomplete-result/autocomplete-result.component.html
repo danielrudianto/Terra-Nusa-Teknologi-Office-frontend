@@ -1,0 +1,10 @@
+<div
+  class="autocomplete-result__wrapper"
+  [style.top.px]="y + height + 10"
+  [style.width.px]="width"
+  [style.height.px]="isFocused ? 200 : 0"
+>
+  <div *ngFor="let data of results">
+    {{ data.name }}
+  </div>
+</div>
