@@ -1,0 +1,13 @@
+.ppn__wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  .form-control {
+    flex-shrink: 1;
+  }
+
+  .form-field {
+    flex-grow: 1;
+  }
+}

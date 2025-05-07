@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-autocomplete-result',
@@ -6,10 +7,17 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./autocomplete-result.component.scss'],
 })
 export class AutocompleteResultComponent {
+  constructor(private router: Router) {}
+
   @Input('width') width!: number;
   @Input('height') height!: number;
   @Input('x') x!: number;
   @Input('y') y!: number;
   @Input('isFocused') isFocused!: boolean;
-  @Input("results") results!: any[];
+  @Input('results') results!: any[];
+
+  onClick(event: any) {
+    console.log(event);
+    this.router.navigate([event.routerLink]);
+  }
 }

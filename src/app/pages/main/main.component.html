@@ -1,0 +1,9 @@
+<div class="main__container">
+  <app-side-nav></app-side-nav>
+  <div class="main__body">
+    <app-dashboard-top
+      [onCtrlFPresed]="ctrlFPressed.asObservable()"
+    ></app-dashboard-top>
+    <router-outlet></router-outlet>
+  </div>
+</div>

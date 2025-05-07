@@ -21,4 +21,23 @@
     border: 2px solid grey;
     box-shadow: 0px 0px 20px -17px;
   }
+
+  // if the form-field has child element of 'btn' class, then the input should have padding-right: 50px;
+  &:has(.btn-suffix) {
+    display: flex;
+    flex-direction: row;
+
+    .input {
+      padding-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .btn-suffix {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border: 0;
+      margin: 0;
+    }
+  }
 }

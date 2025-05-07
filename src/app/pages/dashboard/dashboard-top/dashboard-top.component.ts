@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  HostListener,
   Input,
   ViewChild,
 } from '@angular/core';
@@ -69,5 +70,14 @@ export class DashboardTopComponent {
     // limit the searchresults to 5
     const limitedResults = searchResults.slice(0, 5);
     this.results = limitedResults;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if ((event.key === 'esc' || event.key === 'Escape') && this.isFocused) {
+      event.preventDefault(); // prevent default browser find dialog
+      this.search.nativeElement.blur();
+      this.isFocused = false;
+    }
   }
 }

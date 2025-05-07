@@ -1,10 +1,26 @@
 <div
   class="autocomplete-result__wrapper"
+  [ngClass]="{ opened: isFocused }"
   [style.top.px]="y + height + 10"
-  [style.width.px]="width"
+  [style.width.px]="width + 40"
   [style.height.px]="isFocused ? 200 : 0"
+  [style.left.px]="x - 20"
 >
-  <div *ngFor="let data of results">
-    {{ data.name }}
+  <div class="autocomplete-result__list" *ngIf="results.length > 0">
+    <div
+      *ngFor="let data of results"
+      class="autocomplete-result__item"
+      (click)="onClick(data)"
+    >
+      <div class="autocomplete-result__item__icon" *ngIf="data.icon">
+        <i [ngClass]="'bi bi-' + data.icon"></i>
+      </div>
+      <div class="autocomplete-result__item__text">
+        {{ data.name }}
+      </div>
+    </div>
+  </div>
+  <div class="autocomplete-result__list" *ngIf="results.length == 0">
+    <p>No result found.</p>
   </div>
 </div>

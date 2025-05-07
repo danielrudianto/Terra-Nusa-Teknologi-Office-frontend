@@ -20,6 +20,20 @@ h1 {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
   color: var(--primary-color);
+
+  &.title {
+    font-size: 1.5rem;
+  }
+}
+
+h2 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  color: var(--primary-color);
+
+  &.title {
+    font-size: 1.25rem;
+  }
 }
 
 .accent {

@@ -1,0 +1,392 @@
+<h1 class="title">Purchase / Create Purchase</h1>
+<mat-stepper [linear]="false" #stepper>
+  <mat-step [stepControl]="metaFormGroup">
+    <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+      <ng-template matStepLabel>Meta Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Meta Data</h2>
+
+      <div class="form-field">
+        <label>Invoice Name</label>
+        <input
+          type="text"
+          formControlName="invoiceName"
+          class="input"
+          placeholder="Invoice Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Receipt Name</label>
+        <input
+          type="text"
+          formControlName="receiptName"
+          class="input"
+          placeholder="Receipt Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Tax Invoice Name</label>
+        <input
+          type="text"
+          formControlName="taxInvoiceName"
+          class="input"
+          placeholder="Tax Invoice Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Purchase Order Name</label>
+        <input
+          type="text"
+          formControlName="purchaseOrderName"
+          class="input"
+          placeholder="Purchase Order Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Project</label>
+        <input
+          type="text"
+          formControlName="projectName"
+          class="input"
+          placeholder="Project name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Date</label>
+        <input
+          type="date"
+          formControlName="date"
+          class="input"
+          placeholder="Date"
+        />
+      </div>
+      <div class="form-field">
+        <label>Due date</label>
+        <input
+          type="date"
+          formControlName="dueDate"
+          class="input"
+          placeholder="Date"
+        />
+      </div>
+
+      <label>Supplier</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="supplierName"
+          class="input"
+          placeholder="Supplier"
+        />
+        <button class="btn btn-suffix" (click)="openSupplierSelector()">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <label>Supplier Address</label>
+      <div class="form-field">
+        <textarea
+          formControlName="supplierAddress"
+          class="input"
+          placeholder="Supplier Address"
+          rows="3"
+          readonly
+          style="resize: none"
+        ></textarea>
+      </div>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button class="btn" matStepperNext>Next</button>
+  </mat-step>
+  <mat-step [stepControl]="valueFormGroup">
+    <form [formGroup]="valueFormGroup">
+      <ng-template matStepLabel>Value Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Values</h2>
+
+      <div class="form-field">
+        <label>DPP</label>
+        <input
+          type="text"
+          formControlName="dpp"
+          class="input"
+          placeholder="DPP"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>PPN</label>
+        <input
+          type="text"
+          formControlName="ppn"
+          class="input"
+          placeholder="PPN"
+          suffix="%"
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>PPN</label>
+        <input
+          type="text"
+          formControlName="ppnValue"
+          class="input"
+          placeholder="PPN (Rp.)"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+          readonly
+        />
+      </div>
+
+      <div class="form-field">
+        <label>PBBKB</label>
+        <input
+          type="text"
+          formControlName="pbbkb"
+          class="input"
+          placeholder="PBBKB"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </div>
+
+      <label>PPh</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="pphCode"
+          class="input"
+          placeholder="PPh Code"
+        />
+        <button class="btn btn-suffix" (click)="openPPHSelector()">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <label>PPh Object Name</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="pphTaxObject"
+          class="input"
+          placeholder="PPh Object Name"
+          readonly
+        />
+      </div>
+
+      <label>PPh Percentage</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="pphPercentage"
+          class="input"
+          placeholder="PPh Percentage"
+          readonly
+        />
+      </div>
+
+      <label>Other value</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="otherValue"
+          class="input"
+          placeholder="otherValue"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </div>
+
+      <label>Other value note</label>
+      <div class="form-field">
+        <select class="input" formControlName="otherValueNote">
+          <option value="">Select</option>
+          <option value="delivery">Delivery fee</option>
+          <option value="packing">Packing fee</option>
+        </select>
+      </div>
+
+      <label>Total</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="total"
+          class="input"
+          placeholder="Total"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+        <button
+          class="btn btn-suffix"
+          [disabled]="isFinal || !isNumberValid"
+          (click)="calculateTotal()"
+        >
+          Calculate
+        </button>
+      </div>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button class="btn outlined" matStepperPrevious>Previous</button>
+    <button class="btn" matStepperNext>Next</button>
+  </mat-step>
+  <mat-step [stepControl]="attachmentFormGroup">
+    <form [formGroup]="attachmentFormGroup">
+      <ng-template matStepLabel>Attachments Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Attachments</h2>
+
+      <div class="form-field mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          formControlName="invoiceAttachment"
+        />
+        <label class="form-check-label ms-3" for="flexCheckDefault">
+          Invoice
+        </label>
+      </div>
+
+      <div class="form-field mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          formControlName="receiptAttachment"
+        />
+        <label class="form-check-label ms-3" for="flexCheckDefault">
+          Receipt
+        </label>
+      </div>
+
+      <div class="form-field mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          formControlName="taxInvoiceAttachment"
+        />
+        <label class="form-check-label ms-3" for="flexCheckDefault">
+          Tax invoice
+        </label>
+      </div>
+
+      <div class="form-field mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          formControlName="copAttachment"
+        />
+        <label class="form-check-label ms-3" for="flexCheckDefault">
+          Certificate of Payment
+        </label>
+      </div>
+
+      <div class="form-field mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          formControlName="copyPurchaseOrderAttachment"
+        />
+        <label class="form-check-label ms-3" for="flexCheckDefault">
+          Copy of Purchase Order / Contract
+        </label>
+      </div>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button class="btn outlined" matStepperPrevious>Previous</button>
+    <button class="btn" matStepperNext>Next</button>
+  </mat-step>
+  <mat-step [stepControl]="paymentFormGroup">
+    <form [formGroup]="paymentFormGroup">
+      <ng-template matStepLabel>Payment Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Payment data</h2>
+
+      <div class="form-field">
+        <label>Bank name</label>
+        <input
+          type="text"
+          formControlName="bankName"
+          class="input"
+          placeholder="Bank Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Bank account name</label>
+        <input
+          type="text"
+          formControlName="bankAccountName"
+          class="input"
+          placeholder="Bank Account Name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Payment Method</label>
+        <select class="input" formControlName="paymentMethod">
+          <option value="bank">Bank Transfer</option>
+          <option value="cash">Virtual Account</option>
+          <option value="cash">Cheque</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Bank account number</label>
+        <!-- Input for bank account name -->
+        <input
+          type="text"
+          formControlName="bankAccountNumber"
+          class="input"
+          placeholder="Bank Account Number"
+        />
+      </div>
+
+      <label>Total</label>
+      <div class="form-field">
+        <input
+          type="text"
+          formControlName="paymentTotal"
+          class="input"
+          placeholder="Payment Total"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </div>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button class="btn outlined" matStepperPrevious>Previous</button>
+    <button class="btn">Submit</button>
+  </mat-step>
+</mat-stepper>

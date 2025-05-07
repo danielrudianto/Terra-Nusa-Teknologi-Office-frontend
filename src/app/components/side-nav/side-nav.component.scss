@@ -6,8 +6,12 @@
 }
 
 .side-nav__body {
+  position: fixed;
+  top: 20px;
+  left: 10px;
+  z-index: 100;
   background-color: var(--base-color);
-  height: 100%;
-  width: 100%;
+  width: 230px;
+  height: calc(100vh - 40px);
   border-radius: 20px;
 }
