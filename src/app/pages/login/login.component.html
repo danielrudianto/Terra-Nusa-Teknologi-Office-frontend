@@ -1,1 +1,42 @@
-<p>login works!</p>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-xl-5 col-lg-5 col-md-6 col-sm-8 col-10">
+      <div class="card p-3">
+        <img src="assets/images/logo.png" alt="Logo" class="img-fluid mb-3" />
+
+        <p>Please enter your credentials.</p>
+        <h1>Welcome Back</h1>
+
+        <form [formGroup]="loginFormGroup" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="form-control"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              formControlName="password"
+              class="form-control"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn w-100"
+            [disabled]="loginFormGroup.invalid || isSubmitting"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
