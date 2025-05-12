@@ -6,7 +6,39 @@
     <input
       class="input"
       type="text"
+      [formControl]="searchBar"
       placeholder="Search supplier"
     />
   </div>
+  <mat-divider class="my-3"></mat-divider>
+  <table class="table bordered table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="isLoading">
+      <tr>
+        <td colspan="2" class="text-center">
+          <mat-spinner diameter="50" style="position: relative"></mat-spinner>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && suppliers.length === 0">
+      <tr>
+        <td colspan="2" class="text-center">No suppliers found</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && suppliers.length > 0">
+      <tr
+        *ngFor="let supplier of suppliers"
+        (click)="selectSupplier(supplier)"
+        class="cursor-pointer"
+      >
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.address }}</td>
+      </tr>
+    </tbody>
+  </table>
 </mat-dialog-content>

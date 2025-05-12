@@ -8,6 +8,7 @@
       <option value="CV.">CV.</option>
       <option value="UD.">UD.</option>
       <option value="Pribadi">Pribadi</option>
+      <option value="Lainnya">Lainnya</option>
     </select>
   </div>
 
@@ -31,6 +32,30 @@
       style="resize: none"
     ></textarea>
   </div>
+  <div class="row">
+    <div class="col-sm-6 col-12">
+      <div class="form-field">
+        <label>City</label>
+        <input
+          class="input"
+          type="text"
+          formControlName="city"
+          placeholder="Supplier city"
+        />
+      </div>
+    </div>
+    <div class="col-sm-6 col-12">
+      <div class="form-field">
+        <label>Province</label>
+        <input
+          class="input"
+          type="text"
+          formControlName="province"
+          placeholder="Supplier province"
+        />
+      </div>
+    </div>
+  </div>
 
   <div class="form-field">
     <label>NPWP</label>
@@ -48,7 +73,7 @@
     <input
       class="input"
       type="tel"
-      formControlName="phone"
+      formControlName="phone_number"
       placeholder="Supplier's phone number"
     />
   </div>
@@ -62,6 +87,9 @@
       placeholder="Supplier's email"
     />
   </div>
+
+  <mat-divider class="mb-3"></mat-divider>
+  <h2 class="title">Search Helper</h2>
 
   <div class="form-field">
     <label>Items sold</label>
@@ -80,13 +108,45 @@
       </mat-chip>
     </mat-chip-set>
 
-    <input class="input" formControlName="soldItems" placeholder="Items sold" />
+    <input
+      class="input mt-3"
+      formControlName="soldItems"
+      placeholder="Items sold"
+    />
+  </div>
+
+  <div class="form-field mt-3">
+    <label>Service areas</label>
+
+    <mat-chip-set aria-label="Areas selection">
+      <mat-chip
+        *ngFor="let item of areas"
+        [removable]="true"
+        (removed)="removeArea(item)"
+      >
+        {{ item }}
+        <button matChipRemove aria-label="Remove area">
+          <i class="bi bi-x"></i>
+        </button>
+      </mat-chip>
+    </mat-chip-set>
+
+    <input
+      class="input mt-3"
+      formControlName="serviceAreas"
+      placeholder="Service areas"
+    />
   </div>
 
   <button
     class="btn mt-3"
     type="submit"
-    [disabled]="isSubmitting || supplierFormGroup.invalid"
+    [disabled]="
+      isSubmitting ||
+      supplierFormGroup.invalid ||
+      items.length === 0 ||
+      areas.length === 0
+    "
   >
     Submit
   </button>

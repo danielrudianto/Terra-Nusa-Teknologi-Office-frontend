@@ -40,6 +40,7 @@ export class PurchaseCreateComponent {
       ),
     ]),
     projectName: new FormControl('', Validators.required),
+    purchaseType: new FormControl('', Validators.required),
   });
 
   valueFormGroup: FormGroup = new FormGroup({
@@ -73,6 +74,7 @@ export class PurchaseCreateComponent {
     bankAccountNumber: new FormControl('', Validators.required),
     paymentMethod: new FormControl('', Validators.required),
     paymentTotal: new FormControl(0, [Validators.required, Validators.min(0)]),
+    paymentDate: new FormControl(''),
   });
 
   ngOnInit() {}
@@ -122,7 +124,9 @@ export class PurchaseCreateComponent {
         if (isValid) {
           // set the project name based on the purchase order name
           const projectName = purchaseOrderName.split('-')[2];
+          const expenseType = purchaseOrderName.split('-')[3];
           this.metaFormGroup.controls['projectName'].setValue(projectName);
+          this.metaFormGroup.controls['purchaseType'].setValue(expenseType);
         } else {
           // set the project name to empty string if the purchase order name is not valid
           this.metaFormGroup.controls['projectName'].setValue('');
@@ -135,7 +139,15 @@ export class PurchaseCreateComponent {
     this.dialog
       .open(SupplierSelectorComponent, {})
       .afterClosed()
-      .subscribe((data) => {});
+      .subscribe((data) => {
+        if (data) {
+          this.metaFormGroup.patchValue({
+            supplierID: data.id,
+            supplierName: data.name,
+            supplierAddress: data.address,
+          });
+        }
+      });
   }
 
   openPPHSelector() {
@@ -182,5 +194,41 @@ export class PurchaseCreateComponent {
     this.isFinal = true;
   }
 
-  onSubmit() {}
+  onSubmit() {
+    this.apiService.post('purchases', {
+      invoiceName: this.metaFormGroup.controls['invoiceName'].value,
+      receiptName: this.metaFormGroup.controls['receiptName'].value,
+      taxInvoiceName: this.metaFormGroup.controls['taxInvoiceName'].value,
+      supplierID: this.metaFormGroup.controls['supplierID'].value,
+      date: this.metaFormGroup.controls['date'].value,
+      dueDate: this.metaFormGroup.controls['dueDate'].value,
+      purchaseOrderName: this.metaFormGroup.controls['purchaseOrderName'].value,
+      projectName: this.metaFormGroup.controls['projectName'].value,
+      purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+      dpp: this.valueFormGroup.controls['dpp'].value,
+      ppn: this.valueFormGroup.controls['ppnValue'].value,
+      pbbkb: this.valueFormGroup.controls['pbbkb'].value,
+      pphCode: this.valueFormGroup.controls['pphCode'].value,
+      pphTaxObject: this.valueFormGroup.controls['pphTaxObject'].value,
+      pphPercentage: this.valueFormGroup.controls['pphPercentage'].value,
+      otherValue: this.valueFormGroup.controls['otherValue'].value,
+      otherValueNote: this.valueFormGroup.controls['otherValueNote'].value,
+
+      isInvoiceAttached:
+        this.attachmentFormGroup.controls['invoiceAttachment'].value,
+      isReceiptAttached:
+        this.attachmentFormGroup.controls['receiptAttachment'].value,
+      isTaxInvoiceAttached:
+        this.attachmentFormGroup.controls['taxInvoiceAttachment'].value,
+      isCopAttached: this.attachmentFormGroup.controls['copAttachment'].value,
+      isCopyPurchaseOrderAttached:
+        this.attachmentFormGroup.controls['copyPurchaseOrderAttachment'].value,
+      bankName: this.paymentFormGroup.controls['bankName'].value,
+      bankAccountName: this.paymentFormGroup.controls['bankAccountName'].value,
+      bankAccountNumber:
+        this.paymentFormGroup.controls['bankAccountNumber'].value,
+      paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
+      paymentDate: this.paymentFormGroup.controls['paymentDate'].value,
+    });
+  }
 }

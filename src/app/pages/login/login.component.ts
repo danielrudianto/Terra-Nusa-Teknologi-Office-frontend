@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -9,7 +10,11 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   isSubmitting: boolean = false;
 
@@ -20,8 +25,14 @@ export class LoginComponent {
 
   onSubmit() {
     this.apiService.post('auth', this.loginFormGroup.value).subscribe({
-      next: (data) => {
-        console.log(data);
+      next: (data: any) => {
+        const acessToken = data.access_token;
+        const refreshToken = data.refresh_token;
+
+        localStorage.setItem('access_token', acessToken);
+        localStorage.setItem('refresh_token', refreshToken);
+
+        this.router.navigate(['/']);
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {

@@ -9,6 +9,27 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   post(url: string, body: any) {
-    return this.http.post(environment.url + url, body);
+    const access_token = `Bearer ${localStorage.getItem('access_token')}`;
+    const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;
+
+    return this.http.post(environment.url + url, body, {
+      headers: {
+        Authorization: access_token,
+        'X-Refresh-Token': refresh_token,
+      },
+    });
+  }
+
+  get(url: string, queryParams: any) {
+    const access_token = `Bearer ${localStorage.getItem('access_token')}`;
+    const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;
+
+    return this.http.get(environment.url + url, {
+      headers: {
+        Authorization: access_token,
+        'X-Refresh-Token': refresh_token,
+      },
+      params: queryParams,
+    });
   }
 }

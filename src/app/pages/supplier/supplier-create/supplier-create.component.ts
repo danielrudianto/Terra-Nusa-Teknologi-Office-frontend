@@ -15,17 +15,21 @@ export class SupplierCreateComponent {
     prefix: new FormControl('', Validators.required),
     name: new FormControl('', Validators.required),
     address: new FormControl('', Validators.required),
+    city: new FormControl('', Validators.required),
+    province: new FormControl('', Validators.required),
     npwp: new FormControl('', [Validators.maxLength(16)]),
-    phone: new FormControl('', [
+    phone_number: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\+?\d{1,4}?\s?\d{1,4}?\s?\d{1,4}?\s?\d{1,9}$/),
+      Validators.pattern(/\+?\d{7,20}$/),
     ]),
     email: new FormControl('', [Validators.email]),
     soldItems: new FormControl(''),
+    serviceAreas: new FormControl(''),
   });
 
   isSubmitting: boolean = false;
   items: string[] = [];
+  areas: string[] = [];
 
   ngOnInit(): void {
     this.supplierFormGroup.controls['soldItems'].valueChanges.subscribe(
@@ -42,6 +46,21 @@ export class SupplierCreateComponent {
         }
       }
     );
+
+    this.supplierFormGroup.controls['serviceAreas'].valueChanges.subscribe(
+      (value) => {
+        // if there is a comma, split the string into an array
+        if (value.includes(',') && value.length > 1) {
+          const item = value.slice(0, -1);
+          if (!this.areas.includes(item)) {
+            this.areas.push(item);
+            this.supplierFormGroup.patchValue({
+              serviceAreas: '',
+            });
+          }
+        }
+      }
+    );
   }
 
   remove(item: string) {
@@ -51,18 +70,39 @@ export class SupplierCreateComponent {
     }
   }
 
+  removeArea(area: string) {
+    const index = this.areas.indexOf(area);
+    if (index >= 0) {
+      this.areas.splice(index, 1);
+    }
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
-      .post('supplier', {
+      .post('suppliers', {
         ...this.supplierFormGroup.value,
-        soldItems: this.items,
+        email: this.supplierFormGroup.value.email || null,
+        npwp:
+          this.supplierFormGroup.value.npwp.length < 16
+            ? null
+            : this.supplierFormGroup.value.npwp,
+        items_sold: this.items.map((item) => item.trim()).join(','),
+        service_area: this.areas.map((item) => item.trim()).join(','),
       })
       .subscribe({
-        next: (data) => {},
+        next: (data) => {
+          console.log('Success:', data);
+          this.snackBar.open('Supplier created successfully', 'Close', {
+            duration: 3000,
+          });
+          this.supplierFormGroup.reset();
+          this.items = [];
+          this.areas = [];
+        },
         error: (error) => {
-          console.error(`Error: ${error.error.message}`);
-          this.snackBar.open('Error: ' + error.error.message, 'Close', {
+          console.error(`Error: ${error.error.detail}`);
+          this.snackBar.open('Error: ' + error.error.detail, 'Close', {
             duration: 3000,
           });
         },

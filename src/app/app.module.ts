@@ -29,6 +29,7 @@ import { SupplierListComponent } from './pages/supplier/supplier-list/supplier-l
 import { BankSelectorComponent } from './components/bank-selector/bank-selector.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatStepperModule,
     MatSnackBarModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [provideNgxMask()],
   bootstrap: [AppComponent],
