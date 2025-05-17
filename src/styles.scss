@@ -8,6 +8,7 @@
 :root {
   --background-color: white;
   --base-color: #f7f7f7;
+  --base-color-hover: #eaeaea;
   --on-base-color: #333333;
   --primary-color: #0d152e;
   --accent-color: #f2711a;
@@ -27,5 +28,11 @@ body {
   background-color: var(--background-color);
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

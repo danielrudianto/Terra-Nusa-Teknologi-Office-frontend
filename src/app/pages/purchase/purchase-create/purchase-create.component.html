@@ -1,5 +1,5 @@
 <h1 class="title">Purchase / Create Purchase</h1>
-<mat-stepper [linear]="false" #stepper>
+<mat-stepper [linear]="true" #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Meta Data</ng-template>
@@ -95,7 +95,11 @@
           placeholder="Supplier"
           readonly
         />
-        <button class="btn btn-suffix" (click)="openSupplierSelector()">
+        <button
+          class="btn btn-suffix"
+          (click)="openSupplierSelector()"
+          type="button"
+        >
           <i class="bi bi-search"></i>
         </button>
       </div>
@@ -114,7 +118,9 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button class="btn" matStepperNext>Next</button>
+    <button class="btn" matStepperNext [disabled]="metaFormGroup.invalid">
+      Next
+    </button>
   </mat-step>
   <mat-step [stepControl]="valueFormGroup">
     <form [formGroup]="valueFormGroup">
@@ -262,7 +268,13 @@
 
     <mat-divider class="my-3"></mat-divider>
     <button class="btn outlined" matStepperPrevious>Previous</button>
-    <button class="btn" matStepperNext>Next</button>
+    <button
+      class="btn"
+      matStepperNext
+      [disabled]="valueFormGroup.invalid || !isFinal"
+    >
+      Next
+    </button>
   </mat-step>
   <mat-step [stepControl]="attachmentFormGroup">
     <form [formGroup]="attachmentFormGroup">
@@ -275,7 +287,7 @@
           class="form-check-input"
           type="checkbox"
           value=""
-          formControlName="invoiceAttachment"
+          formControlName="isInvoiceAttached"
         />
         <label class="form-check-label ms-3" for="flexCheckDefault">
           Invoice
@@ -287,7 +299,7 @@
           class="form-check-input"
           type="checkbox"
           value=""
-          formControlName="receiptAttachment"
+          formControlName="isReceiptAttached"
         />
         <label class="form-check-label ms-3" for="flexCheckDefault">
           Receipt
@@ -299,7 +311,7 @@
           class="form-check-input"
           type="checkbox"
           value=""
-          formControlName="taxInvoiceAttachment"
+          formControlName="isTaxInvoiceAttached"
         />
         <label class="form-check-label ms-3" for="flexCheckDefault">
           Tax invoice
@@ -311,7 +323,7 @@
           class="form-check-input"
           type="checkbox"
           value=""
-          formControlName="copAttachment"
+          formControlName="isCopAttached"
         />
         <label class="form-check-label ms-3" for="flexCheckDefault">
           Certificate of Payment
@@ -323,7 +335,7 @@
           class="form-check-input"
           type="checkbox"
           value=""
-          formControlName="copyPurchaseOrderAttachment"
+          formControlName="isCopyPurchaseOrderAttached"
         />
         <label class="form-check-label ms-3" for="flexCheckDefault">
           Copy of Purchase Order / Contract
@@ -333,7 +345,9 @@
 
     <mat-divider class="my-3"></mat-divider>
     <button class="btn outlined" matStepperPrevious>Previous</button>
-    <button class="btn" matStepperNext>Next</button>
+    <button class="btn" matStepperNext [disabled]="attachmentFormGroup.invalid">
+      Next
+    </button>
   </mat-step>
   <mat-step [stepControl]="paymentFormGroup">
     <form [formGroup]="paymentFormGroup">
@@ -399,6 +413,8 @@
 
     <mat-divider class="my-3"></mat-divider>
     <button class="btn outlined" matStepperPrevious>Previous</button>
-    <button class="btn">Submit</button>
+    <button class="btn" (click)="onSubmit()" [disabled]="!isValid">
+      Submit
+    </button>
   </mat-step>
 </mat-stepper>

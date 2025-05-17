@@ -1,6 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepper } from '@angular/material/stepper';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
@@ -12,9 +14,16 @@ import { IPPh } from 'src/app/utils/pph';
   styleUrls: ['./purchase-create.component.scss'],
 })
 export class PurchaseCreateComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
+
+  @ViewChild('stepper') stepper: MatStepper | undefined;
 
   isFinal: boolean = false;
+  isSubmitting: boolean = false;
 
   get isNumberValid() {
     return (
@@ -61,11 +70,14 @@ export class PurchaseCreateComponent {
   });
 
   attachmentFormGroup: FormGroup = new FormGroup({
-    invoiceAttachment: new FormControl('', Validators.requiredTrue),
-    receiptAttachment: new FormControl(''),
-    taxInvoiceAttachment: new FormControl(''),
-    copAttachment: new FormControl(''),
-    copyPurchaseOrderAttachment: new FormControl('', Validators.requiredTrue),
+    isInvoiceAttached: new FormControl(false, Validators.requiredTrue),
+    isReceiptAttached: new FormControl(false),
+    isTaxInvoiceAttached: new FormControl(false),
+    isCopAttached: new FormControl(false),
+    isCopyPurchaseOrderAttached: new FormControl(
+      false,
+      Validators.requiredTrue
+    ),
   });
 
   paymentFormGroup: FormGroup = new FormGroup({
@@ -74,10 +86,13 @@ export class PurchaseCreateComponent {
     bankAccountNumber: new FormControl('', Validators.required),
     paymentMethod: new FormControl('', Validators.required),
     paymentTotal: new FormControl(0, [Validators.required, Validators.min(0)]),
-    paymentDate: new FormControl(''),
   });
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.valueFormGroup.valueChanges.subscribe(() => {
+      console.log(this.valueFormGroup.controls);
+    });
+  }
 
   ngAfterViewInit() {
     this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
@@ -188,47 +203,80 @@ export class PurchaseCreateComponent {
     });
 
     this.paymentFormGroup.patchValue({
-      totalPayment: total + otherValue - pphValue,
+      paymentTotal: total + otherValue - pphValue,
     });
 
     this.isFinal = true;
   }
 
   onSubmit() {
-    this.apiService.post('purchases', {
-      invoiceName: this.metaFormGroup.controls['invoiceName'].value,
-      receiptName: this.metaFormGroup.controls['receiptName'].value,
-      taxInvoiceName: this.metaFormGroup.controls['taxInvoiceName'].value,
-      supplierID: this.metaFormGroup.controls['supplierID'].value,
-      date: this.metaFormGroup.controls['date'].value,
-      dueDate: this.metaFormGroup.controls['dueDate'].value,
-      purchaseOrderName: this.metaFormGroup.controls['purchaseOrderName'].value,
-      projectName: this.metaFormGroup.controls['projectName'].value,
-      purchaseType: this.metaFormGroup.controls['purchaseType'].value,
-      dpp: this.valueFormGroup.controls['dpp'].value,
-      ppn: this.valueFormGroup.controls['ppnValue'].value,
-      pbbkb: this.valueFormGroup.controls['pbbkb'].value,
-      pphCode: this.valueFormGroup.controls['pphCode'].value,
-      pphTaxObject: this.valueFormGroup.controls['pphTaxObject'].value,
-      pphPercentage: this.valueFormGroup.controls['pphPercentage'].value,
-      otherValue: this.valueFormGroup.controls['otherValue'].value,
-      otherValueNote: this.valueFormGroup.controls['otherValueNote'].value,
+    this.isSubmitting = true;
+    this.apiService
+      .post('purchases', {
+        invoiceName: this.metaFormGroup.controls['invoiceName'].value,
+        receiptName: this.metaFormGroup.controls['receiptName'].value,
+        taxInvoiceName: this.metaFormGroup.controls['taxInvoiceName'].value,
+        supplierID: this.metaFormGroup.controls['supplierID'].value,
+        date: this.metaFormGroup.controls['date'].value,
+        dueDate: this.metaFormGroup.controls['dueDate'].value,
+        purchaseOrderName:
+          this.metaFormGroup.controls['purchaseOrderName'].value,
+        projectName: this.metaFormGroup.controls['projectName'].value,
+        purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+        dpp: this.valueFormGroup.controls['dpp'].value,
+        ppn: this.valueFormGroup.controls['ppnValue'].value,
+        pbbkb: this.valueFormGroup.controls['pbbkb'].value,
+        pphCode: this.valueFormGroup.controls['pphCode'].value,
+        pphTaxObject: this.valueFormGroup.controls['pphTaxObject'].value,
+        pphPercentage: this.valueFormGroup.controls['pphPercentage'].value,
+        otherValue: this.valueFormGroup.controls['otherValue'].value,
+        otherValueNote: this.valueFormGroup.controls['otherValueNote'].value,
+        isInvoiceAttached:
+          this.attachmentFormGroup.controls['isInvoiceAttached'].value,
+        isReceiptAttached:
+          this.attachmentFormGroup.controls['isReceiptAttached'].value,
+        isTaxInvoiceAttached:
+          this.attachmentFormGroup.controls['isTaxInvoiceAttached'].value,
+        isCopAttached: this.attachmentFormGroup.controls['isCopAttached'].value,
+        isCopyPurchaseOrderAttached:
+          this.attachmentFormGroup.controls['isCopyPurchaseOrderAttached']
+            .value,
+        bankName: this.paymentFormGroup.controls['bankName'].value,
+        bankAccountName:
+          this.paymentFormGroup.controls['bankAccountName'].value,
+        bankAccountNumber:
+          this.paymentFormGroup.controls['bankAccountNumber'].value,
+        paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
+      })
+      .subscribe({
+        next: (data) => {
+          this.stepper?.reset();
+          this.snackBar.open('Purchase created successfully', 'Close', {
+            duration: 3000,
+          });
 
-      isInvoiceAttached:
-        this.attachmentFormGroup.controls['invoiceAttachment'].value,
-      isReceiptAttached:
-        this.attachmentFormGroup.controls['receiptAttachment'].value,
-      isTaxInvoiceAttached:
-        this.attachmentFormGroup.controls['taxInvoiceAttachment'].value,
-      isCopAttached: this.attachmentFormGroup.controls['copAttachment'].value,
-      isCopyPurchaseOrderAttached:
-        this.attachmentFormGroup.controls['copyPurchaseOrderAttachment'].value,
-      bankName: this.paymentFormGroup.controls['bankName'].value,
-      bankAccountName: this.paymentFormGroup.controls['bankAccountName'].value,
-      bankAccountNumber:
-        this.paymentFormGroup.controls['bankAccountNumber'].value,
-      paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
-      paymentDate: this.paymentFormGroup.controls['paymentDate'].value,
-    });
+          this.metaFormGroup.reset();
+          this.valueFormGroup.reset();
+          this.attachmentFormGroup.reset();
+          this.paymentFormGroup.reset();
+        },
+        error: (error) => {
+          this.snackBar.open(error.error.detail, 'Close', {
+            duration: 3000,
+          });
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
+  }
+
+  get isValid() {
+    return (
+      this.metaFormGroup.valid &&
+      this.valueFormGroup.valid &&
+      this.attachmentFormGroup.valid &&
+      this.paymentFormGroup.valid
+    );
   }
 }

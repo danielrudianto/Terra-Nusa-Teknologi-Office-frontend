@@ -14,4 +14,107 @@
   width: 230px;
   height: calc(100vh - 40px);
   border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-nav__logo {
+  flex-grow: 0;
+  text-align: center;
+
+  img {
+    width: 75%;
+  }
+}
+
+.side-nav__item-list {
+  flex-grow: 1;
+
+  .side-nav__item__title {
+    //upper case
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--on-primary-color);
+  }
+
+  .list-group-item {
+    background-color: var(--base-color);
+    border: none;
+    transition: 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--base-color-hover);
+      transition: 0.2s ease-in-out;
+    }
+  }
+}
+
+.side-nav__version {
+  flex-grow: 0;
+  width: 100%;
+  border-radius: 20px;
+  aspect-ratio: 22/15;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    border-radius: 20px;
+    padding: 15px;
+
+    .text__wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: left;
+      color: white;
+      font-size: 1.2rem;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px;
+
+      p {
+        color: white;
+        font-size: 0.75rem;
+        line-height: 0.5;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      button {
+        // white button with border radius
+        background-color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 12px;
+        font-family: "Montserrat", sans-serif;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        &:hover {
+          background-color: black;
+          color: white;
+        }
+      }
+    }
+  }
 }

@@ -18,7 +18,7 @@ export class SupplierCreateComponent {
     city: new FormControl('', Validators.required),
     province: new FormControl('', Validators.required),
     npwp: new FormControl('', [Validators.maxLength(16)]),
-    phone_number: new FormControl('', [
+    phoneNumber: new FormControl('', [
       Validators.required,
       Validators.pattern(/\+?\d{7,20}$/),
     ]),
@@ -87,8 +87,8 @@ export class SupplierCreateComponent {
           this.supplierFormGroup.value.npwp.length < 16
             ? null
             : this.supplierFormGroup.value.npwp,
-        items_sold: this.items.map((item) => item.trim()).join(','),
-        service_area: this.areas.map((item) => item.trim()).join(','),
+        itemsSold: this.items.map((item) => item.trim()).join(','),
+        serviceArea: this.areas.map((item) => item.trim()).join(','),
       })
       .subscribe({
         next: (data) => {
