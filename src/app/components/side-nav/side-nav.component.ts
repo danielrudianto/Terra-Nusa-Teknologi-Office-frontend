@@ -36,6 +36,11 @@ export class SideNavComponent {
           route: '/Purchase',
         },
         {
+          name: 'Reimbursement',
+          icon: 'shopping_cart',
+          route: '/Reimbursement',
+        },
+        {
           name: 'Supplier',
           icon: 'people',
           route: '/Supplier',

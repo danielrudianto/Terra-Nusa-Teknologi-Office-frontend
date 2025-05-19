@@ -18,15 +18,19 @@
     <tbody>
       <tr *ngFor="let purchase of purchases">
         <td>{{ purchase.date | date : "dd/MM/yyyy" }}</td>
-        <td>{{ purchase.invoiceName }}</td>
-        <td>{{ purchase.receiptName }}</td>
-        <td>{{ purchase.taxInvoiceName }}</td>
-        <td>{{ purchase.supplier }}</td>
-        <td>{{ purchase.project }}</td>
+        <td>{{ purchase.invoiceName || "N/A" }}</td>
+        <td>{{ purchase.receiptName || "N/A" }}</td>
+        <td>{{ purchase.taxInvoiceName || "N/A" }}</td>
+        <td>
+          <p>{{ purchase.supplier.name }}, {{ purchase.supplier.prefix }}</p>
+        </td>
+        <td>{{ purchase.projectName }}</td>
         <td>{{ purchase.dpp | currency : "IDR" }}</td>
         <td>{{ purchase.ppn | currency : "IDR" }}</td>
-        <td>{{ purchase.pphPercentage * purchase.dpp / 100 | currency : "IDR" }}</td>
-        <td>{{ purchase.status }}</td>
+        <td>
+          {{ (purchase.pphPercentage * purchase.dpp) / 100 | currency : "IDR" }}
+        </td>
+        <td>{{ purchase.isDeleted ? "Deleted" : "Active" }}</td>
       </tr>
     </tbody>
   </table>

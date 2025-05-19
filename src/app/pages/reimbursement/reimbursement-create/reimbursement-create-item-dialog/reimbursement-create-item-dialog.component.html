@@ -1,0 +1,37 @@
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <div class="form-field">
+      <label for="date">Date</label>
+      <input
+        type="date"
+        id="date"
+        formControlName="date"
+        class="form-control"
+      />
+    </div>
+
+    <div class="form-field mt-3">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        class="form-control"
+        placeholder="Enter description"
+        rows="3"
+        style="resize: none"
+      ></textarea>
+    </div>
+
+    <div class="form-field mt-3">
+      <label for="amount">Amount</label>
+      <input
+        type="text"
+        id="amount"
+        formControlName="amount"
+        class="form-control"
+        placeholder="Enter amount"
+        thousandSeparator=" "
+      />
+    </div>
+  </form>
+</mat-dialog-content>

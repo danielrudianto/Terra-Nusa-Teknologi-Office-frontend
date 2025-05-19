@@ -33,6 +33,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
+import { ReimbursementListComponent } from './pages/reimbursement/reimbursement-list/reimbursement-list.component';
+import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
+import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +58,10 @@ import { AuthInterceptor } from './services/auth.interceptor';
     PurchaseListComponent,
     SupplierListComponent,
     BankSelectorComponent,
+    ReimbursementComponent,
+    ReimbursementListComponent,
+    ReimbursementCreateComponent,
+    ReimbursementCreateItemDialogComponent,
   ],
   imports: [
     BrowserModule,

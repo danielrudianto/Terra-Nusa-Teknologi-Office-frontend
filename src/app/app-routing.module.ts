@@ -9,6 +9,9 @@ import { PurchaseListComponent } from './pages/purchase/purchase-list/purchase-l
 import { PurchaseCreateComponent } from './pages/purchase/purchase-create/purchase-create.component';
 import { SupplierListComponent } from './pages/supplier/supplier-list/supplier-list.component';
 import { SupplierCreateComponent } from './pages/supplier/supplier-create/supplier-create.component';
+import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
+import { ReimbursementListComponent } from './pages/reimbursement/reimbursement-list/reimbursement-list.component';
+import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
 
 const routes: Routes = [
   {
@@ -37,6 +40,20 @@ const routes: Routes = [
             component: PurchaseCreateComponent,
           },
         ],
+      },
+      {
+        path: "Reimbursement",
+        component: ReimbursementComponent,
+        children: [
+          {
+            path: "",
+            component: ReimbursementListComponent,
+          },
+          {
+            path: "Create",
+            component: ReimbursementCreateComponent
+          }
+        ]
       },
       {
         path: 'Supplier',
