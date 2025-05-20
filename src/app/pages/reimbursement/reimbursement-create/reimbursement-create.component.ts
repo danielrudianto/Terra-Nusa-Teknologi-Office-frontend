@@ -3,6 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { ReimbursementCreateItemDialogComponent } from './reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-reimbursement-create',
@@ -10,7 +11,13 @@ import { ReimbursementCreateItemDialogComponent } from './reimbursement-create-i
   styleUrls: ['./reimbursement-create.component.scss'],
 })
 export class ReimbursementCreateComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
+
+  isSubmitting: boolean = false;
 
   expenseTypes: any[] = [
     {
@@ -34,7 +41,7 @@ export class ReimbursementCreateComponent {
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{3,5}$/),
     ]),
-    expenseType: new FormControl('', Validators.required),
+    purchaseType: new FormControl('', Validators.required),
     bankName: new FormControl('', Validators.required),
     bankAccountName: new FormControl('', Validators.required),
     bankAccountNumber: new FormControl('', Validators.required),
@@ -61,6 +68,44 @@ export class ReimbursementCreateComponent {
     this.dialog
       .open(ReimbursementCreateItemDialogComponent, {})
       .afterClosed()
-      .subscribe((data) => {});
+      .subscribe((data) => {
+        if (data) {
+          this.items.push(
+            new FormGroup({
+              date: new FormControl(data.date, Validators.required),
+              description: new FormControl(
+                data.description,
+                Validators.required
+              ),
+              amount: new FormControl(data.amount, [
+                Validators.required,
+                Validators.min(1),
+              ]),
+            })
+          );
+        }
+      });
+  }
+
+  onSubmit() {
+    this.isSubmitting = true;
+    this.apiService
+      .post('reimbursement', this.formGroup.value)
+      .subscribe({
+        next: (data) => {},
+        error: (error) => {
+          console.error('Error creating reimbursement:', error);
+          this.snackBar.open(
+            'Failed to create reimbursement. Please try again.',
+            'Close',
+            {
+              duration: 3000,
+            }
+          );
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
   }
 }

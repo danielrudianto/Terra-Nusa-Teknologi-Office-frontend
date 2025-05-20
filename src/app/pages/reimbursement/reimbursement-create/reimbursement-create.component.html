@@ -7,8 +7,8 @@
   <div class="form-field mt-3">
     <label for="projectName">Expense type</label>
     <select
-      id="expenseType"
-      formControlName="expenseType"
+      id="purchaseType"
+      formControlName="purchaseType"
       class="form-control"
       placeholder="Enter expense type"
     >
@@ -63,7 +63,9 @@
     />
   </div>
 
-  <button class="btn outlined mt-3" (click)="addItem()">Add reimbursement item</button>
+  <button class="btn outlined mt-3" (click)="addItem()">
+    Add reimbursement item
+  </button>
 
   <div class="table-responsive">
     <table class="table table-bordered hover mt-3">
@@ -72,19 +74,32 @@
           <th>Date</th>
           <th>Description</th>
           <th>Amount</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody *ngIf="items.length == 0">
         <tr>
-          <td colspan="3" class="text-center">No items added yet.</td>
+          <td colspan="4" class="text-center">No items added yet.</td>
         </tr>
       </tbody>
 
       <tbody *ngIf="items.length > 0">
-        <tr *ngFor="let item of items.controls">
-            <td></td>
+        <tr *ngFor="let item of items.controls; index as i">
+          <td>{{ item.get("date")?.value | date : "dd MMMM YYYY" }}</td>
+          <td>{{ item.get("description")?.value }}</td>
+          <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+          <td>
+            <button class="btn icon" (click)="removeItem(i)">
+              <i class="bi bi-x"></i>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <mat-divider class="my-3"></mat-divider>
+  <button class="btn" (click)="onSubmit()" [disabled]="formGroup.invalid">
+    Submit
+  </button>
 </form>
