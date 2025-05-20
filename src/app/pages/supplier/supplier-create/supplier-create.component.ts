@@ -96,7 +96,18 @@ export class SupplierCreateComponent {
           this.snackBar.open('Supplier created successfully', 'Close', {
             duration: 3000,
           });
-          this.supplierFormGroup.reset();
+          this.supplierFormGroup.patchValue({
+            prefix: '',
+            name: '',
+            address: '',
+            city: '',
+            province: '',
+            npwp: '',
+            phoneNumber: '',
+            email: '',
+            soldItems: '',
+            serviceAreas: '',
+          });
           this.items = [];
           this.areas = [];
         },

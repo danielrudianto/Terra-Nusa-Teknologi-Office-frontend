@@ -1,2 +1,90 @@
-<p>supplier-list works!</p>
-<button routerLink="/Supplier/Create">Create</button>
+<div class="title__wrapper mt-3">
+  <h1 class="title flex-grow-1">Supplier</h1>
+  <button class="btn outlined" routerLink="/Supplier/Create">
+    Create new supplier
+  </button>
+</div>
+<mat-divider class="my-3"></mat-divider>
+
+<div class="search__wrapper">
+  <mat-form-field appearance="outline" class="w-100">
+    <input
+      matInput
+      type="text"
+      class="input"
+      placeholder="Search supplier"
+      [formControl]="formControl"
+    />
+  </mat-form-field>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered hover mt-3">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>NPWP</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="isLoading">
+      <tr>
+        <td colspan="6" class="text-center">
+          <mat-spinner
+            class="loading-spinner"
+            [diameter]="50"
+            [strokeWidth]="5"
+            color="primary"
+            mode="indeterminate"
+          ></mat-spinner>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && suppliers.length === 0">
+      <tr>
+        <td colspan="6" class="text-center">No suppliers found.</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && suppliers.length > 0">
+      <tr *ngFor="let supplier of suppliers">
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.address }}</td>
+        <td>{{ supplier.phone_number ?? "N/A" }}</td>
+        <td>{{ supplier.email ?? "N/A" }}</td>
+        <td>{{ supplier.npwp ?? "N/A" }}</td>
+        <td>
+          <button
+            mat-icon-button
+            (click)="onViewDetail(supplier.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>open_in_full</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="onViewDetail(supplier.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="onViewDetail(supplier.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <mat-paginator
+    [pageIndex]="page - 1"
+    [length]="count"
+    [pageSize]="10"
+    (page)="changePage($event)"
+  ></mat-paginator>
+</div>

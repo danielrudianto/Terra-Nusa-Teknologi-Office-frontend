@@ -16,6 +16,9 @@
             class="list-group-item"
             role="button"
             (click)="onItemClick(subItem)"
+            [routerLink]="subItem.route"
+            [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="subItem.routerLinkOptions"
             *ngFor="let subItem of item.children"
           >
             {{ subItem.name }}

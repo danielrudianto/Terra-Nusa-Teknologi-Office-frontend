@@ -40,8 +40,8 @@ export class PurchaseCreateComponent {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl(''),
     supplierAddress: new FormControl(''),
-    date: new FormControl(new Date(), Validators.required),
-    dueDate: new FormControl(new Date(), Validators.required),
+    date: new FormControl('', Validators.required),
+    dueDate: new FormControl('', Validators.required),
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
@@ -152,7 +152,9 @@ export class PurchaseCreateComponent {
 
   openSupplierSelector() {
     this.dialog
-      .open(SupplierSelectorComponent, {})
+      .open(SupplierSelectorComponent, {
+        minWidth: '400px',
+      })
       .afterClosed()
       .subscribe((data) => {
         if (data) {

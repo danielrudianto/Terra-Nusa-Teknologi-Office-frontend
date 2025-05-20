@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
+import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -7,7 +9,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./purchase-list.component.scss'],
 })
 export class PurchaseListComponent {
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private dialog: MatDialog) {}
 
   page: number = 1;
   purchases: any[] = [];
@@ -16,6 +18,10 @@ export class PurchaseListComponent {
 
   ngOnInit(): void {
     this.fetchData();
+  }
+
+  openPurchaseReportSelector() {
+    this.dialog.open(PurchaseReportSelectComponent, {});
   }
 
   fetchData(targetPage: number = 1) {

@@ -7,9 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./side-nav.component.scss'],
 })
 export class SideNavComponent {
-  constructor(
-    private router: Router
-  ){}
+  constructor(private router: Router) {}
 
   // get version from appVersion
   buildStatus: string = 'Alpha';
@@ -24,44 +22,61 @@ export class SideNavComponent {
           name: 'Dashboard',
           icon: 'dashboard',
           route: '/',
+          routerLinkOptions: {
+            exact: true,
+          },
         },
         {
           name: 'Calendar',
           icon: 'calendar_today',
           route: '/Calendar',
+          routerLinkOptions: {
+            exact: false,
+          },
         },
         {
           name: 'Purchase',
           icon: 'shopping_cart',
           route: '/Purchase',
+          routerLinkOptions: {
+            exact: false,
+          },
         },
         {
           name: 'Reimbursement',
           icon: 'shopping_cart',
           route: '/Reimbursement',
+          routerLinkOptions: {
+            exact: false,
+          },
         },
         {
           name: 'Supplier',
           icon: 'people',
           route: '/Supplier',
+          routerLinkOptions: {
+            exact: false,
+          },
         },
       ],
     },
     {
-      name: "General",
+      name: 'General',
       children: [
         {
           name: 'Settings',
           icon: 'settings',
           route: '/Settings',
+          routerLinkOptions: {
+            exact: true,
+          },
         },
       ],
-    }
+    },
   ];
 
-  onItemClick(item: any){
-    console.log(item);
-    if(item.hasOwnProperty('route')){
+  onItemClick(item: any) {
+    if (item.hasOwnProperty('route')) {
       // navigate to route
       this.router.navigate([item.route]);
     }

@@ -48,6 +48,11 @@
       background-color: var(--base-color-hover);
       transition: 0.2s ease-in-out;
     }
+
+    &.active {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
   }
 }
 

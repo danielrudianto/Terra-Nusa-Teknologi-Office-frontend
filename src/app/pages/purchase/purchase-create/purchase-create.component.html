@@ -3,118 +3,129 @@
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Meta Data</ng-template>
-      <mat-divider class="mt-3"></mat-divider>
-      <h2 class="title my-3">Meta Data</h2>
 
-      <div class="form-field">
-        <label>Invoice Name</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Supplier</mat-label>
         <input
-          type="text"
-          formControlName="invoiceName"
-          class="input"
-          placeholder="Invoice Name"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Receipt Name</label>
-        <input
-          type="text"
-          formControlName="receiptName"
-          class="input"
-          placeholder="Receipt Name"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Tax Invoice Name</label>
-        <input
-          type="text"
-          formControlName="taxInvoiceName"
-          class="input"
-          placeholder="Tax Invoice Name"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Purchase Order Name</label>
-        <input
-          type="text"
-          formControlName="purchaseOrderName"
-          class="input"
-          placeholder="Purchase Order Name"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Project</label>
-        <input
-          type="text"
-          formControlName="projectName"
-          class="input"
-          placeholder="Project name"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Purchase type</label>
-        <input
-          type="text"
-          formControlName="purchaseType"
-          class="input"
-          placeholder="Purchase Type"
-          readonly
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Date</label>
-        <input
-          type="date"
-          formControlName="date"
-          class="input"
-          placeholder="Date"
-        />
-      </div>
-      <div class="form-field">
-        <label>Due date</label>
-        <input
-          type="date"
-          formControlName="dueDate"
-          class="input"
-          placeholder="Date"
-        />
-      </div>
-
-      <label>Supplier</label>
-      <div class="form-field">
-        <input
-          type="text"
+          matInput
           formControlName="supplierName"
-          class="input"
-          placeholder="Supplier"
+          type="text"
+          placeholder="Supplier name"
           readonly
         />
         <button
-          class="btn btn-suffix"
+          matSuffix
+          mat-icon-button
           (click)="openSupplierSelector()"
           type="button"
         >
-          <i class="bi bi-search"></i>
+          <mat-icon>search</mat-icon>
         </button>
-      </div>
+      </mat-form-field>
 
-      <label>Supplier Address</label>
-      <div class="form-field">
+      <mat-form-field appearance="outline" class="w-100">
         <textarea
+          matInput
           formControlName="supplierAddress"
-          class="input"
-          placeholder="Supplier Address"
           rows="3"
+          placeholder="Supplier address"
           readonly
           style="resize: none"
         ></textarea>
-      </div>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Invoice name</mat-label>
+        <input
+          matInput
+          formControlName="invoiceName"
+          type="text"
+          placeholder="Invoice name"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Receipt Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="receiptName"
+          placeholder="Receipt Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tax Invoice Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="taxInvoiceName"
+          placeholder="Tax Invoice Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase Order Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="purchaseOrderName"
+          placeholder="Purchase Order Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Project</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="projectName"
+          placeholder="Project name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="purchaseType"
+          placeholder="Purchase Type"
+          readonly
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          formControlName="date"
+          placeholder="Date"
+          [matDatepicker]="picker"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-hint>DD/MM/YYYY</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Due date</mat-label>
+        <input
+          matInput
+          formControlName="dueDate"
+          placeholder="Date"
+          [matDatepicker]="duePicker"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="duePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #duePicker></mat-datepicker>
+        <mat-hint>DD/MM/YYYY</mat-hint>
+      </mat-form-field>
     </form>
 
     <mat-divider class="my-3"></mat-divider>
@@ -128,40 +139,40 @@
       <mat-divider class="mt-3"></mat-divider>
       <h2 class="title my-3">Values</h2>
 
-      <div class="form-field">
-        <label>DPP</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DPP</mat-label>
         <input
+          matInput
           type="text"
           formControlName="dpp"
-          class="input"
           placeholder="DPP"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
         />
-      </div>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>PPN</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN</mat-label>
         <input
+          matInput
           type="text"
           formControlName="ppn"
-          class="input"
           placeholder="PPN"
           suffix="%"
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
         />
-      </div>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>PPN</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN</mat-label>
         <input
+          matInput
           type="text"
           formControlName="ppnValue"
-          class="input"
           placeholder="PPN (Rp.)"
           prefix="Rp. "
           thousandSeparator=" "
@@ -169,86 +180,84 @@
           mask="separator"
           readonly
         />
-      </div>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>PBBKB</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PBBKB</mat-label>
         <input
+          matInput
           type="text"
           formControlName="pbbkb"
-          class="input"
           placeholder="PBBKB"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
         />
-      </div>
+      </mat-form-field>
 
-      <label>PPh</label>
-      <div class="form-field">
+      <mat-label>PPh</mat-label>
+      <mat-form-field appearance="outline" class="w-100">
         <input
+          matInput
           type="text"
           formControlName="pphCode"
-          class="input"
           placeholder="PPh Code"
+          readonly
         />
-        <button class="btn btn-suffix" (click)="openPPHSelector()">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
+      </mat-form-field>
 
-      <label>PPh Object Name</label>
-      <div class="form-field">
+      <mat-label>PPh Object Name</mat-label>
+      <mat-form-field appearance="outline" class="w-100">
         <input
+          matInput
           type="text"
           formControlName="pphTaxObject"
-          class="input"
           placeholder="PPh Object Name"
           readonly
         />
-      </div>
+      </mat-form-field>
 
-      <label>PPh Percentage</label>
-      <div class="form-field">
+      <mat-label>PPh Percentage</mat-label>
+      <mat-form-field appearance="outline" class="w-100">
         <input
+          matInput
           type="text"
           formControlName="pphPercentage"
-          class="input"
           placeholder="PPh Percentage"
           readonly
         />
-      </div>
+      </mat-form-field>
 
-      <label>Other value</label>
-      <div class="form-field">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Other value</mat-label>
         <input
+          matInput
           type="text"
           formControlName="otherValue"
-          class="input"
           placeholder="otherValue"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
         />
-      </div>
+      </mat-form-field>
 
-      <label>Other value note</label>
-      <div class="form-field">
-        <select class="input" formControlName="otherValueNote">
-          <option value="">Select</option>
-          <option value="delivery">Delivery fee</option>
-          <option value="packing">Packing fee</option>
-        </select>
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Other value note</mat-label>
+        <mat-select formControlName="otherValueNote">
+          <mat-option value="">Select</mat-option>
+          <mat-option value="delivery">Delivery fee</mat-option>
+          <mat-option value="packing">Packing fee</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <label>Total</label>
-      <div class="form-field">
+      <mat-label>Total</mat-label>
+      <mat-form-field appearance="outline" class="w-100">
         <input
+          matInput
           type="text"
           formControlName="total"
-          class="input"
           placeholder="Total"
           readonly
           prefix="Rp. "
@@ -263,7 +272,7 @@
         >
           Calculate
         </button>
-      </div>
+      </mat-form-field>
     </form>
 
     <mat-divider class="my-3"></mat-divider>
@@ -282,65 +291,25 @@
       <mat-divider class="mt-3"></mat-divider>
       <h2 class="title my-3">Attachments</h2>
 
-      <div class="form-field mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value=""
-          formControlName="isInvoiceAttached"
-        />
-        <label class="form-check-label ms-3" for="flexCheckDefault">
-          Invoice
-        </label>
-      </div>
+      <mat-slide-toggle formControlName="isInvoiceAttached"
+        >Invoice</mat-slide-toggle
+      >
 
-      <div class="form-field mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value=""
-          formControlName="isReceiptAttached"
-        />
-        <label class="form-check-label ms-3" for="flexCheckDefault">
-          Receipt
-        </label>
-      </div>
+      <mat-slide-toggle formControlName="isReceiptAttached"
+        >Receipt</mat-slide-toggle
+      >
 
-      <div class="form-field mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value=""
-          formControlName="isTaxInvoiceAttached"
-        />
-        <label class="form-check-label ms-3" for="flexCheckDefault">
-          Tax invoice
-        </label>
-      </div>
+      <mat-slide-toggle formControlName="isTaxInvoiceAttached"
+        >Tax invoice</mat-slide-toggle
+      >
 
-      <div class="form-field mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value=""
-          formControlName="isCopAttached"
-        />
-        <label class="form-check-label ms-3" for="flexCheckDefault">
-          Certificate of Payment
-        </label>
-      </div>
+      <mat-slide-toggle formControlName="isCopAttached"
+        >Certificate of Payment</mat-slide-toggle
+      >
 
-      <div class="form-field mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          value=""
-          formControlName="isCopyPurchaseOrderAttached"
-        />
-        <label class="form-check-label ms-3" for="flexCheckDefault">
-          Copy of Purchase Order / Contract
-        </label>
-      </div>
+      <mat-slide-toggle formControlName="isCopyPurchaseOrderAttached"
+        >Copy of Purchase Order / Contract</mat-slide-toggle
+      >
     </form>
 
     <mat-divider class="my-3"></mat-divider>
@@ -355,52 +324,52 @@
       <mat-divider class="mt-3"></mat-divider>
       <h2 class="title my-3">Payment data</h2>
 
-      <div class="form-field">
-        <label>Bank name</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank name</mat-label>
         <input
+          matInput
           type="text"
           formControlName="bankName"
-          class="input"
           placeholder="Bank Name"
         />
-      </div>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>Bank account name</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account name</mat-label>
         <input
+          matInput
           type="text"
           formControlName="bankAccountName"
-          class="input"
           placeholder="Bank Account Name"
         />
-      </div>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>Payment Method</label>
-        <select class="input" formControlName="paymentMethod">
-          <option value="bank">Bank Transfer</option>
-          <option value="cash">Virtual Account</option>
-          <option value="cash">Cheque</option>
-        </select>
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment Method</mat-label>
+        <mat-select formControlName="paymentMethod">
+          <mat-option value="bank">Bank Transfer</mat-option>
+          <mat-option value="cash">Virtual Account</mat-option>
+          <mat-option value="cash">Cheque</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <div class="form-field">
-        <label>Bank account number</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account number</mat-label>
         <!-- Input for bank account name -->
         <input
+          matInput
           type="text"
           formControlName="bankAccountNumber"
-          class="input"
           placeholder="Bank Account Number"
         />
-      </div>
+      </mat-form-field>
 
-      <label>Total</label>
-      <div class="form-field">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
         <input
+          matInput
           type="text"
           formControlName="paymentTotal"
-          class="input"
           placeholder="Payment Total"
           readonly
           prefix="Rp. "
@@ -408,7 +377,7 @@
           decimalScale="2"
           mask="separator"
         />
-      </div>
+      </mat-form-field>
     </form>
 
     <mat-divider class="my-3"></mat-divider>

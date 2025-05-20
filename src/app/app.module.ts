@@ -37,6 +37,23 @@ import { ReimbursementComponent } from './pages/reimbursement/reimbursement.comp
 import { ReimbursementListComponent } from './pages/reimbursement/reimbursement-list/reimbursement-list.component';
 import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
 import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
+import { PurchaseReportSelectComponent } from './pages/purchase/purchase-list/purchase-report-select/purchase-report-select.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { SupplierViewComponent } from './pages/supplier/supplier-list/supplier-view/supplier-view.component';
+import { DragDropFileComponent } from './components/drag-drop-file/drag-drop-file.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+
+import * as _moment from 'moment';
+// tslint:disable-next-line:no-duplicate-imports
+import { default as _rollupMoment } from 'moment';
+import 'moment/locale/fr';
 
 @NgModule({
   declarations: [
@@ -62,6 +79,9 @@ import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/re
     ReimbursementListComponent,
     ReimbursementCreateComponent,
     ReimbursementCreateItemDialogComponent,
+    PurchaseReportSelectComponent,
+    SupplierViewComponent,
+    DragDropFileComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,6 +97,15 @@ import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/re
     MatSnackBarModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     provideNgxMask(),
@@ -85,6 +114,7 @@ import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/re
       useClass: AuthInterceptor,
       multi: true,
     },
+    { provide: MAT_DATE_LOCALE, useValue: 'fr' },
   ],
   bootstrap: [AppComponent],
 })

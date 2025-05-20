@@ -1,142 +1,161 @@
-<h1 class="title">Supplier / Create</h1>
+<h1 class="title mt-3">Supplier / Create</h1>
+<mat-divider class="my-3"></mat-divider>
 
 <form [formGroup]="supplierFormGroup" (ngSubmit)="onSubmit()">
-  <div class="form-field">
-    <label>Prefix</label>
-    <select class="input" formControlName="prefix">
-      <option value="PT.">PT.</option>
-      <option value="CV.">CV.</option>
-      <option value="UD.">UD.</option>
-      <option value="Pribadi">Pribadi</option>
-      <option value="Lainnya">Lainnya</option>
-    </select>
-  </div>
+  <mat-form-field appearance="outline" class="w-100 mt-3">
+    <mat-label>Prefix</mat-label>
+    <mat-select formControlName="prefix" required>
+      <mat-option value="PT.">PT.</mat-option>
+      <mat-option value="CV.">CV.</mat-option>
+      <mat-option value="UD.">UD.</mat-option>
+      <mat-option value="Pribadi">Pribadi</mat-option>
+      <mat-option value="Lainnya">Lainnya</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-  <div class="form-field">
-    <label>Name</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Name</mat-label>
     <input
-      class="input"
-      type="text"
+      matInput
       formControlName="name"
+      type="text"
       placeholder="Supplier name"
+      required
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field">
-    <label>Address</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Address</mat-label>
     <textarea
-      class="input"
+      matInput
       formControlName="address"
       rows="3"
       placeholder="Supplier address"
+      required
       style="resize: none"
     ></textarea>
-  </div>
+  </mat-form-field>
+
   <div class="row">
     <div class="col-sm-6 col-12">
-      <div class="form-field">
-        <label>City</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>City</mat-label>
         <input
-          class="input"
-          type="text"
+          matInput
           formControlName="city"
+          type="text"
           placeholder="Supplier city"
+          required
         />
-      </div>
+      </mat-form-field>
     </div>
     <div class="col-sm-6 col-12">
-      <div class="form-field">
-        <label>Province</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Province</mat-label>
         <input
-          class="input"
-          type="text"
+          matInput
           formControlName="province"
+          type="text"
           placeholder="Supplier province"
+          required
         />
-      </div>
+      </mat-form-field>
     </div>
   </div>
 
-  <div class="form-field">
-    <label>NPWP</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>NPWP</mat-label>
     <input
-      class="input"
-      type="tel"
+      matInput
       formControlName="npwp"
-      placeholder="NPWP Supplier"
+      type="text"
+      placeholder="Supplier NPWP"
+      required
       maxlength="16"
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field">
-    <label>Phone</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Phone number</mat-label>
     <input
-      class="input"
-      type="tel"
+      matInput
       formControlName="phoneNumber"
-      placeholder="Supplier's phone number"
+      type="tel"
+      placeholder="Supplier Phone number"
+      required
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field">
-    <label>Email</label>
+  <!-- Email -->
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Email</mat-label>
     <input
-      class="input"
-      type="email"
+      matInput
       formControlName="email"
-      placeholder="Supplier's email"
+      type="email"
+      placeholder="Supplier Email"
     />
-  </div>
+  </mat-form-field>
 
   <mat-divider class="mb-3"></mat-divider>
   <h2 class="title">Search Helper</h2>
 
-  <div class="form-field">
-    <label>Items sold</label>
-    <p>This will help us find the right supplier when searching.</p>
+  <label>Items sold</label>
+  <p>This will help us find the right supplier when searching.</p>
 
-    <mat-chip-set aria-label="Items sold selection">
-      <mat-chip
-        *ngFor="let item of items"
-        [removable]="true"
-        (removed)="remove(item)"
-      >
-        {{ item }}
-        <button matChipRemove aria-label="Remove item">
-          <i class="bi bi-x"></i>
-        </button>
-      </mat-chip>
-    </mat-chip-set>
+  <mat-chip-set
+    aria-label="Items sold selection"
+    *ngIf="items.length > 0"
+    class="mb-3"
+  >
+    <mat-chip
+      *ngFor="let item of items"
+      [removable]="true"
+      (removed)="remove(item)"
+    >
+      {{ item }}
+      <button matChipRemove aria-label="Remove item">
+        <i class="bi bi-x"></i>
+      </button>
+    </mat-chip>
+  </mat-chip-set>
 
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Items sold</mat-label>
     <input
-      class="input mt-3"
+      matInput
       formControlName="soldItems"
+      type="text"
       placeholder="Items sold"
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field mt-3">
-    <label>Service areas</label>
+  <mat-chip-set
+    aria-label="Areas selection"
+    *ngIf="areas.length > 0"
+    class="mb-3"
+  >
+    <mat-chip
+      *ngFor="let item of areas"
+      [removable]="true"
+      (removed)="removeArea(item)"
+    >
+      {{ item }}
+      <button matChipRemove aria-label="Remove area">
+        <i class="bi bi-x"></i>
+      </button>
+    </mat-chip>
+  </mat-chip-set>
 
-    <mat-chip-set aria-label="Areas selection">
-      <mat-chip
-        *ngFor="let item of areas"
-        [removable]="true"
-        (removed)="removeArea(item)"
-      >
-        {{ item }}
-        <button matChipRemove aria-label="Remove area">
-          <i class="bi bi-x"></i>
-        </button>
-      </mat-chip>
-    </mat-chip-set>
-
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Service areas</mat-label>
     <input
-      class="input mt-3"
+      matInput
       formControlName="serviceAreas"
       placeholder="Service areas"
+      type="text"
     />
-  </div>
+  </mat-form-field>
 
   <button
     class="btn mt-3"
