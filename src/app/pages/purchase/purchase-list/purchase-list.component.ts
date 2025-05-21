@@ -5,9 +5,10 @@ import { PurchaseReportSelectComponent } from './purchase-report-select/purchase
 import { PurchasePaymentCreateComponent } from './purchase-payment-create/purchase-payment-create.component';
 
 @Component({
-  selector: 'app-purchase-list',
-  templateUrl: './purchase-list.component.html',
-  styleUrls: ['./purchase-list.component.scss'],
+    selector: 'app-purchase-list',
+    templateUrl: './purchase-list.component.html',
+    styleUrls: ['./purchase-list.component.scss'],
+    standalone: false
 })
 export class PurchaseListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}

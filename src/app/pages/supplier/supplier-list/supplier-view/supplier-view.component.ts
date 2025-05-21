@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-  selector: 'app-supplier-view',
-  templateUrl: './supplier-view.component.html',
-  styleUrls: ['./supplier-view.component.scss'],
+    selector: 'app-supplier-view',
+    templateUrl: './supplier-view.component.html',
+    styleUrls: ['./supplier-view.component.scss'],
+    standalone: false
 })
 export class SupplierViewComponent {
   supplier: any = null;

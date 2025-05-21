@@ -10,9 +10,10 @@ import { Observable, Subscription } from 'rxjs';
 import { availableFeaturesSearch, IFeature } from '../../../utils/features';
 
 @Component({
-  selector: 'app-dashboard-top',
-  templateUrl: './dashboard-top.component.html',
-  styleUrls: ['./dashboard-top.component.scss'],
+    selector: 'app-dashboard-top',
+    templateUrl: './dashboard-top.component.html',
+    styleUrls: ['./dashboard-top.component.scss'],
+    standalone: false
 })
 export class DashboardTopComponent {
   constructor(private cdr: ChangeDetectorRef) {}

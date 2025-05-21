@@ -125,7 +125,7 @@ import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component
       useClass: AuthInterceptor,
       multi: true,
     },
-    { provide: MAT_DATE_LOCALE, useValue: 'fr' },
+    { provide: MAT_DATE_LOCALE, useValue: 'en' },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })

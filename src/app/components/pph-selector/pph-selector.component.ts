@@ -4,9 +4,10 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
 
 @Component({
-  selector: 'app-pph-selector',
-  templateUrl: './pph-selector.component.html',
-  styleUrls: ['./pph-selector.component.scss'],
+    selector: 'app-pph-selector',
+    templateUrl: './pph-selector.component.html',
+    styleUrls: ['./pph-selector.component.scss'],
+    standalone: false
 })
 export class PphSelectorComponent {
   constructor(private dialog: MatDialogRef<PphSelectorComponent>) {}

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-dashboard-body',
-  templateUrl: './dashboard-body.component.html',
-  styleUrls: ['./dashboard-body.component.scss']
+    selector: 'app-dashboard-body',
+    templateUrl: './dashboard-body.component.html',
+    styleUrls: ['./dashboard-body.component.scss'],
+    standalone: false
 })
 export class DashboardBodyComponent {
 

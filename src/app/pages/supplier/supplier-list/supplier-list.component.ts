@@ -6,9 +6,10 @@ import { SupplierViewComponent } from './supplier-view/supplier-view.component';
 import { debounceTime } from 'rxjs';
 
 @Component({
-  selector: 'app-supplier-list',
-  templateUrl: './supplier-list.component.html',
-  styleUrls: ['./supplier-list.component.scss'],
+    selector: 'app-supplier-list',
+    templateUrl: './supplier-list.component.html',
+    styleUrls: ['./supplier-list.component.scss'],
+    standalone: false
 })
 export class SupplierListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}

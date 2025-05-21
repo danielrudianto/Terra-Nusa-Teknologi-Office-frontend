@@ -5,9 +5,10 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-  selector: 'app-supplier-selector',
-  templateUrl: './supplier-selector.component.html',
-  styleUrls: ['./supplier-selector.component.scss'],
+    selector: 'app-supplier-selector',
+    templateUrl: './supplier-selector.component.html',
+    styleUrls: ['./supplier-selector.component.scss'],
+    standalone: false
 })
 export class SupplierSelectorComponent {
   constructor(

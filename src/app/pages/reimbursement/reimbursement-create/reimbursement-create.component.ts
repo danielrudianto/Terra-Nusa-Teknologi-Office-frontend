@@ -8,9 +8,10 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.component';
 
 @Component({
-  selector: 'app-reimbursement-create',
-  templateUrl: './reimbursement-create.component.html',
-  styleUrls: ['./reimbursement-create.component.scss'],
+    selector: 'app-reimbursement-create',
+    templateUrl: './reimbursement-create.component.html',
+    styleUrls: ['./reimbursement-create.component.scss'],
+    standalone: false
 })
 export class ReimbursementCreateComponent {
   constructor(

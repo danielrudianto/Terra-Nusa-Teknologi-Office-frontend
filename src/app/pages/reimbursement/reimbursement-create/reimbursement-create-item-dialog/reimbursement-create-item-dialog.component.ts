@@ -3,9 +3,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-reimbursement-create-item-dialog',
-  templateUrl: './reimbursement-create-item-dialog.component.html',
-  styleUrls: ['./reimbursement-create-item-dialog.component.scss'],
+    selector: 'app-reimbursement-create-item-dialog',
+    templateUrl: './reimbursement-create-item-dialog.component.html',
+    styleUrls: ['./reimbursement-create-item-dialog.component.scss'],
+    standalone: false
 })
 export class ReimbursementCreateItemDialogComponent {
   constructor(

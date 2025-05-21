@@ -10,9 +10,10 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 
 @Component({
-  selector: 'app-purchase-create',
-  templateUrl: './purchase-create.component.html',
-  styleUrls: ['./purchase-create.component.scss'],
+    selector: 'app-purchase-create',
+    templateUrl: './purchase-create.component.html',
+    styleUrls: ['./purchase-create.component.scss'],
+    standalone: false
 })
 export class PurchaseCreateComponent {
   constructor(

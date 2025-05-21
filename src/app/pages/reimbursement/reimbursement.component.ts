@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-reimbursement',
-  templateUrl: './reimbursement.component.html',
-  styleUrls: ['./reimbursement.component.scss']
+    selector: 'app-reimbursement',
+    templateUrl: './reimbursement.component.html',
+    styleUrls: ['./reimbursement.component.scss'],
+    standalone: false
 })
 export class ReimbursementComponent {
 

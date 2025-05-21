@@ -4,9 +4,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-  selector: 'app-supplier-create',
-  templateUrl: './supplier-create.component.html',
-  styleUrls: ['./supplier-create.component.scss'],
+    selector: 'app-supplier-create',
+    templateUrl: './supplier-create.component.html',
+    styleUrls: ['./supplier-create.component.scss'],
+    standalone: false
 })
 export class SupplierCreateComponent {
   constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}

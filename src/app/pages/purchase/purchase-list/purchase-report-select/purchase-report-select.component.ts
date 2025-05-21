@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-purchase-report-select',
-  templateUrl: './purchase-report-select.component.html',
-  styleUrls: ['./purchase-report-select.component.scss'],
+    selector: 'app-purchase-report-select',
+    templateUrl: './purchase-report-select.component.html',
+    styleUrls: ['./purchase-report-select.component.scss'],
+    standalone: false
 })
 export class PurchaseReportSelectComponent {
   formGroup: FormGroup = new FormGroup({

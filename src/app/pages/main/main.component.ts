@@ -2,9 +2,10 @@ import { Component, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss'],
+    selector: 'app-main',
+    templateUrl: './main.component.html',
+    styleUrls: ['./main.component.scss'],
+    standalone: false
 })
 export class MainComponent {
   ctrlFPressed: Subject<void> = new Subject<void>();

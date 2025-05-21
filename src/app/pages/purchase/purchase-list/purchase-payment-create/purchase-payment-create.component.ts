@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-  selector: 'app-purchase-payment-create',
-  templateUrl: './purchase-payment-create.component.html',
-  styleUrls: ['./purchase-payment-create.component.scss'],
+    selector: 'app-purchase-payment-create',
+    templateUrl: './purchase-payment-create.component.html',
+    styleUrls: ['./purchase-payment-create.component.scss'],
+    standalone: false
 })
 export class PurchasePaymentCreateComponent {
   constructor(

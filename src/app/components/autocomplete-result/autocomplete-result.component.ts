@@ -2,9 +2,10 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-autocomplete-result',
-  templateUrl: './autocomplete-result.component.html',
-  styleUrls: ['./autocomplete-result.component.scss'],
+    selector: 'app-autocomplete-result',
+    templateUrl: './autocomplete-result.component.html',
+    styleUrls: ['./autocomplete-result.component.scss'],
+    standalone: false
 })
 export class AutocompleteResultComponent {
   constructor(private router: Router) {}
