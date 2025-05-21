@@ -24,6 +24,7 @@
         <th>PPH</th>
         <th>Status</th>
         <th>Paid status</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody *ngIf="isLoading">
@@ -47,7 +48,7 @@
 
     <tbody *ngIf="purchases.length > 0 && !isLoading">
       <tr *ngFor="let purchase of purchases">
-        <td>{{ purchase.date | date : "dd/MM/yyyy" }}</td>
+        <td>{{ purchase.date | date : "dd MMM YYYY" }}</td>
         <td>{{ purchase.invoiceName || "N/A" }}</td>
         <td>{{ purchase.receiptName || "N/A" }}</td>
         <td>{{ purchase.taxInvoiceName || "N/A" }}</td>
@@ -62,7 +63,19 @@
         </td>
         <td>{{ purchase.isDeleted ? "Deleted" : "Active" }}</td>
         <td>{{ purchase.isPaid ? "Paid" : "Not paid" }}</td>
+        <td>
+          <button mat-icon-button (click)="openPaymentDetail(purchase.id)">
+            <mat-icon>payments</mat-icon>
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
+<mat-paginator
+  [length]="count"
+  [pageSize]="10"
+  [pageIndex]="page - 1"
+  (page)="changePage($event)"
+>
+</mat-paginator>

@@ -6,6 +6,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
+import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 
 @Component({
@@ -21,7 +22,10 @@ export class PurchaseCreateComponent {
   ) {}
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
+  @ViewChild('input') input!: ElementRef<HTMLInputElement>;
 
+  filteredOptions: IBank[] = [];
+  options: IBank[] = banks;
   isFinal: boolean = false;
   isSubmitting: boolean = false;
 
@@ -36,7 +40,7 @@ export class PurchaseCreateComponent {
   metaFormGroup: FormGroup = new FormGroup({
     invoiceName: new FormControl('', Validators.required),
     receiptName: new FormControl(''),
-    taxInvoiceName: new FormControl('', Validators.maxLength(16)),
+    taxInvoiceName: new FormControl('', Validators.maxLength(17)),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl(''),
     supplierAddress: new FormControl(''),
@@ -64,6 +68,7 @@ export class PurchaseCreateComponent {
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0, [Validators.required, Validators.min(0)]),
+    pphValue: new FormControl(0),
     otherValue: new FormControl(0, [Validators.required, Validators.min(0)]),
     otherValueNote: new FormControl(''),
     total: new FormControl(0, [Validators.required, Validators.min(0)]),
@@ -89,8 +94,8 @@ export class PurchaseCreateComponent {
   });
 
   ngOnInit() {
-    this.valueFormGroup.valueChanges.subscribe(() => {
-      console.log(this.valueFormGroup.controls);
+    this.metaFormGroup.valueChanges.subscribe(() => {
+      console.log(this.metaFormGroup.value);
     });
   }
 
@@ -98,7 +103,7 @@ export class PurchaseCreateComponent {
     this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
       if (value) {
         this.valueFormGroup.controls['ppnValue'].setValue(
-          (this.valueFormGroup.controls['dpp'].value * value) / 100
+          ((this.valueFormGroup.controls['dpp'].value * value) / 100).toFixed(2)
         );
       } else {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
@@ -110,8 +115,13 @@ export class PurchaseCreateComponent {
     this.valueFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
         this.valueFormGroup.controls['ppnValue'].setValue(
-          (this.valueFormGroup.controls['ppn'].value * value) / 100
+          ((this.valueFormGroup.controls['ppn'].value * value) / 100).toFixed(2)
         );
+
+        const pphPercentage =
+          this.valueFormGroup.controls['pphPercentage'].value;
+        const pphValue = (value * pphPercentage) / 100;
+        this.valueFormGroup.controls['pphValue'].setValue(pphValue.toFixed(2));
       } else {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
       }
@@ -179,6 +189,14 @@ export class PurchaseCreateComponent {
             pphTaxObject: pph.taxObjectName,
             pphPercentage: pph.tariff,
           });
+
+          const pphPercentage =
+            this.valueFormGroup.controls['pphPercentage'].value;
+          const dpp = this.valueFormGroup.controls['dpp'].value;
+          const pphValue = (dpp * pphPercentage) / 100;
+          this.valueFormGroup.controls['pphValue'].setValue(
+            pphValue.toFixed(2)
+          );
         } else {
           this.valueFormGroup.patchValue({
             pphCode: '',
@@ -197,21 +215,40 @@ export class PurchaseCreateComponent {
     const pbbkb = this.valueFormGroup.controls['pbbkb'].value;
     const total = dpp + (dpp * ppn) / 100 + pbbkb;
     const pph = this.valueFormGroup.controls['pphPercentage'].value;
-    const pphValue = (total * pph) / 100;
+    const pphValue = (dpp * pph) / 100;
     const otherValue = this.valueFormGroup.controls['otherValue'].value;
 
     this.valueFormGroup.patchValue({
-      total: total + otherValue,
+      total: (total + otherValue).toFixed(2),
     });
 
     this.paymentFormGroup.patchValue({
-      paymentTotal: total + otherValue - pphValue,
+      paymentTotal: (total + otherValue - pphValue).toFixed(2),
     });
 
     this.isFinal = true;
   }
 
+  filter(): void {
+    const filterValue = this.input.nativeElement.value.toLowerCase();
+    this.filteredOptions = this.options.filter(
+      (option) =>
+        option.name.toLowerCase().includes(filterValue) ||
+        option.alias.toLowerCase().includes(filterValue)
+    );
+  }
+
   onSubmit() {
+    const date = this.metaFormGroup.controls['date'].value as Date;
+    const dueDate = this.metaFormGroup.controls['dueDate'].value as Date;
+
+    const dateFormatted = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const dueDateFormatted = `${dueDate.getFullYear()}-${String(
+      dueDate.getMonth() + 1
+    ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
     this.isSubmitting = true;
     this.apiService
       .post('purchases', {
@@ -219,8 +256,9 @@ export class PurchaseCreateComponent {
         receiptName: this.metaFormGroup.controls['receiptName'].value,
         taxInvoiceName: this.metaFormGroup.controls['taxInvoiceName'].value,
         supplierID: this.metaFormGroup.controls['supplierID'].value,
-        date: this.metaFormGroup.controls['date'].value,
-        dueDate: this.metaFormGroup.controls['dueDate'].value,
+        // change from date object to YYYY-MM-DD
+        date: dateFormatted,
+        dueDate: dueDateFormatted,
         purchaseOrderName:
           this.metaFormGroup.controls['purchaseOrderName'].value,
         projectName: this.metaFormGroup.controls['projectName'].value,
@@ -259,7 +297,25 @@ export class PurchaseCreateComponent {
 
           this.metaFormGroup.reset();
           this.valueFormGroup.reset();
+
+          this.valueFormGroup.patchValue({
+            pbbkb: 0,
+            otherValue: 0,
+            pphPercentage: 0,
+            pphTaxObject: '',
+            pphCode: '',
+          });
+
           this.attachmentFormGroup.reset();
+
+          this.attachmentFormGroup.patchValue({
+            isInvoiceAttached: false,
+            isReceiptAttached: false,
+            isTaxInvoiceAttached: false,
+            isCopAttached: false,
+            isCopyPurchaseOrderAttached: false,
+          });
+
           this.paymentFormGroup.reset();
         },
         error: (error) => {

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
+import { PurchasePaymentCreateComponent } from './purchase-payment-create/purchase-payment-create.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -22,6 +23,15 @@ export class PurchaseListComponent {
 
   openPurchaseReportSelector() {
     this.dialog.open(PurchaseReportSelectComponent, {});
+  }
+
+  openPaymentDetail(id: number) {
+    this.dialog.open(PurchasePaymentCreateComponent, {});
+  }
+
+  changePage(event: any) {
+    this.page = event.pageIndex + 1;
+    this.fetchData(this.page);
   }
 
   fetchData(targetPage: number = 1) {

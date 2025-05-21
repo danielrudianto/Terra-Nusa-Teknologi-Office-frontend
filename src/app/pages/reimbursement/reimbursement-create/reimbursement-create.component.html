@@ -1,67 +1,113 @@
+<h1 class="title mt-3">Reimbursement / Create</h1>
+<mat-divider class="my-3"></mat-divider>
+
 <form [formGroup]="formGroup">
-  <div class="form-field">
-    <label for="date">Date</label>
-    <input type="date" id="date" formControlName="date" class="form-control" />
-  </div>
-
-  <div class="form-field mt-3">
-    <label for="projectName">Expense type</label>
-    <select
-      id="purchaseType"
-      formControlName="purchaseType"
-      class="form-control"
-      placeholder="Enter expense type"
-    >
-      <option value="" disabled selected>Select expense type</option>
-      <option *ngFor="let type of expenseTypes" [value]="type.code">
-        {{ type.name }}
-      </option>
-    </select>
-  </div>
-
-  <div class="form-field mt-3">
-    <label for="projectName">Project Name</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Date</mat-label>
     <input
+      matInput
+      formControlName="date"
+      placeholder="Date"
+      [matDatepicker]="picker"
+      formControlName="date"
+    />
+    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-hint>DD/MM/YYYY</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Due Date</mat-label>
+    <input
+      matInput
+      formControlName="dueDate"
+      placeholder="Due date"
+      [matDatepicker]="dueDatePicker"
+      formControlName="dueDate"
+    />
+    <mat-datepicker-toggle
+      matIconPrefix
+      [for]="dueDatePicker"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #dueDatePicker></mat-datepicker>
+    <mat-hint>DD/MM/YYYY</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Expense type</mat-label>
+    <mat-select formControlName="purchaseType">
+      <mat-option *ngFor="let type of expenseTypes" [value]="type.code">{{
+        type.name
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Project Name</mat-label>
+    <input
+      matInput
       type="text"
       id="projectName"
       formControlName="projectName"
       class="form-control"
       placeholder="Enter project name"
+      (keyup)="toUpperCase()"
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field mt-3">
-    <label for="bankName">Bank Name</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank Name</mat-label>
     <input
+      #input
       type="text"
-      id="bankName"
+      placeholder="Bank name"
+      matInput
       formControlName="bankName"
-      class="form-control"
-      placeholder="Enter bank name"
+      [matAutocomplete]="auto"
+      (input)="filter()"
+      (focus)="filter()"
     />
-  </div>
+    <mat-autocomplete requireSelection #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let option of filteredOptions"
+        [value]="option.name"
+        >{{ option.name }}</mat-option
+      >
+    </mat-autocomplete>
+  </mat-form-field>
 
-  <div class="form-field mt-3">
-    <label for="bankAccountNumber">Account Number</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank account number</mat-label>
     <input
+      matInput
       type="text"
       id="bankAccountNumber"
       formControlName="bankAccountNumber"
       class="form-control"
       placeholder="Enter account number"
     />
-  </div>
+  </mat-form-field>
 
-  <div class="form-field mt-3">
-    <label for="bankAccountName">Account Name</label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank account name</mat-label>
     <input
+      matInput
       type="text"
       id="bankAccountName"
       formControlName="bankAccountName"
       class="form-control"
       placeholder="Enter account name"
     />
-  </div>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Payment Method</mat-label>
+    <mat-select formControlName="paymentMethod">
+      <mat-option value="bank">Bank Transfer</mat-option>
+      <mat-option value="cash">Virtual Account</mat-option>
+      <mat-option value="cash">Cheque</mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <button class="btn outlined mt-3" (click)="addItem()">
     Add reimbursement item
@@ -98,7 +144,38 @@
     </table>
   </div>
 
+  <input
+    type="file"
+    class="d-none"
+    #fileInput
+    accept="application/pdf"
+    (change)="onFileSelected($event)"
+  />
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>File</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="fileName"
+      readonly
+      (click)="fileInput.click()"
+    />
+    <button
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      *ngIf="formGroup.get('fileName')?.value != ''"
+      type="button"
+      (click)="openFile()"
+    >
+      <mat-icon>open_in_full</mat-icon>
+    </button>
+  </mat-form-field>
+  <br />
+
   <mat-divider class="my-3"></mat-divider>
+
   <button class="btn" (click)="onSubmit()" [disabled]="formGroup.invalid">
     Submit
   </button>

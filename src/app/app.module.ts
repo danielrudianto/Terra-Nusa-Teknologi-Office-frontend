@@ -40,7 +40,6 @@ import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/re
 import { PurchaseReportSelectComponent } from './pages/purchase/purchase-list/purchase-report-select/purchase-report-select.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { SupplierViewComponent } from './pages/supplier/supplier-list/supplier-view/supplier-view.component';
-import { DragDropFileComponent } from './components/drag-drop-file/drag-drop-file.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -49,11 +48,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
 import 'moment/locale/fr';
+import { BankComponent } from './pages/bank/bank.component';
+import { PurchasePaymentCreateComponent } from './pages/purchase/purchase-list/purchase-payment-create/purchase-payment-create.component';
+import { MatCardModule } from '@angular/material/card';
+import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -81,7 +86,9 @@ import 'moment/locale/fr';
     ReimbursementCreateItemDialogComponent,
     PurchaseReportSelectComponent,
     SupplierViewComponent,
-    DragDropFileComponent,
+    BankComponent,
+    PurchasePaymentCreateComponent,
+    PdfViewerComponent,
   ],
   imports: [
     BrowserModule,
@@ -106,6 +113,9 @@ import 'moment/locale/fr';
     MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatAutocompleteModule,
+    MatCardModule,
+    NgxExtendedPdfViewerModule,
   ],
   providers: [
     provideNgxMask(),

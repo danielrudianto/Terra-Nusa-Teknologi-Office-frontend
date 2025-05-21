@@ -99,7 +99,7 @@ export const banks: IBank[] = [
     alias: 'BCA',
   },
   {
-    name: 'PT Bank Bca Syariah',
+    name: 'PT Bank BCA Syariah',
     alias: 'BCA Syariah',
   },
   {

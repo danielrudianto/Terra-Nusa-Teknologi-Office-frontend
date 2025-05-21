@@ -44,3 +44,15 @@ body {
   margin-bottom: 1rem;
   transform: translate(-50%, 0);
 }
+
+.title__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table {
+  td {
+    vertical-align: middle;
+  }
+}

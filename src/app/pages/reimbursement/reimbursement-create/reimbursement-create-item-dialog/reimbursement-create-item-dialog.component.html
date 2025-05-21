@@ -1,18 +1,28 @@
+<h2 mat-dialog-title>Create reimbursement item</h2>
 <form [formGroup]="formGroup">
   <mat-dialog-content>
-    <div class="form-field">
-      <label for="date">Date</label>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
       <input
-        type="date"
-        id="date"
+        matInput
         formControlName="date"
-        class="form-control"
+        placeholder="Date"
+        [matDatepicker]="picker"
+        formControlName="date"
       />
-    </div>
+      <mat-datepicker-toggle
+        matIconPrefix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-hint>DD/MM/YYYY</mat-hint>
+    </mat-form-field>
 
-    <div class="form-field mt-3">
-      <label for="description">Description</label>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
       <textarea
+        matInput
+        type="text"
         id="description"
         formControlName="description"
         class="form-control"
@@ -20,11 +30,12 @@
         rows="3"
         style="resize: none"
       ></textarea>
-    </div>
+    </mat-form-field>
 
-    <div class="form-field mt-3">
-      <label for="amount">Amount</label>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
       <input
+        matInput
         type="text"
         id="amount"
         formControlName="amount"
@@ -35,7 +46,7 @@
         decimalScale="2"
         mask="separator"
       />
-    </div>
+    </mat-form-field>
   </mat-dialog-content>
   <mat-dialog-actions>
     <button
