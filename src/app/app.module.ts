@@ -58,7 +58,6 @@ import { BankComponent } from './pages/bank/bank.component';
 import { PurchasePaymentCreateComponent } from './pages/purchase/purchase-list/purchase-payment-create/purchase-payment-create.component';
 import { MatCardModule } from '@angular/material/card';
 import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -115,7 +114,6 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     MatNativeDateModule,
     MatAutocompleteModule,
     MatCardModule,
-    NgxExtendedPdfViewerModule,
   ],
   providers: [
     provideNgxMask(),
