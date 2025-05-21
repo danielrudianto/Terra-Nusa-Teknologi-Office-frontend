@@ -78,10 +78,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "terra-nusa-teknologi-office-frontend:build:production"
+              "buildTarget": "terra-nusa-teknologi-office-frontend:build:production"
             },
             "development": {
-              "browserTarget": "terra-nusa-teknologi-office-frontend:build:development"
+              "buildTarget": "terra-nusa-teknologi-office-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -89,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "terra-nusa-teknologi-office-frontend:build"
+            "buildTarget": "terra-nusa-teknologi-office-frontend:build"
           }
         },
         "test": {
