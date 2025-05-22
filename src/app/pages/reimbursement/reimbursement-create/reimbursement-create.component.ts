@@ -8,10 +8,10 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.component';
 
 @Component({
-    selector: 'app-reimbursement-create',
-    templateUrl: './reimbursement-create.component.html',
-    styleUrls: ['./reimbursement-create.component.scss'],
-    standalone: false
+  selector: 'app-reimbursement-create',
+  templateUrl: './reimbursement-create.component.html',
+  styleUrls: ['./reimbursement-create.component.scss'],
+  standalone: false,
 })
 export class ReimbursementCreateComponent {
   constructor(
@@ -137,32 +137,38 @@ export class ReimbursementCreateComponent {
         data: {
           file: this.file,
         },
+        width: '90vw',
+        height: '90vh',
+        panelClass: 'pdf-dialog-panel',
       });
     }
   }
 
   onSubmit() {
     this.isSubmitting = true;
-    const date = this.formGroup.get('date')?.value;
+    const date = new Date(this.formGroup.get('date')?.value);
     const formattedDate = `${date.getFullYear()}-${String(
       date.getMonth() + 1
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    const dueDate = this.formGroup.get('dueDate')?.value;
+    const dueDate = new Date(this.formGroup.get('dueDate')?.value);
     const formattedDueDate = `${dueDate.getFullYear()}-${String(
       dueDate.getMonth() + 1
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
 
     this.apiService
-      .post('reimbursement', {
+      .post('reimbursements', {
         ...this.formGroup.value,
         date: formattedDate,
         dueDate: formattedDueDate,
-        reimbursementItems: this.formGroup.value.items.map((item: any) => ({
-          ...item,
-          date: `${item.date.getFullYear()}-${String(
-            item.date.getMonth() + 1
-          ).padStart(2, '0')}-${String(item.date.getDate()).padStart(2, '0')}`,
-        })),
+        reimbursementItems: this.formGroup.value.items.map((item: any) => {
+          const itemDate = new Date(item.date);
+          return {
+            ...item,
+            date: `${itemDate.getFullYear()}-${String(
+              itemDate.getMonth() + 1
+            ).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`,
+          };
+        }),
       })
       .subscribe({
         next: (data: any) => {
@@ -171,7 +177,7 @@ export class ReimbursementCreateComponent {
           formData.append('file', this.file as any);
           formData.append('reimbursementID', reimbursementID);
           this.apiService
-            .post('reimbursement/upload', formData)
+            .post('reimbursements/upload', formData)
             .subscribe({
               next: (_) => {
                 this.snackBar.open(

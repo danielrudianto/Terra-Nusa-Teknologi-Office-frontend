@@ -1,0 +1,86 @@
+<div class="title__wrapper mt-3">
+  <h1 class="title flex-grow-1">Bank Account</h1>
+  <button class="btn outlined" routerLink="/Bank/Create">
+    Create new bank account
+  </button>
+</div>
+<mat-divider class="my-3"></mat-divider>
+
+<div class="search__wrapper">
+  <mat-form-field appearance="outline" class="w-100">
+    <input
+      matInput
+      type="text"
+      class="input"
+      placeholder="Search supplier"
+      [formControl]="formControl"
+    />
+  </mat-form-field>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered hover mt-3">
+    <thead>
+      <tr>
+        <th>Account number</th>
+        <th>Account name</th>
+        <th>Bank</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="isLoading">
+      <tr>
+        <td colspan="4" class="text-center">
+          <mat-spinner
+            class="loading-spinner"
+            [diameter]="50"
+            [strokeWidth]="5"
+            color="primary"
+            mode="indeterminate"
+          ></mat-spinner>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && banks.length === 0">
+      <tr>
+        <td colspan="4" class="text-center">No bank account found.</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && banks.length > 0">
+      <tr *ngFor="let bank of banks">
+        <td>{{ bank.bankAccountName }}</td>
+        <td>{{ bank.bankAccountNumber }}</td>
+        <td>{{ bank.bankName ?? "N/A" }}</td>
+        <td>
+          <button
+            mat-icon-button
+            (click)="onViewDetail(bank.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>open_in_full</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="onEdit(bank.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="onViewDetail(bank.id)"
+            aria-label="Example icon button with a vertical three dot icon"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <mat-paginator
+    [pageIndex]="page - 1"
+    [length]="count"
+    [pageSize]="10"
+    (page)="changePage($event)"
+  ></mat-paginator>
+</div>

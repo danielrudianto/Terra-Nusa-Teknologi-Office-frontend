@@ -1,5 +1,75 @@
 <div class="title__wrapper">
-  <h1 class="title flex-grow-1">Reimbursement</h1>
+  <h1 class="title flex-grow-1">Reimbursements</h1>
   <button class="btn outlined" routerLink="/Reimbursement/Create">
     Create new reimbursement
   </button>
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered hover mt-3">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Document name</th>
+        <th>Project</th>
+        <th>Expense type</th>
+        <th>Bank account name</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Paid status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="isLoading">
+      <tr>
+        <td colspan="9" class="text-center">
+          <mat-spinner
+            class="loading-spinner"
+            [diameter]="50"
+            [strokeWidth]="5"
+            color="primary"
+            mode="indeterminate"
+          ></mat-spinner>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="reimbursements.length === 0 && !isLoading">
+      <tr>
+        <td colspan="9" class="text-center">No reimbursement found.</td>
+      </tr>
+    </tbody>
+
+    <tbody *ngIf="reimbursements.length > 0 && !isLoading">
+      <tr *ngFor="let purchase of reimbursements">
+        <td>{{ purchase.date | date : "dd MMM YYYY" }}</td>
+        <td>{{ purchase.name }}</td>
+        <td>{{ purchase.projectName }}</td>
+        <td>
+          <div [ngSwitch]="purchase.purchaseType">
+            <span *ngSwitchCase="'A'">Transportation</span>
+            <span *ngSwitchCase="'E'"
+              >Coordination; Consumption; and Accomodation</span
+            >
+            <span *ngSwitchCase="'5.1.6'">Document handling & Stationery</span>
+            <span *ngSwitchDefault>Unknown</span>
+          </div>
+        </td>
+        <td>{{ purchase.bankAccountName }}</td>
+        <td>{{ purchase.amount | number : "0.2-2" }}</td>
+        <td>{{ purchase.isDeleted ? "Deleted" : "Active" }}</td>
+        <td>{{ purchase.isPaid ? "Paid" : "Not paid" }}</td>
+        <td>
+          <button mat-icon-button (click)="openPaymentDetail(purchase.id)">
+            <mat-icon>payments</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<mat-paginator
+  [length]="count"
+  [pageSize]="10"
+  [pageIndex]="page - 1"
+  (page)="changePage($event)"
+>
+</mat-paginator>

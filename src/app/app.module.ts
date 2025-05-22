@@ -50,7 +50,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import {
+  MatNativeDateModule,
+  MAT_DATE_LOCALE,
+  MAT_DATE_FORMATS,
+} from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import * as _moment from 'moment';
@@ -61,6 +65,24 @@ import { BankComponent } from './pages/bank/bank.component';
 import { PurchasePaymentCreateComponent } from './pages/purchase/purchase-list/purchase-payment-create/purchase-payment-create.component';
 import { MatCardModule } from '@angular/material/card';
 import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import { BankListComponent } from './pages/bank/bank-list/bank-list.component';
+import { BankCreateComponent } from './pages/bank/bank-create/bank-create.component';
+import { BankUpdateComponent } from './pages/bank/bank-update/bank-update.component';
+import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD MMMM YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @NgModule({
   declarations: [
@@ -91,14 +113,16 @@ import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component
     BankComponent,
     PurchasePaymentCreateComponent,
     PdfViewerComponent,
+    BankListComponent,
+    BankCreateComponent,
+    BankUpdateComponent,
+    SupplierUpdateComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    NgxMaskDirective,
-    NgxMaskPipe,
     BrowserAnimationsModule,
     MatDialogModule,
     MatDividerModule,
@@ -117,6 +141,9 @@ import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component
     MatNativeDateModule,
     MatAutocompleteModule,
     MatCardModule,
+    NgxExtendedPdfViewerModule,
+    NgxMaskDirective,
+    NgxMaskPipe
   ],
   providers: [
     provideNgxMask(),
@@ -125,7 +152,7 @@ import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component
       useClass: AuthInterceptor,
       multi: true,
     },
-    { provide: MAT_DATE_LOCALE, useValue: 'en' },
+    provideMomentDateAdapter(MY_FORMATS),
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })

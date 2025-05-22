@@ -1,0 +1,55 @@
+<h1 class="title mt-3">Bank Account / Create</h1>
+<mat-divider class="my-3"></mat-divider>
+
+<form [formGroup]="bankFormGroup" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Account name</mat-label>
+    <input
+      matInput
+      formControlName="bankAccountName"
+      type="text"
+      placeholder="Account name"
+      required
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Account number</mat-label>
+    <input
+      matInput
+      formControlName="bankAccountNumber"
+      type="text"
+      placeholder="Account number"
+      required
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank Name</mat-label>
+    <input
+      #input
+      type="text"
+      placeholder="Bank name"
+      matInput
+      formControlName="bankName"
+      [matAutocomplete]="auto"
+      (input)="filter()"
+      (focus)="filter()"
+    />
+    <mat-autocomplete requireSelection #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let option of filteredOptions"
+        [value]="option.name"
+        >{{ option.name }}</mat-option
+      >
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <button
+    class="btn mt-3"
+    type="submit"
+    [disabled]="isSubmitting || bankFormGroup.invalid"
+  >
+    Submit
+  </button>
+</form>

@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-side-nav',
-    templateUrl: './side-nav.component.html',
-    styleUrls: ['./side-nav.component.scss'],
-    standalone: false
+  selector: 'app-side-nav',
+  templateUrl: './side-nav.component.html',
+  styleUrls: ['./side-nav.component.scss'],
+  standalone: false,
 })
 export class SideNavComponent {
   constructor(private router: Router) {}
@@ -52,9 +52,30 @@ export class SideNavComponent {
           },
         },
         {
+          name: 'Expense',
+          icon: 'shopping_cart',
+          route: '/Expense',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+      ],
+    },
+    {
+      name: 'Master',
+      children: [
+        {
           name: 'Supplier',
           icon: 'people',
           route: '/Supplier',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Bank',
+          icon: 'people',
+          route: '/Bank',
           routerLinkOptions: {
             exact: false,
           },

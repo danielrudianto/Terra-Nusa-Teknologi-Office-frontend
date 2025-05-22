@@ -109,7 +109,7 @@
     </mat-select>
   </mat-form-field>
 
-  <button class="btn outlined mt-3" (click)="addItem()">
+  <button class="btn outlined mt-3" type="button" (click)="addItem()">
     Add reimbursement item
   </button>
 
@@ -135,8 +135,8 @@
           <td>{{ item.get("description")?.value }}</td>
           <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
           <td>
-            <button class="btn icon" (click)="removeItem(i)">
-              <i class="bi bi-x"></i>
+            <button mat-icon-button (click)="removeItem(i)">
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </tr>

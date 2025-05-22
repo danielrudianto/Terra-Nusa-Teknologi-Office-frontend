@@ -12,6 +12,9 @@ import { SupplierCreateComponent } from './pages/supplier/supplier-create/suppli
 import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
 import { ReimbursementListComponent } from './pages/reimbursement/reimbursement-list/reimbursement-list.component';
 import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
+import { BankComponent } from './pages/bank/bank.component';
+import { BankListComponent } from './pages/bank/bank-list/bank-list.component';
+import { BankCreateComponent } from './pages/bank/bank-create/bank-create.component';
 
 const routes: Routes = [
   {
@@ -42,18 +45,18 @@ const routes: Routes = [
         ],
       },
       {
-        path: "Reimbursement",
+        path: 'Reimbursement',
         component: ReimbursementComponent,
         children: [
           {
-            path: "",
+            path: '',
             component: ReimbursementListComponent,
           },
           {
-            path: "Create",
-            component: ReimbursementCreateComponent
-          }
-        ]
+            path: 'Create',
+            component: ReimbursementCreateComponent,
+          },
+        ],
       },
       {
         path: 'Supplier',
@@ -66,6 +69,20 @@ const routes: Routes = [
           {
             path: 'Create',
             component: SupplierCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Bank',
+        component: BankComponent,
+        children: [
+          {
+            path: '',
+            component: BankListComponent,
+          },
+          {
+            path: 'Create',
+            component: BankCreateComponent,
           },
         ],
       },

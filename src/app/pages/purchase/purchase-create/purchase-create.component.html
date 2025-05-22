@@ -431,12 +431,16 @@
           mask="separator"
         />
       </mat-form-field>
+
+      <mat-slide-toggle
+        color="primary"
+        class="my-3"
+        formControlName="proxyPayment"
+        >Proxy Payment</mat-slide-toggle
+      >
+      <br />
     </form>
 
-    <mat-slide-toggle color="primary" class="my-3"
-      >Proxy Payment</mat-slide-toggle
-    >
-    <br />
     <mat-divider class="my-3"></mat-divider>
     <button class="btn outlined" matStepperPrevious>Previous</button>
     <button class="btn" (click)="onSubmit()" [disabled]="!isValid">

@@ -1,0 +1,65 @@
+<form [formGroup]="formGroup">
+  <h2 mat-dialog-title>Update bank account</h2>
+  <mat-dialog-content>
+    <mat-progress-spinner
+      *ngIf="isLoading"
+      mode="indeterminate"
+      class="loading-spinner"
+      [diameter]="50"
+    ></mat-progress-spinner>
+
+    <div [ngClass]="{ 'd-none': isLoading }">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account name</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountName"
+          type="text"
+          placeholder="Account name"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account number</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountNumber"
+          type="text"
+          placeholder="Account number"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Name</mat-label>
+        <input
+          #input
+          type="text"
+          placeholder="Bank name"
+          matInput
+          formControlName="bankName"
+          [matAutocomplete]="auto"
+          (input)="filter()"
+          (focus)="filter()"
+        />
+        <mat-autocomplete requireSelection #auto="matAutocomplete">
+          <mat-option
+            *ngFor="let option of filteredOptions"
+            [value]="option.name"
+            >{{ option.name }}</mat-option
+          >
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button
+      class="btn"
+      (click)="onSubmit()"
+      [disabled]="isLoading || formGroup.invalid"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</form>

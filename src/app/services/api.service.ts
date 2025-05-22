@@ -32,4 +32,16 @@ export class ApiService {
       params: queryParams,
     });
   }
+
+  put(url: string, body: any) {
+    const access_token = `Bearer ${localStorage.getItem('access_token')}`;
+    const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;
+
+    return this.http.put(environment.url + url, body, {
+      headers: {
+        Authorization: access_token,
+        'X-Refresh-Token': refresh_token,
+      },
+    });
+  }
 }

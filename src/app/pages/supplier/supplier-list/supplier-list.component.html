@@ -56,27 +56,29 @@
         <td>{{ supplier.email ?? "N/A" }}</td>
         <td>{{ supplier.npwp ?? "N/A" }}</td>
         <td>
-          <button
-            mat-icon-button
-            (click)="onViewDetail(supplier.id)"
-            aria-label="Example icon button with a vertical three dot icon"
-          >
-            <mat-icon>open_in_full</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            (click)="onViewDetail(supplier.id)"
-            aria-label="Example icon button with a vertical three dot icon"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            (click)="onViewDetail(supplier.id)"
-            aria-label="Example icon button with a vertical three dot icon"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
+          <span style="display: flex; align-items: center; gap: 4px">
+            <button
+              mat-icon-button
+              (click)="onViewDetail(supplier.id)"
+              aria-label="Example icon button with a vertical three dot icon"
+            >
+              <mat-icon>open_in_full</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              (click)="onViewDetail(supplier.id)"
+              aria-label="Example icon button with a vertical three dot icon"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              (click)="onViewDetail(supplier.id)"
+              aria-label="Example icon button with a vertical three dot icon"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
         </td>
       </tr>
     </tbody>

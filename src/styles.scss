@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+@use "fonts";
+@use "input";
+@use "buttons";
+
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
-@import "../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
-@import "fonts";
-@import "input";
-@import "buttons";
 
 :root {
   --background-color: white;

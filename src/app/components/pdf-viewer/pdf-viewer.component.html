@@ -1,8 +1,26 @@
-<ngx-extended-pdf-viewer>
-  [textLayer]="true"
-  <!-- enable the find button -->
-  [showHandToolButton]="true"
-  <!-- enable text selection -->
-  [filenameForDownload]="'Public Domain.pdf'">
-  <!-- optional - define the filename if the user downloads the PDF -->
-</ngx-extended-pdf-viewer>
+<mat-dialog-content>
+  <ngx-extended-pdf-viewer
+    #pdfViewer
+    class="w-100 h-100"
+    [sidebarVisible]="false"
+    [spread]="'off'"
+    [handTool]="true"
+    [showToolbar]="true"
+    [showFindButton]="true"
+    [showZoomButtons]="true"
+    [showDrawEditor]="false"
+    [showHighlightEditor]="false"
+    [showStampEditor]="false"
+    [showTextEditor]="false"
+    [showPresentationModeButton]="true"
+    [showOpenFileButton]="false"
+    [showPrintButton]="false"
+    [showRotateButton]="true"
+    [showHandToolButton]="false"
+    [showScrollingButtons]="false"
+    [showSpreadButton]="false"
+    [showPropertiesButton]="false"
+    [showDownloadButton]="false"
+    [src]="src!"
+  ></ngx-extended-pdf-viewer>
+</mat-dialog-content>
