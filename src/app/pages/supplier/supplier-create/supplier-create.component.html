@@ -1,5 +1,6 @@
-<h1 class="title mt-3">Supplier / Create</h1>
-<mat-divider class="my-3"></mat-divider>
+<div class="title__wrapper mb-4">
+  <h1 class="title"><a routerLink="/Supplier">Supplier</a> / Create</h1>
+</div>
 
 <form [formGroup]="supplierFormGroup" (ngSubmit)="onSubmit()">
   <mat-form-field appearance="outline" class="w-100 mt-3">
@@ -97,10 +98,6 @@
   </mat-form-field>
 
   <mat-divider class="mb-3"></mat-divider>
-  <h2 class="title">Search Helper</h2>
-
-  <label>Items sold</label>
-  <p>This will help us find the right supplier when searching.</p>
 
   <mat-chip-set
     aria-label="Items sold selection"
@@ -127,6 +124,9 @@
       type="text"
       placeholder="Items sold"
     />
+    <mat-hint
+      >This will help us find the right supplier when searching.</mat-hint
+    >
   </mat-form-field>
 
   <mat-chip-set
@@ -153,7 +153,9 @@
       formControlName="serviceAreas"
       placeholder="Service areas"
       type="text"
-    />
+    /><mat-hint
+      >This will help us find the right supplier when searching.</mat-hint
+    >
   </mat-form-field>
 
   <button

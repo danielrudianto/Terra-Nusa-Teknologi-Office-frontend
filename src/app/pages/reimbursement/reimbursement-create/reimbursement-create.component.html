@@ -1,5 +1,8 @@
-<h1 class="title mt-3">Reimbursement / Create</h1>
-<mat-divider class="my-3"></mat-divider>
+<div class="title__wrapper mb-4">
+  <h1 class="title">
+    <a routerLink="/Reimbursement">Reimbursement</a> / Create
+  </h1>
+</div>
 
 <form [formGroup]="formGroup">
   <mat-form-field appearance="outline" class="w-100">
@@ -109,7 +112,13 @@
     </mat-select>
   </mat-form-field>
 
-  <button class="btn outlined mt-3" type="button" (click)="addItem()">
+  <button
+    mat-stroked-button
+    color="primary"
+    type="button"
+    (click)="addItem()"
+    style="letter-spacing: 0"
+  >
     Add reimbursement item
   </button>
 
@@ -176,7 +185,13 @@
 
   <mat-divider class="my-3"></mat-divider>
 
-  <button class="btn" (click)="onSubmit()" [disabled]="formGroup.invalid">
+  <button
+    style="letter-spacing: 0"
+    mat-stroked-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="formGroup.invalid"
+  >
     Submit
   </button>
 </form>

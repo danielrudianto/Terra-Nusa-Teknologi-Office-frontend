@@ -2,10 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-expense',
-  imports: [],
   templateUrl: './expense.component.html',
-  styleUrl: './expense.component.scss'
+  styleUrl: './expense.component.scss',
+  standalone: false,
 })
-export class ExpenseComponent {
-
-}
+export class ExpenseComponent {}

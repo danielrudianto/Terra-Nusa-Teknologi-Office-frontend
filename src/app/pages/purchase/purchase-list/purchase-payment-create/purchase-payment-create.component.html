@@ -1,1 +1,56 @@
-<p>purchase-payment-create works!</p>
+<h2 mat-dialog-title>Payment data</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Payment Date</mat-label>
+      <input
+        matInput
+        formControlName="paymentDate"
+        placeholder="Payment date"
+        [matDatepicker]="paymentDatePicker"
+        formControlName="date"
+      />
+      <mat-datepicker-toggle
+        matIconPrefix
+        [for]="paymentDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #paymentDatePicker></mat-datepicker>
+      <mat-hint>DD/MM/YYYY</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank Account Number</mat-label>
+      <mat-select formControlName="bankAccountNumber">
+        <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+          >{{ bank.bankAccountNumber }} --
+          {{ bank.bankAccountName }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        formControlName="amount"
+        type="text"
+        placeholder="Payment amount"
+        required
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button
+    mat-button
+    color="primary"
+    [disabled]="formGroup.invalid"
+    (click)="onSubmit()"
+  >
+    Submit
+  </button>
+  <button mat-button (click)="onClose()">Cancel</button>

@@ -21,6 +21,7 @@ export class SupplierListComponent {
   suppliers: any[] = [];
   page: number = 1;
   count: number = 0;
+  displayedColumns: string[] = ['name', 'address', 'phone', 'email', 'action'];
 
   ngOnInit(): void {
     this.fetchSuppliers();
@@ -49,7 +50,7 @@ export class SupplierListComponent {
         },
       })
       .add(() => {
-        this.isLoading = false;
+        // this.isLoading = false;
       });
   }
 

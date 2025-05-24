@@ -1,5 +1,12 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
@@ -19,6 +26,27 @@ import {
   PageOrientation,
   PageSize,
 } from 'pdfmake/interfaces';
+import { P } from '@angular/cdk/portal-directives.d-BoG39gYN';
+
+function lastStatusDescriptionRequired(): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const lastStatus = group.get('lastStatus')?.value;
+    const descControl = group.get('lastStatusDescription');
+    if (
+      lastStatus === 'draft' &&
+      (!descControl?.value || descControl.value.trim().length < 10)
+    ) {
+      descControl?.setErrors({ required: true });
+      return { lastStatusDescriptionRequired: true };
+    } else {
+      // Only clear if this was the error set by this validator
+      if (descControl?.hasError('required')) {
+        descControl.setErrors(null);
+      }
+      return null;
+    }
+  };
+}
 
 @Component({
   selector: 'app-purchase-create',
@@ -49,24 +77,36 @@ export class PurchaseCreateComponent {
     );
   }
 
-  metaFormGroup: FormGroup = new FormGroup({
-    invoiceName: new FormControl('', Validators.required),
-    receiptName: new FormControl(''),
-    taxInvoiceName: new FormControl('', Validators.maxLength(17)),
-    supplierID: new FormControl('', Validators.required),
-    supplierName: new FormControl(''),
-    supplierAddress: new FormControl(''),
-    date: new FormControl('', Validators.required),
-    dueDate: new FormControl('', Validators.required),
-    purchaseOrderName: new FormControl('', [
-      Validators.required,
-      Validators.pattern(
-        /^\d{3}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
-      ),
-    ]),
-    projectName: new FormControl('', Validators.required),
-    purchaseType: new FormControl('', Validators.required),
-  });
+  metaFormGroup: FormGroup = new FormGroup(
+    {
+      invoiceName: new FormControl('', Validators.required),
+      receiptName: new FormControl(''),
+      taxInvoiceName: new FormControl('', Validators.maxLength(17)),
+      supplierID: new FormControl('', Validators.required),
+      supplierName: new FormControl(''),
+      supplierAddress: new FormControl(''),
+      date: new FormControl('', Validators.required),
+      dueDate: new FormControl('', Validators.required),
+      purchaseOrderName: new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          /^\d{3}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
+        ),
+      ]),
+      projectName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(5),
+      ]),
+      purchaseType: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^\(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6$/),
+      ]),
+      lastStatus: new FormControl('ready', Validators.required),
+      lastStatusDescription: new FormControl(''),
+    },
+    { validators: lastStatusDescriptionRequired() }
+  );
 
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl('', [Validators.required, Validators.min(1)]),
@@ -100,7 +140,10 @@ export class PurchaseCreateComponent {
   paymentFormGroup: FormGroup = new FormGroup({
     bankName: new FormControl('', Validators.required),
     bankAccountName: new FormControl('', Validators.required),
-    bankAccountNumber: new FormControl('', Validators.required),
+    bankAccountNumber: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[0-9]+$/),
+    ]),
     paymentMethod: new FormControl('', Validators.required),
     paymentTotal: new FormControl(0, [Validators.required, Validators.min(0)]),
     proxyPayment: new FormControl(false),
@@ -142,18 +185,16 @@ export class PurchaseCreateComponent {
       this.isFinal = false;
     });
 
-    this.valueFormGroup.controls['otherValue'].valueChanges.subscribe(
-      (value) => {
-        this.isFinal = false;
-      }
-    );
+    this.valueFormGroup.controls['otherValue'].valueChanges.subscribe((_) => {
+      this.isFinal = false;
+    });
 
     this.metaFormGroup.controls['purchaseOrderName'].valueChanges.subscribe(
       (value) => {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3}-(PO|SPK)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/;
+          /^\d{3}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -258,12 +299,18 @@ export class PurchaseCreateComponent {
     const dueDateFormatted = `${dueDate.getFullYear()}-${String(
       dueDate.getMonth() + 1
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
+    const proxyPayment = this.paymentFormGroup.controls['proxyPayment'].value;
+
     this.isSubmitting = true;
+
     this.apiService
       .post('purchases', {
         invoiceName: this.metaFormGroup.controls['invoiceName'].value,
         receiptName: this.metaFormGroup.controls['receiptName'].value,
-        taxInvoiceName: this.metaFormGroup.controls['taxInvoiceName'].value,
+        taxInvoiceName:
+          this.metaFormGroup.controls['taxInvoiceName'].value == ''
+            ? null
+            : this.metaFormGroup.controls['taxInvoiceName'].value,
         supplierID: this.metaFormGroup.controls['supplierID'].value,
         // change from date object to YYYY-MM-DD
         date: dateFormatted,
@@ -273,13 +320,25 @@ export class PurchaseCreateComponent {
         projectName: this.metaFormGroup.controls['projectName'].value,
         purchaseType: this.metaFormGroup.controls['purchaseType'].value,
         dpp: this.valueFormGroup.controls['dpp'].value,
-        ppn: this.valueFormGroup.controls['ppnValue'].value,
+        ppn: this.valueFormGroup.controls['ppn'].value,
         pbbkb: this.valueFormGroup.controls['pbbkb'].value,
-        pphCode: this.valueFormGroup.controls['pphCode'].value,
-        pphTaxObject: this.valueFormGroup.controls['pphTaxObject'].value,
-        pphPercentage: this.valueFormGroup.controls['pphPercentage'].value,
+        pphCode:
+          this.valueFormGroup.controls['pphCode'].value == ''
+            ? null
+            : this.valueFormGroup.controls['pphCode'].value,
+        pphTaxObject:
+          this.valueFormGroup.controls['pphCode'].value == ''
+            ? null
+            : this.valueFormGroup.controls['pphTaxObject'].value,
+        pphPercentage:
+          this.valueFormGroup.controls['pphCode'].value == ''
+            ? 0
+            : this.valueFormGroup.controls['pphPercentage'].value,
         otherValue: this.valueFormGroup.controls['otherValue'].value,
-        otherValueNote: this.valueFormGroup.controls['otherValueNote'].value,
+        otherValueNote:
+          this.valueFormGroup.controls['otherValue'].value == 0
+            ? null
+            : this.valueFormGroup.controls['otherValueNote'].value,
         isInvoiceAttached:
           this.attachmentFormGroup.controls['isInvoiceAttached'].value,
         isReceiptAttached:
@@ -296,22 +355,23 @@ export class PurchaseCreateComponent {
         bankAccountNumber:
           this.paymentFormGroup.controls['bankAccountNumber'].value,
         paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
+        lastStatus: this.metaFormGroup.controls['lastStatus'].value,
+        lastStatusDescription:
+          this.metaFormGroup.controls['lastStatus'].value == 'Ready'
+            ? null
+            : this.metaFormGroup.controls['lastStatusDescription'].value,
       })
       .subscribe({
         next: (_) => {
-          this.stepper?.reset();
           this.snackBar.open('Purchase created successfully', 'Close', {
             duration: 3000,
           });
 
-          if (this.paymentFormGroup.controls['proxyPayment'].value == true) {
+          if (proxyPayment) {
             this.generateProxyPaymentPDF();
           }
 
-          this.metaFormGroup.reset();
-          this.valueFormGroup.reset();
-
-          this.metaFormGroup.patchValue({
+          this.metaFormGroup.reset({
             invoiceName: '',
             receiptName: '',
             taxInvoiceName: '',
@@ -323,19 +383,25 @@ export class PurchaseCreateComponent {
             purchaseOrderName: '',
             projectName: '',
             purchaseType: '',
-          })
-
-          this.valueFormGroup.patchValue({
-            pbbkb: 0,
-            otherValue: 0,
-            pphPercentage: 0,
-            pphTaxObject: '',
-            pphCode: '',
+            lastStatus: 'ready',
+            lastStatusDescription: '',
           });
 
-          this.attachmentFormGroup.reset();
+          this.valueFormGroup.reset({
+            dpp: '',
+            ppn: '',
+            ppnValue: 0,
+            pbbkb: 0,
+            pphCode: '',
+            pphTaxObject: '',
+            pphPercentage: 0,
+            pphValue: 0,
+            otherValue: 0,
+            otherValueNote: '',
+            total: 0,
+          });
 
-          this.attachmentFormGroup.patchValue({
+          this.attachmentFormGroup.reset({
             isInvoiceAttached: false,
             isReceiptAttached: false,
             isTaxInvoiceAttached: false,
@@ -343,7 +409,16 @@ export class PurchaseCreateComponent {
             isCopyPurchaseOrderAttached: false,
           });
 
-          this.paymentFormGroup.reset();
+          this.paymentFormGroup.reset({
+            bankName: '',
+            bankAccountName: '',
+            bankAccountNumber: '',
+            paymentMethod: '',
+            paymentTotal: 0,
+            proxyPayment: false,
+          });
+
+          this.stepper!.selectedIndex = 0;
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {
@@ -367,7 +442,6 @@ export class PurchaseCreateComponent {
 
   generateProxyPaymentPDF() {
     const invoiceName = this.metaFormGroup.controls['invoiceName'].value;
-    const receiptName = this.metaFormGroup.controls['receiptName'].value;
     const taxInvoiceName = this.metaFormGroup.controls['taxInvoiceName'].value;
     const supplierName = this.metaFormGroup.controls['supplierName'].value;
     const bankName = this.paymentFormGroup.controls['bankName'].value;

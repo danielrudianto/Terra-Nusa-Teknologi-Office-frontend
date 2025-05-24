@@ -9,6 +9,7 @@
   --background-color: white;
   --base-color: #f7f7f7;
   --base-color-hover: #eaeaea;
+  --base-color-hover-transparent: rgba(234, 234, 234, 0.5);
   --on-base-color: #333333;
   --primary-color: #0d152e;
   --accent-color: #f2711a;
@@ -49,6 +50,31 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+
+    a {
+      text-decoration: none;
+      color: var(--primary-color);
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-bottom: 0.5rem;
+      padding-top: 0.5rem;
+      background-color: transparent;
+      border-radius: 20px;
+      transition: 0.3s ease-in-out;
+      line-height: 0;
+
+      &:hover {
+        text-decoration: none;
+        color: var(--primary-color);
+        background-color: var(--base-color-hover-transparent);
+      }
+    }
+  }
 }
 
 .table {

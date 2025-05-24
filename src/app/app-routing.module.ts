@@ -15,8 +15,12 @@ import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursemen
 import { BankComponent } from './pages/bank/bank.component';
 import { BankListComponent } from './pages/bank/bank-list/bank-list.component';
 import { BankCreateComponent } from './pages/bank/bank-create/bank-create.component';
+import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-status/purchase-update-status.component';
+import { ExpenseComponent } from './pages/expense/expense.component';
+import { ExpenseListComponent } from './pages/expense/expense-list/expense-list.component';
+import { ExpenseCreateComponent } from './pages/expense/expense-create/expense-create.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'Login',
     component: LoginComponent,
@@ -41,6 +45,10 @@ const routes: Routes = [
           {
             path: 'Create',
             component: PurchaseCreateComponent,
+          },
+          {
+            path: 'Status/:id',
+            component: PurchaseUpdateStatusComponent,
           },
         ],
       },
@@ -83,6 +91,20 @@ const routes: Routes = [
           {
             path: 'Create',
             component: BankCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Expense',
+        component: ExpenseComponent,
+        children: [
+          {
+            path: '',
+            component: ExpenseListComponent,
+          },
+          {
+            path: 'Create',
+            component: ExpenseCreateComponent,
           },
         ],
       },

@@ -1,6 +1,4 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Purchase">Purchase</a> / Create</h1>
-</div>
+<h1 class="title">Purchase / Create Purchase</h1>
 <mat-stepper [linear]="true" #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
@@ -15,14 +13,6 @@
           placeholder="Supplier name"
           readonly
         />
-        <button
-          matPrefix
-          mat-icon-button
-          (click)="openSupplierSelector()"
-          type="button"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -74,6 +64,7 @@
           type="text"
           formControlName="purchaseOrderName"
           placeholder="Purchase Order Name"
+          readonly
         />
       </mat-form-field>
 
@@ -84,6 +75,7 @@
           type="text"
           formControlName="projectName"
           placeholder="Project name"
+          readonly
         />
       </mat-form-field>
 
@@ -97,7 +89,7 @@
           readonly
         />
       </mat-form-field>
-      <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Date</mat-label>
         <input
           matInput
@@ -113,7 +105,7 @@
         <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Due date</mat-label>
         <input
           matInput
@@ -128,41 +120,10 @@
         <mat-datepicker #duePicker></mat-datepicker>
         <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document Status</mat-label>
-        <mat-select formControlName="lastStatus">
-          <mat-option value="draft">Waiting</mat-option>
-          <mat-option value="ready">Ready</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document Type</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="lastStatusDescription"
-          [readonly]="metaFormGroup.controls['lastStatus'].value != 'draft'"
-        /><mat-hint
-          *ngIf="
-            metaFormGroup.hasError('lastStatusDescriptionRequired') &&
-            metaFormGroup.get('lastStatus')?.value === 'draft'
-          "
-        >
-          Description is required and must be at least 10 characters when status
-          is Waiting.
-        </mat-hint>
-      </mat-form-field>
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      mat-stroked-button
-      matStepperNext
-      [disabled]="metaFormGroup.invalid"
-    >
+    <button class="btn" matStepperNext [disabled]="metaFormGroup.invalid">
       Next
     </button>
   </mat-step>
@@ -183,6 +144,7 @@
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
+          readonly
         />
       </mat-form-field>
 
@@ -197,6 +159,7 @@
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
+          readonly
         />
       </mat-form-field>
 
@@ -226,21 +189,8 @@
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphCode"
-          placeholder="PPh Code"
           readonly
         />
-        <button mat-icon-button matPrefix (click)="openPPHSelector()">
-          <mat-icon>search</mat-icon>
-        </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -266,24 +216,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh (Rp.)</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphValue"
-          placeholder="PPh Value"
-          readonly
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-        <button mat-icon-button matPrefix (click)="openPPHSelector()">
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Other value</mat-label>
         <input
           matInput
@@ -306,45 +238,24 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-label>Total</mat-label>
       <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
         <input
           matInput
           type="text"
           formControlName="total"
           placeholder="Total"
-          readonly
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
         />
-        <button
-          mat-icon-button
-          matPrefix
-          [disabled]="isFinal || !isNumberValid"
-          (click)="calculateTotal()"
-        >
-          <mat-icon>calculate</mat-icon>
-        </button>
       </mat-form-field>
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      class="me-2"
-      mat-button
-      matStepperPrevious
-    >
-      Previous
-    </button>
-    <button
-      matStepperNext
-      style="letter-spacing: 0"
-      mat-stroked-button
-      [disabled]="valueFormGroup.invalid || !isFinal"
-    >
+    <button class="btn outlined" matStepperPrevious>Previous</button>
+    <button class="btn" matStepperNext [disabled]="valueFormGroup.invalid">
       Next
     </button>
   </mat-step>
@@ -396,20 +307,8 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      class="me-2"
-      mat-button
-      matStepperPrevious
-    >
-      Previous
-    </button>
-    <button
-      style="letter-spacing: 0"
-      mat-stroked-button
-      matStepperNext
-      [disabled]="attachmentFormGroup.invalid"
-    >
+    <button class="btn outlined" matStepperPrevious>Previous</button>
+    <button class="btn" matStepperNext [disabled]="attachmentFormGroup.invalid">
       Next
     </button>
   </mat-step>
@@ -420,39 +319,19 @@
       <h2 class="title my-3">Payment data</h2>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank name</mat-label>
-        <input
-          #input
-          matInput
-          type="text"
-          formControlName="bankName"
-          placeholder="Bank Name"
-          [matAutocomplete]="auto"
-          (input)="filter()"
-          (focus)="filter()"
-        />
-        <mat-autocomplete requireSelection #auto="matAutocomplete">
-          <mat-option
-            *ngFor="let option of filteredOptions"
-            [value]="option.name"
-            >{{ option.name }}</mat-option
-          >
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Bank account name</mat-label>
         <input
           matInput
           type="text"
           formControlName="bankAccountName"
           placeholder="Bank Account Name"
+          readonly
         />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Payment Method</mat-label>
-        <mat-select formControlName="paymentMethod">
+        <mat-select formControlName="paymentMethod" readonly>
           <mat-option value="bank">Bank Transfer</mat-option>
           <mat-option value="cash">Virtual Account</mat-option>
           <mat-option value="cash">Cheque</mat-option>
@@ -467,6 +346,7 @@
           type="text"
           formControlName="bankAccountNumber"
           placeholder="Bank Account Number"
+          readonly
         />
       </mat-form-field>
 
@@ -482,28 +362,18 @@
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
+          readonly
         />
       </mat-form-field>
-
-      <mat-slide-toggle
-        color="primary"
-        class="my-3"
-        formControlName="proxyPayment"
-        >Proxy Payment</mat-slide-toggle
-      >
-      <br />
     </form>
 
     <mat-divider class="my-3"></mat-divider>
+    <button class="btn outlined" matStepperPrevious>Previous</button>
     <button
-      style="letter-spacing: 0"
-      mat-button
-      class="me-2"
-      matStepperPrevious
+      class="btn"
+      (click)="onSubmit()"
+      [disabled]="!isValid || isSubmitting"
     >
-      Previous
-    </button>
-    <button class="btn" (click)="onSubmit()" [disabled]="!isValid">
       Submit
     </button>
   </mat-step>
