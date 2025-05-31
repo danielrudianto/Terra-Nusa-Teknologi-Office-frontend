@@ -31,7 +31,7 @@ import { BankCreateComponent } from './pages/bank/bank-create/bank-create.compon
 import { BankUpdateComponent } from './pages/bank/bank-update/bank-update.component';
 import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
 import { BankComponent } from './pages/bank/bank.component';
-import { PurchasePaymentCreateComponent } from './pages/purchase/purchase-list/purchase-payment-create/purchase-payment-create.component';
+import { PurchasePaymentCreateComponent } from './components/purchase-payment-create/purchase-payment-create.component';
 import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-status/purchase-update-status.component';
 import { ExpenseComponent } from './pages/expense/expense.component';
 import { ExpenseListComponent } from './pages/expense/expense-list/expense-list.component';
@@ -55,6 +55,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
   MatNativeDateModule,
   MAT_DATE_LOCALE,
@@ -71,6 +75,8 @@ import { PphSelectorComponent } from './components/pph-selector/pph-selector.com
 import { BankSelectorComponent } from './components/bank-selector/bank-selector.component';
 import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
 import { SupplierSelectorComponent } from './components/supplier-selector/supplier-selector.component';
+import { ExpenseOpponentSelectorComponent } from './components/expense-opponent-selector/expense-opponent-selector.component';
+import { ClientSelectorComponent } from './components/client-selector/client-selector.component';
 
 // Interceptors
 import { AuthInterceptor } from './services/auth.interceptor';
@@ -84,6 +90,20 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule, routes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
+import { EmployeeComponent } from './pages/employee/employee.component';
+import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
+import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
+import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
+import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
+import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
+import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
+import { SalesInvoiceListComponent } from './pages/sales-invoice/sales-invoice-list/sales-invoice-list.component';
+import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
+import { ClientListComponent } from './pages/client/client-list/client-list.component';
+import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
+import { ClientComponent } from './pages/client/client.component';
+import { EmployeeUpdateComponent } from './pages/employee/employee-update/employee-update.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -134,6 +154,22 @@ export const MY_FORMATS = {
     ExpenseComponent,
     ExpenseListComponent,
     ExpenseCreateComponent,
+    PurchaseReportProjectComponent,
+    EmployeeComponent,
+    EmployeeCreateComponent,
+    EmployeeListComponent,
+    ExpenseOpponentComponent,
+    ExpenseOpponentListComponent,
+    ExpenseOpponentCreateComponent,
+    ExpenseOpponentSelectorComponent,
+    SalesInvoiceComponent,
+    SalesInvoiceListComponent,
+    SalesInvoiceCreateComponent,
+    ClientComponent,
+    ClientListComponent,
+    ClientCreateComponent,
+    ClientSelectorComponent,
+    EmployeeUpdateComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -161,7 +197,11 @@ export const MY_FORMATS = {
     NgxExtendedPdfViewerModule,
     NgxMaskDirective,
     NgxMaskPipe,
-    MatTableModule
+    MatTableModule,
+    MatListModule,
+    MatMenuModule,
+    MatRadioModule,
+    MatCheckboxModule,
   ],
   providers: [
     provideNgxMask(),

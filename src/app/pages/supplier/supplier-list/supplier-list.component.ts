@@ -6,10 +6,10 @@ import { SupplierViewComponent } from './supplier-view/supplier-view.component';
 import { debounceTime } from 'rxjs';
 
 @Component({
-    selector: 'app-supplier-list',
-    templateUrl: './supplier-list.component.html',
-    styleUrls: ['./supplier-list.component.scss'],
-    standalone: false
+  selector: 'app-supplier-list',
+  templateUrl: './supplier-list.component.html',
+  styleUrls: ['./supplier-list.component.scss'],
+  standalone: false,
 })
 export class SupplierListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}
@@ -20,6 +20,7 @@ export class SupplierListComponent {
 
   suppliers: any[] = [];
   page: number = 1;
+  pageSize: number = 10;
   count: number = 0;
   displayedColumns: string[] = ['name', 'address', 'phone', 'email', 'action'];
 
@@ -38,6 +39,7 @@ export class SupplierListComponent {
     this.apiService
       .get('suppliers', {
         page: this.page,
+        pageSize: this.pageSize,
         keyword: this.formControl.value,
       })
       .subscribe({
@@ -50,13 +52,19 @@ export class SupplierListComponent {
         },
       })
       .add(() => {
-        // this.isLoading = false;
+        this.isLoading = false;
       });
   }
 
   changePage(event: any) {
-    const targetPage = event.pageIndex + 1;
-    this.fetchSuppliers(targetPage);
+    if (event.pageSize == this.pageSize) {
+      const targetPage = event.pageIndex + 1;
+      this.fetchSuppliers(targetPage);
+    } else {
+      this.pageSize = event.pageSize;
+      this.page = 1;
+      this.fetchSuppliers(1);
+    }
   }
 
   onEdit(id: number) {}

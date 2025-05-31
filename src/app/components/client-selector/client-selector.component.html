@@ -1,0 +1,44 @@
+<mat-dialog-content>
+  <h2 class="title">Select client</h2>
+  <p>Select corresponding client here.</p>
+
+  <div class="form-field">
+    <input
+      class="input"
+      type="text"
+      [formControl]="searchBar"
+      placeholder="Search client"
+    />
+  </div>
+  <mat-divider class="my-3"></mat-divider>
+  <table class="table bordered table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="isLoading">
+      <tr>
+        <td colspan="2" class="text-center">
+          <mat-spinner diameter="50" class="loading-spinner"></mat-spinner>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && clients.length === 0">
+      <tr>
+        <td colspan="2" class="text-center">No clients found</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && clients.length > 0">
+      <tr
+        *ngFor="let client of clients"
+        (click)="selectClient(client)"
+        class="cursor-pointer"
+      >
+        <td>{{ client.name }}, {{ client.prefix }}</td>
+        <td>{{ client.address }}, {{ client.city }}, {{ client.province }}</td>
+      </tr>
+    </tbody>
+  </table>
+</mat-dialog-content>

@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Purchase Report Project</h2>
+<form [formGroup]="formGroup">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Project name</mat-label>
+      <input
+        matInput
+        placeholder="Enter project name"
+        formControlName="projectName"
+        (keyup)="toUpperCase()"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Format</mat-label>
+      <mat-select formControlName="format">
+        <mat-option value="pdf">PDF</mat-option>
+        <mat-option value="csv" disabled>CSV</mat-option>
+        <mat-option value="xlsx" disabled>XLSX</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      color="primary"
+      [disabled]="!formGroup.valid || isLoading"
+      type="submit"
+      (click)="onSubmit()"
+    >
+      Generate
+    </button>
+    <button mat-button [mat-dialog-close]="false">
+      Cancel
+    </button></mat-dialog-actions
+  >
+</form>

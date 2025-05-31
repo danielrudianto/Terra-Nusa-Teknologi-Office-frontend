@@ -19,6 +19,23 @@ import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-
 import { ExpenseComponent } from './pages/expense/expense.component';
 import { ExpenseListComponent } from './pages/expense/expense-list/expense-list.component';
 import { ExpenseCreateComponent } from './pages/expense/expense-create/expense-create.component';
+import { LoansComponent } from './pages/loans/loans.component';
+import { LoansListComponent } from './pages/loans/loans-list/loans-list.component';
+import { LoansCreateComponent } from './pages/loans/loans-create/loans-create.component';
+import { EmployeeComponent } from './pages/employee/employee.component';
+import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
+import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
+import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
+import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
+import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
+import { authGuard } from './guards/auth.guard';
+import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
+import { SalesInvoiceListComponent } from './pages/sales-invoice/sales-invoice-list/sales-invoice-list.component';
+import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
+import { ClientComponent } from './pages/client/client.component';
+import { ClientListComponent } from './pages/client/client-list/client-list.component';
+import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
+import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
 
 export const routes: Routes = [
   {
@@ -78,6 +95,10 @@ export const routes: Routes = [
             path: 'Create',
             component: SupplierCreateComponent,
           },
+          {
+            path: 'Update/:id',
+            component: SupplierUpdateComponent,
+          },
         ],
       },
       {
@@ -105,6 +126,76 @@ export const routes: Routes = [
           {
             path: 'Create',
             component: ExpenseCreateComponent,
+          },
+          {
+            path: 'Opponent',
+            component: ExpenseOpponentComponent,
+            children: [
+              {
+                path: '',
+                component: ExpenseOpponentListComponent,
+              },
+              {
+                path: 'Create',
+                component: ExpenseOpponentCreateComponent,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'Loans',
+        component: LoansComponent,
+        children: [
+          {
+            path: '',
+            component: LoansListComponent,
+          },
+          {
+            path: 'Create',
+            component: LoansCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Sales-invoice',
+        component: SalesInvoiceComponent,
+        children: [
+          {
+            path: '',
+            component: SalesInvoiceListComponent,
+          },
+          {
+            path: 'Create',
+            component: SalesInvoiceCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Employee',
+        component: EmployeeComponent,
+        children: [
+          {
+            path: '',
+            component: EmployeeListComponent,
+          },
+          {
+            path: 'Create',
+            component: EmployeeCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Client',
+        component: ClientComponent,
+        children: [
+          {
+            path: '',
+            component: ClientListComponent,
+          },
+          {
+            path: 'Create',
+            component: ClientCreateComponent,
           },
         ],
       },

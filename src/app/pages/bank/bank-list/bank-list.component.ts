@@ -21,6 +21,7 @@ export class BankListComponent {
   banks: any[] = [];
   page: number = 1;
   count: number = 0;
+  displayedColumns: string[] = ["bankName", "bankAccountNumber", "bankAccountName"];
 
   ngOnInit(): void {
     this.fetchBankAccounts();

@@ -29,7 +29,7 @@ export class SideNavComponent {
         },
         {
           name: 'Calendar',
-          icon: 'calendar_today',
+          icon: 'calendar_month',
           route: '/Calendar',
           routerLinkOptions: {
             exact: false,
@@ -37,7 +37,7 @@ export class SideNavComponent {
         },
         {
           name: 'Purchase',
-          icon: 'shopping_cart',
+          icon: 'description',
           route: '/Purchase',
           routerLinkOptions: {
             exact: false,
@@ -45,7 +45,7 @@ export class SideNavComponent {
         },
         {
           name: 'Reimbursement',
-          icon: 'shopping_cart',
+          icon: 'receipt_long',
           route: '/Reimbursement',
           routerLinkOptions: {
             exact: false,
@@ -53,8 +53,24 @@ export class SideNavComponent {
         },
         {
           name: 'Expense',
-          icon: 'shopping_cart',
+          icon: 'credit_card',
           route: '/Expense',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Loans',
+          icon: 'credit_score',
+          route: '/Loans',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Sales invoice',
+          icon: 'receipt',
+          route: '/Sales-invoice',
           routerLinkOptions: {
             exact: false,
           },
@@ -80,6 +96,22 @@ export class SideNavComponent {
             exact: false,
           },
         },
+        {
+          name: 'Employee',
+          icon: 'people',
+          route: '/Employee',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Client',
+          icon: 'people',
+          route: '/Client',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
       ],
     },
     {
@@ -93,6 +125,19 @@ export class SideNavComponent {
             exact: true,
           },
         },
+        {
+          name: 'Logout',
+          icon: 'logout',
+          click: () => {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            this.router.navigate(['/Login']);
+          },
+          routerLinkOptions: {
+            exact: true,
+          },
+        },
       ],
     },
   ];
@@ -101,6 +146,8 @@ export class SideNavComponent {
     if (item.hasOwnProperty('route')) {
       // navigate to route
       this.router.navigate([item.route]);
+    } else {
+      item.click();
     }
   }
 }

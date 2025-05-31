@@ -129,7 +129,19 @@
         <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-radio-group
+        aria-label="Select an option"
+        (change)="onPurchaseTypeChange($event)"
+      >
+        <mat-radio-button color="primary" value="goods"
+          >Goods Purchase</mat-radio-button
+        >
+        <mat-radio-button color="primary" value="other"
+          >Other Purchase</mat-radio-button
+        >
+      </mat-radio-group>
+
+      <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>Document Status</mat-label>
         <mat-select formControlName="lastStatus">
           <mat-option value="draft">Waiting</mat-option>
@@ -161,7 +173,7 @@
       style="letter-spacing: 0"
       mat-stroked-button
       matStepperNext
-      [disabled]="metaFormGroup.invalid"
+      [disabled]="metaFormGroup.invalid || purchaseType === ''"
     >
       Next
     </button>
@@ -169,10 +181,8 @@
   <mat-step [stepControl]="valueFormGroup">
     <form [formGroup]="valueFormGroup">
       <ng-template matStepLabel>Value Data</ng-template>
-      <mat-divider class="mt-3"></mat-divider>
-      <h2 class="title my-3">Values</h2>
 
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>DPP</mat-label>
         <input
           matInput
@@ -236,9 +246,13 @@
           type="text"
           formControlName="pphCode"
           placeholder="PPh Code"
-          readonly
         />
-        <button mat-icon-button matPrefix (click)="openPPHSelector()">
+        <button
+          mat-icon-button
+          matPrefix
+          type="button"
+          (click)="openPPHSelector()"
+        >
           <mat-icon>search</mat-icon>
         </button>
       </mat-form-field>
@@ -351,8 +365,6 @@
   <mat-step [stepControl]="attachmentFormGroup">
     <form [formGroup]="attachmentFormGroup">
       <ng-template matStepLabel>Attachments Data</ng-template>
-      <mat-divider class="mt-3"></mat-divider>
-      <h2 class="title my-3">Attachments</h2>
 
       <mat-slide-toggle
         color="primary"
@@ -416,8 +428,6 @@
   <mat-step [stepControl]="paymentFormGroup">
     <form [formGroup]="paymentFormGroup">
       <ng-template matStepLabel>Payment Data</ng-template>
-      <mat-divider class="mt-3"></mat-divider>
-      <h2 class="title my-3">Payment data</h2>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Bank name</mat-label>
@@ -503,7 +513,11 @@
     >
       Previous
     </button>
-    <button class="btn" (click)="onSubmit()" [disabled]="!isValid">
+    <button
+      class="btn"
+      (click)="onSubmit()"
+      [disabled]="!isValid || isSubmitting"
+    >
       Submit
     </button>
   </mat-step>

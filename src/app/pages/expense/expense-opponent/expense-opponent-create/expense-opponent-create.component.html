@@ -1,0 +1,56 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title">
+    <a routerLink="/Expense">Expense</a> / Opponent / Create
+  </h1>
+</div>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" placeholder="Enter opponent name" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Type</mat-label>
+    <mat-select
+      matInput
+      formControlName="type"
+      placeholder="Enter opponent type"
+    >
+      <mat-option [value]="'individual'">Individual</mat-option>
+      <mat-option [value]="'company'">Company</mat-option>
+      <mat-option [value]="'government'">Government</mat-option>
+      <mat-option [value]="'other'">Other</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Description</mat-label>
+    <textarea
+      matInput
+      formControlName="description"
+      placeholder="Enter opponent description"
+      rows="3"
+      style="resize: none"
+    ></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Payment number</mat-label>
+    <!-- Input for bank account name -->
+    <input
+      matInput
+      type="text"
+      formControlName="paymentNumber"
+      placeholder="Payment Number"
+    />
+  </mat-form-field>
+
+  <button
+    class="btn outlined"
+    type="submit"
+    [disabled]="formGroup.invalid || isSubmitting"
+  >
+    Create
+  </button>
+</form>

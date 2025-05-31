@@ -1,0 +1,50 @@
+<mat-dialog-content>
+  <h2 mat-dialog-title>Select opponent</h2>
+  <form [formGroup]="searchFormGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <input
+        matInput
+        formControlName="search"
+        placeholder="Search by name or email"
+      />
+    </mat-form-field>
+  </form>
+
+  <div class="table-responsive">
+    <mat-table [dataSource]="opponents">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let opponent"> {{ opponent.name }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+        <mat-cell *matCellDef="let opponent">
+          {{ opponent.description }}
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="selectOpponent(row)"
+      ></mat-row>
+      <tr class="mat-row" *matNoDataRow>
+        <td
+          class="mat-cell text-center"
+          [attr.colspan]="displayedColumns.length"
+        >
+          No data matching the filter.
+        </td>
+      </tr>
+    </mat-table>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      [pageSize]="10"
+      [showFirstLastButtons]="true"
+      [length]="count"
+      (page)="onPageChange($event)"
+    ></mat-paginator>
+  </div>
+</mat-dialog-content>

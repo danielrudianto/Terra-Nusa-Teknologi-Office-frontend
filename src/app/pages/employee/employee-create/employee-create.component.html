@@ -1,0 +1,98 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title"><a routerLink="/Employee">Employees</a> / Create</h1>
+</div>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" placeholder="Enter employee name" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Birth date</mat-label>
+    <input
+      matInput
+      formControlName="birthday"
+      placeholder="Enter employee department"
+      [matDatepicker]="picker"
+    />
+    <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>NIK</mat-label>
+    <input
+      matInput
+      formControlName="nik"
+      placeholder="Enter employee NIK (National ID)"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Address</mat-label>
+    <textarea
+      matInput
+      formControlName="address"
+      placeholder="Enter employee address"
+      rows="3"
+      style="resize: none"
+    ></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Email</mat-label>
+    <input
+      matInput
+      formControlName="email"
+      placeholder="Enter employee email"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Phone number</mat-label>
+    <input
+      matInput
+      formControlName="phoneNumber"
+      placeholder="Enter employee phone number"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Position</mat-label>
+    <input
+      matInput
+      formControlName="position"
+      placeholder="Enter employee position"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Department</mat-label>
+    <input
+      matInput
+      formControlName="department"
+      placeholder="Enter employee department"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Tax Category</mat-label>
+    <mat-select formControlName="taxCategory" placeholder="Select tax category">
+      <mat-optgroup label="Tidak kawin">
+        <mat-option value="TK/0">Tidak kawin; 0 tanggungan (TK/0)</mat-option>
+        <mat-option value="TK/1">Tidak kawin; 1 tanggungan (TK/1)</mat-option>
+        <mat-option value="TK/2">Tidak kawin; 2 tanggungan (TK/2)</mat-option>
+        <mat-option value="TK/3">Tidak kawin; 3 tanggungan (TK/3)</mat-option>
+      </mat-optgroup>
+      <mat-optgroup label="Kawin">
+        <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
+        <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
+        <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
+        <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+      </mat-optgroup>
+    </mat-select>
+  </mat-form-field>
+
+  <button class="btn outlined" type="submit">Create Employee</button>
+</form>

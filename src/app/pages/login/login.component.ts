@@ -29,9 +29,11 @@ export class LoginComponent {
       next: (data: any) => {
         const acessToken = data.access_token;
         const refreshToken = data.refresh_token;
+        const user = data.user;
 
         localStorage.setItem('access_token', acessToken);
         localStorage.setItem('refresh_token', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
 
         this.router.navigate(['/']);
       },

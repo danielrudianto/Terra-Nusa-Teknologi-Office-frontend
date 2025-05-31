@@ -15,6 +15,19 @@ export class ReimbursementListComponent {
   reimbursements: any[] = [];
   count: number = 0;
   isLoading: boolean = false;
+  pageSize: number = 10;
+
+  sortBy: string = 'date';
+  sortByDirection: string = 'desc';
+
+  displayedColumns: string[] = [
+    'date',
+    'name',
+    'projectName',
+    'expenseType',
+    'amount',
+    'action',
+  ];
 
   ngOnInit(): void {
     this.fetchData();
@@ -23,8 +36,24 @@ export class ReimbursementListComponent {
   openPaymentDetail(id: number) {}
 
   changePage(event: any) {
-    this.page = event.pageIndex + 1;
-    this.fetchData(this.page);
+    if (event.pageSize !== this.pageSize) {
+      this.pageSize = event.pageSize;
+      this.page = 1; // Reset to first page when page size changes
+      this.fetchData(this.page);
+    } else {
+      this.fetchData(this.page);
+    }
+  }
+
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchData(1);
   }
 
   fetchData(targetPage: number = 1) {
@@ -34,6 +63,9 @@ export class ReimbursementListComponent {
     this.apiService
       .get('reimbursements', {
         page: this.page,
+        pageSize: this.pageSize,
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
       })
       .subscribe({
         next: (res: any) => {

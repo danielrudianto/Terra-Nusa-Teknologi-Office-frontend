@@ -1,5 +1,8 @@
-<h1 class="title mt-3">Bank Account / Create</h1>
-<mat-divider class="my-3"></mat-divider>
+<div class="title__wrapper mb-4">
+  <h1 class="title">
+    <a routerLink="/Bank">Bank Accounts</a> / Create
+  </h1>
+</div>
 
 <form [formGroup]="bankFormGroup" (ngSubmit)="onSubmit()">
   <mat-form-field appearance="outline" class="w-100">

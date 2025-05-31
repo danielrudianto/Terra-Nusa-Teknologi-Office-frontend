@@ -4,10 +4,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-    selector: 'app-supplier-create',
-    templateUrl: './supplier-create.component.html',
-    styleUrls: ['./supplier-create.component.scss'],
-    standalone: false
+  selector: 'app-supplier-create',
+  templateUrl: './supplier-create.component.html',
+  styleUrls: ['./supplier-create.component.scss'],
+  standalone: false,
 })
 export class SupplierCreateComponent {
   constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
@@ -18,10 +18,13 @@ export class SupplierCreateComponent {
     address: new FormControl('', Validators.required),
     city: new FormControl('', Validators.required),
     province: new FormControl('', Validators.required),
-    npwp: new FormControl('', [Validators.maxLength(16)]),
+    npwp: new FormControl('', [
+      Validators.maxLength(16),
+      Validators.pattern(/^$|^\d{16}$/),
+    ]),
     phoneNumber: new FormControl('', [
       Validators.required,
-      Validators.pattern(/\+?\d{7,20}$/),
+      Validators.pattern(/^\d{10,20}$/),
     ]),
     email: new FormControl('', [Validators.email]),
     soldItems: new FormControl(''),

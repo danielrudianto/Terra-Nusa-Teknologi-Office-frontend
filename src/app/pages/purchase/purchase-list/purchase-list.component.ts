@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
-import { PurchasePaymentCreateComponent } from './purchase-payment-create/purchase-payment-create.component';
+import { PurchasePaymentCreateComponent } from '../../../components/purchase-payment-create/purchase-payment-create.component';
 import { FormControl, FormGroup } from '@angular/forms';
+import { debounceTime } from 'rxjs';
+import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -26,6 +28,8 @@ export class PurchaseListComponent {
   sortBy: string = 'date';
   sortByDirection: string = 'desc';
 
+  searchControl: FormControl = new FormControl('');
+
   page: number = 1;
   purchases: any[] = [];
   count: number = 0;
@@ -45,6 +49,15 @@ export class PurchaseListComponent {
 
   ngOnInit(): void {
     this.fetchData();
+
+    this.searchControl.valueChanges.pipe(debounceTime(500)).subscribe({
+      next: (data) => {
+        this.fetchData(1);
+      },
+      error: (error) => {
+        console.error('Error fetching search data:', error);
+      },
+    });
   }
 
   openPurchaseReportSelector() {
@@ -52,7 +65,13 @@ export class PurchaseListComponent {
   }
 
   openPaymentDetail(id: number) {
-    this.dialog.open(PurchasePaymentCreateComponent, {});
+    this.dialog.open(PurchasePaymentCreateComponent, {
+      data: {
+        purchaseID: id,
+        expenseID: null,
+        reimbursementID: null,
+      },
+    });
   }
 
   changePage(event: any) {
@@ -85,6 +104,7 @@ export class PurchaseListComponent {
   fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
     this.isLoading = true;
     let filter: any = {};
+    const searchValue = this.searchControl.value;
 
     const filterValue = this.filterFormGroup.value;
     // if all the filter value is true or all the filter value is false, then filter = {}, filter = 0
@@ -110,6 +130,7 @@ export class PurchaseListComponent {
         ...filter,
         sortBy: this.sortBy,
         sortByDirection: this.sortByDirection,
+        keyword: searchValue,
       })
       .subscribe({
         next: (res: any) => {
@@ -123,5 +144,9 @@ export class PurchaseListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  openProjectSelector() {
+    this.dialog.open(PurchaseReportProjectComponent, {});
   }
 }

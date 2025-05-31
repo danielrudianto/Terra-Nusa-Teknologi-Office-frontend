@@ -1,0 +1,308 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title">
+    <a routerLink="/Sales-invoice">Sales invoice</a> / Create
+  </h1>
+</div>
+<mat-stepper [linear]="false" #stepper>
+  <mat-step [stepControl]="metaFormGroup">
+    <form [formGroup]="metaFormGroup">
+      <ng-template matStepLabel>General</ng-template>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Client name</mat-label>
+        <input
+          matInput
+          formControlName="clientName"
+          type="text"
+          placeholder="Client name"
+          readonly
+        />
+        <button
+          matPrefix
+          mat-icon-button
+          (click)="openClientSelector()"
+          type="button"
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Client address</mat-label>
+        <textarea
+          matInput
+          formControlName="clientAddress"
+          rows="3"
+          placeholder="Client address"
+          readonly
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Client NPWP</mat-label>
+        <input
+          matInput
+          formControlName="clientNPWP"
+          type="text"
+          placeholder="Client NPWP"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Invoice Number</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          placeholder="Enter invoice number"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="date"
+          placeholder="Select date"
+        />
+        <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Project name</mat-label>
+        <input
+          matInput
+          type="text"
+          id="projectName"
+          formControlName="projectName"
+          class="form-control"
+          placeholder="Enter project name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input
+          type="text"
+          placeholder="Pick one"
+          aria-label="Number"
+          matInput
+          formControlName="description"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option [value]="'Down payment (Uang muka)'"
+            >Down payment (Uang muka)</mat-option
+          >
+          <mat-option [value]="'Progress pertama (1)'"
+            >Progress pertama (1)</mat-option
+          >
+          <mat-option [value]="'Progress kedua (2)'"
+            >Progress kedua (2)</mat-option
+          >
+          <mat-option [value]="'Progress ketiga (3)'"
+            >Progress ketiga (3)</mat-option
+          >
+          <mat-option [value]="'Progress final'">Progress final</mat-option>
+          <mat-option [value]="'Retensi'">Retensi</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>SPK Number</mat-label>
+        <input
+          matInput
+          type="text"
+          id="spkNumber"
+          formControlName="spkNumber"
+          class="form-control"
+          placeholder="Enter SPK number"
+        />
+      </mat-form-field>
+
+      <button
+        matStepperNext
+        style="letter-spacing: 0"
+        mat-stroked-button
+        [disabled]="metaFormGroup.invalid"
+      >
+        Next
+      </button>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="valueFormGroup">
+    <form [formGroup]="valueFormGroup">
+      <ng-template matStepLabel>Value</ng-template>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DPP</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="dpp"
+          placeholder="DPP"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN</mat-label>
+        <mat-select formControlName="ppnPercentage">
+          <mat-option value="0">0%</mat-option>
+          <mat-option value="11">11%</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="ppnValue"
+          placeholder="PPN (Rp.)"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPH Code</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphCode"
+          placeholder="PPH Code"
+          readonly
+        />
+        <button mat-icon-button matPrefix (click)="openPphSelector()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPH Tax Object Name</mat-label>
+        <textarea
+          matInput
+          type="text"
+          formControlName="pphTaxObjectName"
+          placeholder="PPH Tax Object Name"
+          readonly
+          rows="3"
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh (%)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphPercentage"
+          placeholder="PPH Percentage"
+          readonly
+          suffix="%"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="total"
+          placeholder="Total (Rp.)"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+          readonly
+        />
+      </mat-form-field>
+
+      <button
+        style="letter-spacing: 0"
+        class="me-2"
+        mat-button
+        matStepperPrevious
+      >
+        Previous
+      </button>
+
+      <button
+        matStepperNext
+        style="letter-spacing: 0"
+        mat-stroked-button
+        [disabled]="metaFormGroup.invalid"
+      >
+        Next
+      </button>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="paymentFormGroup">
+    <form [formGroup]="paymentFormGroup">
+      <ng-template matStepLabel>Payment</ng-template>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Account</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="Bank Account"
+          [matAutocomplete]="bankAccountAutoComplete"
+        />
+        <mat-autocomplete
+          #bankAccountAutoComplete
+          (optionSelected)="onBankAccountSelected($event)"
+          [displayWith]="displayBankAccount"
+        >
+          <mat-option *ngFor="let account of bankAccounts" [value]="account">
+            {{ account.bankAccountNumber }} - {{ account.bankAccountName }} (
+            {{ account.bankName }} )
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment total (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="paymentTotal"
+          placeholder="Payment total (Rp.)"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+
+      <button
+        style="letter-spacing: 0"
+        class="me-2"
+        mat-button
+        matStepperPrevious
+      >
+        Previous
+      </button>
+
+      <button
+        matStepperNext
+        style="letter-spacing: 0"
+        mat-stroked-button
+        [disabled]="paymentFormGroup.invalid"
+        (click)="previewInvoice()"
+      >
+        Preview
+      </button>
+    </form>
+  </mat-step>
+</mat-stepper>

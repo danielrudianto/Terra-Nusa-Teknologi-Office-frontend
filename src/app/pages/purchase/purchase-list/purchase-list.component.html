@@ -41,8 +41,24 @@
   <input
     matInput
     placeholder="Search by invoice name, receipt name, purchase order, supplier, or tax invoice"
+    [formControl]="searchControl"
   />
+
+  <button type="button" [matMenuTriggerFor]="menu" mat-icon-button matSuffix>
+    <mat-icon>more_vert</mat-icon>
+  </button>
 </mat-form-field>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="openProjectSelector()">
+    <mat-icon>workspaces</mat-icon>
+    <span>Project report</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>calendar_month</mat-icon>
+    <span>Monthly report</span>
+  </button>
+</mat-menu>
 
 <div class="table-responsive">
   <table mat-table [dataSource]="purchases">
@@ -118,7 +134,7 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let purchase">
-        <p>{{ purchase.supplier.name }}, {{ purchase.supplier.prefix }}</p>
+        {{ purchase.supplier.name }}, {{ purchase.supplier.prefix }}
       </td>
     </ng-container>
 
@@ -201,9 +217,7 @@
       </th>
       <td mat-cell *matCellDef="let purchase">
         {{
-          purchase.dpp +
-            (purchase.ppn * purchase.dpp) / 100 +
-            (purchase.pphPercentage * purchase.dpp) / 100 | currency : "Rp. "
+          purchase.dpp + (purchase.ppn * purchase.dpp) / 100 | currency : "Rp. "
         }}
       </td>
     </ng-container>

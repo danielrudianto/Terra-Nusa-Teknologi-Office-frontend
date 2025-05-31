@@ -28,7 +28,8 @@
 }
 
 .side-nav__item-list {
-  flex-grow: 1;
+  flex: 0 1 auto;
+  overflow-y: auto;
 
   .side-nav__item__title {
     //upper case
@@ -42,6 +43,7 @@
     background-color: var(--base-color);
     border: none;
     transition: 0.2s ease-in-out;
+    opacity: 0.5;
 
     &:hover {
       background-color: var(--base-color-hover-transparent);
@@ -51,12 +53,13 @@
     &.active {
       color: var(--primary-color);
       font-weight: bold;
+      opacity: 1;
     }
   }
 }
 
 .side-nav__version {
-  flex-grow: 0;
+  flex: 1 1 auto;
   width: 100%;
   border-radius: 20px;
   aspect-ratio: 22/15;

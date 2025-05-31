@@ -1,4 +1,407 @@
 <h1 class="title">Expense / Create Expense</h1>
-<form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+<mat-stepper [linear]="true" #stepper>
+  <mat-step [stepControl]="metaFormGroup">
+    <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+      <ng-template matStepLabel>Meta Data</ng-template>
 
-</form>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Opponent</mat-label>
+        <input
+          matInput
+          formControlName="opponentName"
+          type="text"
+          placeholder="Opponent name"
+          readonly
+        />
+        <button
+          matPrefix
+          mat-icon-button
+          (click)="openOpponentSelector()"
+          type="button"
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <textarea
+          matInput
+          formControlName="opponentDescription"
+          rows="3"
+          placeholder="Opponent description"
+          readonly
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Invoice name</mat-label>
+        <input
+          matInput
+          formControlName="invoiceName"
+          type="text"
+          placeholder="Invoice name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Receipt Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="receiptName"
+          placeholder="Receipt Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tax Invoice Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="taxInvoiceName"
+          placeholder="Tax Invoice Name"
+          maxlength="17"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <mat-select formControlName="purchaseType">
+          <mat-optgroup label="Office Expenses">
+            <mat-option value="5.1.1">Asset purchase</mat-option>
+            <mat-option value="5.1.2">Asset maintenance</mat-option>
+            <mat-option value="5.1.3">Prepaid rent expense</mat-option>
+            <mat-option value="5.1.4">Employee expense</mat-option>
+            <mat-option value="5.1.5">Logistic expense</mat-option>
+            <mat-option value="5.1.6"
+              >Document handling & Stationaries</mat-option
+            >
+            <mat-option value="5.1.7">Utilities</mat-option>
+            <mat-option value="5.1.8">Tax</mat-option>
+            <mat-option value="5.1.9">Administration fees</mat-option>
+            <mat-option value="5.1.10">Interests</mat-option>
+          </mat-optgroup>
+
+          <mat-optgroup label="Project Expenses">
+            <mat-option value="A">Transportation</mat-option>
+            <mat-option value="B">Equipment rental</mat-option>
+            <mat-option value="C">Fuel</mat-option>
+            <mat-option value="D">Manpower</mat-option>
+            <mat-option value="E"
+              >Coordination; Consumption; and Accomodation</mat-option
+            >
+            <mat-option value="F">Material</mat-option>
+            <mat-option value="G"
+              >Project supporting equipment and supplies</mat-option
+            >
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Expense description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="3"
+          placeholder="Description"
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-label>Date</mat-label>
+        <input
+          matInput
+          formControlName="date"
+          placeholder="Date"
+          [matDatepicker]="picker"
+        />
+        <mat-datepicker-toggle
+          matIconPrefix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-hint>DD/MM/YYYY</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-label>Due date</mat-label>
+        <input
+          matInput
+          formControlName="dueDate"
+          placeholder="Date"
+          [matDatepicker]="duePicker"
+        />
+        <mat-datepicker-toggle
+          matIconPrefix
+          [for]="duePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #duePicker></mat-datepicker>
+        <mat-hint>DD/MM/YYYY</mat-hint>
+      </mat-form-field>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button
+      style="letter-spacing: 0"
+      mat-stroked-button
+      matStepperNext
+      [disabled]="metaFormGroup.invalid"
+    >
+      Next
+    </button>
+  </mat-step>
+
+  <mat-step [stepControl]="valueFormGroup">
+    <form [formGroup]="valueFormGroup">
+      <ng-template matStepLabel>Value Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Values</h2>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DPP</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="dpp"
+          placeholder="DPP"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN (%)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="ppn"
+          placeholder="PPN"
+          suffix="%"
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="ppnValue"
+          placeholder="PPN (Rp.)"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PBBKB</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pbbkb"
+          placeholder="PBBKB"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphCode"
+          placeholder="PPh Code"
+          readonly
+        />
+        <button mat-icon-button matPrefix (click)="openPPHSelector()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh Object Name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphTaxObject"
+          placeholder="PPh Object Name"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh Percentage</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphPercentage"
+          placeholder="PPh Percentage"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="pphValue"
+          placeholder="PPh Value"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+        <button mat-icon-button matPrefix (click)="openPPHSelector()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-label>Total</mat-label>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="text"
+          formControlName="total"
+          placeholder="Total"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+        <button
+          mat-icon-button
+          matPrefix
+          [disabled]="isFinal || !isNumberValid"
+          (click)="calculateTotal()"
+        >
+          <mat-icon>calculate</mat-icon>
+        </button>
+      </mat-form-field>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button
+      style="letter-spacing: 0"
+      class="me-2"
+      mat-button
+      matStepperPrevious
+    >
+      Previous
+    </button>
+    <button
+      matStepperNext
+      style="letter-spacing: 0"
+      mat-stroked-button
+      [disabled]="valueFormGroup.invalid || !isFinal"
+    >
+      Next
+    </button>
+  </mat-step>
+
+  <mat-step [stepControl]="paymentFormGroup">
+    <form [formGroup]="paymentFormGroup">
+      <ng-template matStepLabel>Payment Data</ng-template>
+      <mat-divider class="mt-3"></mat-divider>
+      <h2 class="title my-3">Payment data</h2>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank name</mat-label>
+        <input
+          #input
+          matInput
+          type="text"
+          formControlName="bankName"
+          placeholder="Bank Name"
+          [matAutocomplete]="auto"
+          (input)="filter()"
+          (focus)="filter()"
+        />
+        <mat-autocomplete requireSelection #auto="matAutocomplete">
+          <mat-option
+            *ngFor="let option of filteredOptions"
+            [value]="option.name"
+            >{{ option.name }}</mat-option
+          >
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountName"
+          placeholder="Bank Account Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment Method</mat-label>
+        <mat-select formControlName="paymentMethod">
+          <mat-option value="bank">Bank Transfer</mat-option>
+          <mat-option value="cash">Virtual Account</mat-option>
+          <mat-option value="cash">Cheque</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account number</mat-label>
+        <!-- Input for bank account name -->
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountNumber"
+          placeholder="Bank Account Number"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="paymentTotal"
+          placeholder="Payment Total"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+    </form>
+
+    <mat-divider class="my-3"></mat-divider>
+    <button
+      style="letter-spacing: 0"
+      mat-button
+      class="me-2"
+      matStepperPrevious
+    >
+      Previous
+    </button>
+    <button
+      class="btn"
+      (click)="onSubmit()"
+      [disabled]="!isValid || isSubmitting"
+    >
+      Submit
+    </button>
+  </mat-step>
+</mat-stepper>

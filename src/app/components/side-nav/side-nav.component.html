@@ -13,7 +13,7 @@
         <p class="side-nav__item__title">{{ item.name }}</p>
         <ul class="list-group list-group-flush mb-3">
           <li
-            class="list-group-item"
+            class="list-group-item d-flex align-items-center my-1"
             role="button"
             (click)="onItemClick(subItem)"
             [routerLink]="subItem.route"
@@ -21,7 +21,8 @@
             [routerLinkActiveOptions]="subItem.routerLinkOptions"
             *ngFor="let subItem of item.children"
           >
-            {{ subItem.name }}
+            <mat-icon>{{ subItem.icon }}</mat-icon>
+            <span class="ms-3">{{ subItem.name }}</span>
           </li>
         </ul>
       </div>

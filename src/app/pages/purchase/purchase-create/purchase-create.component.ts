@@ -68,6 +68,7 @@ export class PurchaseCreateComponent {
   options: IBank[] = banks;
   isFinal: boolean = false;
   isSubmitting: boolean = false;
+  purchaseType: string | null = null;
 
   get isNumberValid() {
     return (
@@ -90,7 +91,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
         ),
       ]),
       projectName: new FormControl('', [
@@ -100,7 +101,7 @@ export class PurchaseCreateComponent {
       ]),
       purchaseType: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^\(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6$/),
+        Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6$/),
       ]),
       lastStatus: new FormControl('ready', Validators.required),
       lastStatusDescription: new FormControl(''),
@@ -194,7 +195,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -228,35 +229,38 @@ export class PurchaseCreateComponent {
   }
 
   openPPHSelector() {
-    this.dialog
-      .open(PphSelectorComponent, {})
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          const pph = data as IPPh;
-          this.valueFormGroup.patchValue({
-            pphCode: pph.code,
-            pphTaxObject: pph.taxObjectName,
-            pphPercentage: pph.tariff,
-          });
+    console.log(this.purchaseType);
+    if (this.purchaseType == 'other') {
+      this.dialog
+        .open(PphSelectorComponent, {})
+        .afterClosed()
+        .subscribe((data) => {
+          if (data) {
+            const pph = data as IPPh;
+            this.valueFormGroup.patchValue({
+              pphCode: pph.code,
+              pphTaxObject: pph.taxObjectName,
+              pphPercentage: pph.tariff,
+            });
 
-          const pphPercentage =
-            this.valueFormGroup.controls['pphPercentage'].value;
-          const dpp = this.valueFormGroup.controls['dpp'].value;
-          const pphValue = (dpp * pphPercentage) / 100;
-          this.valueFormGroup.controls['pphValue'].setValue(
-            pphValue.toFixed(2)
-          );
-        } else {
-          this.valueFormGroup.patchValue({
-            pphCode: '',
-            pphTaxObject: '',
-            pphPercentage: 0,
-          });
-        }
-      });
+            const pphPercentage =
+              this.valueFormGroup.controls['pphPercentage'].value;
+            const dpp = this.valueFormGroup.controls['dpp'].value;
+            const pphValue = (dpp * pphPercentage) / 100;
+            this.valueFormGroup.controls['pphValue'].setValue(
+              pphValue.toFixed(2)
+            );
+          } else {
+            this.valueFormGroup.patchValue({
+              pphCode: '',
+              pphTaxObject: '',
+              pphPercentage: 0,
+            });
+          }
+        });
 
-    this.isFinal = false;
+      this.isFinal = false;
+    }
   }
 
   calculateTotal() {
@@ -288,6 +292,20 @@ export class PurchaseCreateComponent {
     );
   }
 
+  onPurchaseTypeChange(event: any): void {
+    const value = event.value;
+    this.purchaseType = value;
+
+    if (this.purchaseType == 'goods') {
+      // disable pph
+      this.valueFormGroup.patchValue({
+        pphCode: '',
+        pphTaxObject: '',
+        pphPercentage: 0,
+      });
+    }
+  }
+
   onSubmit() {
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
@@ -305,6 +323,7 @@ export class PurchaseCreateComponent {
 
     this.apiService
       .post('purchases', {
+        procurementType: this.purchaseType,
         invoiceName: this.metaFormGroup.controls['invoiceName'].value,
         receiptName: this.metaFormGroup.controls['receiptName'].value,
         taxInvoiceName:
