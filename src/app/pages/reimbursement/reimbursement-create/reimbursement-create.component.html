@@ -107,7 +107,7 @@
     <mat-label>Payment Method</mat-label>
     <mat-select formControlName="paymentMethod">
       <mat-option value="bank">Bank Transfer</mat-option>
-      <mat-option value="cash">Virtual Account</mat-option>
+      <mat-option value="va">Virtual Account</mat-option>
       <mat-option value="cash">Cheque</mat-option>
     </mat-select>
   </mat-form-field>
@@ -140,7 +140,9 @@
 
       <tbody *ngIf="items.length > 0">
         <tr *ngFor="let item of items.controls; index as i">
-          <td>{{ item.get("date")?.value | date : "dd MMMM YYYY" }}</td>
+          <td>
+            {{ item.get("date")?.value | date : "dd MMMM yyyy" : "GMT+0700'" }}
+          </td>
           <td>{{ item.get("description")?.value }}</td>
           <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
           <td>
@@ -152,36 +154,6 @@
       </tbody>
     </table>
   </div>
-
-  <!-- <input
-    type="file"
-    class="d-none"
-    #fileInput
-    accept="application/pdf"
-    (change)="onFileSelected($event)"
-  />
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>File</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="fileName"
-      readonly
-      (click)="fileInput.click()"
-    />
-    <button
-      matSuffix
-      mat-icon-button
-      aria-label="Clear"
-      *ngIf="formGroup.get('fileName')?.value != ''"
-      type="button"
-      (click)="openFile()"
-    >
-      <mat-icon>open_in_full</mat-icon>
-    </button>
-  </mat-form-field>
-  <br /> -->
 
   <mat-divider class="my-3"></mat-divider>
 

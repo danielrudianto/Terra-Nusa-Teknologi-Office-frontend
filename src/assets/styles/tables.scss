@@ -1,0 +1,14 @@
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row {
+  transition: 0.3s all ease;
+}
+
+.mat-mdc-row:hover {
+  background-color: var(--base-color-hover);
+  transition: 0.3s all ease;
+}

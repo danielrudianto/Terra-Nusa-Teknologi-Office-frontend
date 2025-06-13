@@ -1,0 +1,158 @@
+<h2 mat-dialog-title>Confirm reimbursement data</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" placeholder="Date" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Due Date</mat-label>
+      <input
+        matInput
+        formControlName="dueDate"
+        placeholder="Due date"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Document name"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Expense type</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="purchaseType"
+        placeholder="Expense type"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Project Name</mat-label>
+      <input
+        matInput
+        type="text"
+        id="projectName"
+        formControlName="projectName"
+        placeholder="Enter project name"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank Name</mat-label>
+      <input
+        type="text"
+        placeholder="Bank name"
+        matInput
+        formControlName="bankName"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account number</mat-label>
+      <input
+        matInput
+        type="text"
+        id="bankAccountNumber"
+        formControlName="bankAccountNumber"
+        placeholder="Enter account number"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account name</mat-label>
+      <input
+        matInput
+        type="text"
+        id="bankAccountName"
+        formControlName="bankAccountName"
+        placeholder="Enter account name"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Payment Method</mat-label>
+      <input
+        matInput
+        type="text"
+        id="paymentMethod"
+        formControlName="paymentMethod"
+        placeholder="Payment method"
+        readonly
+      />
+    </mat-form-field>
+
+    <div class="table-responsive">
+      <table class="table table-bordered hover mt-3">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of t.controls; index as i">
+            <td>
+              {{ item.get("date")?.value }}
+            </td>
+            <td>{{ item.get("description")?.value }}</td>
+            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total Amount</mat-label>
+      <input
+        matInput
+        type="text"
+        id="total"
+        formControlName="total"
+        class="form-control"
+        placeholder="Total amount"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    class="me-2"
+    [disabled]="isSubmitting"
+    (click)="approve()"
+  >
+    Approve
+  </button>
+  <button
+    mat-stroked-button
+    color="accent"
+    style="letter-spacing: 0"
+    [disabled]="isSubmitting"
+    (click)="reject()"
+  >
+    Reject
+  </button>
+</mat-dialog-actions>

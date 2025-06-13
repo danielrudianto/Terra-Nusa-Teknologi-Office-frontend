@@ -1,0 +1,66 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title"><a routerLink="/Interpayment">Interpayment</a> / Create</h1>
+</div>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Date</mat-label>
+    <input
+      matInput
+      formControlName="date"
+      placeholder="Date"
+      [matDatepicker]="datePicker"
+    />
+    <mat-datepicker-toggle
+      matIconPrefix
+      [for]="datePicker"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #datePicker></mat-datepicker>
+    <mat-hint>DD/MM/YYYY</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank Account Number</mat-label>
+    <mat-select formControlName="bankAccountIDOrigin">
+      <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+        >{{ bank.bankAccountNumber }} -- {{ bank.bankAccountName }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Bank Account Number</mat-label>
+    <mat-select formControlName="bankAccountIDDestination">
+      <mat-option
+        *ngFor="let bank of bankAccounts"
+        [value]="bank.id"
+        [disabled]="formGroup.get('bankAccountIDOrigin')?.value === bank.id"
+        >{{ bank.bankAccountNumber }} -- {{ bank.bankAccountName }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Amount</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="amount"
+      placeholder="Enter amount"
+      prefix="Rp. "
+      thousandSeparator=" "
+      decimalScale="2"
+      mask="separator"
+    />
+  </mat-form-field>
+
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    type="submit"
+    [disabled]="formGroup.invalid || isSubmitting"
+  >
+    Submit
+  </button>
+</form>

@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
@@ -52,10 +58,10 @@ export class AuthInterceptor implements HttpInterceptor {
               return throwError(() => error);
             })
           );
+        } else {
+          // If the error is not 401 or the request is for refreshing the token, just throw the error
+          return throwError(() => error);
         }
-
-        // If not a 401 error, propagate the error
-        return throwError(error);
       })
     );
   }

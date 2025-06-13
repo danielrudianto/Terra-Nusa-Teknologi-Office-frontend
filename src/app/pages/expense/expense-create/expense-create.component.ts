@@ -40,7 +40,6 @@ export class ExpenseCreateComponent {
     ]),
     purchaseType: new FormControl('', Validators.required),
     opponentID: new FormControl(''),
-    employeeID: new FormControl(''),
     opponentName: new FormControl(''),
     opponentDescription: new FormControl(''),
     date: new FormControl('', Validators.required),
@@ -115,8 +114,7 @@ export class ExpenseCreateComponent {
       .subscribe((data) => {
         if (data) {
           this.metaFormGroup.patchValue({
-            opponentID: data.opponentID,
-            employeeID: data.employeeID,
+            opponentID: data.id,
             opponentName: data.name,
             opponentDescription: data.description,
           });

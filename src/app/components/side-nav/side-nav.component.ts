@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { PphRecapComponent } from 'src/app/pages/taxing/pph-recap/pph-recap.component';
+import { PpnRecapComponent } from 'src/app/pages/taxing/ppn-recap/ppn-recap.component';
+import { TaxingComponent } from 'src/app/pages/taxing/taxing.component';
 
 @Component({
   selector: 'app-side-nav',
@@ -36,6 +39,14 @@ export class SideNavComponent {
           },
         },
         {
+          name: 'Payment',
+          icon: 'payments',
+          route: '/Payment',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
           name: 'Purchase',
           icon: 'description',
           route: '/Purchase',
@@ -60,9 +71,9 @@ export class SideNavComponent {
           },
         },
         {
-          name: 'Loans',
-          icon: 'credit_score',
-          route: '/Loans',
+          name: 'Income',
+          icon: 'attach_money',
+          route: '/Income',
           routerLinkOptions: {
             exact: false,
           },
@@ -71,6 +82,14 @@ export class SideNavComponent {
           name: 'Sales invoice',
           icon: 'receipt',
           route: '/Sales-invoice',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Inter-payment',
+          icon: 'swap_horiz',
+          route: '/Interpayment',
           routerLinkOptions: {
             exact: false,
           },
@@ -108,6 +127,27 @@ export class SideNavComponent {
           name: 'Client',
           icon: 'people',
           route: '/Client',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+      ],
+    },
+    {
+      name: 'Administrator',
+      children: [
+        {
+          name: 'Loans',
+          icon: 'credit_score',
+          route: '/Loans',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Taxing',
+          icon: 'calculate',
+          route: '/Taxing',
           routerLinkOptions: {
             exact: false,
           },

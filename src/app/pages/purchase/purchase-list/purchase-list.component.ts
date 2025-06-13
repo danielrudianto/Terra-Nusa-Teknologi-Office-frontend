@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
-import { PurchasePaymentCreateComponent } from '../../../components/purchase-payment-create/purchase-payment-create.component';
+import { PurchasePaymentCreateComponent } from '../../../components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
+import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -148,5 +149,13 @@ export class PurchaseListComponent {
 
   openProjectSelector() {
     this.dialog.open(PurchaseReportProjectComponent, {});
+  }
+
+  viewPurchase(id: number) {
+    this.dialog.open(PurchaseViewComponent, {
+      data: {
+        id: id,
+      },
+    });
   }
 }

@@ -4,7 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from '../../purchase/purchase-list/purchase-report-select/purchase-report-select.component';
-import { PurchasePaymentCreateComponent } from 'src/app/components/purchase-payment-create/purchase-payment-create.component';
+import { PurchasePaymentCreateComponent } from 'src/app/components/payment-create/purchase-payment-create/purchase-payment-create.component';
+import { ExpenseOpponentCreateComponent } from '../expense-opponent/expense-opponent-create/expense-opponent-create.component';
 
 @Component({
   selector: 'app-expense-list',
@@ -57,19 +58,11 @@ export class ExpenseListComponent {
     });
   }
 
-  openPurchaseReportSelector() {
-    this.dialog.open(PurchaseReportSelectComponent, {});
+  openCreateOpponentDialog() {
+    this.dialog.open(ExpenseOpponentCreateComponent, {});
   }
 
-  openPaymentDetail(id: number) {
-    this.dialog.open(PurchasePaymentCreateComponent, {
-      data: {
-        purchaseID: id,
-        expenseID: null,
-        reimbursementID: null,
-      },
-    });
-  }
+  openPaymentDetail(id: number){}
 
   changePage(event: any) {
     if (event.pageSize !== this.pageSize) {

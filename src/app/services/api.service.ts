@@ -44,4 +44,16 @@ export class ApiService {
       },
     });
   }
+
+  delete(url: string) {
+    const access_token = `Bearer ${localStorage.getItem('access_token')}`;
+    const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;
+
+    return this.http.delete(environment.url + url, {
+      headers: {
+        Authorization: access_token,
+        'X-Refresh-Token': refresh_token,
+      },
+    });
+  }
 }

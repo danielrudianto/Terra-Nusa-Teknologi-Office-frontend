@@ -31,12 +31,31 @@ import { BankCreateComponent } from './pages/bank/bank-create/bank-create.compon
 import { BankUpdateComponent } from './pages/bank/bank-update/bank-update.component';
 import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
 import { BankComponent } from './pages/bank/bank.component';
-import { PurchasePaymentCreateComponent } from './components/purchase-payment-create/purchase-payment-create.component';
+import { PurchasePaymentCreateComponent } from './components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-status/purchase-update-status.component';
 import { ExpenseComponent } from './pages/expense/expense.component';
 import { ExpenseListComponent } from './pages/expense/expense-list/expense-list.component';
 import { ExpenseCreateComponent } from './pages/expense/expense-create/expense-create.component';
 import { MainComponent } from './pages/main/main.component';
+import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
+import { EmployeeComponent } from './pages/employee/employee.component';
+import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
+import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
+import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
+import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
+import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
+import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
+import { SalesInvoiceListComponent } from './pages/sales-invoice/sales-invoice-list/sales-invoice-list.component';
+import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
+import { ClientListComponent } from './pages/client/client-list/client-list.component';
+import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
+import { ClientComponent } from './pages/client/client.component';
+import { EmployeeUpdateComponent } from './pages/employee/employee-update/employee-update.component';
+import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
+import { SalarySlipCreateComponent } from './pages/salary-slip/salary-slip-create/salary-slip-create.component';
+import { SalarySlipListComponent } from './pages/salary-slip/salary-slip-list/salary-slip-list.component';
+import { CalendarComponent } from './pages/calendar/calendar.component';
+import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
 
 // Material
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -59,6 +78,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import {
   MatNativeDateModule,
   MAT_DATE_LOCALE,
@@ -90,27 +111,36 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule, routes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
-import { EmployeeComponent } from './pages/employee/employee.component';
-import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
-import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
-import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
-import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
-import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
-import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
-import { SalesInvoiceListComponent } from './pages/sales-invoice/sales-invoice-list/sales-invoice-list.component';
-import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
-import { ClientListComponent } from './pages/client/client-list/client-list.component';
-import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
-import { ClientComponent } from './pages/client/client.component';
-import { EmployeeUpdateComponent } from './pages/employee/employee-update/employee-update.component';
+import { CalendarTableComponent } from './pages/calendar/calendar-table/calendar-table.component';
+import { ShortCurrencyPipe } from './pipes/short-currency.pipe';
+import { CalendarDayViewComponent } from './pages/calendar/calendar-day-view/calendar-day-view.component';
+import { CalendarMonthSelectorComponent } from './pages/calendar/calendar-month-selector/calendar-month-selector.component';
+import { PaymentComponent } from './pages/payment/payment.component';
+import { PaymentListComponent } from './pages/payment/payment-list/payment-list.component';
+import { PaymentHistoryComponent } from './pages/payment/payment-history/payment-history.component';
+import { PaymentUpdateComponent } from './pages/payment/payment-update/payment-update.component';
+import { TaxingComponent } from './pages/taxing/taxing.component';
+import { PpnRecapComponent } from './pages/taxing/ppn-recap/ppn-recap.component';
+import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component';
+import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { CalendarAccountSelectorComponent } from './pages/calendar/calendar-account-selector/calendar-account-selector.component';
+import { PaymentCreateComponent } from './components/payment-create/payment-create.component';
+import { ReimbursementPaymentCreateComponent } from './components/payment-create/reimbursement-payment-create/reimbursement-payment-create.component';
+import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
+import { InterpaymentCreateComponent } from './pages/interpayment/interpayment-create/interpayment-create.component';
+import { InterpaymentListComponent } from './pages/interpayment/interpayment-list/interpayment-list.component';
+import { IncomeComponent } from './pages/income/income.component';
+import { IncomeListComponent } from './pages/income/income-list/income-list.component';
+import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
 
 export const MY_FORMATS = {
   parse: {
     dateInput: 'LL',
   },
   display: {
-    dateInput: 'DD MMMM YYYY',
+    dateInput: 'DD MMMM yyyy',
     monthYearLabel: 'MMMM YYYY',
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY',
@@ -170,6 +200,33 @@ export const MY_FORMATS = {
     ClientCreateComponent,
     ClientSelectorComponent,
     EmployeeUpdateComponent,
+    SalarySlipComponent,
+    SalarySlipCreateComponent,
+    SalarySlipListComponent,
+    CalendarComponent,
+    CalendarDateSelectorComponent,
+    CalendarTableComponent,
+    ShortCurrencyPipe,
+    CalendarDayViewComponent,
+    CalendarMonthSelectorComponent,
+    PaymentComponent,
+    PaymentListComponent,
+    PaymentHistoryComponent,
+    PaymentUpdateComponent,
+    TaxingComponent,
+    PpnRecapComponent,
+    PphRecapComponent,
+    TaxListComponent,
+    SettingsComponent,
+    CalendarAccountSelectorComponent,
+    PaymentCreateComponent,
+    ReimbursementPaymentCreateComponent,
+    InterpaymentComponent,
+    InterpaymentCreateComponent,
+    InterpaymentListComponent,
+    IncomeComponent,
+    IncomeListComponent,
+    IncomeCreateComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -202,6 +259,8 @@ export const MY_FORMATS = {
     MatMenuModule,
     MatRadioModule,
     MatCheckboxModule,
+    MatTooltipModule,
+    ClipboardModule,
   ],
   providers: [
     provideNgxMask(),
@@ -213,6 +272,8 @@ export const MY_FORMATS = {
     provideMomentDateAdapter(MY_FORMATS),
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes, withViewTransitions()),
+    DatePipe,
+    DecimalPipe,
   ],
 })
 export class AppModule {}

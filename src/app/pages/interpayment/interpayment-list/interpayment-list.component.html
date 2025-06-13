@@ -1,0 +1,73 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title">Inter-payment</h1>
+</div>
+
+<div class="position-absolute bottom-0 end-0 m-3">
+  <button mat-fab color="primary" routerLink="/Interpayment/Create">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<div class="table-responsive">
+  <table mat-table [dataSource]="payments">
+    <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
+        <div class="d-flex d-align-items-center">
+          <span>Date</span>
+          <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'date'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let purchase">
+        {{ purchase.date | date : "dd MMMM yyyy" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="bankAccountOrigin">
+      <th mat-header-cell *matHeaderCellDef>Origin</th>
+      <td mat-cell *matCellDef="let purchase">
+        {{ purchase.originBankAccountName }} --
+        {{ purchase.originBankAccountNumber }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="bankAccountDestination">
+      <th mat-header-cell *matHeaderCellDef>Destination</th>
+      <td mat-cell *matCellDef="let purchase">
+        {{ purchase.destinationBankAccountName }} --
+        {{ purchase.destinationBankAccountNumber }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef>Amount</th>
+      <td mat-cell *matCellDef="let purchase">
+        Rp. {{ purchase.amount | number : "0.2-2" }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+        No data matching the filter.
+      </td>
+    </tr>
+  </table>
+</div>
+<mat-paginator
+  [length]="count"
+  [pageSize]="10"
+  [pageIndex]="page - 1"
+  (page)="changePage($event)"
+  [pageSizeOptions]="[10, 25, 50]"
+  [pageSize]="pageSize"
+></mat-paginator>

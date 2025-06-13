@@ -8,10 +8,42 @@
   </button>
 </div>
 
+<form [formGroup]="filterFormGroup">
+  <mat-chip-listbox
+    class="mb-3"
+    multiple
+    aria-label="Filter Selection"
+    [disabled]="isLoading"
+  >
+    <mat-chip-option (selectionChange)="changeSelection('isApprove', $event)"
+      >Approved</mat-chip-option
+    >
+    <mat-chip-option (selectionChange)="changeSelection('isDelete', $event)"
+      >Rejected</mat-chip-option
+    >
+    <mat-chip-option (selectionChange)="changeSelection('isPending', $event)"
+      >Pending</mat-chip-option
+    >
+    <mat-chip-option (selectionChange)="changeSelection('isPaid', $event)"
+      >Paid</mat-chip-option
+    >
+    <mat-chip-option (selectionChange)="changeSelection('isUnpaid', $event)"
+      >Unpaid</mat-chip-option
+    >
+  </mat-chip-listbox>
+</form>
+
+<mat-form-field appearance="outline" class="w-100 mb-2">
+  <mat-label>Search</mat-label>
+  <input
+    matInput
+    placeholder="Search by invoice name, receipt name, purchase order, supplier, or tax invoice"
+    [formControl]="searchControl"
+  />
+</mat-form-field>
+
 <div class="table-responsive">
-  <table mat-table [dataSource]="reimbursements">
-    <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
+  <table mat-table [dataSource]="reimbursements" #table>
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
         <div class="d-flex d-align-items-center">
@@ -27,7 +59,7 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let purchase">
-        {{ purchase.date | date : "dd MMM YYYY" }}
+        {{ purchase.date | date : "dd MMM yyyy" }}
       </td>
     </ng-container>
 
@@ -74,6 +106,19 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let purchase">
+        {{
+          purchase.isApprove
+            ? "Approved"
+            : purchase.isDelete
+            ? "Deleted"
+            : "Pending"
+        }}
+      </td></ng-container
+    >
+
     <ng-container matColumnDef="expenseType">
       <th mat-header-cell *matHeaderCellDef>Purchase type</th>
       <td mat-cell *matCellDef="let purchase">
@@ -107,17 +152,8 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let purchase">
-        {{ purchase.isDeleted ? "Deleted" : "Active" }}
-      </td>
-    </ng-container>
-
     <ng-container matColumnDef="isPaid">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('isPaid')">
-        Paid status
-      </th>
+      <th mat-header-cell *matHeaderCellDef>Paid status</th>
       <td mat-cell *matCellDef="let purchase">
         {{ purchase.isPaid ? "Paid" : "Not paid" }}
       </td>
@@ -125,15 +161,39 @@
 
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef>Action</th>
-      <td mat-cell *matCellDef="let purchase">
-        <button mat-icon-button (click)="openPaymentDetail(purchase.id)">
+      <td
+        mat-cell
+        *matCellDef="let purchase"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          mat-icon-button
+          [disabled]="
+            !purchase.isApprove || purchase.isPaid || purchase.isDelete
+          "
+          (click)="$event.stopPropagation(); openPaymentDetail(purchase.id)"
+        >
           <mat-icon>payments</mat-icon>
+        </button>
+
+        <button
+          mat-icon-button
+          [disabled]="purchase.isApprove || purchase.isDelete"
+          (click)="
+            $event.stopPropagation(); openConfirmationDialog(purchase.id)
+          "
+        >
+          <mat-icon>check_circle</mat-icon>
         </button>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="viewReimbursementData(row.id)"
+    ></tr>
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
         No data matching the filter.

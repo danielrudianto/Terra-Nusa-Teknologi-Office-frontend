@@ -1,7 +1,7 @@
 <div class="title__wrapper mb-4">
   <h1 class="title"><a routerLink="/Purchase">Purchase</a> / Create</h1>
 </div>
-<mat-stepper [linear]="true" #stepper>
+<mat-stepper #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Meta Data</ng-template>
@@ -173,7 +173,7 @@
       style="letter-spacing: 0"
       mat-stroked-button
       matStepperNext
-      [disabled]="metaFormGroup.invalid || purchaseType === ''"
+      [disabled]="metaFormGroup.invalid || purchaseType === null"
     >
       Next
     </button>
@@ -317,6 +317,7 @@
           <mat-option value="">Select</mat-option>
           <mat-option value="delivery">Delivery fee</mat-option>
           <mat-option value="packing">Packing fee</mat-option>
+          <mat-option value="packing">PPh 22</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -464,7 +465,7 @@
         <mat-label>Payment Method</mat-label>
         <mat-select formControlName="paymentMethod">
           <mat-option value="bank">Bank Transfer</mat-option>
-          <mat-option value="cash">Virtual Account</mat-option>
+          <mat-option value="va">Virtual Account</mat-option>
           <mat-option value="cash">Cheque</mat-option>
         </mat-select>
       </mat-form-field>
@@ -497,11 +498,46 @@
 
       <mat-slide-toggle
         color="primary"
-        class="my-3"
+        class="mb-3"
         formControlName="proxyPayment"
-        >Proxy Payment</mat-slide-toggle
       >
-      <br />
+        <div class="d-flex align-items-center justify-content-between">
+          <span>Proxy Payment</span>
+          <button
+            type="button"
+            mat-icon-button
+            matTooltip="Proxy payment is used when the payment is made by a third party on behalf of the purchaser. (e.g., we pay the supplier through our staff's personal bank account)"
+          >
+            <mat-icon>help</mat-icon>
+          </button>
+        </div>
+      </mat-slide-toggle>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account origin</mat-label>
+        <mat-select formControlName="bankAccountID">
+          <mat-option *ngFor="let option of bankAccounts" [value]="option.id">
+            {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle
+        color="primary"
+        class="mb-3"
+        formControlName="createPayment"
+      >
+        <div class="d-flex align-items-center justify-content-between">
+          <span>Create payment slip</span>
+          <button
+            type="button"
+            mat-icon-button
+            matTooltip="Create payment slip automatically instead of manually filling the payment slip."
+          >
+            <mat-icon>help</mat-icon>
+          </button>
+        </div>
+      </mat-slide-toggle>
     </form>
 
     <mat-divider class="my-3"></mat-divider>

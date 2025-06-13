@@ -1,0 +1,378 @@
+<h2 mat-dialog-title>Payment data</h2>
+<mat-dialog-content class="mat-typography">
+  <mat-stepper [linear]="true">
+    <mat-step [stepControl]="metaFormGroup">
+      <ng-template matStepLabel>Document information</ng-template>
+      <p>
+        Please fill in the payment information below. The payment date is
+        required.
+      </p>
+      <form [formGroup]="metaFormGroup">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Document date"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Due date</mat-label>
+          <input
+            matInput
+            formControlName="dueDate"
+            placeholder="Due date"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase order number</mat-label>
+          <input
+            matInput
+            formControlName="purchaseOrderName"
+            type="text"
+            placeholder="Purchase order name"
+            required
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project name</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            type="text"
+            placeholder="Project name"
+            required
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Invoice name</mat-label>
+          <input
+            matInput
+            formControlName="invoiceName"
+            type="text"
+            placeholder="Invoice name"
+            required
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tax invoice name</mat-label>
+          <input
+            matInput
+            formControlName="taxInvoiceName"
+            type="text"
+            placeholder="Tax invoice name"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier name</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            type="text"
+            placeholder="Supplier name"
+            required
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier address</mat-label>
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="3"
+            placeholder="Supplier address"
+            required
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </form>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        matStepperNext
+      >
+        Next
+      </button>
+    </mat-step>
+
+    <mat-step [stepControl]="valueFormGroup">
+      <ng-template matStepLabel>Value information</ng-template>
+
+      <form [formGroup]="valueFormGroup">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DPP (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="dpp"
+            type="text"
+            placeholder="DPP amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPN (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="ppn"
+            type="text"
+            placeholder="PPN amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PBBKB (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="pbbkb"
+            type="text"
+            placeholder="PBBKB amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Other value (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="otherValue"
+            type="text"
+            placeholder="Other value amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+
+          <!-- Text in the end of the input -->
+          <mat-hint>{{ metaFormGroup.get("otherValueNote")?.value }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh 23 (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="pph"
+            type="text"
+            placeholder="PPh 23 amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Total (Rp.)</mat-label>
+          <input
+            matInput
+            formControlName="total"
+            type="text"
+            placeholder="Total amount"
+            required
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </form>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="me-3"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        matStepperNext
+      >
+        Next
+      </button>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Payment history information</ng-template>
+      <h3>Payment history</h3>
+      <p *ngIf="payments.length === 0">No payment history available.</p>
+      <mat-list *ngIf="payments.length > 0">
+        <mat-list-item *ngFor="let payment of payments">
+          <mat-list-item>
+            <mat-icon
+              matListItemIcon
+              [matTooltip]="
+                payment.isApprove
+                  ? 'Payment approved'
+                  : payment.isDelete
+                  ? 'Payment deleted'
+                  : 'Payment pending'
+              "
+            >
+              {{
+                payment.isApprove
+                  ? "check_circle"
+                  : payment.isDelete
+                  ? "cancel"
+                  : "payment"
+              }}
+            </mat-icon>
+            <span matListItemTitle
+              >Rp. {{ payment.amount | number : "0.2-2" }}</span
+            >
+            <span matListItemLine
+              >{{ payment.bankAccountName }}
+              {{ payment.bankAccountNumber }}</span
+            >
+            <span matListItemLine>{{
+              payment.date | date : "dd MMM yyyy"
+            }}</span>
+          </mat-list-item>
+        </mat-list-item>
+      </mat-list>
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="me-3"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        matStepperNext
+      >
+        Next
+      </button>
+    </mat-step>
+
+    <mat-step [stepControl]="formGroup">
+      <ng-template matStepLabel>Payment information</ng-template>
+      <p>
+        Please fill in the payment information below. The payment date is
+        required.
+      </p>
+
+      <form [formGroup]="formGroup">
+        <p>
+          This document is due on
+          {{ metaFormGroup.get("dueDate")?.value | date : "dd MMMM yyyy" }}
+        </p>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Payment Date</mat-label>
+          <input
+            matInput
+            formControlName="paymentDate"
+            placeholder="Payment date"
+            [matDatepicker]="paymentDatePicker"
+            formControlName="date"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="paymentDatePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #paymentDatePicker></mat-datepicker>
+          <mat-hint>DD/MM/YYYY</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Bank Account Number</mat-label>
+          <mat-select formControlName="bankAccountID">
+            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+              >{{ bank.bankAccountNumber }} --
+              {{ bank.bankAccountName }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Amount</mat-label>
+          <input
+            matInput
+            formControlName="amount"
+            type="text"
+            placeholder="Payment amount"
+            required
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            (click)="fullAmount()"
+          >
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          <mat-hint
+            >Maximum amount paid {{ totalAmount | number : "0.2-2" }}</mat-hint
+          >
+        </mat-form-field>
+      </form>
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="me-3"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        (click)="onSubmit()"
+      >
+        Submit
+      </button>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>

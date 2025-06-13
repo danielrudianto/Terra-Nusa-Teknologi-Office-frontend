@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { SupplierViewComponent } from './supplier-view/supplier-view.component';
 import { debounceTime } from 'rxjs';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 
 @Component({
   selector: 'app-supplier-list',
@@ -67,7 +68,14 @@ export class SupplierListComponent {
     }
   }
 
-  onEdit(id: number) {}
+  onConfirmDelete(id: number) {
+    this.dialog.open(DeleteConfirmationComponent, {
+      data: {
+        title: 'Delete supplier',
+        prompt: 'Are you sure you want to delete this supplier?',
+      },
+    });
+  }
 
   onViewDetail(id: number) {
     this.dialog.open(SupplierViewComponent, {

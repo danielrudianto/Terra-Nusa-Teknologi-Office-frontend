@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>Add Allowance</h2>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Allowance Name</mat-label>
+      <mat-select formControlName="name">
+        <mat-option value="Bonus proyek">Bonus proyek</mat-option>
+        <mat-option value="Bonus tahunan">Bonus tahunan</mat-option>
+        <mat-option value="Bonus kinerja">Bonus kinerja</mat-option>
+        <mat-option value="Tunjangan kesehatan">Tunjangan kesehatan</mat-option>
+        <mat-option value="Tunjangan transportasi"
+          >Tunjangan transportasi</mat-option
+        >
+        <mat-option value="Tunjangan makan">Tunjangan makan</mat-option>
+        <mat-option value="Tunjangan pendidikan"
+          >Tunjangan pendidikan</mat-option
+        >
+        <mat-option value="Tunjangan perumahan">Tunjangan perumahan</mat-option>
+        <mat-option value="Tunjangan hari raya">Tunjangan hari raya</mat-option>
+        <mat-option value="Tunjangan pensiun">Tunjangan pensiun</mat-option>
+        <mat-option value="Tunjangan lainnya">Tunjangan lainnya</mat-option>
+        <mat-option value="Tunjangan luar pulau"
+          >Tunjangan luar pulau</mat-option
+        >
+        <mat-option value="Tunjangan luar kota">Tunjangan luar kota</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="amount"
+        placeholder="Enter allowance amount"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        placeholder="Enter allowance description"
+        rows="3"
+        style="resize: none"
+      ></textarea>
+      <mat-hint>{{ formGroup.value.description.length }} / 10</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid"
+      cdkFocusInitial
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</form>

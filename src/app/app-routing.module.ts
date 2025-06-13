@@ -36,6 +36,25 @@ import { ClientComponent } from './pages/client/client.component';
 import { ClientListComponent } from './pages/client/client-list/client-list.component';
 import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
 import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
+import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
+import { SalarySlipListComponent } from './pages/salary-slip/salary-slip-list/salary-slip-list.component';
+import { SalarySlipCreateComponent } from './pages/salary-slip/salary-slip-create/salary-slip-create.component';
+import { CalendarComponent } from './pages/calendar/calendar.component';
+import { PaymentComponent } from './pages/payment/payment.component';
+import { PaymentListComponent } from './pages/payment/payment-list/payment-list.component';
+import { PaymentHistoryComponent } from './pages/payment/payment-history/payment-history.component';
+import { TaxingComponent } from './pages/taxing/taxing.component';
+import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
+import { PpnRecapComponent } from './pages/taxing/ppn-recap/ppn-recap.component';
+import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { PaymentUpdateComponent } from './pages/payment/payment-update/payment-update.component';
+import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
+import { IncomeComponent } from './pages/income/income.component';
+import { IncomeListComponent } from './pages/income/income-list/income-list.component';
+import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
+import { InterpaymentListComponent } from './pages/interpayment/interpayment-list/interpayment-list.component';
+import { InterpaymentCreateComponent } from './pages/interpayment/interpayment-create/interpayment-create.component';
 
 export const routes: Routes = [
   {
@@ -144,6 +163,20 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'Income',
+        component: IncomeComponent,
+        children: [
+          {
+            path: '',
+            component: IncomeListComponent,
+          },
+          {
+            path: 'Create',
+            component: IncomeCreateComponent,
+          },
+        ],
+      },
+      {
         path: 'Loans',
         component: LoansComponent,
         children: [
@@ -186,6 +219,24 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'Salary-slip',
+        component: SalarySlipComponent,
+        children: [
+          {
+            path: '',
+            component: SalarySlipListComponent,
+          },
+          {
+            path: 'Create',
+            component: SalarySlipCreateComponent,
+          },
+          {
+            path: 'Create',
+            redirectTo: '',
+          },
+        ],
+      },
+      {
         path: 'Client',
         component: ClientComponent,
         children: [
@@ -198,6 +249,68 @@ export const routes: Routes = [
             component: ClientCreateComponent,
           },
         ],
+      },
+      {
+        path: 'Calendar',
+        component: CalendarComponent,
+      },
+      {
+        path: 'Interpayment',
+        component: InterpaymentComponent,
+        children: [
+          {
+            path: '',
+            component: InterpaymentListComponent,
+          },
+          {
+            path: 'Create',
+            component: InterpaymentCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'Payment',
+        component: PaymentComponent,
+        children: [
+          {
+            path: '',
+            component: PaymentListComponent,
+          },
+          {
+            path: 'History',
+            component: PaymentHistoryComponent,
+          },
+          {
+            path: 'Approval/:id',
+            component: PaymentUpdateComponent,
+          },
+          {
+            path: 'Approval',
+            redirectTo: '',
+          },
+        ],
+      },
+      {
+        path: 'Taxing',
+        component: TaxingComponent,
+        children: [
+          {
+            path: '',
+            component: TaxListComponent,
+          },
+          {
+            path: 'PPN',
+            component: PpnRecapComponent,
+          },
+          {
+            path: 'PPH',
+            component: PphRecapComponent,
+          },
+        ],
+      },
+      {
+        path: 'Settings',
+        component: SettingsComponent,
       },
     ],
   },

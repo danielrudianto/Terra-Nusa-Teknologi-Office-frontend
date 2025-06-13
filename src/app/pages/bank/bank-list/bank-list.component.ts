@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { BankUpdateComponent } from '../bank-update/bank-update.component';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-bank-list',
@@ -12,7 +14,11 @@ import { BankUpdateComponent } from '../bank-update/bank-update.component';
   standalone: false,
 })
 export class BankListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   isLoading: boolean = false;
 
@@ -21,7 +27,12 @@ export class BankListComponent {
   banks: any[] = [];
   page: number = 1;
   count: number = 0;
-  displayedColumns: string[] = ["bankName", "bankAccountNumber", "bankAccountName"];
+  displayedColumns: string[] = [
+    'bankName',
+    'bankAccountNumber',
+    'bankAccountName',
+    'action',
+  ];
 
   ngOnInit(): void {
     this.fetchBankAccounts();
@@ -65,6 +76,48 @@ export class BankListComponent {
         id: id,
       },
     });
+  }
+
+  onDelete(id: number) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Delete Bank Account',
+          prompt: 'Are you sure you want to delete this bank account?',
+        },
+      })
+      .afterClosed()
+      .subscribe({
+        next: (data) => {
+          this.apiService.delete('banks/' + id).subscribe({
+            next: (a) => {
+              // remove the deleted bank account from the list
+              this.banks = this.banks.filter((bank) => bank.id !== id);
+              this.count--;
+              this.snackBar.open(
+                'Bank account deleted successfully.',
+                'Close',
+                {
+                  duration: 3000,
+                }
+              );
+            },
+            error: (b) => {
+              console.error('Error deleting bank account:', b);
+              this.snackBar.open(
+                'Failed to delete bank account. Please try again later.',
+                'Close',
+                {
+                  duration: 3000,
+                }
+              );
+            },
+          });
+        },
+        error: (error) => {
+          console.error('Error opening delete confirmation dialog:', error);
+        },
+      });
   }
 
   onViewDetail(id: number) {}

@@ -1,0 +1,43 @@
+import {
+  Component,
+  ComponentRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+
+@Component({
+  selector: 'app-calendar',
+  standalone: false,
+  templateUrl: './calendar.component.html',
+  styleUrl: './calendar.component.scss',
+})
+export class CalendarComponent {
+  constructor(private apiService: ApiService) {}
+
+  sideDialogActive: boolean = false;
+  selectedDay: number | null = null;
+  month: number = new Date().getMonth(); // Months are 0-indexed in JS
+  year: number = new Date().getFullYear();
+
+  onCalendarBoxClicked(event: number | null) {
+    this.selectedDay = event;
+    this.sideDialogActive = true;
+  }
+
+  onMonthChanged(event: any) {
+    this.month = event.month;
+    this.year = event.year;
+  }
+
+  closeSideDialog() {
+    this.sideDialogActive = false;
+  }
+
+  fetchBankAccounts() {
+    this.apiService.get('bank-accounts', {}).subscribe({
+      next: (data) => {},
+      error: (error) => {},
+    });
+  }
+}

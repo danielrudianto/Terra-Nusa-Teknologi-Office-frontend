@@ -1,0 +1,25 @@
+<div
+  class="side-dialog-backdrop"
+  *ngIf="sideDialogActive"
+  (click)="closeSideDialog()"
+></div>
+<div class="side-dialog" [class.side-dialog--active]="sideDialogActive">
+  <!-- Your dialog content here -->
+  <ng-container #sideDialogContent></ng-container>
+</div>
+<div class="calendar__container">
+  <div class="top">
+    <app-calendar-month-selector
+      [month]="month"
+      [year]="year"
+      (onMonthYearSelected)="onMonthChanged($event)"
+    ></app-calendar-month-selector>
+    <app-calendar-account-selector />
+  </div>
+  <app-calendar-table
+    [month]="month"
+    [year]="year"
+    [selectedDay]="selectedDay"
+    (onCalendarBoxClicked)="onCalendarBoxClicked($event)"
+  ></app-calendar-table>
+</div>

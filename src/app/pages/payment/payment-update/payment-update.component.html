@@ -1,0 +1,425 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title"><a routerLink="/Payment">Payment</a> / Approve</h1>
+</div>
+<mat-stepper [orientation]="(stepperOrientation | async)!">
+  <mat-step>
+    <ng-template matStepLabel>Payment Data</ng-template>
+
+    <form [formGroup]="metaFormGroup" class="payment-form">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input matInput formControlName="date" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Amount</mat-label>
+        <input
+          matInput
+          formControlName="amount"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="copyValue()"
+          matTooltip="Copy the amount to clipboard (unformatted)"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Name</mat-label>
+        <input matInput formControlName="bankName" type="text" readonly />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="copyBankDetails()"
+          matTooltip="Copy the payment's origin bank account details"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Account Number</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountNumber"
+          type="text"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Account Name</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountName"
+          type="text"
+          readonly
+        />
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        matStepperNext
+      >
+        Next
+      </button>
+    </form>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Document Data</ng-template>
+    <form [formGroup]="reimbursementFormGroup" *ngIf="isReimbursement">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input matInput formControlName="date" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Project name</mat-label>
+        <input matInput formControlName="projectName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <input matInput formControlName="purchaseType" type="text" readonly />
+      </mat-form-field>
+    </form>
+    <form [formGroup]="purchaseFormGroup" *ngIf="isPurchase">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input matInput formControlName="date" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Project name</mat-label>
+        <input matInput formControlName="projectName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <input matInput formControlName="purchaseType" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Supplier name</mat-label>
+        <input matInput formControlName="supplierName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Supplier address</mat-label>
+        <textarea
+          matInput
+          formControlName="supplierAddress"
+          type="text"
+          readonly
+          rows="3"
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Invoice</mat-label>
+        <input matInput formControlName="invoiceName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Receipt</mat-label>
+        <input matInput formControlName="receiptName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tax invoice</mat-label>
+        <input matInput formControlName="taxInvoiceName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase order</mat-label>
+        <input
+          matInput
+          formControlName="purchaseOrderName"
+          type="text"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Project name</mat-label>
+        <input matInput formControlName="projectName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <input matInput formControlName="purchaseType" type="text" readonly />
+      </mat-form-field>
+    </form>
+
+    <button
+      mat-stroked-button
+      style="letter-spacing: 0"
+      color="accent"
+      matStepperPrevious
+    >
+      Previous
+    </button>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      class="ms-2"
+      matStepperNext
+    >
+      Next
+    </button>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Value data</ng-template>
+    <form [formGroup]="valueFormGroup" *ngIf="isPurchase">
+      <!-- DPP -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DPP</mat-label>
+        <input
+          matInput
+          formControlName="dpp"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+        <button mat-icon-button matSuffix (click)="copyValueDetails()">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+      <!-- PPN -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN</mat-label>
+        <input
+          matInput
+          formControlName="ppnValue"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+      <!-- PBBKB -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PBBKB</mat-label>
+        <input
+          matInput
+          formControlName="pbbkb"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <!-- Other value, with the hint of otherValueNote -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Other Value</mat-label>
+        <input
+          matInput
+          formControlName="otherValue"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+        <mat-hint>{{ valueFormGroup.get("otherValueNote")?.value }}</mat-hint>
+      </mat-form-field>
+
+      <!-- PPh value -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh</mat-label>
+        <input
+          matInput
+          formControlName="pphValue"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <!-- PPh Tax Object name, wrapped in textarea resize none, rows 3 -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh Tax Object Name</mat-label>
+        <textarea
+          matInput
+          formControlName="pphTaxObjectName"
+          rows="3"
+          style="resize: none"
+          readonly
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Total -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
+        <input
+          matInput
+          formControlName="total"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment total</mat-label>
+        <input
+          matInput
+          formControlName="totalPayment"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        style="letter-spacing: 0"
+        color="accent"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="ms-2"
+        matStepperNext
+      >
+        Next
+      </button>
+    </form>
+
+    <form [formGroup]="reimbursementValueFormGroup" *ngIf="isReimbursement">
+      <table class="table table-bordered hover mt-3">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of t.controls; index as i">
+            <td>{{ item.get("date")?.value }}</td>
+            <td>{{ item.get("description")?.value }}</td>
+            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Approval</ng-template>
+
+    <form [formGroup]="paymentFormGroup">
+      <!-- Payment method -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bankName"
+          placeholder="Bank Name"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="copyBankTargetDetails()"
+          matTooltip="Copy the payment's bank account details"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account name</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountName"
+          placeholder="Bank Account Name"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment Method</mat-label>
+        <mat-select formControlName="paymentMethod" readonly>
+          <mat-option value="bank" disabled>Bank Transfer</mat-option>
+          <mat-option value="va" disabled>Virtual Account</mat-option>
+          <mat-option value="cash" disabled>Cheque</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account number</mat-label>
+        <!-- Input for bank account name -->
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountNumber"
+          placeholder="Bank Account Number"
+        />
+      </mat-form-field>
+    </form>
+
+    <button
+      mat-stroked-button
+      style="letter-spacing: 0"
+      color="primary"
+      (click)="approvePayment()"
+      [disabled]="isSubmitting || isApproved"
+    >
+      Approve
+    </button>
+
+    <button
+      mat-stroked-button
+      style="letter-spacing: 0"
+      class="ms-2"
+      color="accent"
+      (click)="rejectPayment()"
+      [disabled]="isSubmitting || isApproved"
+    >
+      Reject
+    </button>
+  </mat-step>
+</mat-stepper>

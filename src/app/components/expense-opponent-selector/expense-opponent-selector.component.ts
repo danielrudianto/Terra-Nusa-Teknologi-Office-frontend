@@ -37,18 +37,7 @@ export class ExpenseOpponentSelectorComponent {
   });
 
   selectOpponent(data: any) {
-    this.dialog.close({
-      employeeID:
-        this.searchFormGroup.controls['type'].value === 'employee'
-          ? data.id
-          : null,
-      expenseOpponentID:
-        this.searchFormGroup.controls['type'].value === 'expense-opponent'
-          ? data.id
-          : null,
-      name: data.name,
-      description: data.description,
-    });
+    this.dialog.close(data);
   }
 
   fetchOpponents(pageNumber: number = 1) {
@@ -70,7 +59,8 @@ export class ExpenseOpponentSelectorComponent {
             return {
               id: x.id,
               name: x.name,
-              description: `${x.description} - ${x.paymentNumber}`,
+              description: x.description,
+              paymentNumber: x.paymentNumber,
             };
           });
           this.count = data.count;

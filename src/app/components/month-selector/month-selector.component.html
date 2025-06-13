@@ -1,0 +1,109 @@
+<div class="month-year-selector__wrapper">
+  <div class="year-selector__wrapper">
+    <button mat-icon-button (click)="onYearDecrement()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="year-selector__year" [class.animate]="yearAnimating">{{
+      year
+    }}</span>
+    <button mat-icon-button (click)="onYearIncrement()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+  <div class="month-selector__wrapper">
+    <!-- Create table like month from January to December in 3 columns -->
+    <div class="month-selector__viewport">
+      <div
+        class="month-selector__table"
+        [class.animate-up]="animateUp"
+        [class.animate-down]="animateDown"
+        (transitionend)="onAnimationEnd()"
+      >
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(0) }"
+          (click)="selectMonth(0)"
+        >
+          January
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(1) }"
+          (click)="selectMonth(1)"
+        >
+          February
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(2) }"
+          (click)="selectMonth(2)"
+        >
+          March
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(3) }"
+          (click)="selectMonth(3)"
+        >
+          April
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(4) }"
+          (click)="selectMonth(4)"
+        >
+          May
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(5) }"
+          (click)="selectMonth(5)"
+        >
+          June
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(6) }"
+          (click)="selectMonth(6)"
+        >
+          July
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(7) }"
+          (click)="selectMonth(7)"
+        >
+          August
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(8) }"
+          (click)="selectMonth(8)"
+        >
+          September
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(9) }"
+          (click)="selectMonth(9)"
+        >
+          October
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(10) }"
+          (click)="selectMonth(10)"
+        >
+          November
+        </div>
+        <div
+          class="month-selector__cell"
+          [ngClass]="{ active: isSelected(11) }"
+          (click)="selectMonth(11)"
+        >
+          December
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

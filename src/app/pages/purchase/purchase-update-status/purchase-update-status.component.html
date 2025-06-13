@@ -123,9 +123,7 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button class="btn" matStepperNext [disabled]="metaFormGroup.invalid">
-      Next
-    </button>
+    <button mat-stroked-button color="primary" matStepperNext>Next</button>
   </mat-step>
   <mat-step [stepControl]="valueFormGroup">
     <form [formGroup]="valueFormGroup">
@@ -254,8 +252,22 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button class="btn outlined" matStepperPrevious>Previous</button>
-    <button class="btn" matStepperNext [disabled]="valueFormGroup.invalid">
+    <button
+      mat-stroked-button
+      color="accent"
+      style="letter-spacing: 0"
+      matStepperPrevious
+    >
+      Previous
+    </button>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      class="ms-2"
+      matStepperNext
+    >
       Next
     </button>
   </mat-step>
@@ -307,8 +319,22 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button class="btn outlined" matStepperPrevious>Previous</button>
-    <button class="btn" matStepperNext [disabled]="attachmentFormGroup.invalid">
+    <button
+      mat-stroked-button
+      color="accent"
+      style="letter-spacing: 0"
+      matStepperPrevious
+    >
+      Previous
+    </button>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      class="ms-2"
+      matStepperNext
+    >
       Next
     </button>
   </mat-step>
@@ -333,7 +359,7 @@
         <mat-label>Payment Method</mat-label>
         <mat-select formControlName="paymentMethod" readonly>
           <mat-option value="bank">Bank Transfer</mat-option>
-          <mat-option value="cash">Virtual Account</mat-option>
+          <mat-option value="va">Virtual Account</mat-option>
           <mat-option value="cash">Cheque</mat-option>
         </mat-select>
       </mat-form-field>
@@ -368,13 +394,32 @@
     </form>
 
     <mat-divider class="my-3"></mat-divider>
-    <button class="btn outlined" matStepperPrevious>Previous</button>
     <button
-      class="btn"
-      (click)="onSubmit()"
-      [disabled]="!isValid || isSubmitting"
+      type="button"
+      mat-stroked-button
+      color="accent"
+      style="letter-spacing: 0"
+      matStepperPrevious
     >
-      Submit
+      Previous
+    </button>
+
+    <button
+      type="submit"
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      class="ms-2"
+      (click)="onSubmit()"
+      [disabled]="
+        !metaFormGroup.valid ||
+        !valueFormGroup.valid ||
+        !attachmentFormGroup.valid ||
+        !paymentFormGroup.valid ||
+        isSubmitting
+      "
+    >
+      Next
     </button>
   </mat-step>
 </mat-stepper>

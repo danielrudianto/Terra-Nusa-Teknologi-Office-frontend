@@ -1,0 +1,366 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Month</mat-label>
+      <input
+        matInput
+        formControlName="monthName"
+        placeholder="Enter month"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Year</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="year"
+        placeholder="Enter year"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="Enter employee name"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Tax category</mat-label>
+      <input
+        matInput
+        formControlName="taxCategory"
+        placeholder="Enter tax category"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Position</mat-label>
+      <input
+        matInput
+        formControlName="position"
+        placeholder="Enter employee position"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Department</mat-label>
+      <input
+        matInput
+        formControlName="department"
+        placeholder="Enter employee department"
+        readonly
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Basic salary</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="basicSalary"
+        placeholder="Enter basic salary"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Overtime hours</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="overtimeQuantity"
+            placeholder="Enter overtime hours"
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-8">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Overtime rate</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="overtimeRate"
+            placeholder="Enter overtime amount"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Meal allowance quantity</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="mealAllowanceQuantity"
+            placeholder="Enter meal allowance quantity"
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-8">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Meal allowance rate</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="mealAllowanceRate"
+            placeholder="Enter meal allowance rate"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Transportation allowance quantity</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="transportationAllowanceQuantity"
+            placeholder="Enter transportation allowance quantity"
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-8">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Transportation allowance rate</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="transportationAllowanceRate"
+            placeholder="Enter transportation allowance rate"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="onAddOtherAllowance()"
+      style="letter-spacing: 0"
+    >
+      Add allowance
+    </button>
+
+    <div class="table-responsive w-100">
+      <table mat-table [dataSource]="allowancesControls" #allowanceTable>
+        <ng-container matColumnDef="name">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            {{ allowance.get("name").value }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            Rp. {{ allowance.get("amount").value | number : "1.2-2" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th
+            style="width: calc(100% - 800px)"
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Description
+          </th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            {{ allowance.get("description").value }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th style="width: 100px" mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            <button
+              mat-icon-button
+              (click)="onRemoveAllowance(i)"
+              aria-label="Remove allowance"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedAllowancesColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedAllowancesColumns"
+        ></tr>
+        <!-- Empty table -->
+        <tr class="mat-row" *matNoDataRow>
+          <td
+            class="mat-cell text-center"
+            [attr.colspan]="displayedAllowancesColumns.length"
+          >
+            No allowances added yet.
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-divider class="my-3"></mat-divider>
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="onAddDeducation()"
+      style="letter-spacing: 0"
+    >
+      Add deduction
+    </button>
+
+    <div class="table-responsive w-100">
+      <table mat-table [dataSource]="deductionsControls" #deductionTable>
+        <ng-container matColumnDef="name">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let deduction; let i = index">
+            {{ deduction.get("name").value }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let deduction; let i = index">
+            Rp. {{ deduction.get("amount").value | number : "1.2-2" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th
+            style="width: calc(100% - 800px)"
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Description
+          </th>
+          <td mat-cell *matCellDef="let deduction; let i = index">
+            {{ deduction.get("description").value }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th style="width: 100px" mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let deduction; let i = index">
+            <button
+              mat-icon-button
+              (click)="onRemoveDeduction(i)"
+              aria-label="Remove deduction"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedDeductionsColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedDeductionsColumns"
+        ></tr>
+        <!-- Empty table -->
+        <tr class="mat-row" *matNoDataRow>
+          <td
+            class="mat-cell text-center"
+            [attr.colspan]="displayedDeductionsColumns.length"
+          >
+            No deductions added yet.
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total salary</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="grossSalary"
+        placeholder="Enter total salary"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+        readonly
+      />
+    </mat-form-field>
+
+    <!-- PPh 21 -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh 21</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="taxAmount"
+        placeholder="Enter PPh 21"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+
+    <!-- Net salary -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Net salary</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="netSalary"
+        placeholder="Enter net salary"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+        readonly
+      />
+      <button
+        mat-icon-button
+        matPrefix
+        [disabled]="isFinal"
+        (click)="calculateSalary()"
+      >
+        <mat-icon>calculate</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <button
+      mat-stroked-button
+      type="submit"
+      style="letter-spacing: 0"
+      [disabled]="!isFinal || isSubmitting || formGroup.invalid"
+    >
+      Submit
+    </button>
+  </div>
+</form>

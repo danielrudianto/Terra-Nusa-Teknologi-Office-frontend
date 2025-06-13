@@ -1,0 +1,84 @@
+.calendar__table {
+  display: table;
+  width: 100%;
+  height: 100%;
+
+  .calendar__table__header {
+    display: table-row;
+    background-color: var(--color-bg-header);
+    color: var(--color-text-header);
+    font-weight: bold;
+    text-align: center;
+
+    .calendar__table__cell {
+      display: table-cell;
+      padding: 8px;
+      border-bottom: 1px solid var(--color-border);
+      // disable user selection
+      user-select: none;
+    }
+  }
+  .calendar__table__spacer-row {
+    display: table-row;
+    height: 12px; // or your desired space
+  }
+
+  .calendar__table__row {
+    display: table-row;
+
+    .calendar__table__cell {
+      display: table-cell;
+      padding: 8px;
+
+      .calendar__table__cell__box {
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        padding: 1rem;
+        border: 1px solid var(--color-border);
+        // user selection
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: var(--base-color-hover);
+
+          .calendar__table__cell__box__date {
+            background-color: var(--primary-color);
+            color: white;
+            transition: background-color 0.3s ease;
+          }
+        }
+
+        &.selected {
+          background-color: var(--base-color-hover);
+        }
+
+        .calendar__table__cell__box__value {
+          font-size: 1.85rem;
+          font-weight: bold;
+          color: var(--color-text);
+          text-align: right;
+        }
+
+        .calendar__table__cell__box__date {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1px solid var(--color-border);
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.3s ease;
+
+          &.today {
+            background-color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

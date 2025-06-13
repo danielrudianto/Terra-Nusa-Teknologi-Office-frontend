@@ -1,5 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { ReimbursementCreateItemDialogComponent } from './reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
@@ -27,7 +33,8 @@ export class ReimbursementCreateComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private formBuilder: FormBuilder
   ) {
     this.filteredOptions = this.options.slice();
   }
@@ -112,9 +119,15 @@ export class ReimbursementCreateComponent {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
+          const date = new Date(data.date);
+          console.log(date.getDate());
+          console.log(date.getMonth());
+          console.log(date.getFullYear());
+          console.log(date.getUTCFullYear());
+
           this.items.push(
-            new FormGroup({
-              date: new FormControl(data.date, Validators.required),
+            this.formBuilder.group({
+              date: new FormControl(date, Validators.required),
               description: new FormControl(
                 data.description,
                 Validators.required
