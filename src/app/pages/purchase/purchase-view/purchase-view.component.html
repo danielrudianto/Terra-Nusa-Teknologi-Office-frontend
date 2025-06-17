@@ -106,7 +106,6 @@
         <mat-label>Due date</mat-label>
         <input
           matInput
-          formControlName="dueDate"
           placeholder="Date"
           [value]="formatDate(purchase?.dueDate)"
           readonly
@@ -125,9 +124,9 @@
       </mat-form-field>
 
       <button
-        mat-stroked-button
         style="letter-spacing: 0"
         color="primary"
+        mat-stroked-button
         matStepperNext
       >
         Next
@@ -212,7 +211,7 @@
             matInput
             type="text"
             placeholder="PPh Object Name"
-            formControlName="pphTaxObjectName"
+            [value]="purchase?.pphTaxObject"
             readonly
           />
         </mat-form-field>
@@ -222,7 +221,7 @@
           <input
             matInput
             type="text"
-            formControlName="pphPercentage"
+            [value]="purchase?.pphPercentage"
             placeholder="PPh Percentage"
             readonly
           />
@@ -293,15 +292,22 @@
       <button
         style="letter-spacing: 0"
         class="me-2"
-        mat-button
+        mat-stroked-button
+        color="accent"
         matStepperPrevious
       >
         Previous
       </button>
-      <button matStepperNext style="letter-spacing: 0" mat-stroked-button>
+      <button
+        matStepperNext
+        style="letter-spacing: 0"
+        mat-stroked-button
+        color="primary"
+      >
         Next
       </button>
     </mat-step>
+
     <mat-step>
       <ng-template matStepLabel>Payment Data</ng-template>
 
@@ -338,10 +344,16 @@
         </mat-form-field>
       </form>
 
+      <label>Delete purchase data</label>
+      <p>
+        Click <a role="button" (click)="deletePurchaseData()">here</a> if you
+        wish to delete this purchase data.
+      </p>
+
       <button
         style="letter-spacing: 0"
-        class="me-2"
-        mat-button
+        mat-stroked-button
+        color="accent"
         matStepperPrevious
       >
         Previous

@@ -23,14 +23,36 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="invoiceNumber">
+    <ng-container matColumnDef="invoiceName">
       <th mat-header-cell *matHeaderCellDef>
         <div class="d-flex d-align-items-center">
           <span>Invoice Number</span>
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
-        {{ invoice.invoiceNumber }}
+        {{ invoice.name }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="invoiceDescription">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="d-flex d-align-items-center">
+          <span>Invoice Description</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let invoice">
+        {{ invoice.description }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="projectName">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="d-flex d-align-items-center">
+          <span>Project Name</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let invoice">
+        {{ invoice.projectName }}
       </td>
     </ng-container>
 
@@ -41,8 +63,36 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
-        {{ invoice.customer.name }}
+        {{ invoice.client_name }}, {{ invoice.client_prefix }}
       </td>
     </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="d-flex d-align-items-center">
+          <span>DPP (Rp.)</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let invoice">
+        {{ invoice.dpp | number : "1.2-2" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="d-flex d-align-items-center">
+          <span>Status</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let invoice"></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+        No data matching the filter.
+      </td>
+    </tr>
   </table>
 </div>

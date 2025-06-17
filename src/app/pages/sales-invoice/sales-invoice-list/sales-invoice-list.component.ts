@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -8,20 +9,51 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './sales-invoice-list.component.scss',
 })
 export class SalesInvoiceListComponent {
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
 
   salesInvoices: any[] = [];
   count: number = 0;
   page: number = 1;
   pageSize: number = 10;
+  isLoading: boolean = false;
 
   displayedColumns: string[] = [
     'date',
     'invoiceName',
-    'receiptName',
     'invoiceDescription',
-    'customerName',
+    'projectName',
+    'customer',
     'amount',
     'status',
   ];
+
+  ngOnInit(): void {
+    this.fetchData();
+  }
+
+  fetchData(targetPage: number = this.page): void {
+    this.isLoading = true;
+    this.page = targetPage;
+
+    this.apiService
+      .get('sales-invoices', {
+        page: this.page,
+        pageSize: this.pageSize,
+      })
+      .subscribe({
+        next: (data: any) => {
+          this.salesInvoices = data.data;
+          this.count = data.count;
+        },
+        error: (error) => {
+          console.error('Error fetching sales invoices:', error);
+          this.snackBar.open('Error fetching sales invoices', 'Close', {
+            duration: 3000,
+          });
+        },
+      })
+      .add(() => {
+        this.isLoading = false;
+      });
+  }
 }

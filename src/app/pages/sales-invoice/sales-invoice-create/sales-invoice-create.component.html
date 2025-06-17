@@ -285,24 +285,26 @@
         />
       </mat-form-field>
 
-      <button
-        style="letter-spacing: 0"
-        class="me-2"
-        mat-button
-        matStepperPrevious
-      >
-        Previous
-      </button>
+      <div class="d-flex justify-content-between">
+        <button
+          style="letter-spacing: 0"
+          class="me-2"
+          mat-button
+          matStepperPrevious
+        >
+          Previous
+        </button>
 
-      <button
-        matStepperNext
-        style="letter-spacing: 0"
-        mat-stroked-button
-        [disabled]="paymentFormGroup.invalid"
-        (click)="previewInvoice()"
-      >
-        Preview
-      </button>
+        <button
+          style="letter-spacing: 0"
+          color="primary"
+          mat-stroked-button
+          [disabled]="paymentFormGroup.invalid"
+          (click)="onSubmit()"
+        >
+          Submit
+        </button>
+      </div>
     </form>
   </mat-step>
 </mat-stepper>

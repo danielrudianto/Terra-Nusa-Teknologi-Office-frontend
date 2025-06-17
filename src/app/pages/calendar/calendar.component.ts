@@ -19,10 +19,14 @@ export class CalendarComponent {
   selectedDay: number | null = null;
   month: number = new Date().getMonth(); // Months are 0-indexed in JS
   year: number = new Date().getFullYear();
+  bankAccounts: any[] = [];
+  isLoadingData: boolean = false;
 
   onCalendarBoxClicked(event: number | null) {
     this.selectedDay = event;
     this.sideDialogActive = true;
+
+    this.fetchDailyData();
   }
 
   onMonthChanged(event: any) {
@@ -34,10 +38,25 @@ export class CalendarComponent {
     this.sideDialogActive = false;
   }
 
-  fetchBankAccounts() {
-    this.apiService.get('bank-accounts', {}).subscribe({
-      next: (data) => {},
-      error: (error) => {},
-    });
+  onBankAccountChanges(event: any) {
+    this.bankAccounts = event;
+  }
+
+  fetchDailyData() {
+    this.isLoadingData = true;
+    this.apiService
+      .get('calendar/daily', {
+        date: `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(
+          this.selectedDay
+        ).padStart(2, '0')}`,
+        bankAccounts: this.bankAccounts.map((account) => account.id),
+      })
+      .subscribe({
+        next: (data) => {},
+        error: (error) => {},
+      })
+      .add(() => {
+        this.isLoadingData = false;
+      });
   }
 }

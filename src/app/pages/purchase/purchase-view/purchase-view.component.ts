@@ -1,11 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -129,5 +124,9 @@ export class PurchaseViewComponent {
       day: 'numeric',
     };
     return new Date(date).toLocaleDateString('id-ID', options);
+  }
+
+  deletePurchaseData() {
+    this.dialog.close('delete');
   }
 }

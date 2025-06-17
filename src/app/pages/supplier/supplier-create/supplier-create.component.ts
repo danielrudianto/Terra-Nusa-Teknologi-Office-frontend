@@ -85,7 +85,12 @@ export class SupplierCreateComponent {
     this.isSubmitting = true;
     this.apiService
       .post('suppliers', {
-        ...this.supplierFormGroup.value,
+        prefix: this.supplierFormGroup.value.prefix,
+        name: this.supplierFormGroup.value.name.trim(),
+        address: this.supplierFormGroup.value.address,
+        city: this.supplierFormGroup.value.city.trim(),
+        province: this.supplierFormGroup.value.province.trim(),
+        phoneNumber: this.supplierFormGroup.value.phoneNumber.trim(),
         email: this.supplierFormGroup.value.email || null,
         npwp:
           this.supplierFormGroup.value.npwp.length < 16

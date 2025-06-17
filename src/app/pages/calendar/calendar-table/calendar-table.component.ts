@@ -14,6 +14,7 @@ export class CalendarTableComponent {
 
   @Input('month') month!: number;
   @Input('year') year!: number;
+  @Input('bankAccounts') bankAccounts: any[] = [];
   @Input('values') values: ICalendarValue[] = [];
   @Input('selectedDay') selectedDay: number | null = null;
   @Output('onCalendarBoxClicked') onCalendarBoxClicked: EventEmitter<
@@ -79,6 +80,9 @@ export class CalendarTableComponent {
       .get('calendar', {
         month: this.month + 1,
         year: this.year,
+        bankAccounts: this.bankAccounts
+          .filter((x) => x.selected)
+          .map((x) => x.id),
       })
       .subscribe({
         next: (data: any) => {

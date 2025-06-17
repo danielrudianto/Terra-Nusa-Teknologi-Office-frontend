@@ -14,11 +14,14 @@
       [year]="year"
       (onMonthYearSelected)="onMonthChanged($event)"
     ></app-calendar-month-selector>
-    <app-calendar-account-selector />
+    <app-calendar-account-selector
+      (onBankAccountChanges)="onBankAccountChanges($event)"
+    />
   </div>
   <app-calendar-table
     [month]="month"
     [year]="year"
+    [bankAccounts]="bankAccounts"
     [selectedDay]="selectedDay"
     (onCalendarBoxClicked)="onCalendarBoxClicked($event)"
   ></app-calendar-table>

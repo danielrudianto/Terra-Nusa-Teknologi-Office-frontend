@@ -7,6 +7,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
 import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -152,10 +153,34 @@ export class PurchaseListComponent {
   }
 
   viewPurchase(id: number) {
-    this.dialog.open(PurchaseViewComponent, {
-      data: {
-        id: id,
-      },
-    });
+    this.dialog
+      .open(PurchaseViewComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((value) => {
+        if (value === 'delete') {
+          this.dialog
+            .open(DeleteConfirmationComponent, {
+              data: {
+                title: 'Delete Purchase',
+                prompt: 'Are you sure you want to delete this purchase?',
+              },
+            })
+            .afterClosed()
+            .subscribe((result) => {
+              if (result === true) {
+                this.apiService.delete(`purchases/${id}`).subscribe({
+                  next: () => {},
+                  error: (err) => {
+                    console.error('Error deleting purchase:', err);
+                  },
+                });
+              }
+            });
+        }
+      });
   }
 }

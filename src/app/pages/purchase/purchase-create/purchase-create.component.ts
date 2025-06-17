@@ -342,6 +342,7 @@ export class PurchaseCreateComponent {
       dueDate.getMonth() + 1
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
     const proxyPayment = this.paymentFormGroup.controls['proxyPayment'].value;
+    const paymentAmount = this.paymentFormGroup.controls['paymentTotal'].value;
 
     this.isSubmitting = true;
 
@@ -427,7 +428,10 @@ export class PurchaseCreateComponent {
               .subscribe({
                 next: (_) => {
                   if (proxyPayment) {
-                    this.generateProxyPaymentPDF(purchaseData);
+                    this.generateProxyPaymentPDF({
+                      ...purchaseData,
+                      totalPayment: paymentAmount,
+                    });
                   }
 
                   PaymentSlipHelper.generatePurchasePaymentSlipPDF({
@@ -471,7 +475,10 @@ export class PurchaseCreateComponent {
         .subscribe({
           next: (_) => {
             if (proxyPayment) {
-              this.generateProxyPaymentPDF(purchaseData);
+              this.generateProxyPaymentPDF({
+                ...purchaseData,
+                totalPayment: paymentAmount,
+              });
             }
 
             this.snackBar.open('Purchase created successfully', 'Close', {
@@ -562,7 +569,7 @@ export class PurchaseCreateComponent {
       bankAccountNumber: data.bankAccountNumber,
       bankAccountName: data.bankAccountName,
       totalPayment: data.totalPayment,
-      date: data.date,
+      date: new Date(data.date),
     });
   }
 

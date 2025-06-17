@@ -331,6 +331,16 @@ export class PaymentUpdateComponent {
                 );
                 this.router.navigate(['/Payment']);
               },
+              error: (error) => {
+                console.error('Error approving payment:', error);
+                this.snackBar.open(
+                  'Failed to approve payment. Please try again later.',
+                  'Close',
+                  {
+                    duration: 3000,
+                  }
+                );
+              },
             })
             .add(() => {
               this.isSubmitting = false;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientSelectorComponent } from 'src/app/components/client-selector/client-selector.component';
@@ -8,6 +8,9 @@ import { ApiService } from 'src/app/services/api.service';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageBreak, PageSize } from 'pdfmake/interfaces';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepper } from '@angular/material/stepper';
+import { catchError, finalize, map, of, tap } from 'rxjs';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -18,9 +21,15 @@ pdfMake.vfs = pdfFonts.vfs;
   styleUrl: './sales-invoice-create.component.scss',
 })
 export class SalesInvoiceCreateComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   bankAccounts: any[] = [];
+  isSubmitting: boolean = false;
+  @ViewChild('stepper') stepper!: MatStepper;
 
   metaFormGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -41,7 +50,7 @@ export class SalesInvoiceCreateComponent {
   });
 
   valueFormGroup: FormGroup = new FormGroup({
-    dpp: new FormControl(0, Validators.required),
+    dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
     ppnPercentage: new FormControl(0, Validators.required),
     ppnValue: new FormControl(0, Validators.required),
     pphCode: new FormControl(''),
@@ -53,6 +62,7 @@ export class SalesInvoiceCreateComponent {
 
   paymentFormGroup: FormGroup = new FormGroup({
     paymentTotal: new FormControl(0, Validators.required),
+    bankAccountID: new FormControl('', Validators.required),
     bankName: new FormControl('', Validators.required),
     bankAccountNumber: new FormControl('', Validators.required),
     bankAccountName: new FormControl('', Validators.required),
@@ -190,7 +200,9 @@ export class SalesInvoiceCreateComponent {
 
   onBankAccountSelected(event: any) {
     const value = event.option.value;
+    console.log(value);
     this.paymentFormGroup.patchValue({
+      bankAccountID: value.id,
       bankName: value.bankName,
       bankAccountNumber: value.bankAccountNumber,
       bankAccountName: value.bankAccountName,
@@ -201,19 +213,108 @@ export class SalesInvoiceCreateComponent {
     return `${account.bankAccountNumber} - ${account.bankAccountName} (${account.bankName})`;
   }
 
+  checkExisting() {
+    this.isSubmitting = true;
+    this.snackBar.open('Checking existing invoice', 'Close', {
+      duration: 3000,
+    });
+    return this.apiService
+      .get('sales-invoices/exists', {
+        name: this.metaFormGroup.value.name,
+        clientID: this.metaFormGroup.value.clientID,
+        description: this.metaFormGroup.value.description,
+        projectName: this.metaFormGroup.value.projectName,
+      })
+      .pipe(
+        tap((data: any) => {
+          if (data.exists) {
+            this.snackBar.open(
+              `An invoice with the same details already exists. [${data.field}]`,
+              'Close',
+              {
+                duration: 5000, // Longer duration for important messages
+              }
+            );
+          }
+        }),
+        map((data: any) => {
+          return !data.exists; // Returns true if invoice does NOT exist, false if it DOES exist
+        }),
+        catchError((error) => {
+          console.error('Error checking existing invoice:', error);
+          this.snackBar.open(
+            'Error checking existing invoice. Please try again.',
+            'Close',
+            {
+              duration: 5000,
+            }
+          );
+          return of(false); // On error, assume it exists or check failed, so return false
+        }),
+        finalize(() => {
+          this.isSubmitting = false;
+        })
+      );
+  }
+
   onSubmit() {
-    this.apiService.post('sales-invoices', {
-      name: this.metaFormGroup.value.name,
-      date: this.metaFormGroup.value.date,
-      projectName: this.metaFormGroup.value.projectName,
-      description: this.metaFormGroup.value.description,
-      spkNumber: this.metaFormGroup.value.spkNumber,
-      clientID: this.metaFormGroup.value.clientID,
-      dpp: this.valueFormGroup.value.dpp,
-      ppn: this.valueFormGroup.value.ppnPercentage,
-      pphCode: this.valueFormGroup.value.pphCode,
-      pphTaxObjectName: this.valueFormGroup.value.pphTaxObjectName,
-      pphPercentage: this.valueFormGroup.value.pphPercentage,
+    this.checkExisting().subscribe((validation) => {
+      if (validation) {
+        this.isSubmitting = true;
+        // need to extract the date to only YYYY-MM-DD format
+        const date = new Date(this.metaFormGroup.value.date);
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        this.apiService
+          .post('sales-invoices', {
+            name: this.metaFormGroup.value.name,
+            date: formattedDate,
+            projectName: this.metaFormGroup.value.projectName,
+            description: this.metaFormGroup.value.description,
+            spkNumber: this.metaFormGroup.value.spkNumber,
+            clientID: this.metaFormGroup.value.clientID,
+            dpp: this.valueFormGroup.value.dpp,
+            ppn: this.valueFormGroup.value.ppnPercentage,
+            pphCode:
+              this.valueFormGroup.value.pphCode == ''
+                ? null
+                : this.valueFormGroup.value.pphCode,
+            pphTaxObject: this.valueFormGroup.value.pphTaxObject
+              ? this.valueFormGroup.value.pphTaxObjectName
+              : null,
+            pphPercentage: this.valueFormGroup.value.pphPercentage,
+            bankAccountID: this.paymentFormGroup.value.bankAccountID,
+          })
+          .subscribe({
+            next: (_) => {
+              this.metaFormGroup.reset();
+              this.valueFormGroup.reset();
+              this.valueFormGroup.reset();
+
+              this.stepper.selectedIndex = 0;
+
+              this.snackBar.open(
+                'Sales invoice created successfully',
+                'Close',
+                {
+                  duration: 3000,
+                }
+              );
+            },
+            error: (error) => {
+              console.error('Error creating sales invoice:', error);
+              this.snackBar.open('Error creating sales invoice', 'Close', {
+                duration: 3000,
+              });
+            },
+          })
+          .add(() => {
+            this.isSubmitting = false;
+          });
+      } else {
+        this.isSubmitting = false;
+      }
     });
   }
 
@@ -603,82 +704,82 @@ export class SalesInvoiceCreateComponent {
           alignment: 'left' as Alignment,
           margin: [0, 0, 0, 20] as Margins,
         },
-        this.valueFormGroup.controls['pphValue'].value > 0
-          ? {
-              table: {
-                widths: [75, 3, '*'],
-                body: [
-                  [
-                    {
-                      text: '\nUntuk mempermudah proses administrasi, mohon untuk menggunakan kode Pajak Penghasilan (PPH) berikut:',
-                      alignment: 'left' as Alignment,
-                      colSpan: 3,
-                      fontSize: 10,
-                    },
-                    {},
-                    {},
-                  ],
-                  [
-                    {
-                      text: 'Kode PPh',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: ':',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: invoiceData.value.pphCode || 'N/A',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                  ],
-                  [
-                    {
-                      text: 'Objek PPh',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: ':',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: invoiceData.value.pphTaxObjectName || 'N/A',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                  ],
-                  [
-                    {
-                      text: 'Tarif PPh (%)',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: ':',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                    {
-                      text: invoiceData.value.pphPercentage
-                        ? `${invoiceData.value.pphPercentage}%`
-                        : 'N/A',
-                      alignment: 'left' as Alignment,
-                      fontSize: 10,
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              margin: [0, 0, 0, 20] as Margins,
-            }
-          : {
-              text: '',
-            },
+        // this.valueFormGroup.controls['pphValue'].value > 0
+        //   ? {
+        //       table: {
+        //         widths: [75, 3, '*'],
+        //         body: [
+        //           [
+        //             {
+        //               text: '\nUntuk mempermudah proses administrasi, mohon untuk menggunakan kode Pajak Penghasilan (PPH) berikut:',
+        //               alignment: 'left' as Alignment,
+        //               colSpan: 3,
+        //               fontSize: 10,
+        //             },
+        //             {},
+        //             {},
+        //           ],
+        //           [
+        //             {
+        //               text: 'Kode PPh',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: ':',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: invoiceData.value.pphCode || 'N/A',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //           ],
+        //           [
+        //             {
+        //               text: 'Objek PPh',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: ':',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: invoiceData.value.pphTaxObjectName || 'N/A',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //           ],
+        //           [
+        //             {
+        //               text: 'Tarif PPh (%)',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: ':',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //             {
+        //               text: invoiceData.value.pphPercentage
+        //                 ? `${invoiceData.value.pphPercentage}%`
+        //                 : 'N/A',
+        //               alignment: 'left' as Alignment,
+        //               fontSize: 10,
+        //             },
+        //           ],
+        //         ],
+        //       },
+        //       layout: 'noBorders',
+        //       margin: [0, 0, 0, 20] as Margins,
+        //     }
+        //   : {
+        //       text: '',
+        //     },
       ],
     };
 
