@@ -24,6 +24,14 @@ const availableFeatures: IFeature[] = [
     icon: 'receipt',
     routerLink: '/Purchase/List',
   },
+  {
+    name: 'Create supplier',
+    description: 'Create a new supplier data.',
+    descriptionSubtitle:
+      'Buat data supplier baru.',
+    icon: 'people',
+    routerLink: '/Supplier/Create',
+  },
 ];
 
 export const availableFeaturesSearch = new FuzzySearch(
