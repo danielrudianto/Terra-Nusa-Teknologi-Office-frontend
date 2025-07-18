@@ -1,0 +1,102 @@
+<h2 mat-dialog-title>Update client data</h2>
+<form [formGroup]="formGroup" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Prefix</mat-label>
+      <mat-select formControlName="prefix">
+        <mat-option value="PT.">PT.</mat-option>
+        <mat-option value="CV.">CV.</mat-option>
+        <mat-option value="UD.">UD.</mat-option>
+        <mat-option value="Yayasan">Yayasan</mat-option>
+        <mat-option value="Perorangan">Perorangan</mat-option>
+        <mat-option value="Lainnya">Lainnya</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        type="text"
+        placeholder="Enter client name"
+      />
+    </mat-form-field>
+
+    <mat-label></mat-label>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        formControlName="email"
+        type="email"
+        placeholder="Enter client email"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Phone</mat-label>
+      <input
+        matInput
+        formControlName="phoneNumber"
+        type="tel"
+        placeholder="Enter client phone number"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Address</mat-label>
+      <textarea
+        matInput
+        formControlName="address"
+        placeholder="Enter client address"
+        rows="3"
+        style="resize: none"
+      ></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>City</mat-label>
+      <input
+        matInput
+        formControlName="city"
+        type="text"
+        placeholder="Enter client city"
+      />
+    </mat-form-field>
+
+    <!-- Province -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Province</mat-label>
+      <input
+        matInput
+        formControlName="province"
+        type="text"
+        placeholder="Enter client province"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>NPWP</mat-label>
+      <input
+        matInput
+        formControlName="npwp"
+        type="text"
+        placeholder="Enter client NPWP"
+      />
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      type="submit"
+      [disabled]="isSubmitting"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</form>
