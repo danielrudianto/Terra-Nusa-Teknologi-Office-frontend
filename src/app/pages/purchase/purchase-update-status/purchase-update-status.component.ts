@@ -55,7 +55,7 @@ export class PurchaseUpdateStatusComponent {
     pphPercentage: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphValue: new FormControl(0),
     otherValue: new FormControl(0, [Validators.required, Validators.min(0)]),
-    otherValueNote: new FormControl(''),
+    otherValueNote: new FormControl({ value: '', disabled: true }),
     total: new FormControl(0, [Validators.required, Validators.min(0)]),
   });
 

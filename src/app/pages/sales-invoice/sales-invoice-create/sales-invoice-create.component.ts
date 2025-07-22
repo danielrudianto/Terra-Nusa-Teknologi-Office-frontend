@@ -288,6 +288,8 @@ export class SalesInvoiceCreateComponent {
           })
           .subscribe({
             next: (_) => {
+              this.previewInvoice();
+
               this.metaFormGroup.reset();
               this.valueFormGroup.reset();
               this.valueFormGroup.reset();
