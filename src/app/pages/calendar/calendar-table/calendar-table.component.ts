@@ -38,7 +38,7 @@ export class CalendarTableComponent {
   generateCalendar() {
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
-    const daysInMonth = new Date(this.year, this.month, 0).getDate();
+    const daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
 
     // Adjust so Monday is 0, Saturday is 5, Sunday is 6
     let firstDayOfWeek = (firstDay.getDay() + 6) % 7;

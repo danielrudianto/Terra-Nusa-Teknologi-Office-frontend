@@ -134,6 +134,7 @@ import { InterpaymentListComponent } from './pages/interpayment/interpayment-lis
 import { IncomeComponent } from './pages/income/income.component';
 import { IncomeListComponent } from './pages/income/income-list/income-list.component';
 import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
+import { ExpensePaymentCreateComponent } from './components/payment-create/expense-payment-create/expense-payment-create.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -227,6 +228,7 @@ export const MY_FORMATS = {
     IncomeComponent,
     IncomeListComponent,
     IncomeCreateComponent,
+    ExpensePaymentCreateComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

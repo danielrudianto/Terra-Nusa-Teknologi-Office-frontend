@@ -2,7 +2,15 @@
   class="side-dialog-backdrop"
   *ngIf="sideDialogActive"
   (click)="closeSideDialog()"
-></div>
+>
+  <app-calendar-day-view
+    [date]="selectedDay"
+    [month]="month"
+    [year]="year"
+    [bankAccountID]="bankAccounts"
+    (onClose)="closeSideDialog()"
+  ></app-calendar-day-view>
+</div>
 <div class="side-dialog" [class.side-dialog--active]="sideDialogActive">
   <!-- Your dialog content here -->
   <ng-container #sideDialogContent></ng-container>

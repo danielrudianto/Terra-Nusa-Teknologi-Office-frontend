@@ -204,9 +204,7 @@
       </th>
       <td mat-cell *matCellDef="let purchase">
         {{
-          purchase.dpp +
-            (purchase.ppn * purchase.dpp) / 100 +
-            (purchase.pphPercentage * purchase.dpp) / 100 | currency : "Rp. "
+          purchase.dpp + (purchase.ppn * purchase.dpp) / 100 | currency : "Rp. "
         }}
       </td>
     </ng-container>

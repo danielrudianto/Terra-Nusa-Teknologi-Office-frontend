@@ -42,6 +42,8 @@ export class PaymentUpdateComponent {
   paymentId: string = '';
   isPurchase: boolean = false;
   isReimbursement: boolean = false;
+  isExpense: boolean = false;
+
   isSubmitting: boolean = false;
   isApproved: boolean = false;
 
@@ -55,7 +57,7 @@ export class PaymentUpdateComponent {
 
   purchaseFormGroup: FormGroup = new FormGroup({
     date: new FormControl(''),
-    invoiceName: new FormControl(''),
+    name: new FormControl(''),
     receiptName: new FormControl(''),
     taxInvoiceName: new FormControl(''),
     purchaseOrderName: new FormControl(''),
@@ -69,6 +71,16 @@ export class PaymentUpdateComponent {
     date: new FormControl(''),
     name: new FormControl(''),
     projectName: new FormControl(''),
+    purchaseType: new FormControl(''),
+  });
+
+  expenseFormGroup: FormGroup = new FormGroup({
+    date: new FormControl(''),
+    name: new FormControl(''),
+    opponentName: new FormControl(''),
+    opponentDescription: new FormControl(''),
+    receiptName: new FormControl(''),
+    taxInvoiceName: new FormControl(''),
     purchaseType: new FormControl(''),
   });
 
@@ -110,6 +122,7 @@ export class PaymentUpdateComponent {
 
     this.isPurchase = false;
     this.isReimbursement = false;
+    this.isExpense = false;
 
     this.apiService
       .get(`payments/${this.paymentId}`, {})
@@ -127,7 +140,7 @@ export class PaymentUpdateComponent {
             this.isPurchase = true;
             this.purchaseFormGroup.patchValue({
               date: this.datePipe.transform(data.purchase.date, 'dd MMMM yyyy'),
-              invoiceName: data.purchase.invoiceName,
+              name: data.purchase.invoiceName,
               receiptName: data.purchase.receiptName,
               taxInvoiceName: data.purchase.taxInvoiceName,
               purchaseOrderName: data.purchase.purchaseOrderName,
@@ -143,7 +156,7 @@ export class PaymentUpdateComponent {
               ppnValue: (data.purchase.ppn * data.purchase.dpp) / 100,
               pbbkb: data.purchase.pbbkb,
               pphTaxObjectName: data.purchase.pphCode
-                ? `[${data.purchase.pphCode}] ${data.purchase.pphTaxObjectName}`
+                ? `[${data.purchase.pphCode}] ${data.purchase.pphTaxObject}`
                 : 'N/A',
               pphPercentage: data.purchase.pphPercentage,
               pphValue: data.purchase.pphPercentage * (data.purchase.dpp / 100),
@@ -202,7 +215,49 @@ export class PaymentUpdateComponent {
               paymentMethod: data.reimbursement.paymentMethod,
             });
           }
+
+          if (data.expense != null) {
+            this.isExpense = true;
+            this.expenseFormGroup.patchValue({
+              date: this.datePipe.transform(data.expense.date, 'dd MMMM yyyy'),
+              name: data.expense.invoiceName,
+              receiptName: data.expense.receiptName,
+              taxInvoiceName: data.taxInvoiceName,
+              opponentName: data.expense.expense_opponent_name,
+              opponentDescription: data.expense.expense_opponent_description,
+              purchaseType: data.expense.purchaseType,
+            });
+
+            this.valueFormGroup.patchValue({
+              dpp: data.expense.dpp,
+              ppn: data.expense.ppn,
+              ppnValue: (data.expense.ppn * data.expense.dpp) / 100,
+              pbbkb: data.expense.pbbkb,
+              pphTaxObjectName: data.expense.pphCode
+                ? `[${data.expense.pphCode}] ${data.expense.pphTaxObject}`
+                : 'N/A',
+              pphPercentage: data.expense.pphPercentage,
+              pphValue: data.expense.pphPercentage * (data.expense.dpp / 100),
+              total:
+                data.expense.dpp +
+                (data.expense.ppn * data.expense.dpp) / 100 +
+                data.expense.pbbkb,
+              totalPayment:
+                data.expense.dpp +
+                (data.expense.ppn * data.expense.dpp) / 100 +
+                data.expense.pbbkb -
+                data.expense.pphPercentage * (data.expense.dpp / 100),
+            });
+
+            this.paymentFormGroup.patchValue({
+              bankName: data.expense.bankName,
+              bankAccountNumber: data.expense.bankAccountNumber,
+              bankAccountName: data.expense.bankAccountName,
+              paymentMethod: data.expense.paymentMethod,
+            });
+          }
         },
+
         error: (error) => {
           this.snackBar.open(
             'Failed to fetch payment data. Please try again later.',

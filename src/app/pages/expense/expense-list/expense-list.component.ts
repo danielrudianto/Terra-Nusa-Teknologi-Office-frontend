@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from '../../purchase/purchase-list/purchase-report-select/purchase-report-select.component';
 import { PurchasePaymentCreateComponent } from 'src/app/components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import { ExpenseOpponentCreateComponent } from '../expense-opponent/expense-opponent-create/expense-opponent-create.component';
+import { ExpensePaymentCreateComponent } from 'src/app/components/payment-create/expense-payment-create/expense-payment-create.component';
 
 @Component({
   selector: 'app-expense-list',
@@ -62,7 +63,15 @@ export class ExpenseListComponent {
     this.dialog.open(ExpenseOpponentCreateComponent, {});
   }
 
-  openPaymentDetail(id: number){}
+  openPaymentDetail(id: number) {
+    this.dialog.open(ExpensePaymentCreateComponent, {
+      data: {
+        purchaseID: null,
+        expenseID: id,
+        reimbursementID: null,
+      },
+    });
+  }
 
   changePage(event: any) {
     if (event.pageSize !== this.pageSize) {

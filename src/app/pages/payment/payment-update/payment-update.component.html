@@ -1,7 +1,7 @@
 <div class="title__wrapper mb-4">
   <h1 class="title"><a routerLink="/Payment">Payment</a> / Approve</h1>
 </div>
-<mat-stepper [orientation]="(stepperOrientation | async)!">
+<mat-stepper [orientation]="(stepperOrientation | async)!" linear>
   <mat-step>
     <ng-template matStepLabel>Payment Data</ng-template>
 
@@ -99,6 +99,7 @@
         <input matInput formControlName="purchaseType" type="text" readonly />
       </mat-form-field>
     </form>
+
     <form [formGroup]="purchaseFormGroup" *ngIf="isPurchase">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Date</mat-label>
@@ -108,11 +109,6 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Project name</mat-label>
         <input matInput formControlName="projectName" type="text" readonly />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase type</mat-label>
-        <input matInput formControlName="purchaseType" type="text" readonly />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -134,7 +130,7 @@
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Invoice</mat-label>
-        <input matInput formControlName="invoiceName" type="text" readonly />
+        <input matInput formControlName="name" type="text" readonly />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -160,6 +156,50 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Project name</mat-label>
         <input matInput formControlName="projectName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Purchase type</mat-label>
+        <input matInput formControlName="purchaseType" type="text" readonly />
+      </mat-form-field>
+    </form>
+
+    <form [formGroup]="expenseFormGroup" *ngIf="isExpense">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Date</mat-label>
+        <input matInput formControlName="date" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Opponent name</mat-label>
+        <input matInput formControlName="opponentName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Opponent description</mat-label>
+        <textarea
+          matInput
+          formControlName="opponentDescription"
+          type="text"
+          readonly
+          rows="3"
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Invoice</mat-label>
+        <input matInput formControlName="name" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Receipt</mat-label>
+        <input matInput formControlName="receiptName" type="text" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tax invoice</mat-label>
+        <input matInput formControlName="taxInvoiceName" type="text" readonly />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -301,6 +341,123 @@
           readonly
         />
       </mat-form-field>
+    </form>
+
+    <form [formGroup]="reimbursementValueFormGroup" *ngIf="isReimbursement">
+      <table class="table table-bordered hover mt-3">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of t.controls; index as i">
+            <td>{{ item.get("date")?.value }}</td>
+            <td>{{ item.get("description")?.value }}</td>
+            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+
+    <form [formGroup]="valueFormGroup" *ngIf="isExpense">
+      <!-- DPP -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>DPP</mat-label>
+        <input
+          matInput
+          formControlName="dpp"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+        <button mat-icon-button matSuffix (click)="copyValueDetails()">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </mat-form-field>
+      <!-- PPN -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPN</mat-label>
+        <input
+          matInput
+          formControlName="ppnValue"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+      <!-- PBBKB -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PBBKB</mat-label>
+        <input
+          matInput
+          formControlName="pbbkb"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <!-- PPh value -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh</mat-label>
+        <input
+          matInput
+          formControlName="pphValue"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <!-- PPh Tax Object name, wrapped in textarea resize none, rows 3 -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>PPh Tax Object Name</mat-label>
+        <textarea
+          matInput
+          formControlName="pphTaxObjectName"
+          rows="3"
+          style="resize: none"
+          readonly
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Total -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
+        <input
+          matInput
+          formControlName="total"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment total</mat-label>
+        <input
+          matInput
+          formControlName="totalPayment"
+          type="text"
+          mask="separator"
+          thousandSeparator=" "
+          prefix="Rp. "
+          readonly
+        />
+      </mat-form-field>
 
       <button
         mat-stroked-button
@@ -322,24 +479,24 @@
       </button>
     </form>
 
-    <form [formGroup]="reimbursementValueFormGroup" *ngIf="isReimbursement">
-      <table class="table table-bordered hover mt-3">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of t.controls; index as i">
-            <td>{{ item.get("date")?.value }}</td>
-            <td>{{ item.get("description")?.value }}</td>
-            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>
+    <button
+      mat-stroked-button
+      style="letter-spacing: 0"
+      color="accent"
+      matStepperPrevious
+    >
+      Previous
+    </button>
+
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      class="ms-2"
+      matStepperNext
+    >
+      Next
+    </button>
   </mat-step>
 
   <mat-step>

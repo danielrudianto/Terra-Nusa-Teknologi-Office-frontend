@@ -1,9 +1,4 @@
-import {
-  Component,
-  ComponentRef,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
+import { Component } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -25,8 +20,6 @@ export class CalendarComponent {
   onCalendarBoxClicked(event: number | null) {
     this.selectedDay = event;
     this.sideDialogActive = true;
-
-    this.fetchDailyData();
   }
 
   onMonthChanged(event: any) {
@@ -42,21 +35,5 @@ export class CalendarComponent {
     this.bankAccounts = event;
   }
 
-  fetchDailyData() {
-    this.isLoadingData = true;
-    this.apiService
-      .get('calendar/daily', {
-        date: `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(
-          this.selectedDay
-        ).padStart(2, '0')}`,
-        bankAccounts: this.bankAccounts.map((account) => account.id),
-      })
-      .subscribe({
-        next: (data) => {},
-        error: (error) => {},
-      })
-      .add(() => {
-        this.isLoadingData = false;
-      });
-  }
+  
 }

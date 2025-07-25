@@ -532,6 +532,97 @@ export const availablePPh: IPPh[] = [
     type: 'PPh 15',
     tariff: 1.8,
   },
+  {
+    code: '21-100-09',
+    taxObjectName: 'Tidak final - Bukan pegawai lainnya',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-01',
+    taxObjectName:
+      'Tidak final -	Pegawai Negeri Sipil, Anggota Tentara Nasional Indonesia, Anggota Polisi Republik Indonesia atau Pejabat Negara',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-02',
+    taxObjectName:
+      'Tidak final - Penerima Pensiun yang menerima penghasilan secara teraturs',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-03',
+    taxObjectName: 'Tidak final - Pegawai Tidak Tetap atau Tenaga Kerja Lepas',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-04',
+    taxObjectName: 'Tidak final - Distributor Multi Level Marketing (MLM)',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-05',
+    taxObjectName: 'Tidak final - Petugas Dinas Luar Asuransi',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-06',
+    taxObjectName: 'Tidak final - Penjaja Barang Dagangan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-07',
+    taxObjectName: 'Tidak final - Tenaga Ahli',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-08',
+    taxObjectName:
+      'Tidak final - Bukan Pegawai yang Menerima Penghasilan yang Bersifat Berkesinambungan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-09',
+    taxObjectName:
+      'Tidak final - Bukan Pegawai yang Menerima Penghasilan yang Tidak Bersifat Berkesinambungan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-10',
+    taxObjectName:
+      'Tidak final - Anggota Dewan Komisaris atau Dewan Pengawas yang tidak Merangkap sebagai Pegawai Tetap',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-11',
+    taxObjectName:
+      'Tidak final - Mantan Pegawai yang menerima Jasa Produksi, Tantiem, Bonus atau Imbalan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-12',
+    taxObjectName:
+      'Tidak final - Pegawai yang melakukan  penarikan Dana Pensiun',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-13',
+    taxObjectName: 'Tidak final - Peserta Kegiatan yang menerima imbalan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
 ];
 export const availablePPhSearch = new FuzzySearch(
   availablePPh,
