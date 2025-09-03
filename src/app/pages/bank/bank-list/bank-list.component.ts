@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { BankUpdateComponent } from '../bank-update/bank-update.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-bank-list',
@@ -17,7 +18,9 @@ export class BankListComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   isLoading: boolean = false;
@@ -120,5 +123,9 @@ export class BankListComponent {
       });
   }
 
-  onViewDetail(id: number) {}
+  onOpenMutation(id: number) {
+    this.router.navigate(['Mutation', id], {
+      relativeTo: this.route,
+    });
+  }
 }

@@ -34,6 +34,4 @@ export class CalendarComponent {
   onBankAccountChanges(event: any) {
     this.bankAccounts = event;
   }
-
-  
 }

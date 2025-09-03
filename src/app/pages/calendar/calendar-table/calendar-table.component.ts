@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChange,
+  SimpleChanges,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICalendarValue } from 'src/app/model/calendar.model';
 import { ApiService } from 'src/app/services/api.service';
@@ -24,7 +31,15 @@ export class CalendarTableComponent {
   weeks: (number | null)[][] = [];
   data: any[] = [];
 
-  ngOnChanges() {
+  ngOnInit() {
+    this.generateCalendar();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.hasOwnProperty('selectedDay')) {
+      return;
+    }
+
     if (this.month === undefined || this.year === undefined) {
       console.error(
         'Month and year inputs are required for CalendarTableComponent.'
@@ -114,25 +129,9 @@ export class CalendarTableComponent {
     );
   }
 
-  dataForDay(day: number): ICalendarValue {
-    const date = new Date(this.year, this.month, day);
-    const value = this.data
-      .filter((x) => new Date(x.date).getDate() === day && x.isApprove === true)
-      .reduce((acc, curr) => acc + curr.amount, 0);
-    const pendingValue = this.data
-      .filter(
-        (x) => new Date(x.date).getDate() === day && x.isApprove === false
-      )
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    return (
-      this.values.find((value) => value.date.getTime() === date.getTime()) || {
-        date: date,
-        value: 0,
-        confirmed: value,
-        pending: pendingValue,
-      }
-    );
+  dataForDay(day: number): number {
+    const index = this.data.findIndex(x => x.day == day);
+    return index == -1 ? 0 : this.data[index].total_amount;
   }
 
   onDayClick(day: number | null) {

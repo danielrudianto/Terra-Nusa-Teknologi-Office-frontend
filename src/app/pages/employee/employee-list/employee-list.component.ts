@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { EmployeeUpdateComponent } from '../employee-update/employee-update.component';
 import { EmployeeSalarySlipSelectorCreateComponent } from './employee-salary-slip-selector-create/employee-salary-slip-selector-create.component';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-employee-list',
@@ -30,6 +31,10 @@ export class EmployeeListComponent {
 
   ngOnInit(): void {
     this.fetchEmployees();
+
+    this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.fetchEmployees(1);
+    });
   }
 
   changePage(event: any) {

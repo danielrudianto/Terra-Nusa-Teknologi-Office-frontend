@@ -32,13 +32,24 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Tax category</mat-label>
-      <input
-        matInput
+      <mat-label>Tax Category</mat-label>
+      <mat-select
         formControlName="taxCategory"
-        placeholder="Enter tax category"
-        readonly
-      />
+        placeholder="Select tax category"
+      >
+        <mat-optgroup label="Tidak kawin">
+          <mat-option value="TK/0">Tidak kawin; 0 tanggungan (TK/0)</mat-option>
+          <mat-option value="TK/1">Tidak kawin; 1 tanggungan (TK/1)</mat-option>
+          <mat-option value="TK/2">Tidak kawin; 2 tanggungan (TK/2)</mat-option>
+          <mat-option value="TK/3">Tidak kawin; 3 tanggungan (TK/3)</mat-option>
+        </mat-optgroup>
+        <mat-optgroup label="Kawin">
+          <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
+          <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
+          <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
+          <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+        </mat-optgroup>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
@@ -47,7 +58,6 @@
         matInput
         formControlName="position"
         placeholder="Enter employee position"
-        readonly
       />
     </mat-form-field>
 
@@ -57,7 +67,6 @@
         matInput
         formControlName="department"
         placeholder="Enter employee department"
-        readonly
       />
     </mat-form-field>
 

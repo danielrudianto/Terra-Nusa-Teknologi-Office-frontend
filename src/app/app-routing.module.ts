@@ -55,6 +55,10 @@ import { IncomeListComponent } from './pages/income/income-list/income-list.comp
 import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
 import { InterpaymentListComponent } from './pages/interpayment/interpayment-list/interpayment-list.component';
 import { InterpaymentCreateComponent } from './pages/interpayment/interpayment-create/interpayment-create.component';
+import { BankMutationComponent } from './pages/bank/bank-mutation/bank-mutation.component';
+import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
+import { AssetComponent } from './pages/asset/asset.component';
+import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
 
 export const routes: Routes = [
   {
@@ -131,6 +135,24 @@ export const routes: Routes = [
           {
             path: 'Create',
             component: BankCreateComponent,
+          },
+          {
+            path: 'Mutation/:id',
+            component: BankMutationComponent,
+          },
+        ],
+      },
+      {
+        path: 'Asset',
+        component: AssetComponent,
+        children: [
+          {
+            path: '',
+            component: AssetListComponent,
+          },
+          {
+            path: 'Create',
+            component: AssetCreateComponent,
           },
         ],
       },

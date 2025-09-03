@@ -27,7 +27,7 @@
         </div>
 
         <div class="calendar__table__cell__box__value" *ngIf="day != null">
-          {{ dataForDay(day).confirmed | shortCurrency : "Rp. " }}
+          {{ dataForDay(day) | shortCurrency : "Rp. " }}
         </div>
       </div>
     </div>

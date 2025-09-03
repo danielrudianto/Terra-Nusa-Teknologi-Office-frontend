@@ -94,6 +94,14 @@ export class SideNavComponent {
             exact: false,
           },
         },
+        {
+          name: 'Salary Slip',
+          icon: 'badge',
+          route: '/Salary-slip',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
       ],
     },
     {
@@ -127,6 +135,14 @@ export class SideNavComponent {
           name: 'Client',
           icon: 'people',
           route: '/Client',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
+          name: 'Asset',
+          icon: 'hardware',
+          route: '/Asset',
           routerLinkOptions: {
             exact: false,
           },

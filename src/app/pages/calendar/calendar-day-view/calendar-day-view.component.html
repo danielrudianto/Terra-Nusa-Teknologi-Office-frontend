@@ -1,1 +1,16 @@
-<p>calendar-day-view works!</p>
+<div class="p-3">
+  <h2>Daily calendar</h2>
+
+  <mat-list>
+    <mat-list-item
+      *ngFor="let item of dataSource"
+      (click)="openPaymentData(item.id)"
+    >
+      <mat-icon [matTooltip]="getTooltip(item)" matListItemIcon>{{
+        getIcon(item)
+      }}</mat-icon>
+      <div matListItemTitle [innerHTML]="getDescription(item)"></div>
+      <div matListItemLine>{{ item.amount | number : "0.2-2" }}</div>
+    </mat-list-item>
+  </mat-list>
+</div>

@@ -1,0 +1,84 @@
+<div class="title__wrapper mb-4">
+  <h1 class="title"><a routerLink="/Asset">Asset</a> / Create</h1>
+</div>
+
+<form [formGroup]="assetFormGroup" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Asset Name</mat-label>
+    <input matInput formControlName="name" placeholder="Ex. Alat bor KR" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Asset Description</mat-label>
+    <textarea
+      matInput
+      formControlName="description"
+      placeholder="Ex. Alat bor KR"
+    ></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Asset Brand</mat-label>
+    <input matInput formControlName="brand" placeholder="Ex. XCMG" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Asset Type</mat-label>
+    <mat-select formControlName="type">
+      <mat-option [value]="'Fixed'">Fixed asset</mat-option>
+      <mat-option [value]="'Equipment'">Equipment</mat-option>
+      <mat-option [value]="'Tools'">Tools</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Asset Location</mat-label>
+    <textarea
+      matInput
+      formControlName="location"
+      placeholder="Ex. Gudang Pusat"
+    ></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Depreciation</mat-label>
+    <mat-select formControlName="depreciation">
+      <mat-optgroup label="General">
+        <mat-option [value]="4">4 years (Group 1)</mat-option>
+        <mat-option [value]="8">8 years (Group 2)</mat-option>
+        <mat-option [value]="16">16 years (Group 3)</mat-option>
+        <mat-option [value]="20">20 years (Group 4)</mat-option>
+      </mat-optgroup>
+      <mat-optgroup label="Buildings">
+        <mat-option [value]="20">20 years (Permanent Building)</mat-option>
+        <mat-option [value]="10">10 years (Non-permanent Building)</mat-option>
+      </mat-optgroup>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Purchase Order Name</mat-label>
+    <input
+      matInput
+      formControlName="purchaseOrderName"
+      placeholder="Ex. 001-PO-PUSAT-5.1.1"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Purchase date</mat-label>
+    <input matInput formControlName="purchaseDate" [matDatepicker]="picker" />
+    <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <button
+    type="submit"
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    [disabled]="isSubmitting || !assetFormGroup.valid"
+  >
+    Submit
+  </button>
+</form>

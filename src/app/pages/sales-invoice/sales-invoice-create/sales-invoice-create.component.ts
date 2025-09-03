@@ -33,15 +33,15 @@ export class SalesInvoiceCreateComponent {
 
   metaFormGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
-    name: new FormControl('001-INV-SCBT-V-2025', [
+    name: new FormControl('', [
       Validators.required,
       Validators.pattern(
         /^[0-9]{3}-INV-[A-Z0-9]{4,5}-(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-20[0-9]{2}$/
       ),
     ]),
-    projectName: new FormControl('SCBT', Validators.required),
+    projectName: new FormControl('', Validators.required),
     description: new FormControl('', Validators.required),
-    spkNumber: new FormControl('ASDF', Validators.required),
+    spkNumber: new FormControl('', Validators.required),
     clientID: new FormControl('', Validators.required),
     clientName: new FormControl('', Validators.required),
     clientAddress: new FormControl('', Validators.required),
@@ -130,13 +130,15 @@ export class SalesInvoiceCreateComponent {
       (value) => {
         if (value) {
           const dpp = this.valueFormGroup.controls['dpp'].value;
+          const ppnPercentage =
+            this.valueFormGroup.controls['ppnPercentage'].value;
+          const ppnValue = (dpp * ppnPercentage) / 100;
           const pphValue = (dpp * value) / 100;
           this.valueFormGroup.patchValue({
             pphValue: pphValue,
-            total: dpp + this.valueFormGroup.controls['ppnValue'].value,
+            total: dpp + ppnValue,
           });
 
-          const ppnValue = this.valueFormGroup.controls['ppnValue'].value;
           this.paymentFormGroup.patchValue({
             paymentTotal: dpp + ppnValue - pphValue,
           });
@@ -361,7 +363,7 @@ export class SalesInvoiceCreateComponent {
       pageSize: 'A4' as PageSize,
       pageMargins: [40, 5, 40, 20] as Margins,
       footer: {
-        text: 'Office : Ruko Asia Tropis Blok AT 12 No 21, Kota Harapan Indah Bekasi | Phone : 021 - 888 98 292 | Email : finance@alphakonstruksi.id',
+        text: 'Office : Ruko Asia Tropis Blok AT 12 No 21,a Kota Harapan Indah Bekasi | Phone : 021 - 888 98 292 | Email : finance@alphakonstruksi.id',
         fontSize: 8,
         alignment: 'center' as Alignment,
       },
@@ -439,7 +441,10 @@ export class SalesInvoiceCreateComponent {
                   text: ':',
                 },
                 {
-                  text: `Rp ${invoiceData.value.total.toLocaleString('id-ID')}`,
+                  text: `${new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  }).format(Math.round(parseFloat(invoiceData.value.total)))}`,
                   bold: true,
                 },
               ],
@@ -605,7 +610,10 @@ export class SalesInvoiceCreateComponent {
           alignment: 'center' as Alignment,
         },
         {
-          text: `Rp. ${invoiceData.value.total.toLocaleString('id-ID')}`,
+          text: `${new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+          }).format(Math.round(parseFloat(invoiceData.value.total)))}`,
           margin: [0, 0, 0, 10] as Margins,
           alignment: 'center' as Alignment,
           bold: true,
@@ -804,58 +812,47 @@ export class SalesInvoiceCreateComponent {
       'sebelas',
     ];
 
-    function terbilang(n: number): string {
+    function spell(n: number): string {
       if (n < 12) {
         return satuan[n];
       } else if (n < 20) {
-        return terbilang(n - 10) + ' belas';
+        return `${spell(n - 10)} belas`;
       } else if (n < 100) {
-        return (
-          terbilang(Math.floor(n / 10)) +
-          ' puluh' +
-          (n % 10 !== 0 ? ' ' + terbilang(n % 10) : '')
-        );
+        return `${spell(Math.floor(n / 10))} puluh${
+          n % 10 !== 0 ? ' ' + spell(n % 10) : ''
+        }`;
       } else if (n < 200) {
-        return 'seratus' + (n - 100 !== 0 ? ' ' + terbilang(n - 100) : '');
+        return `seratus${n > 100 ? ' ' + spell(n - 100) : ''}`;
       } else if (n < 1000) {
-        return (
-          terbilang(Math.floor(n / 100)) +
-          ' ratus' +
-          (n % 100 !== 0 ? ' ' + terbilang(n % 100) : '')
-        );
+        return `${spell(Math.floor(n / 100))} ratus${
+          n % 100 !== 0 ? ' ' + spell(n % 100) : ''
+        }`;
       } else if (n < 2000) {
-        return 'seribu' + (n - 1000 !== 0 ? ' ' + terbilang(n - 1000) : '');
-      } else if (n < 1000000) {
-        return (
-          terbilang(Math.floor(n / 1000)) +
-          ' ribu' +
-          (n % 1000 !== 0 ? ' ' + terbilang(n % 1000) : '')
-        );
-      } else if (n < 1000000000) {
-        return (
-          terbilang(Math.floor(n / 1000000)) +
-          ' juta' +
-          (n % 1000000 !== 0 ? ' ' + terbilang(n % 1000000) : '')
-        );
-      } else if (n < 1000000000000) {
-        return (
-          terbilang(Math.floor(n / 1000000000)) +
-          ' miliar' +
-          (n % 1000000000 !== 0 ? ' ' + terbilang(n % 1000000000) : '')
-        );
-      } else if (n < 1000000000000000) {
-        return (
-          terbilang(Math.floor(n / 1000000000000)) +
-          ' triliun' +
-          (n % 1000000000000 !== 0 ? ' ' + terbilang(n % 1000000000000) : '')
-        );
+        return `seribu${n > 1000 ? ' ' + spell(n - 1000) : ''}`;
+      } else if (n < 1_000_000) {
+        return `${spell(Math.floor(n / 1000))} ribu${
+          n % 1000 !== 0 ? ' ' + spell(n % 1000) : ''
+        }`;
+      } else if (n < 1_000_000_000) {
+        return `${spell(Math.floor(n / 1_000_000))} juta${
+          n % 1_000_000 !== 0 ? ' ' + spell(n % 1_000_000) : ''
+        }`;
+      } else if (n < 1_000_000_000_000) {
+        return `${spell(Math.floor(n / 1_000_000_000))} miliar${
+          n % 1_000_000_000 !== 0 ? ' ' + spell(n % 1_000_000_000) : ''
+        }`;
+      } else if (n < 1_000_000_000_000_000) {
+        return `${spell(Math.floor(n / 1_000_000_000_000))} triliun${
+          n % 1_000_000_000_000 !== 0 ? ' ' + spell(n % 1_000_000_000_000) : ''
+        }`;
       } else {
         return 'nilai terlalu besar';
       }
     }
 
     if (value === 0) return 'nol rupiah';
-    return terbilang(value).replace(/\s+/g, ' ').trim() + ' rupiah';
+
+    return `${spell(Math.round(value)).replace(/\s+/g, ' ').trim()} rupiah`;
   }
 
   capitalizeWords(str: string): string {

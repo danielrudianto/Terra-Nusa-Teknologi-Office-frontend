@@ -135,6 +135,10 @@ import { IncomeComponent } from './pages/income/income.component';
 import { IncomeListComponent } from './pages/income/income-list/income-list.component';
 import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
 import { ExpensePaymentCreateComponent } from './components/payment-create/expense-payment-create/expense-payment-create.component';
+import { AssetComponent } from './pages/asset/asset.component';
+import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
+import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
+import { SalarySlipViewComponent } from './pages/salary-slip-list/salary-slip-view/salary-slip-view.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -229,6 +233,10 @@ export const MY_FORMATS = {
     IncomeListComponent,
     IncomeCreateComponent,
     ExpensePaymentCreateComponent,
+    AssetComponent,
+    AssetListComponent,
+    AssetCreateComponent,
+    SalarySlipViewComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

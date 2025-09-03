@@ -105,6 +105,9 @@
           <mat-option [value]="'Progress ketiga (3)'"
             >Progress ketiga (3)</mat-option
           >
+          <mat-option [value]="'Progress keempat (4)'"
+            >Progress keempat (4)</mat-option
+          >
           <mat-option [value]="'Progress final'">Progress final</mat-option>
           <mat-option [value]="'Retensi'">Retensi</mat-option>
         </mat-autocomplete>
@@ -226,6 +229,14 @@
           mask="separator"
           readonly
         />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Should be printed separately?</mat-label>
+        <mat-select formControlName="separate">
+          <mat-option [value]="false">No</mat-option>
+          <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <button

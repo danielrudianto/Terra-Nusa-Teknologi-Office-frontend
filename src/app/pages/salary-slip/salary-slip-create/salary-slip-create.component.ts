@@ -96,7 +96,6 @@ export class SalarySlipCreateComponent {
     taxCategory: new FormControl('', { nonNullable: true }),
     position: new FormControl('', { nonNullable: true }),
     department: new FormControl('', { nonNullable: true }),
-
     basicSalary: new FormControl(0, { nonNullable: true }),
     transportationAllowanceQuantity: new FormControl(0, { nonNullable: true }),
     transportationAllowanceRate: new FormControl(0, { nonNullable: true }),
