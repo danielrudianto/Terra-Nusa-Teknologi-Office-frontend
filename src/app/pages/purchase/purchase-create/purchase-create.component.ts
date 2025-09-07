@@ -114,6 +114,7 @@ export class PurchaseCreateComponent {
       ]),
       lastStatus: new FormControl('ready', Validators.required),
       lastStatusDescription: new FormControl(''),
+      isInternal: new FormControl(false, Validators.required),
     },
     { validators: lastStatusDescriptionRequired() }
   );
@@ -363,6 +364,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: this.metaFormGroup.controls['purchaseOrderName'].value,
       projectName: this.metaFormGroup.controls['projectName'].value,
       purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+      isInternal: this.metaFormGroup.controls['isInternal'].value,
       dpp: this.valueFormGroup.controls['dpp'].value,
       ppn: this.valueFormGroup.controls['ppn'].value,
       pbbkb: this.valueFormGroup.controls['pbbkb'].value,

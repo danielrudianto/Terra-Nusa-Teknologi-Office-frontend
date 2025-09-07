@@ -8,6 +8,7 @@ import { debounceTime } from 'rxjs';
 import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
 import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { PurchaseUpdateComponent } from '../purchase-update/purchase-update.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -64,6 +65,14 @@ export class PurchaseListComponent {
 
   openPurchaseReportSelector() {
     this.dialog.open(PurchaseReportSelectComponent, {});
+  }
+
+  openUpdateInternal(id: number) {
+    this.dialog.open(PurchaseUpdateComponent, {
+      data: {
+        id: id,
+      },
+    });
   }
 
   openPaymentDetail(id: number) {

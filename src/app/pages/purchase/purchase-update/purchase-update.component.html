@@ -1,0 +1,347 @@
+<h2 mat-dialog-title>Update internal purchase data</h2>
+<mat-dialog-content>
+  <mat-stepper [linear]="true" #stepper>
+    <mat-step [stepControl]="metaFormGroup">
+      <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+        <ng-template matStepLabel>Meta Data</ng-template>
+        <mat-form-field appearance="outline" class="w-100 d-none">
+          <mat-label>ID</mat-label>
+          <input matInput formControlName="id" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            type="text"
+            placeholder="Supplier name"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="3"
+            placeholder="Supplier address"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Invoice name</mat-label>
+          <input
+            matInput
+            formControlName="invoiceName"
+            type="text"
+            placeholder="Invoice name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Receipt Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="receiptName"
+            placeholder="Receipt Name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tax Invoice Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxInvoiceName"
+            placeholder="Tax Invoice Name"
+            maxlength="17"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase Order Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseOrderName"
+            placeholder="Purchase Order Name"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="projectName"
+            placeholder="Project name"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase type</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseType"
+            placeholder="Purchase Type"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Date"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>DD/MM/YYYY</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Due date</mat-label>
+          <input
+            matInput
+            formControlName="dueDate"
+            placeholder="Date"
+            [matDatepicker]="duePicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="duePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #duePicker></mat-datepicker>
+          <mat-hint>DD/MM/YYYY</mat-hint>
+        </mat-form-field>
+      </form>
+
+      <mat-divider class="my-3"></mat-divider>
+      <button mat-stroked-button color="primary" matStepperNext>Next</button>
+    </mat-step>
+    <mat-step [stepControl]="valueFormGroup">
+      <form [formGroup]="valueFormGroup">
+        <ng-template matStepLabel>Value Data</ng-template>
+        <mat-divider class="mt-3"></mat-divider>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>DPP</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="dpp"
+            placeholder="DPP"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPN (%)</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="ppn"
+            placeholder="PPN"
+            suffix="%"
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPN (Rp.)</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="ppnValue"
+            placeholder="PPN (Rp.)"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PBBKB</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pbbkb"
+            placeholder="PBBKB"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh Object Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphTaxObject"
+            placeholder="PPh Object Name"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh Percentage</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphPercentage"
+            placeholder="PPh Percentage"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Other value</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="otherValue"
+            placeholder="otherValue"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Other value note</mat-label>
+          <mat-select formControlName="otherValueNote">
+            <mat-option value="">Select</mat-option>
+            <mat-option value="delivery">Delivery fee</mat-option>
+            <mat-option value="packing">Packing fee</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Total</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="total"
+            placeholder="Total"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </form>
+
+      <mat-divider class="my-3"></mat-divider>
+      <button
+        mat-stroked-button
+        color="accent"
+        style="letter-spacing: 0"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="ms-2"
+        matStepperNext
+      >
+        Next
+      </button>
+    </mat-step>
+    <mat-step [stepControl]="attachmentFormGroup">
+      <form [formGroup]="attachmentFormGroup">
+        <ng-template matStepLabel>Attachments Data</ng-template>
+        <mat-divider class="mt-3"></mat-divider>
+
+        <mat-slide-toggle
+          color="primary"
+          class="my-2"
+          formControlName="isInvoiceAttached"
+          >Invoice</mat-slide-toggle
+        >
+        <br />
+
+        <mat-slide-toggle
+          color="primary"
+          class="my-2"
+          formControlName="isReceiptAttached"
+          >Receipt</mat-slide-toggle
+        >
+        <br />
+
+        <mat-slide-toggle
+          color="primary"
+          class="my-2"
+          formControlName="isTaxInvoiceAttached"
+          >Tax invoice</mat-slide-toggle
+        >
+        <br />
+
+        <mat-slide-toggle
+          color="primary"
+          class="my-2"
+          formControlName="isCopAttached"
+          >Certificate of Payment</mat-slide-toggle
+        >
+        <br />
+
+        <mat-slide-toggle
+          color="primary"
+          class="my-2"
+          formControlName="isCopyPurchaseOrderAttached"
+          >Copy of Purchase Order / Contract</mat-slide-toggle
+        >
+        <br />
+      </form>
+
+      <mat-divider class="my-3"></mat-divider>
+      <button
+        mat-stroked-button
+        color="accent"
+        style="letter-spacing: 0"
+        matStepperPrevious
+      >
+        Previous
+      </button>
+
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        class="ms-2"
+        type="button"
+        (click)="onSubmit()"
+      >
+        Submit
+      </button>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>

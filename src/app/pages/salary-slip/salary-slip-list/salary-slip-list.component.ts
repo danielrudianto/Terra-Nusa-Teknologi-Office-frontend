@@ -3,7 +3,8 @@ import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { ApiService } from '../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SalarySlipViewComponent } from '../../salary-slip-list/salary-slip-view/salary-slip-view.component';
+import { SalarySlipViewComponent } from './salary-slip-view/salary-slip-view.component';
+import { SalaryPaymentCreateComponent } from 'src/app/components/payment-create/salary-payment-create/salary-payment-create.component';
 
 @Component({
   selector: 'app-salary-slip-list',
@@ -29,6 +30,8 @@ export class SalarySlipListComponent {
     'allowances',
     'deductions',
     'pph',
+    'status',
+    'action',
   ];
   formControl: FormControl = new FormControl('');
 
@@ -60,10 +63,31 @@ export class SalarySlipListComponent {
   }
 
   viewSalarySlip(id: number) {
-    this.dialog.open(SalarySlipViewComponent, {
-      data: {
-        id: id,
-      },
-    });
+    this.dialog
+      .open(SalarySlipViewComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data === 'deleted') {
+          const index = this.dataSource.findIndex((x) => x.id == id);
+          if (index != -1) {
+            this.dataSource[index].isDelete = true;
+          }
+        }
+      });
+  }
+
+  createPayment(id: number) {
+    this.dialog
+      .open(SalaryPaymentCreateComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 }

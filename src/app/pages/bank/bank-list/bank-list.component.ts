@@ -92,30 +92,32 @@ export class BankListComponent {
       .afterClosed()
       .subscribe({
         next: (data) => {
-          this.apiService.delete('banks/' + id).subscribe({
-            next: (a) => {
-              // remove the deleted bank account from the list
-              this.banks = this.banks.filter((bank) => bank.id !== id);
-              this.count--;
-              this.snackBar.open(
-                'Bank account deleted successfully.',
-                'Close',
-                {
-                  duration: 3000,
-                }
-              );
-            },
-            error: (b) => {
-              console.error('Error deleting bank account:', b);
-              this.snackBar.open(
-                'Failed to delete bank account. Please try again later.',
-                'Close',
-                {
-                  duration: 3000,
-                }
-              );
-            },
-          });
+          if (data === true) {
+            this.apiService.delete('banks/' + id).subscribe({
+              next: (a) => {
+                // remove the deleted bank account from the list
+                this.banks = this.banks.filter((bank) => bank.id !== id);
+                this.count--;
+                this.snackBar.open(
+                  'Bank account deleted successfully.',
+                  'Close',
+                  {
+                    duration: 3000,
+                  }
+                );
+              },
+              error: (b) => {
+                console.error('Error deleting bank account:', b);
+                this.snackBar.open(
+                  'Failed to delete bank account. Please try again later.',
+                  'Close',
+                  {
+                    duration: 3000,
+                  }
+                );
+              },
+            });
+          }
         },
         error: (error) => {
           console.error('Error opening delete confirmation dialog:', error);

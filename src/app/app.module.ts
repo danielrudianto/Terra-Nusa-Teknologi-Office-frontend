@@ -138,7 +138,13 @@ import { ExpensePaymentCreateComponent } from './components/payment-create/expen
 import { AssetComponent } from './pages/asset/asset.component';
 import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
 import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
-import { SalarySlipViewComponent } from './pages/salary-slip-list/salary-slip-view/salary-slip-view.component';
+import { SalarySlipViewComponent } from './pages/salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
+import { SalaryPaymentCreateComponent } from './components/payment-create/salary-payment-create/salary-payment-create.component';
+import { PurchaseUpdateComponent } from './pages/purchase/purchase-update/purchase-update.component';
+import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
+import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
+import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draft-list/purchase-draft-list.component';
+import { PurchaseDraftViewComponent } from './pages/purchase-draft/purchase-draft-view/purchase-draft-view.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -237,6 +243,12 @@ export const MY_FORMATS = {
     AssetListComponent,
     AssetCreateComponent,
     SalarySlipViewComponent,
+    SalaryPaymentCreateComponent,
+    PurchaseUpdateComponent,
+    PurchaseDraftComponent,
+    PurchaseDraftCreateComponent,
+    PurchaseDraftListComponent,
+    PurchaseDraftViewComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

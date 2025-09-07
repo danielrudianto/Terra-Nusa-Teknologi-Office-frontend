@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentHistoryComponent } from '../../payment/payment-history/payment-history.component';
+import { MatSelectionListChange } from '@angular/material/list';
 
 @Component({
   selector: 'app-calendar-day-view',
@@ -33,12 +34,14 @@ export class CalendarDayViewComponent {
   isLoadingData: boolean = false;
   dataSource: any[] = [];
   dataCount: number = 0;
+  selected: number[] = [];
 
   ngOnChanges(changes: SimpleChange) {
     if (this.date == null) {
       return;
     }
 
+    this.selected = [];
     this.fetchDailyData();
   }
 
@@ -121,11 +124,25 @@ export class CalendarDayViewComponent {
     return 'Unknown';
   }
 
-  openPaymentData(paymentID: number) {
+  openPaymentData(paymentID: number, event: any) {
+    event.stopPropagation();
     this.dialog.open(PaymentHistoryComponent, {
       data: {
         id: paymentID,
       },
     });
+  }
+
+  get totalPayment(): number {
+    return this.selected.reduce((a, b) => {
+      return a + b;
+    }, 0);
+  }
+
+  onSelectionChange(event: MatSelectionListChange) {
+    this.selected =
+      event.source._value?.map((x) => {
+        return Number(x);
+      }) ?? [];
   }
 }

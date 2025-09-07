@@ -260,7 +260,13 @@
             routerLink="/Purchase/Status/{{ purchase.id }}"
             [disabled]="purchase.lastStatus !== 'draft'"
           >
-            <mat-icon>update</mat-icon>
+            <mat-icon>update</mat-icon></button
+          ><button
+            mat-icon-button
+            (click)="openUpdateInternal(purchase.id)"
+            [disabled]="purchase.isInternal == false"
+          >
+            <mat-icon>edit</mat-icon>
           </button>
         </span>
       </td>
