@@ -96,3 +96,10 @@
     </tr>
   </table>
 </div>
+
+<mat-paginator
+  [pageIndex]="page - 1"
+  [length]="count"
+  [pageSize]="10"
+  (page)="changePage($event)"
+></mat-paginator>

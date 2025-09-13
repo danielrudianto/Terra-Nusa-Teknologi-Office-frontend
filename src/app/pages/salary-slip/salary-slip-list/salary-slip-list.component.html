@@ -107,7 +107,11 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
-        <button mat-icon-button (click)="createPayment(element.id)">
+        <button
+          [disabled]="element.isDelete || element.isPaid"
+          mat-icon-button
+          (click)="createPayment(element.id)"
+        >
           <mat-icon>payments</mat-icon>
         </button>
       </td>
@@ -136,6 +140,7 @@
     [pageIndex]="page - 1"
     [length]="dataCount"
     [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 50]"
     (page)="changePage($event)"
   ></mat-paginator>
 </div>

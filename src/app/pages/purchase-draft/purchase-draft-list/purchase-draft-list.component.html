@@ -1,1 +1,27 @@
-<p>purchase-draft-list works!</p>
+<div class="title__wrapper mb-4">
+  <h1 class="title">Purchase Draft</h1>
+</div>
+
+<mat-chip-listbox
+  class="mb-3"
+  multiple
+  aria-label="Filter Selection"
+  [disabled]="isLoading"
+>
+  <mat-chip-option
+    (selectionChange)="changeSelection('isPending', $event)"
+    [selected]="isPending"
+    >Pending</mat-chip-option
+  >
+  <mat-chip-option
+    (selectionChange)="changeSelection('isApproved', $event)"
+    [selected]="isApproved"
+    >Approved</mat-chip-option
+  >
+</mat-chip-listbox>
+
+<div class="position-absolute bottom-0 end-0 m-3">
+  <button mat-fab color="primary" routerLink="/Purchase-draft/Create">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

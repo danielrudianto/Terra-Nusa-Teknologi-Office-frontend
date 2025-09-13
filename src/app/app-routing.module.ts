@@ -59,6 +59,9 @@ import { BankMutationComponent } from './pages/bank/bank-mutation/bank-mutation.
 import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
 import { AssetComponent } from './pages/asset/asset.component';
 import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
+import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
+import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draft-list/purchase-draft-list.component';
+import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
 
 export const routes: Routes = [
   {
@@ -89,6 +92,21 @@ export const routes: Routes = [
           {
             path: 'Status/:id',
             component: PurchaseUpdateStatusComponent,
+          },
+        ],
+      },
+      {
+        path: 'Purchase-draft',
+        component: PurchaseDraftComponent,
+        children: [
+          {
+            path: '',
+            component: PurchaseDraftListComponent,
+            pathMatch: 'full',
+          },
+          {
+            path: 'Create',
+            component: PurchaseDraftCreateComponent,
           },
         ],
       },

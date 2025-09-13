@@ -1,5 +1,5 @@
 <div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Supplier">Supplier</a> / Create</h1>
+  <h1 class="title"><a routerLink="/Supplier">Supplier</a>/Update /{{ route.snapshot.params['id'] }}</h1>
 </div>
 
 <form [formGroup]="supplierFormGroup" (ngSubmit)="onSubmit()">

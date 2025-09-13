@@ -14,7 +14,7 @@ export class SupplierUpdateComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute
+    public route: ActivatedRoute
   ) {}
 
   supplierFormGroup: FormGroup = new FormGroup({
@@ -108,20 +108,6 @@ export class SupplierUpdateComponent {
           this.snackBar.open('Supplier created successfully', 'Close', {
             duration: 3000,
           });
-          this.supplierFormGroup.patchValue({
-            prefix: '',
-            name: '',
-            address: '',
-            city: '',
-            province: '',
-            npwp: '',
-            phoneNumber: '',
-            email: '',
-            soldItems: '',
-            serviceAreas: '',
-          });
-          this.items = [];
-          this.areas = [];
         },
         error: (error) => {
           console.error(`Error: ${error.error.detail}`);

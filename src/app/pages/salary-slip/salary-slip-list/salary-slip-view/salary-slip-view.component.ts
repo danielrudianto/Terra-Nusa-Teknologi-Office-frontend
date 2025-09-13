@@ -104,8 +104,8 @@ export class SalarySlipViewComponent {
   ngOnInit(): void {
     this.apiService.get(`salary-slips/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
-        this.formGroup.patchValue(data);
-        data.otherAllowances.forEach((x: any) => {
+        this.formGroup.patchValue(data.data);
+        data.data.otherAllowances.forEach((x: any) => {
           this.allowancesFormArray.push(
             this.formBuilder.group({
               id: [x.id],
@@ -118,7 +118,7 @@ export class SalarySlipViewComponent {
           );
         });
 
-        data.otherDeductions.forEach((x: any) => {
+        data.data.otherDeductions.forEach((x: any) => {
           this.deductionsFormArray.push(
             this.formBuilder.group({
               id: [x.id],
@@ -134,35 +134,34 @@ export class SalarySlipViewComponent {
         this.allowanceTable.renderRows();
         this.deductionTable.renderRows();
 
-        console.log(this.months[data.month]);
-
         this.formGroup.patchValue({
-          month: this.months[data.month - 1].label,
+          month: data.data.month,
+          monthName: this.months[data.data.month - 1].label,
           grossSalary:
-            data.basicSalary +
-            data.transportationAllowanceRate *
-              data.transportationAllowanceQuantity +
-            data.mealAllowanceRate * data.mealAllowanceQuantity +
-            data.overtimeRate * data.overtimeQuantity +
-            data.otherAllowances.reduce((a: any, b: any) => {
+            data.data.basicSalary +
+            data.data.transportationAllowanceRate *
+              data.data.transportationAllowanceQuantity +
+            data.data.mealAllowanceRate * data.data.mealAllowanceQuantity +
+            data.data.overtimeRate * data.data.overtimeQuantity +
+            data.data.otherAllowances.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
-            data.otherDeductions.reduce((a: any, b: any) => {
+            data.data.otherDeductions.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0),
           netSalary:
-            data.basicSalary +
-            data.transportationAllowanceRate *
-              data.transportationAllowanceQuantity +
-            data.mealAllowanceRate * data.mealAllowanceQuantity +
-            data.overtimeRate * data.overtimeQuantity +
-            data.otherAllowances.reduce((a: any, b: any) => {
+            data.data.basicSalary +
+            data.data.transportationAllowanceRate *
+              data.data.transportationAllowanceQuantity +
+            data.data.mealAllowanceRate * data.data.mealAllowanceQuantity +
+            data.data.overtimeRate * data.data.overtimeQuantity +
+            data.data.otherAllowances.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
-            data.otherDeductions.reduce((a: any, b: any) => {
+            data.data.otherDeductions.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
-            data.taxAmount,
+            data.data.taxAmount,
         });
       },
       error: (err) => {

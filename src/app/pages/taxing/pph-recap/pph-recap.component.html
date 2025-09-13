@@ -1,1 +1,46 @@
-<p>pph-recap works!</p>
+<h2 mat-dialog-title>PPh Report (Purchase)</h2>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Month</mat-label>
+      <mat-select formControlName="month" required>
+        <mat-option value="1">January</mat-option>
+        <mat-option value="2">February</mat-option>
+        <mat-option value="3">March</mat-option>
+        <mat-option value="4">April</mat-option>
+        <mat-option value="5">May</mat-option>
+        <mat-option value="6">June</mat-option>
+        <mat-option value="7">July</mat-option>
+        <mat-option value="8">August</mat-option>
+        <mat-option value="9">September</mat-option>
+        <mat-option value="10">October</mat-option>
+        <mat-option value="11">November</mat-option>
+        <mat-option value="12">December</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Year</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="year"
+        placeholder="Year"
+        required
+        min="2000"
+        max="2100"
+      />
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="primary"
+      type="submit"
+      style="letter-spacing: 0"
+      [disabled]="formGroup.invalid || isLoading"
+    >
+      Download
+    </button>
+  </mat-dialog-actions>
+</form>

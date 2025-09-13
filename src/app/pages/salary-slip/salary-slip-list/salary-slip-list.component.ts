@@ -5,6 +5,7 @@ import { ApiService } from '../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SalarySlipViewComponent } from './salary-slip-view/salary-slip-view.component';
 import { SalaryPaymentCreateComponent } from 'src/app/components/payment-create/salary-payment-create/salary-payment-create.component';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-salary-slip-list',
@@ -37,6 +38,10 @@ export class SalarySlipListComponent {
 
   ngOnInit(): void {
     this.fetchSalarySlips();
+
+    this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.fetchSalarySlips(1);
+    });
   }
 
   changePage(page: PageEvent) {

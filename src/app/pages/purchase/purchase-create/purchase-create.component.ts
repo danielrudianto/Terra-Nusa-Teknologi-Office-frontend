@@ -100,7 +100,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7)$/
         ),
       ]),
       projectName: new FormControl('', [
@@ -110,7 +110,7 @@ export class PurchaseCreateComponent {
       ]),
       purchaseType: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6$/),
+        Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7$/),
       ]),
       lastStatus: new FormControl('ready', Validators.required),
       lastStatusDescription: new FormControl(''),
@@ -221,7 +221,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -401,19 +401,9 @@ export class PurchaseCreateComponent {
       paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
       lastStatus: this.metaFormGroup.controls['lastStatus'].value,
       lastStatusDescription:
-        this.metaFormGroup.controls['lastStatus'].value == 'Ready'
+        this.metaFormGroup.controls['lastStatus'].value == 'ready'
           ? null
           : this.metaFormGroup.controls['lastStatusDescription'].value,
-    };
-
-    const paymentData = {
-      purchaseID: null, // Will be set after purchase creation
-      expenseID: null,
-      reimbursementID: null,
-      date: dueDateFormatted,
-      amount: this.paymentFormGroup.controls['paymentTotal'].value,
-      bankAccountID: this.paymentFormGroup.controls['bankAccountID'].value,
-      status: this.metaFormGroup.controls['lastStatus'].value,
     };
 
     if (this.paymentFormGroup.controls['createPayment'].value === true) {
@@ -422,11 +412,21 @@ export class PurchaseCreateComponent {
         .subscribe({
           next: (result: any) => {
             const purchaseID = result.purchase_id;
+
+            const paymentData = {
+              purchaseID: purchaseID,
+              expenseID: null,
+              reimbursementID: null,
+              salarySlipID: null,
+              date: dueDateFormatted,
+              amount: this.paymentFormGroup.controls['paymentTotal'].value,
+              bankAccountID:
+                this.paymentFormGroup.controls['bankAccountID'].value,
+              status: this.metaFormGroup.controls['lastStatus'].value,
+            };
+
             this.apiService
-              .post('payments', {
-                ...paymentData,
-                purchaseID: purchaseID,
-              })
+              .post('payments', paymentData)
               .subscribe({
                 next: (_) => {
                   if (proxyPayment) {
@@ -451,6 +451,56 @@ export class PurchaseCreateComponent {
                   this.snackBar.open('Purchase created successfully', 'Close', {
                     duration: 3000,
                   });
+
+                  this.metaFormGroup.reset({
+                    invoiceName: '',
+                    receiptName: '',
+                    taxInvoiceName: '',
+                    supplierID: '',
+                    supplierName: '',
+                    supplierAddress: '',
+                    date: '',
+                    dueDate: '',
+                    purchaseOrderName: '',
+                    projectName: '',
+                    purchaseType: '',
+                    lastStatus: 'ready',
+                    lastStatusDescription: '',
+                  });
+
+                  this.valueFormGroup.reset({
+                    dpp: '',
+                    ppn: '',
+                    ppnValue: 0,
+                    pbbkb: 0,
+                    pphCode: '',
+                    pphTaxObject: '',
+                    pphPercentage: 0,
+                    pphValue: 0,
+                    otherValue: 0,
+                    otherValueNote: '',
+                    total: 0,
+                  });
+
+                  this.attachmentFormGroup.reset({
+                    isInvoiceAttached: false,
+                    isReceiptAttached: false,
+                    isTaxInvoiceAttached: false,
+                    isCopAttached: false,
+                    isCopyPurchaseOrderAttached: false,
+                  });
+
+                  this.paymentFormGroup.reset({
+                    bankName: '',
+                    bankAccountName: '',
+                    bankAccountNumber: '',
+                    paymentMethod: '',
+                    paymentTotal: 0,
+                    proxyPayment: false,
+                  });
+
+                  this.purchaseType = null;
+                  this.stepper!.selectedIndex = 0;
                 },
                 error: (error) => {
                   this.snackBar.open(error.error.detail, 'Close', {
@@ -476,16 +526,59 @@ export class PurchaseCreateComponent {
         .post('purchases', purchaseData)
         .subscribe({
           next: (_) => {
-            if (proxyPayment) {
-              this.generateProxyPaymentPDF({
-                ...purchaseData,
-                totalPayment: paymentAmount,
-              });
-            }
-
             this.snackBar.open('Purchase created successfully', 'Close', {
               duration: 3000,
             });
+
+            this.metaFormGroup.reset({
+              invoiceName: '',
+              receiptName: '',
+              taxInvoiceName: '',
+              supplierID: '',
+              supplierName: '',
+              supplierAddress: '',
+              date: '',
+              dueDate: '',
+              purchaseOrderName: '',
+              projectName: '',
+              purchaseType: '',
+              lastStatus: 'ready',
+              lastStatusDescription: '',
+            });
+
+            this.valueFormGroup.reset({
+              dpp: '',
+              ppn: '',
+              ppnValue: 0,
+              pbbkb: 0,
+              pphCode: '',
+              pphTaxObject: '',
+              pphPercentage: 0,
+              pphValue: 0,
+              otherValue: 0,
+              otherValueNote: '',
+              total: 0,
+            });
+
+            this.attachmentFormGroup.reset({
+              isInvoiceAttached: false,
+              isReceiptAttached: false,
+              isTaxInvoiceAttached: false,
+              isCopAttached: false,
+              isCopyPurchaseOrderAttached: false,
+            });
+
+            this.paymentFormGroup.reset({
+              bankName: '',
+              bankAccountName: '',
+              bankAccountNumber: '',
+              paymentMethod: '',
+              paymentTotal: 0,
+              proxyPayment: false,
+            });
+
+            this.purchaseType = null;
+            this.stepper!.selectedIndex = 0;
           },
           error: (error) => {
             this.snackBar.open(error.error.detail, 'Close', {
@@ -497,56 +590,6 @@ export class PurchaseCreateComponent {
           this.isSubmitting = false;
         });
     }
-
-    this.metaFormGroup.reset({
-      invoiceName: '',
-      receiptName: '',
-      taxInvoiceName: '',
-      supplierID: '',
-      supplierName: '',
-      supplierAddress: '',
-      date: '',
-      dueDate: '',
-      purchaseOrderName: '',
-      projectName: '',
-      purchaseType: '',
-      lastStatus: 'ready',
-      lastStatusDescription: '',
-    });
-
-    this.valueFormGroup.reset({
-      dpp: '',
-      ppn: '',
-      ppnValue: 0,
-      pbbkb: 0,
-      pphCode: '',
-      pphTaxObject: '',
-      pphPercentage: 0,
-      pphValue: 0,
-      otherValue: 0,
-      otherValueNote: '',
-      total: 0,
-    });
-
-    this.attachmentFormGroup.reset({
-      isInvoiceAttached: false,
-      isReceiptAttached: false,
-      isTaxInvoiceAttached: false,
-      isCopAttached: false,
-      isCopyPurchaseOrderAttached: false,
-    });
-
-    this.paymentFormGroup.reset({
-      bankName: '',
-      bankAccountName: '',
-      bankAccountNumber: '',
-      paymentMethod: '',
-      paymentTotal: 0,
-      proxyPayment: false,
-    });
-
-    this.purchaseType = null;
-    this.stepper!.selectedIndex = 0;
   }
 
   fetchBankAccounts() {

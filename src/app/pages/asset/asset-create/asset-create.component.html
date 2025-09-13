@@ -72,6 +72,18 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Value</mat-label>
+    <input
+      matInput
+      formControlName="value"
+      placeholder="Ex. 1.200.000"
+      prefix="Rp. "
+      type="text"
+      thousandSeparator=" "
+    />
+  </mat-form-field>
+
   <button
     type="submit"
     mat-stroked-button

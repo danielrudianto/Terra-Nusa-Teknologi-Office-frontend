@@ -1,6 +1,12 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
@@ -43,6 +49,7 @@ export class PaymentUpdateComponent {
   isPurchase: boolean = false;
   isReimbursement: boolean = false;
   isExpense: boolean = false;
+  isSalarySlip: boolean = false;
 
   isSubmitting: boolean = false;
   isApproved: boolean = false;
@@ -98,6 +105,44 @@ export class PaymentUpdateComponent {
     totalPayment: new FormControl(''),
   });
 
+  displayedAllowancesColumns: string[] = ['name', 'amount', 'description'];
+  displayedDeductionsColumns: string[] = ['name', 'amount', 'description'];
+
+  salarySlipFormGroup: FormGroup = new FormGroup({
+    month: new FormControl('', { nonNullable: true }),
+    monthName: new FormControl('', { nonNullable: true }),
+    year: new FormControl('', { nonNullable: true }),
+    name: new FormControl('', { nonNullable: true }),
+    address: new FormControl('', { nonNullable: true }),
+    taxCategory: new FormControl('', { nonNullable: true }),
+    position: new FormControl('', { nonNullable: true }),
+    department: new FormControl('', { nonNullable: true }),
+    basicSalary: new FormControl(0, { nonNullable: true }),
+    transportationAllowanceQuantity: new FormControl(0, { nonNullable: true }),
+    transportationAllowanceRate: new FormControl(0, { nonNullable: true }),
+    mealAllowanceQuantity: new FormControl(0, { nonNullable: true }),
+    mealAllowanceRate: new FormControl(0, { nonNullable: true }),
+    overtimeQuantity: new FormControl(0, { nonNullable: true }),
+    overtimeRate: new FormControl(0, { nonNullable: true }),
+    isDelete: new FormControl(false),
+
+    // other allowances
+    otherAllowances: new FormArray([]),
+
+    // deductions
+    deductions: new FormArray([]),
+
+    // bank details
+    bankName: new FormControl('', { nonNullable: true }),
+    bankAccountNumber: new FormControl('', { nonNullable: true }),
+    bankAccountName: new FormControl('', { nonNullable: true }),
+
+    // tax deduction
+    taxAmount: new FormControl(0, { nonNullable: true }),
+    grossSalary: new FormControl(0, { nonNullable: true }),
+    netSalary: new FormControl(0, { nonNullable: true }),
+  });
+
   reimbursementValueFormGroup: FormGroup = new FormGroup({
     items: new FormArray([]),
     amount: new FormControl(''),
@@ -123,6 +168,7 @@ export class PaymentUpdateComponent {
     this.isPurchase = false;
     this.isReimbursement = false;
     this.isExpense = false;
+    this.isSalarySlip = false;
 
     this.apiService
       .get(`payments/${this.paymentId}`, {})
@@ -254,6 +300,16 @@ export class PaymentUpdateComponent {
               bankAccountNumber: data.expense.bankAccountNumber,
               bankAccountName: data.expense.bankAccountName,
               paymentMethod: data.expense.paymentMethod,
+            });
+          }
+
+          if (data.salarySlip != null) {
+            this.isSalarySlip = true;
+            this.paymentFormGroup.patchValue({
+              bankName: data.salarySlip.bankName,
+              bankAccountNumber: data.salarySlip.bankAccountNumber,
+              bankAccountName: data.salarySlip.bankAccountName,
+              paymentMethod: data.salarySlip.paymentMethod,
             });
           }
         },

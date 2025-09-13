@@ -60,6 +60,10 @@ export interface IReimbursementPaymentSlip {
   bankNameOrigin: string;
 }
 
+export interface IExpensePaymentSlip {
+
+}
+
 export class PaymentSlipHelper {
   static generatePurchasePaymentSlipPDF(data: IPurchasePaymentSlip) {
     const dd = {
@@ -483,4 +487,8 @@ export class PaymentSlipHelper {
   }
 
   static generateReimbursementPaymentSlipPDF(data: IReimbursementPaymentSlip) {}
+
+  static generateExpensePaymentSlipPDF(data:IExpensePaymentSlip){
+    
+  }
 }

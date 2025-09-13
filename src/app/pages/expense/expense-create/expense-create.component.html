@@ -55,17 +55,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Invoice Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="taxInvoiceName"
-          placeholder="Tax Invoice Name"
-          maxlength="17"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Purchase type</mat-label>
         <mat-select formControlName="purchaseType">
           <mat-optgroup label="Office Expenses">
@@ -180,35 +169,6 @@
           thousandSeparator=" "
           decimalScale="2"
           mask="separator"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (%)</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="ppn"
-          placeholder="PPN"
-          suffix="%"
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (Rp.)</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="ppnValue"
-          placeholder="PPN (Rp.)"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-          readonly
         />
       </mat-form-field>
 
@@ -394,6 +354,32 @@
           mask="separator"
         />
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account origin</mat-label>
+        <mat-select formControlName="bankAccountID">
+          <mat-option *ngFor="let option of bankAccounts" [value]="option.id">
+            {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle
+        color="primary"
+        class="mb-3"
+        formControlName="createPayment"
+      >
+        <div class="d-flex align-items-center justify-content-between">
+          <span>Create payment slip</span>
+          <button
+            type="button"
+            mat-icon-button
+            matTooltip="Create payment slip automatically instead of manually filling the payment slip."
+          >
+            <mat-icon>help</mat-icon>
+          </button>
+        </div>
+      </mat-slide-toggle>
     </form>
 
     <mat-divider class="my-3"></mat-divider>

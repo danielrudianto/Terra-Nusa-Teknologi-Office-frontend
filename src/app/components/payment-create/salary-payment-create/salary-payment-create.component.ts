@@ -79,7 +79,13 @@ export class SalaryPaymentCreateComponent {
           salarySlip.transportationAllowanceRate *
             salarySlip.transportationAllowanceQuantity +
           salarySlip.mealAllowanceRate * salarySlip.mealAllowanceQuantity +
-          salarySlip.overtimeRate * salarySlip.overtimeQuantity;
+          salarySlip.overtimeRate * salarySlip.overtimeQuantity +
+          salarySlip.otherAllowances.reduce((a: any, b: any) => {
+            return a + b.amount;
+          }, 0) -
+          salarySlip.otherDeductions.reduce((a: any, b: any) => {
+            return a + b.amount;
+          }, 0);
 
         const net = gross - salarySlip.taxAmount;
 
@@ -137,8 +143,8 @@ export class SalaryPaymentCreateComponent {
         reimbursementID: null,
         salarySlipID: this.data.id,
         date: formattedDate,
-        amount: this.formGroup.value.netSalary,
-        bankAccountID: this.formGroup.value.bankAccountID,
+        amount: this.formGroup.value.amount,
+        bankAccountID: this.formGroup.value.bankAccount,
       })
       .subscribe({
         next: () => {

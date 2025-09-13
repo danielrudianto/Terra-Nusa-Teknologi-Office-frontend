@@ -1,5 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +14,7 @@ import { SalarySlipAllowanceCreateComponent } from './salary-slip-allowance-crea
 import { SalarySlipDeductionCreateComponent } from './salary-slip-deduction-create/salary-slip-deduction-create.component';
 import { MatTable } from '@angular/material/table';
 import { ApiService } from 'src/app/services/api.service';
+import { banks, IBank } from 'src/app/utils/bank';
 
 @Component({
   selector: 'app-salary-slip-create',
@@ -28,8 +35,12 @@ export class SalarySlipCreateComponent {
 
   @ViewChild('allowanceTable') allowanceTable!: MatTable<any>;
   @ViewChild('deductionTable') deductionTable!: MatTable<any>;
+  @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   isFinal: boolean = false;
   isSubmitting: boolean = false;
+  filteredOptions: IBank[] = [];
+  options: IBank[] = banks;
+  bankAccounts: any[] = [];
 
   months: { value: number; label: string }[] = [
     { value: 0, label: 'January' },
@@ -114,6 +125,7 @@ export class SalarySlipCreateComponent {
     bankName: new FormControl('', { nonNullable: true }),
     bankAccountNumber: new FormControl('', { nonNullable: true }),
     bankAccountName: new FormControl('', { nonNullable: true }),
+    paymentMethod: new FormControl('', Validators.required),
 
     // tax deduction
     taxAmount: new FormControl(0, { nonNullable: true }),
@@ -273,6 +285,15 @@ export class SalarySlipCreateComponent {
     });
 
     this.isFinal = true;
+  }
+
+  filter(): void {
+    const filterValue = this.input.nativeElement.value.toLowerCase();
+    this.filteredOptions = this.options.filter(
+      (option) =>
+        option.name.toLowerCase().includes(filterValue) ||
+        option.alias.toLowerCase().includes(filterValue)
+    );
   }
 
   onSubmit() {

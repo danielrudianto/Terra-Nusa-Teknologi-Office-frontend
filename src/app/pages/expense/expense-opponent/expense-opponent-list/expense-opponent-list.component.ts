@@ -30,6 +30,7 @@ export class ExpenseOpponentListComponent {
     'name',
     'description',
     'type',
+    'npwp',
     'paymentNumber',
     'action',
   ];
@@ -71,8 +72,13 @@ export class ExpenseOpponentListComponent {
   }
 
   changePage(event: any) {
-    const targetPage = event.pageIndex + 1;
-    this.fetchOpponents(targetPage);
+    if (event.pageSize == this.pageSize) {
+      const targetPage = event.pageIndex + 1;
+      this.fetchOpponents(targetPage);
+    } else {
+      this.pageSize = event.pageSize;
+      this.fetchOpponents(1);
+    }
   }
 
   onEdit(id: number) {}

@@ -145,6 +145,8 @@ import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.co
 import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
 import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draft-list/purchase-draft-list.component';
 import { PurchaseDraftViewComponent } from './pages/purchase-draft/purchase-draft-view/purchase-draft-view.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { ExpenseViewComponent } from './pages/expense/expense-view/expense-view.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -249,6 +251,7 @@ export const MY_FORMATS = {
     PurchaseDraftCreateComponent,
     PurchaseDraftListComponent,
     PurchaseDraftViewComponent,
+    ExpenseViewComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -283,6 +286,7 @@ export const MY_FORMATS = {
     MatCheckboxModule,
     MatTooltipModule,
     ClipboardModule,
+    MatGridListModule,
   ],
   providers: [
     provideNgxMask(),

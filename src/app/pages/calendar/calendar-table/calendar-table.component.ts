@@ -30,6 +30,7 @@ export class CalendarTableComponent {
 
   weeks: (number | null)[][] = [];
   data: any[] = [];
+  interpayments: any[] = [];
 
   ngOnInit() {
     this.generateCalendar();
@@ -76,13 +77,15 @@ export class CalendarTableComponent {
         week.push(day);
       }
       // If Saturday or last day of month, push the week and reset
-      if (currentDayOfWeek === 5 || day === daysInMonth) {
-        // Fill trailing empty cells if last week is not full
-        while (week.length < 6) {
-          week.push(null);
+      if (week.length > 0) {
+        if (currentDayOfWeek === 5 || day === daysInMonth) {
+          // Fill trailing empty cells if last week is not full
+          while (week.length < 6) {
+            week.push(null);
+          }
+          this.weeks.push(week);
+          week = [];
         }
-        this.weeks.push(week);
-        week = [];
       }
       // If Sunday, skip (do not add to week)
     }
@@ -102,6 +105,7 @@ export class CalendarTableComponent {
       .subscribe({
         next: (data: any) => {
           this.data = data.payments;
+          this.interpayments = data.interpayments;
         },
         error: (error) => {
           this.snackBar.open(
@@ -130,8 +134,8 @@ export class CalendarTableComponent {
   }
 
   dataForDay(day: number): number {
-    const index = this.data.findIndex(x => x.day == day);
-    return index == -1 ? 0 : this.data[index].total_amount;
+    const index = this.data.findIndex((x) => new Date(x.date).getDate() == day);
+    return index == -1 ? 0 : this.data[index].amount;
   }
 
   onDayClick(day: number | null) {
@@ -140,5 +144,16 @@ export class CalendarTableComponent {
       return;
     }
     this.onCalendarBoxClicked.emit(day);
+  }
+
+  interpaymentExistsForDay(day: number | null): boolean {
+    if (day == null) {
+      return false;
+    }
+
+    const index = this.interpayments.findIndex(
+      (x) => new Date(x.date).getDate() == day
+    );
+    return index >= 0;
   }
 }

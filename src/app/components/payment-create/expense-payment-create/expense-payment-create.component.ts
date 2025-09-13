@@ -41,7 +41,6 @@ export class ExpensePaymentCreateComponent {
 
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
-    ppn: new FormControl('', Validators.required),
     pph: new FormControl(0, Validators.required),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
@@ -120,14 +119,12 @@ export class ExpensePaymentCreateComponent {
 
           this.valueFormGroup.patchValue({
             dpp: data.expense.dpp,
-            ppn: (data.expense.ppn * data.expense.dpp) / 100,
             pbbkb: data.expense.pbbkb,
             pph: (data.expense.pphPercentage * data.expense.dpp) / 100,
             pphCode: data.expense.pphCode,
             pphTaxObject: data.expense.pphTaxObject,
             total: (
               data.expense.dpp +
-              (data.expense.ppn * data.expense.dpp) / 100 +
               data.expense.pbbkb -
               (data.expense.pphPercentage * data.expense.dpp) / 100
             ).toFixed(2),
@@ -155,8 +152,7 @@ export class ExpensePaymentCreateComponent {
 
           // set the maximum amount of dpp + ppn + pbbkb + otherValue - sum(data.payments.amount)
           const totalAmount =
-            data.expense.dpp +
-            (data.expense.ppn * data.expense.dpp) / 100 -
+            data.expense.dpp -
             (data.expense.pphPercentage * data.expense.dpp) / 100 +
             data.expense.pbbkb -
             data.payments
@@ -227,7 +223,7 @@ export class ExpensePaymentCreateComponent {
             dueDate: this.metaFormGroup.value.dueDate,
             createdAt: this.metaFormGroup.value.createdAt,
             dpp: this.valueFormGroup.value.dpp,
-            ppn: this.valueFormGroup.value.ppn,
+            ppn: 0,
             pphCode: this.valueFormGroup.value.pphCode,
             pphTaxObject: this.valueFormGroup.value.pphTaxObject,
             pphPercentage: this.valueFormGroup.value.pphPercentage,

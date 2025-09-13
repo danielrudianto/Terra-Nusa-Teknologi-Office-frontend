@@ -45,6 +45,14 @@
     <td mat-cell *matCellDef="let element">{{ element.type }}</td>
   </ng-container>
 
+  <!-- Weight Column -->
+  <ng-container matColumnDef="npwp">
+    <th mat-header-cell *matHeaderCellDef>NPWP</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.npwp == null ? "N/A" : element.npwp }}
+    </td>
+  </ng-container>
+
   <!-- Symbol Column -->
   <ng-container matColumnDef="paymentNumber">
     <th mat-header-cell *matHeaderCellDef>Payment number</th>

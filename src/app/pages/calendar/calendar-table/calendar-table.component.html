@@ -1,33 +1,48 @@
-<div class="calendar__table">
-  <div class="calendar__table__header">
-    <div class="calendar__table__cell">Mon</div>
-    <div class="calendar__table__cell">Tue</div>
-    <div class="calendar__table__cell">Wed</div>
-    <div class="calendar__table__cell">Thu</div>
-    <div class="calendar__table__cell">Fri</div>
-    <div class="calendar__table__cell">Sat</div>
-  </div>
-  <div class="calendar__table__spacer-row"></div>
-  <div class="calendar__table__row" *ngFor="let week of weeks">
-    <div class="calendar__table__cell" *ngFor="let day of week">
-      <div
-        class="calendar__table__cell__box"
-        [ngClass]="{
-          active: day != null,
-          selected: day === selectedDay && day != null
-        }"
-        (click)="onDayClick(day)"
-      >
+<div class="calendar__table__wrapper">
+  <div class="calendar__table">
+    <div class="calendar__table__header">
+      <div class="calendar__table__cell">Mon</div>
+      <div class="calendar__table__cell">Tue</div>
+      <div class="calendar__table__cell">Wed</div>
+      <div class="calendar__table__cell">Thu</div>
+      <div class="calendar__table__cell">Fri</div>
+      <div class="calendar__table__cell">Sat</div>
+    </div>
+    <div class="calendar__table__spacer-row"></div>
+    <div class="calendar__table__row" *ngFor="let week of weeks">
+      <div class="calendar__table__cell" *ngFor="let day of week">
         <div
-          class="calendar__table__cell__box__date"
+          class="calendar__table__cell__box"
           [ngClass]="{
-          'today': dayIsToday(day) ,}"
+            active: day != null,
+            selected: day === selectedDay && day != null
+          }"
+          (click)="onDayClick(day)"
         >
-          {{ day || "\u00A0" }}
-        </div>
+          <div class="calendar__table__cell__box__header">
+            <div
+              class="calendar__table__cell__box__date"
+              [ngClass]="{
+                today: dayIsToday(day)
+              }"
+            >
+              {{ day || "\u00A0" }}
+            </div>
 
-        <div class="calendar__table__cell__box__value" *ngIf="day != null">
-          {{ dataForDay(day) | shortCurrency : "Rp. " }}
+            <div
+              class="calendar__table__cell__interpayment-indicator"
+              [ngClass]="{
+                exists: interpaymentExistsForDay(day)
+              }"
+              matTooltip="Interpayment exists"
+            >
+            <mat-icon>swap_horiz</mat-icon>
+            </div>
+          </div>
+
+          <div class="calendar__table__cell__box__value" *ngIf="day != null">
+            {{ dataForDay(day) | shortCurrency : "Rp. " }}
+          </div>
         </div>
       </div>
     </div>

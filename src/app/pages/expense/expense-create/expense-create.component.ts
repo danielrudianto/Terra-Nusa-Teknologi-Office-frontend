@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
+import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
 
 @Component({
   selector: 'app-expense-create',
@@ -29,11 +30,11 @@ export class ExpenseCreateComponent {
   filteredOptions: IBank[] = [];
   options: IBank[] = banks;
   isSubmitting: boolean = false;
+  bankAccounts: any[] = [];
 
   metaFormGroup: FormGroup = new FormGroup({
     invoiceName: new FormControl(''),
     receiptName: new FormControl(''),
-    taxInvoiceName: new FormControl('', Validators.maxLength(17)),
     description: new FormControl('', [
       Validators.required,
       Validators.minLength(10),
@@ -48,12 +49,6 @@ export class ExpenseCreateComponent {
 
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl('', [Validators.required, Validators.min(1)]),
-    ppn: new FormControl('', [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(11),
-    ]),
-    ppnValue: new FormControl(0),
     pbbkb: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
@@ -68,39 +63,27 @@ export class ExpenseCreateComponent {
     bankAccountNumber: new FormControl('', Validators.required),
     paymentMethod: new FormControl('', Validators.required),
     paymentTotal: new FormControl(0, [Validators.required]),
+    createPayment: new FormControl(false),
+    bankAccountID: new FormControl(null),
   });
 
+  ngOnInit(): void {
+    this.fetchBankAccounts();
+  }
+
   ngAfterViewInit() {
-    this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
-      if (value) {
-        this.valueFormGroup.controls['ppnValue'].setValue(
-          ((this.valueFormGroup.controls['dpp'].value * value) / 100).toFixed(2)
-        );
-      } else {
-        this.valueFormGroup.controls['ppnValue'].setValue(0);
-      }
-
-      this.isFinal = false;
-    });
-
     this.valueFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
-        this.valueFormGroup.controls['ppnValue'].setValue(
-          ((this.valueFormGroup.controls['ppn'].value * value) / 100).toFixed(2)
-        );
-
         const pphPercentage =
           this.valueFormGroup.controls['pphPercentage'].value;
         const pphValue = (value * pphPercentage) / 100;
         this.valueFormGroup.controls['pphValue'].setValue(pphValue.toFixed(2));
-      } else {
-        this.valueFormGroup.controls['ppnValue'].setValue(0);
       }
 
       this.isFinal = false;
     });
 
-    this.valueFormGroup.controls['pbbkb'].valueChanges.subscribe((value) => {
+    this.valueFormGroup.controls['pbbkb'].valueChanges.subscribe((_) => {
       this.isFinal = false;
     });
   }
@@ -157,7 +140,6 @@ export class ExpenseCreateComponent {
   get isNumberValid() {
     return (
       this.valueFormGroup.controls['dpp'].valid &&
-      this.valueFormGroup.controls['ppn'].valid &&
       this.valueFormGroup.controls['pbbkb'].valid
     );
   }
@@ -181,9 +163,8 @@ export class ExpenseCreateComponent {
 
   calculateTotal() {
     const dpp = Number(this.valueFormGroup.controls['dpp'].value);
-    const ppn = Number(this.valueFormGroup.controls['ppn'].value);
     const pbbkb = Number(this.valueFormGroup.controls['pbbkb'].value);
-    const total = dpp + (dpp * ppn) / 100 + pbbkb;
+    const total = dpp + pbbkb;
     const pph = Number(this.valueFormGroup.controls['pphPercentage'].value);
     const pphValue = (dpp * pph) / 100;
 
@@ -212,91 +193,106 @@ export class ExpenseCreateComponent {
 
     this.isSubmitting = true;
 
-    this.apiService
-      .post('expenses', {
-        invoiceName: this.metaFormGroup.controls['invoiceName'].value,
-        receiptName: this.metaFormGroup.controls['receiptName'].value,
-        taxInvoiceName:
-          this.metaFormGroup.controls['taxInvoiceName'].value == ''
-            ? null
-            : this.metaFormGroup.controls['taxInvoiceName'].value,
-        opponentID: this.metaFormGroup.controls['opponentID'].value,
-        // change from date object to YYYY-MM-DD
-        date: dateFormatted,
-        dueDate: dueDateFormatted,
-        purchaseType: this.metaFormGroup.controls['purchaseType'].value,
-        description: this.metaFormGroup.controls['description'].value,
-        dpp: this.valueFormGroup.controls['dpp'].value,
-        ppn: this.valueFormGroup.controls['ppn'].value,
-        pbbkb: this.valueFormGroup.controls['pbbkb'].value,
-        pphCode:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? null
-            : this.valueFormGroup.controls['pphCode'].value,
-        pphTaxObject:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? null
-            : this.valueFormGroup.controls['pphTaxObject'].value,
-        pphPercentage:
-          this.valueFormGroup.controls['pphCode'].value == ''
-            ? 0
-            : this.valueFormGroup.controls['pphPercentage'].value,
-        bankName: this.paymentFormGroup.controls['bankName'].value,
-        bankAccountName:
-          this.paymentFormGroup.controls['bankAccountName'].value,
-        bankAccountNumber:
-          this.paymentFormGroup.controls['bankAccountNumber'].value,
-        paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
-      })
-      .subscribe({
-        next: (_) => {
-          this.snackBar.open('Expense created successfully', 'Close', {
-            duration: 3000,
-          });
+    const expenseData = {
+      invoiceName: this.metaFormGroup.controls['invoiceName'].value,
+      receiptName: this.metaFormGroup.controls['receiptName'].value,
+      opponentID: this.metaFormGroup.controls['opponentID'].value,
+      // change from date object to YYYY-MM-DD
+      date: dateFormatted,
+      dueDate: dueDateFormatted,
+      purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+      description: this.metaFormGroup.controls['description'].value,
+      dpp: this.valueFormGroup.controls['dpp'].value,
+      pbbkb: this.valueFormGroup.controls['pbbkb'].value,
+      pphCode:
+        this.valueFormGroup.controls['pphCode'].value == ''
+          ? null
+          : this.valueFormGroup.controls['pphCode'].value,
+      pphTaxObject:
+        this.valueFormGroup.controls['pphCode'].value == ''
+          ? null
+          : this.valueFormGroup.controls['pphTaxObject'].value,
+      pphPercentage:
+        this.valueFormGroup.controls['pphCode'].value == ''
+          ? 0
+          : this.valueFormGroup.controls['pphPercentage'].value,
+      bankName: this.paymentFormGroup.controls['bankName'].value,
+      bankAccountName: this.paymentFormGroup.controls['bankAccountName'].value,
+      bankAccountNumber:
+        this.paymentFormGroup.controls['bankAccountNumber'].value,
+      paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
+    };
 
-          this.metaFormGroup.reset({
-            invoiceName: '',
-            receiptName: '',
-            taxInvoiceName: '',
-            supplierID: '',
-            supplierName: '',
-            supplierAddress: '',
-            description: '',
-            date: '',
-            dueDate: '',
-            purchaseType: '',
-          });
+    if (this.paymentFormGroup.controls['createPayment'].value === true) {
+      this.apiService
+        .post('expenses', expenseData)
+        .subscribe({
+          next: (result: any) => {
+            const expenseID = result.expense_id;
+            const paymentData = {
+              purchaseID: null,
+              expenseID: expenseID,
+              reimbursementID: null,
+              salarySlipID: null,
+              date: dueDateFormatted,
+              amount: this.paymentFormGroup.controls['paymentTotal'].value,
+              bankAccountID:
+                this.paymentFormGroup.controls['bankAccountID'].value,
+              status: 'ready',
+            };
+            this.apiService
+              .post('payments', paymentData)
+              .subscribe({
+                next: (_) => {
+                  this.snackBar.open('Expense created successfully', 'Close', {
+                    duration: 3000,
+                  });
+                },
+                error: (error) => {
+                  this.snackBar.open(error.error.detail, 'Close', {
+                    duration: 3000,
+                  });
+                },
+              })
+              .add(() => {
+                this.isSubmitting = false;
+              });
+          },
+        })
+        .add(() => {
+          this.isSubmitting = false;
+        });
+    } else {
+      this.apiService
+        .post('expenses', expenseData)
+        .subscribe({
+          next: (_) => {
+            this.snackBar.open('Expense created successfully', 'Close', {
+              duration: 3000,
+            });
+          },
+          error: (error) => {
+            this.snackBar.open(error.error.detail, 'Close', {
+              duration: 3000,
+            });
+          },
+        })
+        .add(() => {
+          this.isSubmitting = false;
+        });
+    }
+  }
 
-          this.valueFormGroup.reset({
-            dpp: '',
-            ppn: '',
-            ppnValue: 0,
-            pbbkb: 0,
-            pphCode: '',
-            pphTaxObject: '',
-            pphPercentage: 0,
-            pphValue: 0,
-            total: 0,
-          });
-
-          this.paymentFormGroup.reset({
-            bankName: '',
-            bankAccountName: '',
-            bankAccountNumber: '',
-            paymentMethod: '',
-            paymentTotal: 0,
-          });
-
-          this.stepper!.selectedIndex = 0;
-        },
-        error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
-            duration: 3000,
-          });
-        },
-      })
-      .add(() => {
-        this.isSubmitting = false;
-      });
+  fetchBankAccounts() {
+    this.apiService.get('banks', {}).subscribe({
+      next: (data: any) => {
+        this.bankAccounts = data.data;
+      },
+      error: (error) => {
+        this.snackBar.open('Error fetching bank accounts', 'Close', {
+          duration: 3000,
+        });
+      },
+    });
   }
 }

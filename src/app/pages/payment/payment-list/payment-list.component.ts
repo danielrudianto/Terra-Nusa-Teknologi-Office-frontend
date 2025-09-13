@@ -80,7 +80,6 @@ export class PaymentListComponent {
   }
 
   changeSelection(field: string, event: any): void {
-    console.log(event);
     switch (field) {
       case 'pending':
         this.isPending = event.selected;

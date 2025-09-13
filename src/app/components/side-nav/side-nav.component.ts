@@ -55,6 +55,14 @@ export class SideNavComponent {
           },
         },
         {
+          name: 'Purchase Draft',
+          icon: 'description',
+          route: '/Purchase-draft',
+          routerLinkOptions: {
+            exact: false,
+          },
+        },
+        {
           name: 'Reimbursement',
           icon: 'receipt_long',
           route: '/Reimbursement',

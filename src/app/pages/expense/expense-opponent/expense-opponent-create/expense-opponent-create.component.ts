@@ -20,12 +20,17 @@ export class ExpenseOpponentCreateComponent {
     description: new FormControl('', Validators.required),
     type: new FormControl('', Validators.required),
     paymentNumber: new FormControl('', Validators.required),
+    npwp: new FormControl(''),
   });
 
   onSubmit(): void {
     this.isSubmitting = true;
     this.apiService
-      .post('expense-opponents', this.formGroup.value)
+      .post('expense-opponents', {
+        ...this.formGroup.value,
+        npwp:
+          this.formGroup.value.npwp == '' ? null : this.formGroup.value.npwp,
+      })
       .subscribe({
         next: (data) => {
           this.snackBar.open('Data successfully saved', 'Close', {

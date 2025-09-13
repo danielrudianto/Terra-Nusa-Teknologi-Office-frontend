@@ -56,4 +56,13 @@ export class SalesInvoiceListComponent {
         this.isLoading = false;
       });
   }
+
+  changePage(event: any) {
+    if (event.pageSize == this.pageSize) {
+      this.fetchData(event.pageIndex + 1);
+    } else {
+      this.pageSize = event.pageSize;
+      this.fetchData(1);
+    }
+  }
 }
