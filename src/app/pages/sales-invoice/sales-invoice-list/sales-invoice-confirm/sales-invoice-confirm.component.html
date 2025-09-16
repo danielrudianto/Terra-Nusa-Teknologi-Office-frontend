@@ -1,0 +1,117 @@
+<h2 mat-dialog-title>Sales invoice / Confirm</h2>
+<form [formGroup]="formGroup">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput readonly formControlName="date" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Client name</mat-label>
+      <input matInput readonly formControlName="clientName" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Client address</mat-label>
+      <textarea matInput readonly formControlName="clientAddress"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Invoice name</mat-label>
+      <input matInput readonly formControlName="invoiceName" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <input matInput readonly formControlName="description" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>SPK Number</mat-label>
+      <input matInput readonly formControlName="spkNumber" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>DPP</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="dpp"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPN</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="ppn"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh</mat-label>
+      <input matInput readonly formControlName="pphCode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh Tax Object</mat-label>
+      <textarea matInput readonly formControlName="pphTaxObject"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh Value</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="pphValue"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Payment value</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="pphValue"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Tax invoice name</mat-label>
+      <input matInput formControlName="taxInvoiceName" />
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="warn"
+      style="letter-spacing: 0"
+      [disabled]="isSubmitting || isLoading"
+      (click)="reject()"
+      type="button"
+    >
+      Reject
+    </button>
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      [disabled]="isSubmitting || isLoading"
+      (click)="confirm()"
+      type="button"
+    >
+      Confirm
+    </button>
+  </mat-dialog-actions>
+</form>

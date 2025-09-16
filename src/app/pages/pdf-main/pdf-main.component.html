@@ -1,0 +1,28 @@
+<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened position="end">Drawer content</mat-drawer>
+  <mat-drawer-content>
+    <div class="text-center">
+      <h1>Custom PDF files</h1>
+      <p>
+        Combine PDFs in the order you want with the easiest PDF merger
+        available.
+      </p>
+      <button mat-stroked-button color="primary" style="letter-spacing: 0">
+        Upload file
+      </button>
+      <br />
+      <small class="mt-5">or drop PDFs here</small>
+    </div>
+
+    <div class="dropZone">
+      <input
+        type="file"
+        accept="allowedTypes"
+        multiple="allowMultipleFiles"
+        (drop)="onFileDropped($event)"
+        (change)="onFileSelected($event)"
+        #fileDropRef
+      />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

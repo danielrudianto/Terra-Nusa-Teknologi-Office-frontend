@@ -16,7 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
-import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
+import { PaymentSlipHelper } from '../../../helpers/payment-slip.helper';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -25,6 +25,12 @@ function lastStatusDescriptionRequired(): ValidatorFn {
     if (
       lastStatus === 'draft' &&
       (!descControl?.value || descControl.value.trim().length < 10)
+    ) {
+      descControl?.setErrors({ required: true });
+      return { lastStatusDescriptionRequired: true };
+    } else if (
+      lastStatus === 'draft' &&
+      (!descControl?.value || descControl.value.trim().length > 99)
     ) {
       descControl?.setErrors({ required: true });
       return { lastStatusDescriptionRequired: true };
@@ -43,7 +49,10 @@ function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
     const createPayment = group.get('createPayment')?.value;
     const bankAccountID = group.get('bankAccountID');
-    if (createPayment && bankAccountID?.value == null) {
+    if (
+      createPayment == true &&
+      (bankAccountID == null || bankAccountID.value.toString() == '')
+    ) {
       bankAccountID?.setErrors({ required: true });
       return { bankAccountIDRequired: true };
     } else {
@@ -76,7 +85,6 @@ export class PurchaseCreateComponent {
   options: IBank[] = banks;
   isFinal: boolean = false;
   isSubmitting: boolean = false;
-  purchaseType: string | null = null;
   bankAccounts: any[] = [];
 
   get isNumberValid() {
@@ -112,6 +120,7 @@ export class PurchaseCreateComponent {
         Validators.required,
         Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7$/),
       ]),
+      documentType: new FormControl('', Validators.required),
       lastStatus: new FormControl('ready', Validators.required),
       lastStatusDescription: new FormControl(''),
       isInternal: new FormControl(false, Validators.required),
@@ -173,8 +182,15 @@ export class PurchaseCreateComponent {
   ngOnInit() {
     this.fetchBankAccounts();
 
-    this.paymentFormGroup.valueChanges.subscribe((value) => {
-      console.log(value);
+    this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
+      const documentType = this.metaFormGroup.value['documentType'];
+      if (documentType == 'goods') {
+        this.valueFormGroup.patchValue({
+          pphCode: '',
+          pphTaxObject: '',
+          pphPercentage: 0,
+        });
+      }
     });
   }
 
@@ -217,7 +233,7 @@ export class PurchaseCreateComponent {
     });
 
     this.metaFormGroup.controls['purchaseOrderName'].valueChanges.subscribe(
-      (value) => {
+      (_) => {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
@@ -255,7 +271,9 @@ export class PurchaseCreateComponent {
   }
 
   openPPHSelector() {
-    if (this.purchaseType == 'other') {
+    const documentType = this.metaFormGroup.value['documentType'];
+    console.log(documentType);
+    if (documentType == 'other') {
       this.dialog
         .open(PphSelectorComponent, {})
         .afterClosed()
@@ -317,20 +335,6 @@ export class PurchaseCreateComponent {
     );
   }
 
-  onPurchaseTypeChange(event: any): void {
-    const value = event.value;
-    this.purchaseType = value;
-
-    if (this.purchaseType == 'goods') {
-      // disable pph
-      this.valueFormGroup.patchValue({
-        pphCode: '',
-        pphTaxObject: '',
-        pphPercentage: 0,
-      });
-    }
-  }
-
   onSubmit() {
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
@@ -348,7 +352,7 @@ export class PurchaseCreateComponent {
     this.isSubmitting = true;
 
     const purchaseData = {
-      procurementType: this.purchaseType,
+      procurementType: this.metaFormGroup.controls['documentType'].value,
       invoiceName: this.metaFormGroup.controls['invoiceName'].value,
       receiptName: this.metaFormGroup.controls['receiptName'].value,
       taxInvoiceName:
@@ -426,7 +430,7 @@ export class PurchaseCreateComponent {
             };
 
             this.apiService
-              .post('payments', paymentData)
+              .post('outoing-payments', paymentData)
               .subscribe({
                 next: (_) => {
                   if (proxyPayment) {
@@ -466,6 +470,7 @@ export class PurchaseCreateComponent {
                     purchaseType: '',
                     lastStatus: 'ready',
                     lastStatusDescription: '',
+                    isInternal: false,
                   });
 
                   this.valueFormGroup.reset({
@@ -499,7 +504,6 @@ export class PurchaseCreateComponent {
                     proxyPayment: false,
                   });
 
-                  this.purchaseType = null;
                   this.stepper!.selectedIndex = 0;
                 },
                 error: (error) => {
@@ -526,6 +530,13 @@ export class PurchaseCreateComponent {
         .post('purchases', purchaseData)
         .subscribe({
           next: (_) => {
+            if (proxyPayment) {
+              this.generateProxyPaymentPDF({
+                ...purchaseData,
+                totalPayment: paymentAmount,
+              });
+            }
+
             this.snackBar.open('Purchase created successfully', 'Close', {
               duration: 3000,
             });
@@ -544,6 +555,7 @@ export class PurchaseCreateComponent {
               purchaseType: '',
               lastStatus: 'ready',
               lastStatusDescription: '',
+              isInternal: false,
             });
 
             this.valueFormGroup.reset({
@@ -577,7 +589,6 @@ export class PurchaseCreateComponent {
               proxyPayment: false,
             });
 
-            this.purchaseType = null;
             this.stepper!.selectedIndex = 0;
           },
           error: (error) => {

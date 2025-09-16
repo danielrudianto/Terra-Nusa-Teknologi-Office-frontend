@@ -1,0 +1,103 @@
+<h2 mat-dialog-title>Create sales invoice payment</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Invoice name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Client name</mat-label>
+      <input matInput formControlName="clientName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>DPP</mat-label>
+      <input
+        matInput
+        formControlName="dpp"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPN</mat-label>
+      <input
+        matInput
+        formControlName="ppn"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh</mat-label>
+      <input
+        matInput
+        formControlName="pph"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-list>
+      <mat-list-item *ngFor="let data of t.controls">
+        <div matLine>{{ data.get("amount")?.value | number : "0.2-2" }}</div>
+      </mat-list-item>
+    </mat-list>
+  </form>
+  <form [formGroup]="paymentFormGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input
+        matInput
+        formControlName="date"
+        [matDatepicker]="picker"
+      /><mat-datepicker-toggle
+        matIconPrefix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        formControlName="amount"
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank Account Number</mat-label>
+      <mat-select formControlName="bankAccountID">
+        <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+          >{{ bank.bankAccountNumber }} --
+          {{ bank.bankAccountName }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="isLoading || isSubmitting || !paymentFormGroup.valid"
+  >
+    Submit
+  </button>
+</mat-dialog-actions>

@@ -1,17 +1,49 @@
-<div class="p-3">
-  <h2>Daily calendar</h2>
+<h2 mat-dialog-title>Daily calendar</h2>
+<mat-dialog-content>
   <h2>{{ totalPayment | number : "0.2-2" }}</h2>
-
-  <mat-selection-list (selectionChange)="onSelectionChange($event)">
-    <mat-list-option [value]="item.amount" *ngFor="let item of dataSource">
-      <mat-icon
-        [matTooltip]="getTooltip(item)"
-        matListItemIcon
-        (click)="openPaymentData(item.id, $event)"
-        >{{ getIcon(item) }}</mat-icon
+  <mat-drawer-container class="example-container">
+    <mat-drawer mode="side" opened>
+      <mat-selection-list [multiple]="false">
+        <mat-list-option
+          *ngFor="let bankData of bankDataSource"
+          (click)="selectedBankAccountID = bankData.id"
+        >
+          <mat-icon matListItemIcon>folder</mat-icon>
+          <div matListItemTitle>{{ bankData.bankAccountName }}</div>
+          <div matListItemLine>{{ bankData.bankAccountNumber }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div *ngIf="selectedBankAccountID == null">
+        <p>There's no bank account selected</p>
+      </div>
+      <div
+        *ngIf="
+          selectedBankAccountID != null &&
+          getDataSource(selectedBankAccountID).length == 0
+        "
       >
-      <div matListItemTitle [innerHTML]="getDescription(item)"></div>
-      <div matListItemLine>{{ item.amount | number : "0.2-2" }}</div>
-    </mat-list-option>
-  </mat-selection-list>
-</div>
+        <p>There's no data</p>
+      </div>
+      <mat-selection-list
+        (selectionChange)="onSelectionChange($event)"
+        *ngIf="selectedBankAccountID != null"
+      >
+        <mat-list-option
+          [value]="item.amount"
+          *ngFor="let item of getDataSource(selectedBankAccountID)"
+        >
+          <mat-icon
+            [matTooltip]="getTooltip(item)"
+            matListItemIcon
+            (click)="openPaymentData(item.id, $event)"
+            >{{ getIcon(item) }}</mat-icon
+          >
+          <div matListItemTitle [innerHTML]="getDescription(item)"></div>
+          <div matListItemLine>{{ item.amount | number : "0.2-2" }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</mat-dialog-content>

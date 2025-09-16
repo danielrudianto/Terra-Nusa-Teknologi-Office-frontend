@@ -46,7 +46,6 @@ export class SalesInvoiceCreateComponent {
     clientName: new FormControl('', Validators.required),
     clientAddress: new FormControl('', Validators.required),
     clientNPWP: new FormControl(''),
-    taxInvoiceNumber: new FormControl(''),
   });
 
   valueFormGroup: FormGroup = new FormGroup({

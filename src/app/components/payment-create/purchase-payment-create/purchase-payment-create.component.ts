@@ -217,7 +217,7 @@ export class PurchasePaymentCreateComponent {
 
     this.isSubmitting = false;
     this.apiService
-      .post('payments', {
+      .post('outoing-payments', {
         purchaseID: this.data.purchaseID,
         expenseID: null,
         reimbursementID: null,

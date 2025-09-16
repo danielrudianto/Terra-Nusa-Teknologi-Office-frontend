@@ -6,6 +6,7 @@ import {
   PageOrientation,
   PageSize,
 } from 'pdfmake/interfaces';
+import { v4 } from 'uuid';
 
 export interface IPurchasePaymentSlip {
   supplierName: string;
@@ -60,9 +61,7 @@ export interface IReimbursementPaymentSlip {
   bankNameOrigin: string;
 }
 
-export interface IExpensePaymentSlip {
-
-}
+export interface IExpensePaymentSlip {}
 
 export class PaymentSlipHelper {
   static generatePurchasePaymentSlipPDF(data: IPurchasePaymentSlip) {
@@ -483,12 +482,12 @@ export class PaymentSlipHelper {
       },
     };
 
-    pdfMake.createPdf(dd).open();
+    var uuid = v4();
+
+    return pdfMake.createPdf(dd).download(`Payment ${uuid}.pdf`);
   }
 
   static generateReimbursementPaymentSlipPDF(data: IReimbursementPaymentSlip) {}
 
-  static generateExpensePaymentSlipPDF(data:IExpensePaymentSlip){
-    
-  }
+  static generateExpensePaymentSlipPDF(data: IExpensePaymentSlip) {}
 }

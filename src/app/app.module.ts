@@ -147,6 +147,12 @@ import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draf
 import { PurchaseDraftViewComponent } from './pages/purchase-draft/purchase-draft-view/purchase-draft-view.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ExpenseViewComponent } from './pages/expense/expense-view/expense-view.component';
+import { SalesInvoicePaymentCreateComponent } from './components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { CalendarDaySelectorComponent } from './pages/calendar/calendar-day-selector/calendar-day-selector.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -252,6 +258,9 @@ export const MY_FORMATS = {
     PurchaseDraftListComponent,
     PurchaseDraftViewComponent,
     ExpenseViewComponent,
+    SalesInvoicePaymentCreateComponent,
+    CalendarDaySelectorComponent,
+    PdfMainComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -287,6 +296,9 @@ export const MY_FORMATS = {
     MatTooltipModule,
     ClipboardModule,
     MatGridListModule,
+    MatTabsModule,
+    MatSidenavModule,
+    MatBottomSheetModule,
   ],
   providers: [
     provideNgxMask(),

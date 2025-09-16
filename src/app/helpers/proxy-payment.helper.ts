@@ -6,6 +6,7 @@ import {
   PageOrientation,
   PageSize,
 } from 'pdfmake/interfaces';
+import { v4 } from 'uuid';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -217,6 +218,7 @@ export class ProxyPaymentHelper {
       },
     };
 
-    pdfMake.createPdf(dd).open();
+    var uuid = v4();
+    return pdfMake.createPdf(dd).download(`Proxy ${uuid}.pdf`);
   }
 }

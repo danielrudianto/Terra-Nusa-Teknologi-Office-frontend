@@ -129,17 +129,13 @@
         <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
-      <mat-radio-group
-        aria-label="Select an option"
-        (change)="onPurchaseTypeChange($event)"
-      >
-        <mat-radio-button color="primary" value="goods"
-          >Goods Purchase</mat-radio-button
-        >
-        <mat-radio-button color="primary" value="other"
-          >Other Purchase</mat-radio-button
-        >
-      </mat-radio-group>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Document type</mat-label>
+        <mat-select formControlName="documentType">
+          <mat-option [value]="'goods'">Goods purchase</mat-option>
+          <mat-option [value]="'other'">Other purchase</mat-option>
+        </mat-select>
+      </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>Document Status</mat-label>
@@ -162,8 +158,8 @@
             metaFormGroup.get('lastStatus')?.value === 'draft'
           "
         >
-          Description is required and must be at least 10 characters when status
-          is Waiting.
+          Description is required and must be between 10 and 100 characters when
+          status is Waiting.
         </mat-hint>
       </mat-form-field>
 
@@ -177,7 +173,7 @@
       style="letter-spacing: 0"
       mat-stroked-button
       matStepperNext
-      [disabled]="metaFormGroup.invalid || purchaseType === null"
+      [disabled]="metaFormGroup.invalid"
     >
       Next
     </button>
@@ -296,9 +292,6 @@
           decimalScale="2"
           mask="separator"
         />
-        <button mat-icon-button matPrefix (click)="openPPHSelector()">
-          <mat-icon>search</mat-icon>
-        </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">

@@ -55,13 +55,9 @@ export class CalendarTableComponent {
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
     const daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
-
-    // Adjust so Monday is 0, Saturday is 5, Sunday is 6
     let firstDayOfWeek = (firstDay.getDay() + 6) % 7;
 
     let week: (number | null)[] = [];
-    // Fill initial empty cells (for days before the 1st)
-    // If the first day is not Sunday, add empty cells
     if (firstDayOfWeek !== 6) {
       for (let i = 0; i < firstDayOfWeek; i++) {
         week.push(null);
@@ -70,16 +66,13 @@ export class CalendarTableComponent {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDate = new Date(this.year, this.month, day);
-      // 0 = Monday, ..., 5 = Saturday, 6 = Sunday
       const currentDayOfWeek = (currentDate.getDay() + 6) % 7;
 
       if (currentDayOfWeek < 6) {
         week.push(day);
       }
-      // If Saturday or last day of month, push the week and reset
       if (week.length > 0) {
         if (currentDayOfWeek === 5 || day === daysInMonth) {
-          // Fill trailing empty cells if last week is not full
           while (week.length < 6) {
             week.push(null);
           }
@@ -87,7 +80,6 @@ export class CalendarTableComponent {
           week = [];
         }
       }
-      // If Sunday, skip (do not add to week)
     }
 
     this.fetchData();

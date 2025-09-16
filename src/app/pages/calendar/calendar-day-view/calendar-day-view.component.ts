@@ -1,11 +1,12 @@
 import {
   Component,
   EventEmitter,
+  Inject,
   Input,
   Output,
   SimpleChange,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentHistoryComponent } from '../../payment/payment-history/payment-history.component';
@@ -19,29 +20,29 @@ import { MatSelectionListChange } from '@angular/material/list';
 })
 export class CalendarDayViewComponent {
   constructor(
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      date: number;
+      month: number;
+      year: number;
+      bankAccountID: any[];
+    },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
 
-  @Input('date') date!: number | null;
-  @Input('month') month!: number;
-  @Input('year') year!: number;
-  @Input('bankAccountID') bankAccountID: any[] = [];
-
   @Output('onClose') onClose: EventEmitter<void> = new EventEmitter();
 
   isLoadingData: boolean = false;
   dataSource: any[] = [];
+  interpaymentDataSource: any[] = [];
+  bankDataSource: any[] = [];
   dataCount: number = 0;
   selected: number[] = [];
+  selectedBankAccountID: number | null = null;
 
-  ngOnChanges(changes: SimpleChange) {
-    if (this.date == null) {
-      return;
-    }
-
-    this.selected = [];
+  ngOnInit(): void {
     this.fetchDailyData();
   }
 
@@ -49,16 +50,21 @@ export class CalendarDayViewComponent {
     this.isLoadingData = true;
     this.apiService
       .get('calendar/daily', {
-        date: `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(
-          this.date
-        ).padStart(2, '0')}`,
-        bankAccounts: this.bankAccountID
+        date: `${this.data.year}-${String(this.data.month + 1).padStart(
+          2,
+          '0'
+        )}-${String(this.data.date).padStart(2, '0')}`,
+        bankAccounts: this.data.bankAccountID
           .filter((x) => x.selected)
-          .map((x) => x.id),
+          .map((x) => {
+            return x.id;
+          }),
       })
       .subscribe({
         next: (data: any) => {
-          this.dataSource = data;
+          this.dataSource = data.data;
+          this.bankDataSource = data.bankAccounts;
+          this.interpaymentDataSource = data.interpayments;
         },
         error: (error) => {
           this.snackBar.open(error, 'Close', {
@@ -105,6 +111,10 @@ export class CalendarDayViewComponent {
       return 'document_scanner';
     }
 
+    if (data.bankAccountIDDestination != null) {
+      return 'swap_horizontal';
+    }
+
     return 'unknown_document';
   }
 
@@ -144,5 +154,14 @@ export class CalendarDayViewComponent {
       event.source._value?.map((x) => {
         return Number(x);
       }) ?? [];
+  }
+
+  getDataSource(id: number) {
+    const purchases = this.dataSource.filter((x) => x.bankAccountID == id);
+    const interpayments = this.interpaymentDataSource.filter(
+      (x) => x.bankAccountIDOrigin == id || x.bankAccountIDDestination == id
+    );
+
+    return [...purchases, ...interpayments];
   }
 }

@@ -51,7 +51,7 @@ export class PaymentListComponent {
     this.isLoading = true;
     this.page = targetPage;
     this.apiService
-      .get('payments', {
+      .get('outgoing-payments', {
         page: this.page,
         pageSize: this.pageSize,
         isApproved: this.isApproved,

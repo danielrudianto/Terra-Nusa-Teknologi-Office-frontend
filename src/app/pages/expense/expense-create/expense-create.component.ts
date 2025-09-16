@@ -241,7 +241,7 @@ export class ExpenseCreateComponent {
               status: 'ready',
             };
             this.apiService
-              .post('payments', paymentData)
+              .post('outoing-payments', paymentData)
               .subscribe({
                 next: (_) => {
                   this.snackBar.open('Expense created successfully', 'Close', {

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { SalesInvoiceConfirmComponent } from './sales-invoice-confirm/sales-invoice-confirm.component';
+import { SalesInvoicePaymentCreateComponent } from '../../../components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -9,7 +12,11 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './sales-invoice-list.component.scss',
 })
 export class SalesInvoiceListComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
 
   salesInvoices: any[] = [];
   count: number = 0;
@@ -25,6 +32,7 @@ export class SalesInvoiceListComponent {
     'customer',
     'amount',
     'status',
+    'action',
   ];
 
   ngOnInit(): void {
@@ -64,5 +72,38 @@ export class SalesInvoiceListComponent {
       this.pageSize = event.pageSize;
       this.fetchData(1);
     }
+  }
+
+  openPaymentDetail(invoiceID: number) {
+    this.dialog.open(SalesInvoicePaymentCreateComponent, {
+      data: {
+        id: invoiceID,
+      },
+    });
+  }
+
+  openSalesInvoiceConfirmation(id: number) {
+    this.dialog
+      .open(SalesInvoiceConfirmComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((value) => {
+        if (value == 'reject') {
+          const index = this.salesInvoices.findIndex((x) => x.id == id);
+          if (index != -1) {
+            this.salesInvoices[index].isDelete = true;
+          }
+        }
+
+        if (value == 'approve') {
+          const index = this.salesInvoices.findIndex((x) => x.id == id);
+          if (index != -1) {
+            this.salesInvoices[index].isApprove = true;
+          }
+        }
+      });
   }
 }
