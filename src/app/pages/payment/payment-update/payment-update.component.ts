@@ -430,7 +430,7 @@ export class PaymentUpdateComponent {
         if (result === true) {
           this.isSubmitting = true;
           this.apiService
-            .put('outoing-payments/approve/' + this.paymentId, {})
+            .put('outgoing-payments/approve/' + this.paymentId, {})
             .subscribe({
               next: (data) => {
                 this.snackBar.open(
@@ -473,7 +473,7 @@ export class PaymentUpdateComponent {
         if (result === true) {
           this.isSubmitting = true;
           this.apiService
-            .put('outoing-payments/reject/' + this.paymentId, {})
+            .put('outgoing-payments/reject/' + this.paymentId, {})
             .subscribe({
               next: (data) => {
                 this.snackBar.open(

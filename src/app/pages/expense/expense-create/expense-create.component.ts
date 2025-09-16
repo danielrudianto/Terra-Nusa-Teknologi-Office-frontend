@@ -48,7 +48,7 @@ export class ExpenseCreateComponent {
   });
 
   valueFormGroup: FormGroup = new FormGroup({
-    dpp: new FormControl('', [Validators.required, Validators.min(1)]),
+    dpp: new FormControl('', [Validators.required, Validators.min(0.01)]),
     pbbkb: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
@@ -241,7 +241,7 @@ export class ExpenseCreateComponent {
               status: 'ready',
             };
             this.apiService
-              .post('outoing-payments', paymentData)
+              .post('outgoing-payments', paymentData)
               .subscribe({
                 next: (_) => {
                   this.snackBar.open('Expense created successfully', 'Close', {

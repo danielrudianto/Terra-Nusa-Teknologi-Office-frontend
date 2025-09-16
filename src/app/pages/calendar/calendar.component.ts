@@ -1,7 +1,4 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ApiService } from 'src/app/services/api.service';
-import { CalendarDayViewComponent } from './calendar-day-view/calendar-day-view.component';
 import { CalendarDaySelectorComponent } from './calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
@@ -12,11 +9,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
   styleUrl: './calendar.component.scss',
 })
 export class CalendarComponent {
-  constructor(
-    private apiService: ApiService,
-    private dialog: MatDialog,
-    private sheet: MatBottomSheet
-  ) {}
+  constructor(private sheet: MatBottomSheet) {}
 
   month: number = new Date().getMonth(); // Months are 0-indexed in JS
   year: number = new Date().getFullYear();
@@ -24,6 +17,8 @@ export class CalendarComponent {
   isLoadingData: boolean = false;
 
   onCalendarBoxClicked(event: number | null) {
+    if (event == null) return;
+
     this.sheet.open(CalendarDaySelectorComponent, {
       data: {
         date: event,

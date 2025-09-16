@@ -1,3 +1,10 @@
-<mat-bottom-sheet-container>
-    <h1>Hello!</h1>
-</mat-bottom-sheet-container>
+<mat-list *ngIf="!isLoading">
+  <mat-list-item
+    *ngFor="let data of bankDataSource"
+    (click)="viewData(data.id)"
+  >
+    <mat-icon matListItemIcon>folder</mat-icon>
+    <span matListItemTitle>{{ data.bankAccountName }}</span>
+    <span matListItemLine>{{ data.bankAccountNumber }}</span>
+  </mat-list-item>
+</mat-list>

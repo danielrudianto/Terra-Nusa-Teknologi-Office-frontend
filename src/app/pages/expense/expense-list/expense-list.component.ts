@@ -7,6 +7,7 @@ import { PurchaseReportSelectComponent } from '../../purchase/purchase-list/purc
 import { PurchasePaymentCreateComponent } from 'src/app/components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import { ExpenseOpponentCreateComponent } from '../expense-opponent/expense-opponent-create/expense-opponent-create.component';
 import { ExpensePaymentCreateComponent } from 'src/app/components/payment-create/expense-payment-create/expense-payment-create.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-expense-list',
@@ -15,7 +16,11 @@ import { ExpensePaymentCreateComponent } from 'src/app/components/payment-create
   standalone: false,
 })
 export class ExpenseListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   filterFormGroup: FormGroup = new FormGroup({
     isDue: new FormControl(false, { nonNullable: true }),
@@ -137,7 +142,9 @@ export class ExpenseListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          console.error(err);
+          this.snackBar.open(err.error.detail, 'Close', {
+            duration: 3000,
+          });
         },
       })
       .add(() => {

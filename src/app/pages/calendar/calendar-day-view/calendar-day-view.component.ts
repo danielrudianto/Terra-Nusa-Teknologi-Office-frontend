@@ -22,65 +22,24 @@ export class CalendarDayViewComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      date: number;
-      month: number;
-      year: number;
-      bankAccountID: any[];
+      bankAccount: {
+        bankAccountName: string;
+        bankAccountNumber: string;
+        bankName: string;
+      };
+      payments: any[];
+      incomingInterpayments: any[];
+      outgoingInterpayments: any[];
     },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
 
-  @Output('onClose') onClose: EventEmitter<void> = new EventEmitter();
-
   isLoadingData: boolean = false;
-  dataSource: any[] = [];
-  interpaymentDataSource: any[] = [];
-  bankDataSource: any[] = [];
-  dataCount: number = 0;
-  selected: number[] = [];
-  selectedBankAccountID: number | null = null;
+  selected: number = 0;
 
-  ngOnInit(): void {
-    this.fetchDailyData();
-  }
-
-  fetchDailyData() {
-    this.isLoadingData = true;
-    this.apiService
-      .get('calendar/daily', {
-        date: `${this.data.year}-${String(this.data.month + 1).padStart(
-          2,
-          '0'
-        )}-${String(this.data.date).padStart(2, '0')}`,
-        bankAccounts: this.data.bankAccountID
-          .filter((x) => x.selected)
-          .map((x) => {
-            return x.id;
-          }),
-      })
-      .subscribe({
-        next: (data: any) => {
-          this.dataSource = data.data;
-          this.bankDataSource = data.bankAccounts;
-          this.interpaymentDataSource = data.interpayments;
-        },
-        error: (error) => {
-          this.snackBar.open(error, 'Close', {
-            duration: 1000,
-          });
-          this.closeDialog();
-        },
-      })
-      .add(() => {
-        this.isLoadingData = false;
-      });
-  }
-
-  closeDialog() {
-    this.onClose.emit();
-  }
+  ngOnInit(): void {}
 
   getDescription(data: any) {
     if (data.expense != null) {
@@ -134,6 +93,10 @@ export class CalendarDayViewComponent {
     return 'Unknown';
   }
 
+  onSelectionChange(event: MatSelectionListChange) {
+    console.log(event.options);
+  }
+
   openPaymentData(paymentID: number, event: any) {
     event.stopPropagation();
     this.dialog.open(PaymentHistoryComponent, {
@@ -141,27 +104,5 @@ export class CalendarDayViewComponent {
         id: paymentID,
       },
     });
-  }
-
-  get totalPayment(): number {
-    return this.selected.reduce((a, b) => {
-      return a + b;
-    }, 0);
-  }
-
-  onSelectionChange(event: MatSelectionListChange) {
-    this.selected =
-      event.source._value?.map((x) => {
-        return Number(x);
-      }) ?? [];
-  }
-
-  getDataSource(id: number) {
-    const purchases = this.dataSource.filter((x) => x.bankAccountID == id);
-    const interpayments = this.interpaymentDataSource.filter(
-      (x) => x.bankAccountIDOrigin == id || x.bankAccountIDDestination == id
-    );
-
-    return [...purchases, ...interpayments];
   }
 }

@@ -430,7 +430,7 @@ export class PurchaseCreateComponent {
             };
 
             this.apiService
-              .post('outoing-payments', paymentData)
+              .post('outgoing-payments', paymentData)
               .subscribe({
                 next: (_) => {
                   if (proxyPayment) {

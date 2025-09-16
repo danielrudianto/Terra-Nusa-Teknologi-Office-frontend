@@ -137,7 +137,7 @@ export class SalaryPaymentCreateComponent {
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     this.apiService
-      .post('outoing-payments', {
+      .post('outgoing-payments', {
         purchaseID: null,
         expenseID: null,
         reimbursementID: null,
