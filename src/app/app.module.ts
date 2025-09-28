@@ -152,7 +152,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CalendarDaySelectorComponent } from './pages/calendar/calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-// import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
 import { LoansComponent } from './pages/loans/loans.component';
 import { LoansListComponent } from './pages/loans/loans-list/loans-list.component';
 import { LoansCreateComponent } from './pages/loans/loans-create/loans-create.component';
@@ -161,6 +160,7 @@ import { PphSalaryRecapComponent } from './pages/taxing/pph-salary-recap/pph-sal
 import { FileDropComponent } from './pages/pdf-main/file-drop/file-drop.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
 
 export const MY_FORMATS = {
   parse: {
@@ -268,7 +268,7 @@ export const MY_FORMATS = {
     ExpenseViewComponent,
     SalesInvoicePaymentCreateComponent,
     CalendarDaySelectorComponent,
-    // PdfMainComponent,
+    PdfMainComponent,
     LoansComponent,
     LoansListComponent,
     LoansCreateComponent,

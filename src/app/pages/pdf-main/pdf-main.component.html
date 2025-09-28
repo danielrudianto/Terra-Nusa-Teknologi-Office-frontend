@@ -1,4 +1,3 @@
-<!-- merge.component.html -->
 <div class="merge-container">
   <div class="header-section">
     <h1>Merge PDF</h1>
@@ -15,165 +14,162 @@
         class="file-drop-zone"
       />
 
-      <!-- Uploaded Files List -->
-      <div class="files-section" *ngIf="pdfFiles.length > 0">
+      <!-- Processing Indicator -->
+      <div *ngIf="isProcessing" class="processing-overlay">
+        <div class="processing-spinner"></div>
+        <p>Processing PDF files...</p>
+        <span class="processing-text">{{ processingProgress }}</span>
+      </div>
+
+      <!-- Uploaded Files Grid -->
+      <div
+        *ngIf="processedDocuments.length > 0"
+        class="files-section-container"
+        [class.processing]="isProcessing"
+      >
         <div class="section-header">
-          <h3>PDF Files to Merge ({{ pdfFiles.length }})</h3>
-          <p>Drag to reorder files. The merge will follow this order.</p>
+          <h3>PDF Pages ({{ processedDocuments.length }})</h3>
+          <div class="header-actions">
+            <button
+              class="btn-primary"
+              (click)="mergePdfs()"
+              [disabled]="isProcessing || processedDocuments.length < 2"
+            >
+              <span class="btn-icon">🔄</span>
+              Merge PDFs
+            </button>
+            <button
+              class="btn-secondary"
+              (click)="clearAll()"
+              [disabled]="isProcessing"
+            >
+              <span class="btn-icon">🗑️</span>
+              Clear All
+            </button>
+          </div>
         </div>
 
         <div
-          class="files-list"
+          class="files-grid"
           cdkDropList
+          [cdkDropListData]="processedDocuments"
           (cdkDropListDropped)="onFileDropped($event)"
         >
           <div
-            class="file-item"
-            *ngFor="let pdfFile of pdfFiles; let i = index"
+            *ngFor="let page of processedDocuments; let i = index"
             cdkDrag
+            class="file-card"
+            [class.dragging]="isDragging"
+            [class.processing]="isProcessing"
           >
+            <!-- Drag Handle -->
             <div class="drag-handle" cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
+              <span class="handle-icon">⋮⋮</span>
             </div>
 
-            <div class="file-icon">
-              <mat-icon>picture_as_pdf</mat-icon>
+            <!-- Page Thumbnail -->
+            <div class="thumbnail-container">
+              <img
+                [src]="page.thumbnail"
+                [alt]="'Page ' + page.pageNumber"
+                class="thumbnail-image"
+                [class.loading]="isProcessing"
+              />
+              <div class="page-badge">{{ i + 1 }}</div>
             </div>
 
+            <!-- Page Info -->
             <div class="file-info">
-              <span class="file-name">{{ pdfFile.name }}</span>
-              <span class="file-details">
-                {{ pdfFile.pageCount }} pages • {{ pdfFile.size }}
-              </span>
+              <h4 class="file-name" [title]="page.fileName">
+                {{ getShortFileName(page.fileName) }}
+              </h4>
+              <p class="page-info">Page {{ page.pageNumber }}</p>
+              <p class="file-origin" [title]="getFileOrigin(page.fileName)">
+                {{ getFileOrigin(page.fileName) }}
+              </p>
             </div>
 
+            <!-- Actions -->
             <div class="file-actions">
               <button
-                mat-icon-button
+                class="btn-action move-up"
                 (click)="moveFileUp(i)"
-                [disabled]="i === 0"
+                [disabled]="i === 0 || isProcessing"
+                title="Move up"
               >
-                <mat-icon>arrow_upward</mat-icon>
+                ↑
               </button>
               <button
-                mat-icon-button
+                class="btn-action move-down"
                 (click)="moveFileDown(i)"
-                [disabled]="i === pdfFiles.length - 1"
+                [disabled]="i === processedDocuments.length - 1 || isProcessing"
+                title="Move down"
               >
-                <mat-icon>arrow_downward</mat-icon>
+                ↓
               </button>
               <button
-                mat-icon-button
-                color="warn"
-                (click)="removeFile(pdfFile.id)"
+                class="btn-action remove"
+                (click)="removeFile(i)"
+                [disabled]="isProcessing"
+                title="Remove"
               >
-                <mat-icon>delete</mat-icon>
+                ✕
               </button>
             </div>
+
+            <!-- Drag Preview -->
+            <div *cdkDragPreview class="drag-preview">
+              <img [src]="page.thumbnail" />
+              <span>{{ getShortFileName(page.fileName) }}</span>
+            </div>
+
+            <!-- Drop Placeholder -->
+            <div *cdkDragPlaceholder class="drop-placeholder"></div>
           </div>
         </div>
 
-        <!-- Summary -->
-        <div class="summary-section">
-          <div class="summary-item">
-            <span>Total files:</span>
-            <strong>{{ pdfFiles.length }}</strong>
-          </div>
-          <div class="summary-item">
-            <span>Total pages:</span>
-            <strong>{{ totalPages }}</strong>
-          </div>
-          <div class="summary-item">
-            <span>Total size:</span>
-            <strong>{{ totalSize }}</strong>
-          </div>
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions" *ngIf="processedDocuments.length > 1">
+          <button
+            class="btn-quick"
+            (click)="reverseOrder()"
+            [disabled]="isProcessing"
+          >
+            🔄 Reverse Order
+          </button>
+          <button
+            class="btn-quick"
+            (click)="shuffleOrder()"
+            [disabled]="isProcessing"
+          >
+            🎲 Shuffle
+          </button>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div class="empty-state" *ngIf="pdfFiles.length === 0">
-        <mat-icon class="empty-icon">merge_type</mat-icon>
+      <div
+        class="empty-state"
+        *ngIf="processedDocuments.length === 0 && !isProcessing"
+      >
+        <div class="empty-icon">📄</div>
         <h3>No PDF files added yet</h3>
         <p>Drag and drop PDF files above or click to browse</p>
+        <div class="empty-features">
+          <div class="feature">
+            <span class="feature-icon">🔀</span>
+            <span>Drag to reorder pages</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">🖼️</span>
+            <span>Visual page previews</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">⚡</span>
+            <span>Fast processing</span>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- Sidebar Options -->
-    <div class="sidebar-options">
-      <mat-card class="options-card">
-        <mat-card-header>
-          <mat-card-title>Merge Options</mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content>
-          <div class="option-group">
-            <mat-checkbox [(ngModel)]="mergeOptions.addPageNumbers">
-              Add page numbers
-            </mat-checkbox>
-
-            <div class="option-subgroup" *ngIf="mergeOptions.addPageNumbers">
-              <mat-radio-group [(ngModel)]="mergeOptions.pageNumberPosition">
-                <mat-radio-button value="top">Top of page</mat-radio-button>
-                <mat-radio-button value="bottom"
-                  >Bottom of page</mat-radio-button
-                >
-              </mat-radio-group>
-            </div>
-          </div>
-
-          <div class="option-group">
-            <mat-checkbox [(ngModel)]="mergeOptions.addTableOfContents">
-              Add table of contents
-            </mat-checkbox>
-          </div>
-
-          <div class="option-group">
-            <label>Output Quality</label>
-            <mat-radio-group [(ngModel)]="mergeOptions.quality">
-              <mat-radio-button value="standard"
-                >Standard (Smaller file)</mat-radio-button
-              >
-              <mat-radio-button value="high">High quality</mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Action Buttons -->
-      <div class="action-buttons">
-        <button
-          mat-raised-button
-          color="primary"
-          class="merge-button"
-          (click)="mergePdfs()"
-          [disabled]="pdfFiles.length < 2 || isMerging"
-        >
-          <mat-icon>merge</mat-icon>
-          {{ isMerging ? "Merging..." : "Merge PDFs" }}
-        </button>
-
-        <button
-          mat-button
-          color="warn"
-          (click)="clearAll()"
-          [disabled]="pdfFiles.length === 0"
-        >
-          <mat-icon>delete_sweep</mat-icon>
-          Clear All
-        </button>
-      </div>
-
-      <!-- Progress Bar -->
-      <mat-card *ngIf="isMerging" class="progress-card">
-        <mat-card-content>
-          <p>Merging PDF files...</p>
-          <mat-progress-bar
-            mode="determinate"
-            [value]="mergeProgress"
-          ></mat-progress-bar>
-          <span class="progress-text">{{ mergeProgress }}%</span>
-        </mat-card-content>
-      </mat-card>
     </div>
   </div>
 </div>
