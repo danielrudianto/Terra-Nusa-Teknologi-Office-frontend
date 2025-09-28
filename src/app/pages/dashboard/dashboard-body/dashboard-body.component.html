@@ -1,17 +1,18 @@
 <div class="dashboard-body__wrapper">
-  <div class="dashboard-body__body">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-8">
-          <h1>Dashboard</h1>
-          <p class="accent mb-4">
-            Plan, prioritize, and accomplish your tasks with ease.
-          </p>
-        </div>
-        <div class="col-4">
-          <div class="d-flex justify-content-end align-items-center h-100">
-            <button type="button" class="btn outlined" routerLink="/Purchase/Create">Add new purchase</button>
-          </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Dashboard</h1>
+        <p class="accent mb-4">
+          Plan, prioritize, and accomplish your tasks with ease.
+        </p>
+      </div>
+      <div class="col-12">
+        <div class="dashboard-card">
+          <h1>MERGE, SPLIT, AND SAVE</h1>
+          <h1 class="red">IN THE TIP OF YOUR HAND</h1>
+
+          <button [routerLink]="'/PDF'">Get started</button>
         </div>
       </div>
     </div>

@@ -1,1 +1,97 @@
-<p>purchase-draft-view works!</p>
+<h2 mat-dialog-title>Purchase draft</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Supplier name</mat-label>
+      <input matInput formControlName="supplierName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Supplier address</mat-label>
+      <textarea matInput formControlName="supplierAddress"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Purchase order name</mat-label>
+      <input matInput formControlName="purchaseOrderName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Project name</mat-label>
+      <input matInput formControlName="projectName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Purchase type</mat-label>
+      <input matInput formControlName="purchaseType" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>DPP</mat-label>
+      <input
+        matInput
+        formControlName="dpp"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPN</mat-label>
+      <input
+        matInput
+        formControlName="ppn"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PBBKB</mat-label>
+      <input
+        matInput
+        formControlName="pbbkb"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total</mat-label>
+      <input
+        matInput
+        formControlName="total"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    (click)="createPurchase()"
+  >
+    Create purchase
+  </button>
+</mat-dialog-actions>

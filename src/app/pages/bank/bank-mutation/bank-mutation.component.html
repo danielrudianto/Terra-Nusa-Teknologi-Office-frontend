@@ -1,8 +1,19 @@
 <mat-form-field>
   <mat-label>Enter a date range</mat-label>
   <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-    <input matStartDate formControlName="start" placeholder="Start date" />
-    <input matEndDate formControlName="end" placeholder="End date" />
+    <input
+      matStartDate
+      formControlName="start"
+      placeholder="Start date"
+      #dateRangeStart
+    />
+    <input
+      matEndDate
+      formControlName="end"
+      placeholder="End date"
+      #dateRangeEnd
+      (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
+    />
   </mat-date-range-input>
   <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -19,16 +30,16 @@
     </ng-container>
 
     <ng-container matColumnDef="opponent">
-      <mat-header-cell *matHeaderCellDef> Oopponent </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> Opponent </mat-header-cell>
       <mat-cell *matCellDef="let opponent">
-        {{ getOpponentName(opponent) }}
+        {{ opponent.opponent }}
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="document">
       <mat-header-cell *matHeaderCellDef> Document </mat-header-cell>
       <mat-cell *matCellDef="let opponent">
-        {{ getDocumentName(opponent) }}
+        {{ opponent.document }}
       </mat-cell>
     </ng-container>
 
@@ -42,7 +53,7 @@
     <ng-container matColumnDef="balance">
       <mat-header-cell *matHeaderCellDef> Balance </mat-header-cell>
       <mat-cell *matCellDef="let opponent">
-        {{ opponent.amount }}
+        {{ opponent.balance | currency : "Rp." }}
       </mat-cell>
     </ng-container>
 
@@ -60,6 +71,7 @@
     [pageSize]="10"
     [showFirstLastButtons]="true"
     [length]="dataCount"
+    [pageIndex]="page - 1"
     (page)="onPageChange($event)"
   ></mat-paginator>
 </div>

@@ -48,40 +48,14 @@
   <mat-form-field appearance="outline" class="w-100">
     <mat-label>Purchase type</mat-label>
     <mat-select formControlName="incomeType">
-      <mat-optgroup label="Office Expenses">
-        <mat-option value="5.1.1">Asset purchase</mat-option>
-        <mat-option value="5.1.2">Asset maintenance</mat-option>
-        <mat-option value="5.1.3">Prepaid rent expense</mat-option>
-        <mat-option value="5.1.4">Employee expense</mat-option>
-        <mat-option value="5.1.5">Logistic expense</mat-option>
-        <mat-option value="5.1.6">Document handling & Stationaries</mat-option>
-        <mat-option value="5.1.7">Utilities</mat-option>
-        <mat-optgroup label="Tax">
-          <mat-option value="5.1.8.1">PPN</mat-option>
-          <mat-option value="5.1.8.2">PPh pasal 23</mat-option>
-          <mat-option value="5.1.8.3">PPh pasal 21</mat-option>
-          <mat-option value="5.1.8.4">PPh 4 ayat (2)</mat-option>
-          <mat-option value="5.1.8.5">Annual tax report</mat-option>
-          <mat-option value="5.1.8.6">Penalty</mat-option>
-        </mat-optgroup>
-        <mat-option value="5.1.9">Administration fees</mat-option>
-        <mat-option value="5.1.10">Interests</mat-option>
-        <mat-option value="5.1.11">Rounding up</mat-option>
+      <mat-optgroup label="Other income">
+        <mat-option value="7.1">Income from interest</mat-option>
+        <mat-option value="7.2">Income from royalty</mat-option>
+        <mat-option value="7.3">Income from dividend</mat-option>
+        <mat-option value="7.5">Other income</mat-option>
       </mat-optgroup>
-
-      <mat-optgroup label="Project Expenses">
-        <mat-option value="A">Transportation</mat-option>
-        <mat-option value="B">Equipment rental</mat-option>
-        <mat-option value="C">Fuel</mat-option>
-        <mat-option value="D">Manpower</mat-option>
-        <mat-option value="E"
-          >Coordination; Consumption; and Accomodation</mat-option
-        >
-        <mat-option value="F">Material</mat-option>
-        <mat-option value="G"
-          >Project supporting equipment and supplies</mat-option
-        >
-        <mat-option value="H">Human resources</mat-option>
+      <mat-optgroup label="Miscelanous income">
+        <mat-option value="7.4">Income from rounding up</mat-option>
       </mat-optgroup>
     </mat-select>
   </mat-form-field>

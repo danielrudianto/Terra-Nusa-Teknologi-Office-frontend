@@ -1,10 +1,44 @@
-/* You can add global styles to this file, and also import other style files */
-@use "fonts";
-@use "input";
-@use "buttons";
-@use "tables";
-
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Monsterrat/static/Montserrat-Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Monsterrat/static/Montserrat-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Monsterrat/static/Montserrat-BoldItalic.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Monsterrat/static/Montserrat-Black.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("assets/fonts/Monsterrat/static/Montserrat-BlackItalic.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
 
 :root {
   --background-color: white;

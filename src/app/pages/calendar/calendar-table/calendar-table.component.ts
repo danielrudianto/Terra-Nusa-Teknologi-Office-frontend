@@ -56,24 +56,26 @@ export class CalendarTableComponent {
     const firstDay = new Date(this.year, this.month, 1);
     const daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
     let firstDayOfWeek = (firstDay.getDay() + 6) % 7;
+    console.log(firstDayOfWeek);
 
     let week: (number | null)[] = [];
-    if (firstDayOfWeek !== 6) {
-      for (let i = 0; i < firstDayOfWeek; i++) {
-        week.push(null);
-      }
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      week.push(null);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDate = new Date(this.year, this.month, day);
+      // console.log(currentDate.getDay());
       const currentDayOfWeek = (currentDate.getDay() + 6) % 7;
+      console.log(currentDayOfWeek, currentDate);
 
-      if (currentDayOfWeek < 6) {
+      if (currentDayOfWeek <= 6) {
         week.push(day);
       }
+
       if (week.length > 0) {
-        if (currentDayOfWeek === 5 || day === daysInMonth) {
-          while (week.length < 6) {
+        if (currentDayOfWeek === 6 || day === daysInMonth) {
+          while (week.length <= 6) {
             week.push(null);
           }
           this.weeks.push(week);
@@ -81,6 +83,8 @@ export class CalendarTableComponent {
         }
       }
     }
+
+    console.log(this.weeks);
 
     this.fetchData();
   }

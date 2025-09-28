@@ -108,7 +108,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/
         ),
       ]),
       projectName: new FormControl('', [
@@ -118,7 +118,9 @@ export class PurchaseCreateComponent {
       ]),
       purchaseType: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7$/),
+        Validators.pattern(
+          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12$/
+        ),
       ]),
       documentType: new FormControl('', Validators.required),
       lastStatus: new FormControl('ready', Validators.required),
@@ -237,7 +239,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -272,7 +274,6 @@ export class PurchaseCreateComponent {
 
   openPPHSelector() {
     const documentType = this.metaFormGroup.value['documentType'];
-    console.log(documentType);
     if (documentType == 'other') {
       this.dialog
         .open(PphSelectorComponent, {})
@@ -336,6 +337,23 @@ export class PurchaseCreateComponent {
   }
 
   onSubmit() {
+    this.isSubmitting = true;
+
+    this.apiService
+      .post(`purchases/check`, {
+        invoiceName: this.metaFormGroup.controls['invoiceName'].value,
+        purchaseOrderName:
+          this.metaFormGroup.controls['purchaseOrderName'].value,
+      })
+      .subscribe({
+        next: (data) => {},
+        error: (error) => {
+          this.snackBar.open(error.error.detail, 'Close', {
+            duration: 3000,
+          });
+        },
+      });
+
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
 
@@ -348,8 +366,6 @@ export class PurchaseCreateComponent {
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
     const proxyPayment = this.paymentFormGroup.controls['proxyPayment'].value;
     const paymentAmount = this.paymentFormGroup.controls['paymentTotal'].value;
-
-    this.isSubmitting = true;
 
     const purchaseData = {
       procurementType: this.metaFormGroup.controls['documentType'].value,

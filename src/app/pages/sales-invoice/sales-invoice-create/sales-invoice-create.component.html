@@ -217,6 +217,19 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
+        <mat-label>BPJS (Rp.)</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bpjs"
+          placeholder="BPJS"
+          prefix="Rp. "
+          thousandSeparator=" "
+          mask="separator.2"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Total (Rp.)</mat-label>
         <input
           matInput

@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { PurchaseDraftViewComponent } from '../purchase-draft-view/purchase-draft-view.component';
 
 @Component({
   selector: 'app-purchase-draft-list',
@@ -10,7 +12,11 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './purchase-draft-list.component.scss',
 })
 export class PurchaseDraftListComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
 
   page: number = 1;
   pageSize: number = 10;
@@ -67,5 +73,45 @@ export class PurchaseDraftListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  viewPurchase(id: number) {
+    this.dialog.open(PurchaseDraftViewComponent, {
+      data: {
+        id: id,
+      },
+    });
+  }
+
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchData(1);
+  }
+
+  displayedColumns: string[] = [
+    'date',
+    'supplier',
+    'projectName',
+    'purchaseOrderName',
+    'total',
+    'status',
+    'action',
+  ];
+
+  changePage(event: any) {
+    if (event.pageSize !== this.pageSize) {
+      this.page = 1;
+      this.pageSize = event.pageSize;
+      this.fetchData(this.page, this.pageSize);
+    } else {
+      this.page = event.pageIndex + 1;
+      this.fetchData(this.page, this.pageSize);
+    }
   }
 }

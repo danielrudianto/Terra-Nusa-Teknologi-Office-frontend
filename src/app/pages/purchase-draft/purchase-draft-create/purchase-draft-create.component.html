@@ -1,97 +1,170 @@
 <div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Purchase">Purchase</a> / Create</h1>
+  <h1 class="title">
+    <a routerLink="/Purchase-draft">Purchase draft</a> / Create
+  </h1>
 </div>
-<mat-stepper #stepper>
-  <mat-step [stepControl]="metaFormGroup">
-    <form [formGroup]="metaFormGroup">
-      <ng-template matStepLabel>Meta Data</ng-template>
+<form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+  <ng-template matStepLabel>Meta Data</ng-template>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Supplier</mat-label>
-        <input
-          matInput
-          formControlName="supplierName"
-          type="text"
-          placeholder="Supplier name"
-          readonly
-        />
-        <button
-          matPrefix
-          mat-icon-button
-          (click)="openSupplierSelector()"
-          type="button"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Supplier</mat-label>
+    <input
+      matInput
+      formControlName="supplierName"
+      type="text"
+      placeholder="Supplier name"
+      readonly
+    />
+    <button
+      matPrefix
+      mat-icon-button
+      (click)="openSupplierSelector()"
+      type="button"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <textarea
-          matInput
-          formControlName="supplierAddress"
-          rows="3"
-          placeholder="Supplier address"
-          readonly
-          style="resize: none"
-        ></textarea>
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <textarea
+      matInput
+      formControlName="supplierAddress"
+      rows="3"
+      placeholder="Supplier address"
+      readonly
+      style="resize: none"
+    ></textarea>
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Description</mat-label>
-        <input
-          matInput
-          formControlName="description"
-          type="text"
-          placeholder="Description"
-        />
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Description</mat-label>
+    <input
+      matInput
+      formControlName="description"
+      type="text"
+      placeholder="Description"
+    />
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase Order Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="purchaseOrderName"
-          placeholder="Purchase Order Name"
-        />
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Purchase Order Name</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="purchaseOrderName"
+      placeholder="Purchase Order Name"
+    />
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Project</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="projectName"
-          placeholder="Project name"
-        />
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Project</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="projectName"
+      placeholder="Project name"
+    />
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase type</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="purchaseType"
-          placeholder="Purchase Type"
-          readonly
-        />
-      </mat-form-field>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Purchase type</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="purchaseType"
+      placeholder="Purchase Type"
+      readonly
+    />
+  </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100 mb-3">
-        <mat-label>Date</mat-label>
-        <input
-          matInput
-          formControlName="date"
-          placeholder="Date"
-          [matDatepicker]="picker"
-        />
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        <mat-hint>DD/MM/YYYY</mat-hint>
-      </mat-form-field>
-    </form>
-  </mat-step>
-</mat-stepper>
+  <mat-form-field appearance="outline" class="w-100 mb-3">
+    <mat-label>Date</mat-label>
+    <input
+      matInput
+      formControlName="date"
+      placeholder="Date"
+      [matDatepicker]="picker"
+    />
+    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-hint>DD/MM/YYYY</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100 mt-3">
+    <mat-label>DPP</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="dpp"
+      placeholder="DPP"
+      prefix="Rp. "
+      thousandSeparator=" "
+      decimalScale="2"
+      mask="separator"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>PPN (%)</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="ppn"
+      placeholder="PPN"
+      suffix="%"
+      thousandSeparator=" "
+      mask="separator.2"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>PPN (Rp.)</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="ppnValue"
+      placeholder="PPN (Rp.)"
+      prefix="Rp. "
+      thousandSeparator=" "
+      mask="separator.2"
+      readonly
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>PBBKB (Rp.)</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="pbbkb"
+      placeholder="PBBKB (Rp.)"
+      prefix="Rp. "
+      thousandSeparator=" "
+      decimalScale="2"
+      mask="separator.2"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Total</mat-label>
+    <input
+      matInput
+      type="text"
+      [value]="total | number : '0.2-2'"
+      placeholder="Total (Rp.)"
+      prefix="Rp. "
+      thousandSeparator=" "
+      mask="separator.2"
+      readonly
+    />
+  </mat-form-field>
+  <button
+    type="submit"
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    [disabled]="isSubmitting || !metaFormGroup.valid"
+  >
+    Submit
+  </button>
+</form>

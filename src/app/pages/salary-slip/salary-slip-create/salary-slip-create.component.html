@@ -71,6 +71,57 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank name</mat-label>
+      <input
+        #input
+        matInput
+        type="text"
+        formControlName="bankName"
+        placeholder="Bank Name"
+        [matAutocomplete]="auto"
+        (input)="filter()"
+        (focus)="filter()"
+      />
+      <mat-autocomplete requireSelection #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let option of filteredOptions"
+          [value]="option.name"
+          >{{ option.name }}</mat-option
+        >
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account name</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="bankAccountName"
+        placeholder="Bank Account Name"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Payment Method</mat-label>
+      <mat-select formControlName="paymentMethod">
+        <mat-option value="bank">Bank Transfer</mat-option>
+        <mat-option value="va">Virtual Account</mat-option>
+        <mat-option value="cash">Cheque</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account number</mat-label>
+      <!-- Input for bank account name -->
+      <input
+        matInput
+        type="text"
+        formControlName="bankAccountNumber"
+        placeholder="Bank Account Number"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
       <mat-label>Basic salary</mat-label>
       <input
         matInput
@@ -83,34 +134,6 @@
         mask="separator"
       />
     </mat-form-field>
-
-    <div class="row">
-      <div class="col-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Overtime hours</mat-label>
-          <input
-            matInput
-            type="number"
-            formControlName="overtimeQuantity"
-            placeholder="Enter overtime hours"
-          />
-        </mat-form-field>
-      </div>
-      <div class="col-8">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Overtime rate</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="overtimeRate"
-            placeholder="Enter overtime amount"
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
-      </div>
-    </div>
 
     <div class="row">
       <div class="col-4">
@@ -160,6 +183,34 @@
             type="text"
             formControlName="transportationAllowanceRate"
             placeholder="Enter transportation allowance rate"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Overtime hours</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="overtimeQuantity"
+            placeholder="Enter overtime hours"
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-8">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Overtime rate</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="overtimeRate"
+            placeholder="Enter overtime amount"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -359,57 +410,32 @@
         <mat-icon>calculate</mat-icon>
       </button>
     </mat-form-field>
-
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank name</mat-label>
-      <input
-        #input
-        matInput
-        type="text"
-        formControlName="bankName"
-        placeholder="Bank Name"
-        [matAutocomplete]="auto"
-        (input)="filter()"
-        (focus)="filter()"
-      />
-      <mat-autocomplete requireSelection #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let option of filteredOptions"
-          [value]="option.name"
-          >{{ option.name }}</mat-option
-        >
-      </mat-autocomplete>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="bankAccountName"
-        placeholder="Bank Account Name"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Method</mat-label>
-      <mat-select formControlName="paymentMethod">
-        <mat-option value="bank">Bank Transfer</mat-option>
-        <mat-option value="va">Virtual Account</mat-option>
-        <mat-option value="cash">Cheque</mat-option>
+      <mat-label>Is last day?</mat-label>
+      <mat-select formControlName="isLastDay">
+        <mat-option [value]="true">Yes</mat-option>
+        <mat-option [value]="false">No</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <!-- Input for bank account name -->
-      <input
-        matInput
-        type="text"
-        formControlName="bankAccountNumber"
-        placeholder="Bank Account Number"
-      />
+      <mat-label>Last date</mat-label>
+      <input matInput formControlName="lastDate" />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+
+    <div
+      *ngIf="
+        formGroup.hasError('lastDateRequired') &&
+        formGroup.get('lastDate')?.touched
+      "
+    >
+      Last date is required when it's the last day.
+    </div>
 
     <button
       mat-stroked-button

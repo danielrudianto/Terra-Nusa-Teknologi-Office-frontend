@@ -1,9 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +17,19 @@ import { SalarySlipDeductionCreateComponent } from './salary-slip-deduction-crea
 import { MatTable } from '@angular/material/table';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
+
+const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
+  const group = control as FormGroup;
+  const isLastDay = group.get('isLastDay')?.value;
+  const lastDate = group.get('lastDate')?.value;
+
+  if (isLastDay && !lastDate) {
+    return { lastDateRequired: true };
+  }
+
+  return null;
+};
 
 @Component({
   selector: 'app-salary-slip-create',
@@ -65,6 +80,7 @@ export class SalarySlipCreateComponent {
         month: data.month + 1,
         monthName: this.months[data.month].label,
         year: data.year,
+        nik: data.nik,
       });
 
       this.fetchEmployeeData();
@@ -95,43 +111,64 @@ export class SalarySlipCreateComponent {
         this.isFinal = false;
       }
     });
+
+    this.formGroup.get('isLastDay')?.valueChanges.subscribe((isLastDay) => {
+      const lastDateControl = this.formGroup.get('lastDate');
+
+      if (isLastDay) {
+        lastDateControl?.disable(); // makes it readonly
+      } else {
+        lastDateControl?.enable(); // re-enable if not last day
+      }
+    });
   }
 
-  formGroup: FormGroup = new FormGroup({
-    userID: new FormControl('', { nonNullable: true }),
-    month: new FormControl('', { nonNullable: true }),
-    monthName: new FormControl('', { nonNullable: true }),
-    year: new FormControl('', { nonNullable: true }),
-    name: new FormControl('', { nonNullable: true }),
-    address: new FormControl('', { nonNullable: true }),
-    taxCategory: new FormControl('', { nonNullable: true }),
-    position: new FormControl('', { nonNullable: true }),
-    department: new FormControl('', { nonNullable: true }),
-    basicSalary: new FormControl(0, { nonNullable: true }),
-    transportationAllowanceQuantity: new FormControl(0, { nonNullable: true }),
-    transportationAllowanceRate: new FormControl(0, { nonNullable: true }),
-    mealAllowanceQuantity: new FormControl(0, { nonNullable: true }),
-    mealAllowanceRate: new FormControl(0, { nonNullable: true }),
-    overtimeQuantity: new FormControl(0, { nonNullable: true }),
-    overtimeRate: new FormControl(0, { nonNullable: true }),
+  formGroup: FormGroup = new FormGroup(
+    {
+      userID: new FormControl('', { nonNullable: true }),
+      nik: new FormControl(''),
+      month: new FormControl('', { nonNullable: true }),
+      monthName: new FormControl('', { nonNullable: true }),
+      year: new FormControl('', { nonNullable: true }),
+      name: new FormControl('', { nonNullable: true }),
+      address: new FormControl('', { nonNullable: true }),
+      taxCategory: new FormControl('', { nonNullable: true }),
+      position: new FormControl('', { nonNullable: true }),
+      department: new FormControl('', { nonNullable: true }),
+      basicSalary: new FormControl(0, { nonNullable: true }),
+      transportationAllowanceQuantity: new FormControl(0, {
+        nonNullable: true,
+      }),
+      transportationAllowanceRate: new FormControl(0, { nonNullable: true }),
+      mealAllowanceQuantity: new FormControl(0, { nonNullable: true }),
+      mealAllowanceRate: new FormControl(0, { nonNullable: true }),
+      overtimeQuantity: new FormControl(0, { nonNullable: true }),
+      overtimeRate: new FormControl(0, { nonNullable: true }),
 
-    // other allowances
-    otherAllowances: new FormArray([]),
+      // other allowances
+      otherAllowances: new FormArray([]),
 
-    // deductions
-    deductions: new FormArray([]),
+      // deductions
+      deductions: new FormArray([]),
 
-    // bank details
-    bankName: new FormControl('', { nonNullable: true }),
-    bankAccountNumber: new FormControl('', { nonNullable: true }),
-    bankAccountName: new FormControl('', { nonNullable: true }),
-    paymentMethod: new FormControl('', Validators.required),
+      // bank details
+      bankName: new FormControl('', { nonNullable: true }),
+      bankAccountNumber: new FormControl('', { nonNullable: true }),
+      bankAccountName: new FormControl('', { nonNullable: true }),
+      paymentMethod: new FormControl('', Validators.required),
 
-    // tax deduction
-    taxAmount: new FormControl(0, { nonNullable: true }),
-    grossSalary: new FormControl(0, { nonNullable: true }),
-    netSalary: new FormControl(0, { nonNullable: true }),
-  });
+      // tax deduction
+      taxAmount: new FormControl(0, { nonNullable: true }),
+      grossSalary: new FormControl(0, { nonNullable: true }),
+      netSalary: new FormControl(0, { nonNullable: true }),
+
+      isLastDay: new FormControl(false, { nonNullable: true }),
+      lastDate: new FormControl(''),
+    },
+    {
+      validators: lastDateRequiredIfLastDay,
+    }
+  );
 
   onAddOtherAllowance() {
     this.dialog
@@ -225,13 +262,18 @@ export class SalarySlipCreateComponent {
       next: (data: any) => {
         this.formGroup.patchValue({
           name: data.name,
+          nik: data.nik,
           address: data.address,
           taxCategory: data.taxCategory,
           position: data.position,
           department: data.department,
         });
       },
-      error: (error) => {},
+      error: (error) => {
+        this.snackBar.open(error.error.detail, 'Close', {
+          duration: 3000,
+        });
+      },
     });
   }
 
@@ -297,29 +339,36 @@ export class SalarySlipCreateComponent {
   }
 
   onSubmit() {
-    this.isSubmitting = true;
-    this.apiService
-      .post('salary-slips', this.formGroup.value)
-      .subscribe({
-        next: (_) => {
-          this.snackBar.open('Salary slip created successfully', 'Close', {
-            duration: 3000,
-          });
-          this.router.navigate(['/Salary-slip']);
-        },
-        error: (error) => {
-          console.error('Error creating salary slip:', error);
-          this.snackBar.open(
-            'Failed to create salary slip. Please try again later.',
-            'Close',
-            {
-              duration: 3000,
-            }
-          );
-        },
-      })
-      .add(() => {
-        this.isSubmitting = false;
-      });
+    this.generateSalarySlip(this.formGroup.value);
+    // this.isSubmitting = true;
+    // this.apiService
+    //   .post('salary-slips', this.formGroup.value)
+    //   .subscribe({
+    //     next: (_) => {
+    //       this.snackBar.open('Salary slip created successfully', 'Close', {
+    //         duration: 3000,
+    //       });
+    //       this.generateSalarySlip(this.formGroup.value);
+    //       this.router.navigate(['/Salary-slip']);
+    //     },
+    //     error: (error) => {
+    //       console.error('Error creating salary slip:', error);
+    //       this.snackBar.open(
+    //         'Failed to create salary slip. Please try again later.',
+    //         'Close',
+    //         {
+    //           duration: 3000,
+    //         }
+    //       );
+    //     },
+    //   })
+    //   .add(() => {
+    //     this.isSubmitting = false;
+    //   });
+  }
+
+  generateSalarySlip(data: any) {
+    console.log(data);
+    SalarySlipHelper.createProxyPaymentPDF(data);
   }
 }

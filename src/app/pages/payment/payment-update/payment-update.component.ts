@@ -171,7 +171,7 @@ export class PaymentUpdateComponent {
     this.isSalarySlip = false;
 
     this.apiService
-      .get(`payments/${this.paymentId}`, {})
+      .get(`outgoing-payments/${this.paymentId}`, {})
       .subscribe({
         next: (data: any) => {
           this.metaFormGroup.patchValue({

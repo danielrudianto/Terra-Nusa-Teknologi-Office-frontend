@@ -3,134 +3,145 @@
   <mat-stepper>
     <mat-step>
       <ng-template matStepLabel>Meta data</ng-template>
+      <form [formGroup]="metaFormGroup">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            type="text"
+            placeholder="Supplier name"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Supplier</mat-label>
-        <input
-          matInput
-          [value]="purchase?.supplier_name"
-          type="text"
-          placeholder="Supplier name"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="3"
+            placeholder="Supplier address"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <textarea
-          matInput
-          [value]="purchase?.supplier_address"
-          rows="3"
-          placeholder="Supplier address"
-          readonly
-          style="resize: none"
-        ></textarea>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Invoice name</mat-label>
+          <input
+            matInput
+            formControlName="invoiceName"
+            type="text"
+            placeholder="Invoice name"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Invoice name</mat-label>
-        <input
-          matInput
-          [value]="purchase?.invoiceName"
-          type="text"
-          placeholder="Invoice name"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Receipt Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="receiptName"
+            placeholder="Receipt Name"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Receipt Name</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.receiptName"
-          placeholder="Receipt Name"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tax Invoice Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxInvoiceName"
+            placeholder="Tax Invoice Name"
+            maxlength="17"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Invoice Name</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.taxInvoiceName"
-          placeholder="Tax Invoice Name"
-          maxlength="17"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase Order Name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseOrderName"
+            placeholder="Purchase Order Name"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase Order Name</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.purchaseOrderName"
-          placeholder="Purchase Order Name"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="projectName"
+            placeholder="Project name"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Project</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.projectName"
-          placeholder="Project name"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase type</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseType"
+            placeholder="Purchase Type"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input matInput placeholder="Date" formControlName="date" readonly />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase type</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.purchaseType"
-          placeholder="Purchase Type"
-          readonly
-        />
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Date</mat-label>
-        <input
-          matInput
-          placeholder="Date"
-          [value]="formatDate(purchase?.date)"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Due date</mat-label>
+          <input
+            matInput
+            placeholder="Date"
+            formControlName="dueDate"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Due date</mat-label>
-        <input
-          matInput
-          placeholder="Date"
-          [value]="formatDate(purchase?.dueDate)"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase status</mat-label>
+          <input
+            matInput
+            type="text"
+            [value]="
+              valueFormGroup.get('lastStatus')?.value == 'draft'
+                ? 'Draft'
+                : 'Ready'
+            "
+            placeholder="Purchase Status"
+            readonly
+          />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase status</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="purchase?.lastStatus == 'draft' ? 'Draft' : 'Ready'"
-          placeholder="Purchase Status"
-          readonly
-        />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Is internal purchase</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="isInternal"
+            placeholder="Project name"
+            readonly
+          />
+        </mat-form-field>
 
-      <button
-        style="letter-spacing: 0"
-        color="primary"
-        mat-stroked-button
-        matStepperNext
-      >
-        Next
-      </button>
+        <button
+          style="letter-spacing: 0"
+          color="primary"
+          mat-stroked-button
+          matStepperNext
+        >
+          Next
+        </button>
+      </form>
     </mat-step>
 
     <mat-step>
@@ -208,7 +219,7 @@
             matInput
             type="text"
             placeholder="PPh Object Name"
-            [value]="purchase?.pphTaxObject"
+            formControlName="pphTaxObject"
             readonly
           />
         </mat-form-field>
@@ -218,7 +229,7 @@
           <input
             matInput
             type="text"
-            [value]="purchase?.pphPercentage"
+            formControlName="pphPercentage"
             placeholder="PPh Percentage"
             readonly
           />
@@ -254,8 +265,8 @@
           <mat-hint>{{ valueFormGroup.get("otherValueNote")?.value }}</mat-hint>
         </mat-form-field>
 
-        <mat-label>Total</mat-label>
         <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Total</mat-label>
           <input
             matInput
             type="text"
@@ -269,7 +280,19 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
+        <mat-list>
+          <mat-list-item *ngFor="let data of t.controls">
+            <span matListItemTitle>{{
+              data.get("amount")?.value | currency : "Rp."
+            }}</span>
+            <span matListItemLine>{{
+              data.get("date")?.value | date : "dd MMMM YYYY"
+            }}</span>
+          </mat-list-item>
+        </mat-list>
+
+        <mat-form-field appearance="outline" class="w-100 mt-3">
+          <mat-label>Payment</mat-label>
           <input
             matInput
             type="text"

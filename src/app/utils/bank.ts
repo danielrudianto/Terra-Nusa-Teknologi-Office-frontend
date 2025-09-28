@@ -442,6 +442,10 @@ export const banks: IBank[] = [
     name: 'PT HSBC Indonesia',
     alias: 'HSBC',
   },
+  {
+    name: 'Standard Chartered',
+    alias: 'SCBI',
+  },
 ];
 
 export const availableBankSearch = new FuzzySearch(banks, ['name', 'alias'], {

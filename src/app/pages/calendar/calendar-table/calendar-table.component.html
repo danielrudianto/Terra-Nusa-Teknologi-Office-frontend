@@ -7,6 +7,7 @@
       <div class="calendar__table__cell">Thu</div>
       <div class="calendar__table__cell">Fri</div>
       <div class="calendar__table__cell">Sat</div>
+      <div class="calendar__table__cell">Sun</div>
     </div>
     <div class="calendar__table__spacer-row"></div>
     <div class="calendar__table__row" *ngFor="let week of weeks">
@@ -15,7 +16,8 @@
           class="calendar__table__cell__box"
           [ngClass]="{
             active: day != null,
-            selected: day === selectedDay && day != null
+            selected: day === selectedDay && day != null,
+            inactive: day == null
           }"
           (click)="onDayClick(day)"
         >
@@ -36,7 +38,7 @@
               }"
               matTooltip="Interpayment exists"
             >
-            <mat-icon>swap_horiz</mat-icon>
+              <mat-icon>swap_horiz</mat-icon>
             </div>
           </div>
 

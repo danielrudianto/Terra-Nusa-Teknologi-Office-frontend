@@ -62,16 +62,13 @@ import { AssetListComponent } from './pages/asset/asset-list/asset-list.componen
 import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
 import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draft-list/purchase-draft-list.component';
 import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
-import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
+// import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
+import { PurchaseDraftConvertComponent } from './pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component';
 
 export const routes: Routes = [
   {
     path: 'Login',
     component: LoginComponent,
-  },
-  {
-    path: 'PDF',
-    component: PdfMainComponent,
   },
   {
     path: '',
@@ -81,6 +78,10 @@ export const routes: Routes = [
         path: '',
         component: DashboardComponent,
       },
+      // {
+      //   path: 'PDF',
+      //   component: PdfMainComponent,
+      // },
       {
         path: 'Purchase',
         component: PurchaseComponent,
@@ -112,6 +113,10 @@ export const routes: Routes = [
           {
             path: 'Create',
             component: PurchaseDraftCreateComponent,
+          },
+          {
+            path: 'Update/:id',
+            component: PurchaseDraftConvertComponent,
           },
         ],
       },

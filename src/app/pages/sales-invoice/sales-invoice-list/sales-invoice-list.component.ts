@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { SalesInvoiceConfirmComponent } from './sales-invoice-confirm/sales-invoice-confirm.component';
 import { SalesInvoicePaymentCreateComponent } from '../../../components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -23,6 +25,10 @@ export class SalesInvoiceListComponent {
   page: number = 1;
   pageSize: number = 10;
   isLoading: boolean = false;
+  sortBy: string = 'date';
+  sortByDirection: string = 'desc';
+
+  searchFormControl: FormControl = new FormControl('');
 
   displayedColumns: string[] = [
     'date',
@@ -37,6 +43,12 @@ export class SalesInvoiceListComponent {
 
   ngOnInit(): void {
     this.fetchData();
+
+    this.searchFormControl.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        this.fetchData(1);
+      });
   }
 
   fetchData(targetPage: number = this.page): void {
@@ -47,6 +59,9 @@ export class SalesInvoiceListComponent {
       .get('sales-invoices', {
         page: this.page,
         pageSize: this.pageSize,
+        keyword: this.searchFormControl.value,
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
       })
       .subscribe({
         next: (data: any) => {
@@ -72,6 +87,17 @@ export class SalesInvoiceListComponent {
       this.pageSize = event.pageSize;
       this.fetchData(1);
     }
+  }
+
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchData(1);
   }
 
   openPaymentDetail(invoiceID: number) {

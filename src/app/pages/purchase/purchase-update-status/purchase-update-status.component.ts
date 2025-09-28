@@ -34,7 +34,7 @@ export class PurchaseUpdateStatusComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6)$/
+        /^\d{3,4}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/
       ),
     ]),
     projectName: new FormControl('', Validators.required),

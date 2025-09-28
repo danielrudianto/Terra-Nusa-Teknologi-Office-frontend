@@ -1,21 +1,7 @@
 <div class="dashboard-top__wrapper">
   <div class="dashboard-top__body">
-    <div class="dashboard-top__search-wrapper">
-      <div class="form-field">
-        <div class="search-icon"><i class="bi bi-search"></i></div>
-        <div class="shortcut-icon">
-          <img src="assets/images/windows_hotkey.png" />
-        </div>
-        <input type="text" class="input" #search />
-        <app-autocomplete-result
-          [width]="width"
-          [height]="height"
-          [x]="x"
-          [y]="y"
-          [isFocused]="isFocused"
-          [results]="results"
-        ></app-autocomplete-result>
-      </div>
+    <div class="dashboard-top__profile">
+      <h1>{{ authService.isLoggedIn }}</h1>
     </div>
   </div>
 </div>

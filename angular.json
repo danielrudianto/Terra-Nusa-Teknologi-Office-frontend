@@ -39,7 +39,7 @@
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/assets/styles"]
+              "includePaths": ["src/assets"]
             },
             "browser": "src/main.ts"
           },

@@ -8,14 +8,27 @@
   </button>
 </div>
 
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>Search</mat-label>
+  <input matInput [formControl]="searchFormControl" />
+</mat-form-field>
+
 <div class="table-responsive">
   <table mat-table [dataSource]="salesInvoices">
     <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
     <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
         <div class="d-flex d-align-items-center">
           <span>Date</span>
+          <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'date'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
@@ -24,9 +37,17 @@
     </ng-container>
 
     <ng-container matColumnDef="invoiceName">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
         <div class="d-flex d-align-items-center">
-          <span>Invoice Number</span>
+          <span>Invoice number</span>
+          <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'name'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
@@ -46,9 +67,17 @@
     </ng-container>
 
     <ng-container matColumnDef="projectName">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('project')">
         <div class="d-flex d-align-items-center">
-          <span>Project Name</span>
+          <span>Project name</span>
+          <mat-icon *ngIf="sortBy == 'project' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'project' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'project'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
@@ -57,9 +86,17 @@
     </ng-container>
 
     <ng-container matColumnDef="customer">
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('client')">
         <div class="d-flex d-align-items-center">
-          <span>Customer</span>
+          <span>Client</span>
+          <mat-icon *ngIf="sortBy == 'client' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'client' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'client'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
@@ -67,7 +104,7 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="amount">
+    <ng-container matColumnDef="amount" (click)="changeSortBy('dpp')">
       <th mat-header-cell *matHeaderCellDef>
         <div class="d-flex d-align-items-center">
           <span>DPP (Rp.)</span>

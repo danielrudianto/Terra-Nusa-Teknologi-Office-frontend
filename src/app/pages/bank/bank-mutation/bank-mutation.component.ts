@@ -4,6 +4,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -58,10 +59,12 @@ export class BankMutationComponent {
 
   readonly range = new FormGroup({
     start: new FormControl<Date | null>(
-      moment(this.startOfMonth, 'DD-MM-YYYY').toDate()
+      moment(this.startOfMonth, 'DD-MM-YYYY').toDate(),
+      Validators.required
     ),
     end: new FormControl<Date | null>(
-      moment(this.endOfMonth, 'DD-MM-YYYY').toDate()
+      moment(this.endOfMonth, 'DD-MM-YYYY').toDate(),
+      Validators.required
     ),
   });
 
@@ -69,16 +72,25 @@ export class BankMutationComponent {
     this.fetchData();
   }
 
+  dateRangeChange(
+    dateRangeStart: HTMLInputElement,
+    dateRangeEnd: HTMLInputElement
+  ) {
+    if (dateRangeStart.value && dateRangeEnd.value) {
+      this.fetchData(1);
+    }
+  }
+
   fetchData(page: number = this.page) {
     this.page = page;
     const bankAccountID = this.route.snapshot.params['id'];
     this.apiService
-      .post(`payments/mutation`, {
+      .post(`banks/mutation`, {
         bankAccountID: Number(bankAccountID),
         page: this.page,
         pageSize: this.pageSize,
-        startDate: moment(this.range.value.start, 'DD-MM-YYYY'),
-        endDate: moment(this.range.value.end, 'DD-MM-YYYY'),
+        startDate: moment(this.range.value.start).format('YYYY-MM-DD'),
+        endDate: moment(this.range.value.end).format('YYYY-MM-DD'),
       })
       .subscribe({
         next: (data: any) => {

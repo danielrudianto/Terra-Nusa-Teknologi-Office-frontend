@@ -1,28 +1,179 @@
-<mat-drawer-container class="example-container">
-  <mat-drawer mode="side" opened position="end">Drawer content</mat-drawer>
-  <mat-drawer-content>
-    <div class="text-center">
-      <h1>Custom PDF files</h1>
-      <p>
-        Combine PDFs in the order you want with the easiest PDF merger
-        available.
-      </p>
-      <button mat-stroked-button color="primary" style="letter-spacing: 0">
-        Upload file
-      </button>
-      <br />
-      <small class="mt-5">or drop PDFs here</small>
+<!-- merge.component.html -->
+<div class="merge-container">
+  <div class="header-section">
+    <h1>Merge PDF</h1>
+    <p>Combine multiple PDFs into one document</p>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="main-content">
+      <!-- File Drop Zone -->
+      <app-file-drop
+        [allowedExtensions]="['.pdf']"
+        [allowMultipleFiles]="true"
+        (onFileDropped)="onFilesDropped($event)"
+        class="file-drop-zone"
+      />
+
+      <!-- Uploaded Files List -->
+      <div class="files-section" *ngIf="pdfFiles.length > 0">
+        <div class="section-header">
+          <h3>PDF Files to Merge ({{ pdfFiles.length }})</h3>
+          <p>Drag to reorder files. The merge will follow this order.</p>
+        </div>
+
+        <div
+          class="files-list"
+          cdkDropList
+          (cdkDropListDropped)="onFileDropped($event)"
+        >
+          <div
+            class="file-item"
+            *ngFor="let pdfFile of pdfFiles; let i = index"
+            cdkDrag
+          >
+            <div class="drag-handle" cdkDragHandle>
+              <mat-icon>drag_indicator</mat-icon>
+            </div>
+
+            <div class="file-icon">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </div>
+
+            <div class="file-info">
+              <span class="file-name">{{ pdfFile.name }}</span>
+              <span class="file-details">
+                {{ pdfFile.pageCount }} pages • {{ pdfFile.size }}
+              </span>
+            </div>
+
+            <div class="file-actions">
+              <button
+                mat-icon-button
+                (click)="moveFileUp(i)"
+                [disabled]="i === 0"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                (click)="moveFileDown(i)"
+                [disabled]="i === pdfFiles.length - 1"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="removeFile(pdfFile.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-section">
+          <div class="summary-item">
+            <span>Total files:</span>
+            <strong>{{ pdfFiles.length }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Total pages:</span>
+            <strong>{{ totalPages }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>Total size:</span>
+            <strong>{{ totalSize }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="pdfFiles.length === 0">
+        <mat-icon class="empty-icon">merge_type</mat-icon>
+        <h3>No PDF files added yet</h3>
+        <p>Drag and drop PDF files above or click to browse</p>
+      </div>
     </div>
 
-    <div class="dropZone">
-      <input
-        type="file"
-        accept="allowedTypes"
-        multiple="allowMultipleFiles"
-        (drop)="onFileDropped($event)"
-        (change)="onFileSelected($event)"
-        #fileDropRef
-      />
+    <!-- Sidebar Options -->
+    <div class="sidebar-options">
+      <mat-card class="options-card">
+        <mat-card-header>
+          <mat-card-title>Merge Options</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="option-group">
+            <mat-checkbox [(ngModel)]="mergeOptions.addPageNumbers">
+              Add page numbers
+            </mat-checkbox>
+
+            <div class="option-subgroup" *ngIf="mergeOptions.addPageNumbers">
+              <mat-radio-group [(ngModel)]="mergeOptions.pageNumberPosition">
+                <mat-radio-button value="top">Top of page</mat-radio-button>
+                <mat-radio-button value="bottom"
+                  >Bottom of page</mat-radio-button
+                >
+              </mat-radio-group>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <mat-checkbox [(ngModel)]="mergeOptions.addTableOfContents">
+              Add table of contents
+            </mat-checkbox>
+          </div>
+
+          <div class="option-group">
+            <label>Output Quality</label>
+            <mat-radio-group [(ngModel)]="mergeOptions.quality">
+              <mat-radio-button value="standard"
+                >Standard (Smaller file)</mat-radio-button
+              >
+              <mat-radio-button value="high">High quality</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          class="merge-button"
+          (click)="mergePdfs()"
+          [disabled]="pdfFiles.length < 2 || isMerging"
+        >
+          <mat-icon>merge</mat-icon>
+          {{ isMerging ? "Merging..." : "Merge PDFs" }}
+        </button>
+
+        <button
+          mat-button
+          color="warn"
+          (click)="clearAll()"
+          [disabled]="pdfFiles.length === 0"
+        >
+          <mat-icon>delete_sweep</mat-icon>
+          Clear All
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <mat-card *ngIf="isMerging" class="progress-card">
+        <mat-card-content>
+          <p>Merging PDF files...</p>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="mergeProgress"
+          ></mat-progress-bar>
+          <span class="progress-text">{{ mergeProgress }}%</span>
+        </mat-card-content>
+      </mat-card>
     </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+  </div>
+</div>

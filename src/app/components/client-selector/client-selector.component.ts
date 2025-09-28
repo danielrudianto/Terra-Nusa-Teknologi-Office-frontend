@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -25,6 +26,10 @@ export class ClientSelectorComponent {
 
   ngOnInit(): void {
     this.fetchClients();
+
+    this.searchBar.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.fetchClients(1);
+    });
   }
 
   selectClient(client: any) {

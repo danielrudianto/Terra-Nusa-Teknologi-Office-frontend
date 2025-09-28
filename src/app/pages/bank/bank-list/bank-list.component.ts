@@ -34,6 +34,7 @@ export class BankListComponent {
     'bankName',
     'bankAccountNumber',
     'bankAccountName',
+    'balance',
     'action',
   ];
 
@@ -58,6 +59,17 @@ export class BankListComponent {
         next: (res: any) => {
           this.banks = res.data;
           this.count = res.count;
+
+          const balances = res.balances;
+          balances.forEach((x: any) => {
+            const id = x.id;
+            const balance = x.balance;
+
+            const index = this.banks.findIndex((y) => y.id == id);
+            if (index != -1) {
+              this.banks[index].balance = balance;
+            }
+          });
         },
         error: (err) => {
           console.error(err);

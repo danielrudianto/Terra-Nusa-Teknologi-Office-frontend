@@ -56,6 +56,7 @@ export class SalesInvoiceCreateComponent {
     pphTaxObjectName: new FormControl(''),
     pphPercentage: new FormControl(0, Validators.required),
     pphValue: new FormControl(0, Validators.required),
+    bpjs: new FormControl(0, [Validators.required, Validators.min(0)]),
     total: new FormControl(0, Validators.required),
   });
 
@@ -93,6 +94,7 @@ export class SalesInvoiceCreateComponent {
           this.valueFormGroup.controls['pphPercentage'].value;
         const ppnValue = (value * ppnPercentage) / 100;
         const pphValue = (value * pphPercentage) / 100;
+        const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
 
         this.valueFormGroup.patchValue({
           pphValue: pphValue,
@@ -101,7 +103,7 @@ export class SalesInvoiceCreateComponent {
         });
 
         this.paymentFormGroup.patchValue({
-          paymentTotal: value + ppnValue - pphValue,
+          paymentTotal: value + ppnValue - pphValue - bpjsValue,
         });
       }
     });
@@ -117,9 +119,10 @@ export class SalesInvoiceCreateComponent {
           });
 
           const pphValue = this.valueFormGroup.controls['pphValue'].value;
+          const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
 
           this.paymentFormGroup.patchValue({
-            paymentTotal: dpp + ppnValue - pphValue,
+            paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
           });
         }
       }
@@ -138,8 +141,10 @@ export class SalesInvoiceCreateComponent {
             total: dpp + ppnValue,
           });
 
+          const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
+
           this.paymentFormGroup.patchValue({
-            paymentTotal: dpp + ppnValue - pphValue,
+            paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
           });
         }
       }
@@ -201,7 +206,6 @@ export class SalesInvoiceCreateComponent {
 
   onBankAccountSelected(event: any) {
     const value = event.option.value;
-    console.log(value);
     this.paymentFormGroup.patchValue({
       bankAccountID: value.id,
       bankName: value.bankName,
@@ -285,6 +289,7 @@ export class SalesInvoiceCreateComponent {
               ? this.valueFormGroup.value.pphTaxObjectName
               : null,
             pphPercentage: this.valueFormGroup.value.pphPercentage,
+            bpjs: this.valueFormGroup.value.bpjs,
             bankAccountID: this.paymentFormGroup.value.bankAccountID,
           })
           .subscribe({

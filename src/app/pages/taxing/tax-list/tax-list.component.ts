@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PpnRecapComponent } from '../ppn-recap/ppn-recap.component';
 import { PphRecapComponent } from '../pph-recap/pph-recap.component';
+import { PphSalaryRecapComponent } from '../pph-salary-recap/pph-salary-recap.component';
 
 @Component({
   selector: 'app-tax-list',
@@ -31,6 +32,10 @@ export class TaxListComponent {
 
   openPPHReport() {
     this.dialog.open(PphRecapComponent, {});
+  }
+
+  openPPHSalaryReport() {
+    this.dialog.open(PphSalaryRecapComponent, {});
   }
 
   onResize(event: any) {

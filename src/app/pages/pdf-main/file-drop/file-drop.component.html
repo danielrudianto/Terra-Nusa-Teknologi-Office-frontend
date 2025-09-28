@@ -1,0 +1,26 @@
+<!-- file-drop.component.html -->
+<div class="dropzone-container">
+  <!-- Main drop zone - now full width/height -->
+  <div class="dropzone" [class.dragover]="isDragging">
+    <input
+      type="file"
+      [accept]="allowedList"
+      [multiple]="allowMultipleFiles"
+      (drop)="onFilePlaced($event)"
+      (change)="onFileSelected($event)"
+      #fileDropRef
+    />
+    <label for="fileDropRef">
+      Drag and Drop your file or
+      <b class="bold-blue">browse</b>
+    </label>
+  </div>
+
+  <!-- Drag overlay -->
+  <div class="drag-overlay" [class.visible]="isDragging">
+    <div class="overlay-content">
+      <h3>Drop your files here</h3>
+      <p>Release to upload your files</p>
+    </div>
+  </div>
+</div>
