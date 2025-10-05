@@ -60,7 +60,7 @@ export class PurchaseViewComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/
+        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
       ),
     ]),
     purchaseType: new FormControl('', Validators.required),

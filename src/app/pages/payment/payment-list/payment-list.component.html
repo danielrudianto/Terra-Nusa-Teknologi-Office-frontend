@@ -31,15 +31,46 @@
     <td mat-cell *matCellDef="let payment">{{ payment.id }}</td>
   </ng-container>
 
+  <ng-container matColumnDef="bankAccount">
+    <th mat-header-cell *matHeaderCellDef>Bank Account</th>
+    <td mat-cell *matCellDef="let payment">
+      {{ payment.bankAccountName }} -- {{ payment.bankAccountNumber }}
+    </td>
+  </ng-container>
+
   <ng-container matColumnDef="amount">
-    <th mat-header-cell *matHeaderCellDef>Amount</th>
+    <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('amount')">
+      <div class="d-flex d-align-items-center">
+        <span>Amount</span>
+        <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
+          >arrow_drop_up</mat-icon
+        ><mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'desc'"
+          >arrow_drop_down</mat-icon
+        >
+        <mat-icon *ngIf="sortBy != 'amount'" class="opacity-0"
+          >arrow_drop_down</mat-icon
+        >
+      </div>
+    </th>
     <td mat-cell *matCellDef="let payment">
       {{ payment.amount | currency : "Rp. " }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="date">
-    <th mat-header-cell *matHeaderCellDef>Date</th>
+    <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
+      <div class="d-flex d-align-items-center">
+        <span>Date</span>
+        <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
+          >arrow_drop_up</mat-icon
+        ><mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
+          >arrow_drop_down</mat-icon
+        >
+        <mat-icon *ngIf="sortBy != 'date'" class="opacity-0"
+          >arrow_drop_down</mat-icon
+        >
+      </div>
+    </th>
     <td mat-cell *matCellDef="let payment">
       {{ payment.date | date : "dd MMMM yyyy" }}
     </td>

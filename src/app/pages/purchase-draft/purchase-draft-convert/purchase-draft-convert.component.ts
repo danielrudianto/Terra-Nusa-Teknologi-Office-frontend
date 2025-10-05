@@ -109,7 +109,7 @@ export class PurchaseDraftConvertComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
         ),
       ]),
       projectName: new FormControl('', [
@@ -120,7 +120,7 @@ export class PurchaseDraftConvertComponent {
       purchaseType: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12$/
+          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/
         ),
       ]),
       documentType: new FormControl('', Validators.required),
@@ -242,7 +242,7 @@ export class PurchaseDraftConvertComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name

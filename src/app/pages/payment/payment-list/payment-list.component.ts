@@ -33,6 +33,8 @@ export class PaymentListComponent {
     'approvalStatus',
     'documentStatus',
   ];
+  sortBy: string = 'date';
+  sortByDirection: 'asc' | 'desc' = 'desc';
 
   ngOnInit(): void {
     this.fetchPayments(1);
@@ -57,6 +59,8 @@ export class PaymentListComponent {
         isApproved: this.isApproved,
         isPending: this.isPending,
         isRejected: this.isRejected,
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
       })
       .subscribe({
         next: (data: any) => {
@@ -73,6 +77,17 @@ export class PaymentListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchPayments(1);
   }
 
   approvePayment(paymentID: number) {

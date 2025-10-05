@@ -38,9 +38,12 @@ export class PphRecapComponent {
             [
               [
                 'Date',
+                'Payment date',
                 'Prefix',
                 'Name',
                 'NPWP',
+                'Project name',
+                'Purchase order name',
                 'Invoice name',
                 'Receipt name',
                 'Tax invoice name',
@@ -63,9 +66,15 @@ export class PphRecapComponent {
               [
                 [
                   this.datePipe.transform(new Date(x.date), 'dd MMMM YYYY'),
+                  this.datePipe.transform(
+                    new Date(x.payment_date),
+                    'dd MMMM YYYY'
+                  ),
                   x.supplier_prefix,
                   x.supplier_name,
                   x.supplier_npwp,
+                  x.projectName,
+                  x.purchaseOrderName,
                   x.invoiceName,
                   x.receiptName,
                   x.taxInvoiceName,
@@ -109,6 +118,7 @@ export class PphRecapComponent {
             [
               [
                 'Date',
+                'Payment date',
                 'Name',
                 'NPWP',
                 'Invoice name',
@@ -131,6 +141,10 @@ export class PphRecapComponent {
               [
                 [
                   this.datePipe.transform(new Date(x.date), 'dd MMMM YYYY'),
+                  this.datePipe.transform(
+                    new Date(x.payment_date),
+                    'dd MMMM YYYY'
+                  ),
                   x.opponent_name,
                   x.opponent_npwp,
                   x.invoiceName,

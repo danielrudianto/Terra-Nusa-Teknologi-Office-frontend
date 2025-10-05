@@ -7,7 +7,13 @@
 
 h1 {
   font-family: "Montserrat";
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-family: "Montserrat";
+  font-size: 1rem;
   font-weight: bold;
 }
 
@@ -19,6 +25,19 @@ h1 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   background-color: #0d0d0d;
+
+  &.white {
+    background-color: white !important;
+    border: 0.5px solid #ccc;
+  }
+
+  &.full-h {
+    height: 400px;
+  }
+
+  &.half-h {
+    height: 190px;
+  }
 
   h1 {
     font-size: 1.8rem;

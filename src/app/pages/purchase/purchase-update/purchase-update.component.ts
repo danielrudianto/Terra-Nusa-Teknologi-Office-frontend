@@ -57,7 +57,7 @@ export class PurchaseUpdateComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12)$/
+        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
       ),
     ]),
     projectName: new FormControl('', [
@@ -67,7 +67,9 @@ export class PurchaseUpdateComponent {
     ]),
     purchaseType: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12$/),
+      Validators.pattern(
+        /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/
+      ),
     ]),
     lastStatus: new FormControl('ready', Validators.required),
     lastStatusDescription: new FormControl(''),
@@ -205,6 +207,16 @@ export class PurchaseUpdateComponent {
 
   onSubmit() {
     this.isSubmitting = true;
+    const date = new Date(this.metaFormGroup.controls['date'].value);
+    const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
+
+    const dateFormatted = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dueDateFormatted = `${dueDate.getFullYear()}-${String(
+      dueDate.getMonth() + 1
+    ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
+
     this.apiService
       .put('purchases/update', {
         id: this.metaFormGroup.value.id,
@@ -228,8 +240,8 @@ export class PurchaseUpdateComponent {
         isCopAttached: this.attachmentFormGroup.value.isCopAttached,
         isCopyPurchaseOrderAttached:
           this.attachmentFormGroup.value.isCopyPurchaseOrderAttached,
-        dueDate: this.metaFormGroup.value.dueDate,
-        date: this.metaFormGroup.value.date,
+        dueDate: dueDateFormatted,
+        date: dateFormatted,
         procurementType: this.purchaseType,
         dpp: this.valueFormGroup.controls['dpp'].value,
         ppn: this.valueFormGroup.controls['ppn'].value,

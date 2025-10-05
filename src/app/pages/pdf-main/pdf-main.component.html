@@ -21,22 +21,82 @@
         <span class="processing-text">{{ processingProgress }}</span>
       </div>
 
+      <!-- Selection Mode Header -->
+      <div *ngIf="processedDocuments.length > 0" class="selection-header">
+        <div class="selection-controls">
+          <button
+            class="btn-selection-mode"
+            [class.active]="selectionMode"
+            (click)="toggleSelectionMode()"
+          >
+            <span class="btn-icon">🎯</span>
+            {{ selectionMode ? "Exit Selection Mode" : "Select Pages" }}
+          </button>
+
+          <div *ngIf="selectionMode" class="selection-actions">
+            <span class="selection-count">
+              {{ selectedCount }} of {{ processedDocuments.length }} selected
+            </span>
+
+            <button class="btn-select-all" (click)="toggleSelectAll()">
+              {{ allSelected ? "Deselect All" : "Select All" }}
+            </button>
+
+            <button
+              class="btn-primary"
+              (click)="saveSelectedPages()"
+              [disabled]="selectedCount === 0"
+            >
+              <span class="btn-icon">💾</span>
+              Save Selected ({{ selectedCount }})
+            </button>
+
+            <button
+              class="btn-secondary"
+              (click)="mergeSelectedPdfs()"
+              [disabled]="selectedCount < 2"
+            >
+              <span class="btn-icon">🔄</span>
+              Merge Selected ({{ selectedCount }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Selection Patterns -->
+        <div *ngIf="selectionMode" class="quick-selection-patterns">
+          <span class="patterns-label">Quick Select:</span>
+          <button class="btn-pattern" (click)="selectOddPages()">
+            Odd Pages
+          </button>
+          <button class="btn-pattern" (click)="selectEvenPages()">
+            Even Pages
+          </button>
+          <button class="btn-pattern" (click)="selectFirstPageOfEachDocument()">
+            First Pages
+          </button>
+          <button class="btn-pattern" (click)="clearAllSelections()">
+            Clear All
+          </button>
+        </div>
+      </div>
+
       <!-- Uploaded Files Grid -->
       <div
         *ngIf="processedDocuments.length > 0"
         class="files-section-container"
         [class.processing]="isProcessing"
+        [class.selection-mode]="selectionMode"
       >
         <div class="section-header">
           <h3>PDF Pages ({{ processedDocuments.length }})</h3>
-          <div class="header-actions">
+          <div class="header-actions" *ngIf="!selectionMode">
             <button
               class="btn-primary"
               (click)="mergePdfs()"
               [disabled]="isProcessing || processedDocuments.length < 2"
             >
               <span class="btn-icon">🔄</span>
-              Merge PDFs
+              Merge All PDFs
             </button>
             <button
               class="btn-secondary"
@@ -59,9 +119,23 @@
             *ngFor="let page of processedDocuments; let i = index"
             cdkDrag
             class="file-card"
+            [class.selected]="page.selected"
+            [class.selection-mode]="selectionMode"
             [class.dragging]="isDragging"
             [class.processing]="isProcessing"
+            (click)="togglePageSelection(page, $event)"
           >
+            <!-- Selection Checkbox -->
+            <div class="selection-checkbox" *ngIf="selectionMode">
+              <input
+                type="checkbox"
+                [checked]="page.selected"
+                (click)="togglePageSelection(page, $event)"
+                class="checkbox"
+              />
+              <span class="checkmark"></span>
+            </div>
+
             <!-- Drag Handle -->
             <div class="drag-handle" cdkDragHandle>
               <span class="handle-icon">⋮⋮</span>
@@ -76,6 +150,14 @@
                 [class.loading]="isProcessing"
               />
               <div class="page-badge">{{ i + 1 }}</div>
+
+              <!-- Selected Overlay -->
+              <div
+                class="selected-overlay"
+                *ngIf="page.selected && selectionMode"
+              >
+                <span class="selected-icon">✓</span>
+              </div>
             </div>
 
             <!-- Page Info -->
@@ -90,10 +172,10 @@
             </div>
 
             <!-- Actions -->
-            <div class="file-actions">
+            <div class="file-actions" *ngIf="!selectionMode">
               <button
                 class="btn-action move-up"
-                (click)="moveFileUp(i)"
+                (click)="moveFileUp(i); $event.stopPropagation()"
                 [disabled]="i === 0 || isProcessing"
                 title="Move up"
               >
@@ -101,7 +183,7 @@
               </button>
               <button
                 class="btn-action move-down"
-                (click)="moveFileDown(i)"
+                (click)="moveFileDown(i); $event.stopPropagation()"
                 [disabled]="i === processedDocuments.length - 1 || isProcessing"
                 title="Move down"
               >
@@ -109,11 +191,28 @@
               </button>
               <button
                 class="btn-action remove"
-                (click)="removeFile(i)"
+                (click)="removeFile(i); $event.stopPropagation()"
                 [disabled]="isProcessing"
                 title="Remove"
               >
                 ✕
+              </button>
+            </div>
+
+            <!-- Selection Actions -->
+            <div
+              class="selection-actions"
+              *ngIf="selectionMode && page.originalFile"
+            >
+              <button
+                class="btn-action select-doc"
+                (click)="
+                  selectAllFromDocument(page.originalFile!);
+                  $event.stopPropagation()
+                "
+                title="Select all from this document"
+              >
+                📄+
               </button>
             </div>
 
@@ -129,7 +228,10 @@
         </div>
 
         <!-- Quick Actions Bar -->
-        <div class="quick-actions" *ngIf="processedDocuments.length > 1">
+        <div
+          class="quick-actions"
+          *ngIf="processedDocuments.length > 1 && !selectionMode"
+        >
           <button
             class="btn-quick"
             (click)="reverseOrder()"
@@ -157,12 +259,12 @@
         <p>Drag and drop PDF files above or click to browse</p>
         <div class="empty-features">
           <div class="feature">
-            <span class="feature-icon">🔀</span>
-            <span>Drag to reorder pages</span>
+            <span class="feature-icon">🎯</span>
+            <span>Select specific pages</span>
           </div>
           <div class="feature">
-            <span class="feature-icon">🖼️</span>
-            <span>Visual page previews</span>
+            <span class="feature-icon">🔀</span>
+            <span>Drag to reorder</span>
           </div>
           <div class="feature">
             <span class="feature-icon">⚡</span>

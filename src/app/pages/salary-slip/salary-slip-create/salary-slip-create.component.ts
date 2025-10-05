@@ -339,32 +339,32 @@ export class SalarySlipCreateComponent {
   }
 
   onSubmit() {
-    this.generateSalarySlip(this.formGroup.value);
-    // this.isSubmitting = true;
-    // this.apiService
-    //   .post('salary-slips', this.formGroup.value)
-    //   .subscribe({
-    //     next: (_) => {
-    //       this.snackBar.open('Salary slip created successfully', 'Close', {
-    //         duration: 3000,
-    //       });
-    //       this.generateSalarySlip(this.formGroup.value);
-    //       this.router.navigate(['/Salary-slip']);
-    //     },
-    //     error: (error) => {
-    //       console.error('Error creating salary slip:', error);
-    //       this.snackBar.open(
-    //         'Failed to create salary slip. Please try again later.',
-    //         'Close',
-    //         {
-    //           duration: 3000,
-    //         }
-    //       );
-    //     },
-    //   })
-    //   .add(() => {
-    //     this.isSubmitting = false;
-    //   });
+    this.isSubmitting = true;
+    this.apiService
+      .post('salary-slips', this.formGroup.value)
+      .subscribe({
+        next: (_) => {
+          this.generateSalarySlip(this.formGroup.value);
+          this.snackBar.open('Salary slip created successfully', 'Close', {
+            duration: 3000,
+          });
+          this.generateSalarySlip(this.formGroup.value);
+          this.router.navigate(['/Salary-slip']);
+        },
+        error: (error) => {
+          console.error('Error creating salary slip:', error);
+          this.snackBar.open(
+            'Failed to create salary slip. Please try again later.',
+            'Close',
+            {
+              duration: 3000,
+            }
+          );
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
   }
 
   generateSalarySlip(data: any) {

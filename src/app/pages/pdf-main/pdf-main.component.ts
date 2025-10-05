@@ -12,6 +12,7 @@ interface PageData {
   pageNumber: number;
   fileName: string;
   originalFile?: string; // Track original file name
+  selected?: boolean;
 }
 
 @Component({
@@ -25,6 +26,9 @@ export class PdfMainComponent implements OnInit {
   isProcessing = false;
   isDragging = false;
   processingProgress = '';
+
+  selectionMode = false;
+  allSelected = false;
 
   // Merge options
   mergeOptions = {
@@ -255,11 +259,6 @@ export class PdfMainComponent implements OnInit {
     this.isDragging = false;
   }
 
-  // ENHANCED MOVEMENT METHODS
-  removeFile(index: number): void {
-    this.processedDocuments.splice(index, 1);
-  }
-
   moveFileUp(index: number): void {
     if (index > 0) {
       const temp = this.processedDocuments[index];
@@ -287,7 +286,6 @@ export class PdfMainComponent implements OnInit {
     // You can add specific animation logic here if needed
   }
 
-  // NEW UTILITY METHODS
   reverseOrder(): void {
     this.processedDocuments.reverse();
   }
@@ -322,7 +320,14 @@ export class PdfMainComponent implements OnInit {
       }
 
       const mergedPdfBytes = await mergedPdf.save();
-      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+
+      // FIX: Convert to regular ArrayBuffer if needed
+      const blobData =
+        mergedPdfBytes.buffer instanceof SharedArrayBuffer
+          ? new Uint8Array(mergedPdfBytes).buffer
+          : mergedPdfBytes.buffer;
+
+      const blob = new Blob([blobData], { type: 'application/pdf' });
       this.downloadMergedPdf(blob);
     } catch (error) {
       console.error('Error merging PDFs:', error);
@@ -336,20 +341,220 @@ export class PdfMainComponent implements OnInit {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = this.generateFileName();
+    a.download = this.generateFileName('merge');
     a.click();
     URL.revokeObjectURL(url);
   }
 
-  private generateFileName(): string {
+  toggleSelectionMode(): void {
+    this.selectionMode = !this.selectionMode;
+    if (!this.selectionMode) {
+      // Exit selection mode - clear all selections
+      this.clearAllSelections();
+    }
+  }
+
+  togglePageSelection(page: PageData, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (this.selectionMode) {
+      page.selected = !page.selected;
+      this.updateSelectionState();
+    }
+  }
+
+  toggleSelectAll(): void {
+    this.allSelected = !this.allSelected;
+    this.processedDocuments.forEach((page) => {
+      page.selected = this.allSelected;
+    });
+  }
+
+  clearAllSelections(): void {
+    this.processedDocuments.forEach((page) => {
+      page.selected = false;
+    });
+    this.allSelected = false;
+  }
+
+  private updateSelectionState(): void {
+    const selectedCount = this.processedDocuments.filter(
+      (page) => page.selected
+    ).length;
+    this.allSelected = selectedCount === this.processedDocuments.length;
+  }
+
+  get selectedPages(): PageData[] {
+    return this.processedDocuments.filter((page) => page.selected);
+  }
+
+  get selectedCount(): number {
+    return this.selectedPages.length;
+  }
+
+  async saveSelectedPages(): Promise<void> {
+    const selectedPages = this.selectedPages;
+
+    if (selectedPages.length === 0) {
+      alert('Please select at least one page to save.');
+      return;
+    }
+
+    this.isProcessing = true;
+    this.processingProgress = 'Creating PDF from selected pages...';
+
+    try {
+      const newPdf = await PDFDocument.create();
+
+      for (const pageData of selectedPages) {
+        const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
+          c.charCodeAt(0)
+        );
+        const pagePdf = await PDFDocument.load(pdfBytes);
+        const [copiedPage] = await newPdf.copyPages(pagePdf, [0]);
+        newPdf.addPage(copiedPage);
+      }
+
+      const mergedPdfBytes = await newPdf.save();
+
+      // FIX: Create a new Uint8Array to ensure compatibility
+      const compatibleBytes = new Uint8Array(mergedPdfBytes);
+      const blob = new Blob([compatibleBytes], { type: 'application/pdf' });
+      this.downloadPdf(blob, 'selected-pages');
+
+      // Optional: Show success message
+      this.showSuccessMessage(
+        `Successfully created PDF with ${selectedPages.length} selected pages!`
+      );
+    } catch (error) {
+      console.error('Error creating PDF from selected pages:', error);
+      alert('Error creating PDF. Please try again.');
+    } finally {
+      this.isProcessing = false;
+      this.processingProgress = '';
+    }
+  }
+
+  async mergeSelectedPdfs(): Promise<void> {
+    const selectedPages = this.selectedPages;
+
+    if (selectedPages.length < 2) {
+      alert('Please select at least 2 pages to merge.');
+      return;
+    }
+
+    this.isProcessing = true;
+    this.processingProgress = 'Merging selected pages...';
+
+    try {
+      const mergedPdf = await PDFDocument.create();
+
+      for (const pageData of selectedPages) {
+        const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
+          c.charCodeAt(0)
+        );
+        const pagePdf = await PDFDocument.load(pdfBytes);
+        const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
+        mergedPdf.addPage(copiedPage);
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+      const compatibleBytes = new Uint8Array(mergedPdfBytes);
+      const blob = new Blob([compatibleBytes], { type: 'application/pdf' });
+      this.downloadPdf(blob, 'selected-pages');
+
+      this.showSuccessMessage(
+        `Successfully merged ${selectedPages.length} selected pages!`
+      );
+    } catch (error) {
+      console.error('Error merging selected PDFs:', error);
+      alert('Error merging PDFs. Please try again.');
+    } finally {
+      this.isProcessing = false;
+      this.processingProgress = '';
+    }
+  }
+
+  private downloadPdf(blob: Blob, prefix: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = this.generateFileName(prefix);
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private generateFileName(prefix: string): string {
     const timestamp = new Date()
       .toISOString()
       .slice(0, 19)
       .replace(/[:]/g, '-');
-    return `merged-document-${timestamp}.pdf`;
+    return `${prefix}-${timestamp}.pdf`;
+  }
+
+  private showSuccessMessage(message: string): void {
+    // You can replace this with a proper toast notification
+    console.log(message);
+    // For now, we'll just log it. You can integrate a toast service here.
+  }
+
+  // NEW: Bulk selection actions
+  selectAllFromDocument(documentName: string): void {
+    this.processedDocuments.forEach((page) => {
+      if (page.originalFile === documentName) {
+        page.selected = true;
+      }
+    });
+    this.updateSelectionState();
+  }
+
+  deselectAllFromDocument(documentName: string): void {
+    this.processedDocuments.forEach((page) => {
+      if (page.originalFile === documentName) {
+        page.selected = false;
+      }
+    });
+    this.updateSelectionState();
+  }
+
+  // NEW: Quick selection patterns
+  selectOddPages(): void {
+    this.processedDocuments.forEach((page, index) => {
+      page.selected = (index + 1) % 2 === 1;
+    });
+    this.updateSelectionState();
+  }
+
+  selectEvenPages(): void {
+    this.processedDocuments.forEach((page, index) => {
+      page.selected = (index + 1) % 2 === 0;
+    });
+    this.updateSelectionState();
+  }
+
+  selectFirstPageOfEachDocument(): void {
+    const processedDocs = new Set();
+    this.processedDocuments.forEach((page) => {
+      if (page.originalFile && !processedDocs.has(page.originalFile)) {
+        page.selected = true;
+        processedDocs.add(page.originalFile);
+      } else {
+        page.selected = false;
+      }
+    });
+    this.updateSelectionState();
+  }
+
+  removeFile(index: number): void {
+    this.processedDocuments.splice(index, 1);
+    this.updateSelectionState();
   }
 
   clearAll(): void {
     this.processedDocuments = [];
+    this.selectionMode = false;
+    this.allSelected = false;
   }
 }
