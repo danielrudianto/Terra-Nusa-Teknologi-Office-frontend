@@ -217,7 +217,6 @@ export const MY_FORMATS = {
     PurchaseDraftComponent,
     PurchaseDraftViewComponent,
     SalesInvoicePaymentCreateComponent,
-    CalendarDaySelectorComponent,
     PdfMainComponent,
     LoansComponent,
     LoansCreateComponent,

@@ -184,34 +184,34 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (%)</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="ppn"
-          placeholder="PPN"
-          suffix="%"
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (Rp.)</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="ppnValue"
-          placeholder="PPN (Rp.)"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-          readonly
-        />
-      </mat-form-field>
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>PPN (%)</mat-label>
+            <mat-select formControlName="ppn">
+              <mat-option [value]="0">0%</mat-option>
+              <mat-option [value]="1.1">1.1%</mat-option>
+              <mat-option [value]="11">11%</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>PPN (Rp.)</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="ppnValue"
+              placeholder="PPN (Rp.)"
+              prefix="Rp. "
+              thousandSeparator=" "
+              decimalScale="2"
+              mask="separator"
+              readonly
+            />
+          </mat-form-field>
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>PBBKB</mat-label>
@@ -227,45 +227,50 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphCode"
-          placeholder="PPh Code"
-        />
-        <button
-          mat-icon-button
-          matPrefix
-          type="button"
-          (click)="openPPHSelector()"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh Object Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphTaxObject"
-          placeholder="PPh Object Name"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh Percentage</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphPercentage"
-          placeholder="PPh Percentage"
-          readonly
-        />
-      </mat-form-field>
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>PPh</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="pphCode"
+              placeholder="PPh Code"
+            />
+            <button
+              mat-icon-button
+              matPrefix
+              type="button"
+              (click)="openPPHSelector()"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>PPh Percentage</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="pphPercentage"
+              placeholder="PPh Percentage"
+              readonly
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>PPh Object Name</mat-label>
+            <textarea
+              matInput
+              type="text"
+              formControlName="pphTaxObject"
+              placeholder="PPh Object Name"
+              readonly
+              rows="4"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>PPh (Rp.)</mat-label>
@@ -282,33 +287,38 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Other value</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="otherValue"
-          placeholder="otherValue"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Other value</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="otherValue"
+              placeholder="otherValue"
+              prefix="Rp. "
+              thousandSeparator=" "
+              decimalScale="2"
+              mask="separator"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Other value note</mat-label>
+            <mat-select formControlName="otherValueNote">
+              <mat-option value="">Select</mat-option>
+              <mat-option value="delivery">Delivery fee</mat-option>
+              <mat-option value="packing">Packing fee</mat-option>
+              <mat-option value="packing">PPh 22</mat-option>
+              <mat-option value="administrative">Administration fee</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Other value note</mat-label>
-        <mat-select formControlName="otherValueNote">
-          <mat-option value="">Select</mat-option>
-          <mat-option value="delivery">Delivery fee</mat-option>
-          <mat-option value="packing">Packing fee</mat-option>
-          <mat-option value="packing">PPh 22</mat-option>
-          <mat-option value="administrative">Administration fee</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-label>Total</mat-label>
-      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
         <input
           matInput
           type="text"

@@ -1,17 +1,26 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { CalendarDayViewComponent } from '../calendar-day-view/calendar-day-view.component';
 import {
   MatList,
+  MatListModule,
   MatSelectionList,
   MatSelectionListChange,
 } from '@angular/material/list';
-import { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CalendarPaymentConfirmComponent } from '../calendar-payment-confirm/calendar-payment-confirm.component';
 import { CalendarPaymentRejectComponent } from '../calendar-payment-reject/calendar-payment-reject.component';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface BankAccountSummary {
   id: number;
@@ -27,9 +36,18 @@ interface BankAccountSummary {
 
 @Component({
   selector: 'app-calendar-day-selector',
-  standalone: false,
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatListModule,
+  ],
   templateUrl: './calendar-day-selector.component.html',
   styleUrl: './calendar-day-selector.component.scss',
+  standalone: true,
 })
 export class CalendarDaySelectorComponent {
   constructor(
@@ -48,6 +66,9 @@ export class CalendarDaySelectorComponent {
   ) {}
 
   @ViewChild('paymentSelection') paymentSelection: MatSelectionList | undefined;
+  @ViewChild('menuTrigger') menuTrigger: MatMenuTrigger | undefined;
+
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   isLoading: boolean = false;
   bankAccountSummaries: BankAccountSummary[] = [];
@@ -437,4 +458,14 @@ export class CalendarDaySelectorComponent {
         }
       });
   }
+
+  onRightClick(event: MouseEvent, item: any): void {
+    event.preventDefault(); // Prevent default browser context menu
+
+    this.menuTrigger?.openMenu();
+  }
+
+  editItem() {}
+
+  deleteItem() {}
 }

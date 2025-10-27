@@ -91,7 +91,10 @@
             (selectionChange)="onValueSelected($event)"
           >
             @for(p of payments; track p){
-            <mat-list-option [value]="p.id">
+            <mat-list-option
+              [value]="p.id"
+              [matContextMenuTriggerFor]="contextMenu"
+            >
               @if(p.isApprove){
               <mat-icon matListItemIcon>check</mat-icon>
               } @else {
@@ -101,7 +104,23 @@
               <span matListItemLine>{{ getProjectName(p) }}</span>
               {{ p.amount | number : "0.2-2" }}
             </mat-list-option>
-            } @for(i of interpayments; track i){
+            }
+            <mat-menu
+              #contextMenu
+              [overlapTrigger]="false"
+              xPosition="before"
+              yPosition="below"
+            >
+              <button mat-menu-item (click)="editItem()">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item (click)="deleteItem()">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+            @for(i of interpayments; track i){
             <mat-list-item>
               <mat-icon matListItemIcon>folder</mat-icon>
               <div matListItemTitle>
