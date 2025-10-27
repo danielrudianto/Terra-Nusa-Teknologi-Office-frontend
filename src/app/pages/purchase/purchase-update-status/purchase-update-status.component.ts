@@ -34,7 +34,7 @@ export class PurchaseUpdateStatusComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
+        /^\d{3,4}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/
       ),
     ]),
     projectName: new FormControl('', Validators.required),
@@ -105,9 +105,9 @@ export class PurchaseUpdateStatusComponent {
           projectName: data.projectName,
           purchaseOrderName: data.purchaseOrderName,
           purchaseType: data.purchaseType,
-          supplierID: data.supplier_id,
-          supplierName: `${data.supplier_name}, ${data.supplier_prefix}`,
-          supplierAddress: `${data.supplier_address}, ${data.supplier_city}, ${data.supplier_province}`,
+          supplierID: data.supplierID,
+          supplierName: `${data.supplier.name}, ${data.supplier.prefix}`,
+          supplierAddress: `${data.supplier.address}, ${data.supplier.city}, ${data.supplier.province}`,
         });
 
         const total =

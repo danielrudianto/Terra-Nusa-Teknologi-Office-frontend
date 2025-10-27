@@ -1,16 +1,37 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { EmployeeUpdateComponent } from '../employee-update/employee-update.component';
 import { EmployeeSalarySlipSelectorCreateComponent } from './employee-salary-slip-selector-create/employee-salary-slip-selector-create.component';
 import { debounceTime } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { EmployeeCreateComponent } from '../employee-create/employee-create.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-employee-list',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatPaginatorModule,
+    HeaderTitleComponent,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class EmployeeListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}
@@ -82,5 +103,9 @@ export class EmployeeListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  createNewEmployee() {
+    this.dialog.open(EmployeeCreateComponent, {});
   }
 }

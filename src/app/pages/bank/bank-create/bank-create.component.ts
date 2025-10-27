@@ -1,17 +1,44 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 
 @Component({
   selector: 'app-bank-create',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatButtonModule,
+  ],
   templateUrl: './bank-create.component.html',
   styleUrl: './bank-create.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class BankCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialogRef<BankCreateComponent>
+  ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   isSubmitting: boolean = false;
@@ -42,17 +69,18 @@ export class BankCreateComponent {
       .post('banks', this.bankFormGroup.value)
       .subscribe({
         next: (_) => {
-          this.bankFormGroup.reset();
-          this.input.nativeElement.value = '';
-          this.filteredOptions = this.options.slice();
-
           this.snackBar.open('Bank account created successfully', 'Close', {
             duration: 2000,
           });
+
+          this.snackBar.open('Bank account created successfully', 'Close', {
+            duration: 3000,
+          });
+          this.dialog.close();
         },
         error: (err) => {
-          this.snackBar.open('Error creating bank account', 'Close', {
-            duration: 2000,
+          this.snackBar.open(err.error.detail, 'Close', {
+            duration: 3000,
           });
         },
       })

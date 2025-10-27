@@ -1,26 +1,66 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
-import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { NgxMaskDirective } from 'ngx-mask';
+import { ExpenseCreateAdministrationComponent } from './expense-create-administration/expense-create-administration.component';
 
 @Component({
   selector: 'app-expense-create',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatTableModule,
+    MatIconModule,
+    MatStepperModule,
+    MatAutocompleteModule,
+    MatDividerModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    HeaderTitleComponent,
+    NgxMaskDirective,
+  ],
   templateUrl: './expense-create.component.html',
   styleUrl: './expense-create.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class ExpenseCreateComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private decimalPipe: DecimalPipe
   ) {}
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
@@ -43,8 +83,8 @@ export class ExpenseCreateComponent {
     opponentID: new FormControl(''),
     opponentName: new FormControl(''),
     opponentDescription: new FormControl(''),
-    date: new FormControl('', Validators.required),
-    dueDate: new FormControl('', Validators.required),
+    date: new FormControl(new Date(), Validators.required),
+    dueDate: new FormControl(new Date(), Validators.required),
   });
 
   valueFormGroup: FormGroup = new FormGroup({
@@ -169,7 +209,7 @@ export class ExpenseCreateComponent {
     const pphValue = (dpp * pph) / 100;
 
     this.valueFormGroup.patchValue({
-      total: total.toFixed(2),
+      total: this.decimalPipe.transform(total, '1.2-2'),
     });
 
     this.paymentFormGroup.patchValue({
@@ -247,6 +287,10 @@ export class ExpenseCreateComponent {
                   this.snackBar.open('Expense created successfully', 'Close', {
                     duration: 3000,
                   });
+                  this.metaFormGroup.reset();
+                  this.valueFormGroup.reset();
+                  this.paymentFormGroup.reset();
+                  this.stepper?.reset();
                 },
                 error: (error) => {
                   this.snackBar.open(error.error.detail, 'Close', {
@@ -270,6 +314,10 @@ export class ExpenseCreateComponent {
             this.snackBar.open('Expense created successfully', 'Close', {
               duration: 3000,
             });
+            this.metaFormGroup.reset();
+            this.valueFormGroup.reset();
+            this.paymentFormGroup.reset();
+            this.stepper?.reset();
           },
           error: (error) => {
             this.snackBar.open(error.error.detail, 'Close', {
@@ -293,6 +341,13 @@ export class ExpenseCreateComponent {
           duration: 3000,
         });
       },
+    });
+  }
+
+  createNewAdministrationExpense() {
+    if (this.bankAccounts.length == 0) return;
+    this.dialog.open(ExpenseCreateAdministrationComponent, {
+      data: this.bankAccounts,
     });
   }
 }

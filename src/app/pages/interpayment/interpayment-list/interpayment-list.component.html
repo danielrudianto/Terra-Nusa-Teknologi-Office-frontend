@@ -1,17 +1,24 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Inter-payment</h1>
-</div>
+<app-header-title
+  [title]="'Interpayment'"
+  [description]="'Manage your interpayment data here'"
+  [actionButtonLabel]="'Create new interpayment'"
+  (onActionButtonClicked)="createNewInterpayment()"
+></app-header-title>
 
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Interpayment/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<form [formGroup]="formGroup">
+  <mat-form-field appearance="outline">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate formControlName="start" placeholder="Start date" />
+      <input matEndDate formControlName="end" placeholder="End date" />
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+</form>
 
 <div class="table-responsive">
-  <table mat-table [dataSource]="payments">
-    <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
+  <table mat-table [dataSource]="payments" #table>
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
         <div class="d-flex d-align-items-center">
@@ -48,7 +55,19 @@
     </ng-container>
 
     <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef>Amount</th>
+      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('amount')">
+        <div class="d-flex d-align-items-center">
+          <span>Amount</span>
+          <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
+            >arrow_drop_up</mat-icon
+          ><mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'desc'"
+            >arrow_drop_down</mat-icon
+          >
+          <mat-icon *ngIf="sortBy != 'amount'" class="opacity-0"
+            >arrow_drop_down</mat-icon
+          >
+        </div>
+      </th>
       <td mat-cell *matCellDef="let purchase">
         Rp. {{ purchase.amount | number : "0.2-2" }}
       </td>

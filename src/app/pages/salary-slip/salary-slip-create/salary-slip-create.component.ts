@@ -5,6 +5,8 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
@@ -14,10 +16,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
 import { SalarySlipAllowanceCreateComponent } from './salary-slip-allowance-create/salary-slip-allowance-create.component';
 import { SalarySlipDeductionCreateComponent } from './salary-slip-deduction-create/salary-slip-deduction-create.component';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
+import { CommonModule, DatePipe } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   const group = control as FormGroup;
@@ -33,9 +45,25 @@ const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
 
 @Component({
   selector: 'app-salary-slip-create',
-  standalone: false,
+  providers: [provideNgxMask()],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatTableModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './salary-slip-create.component.html',
   styleUrl: './salary-slip-create.component.scss',
+  standalone: true,
 })
 export class SalarySlipCreateComponent {
   constructor(
@@ -45,7 +73,8 @@ export class SalarySlipCreateComponent {
     private dataTransferService: DataTransferService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private datePipe: DatePipe
   ) {}
 
   @ViewChild('allowanceTable') allowanceTable!: MatTable<any>;
@@ -112,10 +141,12 @@ export class SalarySlipCreateComponent {
       }
     });
 
+    this.formGroup.get('lastDate')?.disable();
+
     this.formGroup.get('isLastDay')?.valueChanges.subscribe((isLastDay) => {
       const lastDateControl = this.formGroup.get('lastDate');
 
-      if (isLastDay) {
+      if (!isLastDay) {
         lastDateControl?.disable(); // makes it readonly
       } else {
         lastDateControl?.enable(); // re-enable if not last day
@@ -338,10 +369,49 @@ export class SalarySlipCreateComponent {
     );
   }
 
+  formatFormData() {
+    // only need
+    // 1. userID, taxCategory, position, department, basicSalary, meal, transportation, and overtime, month, year, taxAmount, otherAllowances, deductions
+    // 2. last day (if isLastDay == True), else set as null
+    const lastDate = this.formGroup.get('isLastDay')?.value
+      ? // Convert the date to YYYY-MM-DD
+        this.datePipe.transform(
+          this.formGroup.get('lastDate')?.value,
+          'yyyy-MM-dd'
+        )
+      : null;
+
+    const data = {
+      userID: this.formGroup.get('userID')?.value,
+      taxCategory: this.formGroup.get('taxCategory')?.value,
+      position: this.formGroup.get('position')?.value,
+      department: this.formGroup.get('department')?.value,
+      basicSalary: this.formGroup.get('basicSalary')?.value,
+      mealAllowanceQuantity: this.formGroup.get('mealAllowanceQuantity')?.value,
+      mealAllowanceRate: this.formGroup.get('mealAllowanceRate')?.value,
+      transportationAllowanceQuantity: this.formGroup.get(
+        'transportationAllowanceQuantity'
+      )?.value,
+      transportationAllowanceRate: this.formGroup.get(
+        'transportationAllowanceRate'
+      )?.value,
+      overtimeQuantity: this.formGroup.get('overtimeQuantity')?.value,
+      overtimeRate: this.formGroup.get('overtimeRate')?.value,
+      month: this.formGroup.get('month')?.value,
+      year: this.formGroup.get('year')?.value,
+      taxAmount: this.formGroup.get('taxAmount')?.value,
+      otherAllowances: this.formGroup.get('otherAllowances')?.value,
+      deductions: this.formGroup.get('deductions')?.value,
+      lastDate: lastDate,
+    };
+
+    return data;
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
-      .post('salary-slips', this.formGroup.value)
+      .post('salary-slips', this.formatFormData())
       .subscribe({
         next: (_) => {
           this.generateSalarySlip(this.formGroup.value);

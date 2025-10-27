@@ -217,8 +217,6 @@ export class ProxyPaymentHelper {
         },
       },
     };
-
-    var uuid = v4();
-    return pdfMake.createPdf(dd).download(`Proxy ${uuid}.pdf`);
+    return pdfMake.createPdf(dd).open();
   }
 }

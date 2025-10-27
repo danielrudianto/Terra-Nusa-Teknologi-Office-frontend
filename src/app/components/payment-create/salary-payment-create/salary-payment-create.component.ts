@@ -80,10 +80,10 @@ export class SalaryPaymentCreateComponent {
             salarySlip.transportationAllowanceQuantity +
           salarySlip.mealAllowanceRate * salarySlip.mealAllowanceQuantity +
           salarySlip.overtimeRate * salarySlip.overtimeQuantity +
-          salarySlip.otherAllowances.reduce((a: any, b: any) => {
+          data.allowances.reduce((a: any, b: any) => {
             return a + b.amount;
           }, 0) -
-          salarySlip.otherDeductions.reduce((a: any, b: any) => {
+          data.deductions.reduce((a: any, b: any) => {
             return a + b.amount;
           }, 0);
 

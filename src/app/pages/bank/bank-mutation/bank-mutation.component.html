@@ -1,24 +1,38 @@
-<mat-form-field>
-  <mat-label>Enter a date range</mat-label>
-  <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-    <input
-      matStartDate
-      formControlName="start"
-      placeholder="Start date"
-      #dateRangeStart
-    />
-    <input
-      matEndDate
-      formControlName="end"
-      placeholder="End date"
-      #dateRangeEnd
-      (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
-    />
-  </mat-date-range-input>
-  <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-date-range-picker #picker></mat-date-range-picker>
-</mat-form-field>
+<div class="bank-header">
+  <app-header-title
+    class="flex-grow-1"
+    [title]="bankAccount == null ? 'N/A' : bankAccount.bankAccountName"
+    [description]="
+      bankAccount == null
+        ? ''
+        : bankAccount.bankAccountNumber + ' - ' + bankAccount.bankName
+    "
+  ></app-header-title>
+  <mat-form-field appearance="outline">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+      <input
+        matStartDate
+        formControlName="start"
+        placeholder="Start date"
+        #dateRangeStart
+      />
+      <input
+        matEndDate
+        formControlName="end"
+        placeholder="End date"
+        #dateRangeEnd
+        (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
+      />
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    <button mat-icon-button matSuffix type="button" (click)="download()">
+      <mat-icon>download</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
 
 <div class="table-responsive">
   <mat-table [dataSource]="dataSource">
@@ -67,8 +81,8 @@
   </mat-table>
 
   <mat-paginator
-    [pageSizeOptions]="[5, 10, 25, 100]"
-    [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 100]"
+    [pageSize]="pageSize"
     [showFirstLastButtons]="true"
     [length]="dataCount"
     [pageIndex]="page - 1"

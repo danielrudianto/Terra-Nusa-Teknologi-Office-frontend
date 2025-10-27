@@ -1,0 +1,12 @@
+<div class="title__wrapper mb-4">
+  <div class="title__wrapper-text">
+    <h1 class="mb-0">{{ title }}</h1>
+    <p class="mt-0">{{ description }}</p>
+  </div>
+  @if(actionButtonLabel != null){
+  <button class="header-button" (click)="actionButtonClicked()">
+    <mat-icon>add</mat-icon>
+    <span>{{ actionButtonLabel }}</span>
+  </button>
+  }
+</div>

@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>View payment data</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        formControlName="amount"
+        readonly
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account name</mat-label>
+      <input matInput formControlName="bank_account_name" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account number</mat-label>
+      <input matInput formControlName="bank_account_number" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank name</mat-label>
+      <input matInput formControlName="bank_name" readonly />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Document type</mat-label>
+      <input matInput formControlName="type" readonly />
+      <button mat-icon-button matPrefix (click)="onSelectClicked()">
+        <mat-icon>view_comfy</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    mat-dialog-close
+  >
+    Close
+  </button>
+</mat-dialog-actions>

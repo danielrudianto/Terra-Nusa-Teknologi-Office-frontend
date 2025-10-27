@@ -21,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
+import { PurchaseType } from '../../../utils/purchase-type';
 
 @Component({
   selector: 'app-purchase-view',
@@ -69,9 +70,6 @@ export class PurchaseViewComponent {
     date: new FormControl('', Validators.required),
     dueDate: new FormControl('', Validators.required),
     isInternal: new FormControl('', Validators.required),
-  });
-
-  valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl(''),
     ppn: new FormControl(''),
     ppnValue: new FormControl(''),
@@ -85,9 +83,6 @@ export class PurchaseViewComponent {
     total: new FormControl(''),
     paymentTotal: new FormControl(''),
     payments: new FormArray([]),
-  });
-
-  paymentFormGroup: FormGroup = new FormGroup({
     paymentMethod: new FormControl(''),
     bankName: new FormControl(''),
     bankAccountNumber: new FormControl(''),
@@ -99,7 +94,7 @@ export class PurchaseViewComponent {
   }
 
   get f() {
-    return this.valueFormGroup.controls;
+    return this.metaFormGroup.controls;
   }
 
   get t(): FormArray {
@@ -116,14 +111,11 @@ export class PurchaseViewComponent {
           receiptName: data.receiptName,
           taxInvoiceName: data.taxInvoiceName,
           projectName: data.projectName,
-          supplierName: `${data.supplier_name}, ${data.supplier_prefix}`,
-          supplierAddress: `${data.supplier_address}, ${data.supplier_city}, ${data.supplier_province}`,
+          supplierName: `${data.supplier.name}, ${data.supplier.prefix}`,
+          supplierAddress: `${data.supplier.address}, ${data.supplier.city}, ${data.supplier.province}`,
           lastStatus: data.lastStatus,
           purchaseOrderName: data.purchaseOrderName,
           isInternal: data.isInternal ? 'Yes' : 'No',
-        });
-
-        this.valueFormGroup.patchValue({
           dpp: data.dpp,
           ppn: data.ppn,
           ppnValue: ((data.ppn * data.dpp) / 100).toFixed(2),
@@ -147,7 +139,11 @@ export class PurchaseViewComponent {
             data.pbbkb +
             data.otherValue
           ).toFixed(2),
-          lastStatus: data.lastStatus,
+          purchaseType: PurchaseType.getPurchaseType(data.purchaseType),
+          paymentMethod: data.paymentMethod,
+          bankName: data.bankName,
+          bankAccountNumber: data.bankAccountNumber,
+          bankAccountName: data.bankAccountName,
         });
 
         data.payments.forEach((x: any) => {
@@ -158,13 +154,6 @@ export class PurchaseViewComponent {
               date: [x.date],
             })
           );
-        });
-
-        this.paymentFormGroup.patchValue({
-          paymentMethod: data.paymentMethod,
-          bankName: data.bankName,
-          bankAccountNumber: data.bankAccountNumber,
-          bankAccountName: data.bankAccountName,
         });
       },
       error: (error) => {

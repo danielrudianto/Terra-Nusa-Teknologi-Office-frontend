@@ -1,0 +1,13 @@
+.mdc-data-table__cell,
+.mdc-data-table__header-cell {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.search__wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}

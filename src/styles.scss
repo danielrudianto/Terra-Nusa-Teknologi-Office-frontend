@@ -40,16 +40,50 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: "Poppins";
+  src: url("assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("assets/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("assets/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
 :root {
-  --background-color: white;
-  --base-color: #f7f7f7;
-  --base-color-hover: #eaeaea;
-  --base-color-hover-transparent: rgba(234, 234, 234, 0.5);
-  --on-base-color: #333333;
-  --primary-color: #0d152e;
-  --accent-color: #f2711a;
-  --disabled-color: #b0b0b0;
-  --color-border: #cccccc;
+  --base-color: rgba(247, 249, 251, 1);
+  --active-button-color: rgba(213, 232, 255, 1);
+  --on-active-button-color: rgba(21, 77, 236, 1);
+  --inactive-button-color: transparent;
+  --on-inactive-button-color: rgba(24, 22, 22, 1);
+  --surface-color: white;
+  --disabled-color: #969696;
+  --banner-background-color: rgba(21, 77, 236, 1);
+  --on-banner-color: white;
+  --snackbar-background-color: rgb(43, 43, 43);
+  --stepper-icon-background: rgba(0, 0, 0, 0);
+  --stepper-icon-border: rgba(193, 205, 223, 1);
+  --stepper-icon-background-selected: rgba(0, 0, 0, 1);
+  --stepper-icon-border-selected: rgba(0, 0, 0, 1);
+  --stepper-icon-background-disabled: rgba(0, 0, 0, 0.1);
+  --stepper-icon-border-disabled: rgba(0, 0, 0, 1);
+  --paginator-button-background: transparent;
+  --paginator-button-border-color: rgba(232, 232, 232, 1);
+  --paginator-button-background-disabled: transparent;
+  --paginator-button-border-color-disabled: rgba(232, 232, 232, 1);
+
+  --heading-text-color: rgba(0, 0, 0, 1);
 }
 
 html {

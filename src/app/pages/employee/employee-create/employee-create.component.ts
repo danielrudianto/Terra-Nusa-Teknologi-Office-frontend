@@ -12,6 +12,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class EmployeeCreateComponent {
   constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
 
+  isSubmitting: boolean = false;
   formGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
     birthday: new FormControl('', Validators.required),
@@ -32,13 +33,21 @@ export class EmployeeCreateComponent {
     position: new FormControl('', Validators.required),
     department: new FormControl('', Validators.required),
     taxCategory: new FormControl('', Validators.required),
+    startDate: new FormControl('', Validators.required),
   });
 
   onSubmit() {
+    this.isSubmitting = true;
     const date = new Date(this.formGroup.value.birthday);
     const formattedDate = `${date.getFullYear()}-${String(
       date.getMonth() + 1
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const startDate = new Date(this.formGroup.value.startDate);
+    const formattedStartDate = `${startDate.getFullYear()}-${String(
+      startDate.getMonth() + 1
+    ).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+
     this.apiService
       .post('employees', {
         name: this.formGroup.value.name,
@@ -50,6 +59,7 @@ export class EmployeeCreateComponent {
         position: this.formGroup.value.position,
         department: this.formGroup.value.department,
         taxCategory: this.formGroup.value.taxCategory,
+        startDate: formattedStartDate,
       })
       .subscribe({
         next: (_) => {
@@ -68,6 +78,9 @@ export class EmployeeCreateComponent {
             }
           );
         },
+      })
+      .add(() => {
+        this.isSubmitting = false;
       });
   }
 }

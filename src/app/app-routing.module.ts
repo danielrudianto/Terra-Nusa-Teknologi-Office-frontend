@@ -48,7 +48,6 @@ import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
 import { PpnRecapComponent } from './pages/taxing/ppn-recap/ppn-recap.component';
 import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component';
 import { SettingsComponent } from './pages/settings/settings.component';
-import { PaymentUpdateComponent } from './pages/payment/payment-update/payment-update.component';
 import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
 import { IncomeComponent } from './pages/income/income.component';
 import { IncomeListComponent } from './pages/income/income-list/income-list.component';
@@ -64,6 +63,10 @@ import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draf
 import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
 import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
 import { PurchaseDraftConvertComponent } from './pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component';
+import { PurchaseOrderComponent } from './pages/purchase-order/purchase-order.component';
+import { PurchaseOrderListComponent } from './pages/purchase-order/purchase-order-list/purchase-order-list.component';
+import { PurchaseOrderCreateComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create.component';
+import { PurchaseOrderCreateGComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component';
 
 export const routes: Routes = [
   {
@@ -77,52 +80,115 @@ export const routes: Routes = [
       {
         path: '',
         component: DashboardComponent,
+        data: {
+          title: 'Dashboard',
+        },
       },
       {
         path: 'PDF',
         component: PdfMainComponent,
+        data: {
+          title: 'PDF',
+        },
       },
       {
         path: 'Purchase',
         component: PurchaseComponent,
+        data: {
+          title: 'Purchase',
+        },
         children: [
           {
             path: '',
             component: PurchaseListComponent,
             pathMatch: 'full',
+            data: {
+              title: 'Purchase',
+            },
           },
           {
             path: 'Create',
             component: PurchaseCreateComponent,
+            data: {
+              title: 'Purchase',
+            },
           },
           {
             path: 'Status/:id',
             component: PurchaseUpdateStatusComponent,
+            data: {
+              title: 'Purchase',
+            },
           },
         ],
       },
       {
         path: 'Purchase-draft',
         component: PurchaseDraftComponent,
+        data: {
+          title: 'Purchase draft',
+        },
         children: [
           {
             path: '',
             component: PurchaseDraftListComponent,
             pathMatch: 'full',
+            data: {
+              title: 'Purchase draft',
+            },
           },
           {
             path: 'Create',
             component: PurchaseDraftCreateComponent,
+            data: {
+              title: 'Purchase draft',
+            },
           },
           {
             path: 'Update/:id',
             component: PurchaseDraftConvertComponent,
+            data: {
+              title: 'Purchase draft',
+            },
+          },
+        ],
+      },
+      {
+        path: 'Purchase-order',
+        component: PurchaseOrderComponent,
+        data: {
+          title: 'Purchase order',
+        },
+        children: [
+          {
+            path: '',
+            component: PurchaseOrderListComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create',
+            component: PurchaseOrderCreateComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/G',
+            component: PurchaseOrderCreateGComponent,
+            data: {
+              title: 'Purchase order',
+            },
           },
         ],
       },
       {
         path: 'Reimbursement',
         component: ReimbursementComponent,
+        data: {
+          title: 'Reimbursement',
+        },
         children: [
           {
             path: '',
@@ -137,42 +203,69 @@ export const routes: Routes = [
       {
         path: 'Supplier',
         component: SupplierComponent,
+        data: {
+          title: 'Supplier',
+        },
         children: [
           {
             path: '',
             component: SupplierListComponent,
+            data: {
+              title: 'Supplier',
+            },
           },
           {
             path: 'Create',
             component: SupplierCreateComponent,
+            data: {
+              title: 'Supplier',
+            },
           },
           {
             path: 'Update/:id',
             component: SupplierUpdateComponent,
+            data: {
+              title: 'Supplier',
+            },
           },
         ],
       },
       {
         path: 'Bank',
         component: BankComponent,
+        data: {
+          title: 'Bank',
+        },
         children: [
           {
             path: '',
             component: BankListComponent,
+            data: {
+              title: 'Bank',
+            },
           },
           {
             path: 'Create',
             component: BankCreateComponent,
+            data: {
+              title: 'Bank',
+            },
           },
           {
             path: 'Mutation/:id',
             component: BankMutationComponent,
+            data: {
+              title: 'Bank',
+            },
           },
         ],
       },
       {
         path: 'Asset',
         component: AssetComponent,
+        data: {
+          title: 'Asset',
+        },
         children: [
           {
             path: '',
@@ -187,26 +280,44 @@ export const routes: Routes = [
       {
         path: 'Expense',
         component: ExpenseComponent,
+        data: {
+          title: 'Expense',
+        },
         children: [
           {
             path: '',
             component: ExpenseListComponent,
+            data: {
+              title: 'Expense',
+            },
           },
           {
             path: 'Create',
             component: ExpenseCreateComponent,
+            data: {
+              title: 'Expense',
+            },
           },
           {
             path: 'Opponent',
             component: ExpenseOpponentComponent,
+            data: {
+              title: 'Expense',
+            },
             children: [
               {
                 path: '',
                 component: ExpenseOpponentListComponent,
+                data: {
+                  title: 'Expense',
+                },
               },
               {
                 path: 'Create',
                 component: ExpenseOpponentCreateComponent,
+                data: {
+                  title: 'Expense',
+                },
               },
             ],
           },
@@ -215,6 +326,9 @@ export const routes: Routes = [
       {
         path: 'Income',
         component: IncomeComponent,
+        data: {
+          title: 'Income',
+        },
         children: [
           {
             path: '',
@@ -229,6 +343,9 @@ export const routes: Routes = [
       {
         path: 'Loans',
         component: LoansComponent,
+        data: {
+          title: 'Loans',
+        },
         children: [
           {
             path: '',
@@ -243,6 +360,9 @@ export const routes: Routes = [
       {
         path: 'Sales-invoice',
         component: SalesInvoiceComponent,
+        data: {
+          title: 'Sales invoice',
+        },
         children: [
           {
             path: '',
@@ -257,6 +377,9 @@ export const routes: Routes = [
       {
         path: 'Employee',
         component: EmployeeComponent,
+        data: {
+          title: 'Employee',
+        },
         children: [
           {
             path: '',
@@ -271,6 +394,9 @@ export const routes: Routes = [
       {
         path: 'Salary-slip',
         component: SalarySlipComponent,
+        data: {
+          title: 'Salary slip',
+        },
         children: [
           {
             path: '',
@@ -289,6 +415,9 @@ export const routes: Routes = [
       {
         path: 'Client',
         component: ClientComponent,
+        data: {
+          title: 'Client',
+        },
         children: [
           {
             path: '',
@@ -303,10 +432,16 @@ export const routes: Routes = [
       {
         path: 'Calendar',
         component: CalendarComponent,
+        data: {
+          title: 'Calendar',
+        },
       },
       {
         path: 'Interpayment',
         component: InterpaymentComponent,
+        data: {
+          title: 'Interpayment',
+        },
         children: [
           {
             path: '',
@@ -321,18 +456,23 @@ export const routes: Routes = [
       {
         path: 'Payment',
         component: PaymentComponent,
+        data: {
+          title: 'Payment',
+        },
         children: [
           {
             path: '',
             component: PaymentListComponent,
+            data: {
+              title: 'Payment',
+            },
           },
           {
             path: 'History',
             component: PaymentHistoryComponent,
-          },
-          {
-            path: 'Approval/:id',
-            component: PaymentUpdateComponent,
+            data: {
+              title: 'Payment',
+            },
           },
           {
             path: 'Approval',
@@ -343,6 +483,9 @@ export const routes: Routes = [
       {
         path: 'Taxing',
         component: TaxingComponent,
+        data: {
+          title: 'Taxing',
+        },
         children: [
           {
             path: '',
@@ -361,6 +504,9 @@ export const routes: Routes = [
       {
         path: 'Settings',
         component: SettingsComponent,
+        data: {
+          title: 'Settings',
+        },
       },
     ],
   },

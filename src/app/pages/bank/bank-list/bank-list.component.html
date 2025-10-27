@@ -1,12 +1,9 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Bank Accounts</h1>
-</div>
-
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Bank/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<app-header-title
+  [title]="'Bank accounts'"
+  [description]="'Manage your bank accounts here'"
+  [actionButtonLabel]="'Create new bank account'"
+  (onActionButtonClicked)="createNewBank()"
+></app-header-title>
 
 <div class="search__wrapper">
   <mat-form-field appearance="outline" class="w-100">

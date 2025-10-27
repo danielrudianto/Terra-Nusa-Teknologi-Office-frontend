@@ -184,7 +184,6 @@ export class PurchaseDraftConvertComponent {
 
   ngOnInit() {
     this.fetchBankAccounts();
-
     this.fetchPurchaseDraft();
 
     this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
@@ -335,10 +334,11 @@ export class PurchaseDraftConvertComponent {
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
     const proxyPayment = this.paymentFormGroup.controls['proxyPayment'].value;
     const paymentAmount = this.paymentFormGroup.controls['paymentTotal'].value;
-
+    const id = this.router.snapshot.params['id'];
     this.isSubmitting = true;
 
     const purchaseData = {
+      id: id,
       procurementType: this.metaFormGroup.controls['documentType'].value,
       invoiceName: this.metaFormGroup.controls['invoiceName'].value,
       receiptName: this.metaFormGroup.controls['receiptName'].value,
@@ -399,7 +399,7 @@ export class PurchaseDraftConvertComponent {
 
     if (this.paymentFormGroup.controls['createPayment'].value === true) {
       this.apiService
-        .post('purchases/draft', purchaseData)
+        .put('purchase-draft', purchaseData)
         .subscribe({
           next: (result: any) => {
             const purchaseID = result.purchase_id;
@@ -424,6 +424,7 @@ export class PurchaseDraftConvertComponent {
                     this.generateProxyPaymentPDF({
                       ...purchaseData,
                       totalPayment: paymentAmount,
+                      id: this.router.snapshot.params['id'],
                     });
                   }
 
@@ -608,11 +609,12 @@ export class PurchaseDraftConvertComponent {
       .get(`purchase-draft/${this.router.snapshot.params['id']}`, {})
       .subscribe({
         next: (data: any) => {
+          console.log(data.supplier_id);
           this.metaFormGroup.patchValue({
             date: new Date(data.date),
             supplierID: data.supplier_id,
-            supplierName: data.supplier_name,
-            supplierAddress: data.supplier_address,
+            supplierName: data.supplier.name,
+            supplierAddress: data.supplier.address,
             total: data.dpp + (data.ppn * data.dpp) / 100 + data.pbbkb,
             purchaseOrderName: data.purchaseOrderName,
             purchaseType: data.purchaseType,

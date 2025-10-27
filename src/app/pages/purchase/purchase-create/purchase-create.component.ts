@@ -3,13 +3,15 @@ import {
   AbstractControl,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
@@ -17,6 +19,18 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
 import { PaymentSlipHelper } from '../../../helpers/payment-slip.helper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CommonModule } from '@angular/common';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { MatInputModule } from '@angular/material/input';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -67,9 +81,27 @@ function bankAccountIDRequired(): ValidatorFn {
 
 @Component({
   selector: 'app-purchase-create',
+  providers: [provideNgxMask()],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatStepperModule,
+    MatIconModule,
+    HeaderTitleComponent,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatAutocompleteModule,
+    MatSlideToggleModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './purchase-create.component.html',
   styleUrls: ['./purchase-create.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class PurchaseCreateComponent {
   constructor(
@@ -108,7 +140,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/
         ),
       ]),
       projectName: new FormControl('', [
@@ -119,7 +151,7 @@ export class PurchaseCreateComponent {
       purchaseType: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/
+          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1$/
         ),
       ]),
       documentType: new FormControl('', Validators.required),
@@ -239,7 +271,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -268,6 +300,8 @@ export class PurchaseCreateComponent {
             supplierName: data.name,
             supplierAddress: data.address,
           });
+
+          this.fetchFrequentPaymentBySupplierID(data.id);
         }
       });
   }
@@ -456,17 +490,17 @@ export class PurchaseCreateComponent {
                     });
                   }
 
-                  PaymentSlipHelper.generatePurchasePaymentSlipPDF({
-                    ...purchaseData,
-                    createdAt: new Date(),
-                    amount: paymentData.amount,
-                    paymentDate: dueDateFormatted,
-                    payments: [],
-                    total: paymentData.amount,
-                    bankNameOrigin: '',
-                    bankAccountNameOrigin: '',
-                    bankAccountNumberOrigin: '',
-                  });
+                  // PaymentSlipHelper.generatePurchasePaymentSlipPDF({
+                  //   ...purchaseData,
+                  //   createdAt: new Date(),
+                  //   amount: paymentData.amount,
+                  //   paymentDate: dueDateFormatted,
+                  //   payments: [],
+                  //   total: paymentData.amount,
+                  //   bankNameOrigin: '',
+                  //   bankAccountNameOrigin: '',
+                  //   bankAccountNumberOrigin: '',
+                  // });
 
                   this.snackBar.open('Purchase created successfully', 'Close', {
                     duration: 3000,
@@ -628,6 +662,20 @@ export class PurchaseCreateComponent {
         this.snackBar.open('Error fetching bank accounts', 'Close', {
           duration: 3000,
         });
+      },
+    });
+  }
+
+  fetchFrequentPaymentBySupplierID(id: number) {
+    this.apiService.get('purchases/frequent-payment/' + id, {}).subscribe({
+      next: (data: any) => {
+        if (data != null) {
+          this.paymentFormGroup.patchValue({
+            bankName: data.bankName,
+            bankAccountName: data.bankAccountName,
+            bankAccountNumber: data.bankAccountNumber,
+          });
+        }
       },
     });
   }

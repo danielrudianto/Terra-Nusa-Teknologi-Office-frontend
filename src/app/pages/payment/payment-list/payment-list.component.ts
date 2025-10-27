@@ -1,20 +1,56 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil, debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
+import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
+import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { PaymentViewComponent } from '../payment-view/payment-view.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 
 @Component({
   selector: 'app-payment-list',
-  standalone: false,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatChipsModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatButtonModule,
+    HeaderTitleComponent,
+    PillSuccessComponent,
+    PillWarningComponent,
+    PillDangerComponent,
+    MatMenuModule,
+  ],
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss',
+  standalone: true,
 })
-export class PaymentListComponent {
+export class PaymentListComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private route: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {}
+
+  private destroy$ = new Subject<void>();
 
   isPending: boolean = true;
   isApproved: boolean = false;
@@ -27,26 +63,87 @@ export class PaymentListComponent {
   pageSize: number = 10;
   displayedColumns: string[] = [
     'date',
-    'createdAt',
-    'amount',
+    'bankAccount',
     'documentName',
+    'amount',
     'approvalStatus',
     'documentStatus',
+    'action',
   ];
   sortBy: string = 'date';
   sortByDirection: 'asc' | 'desc' = 'desc';
 
   ngOnInit(): void {
-    this.fetchPayments(1);
+    this.loadStateFromQueryParams();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadStateFromQueryParams(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        // Load pagination
+        if (params['page']) this.page = +params['page'];
+        if (params['pageSize']) this.pageSize = +params['pageSize'];
+
+        // Load sort
+        if (params['sortBy']) this.sortBy = params['sortBy'];
+        if (params['sortByDirection'])
+          this.sortByDirection = params['sortByDirection'];
+
+        // Load filter states - RESET to false if not in params
+        this.isPending =
+          params['isPending'] == undefined
+            ? true
+            : params['isPending'] === 'true';
+        this.isApproved = params['isApproved'] === 'true';
+        this.isRejected = params['isRejected'] === 'true';
+
+        // Fetch data with loaded state
+        this.fetchPayments(this.page);
+      });
+  }
+
+  private updateQueryParams(): void {
+    const queryParams: any = {
+      page: this.page,
+      pageSize: this.pageSize,
+      sortBy: this.sortBy,
+      sortByDirection: this.sortByDirection,
+      isPending: this.isPending ? 'true' : null,
+      isApproved: this.isApproved ? 'true' : null,
+      isRejected: this.isRejected ? 'true' : null,
+    };
+
+    // Remove null values
+    Object.keys(queryParams).forEach((key) => {
+      if (queryParams[key] === null || queryParams[key] === undefined) {
+        delete queryParams[key];
+      }
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true,
+    });
   }
 
   onPageChange(event: any): void {
     if (event.pageSize == this.pageSize) {
-      this.fetchPayments(event.pageIndex + 1);
+      this.page = event.pageIndex + 1;
     } else {
+      this.page = 1;
       this.pageSize = event.pageSize;
-      this.fetchPayments(1);
     }
+
+    this.updateQueryParams();
+    this.fetchPayments(this.page);
   }
 
   fetchPayments(targetPage: number): void {
@@ -87,27 +184,100 @@ export class PaymentListComponent {
       this.sortByDirection = 'asc';
     }
 
+    this.updateQueryParams();
     this.fetchPayments(1);
   }
 
   approvePayment(paymentID: number) {
-    this.route.navigate(['/Payment/Approval/' + paymentID]);
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Approve payment',
+          prompt: 'Are you sure you want to approve this payment?',
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data === true) {
+          this.apiService
+            .put(`outgoing-payments/approve/${paymentID}`, {})
+            .subscribe({
+              next: (data: any) => {
+                this.snackBar.open('Payment has been approved', 'Close', {
+                  duration: 3000,
+                });
+
+                const index = this.payments.findIndex((x) => x.id == paymentID);
+                if (index != -1) {
+                  this.payments[index].isApprove = true;
+                }
+              },
+              error: (error) => {
+                this.snackBar.open(error.error.detail, 'Close', {
+                  duration: 3000,
+                });
+              },
+            });
+        }
+      });
+  }
+
+  rejectPayment(paymentID: number) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Reject payment',
+          prompt: 'Are you sure you want to reject this payment?',
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data === true) {
+          this.apiService
+            .put(`outgoing-payments/reject/${paymentID}`, {})
+            .subscribe({
+              next: (data: any) => {
+                this.snackBar.open('Payment has been rejected', 'Close', {
+                  duration: 3000,
+                });
+
+                const index = this.payments.findIndex((x) => x.id == paymentID);
+                if (index != -1) {
+                  this.payments[index].isDelete = true;
+                }
+              },
+              error: (error) => {
+                this.snackBar.open(error.error.detail, 'Close', {
+                  duration: 3000,
+                });
+              },
+            });
+        }
+      });
   }
 
   changeSelection(field: string, event: any): void {
     switch (field) {
       case 'pending':
         this.isPending = event.selected;
-        this.fetchPayments(1);
         break;
       case 'approved':
         this.isApproved = event.selected;
-        this.fetchPayments(1);
         break;
       case 'rejected':
         this.isRejected = event.selected;
-        this.fetchPayments(1);
         break;
     }
+
+    this.updateQueryParams();
+    this.fetchPayments(1);
+  }
+
+  viewPayment(id: number) {
+    this.dialog.open(PaymentViewComponent, {
+      data: {
+        id: id,
+      },
+    });
   }
 }

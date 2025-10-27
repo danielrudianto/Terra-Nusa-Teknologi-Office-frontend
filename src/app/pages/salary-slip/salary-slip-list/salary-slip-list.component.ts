@@ -1,20 +1,99 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ApiService } from '../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SalarySlipViewComponent } from './salary-slip-view/salary-slip-view.component';
 import { SalaryPaymentCreateComponent } from 'src/app/components/payment-create/salary-payment-create/salary-payment-create.component';
 import { debounceTime } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import * as _moment from 'moment';
+// tslint:disable-next-line:no-duplicate-imports
+import { default as _rollupMoment, Moment } from 'moment';
+import {
+  MatDatepicker,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+
+const moment = _rollupMoment || _moment;
+
+// See the Moment.js docs for the meaning of these formats:
+// https://momentjs.com/docs/#/displaying/format/
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'MM/YYYY',
+  },
+  display: {
+    dateInput: 'MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-salary-slip-list',
-  standalone: false,
+  providers: [provideMomentDateAdapter(MY_FORMATS)],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    HeaderTitleComponent,
+    MatDatepickerModule,
+  ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',
+  standalone: true,
 })
 export class SalarySlipListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  month: number = new Date().getMonth();
+  year: number = new Date().getFullYear();
+  readonly date = new FormControl(moment());
+
+  ngOnInit(): void {
+    this.fetchSalarySlips();
+
+    this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.fetchSalarySlips(1);
+    });
+
+    this.date.valueChanges.subscribe((date) => {
+      if (date) {
+        const month = date.month() + 1;
+        const year = date.year();
+
+        this.month = month;
+        this.year = year;
+
+        this.fetchSalarySlips(1);
+      }
+    });
+  }
+
+  setMonthAndYear(
+    normalizedMonthAndYear: Moment,
+    datepicker: MatDatepicker<Moment>
+  ) {
+    const ctrlValue = this.date.value ?? moment();
+    ctrlValue.month(normalizedMonthAndYear.month());
+    ctrlValue.year(normalizedMonthAndYear.year());
+    this.date.setValue(ctrlValue);
+    datepicker.close();
+  }
 
   dataSource: any[] = [];
   dataCount: number = 0;
@@ -36,14 +115,6 @@ export class SalarySlipListComponent {
   ];
   formControl: FormControl = new FormControl('');
 
-  ngOnInit(): void {
-    this.fetchSalarySlips();
-
-    this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
-      this.fetchSalarySlips(1);
-    });
-  }
-
   changePage(page: PageEvent) {
     if ((this.pageSize = page.pageSize)) {
       this.fetchSalarySlips(page.pageIndex + 1);
@@ -60,6 +131,8 @@ export class SalarySlipListComponent {
         page: this.page,
         pageSize: this.pageSize,
         keyword: this.formControl.value,
+        month: this.month,
+        year: this.year,
       })
       .subscribe((response: any) => {
         this.dataSource = response.data;

@@ -1,46 +1,85 @@
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-xl-5 col-lg-5 col-md-6 col-sm-8 col-10">
-      <div class="card p-3">
+<div class="login__wrapper">
+  <div class="container h-100">
+    <div class="row justify-content-center h-100">
+      <div
+        class="col-xl-6 col-lg-6 col-md-10 d-flex align-items-center justify-content-center d-block"
+      >
+        <div class="login-form__wrapper">
+          <img src="/assets/images/sphere.png" alt="Sphere" id="sphere" />
+          <img src="/assets/images/dome.png" alt="Dome" id="dome" />
+          <div class="login-form">
+            <form [formGroup]="loginFormGroup" (submit)="onSubmit()">
+              <div class="login-form__logo">
+                <img
+                  src="/assets/images/login-logo.png"
+                  alt="Login logo"
+                  class="w-100"
+                />
+              </div>
+              <h2>Welcome Back</h2>
+              <p>Masukkan kredensial Anda untuk mengakses Sistem</p>
+              <mat-form-field
+                appearance="outline"
+                class="w-100"
+                required
+                subscriptSizing="dynamic"
+              >
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  placeholder="Ex. JohnDoe"
+                  [readonly]="isSubmitting"
+                />
+                <mat-icon matPrefix>email</mat-icon>
+              </mat-form-field>
+              <mat-form-field
+                appearance="outline"
+                class="w-100 mt-3"
+                required
+                subscriptSizing="dynamic"
+              >
+                <mat-label>Password</mat-label>
+                <input
+                  type="password"
+                  matInput
+                  formControlName="password"
+                  placeholder="Ex. Password"
+                  [readonly]="isSubmitting"
+                />
+                <mat-icon matPrefix>password</mat-icon>
+              </mat-form-field>
+
+              <div class="login__form__action mt-5">
+                <mat-checkbox formControlName="remember" color="primary"
+                  >Remember me</mat-checkbox
+                >
+              </div>
+
+              <button
+                class="btn mt-5"
+                type="submit"
+                [disabled]="!loginFormGroup.valid || isSubmitting"
+              >
+                Login
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div
+        class="col-xl-6 col-lg-6 col-md-10 h-100 p-relative d-lg-flex align-items-center justify-content-center d-none"
+      >
+        <img src="/assets/images/rock.png" alt="Rock" id="rock" />
+        <img src="/assets/images/graph.png" alt="Graph" id="graph" />
+        <img src="/assets/images/cone.png" alt="Cone" id="cone" />
+
         <img
-          src="assets/images/logo.png"
-          alt="Logo"
-          class="mb-3 text-center"
-          width="200"
+          src="/assets/images/login.png"
+          alt="Hero image"
+          class="w-100"
+          id="hero"
         />
-
-        <p>Please enter your credentials.</p>
-        <h1 class="title mb-5">Welcome Back</h1>
-
-        <form [formGroup]="loginFormGroup" (ngSubmit)="onSubmit()">
-          <mat-form-field appearance="outline" class="w-100 mb-3">
-            <mat-label>Email</mat-label>
-            <input
-              matInput
-              formControlName="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-100 mb-3">
-            <mat-label>Password</mat-label>
-            <input
-              matInput
-              formControlName="password"
-              type="password"
-              placeholder="Enter your password"
-              required
-            />
-          </mat-form-field>
-          <button
-            type="submit"
-            class="btn w-100"
-            [disabled]="loginFormGroup.invalid || isSubmitting"
-          >
-            Login
-          </button>
-        </form>
       </div>
     </div>
   </div>

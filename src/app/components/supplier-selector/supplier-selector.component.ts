@@ -1,14 +1,31 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
-    selector: 'app-supplier-selector',
-    templateUrl: './supplier-selector.component.html',
-    styleUrls: ['./supplier-selector.component.scss'],
-    standalone: false
+  selector: 'app-supplier-selector',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
+  templateUrl: './supplier-selector.component.html',
+  styleUrls: ['./supplier-selector.component.scss'],
+  standalone: true,
 })
 export class SupplierSelectorComponent {
   constructor(

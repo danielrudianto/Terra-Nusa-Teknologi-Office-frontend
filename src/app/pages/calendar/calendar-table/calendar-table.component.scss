@@ -7,7 +7,7 @@
   display: table;
   width: 100%;
   height: 100%;
-  min-width: 1600px;
+  min-width: 1400px;
 
   .calendar__table__header {
     display: table-row;
@@ -24,6 +24,7 @@
       // disable user selection
       user-select: none;
       width: 12.5%;
+      border-bottom: 1px solid #888;
     }
   }
   .calendar__table__spacer-row {
@@ -43,7 +44,7 @@
         height: 100%;
         border-radius: 20px;
         padding: 1rem;
-        border: 1px solid var(--color-border);
+        border: 1px solid #888;
         // user selection
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -55,10 +56,10 @@
         }
 
         &:hover {
-          background-color: var(--base-color-hover);
+          background-color: #ddd;
 
           .calendar__table__cell__box__date {
-            background-color: var(--primary-color);
+            background-color: rgba(21, 77, 236, 1);
             color: white;
             transition: background-color 0.3s ease;
           }
@@ -76,7 +77,7 @@
         }
 
         .calendar__table__cell__box__value {
-          font-size: 1.85rem;
+          font-size: 1.55rem;
           font-weight: bold;
           color: var(--color-text);
           text-align: right;
@@ -94,8 +95,8 @@
           transition: background-color 0.3s ease;
 
           &.today {
-            background-color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            background-color: rgba(21, 77, 236, 1);
+            border: 1px solid rgba(21, 77, 236, 1);
             color: white;
           }
         }

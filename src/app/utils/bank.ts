@@ -7,6 +7,18 @@ export interface IBank {
 
 export const banks: IBank[] = [
   {
+    name: 'PT Bank Central Asia Tbk.',
+    alias: 'BCA',
+  },
+  {
+    name: 'PT Bank Rakyat Indonesia (Persero), Tbk',
+    alias: 'BRI',
+  },
+  {
+    name: 'PT Bank Mandiri, Tbk',
+    alias: 'Bank Mandiri',
+  },
+  {
     name: 'PT BPD Bengkulu',
     alias: 'Bank Bengkulu',
   },
@@ -63,10 +75,6 @@ export const banks: IBank[] = [
     alias: 'Bank Maluku',
   },
   {
-    name: 'PT Bank Mandiri, Tbk',
-    alias: 'Bank Mandiri',
-  },
-  {
     name: 'PT BPD Nusa Tenggara Barat',
     alias: 'Bank NTB',
   },
@@ -95,8 +103,8 @@ export const banks: IBank[] = [
     alias: 'Bank Sumut',
   },
   {
-    name: 'PT Bank Central Asia Tbk.',
-    alias: 'BCA',
+    name: 'PT Bank Digital BCA.',
+    alias: 'BCA Digital',
   },
   {
     name: 'PT Bank Syariah Indonesia Tbk.,',
@@ -117,10 +125,6 @@ export const banks: IBank[] = [
   {
     name: 'PT Bank BNI Syariah',
     alias: 'BNI Sayariah',
-  },
-  {
-    name: 'PT Bank Rakyat Indonesia (Persero), Tbk',
-    alias: 'BRI',
   },
   {
     name: 'PT Bank Raya Indonesia, Tbk.',

@@ -1,0 +1,53 @@
+<h1 mat-dialog-title>View Income Data</h1>
+<mat-dialog-content>
+  <p>Here are the income data</p>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Opponent name</mat-label>
+      <input matInput formControlName="opponent_name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Opponent description</mat-label>
+      <textarea matInput formControlName="opponent_description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Income type</mat-label>
+      <mat-select formControlName="incomeType">
+        <mat-optgroup label="Other income">
+          <mat-option value="7.1">Income from interest</mat-option>
+          <mat-option value="7.2">Income from royalty</mat-option>
+          <mat-option value="7.3">Income from dividend</mat-option>
+          <mat-option value="7.5">Other income</mat-option>
+        </mat-optgroup>
+        <mat-optgroup label="Miscelanous income">
+          <mat-option value="7.4">Income from rounding up</mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <span matTextPrefix>Rp.&nbsp;</span>
+      <input matInput formControlName="amount" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    mat-dialog-close
+  >
+    Close
+  </button>
+</mat-dialog-actions>

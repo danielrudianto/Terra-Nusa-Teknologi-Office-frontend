@@ -21,7 +21,13 @@ export class AssetListComponent {
   clients: any[] = [];
   count: number = 0;
 
-  displayedColumns: string[] = ['name', 'description', 'brand', 'type', 'action'];
+  displayedColumns: string[] = [
+    'name',
+    'description',
+    'brand',
+    'type',
+    'action',
+  ];
 
   ngOnInit(): void {
     this.fetchClients();
@@ -45,7 +51,7 @@ export class AssetListComponent {
       .subscribe({
         next: (res: any) => {
           this.clients = res.data;
-          this.count = res.count;
+          this.count = res.total_count;
         },
         error: (err) => {
           console.error(err);

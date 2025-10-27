@@ -1,12 +1,9 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Reimbursements</h1>
-</div>
-
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Reimbursement/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<app-header-title
+  [title]="'Reimbursements'"
+  [description]="'Manage your reimbursement data here'"
+  [actionButtonLabel]="'Create new reimbursement'"
+  (onActionButtonClicked)="createNewReimbursement()"
+/>
 
 <form [formGroup]="filterFormGroup">
   <mat-chip-listbox
@@ -15,19 +12,29 @@
     aria-label="Filter Selection"
     [disabled]="isLoading"
   >
-    <mat-chip-option (selectionChange)="changeSelection('isApprove', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isApprove')"
+      (selectionChange)="changeSelection('isApprove', $event)"
       >Approved</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isDelete', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isDelete')"
+      (selectionChange)="changeSelection('isDelete', $event)"
       >Rejected</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isPending', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isPending')"
+      (selectionChange)="changeSelection('isPending', $event)"
       >Pending</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isPaid', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isPaid')"
+      (selectionChange)="changeSelection('isPaid', $event)"
       >Paid</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isUnpaid', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isUnpaid')"
+      (selectionChange)="changeSelection('isUnpaid', $event)"
       >Unpaid</mat-chip-option
     >
   </mat-chip-listbox>
@@ -109,13 +116,13 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let purchase">
-        {{
-          purchase.isDelete
-            ? "Deleted"
-            : purchase.isApprove
-            ? "Approved"
-            : "Pending"
-        }}
+        @if(purchase.isDelete){
+        <app-pill-danger [label]="'Deleted'" />
+        } @else if(purchase.isApprove){
+        <app-pill-success [label]="'Approved'" />
+        } @else {
+        <app-pill-warning [label]="'Pending'" />
+        }
       </td></ng-container
     >
 
@@ -155,7 +162,11 @@
     <ng-container matColumnDef="isPaid">
       <th mat-header-cell *matHeaderCellDef>Paid status</th>
       <td mat-cell *matCellDef="let purchase">
-        {{ purchase.isPaid ? "Paid" : "Not paid" }}
+        @if(purchase.isPaid){
+        <app-pill-success [label]="'Paid'" />
+        } @else {
+        <app-pill-danger [label]="'Not paid'" />
+        }
       </td>
     </ng-container>
 
@@ -166,34 +177,53 @@
         *matCellDef="let purchase"
         (click)="$event.stopPropagation()"
       >
-        <button
-          mat-icon-button
-          [disabled]="
-            !purchase.isApprove || purchase.isPaid || purchase.isDelete
-          "
-          (click)="$event.stopPropagation(); openPaymentDetail(purchase.id)"
-        >
-          <mat-icon>payments</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_horiz</mat-icon>
         </button>
-
-        <button
-          mat-icon-button
-          [disabled]="purchase.isApprove || purchase.isDelete"
-          (click)="
-            $event.stopPropagation(); openConfirmationDialog(purchase.id)
-          "
-        >
-          <mat-icon>check_circle</mat-icon>
-        </button>
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
+            [disabled]="
+              !purchase.isApprove || purchase.isPaid || purchase.isDelete
+            "
+            (click)="$event.stopPropagation(); openPaymentDetail(purchase.id)"
+          >
+            <mat-icon>payments</mat-icon>
+            <span>Create payment</span>
+          </button>
+          <button
+            mat-menu-item
+            [disabled]="purchase.isApprove || purchase.isDelete"
+            (click)="
+              $event.stopPropagation(); openConfirmationDialog(purchase.id)
+            "
+          >
+            <mat-icon>check_circle</mat-icon>
+            <span>Approve reimbursement</span>
+          </button>
+          <button
+            mat-menu-item
+            [disabled]="purchase.isDelete"
+            (click)="$event.stopPropagation(); print(purchase.id)"
+          >
+            <mat-icon>print</mat-icon>
+            <span>Re-print reimbursement</span>
+          </button>
+          <button
+            mat-menu-item
+            (click)="
+              $event.stopPropagation(); viewReimbursementData(purchase.id)
+            "
+          >
+            <mat-icon>view_array</mat-icon>
+            <span>View reimbursement data</span>
+          </button>
+        </mat-menu>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      (click)="viewReimbursementData(row.id)"
-    ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
         No data matching the filter.

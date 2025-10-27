@@ -1,58 +1,58 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">
-    <a routerLink="/Bank">Bank Accounts</a> / Create
-  </h1>
-</div>
-
+<h1 mat-dialog-title>Create new bank account</h1>
 <form [formGroup]="bankFormGroup" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Account name</mat-label>
-    <input
-      matInput
-      formControlName="bankAccountName"
-      type="text"
-      placeholder="Account name"
-      required
-    />
-  </mat-form-field>
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Account name</mat-label>
+      <input
+        matInput
+        formControlName="bankAccountName"
+        type="text"
+        placeholder="Account name"
+        required
+      />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Account number</mat-label>
-    <input
-      matInput
-      formControlName="bankAccountNumber"
-      type="text"
-      placeholder="Account number"
-      required
-    />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Account number</mat-label>
+      <input
+        matInput
+        formControlName="bankAccountNumber"
+        type="text"
+        placeholder="Account number"
+        required
+      />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank Name</mat-label>
-    <input
-      #input
-      type="text"
-      placeholder="Bank name"
-      matInput
-      formControlName="bankName"
-      [matAutocomplete]="auto"
-      (input)="filter()"
-      (focus)="filter()"
-    />
-    <mat-autocomplete requireSelection #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let option of filteredOptions"
-        [value]="option.name"
-        >{{ option.name }}</mat-option
-      >
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <button
-    class="btn mt-3"
-    type="submit"
-    [disabled]="isSubmitting || bankFormGroup.invalid"
-  >
-    Submit
-  </button>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank Name</mat-label>
+      <input
+        #input
+        type="text"
+        placeholder="Bank name"
+        matInput
+        formControlName="bankName"
+        [matAutocomplete]="auto"
+        (input)="filter()"
+        (focus)="filter()"
+      />
+      <mat-autocomplete requireSelection #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let option of filteredOptions"
+          [value]="option.name"
+          >{{ option.name }}</mat-option
+        >
+      </mat-autocomplete>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      type="submit"
+      [disabled]="isSubmitting || bankFormGroup.invalid"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
 </form>

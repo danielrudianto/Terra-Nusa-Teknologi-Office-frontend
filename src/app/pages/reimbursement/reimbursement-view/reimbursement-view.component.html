@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>View reimbursement data</h2>
+<h1 mat-dialog-title>View reimbursement data</h1>
 <mat-dialog-content>
   <form [formGroup]="formGroup">
     <mat-form-field appearance="outline" class="w-100">
@@ -16,15 +16,32 @@
       />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        placeholder="Document name"
-        readonly
-      />
-    </mat-form-field>
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Document name"
+            readonly
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project Name</mat-label>
+          <input
+            matInput
+            type="text"
+            id="projectName"
+            formControlName="projectName"
+            placeholder="Enter project name"
+            readonly
+          />
+        </mat-form-field>
+      </div>
+    </div>
 
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Expense type</mat-label>
@@ -33,18 +50,6 @@
         type="text"
         formControlName="purchaseType"
         placeholder="Expense type"
-        readonly
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Project Name</mat-label>
-      <input
-        matInput
-        type="text"
-        id="projectName"
-        formControlName="projectName"
-        placeholder="Enter project name"
         readonly
       />
     </mat-form-field>
@@ -97,7 +102,7 @@
     </mat-form-field>
 
     <div class="table-responsive">
-      <table class="table table-bordered hover mt-3">
+      <table class="table hover mt-3">
         <thead>
           <tr>
             <th>Date</th>
@@ -111,15 +116,12 @@
               {{ item.get("date")?.value }}
             </td>
             <td>{{ item.get("description")?.value }}</td>
-            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+            <td>Rp. {{ item.get("amount")?.value | number : "0.2-2" }}</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <td></td>
-            <td>
-              <b>Total</b>
-            </td>
+            <td colspan="2" class="text-end">Total</td>
             <td>Rp. {{ formGroup.get("total")?.value | number : "0.2-2" }}</td>
           </tr>
         </tfoot>

@@ -1,6 +1,9 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Purchase Draft</h1>
-</div>
+<app-header-title
+  [title]="'Purchase Draft'"
+  [description]="'Manage your purchase draft data here'"
+  [actionButtonLabel]="'Create new purchase draft'"
+  (onActionButtonClicked)="createNewPurchaseDraft()"
+/>
 
 <mat-chip-listbox
   class="mb-3"
@@ -27,20 +30,10 @@
     placeholder="Search by purchase order or supplier"
     [formControl]="searchControl"
   />
-
-  <!-- <button type="button" [matMenuTriggerFor]="menu" mat-icon-button matSuffix>
-    <mat-icon>more_vert</mat-icon>
-  </button> -->
 </mat-form-field>
 
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Purchase-draft/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
-
 <div class="table-responsive">
-  <table mat-table [dataSource]="purchases">
+  <table mat-table [dataSource]="purchases" #table>
     <!--- Note that these columns can be defined in any order.
         The actual rendered columns are set as a property on the row definition" -->
     <ng-container matColumnDef="date">
@@ -189,13 +182,11 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let purchase">
-        <span class="d-flex align-items-center gap-2">
-          <mat-icon *ngIf="purchase.lastStatus === 'ready'"
-            >check_circle</mat-icon
-          >
-          <mat-icon *ngIf="purchase.lastStatus === 'draft'">article</mat-icon>
-          {{ purchase.lastStatus == "draft" ? "Draft" : "Ready" }}
-        </span>
+        @if(purchase.isDelete){
+        <app-pill-success [label]="'Approved'" />
+        } @else {
+        <app-pill-danger [label]="'Draft'" />
+        }
       </td>
     </ng-container>
 
@@ -213,16 +204,25 @@
         *matCellDef="let purchase"
         (click)="$event.stopPropagation()"
       >
-        <span style="display: flex; gap: 4px; align-items: center"> </span>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="viewPurchase(purchase.id)">
+            <mat-icon>view_array</mat-icon>
+            View purchase draft data
+          </button>
+          <button mat-menu-item (click)="convertPurchase(purchase.id)">
+            <mat-icon>swap_horiz</mat-icon>
+            Convert purchase draft data
+          </button>
+        </mat-menu>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      (click)="viewPurchase(row.id)"
-    ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
         No data matching the filter.

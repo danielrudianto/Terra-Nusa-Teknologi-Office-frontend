@@ -23,3 +23,9 @@ mat-header-cell {
   overflow: hidden;
   vertical-align: middle;
 }
+
+.mdc-data-table__cell,
+.mdc-data-table__header-cell {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

@@ -187,6 +187,11 @@ export class PurchasePaymentCreateComponent {
               Validators.max(totalAmount),
             ]);
 
+          this.formGroup.patchValue({
+            date: new Date(data.purchase.dueDate),
+            amount: totalAmount,
+          });
+
           this.totalAmount = totalAmount;
         },
         error: (error) => {
@@ -226,7 +231,7 @@ export class PurchasePaymentCreateComponent {
         bankAccountID: this.formGroup.value.bankAccountID,
       })
       .subscribe({
-        next: (data) => {
+        next: (_) => {
           // create pdf document
           PaymentSlipHelper.generatePurchasePaymentSlipPDF({
             invoiceName: this.metaFormGroup.value.invoiceName,

@@ -94,7 +94,7 @@ export class PpnRecapComponent {
           });
           this.saveAsExcelFile(
             excelBuffer,
-            `PPN Recap ${Number(this.formGroup.value.month) + 1} ${
+            `PPN Recap ${Number(this.formGroup.value.month)} ${
               this.formGroup.value.year
             }.xlsx`
           );

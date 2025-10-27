@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Payment data</h2>
+<mat-dialog-content class="mat-typography">
+  <p>
+    Please fill in the payment information below. The payment date is required.
+  </p>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Payment Date</mat-label>
+      <input
+        matInput
+        formControlName="paymentDate"
+        placeholder="Payment date"
+        [matDatepicker]="paymentDatePicker"
+        formControlName="date"
+      />
+      <mat-datepicker-toggle
+        matIconPrefix
+        [for]="paymentDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #paymentDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank Account Number</mat-label>
+      <mat-select formControlName="bankAccountID">
+        <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+          >{{ bank.bankAccountNumber }} --
+          {{ bank.bankAccountName }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        formControlName="amount"
+        type="text"
+        placeholder="Payment amount"
+        required
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+      <button matSuffix mat-icon-button type="button" (click)="fullAmount()">
+        <mat-icon>check_circle</mat-icon>
+      </button>
+      <mat-hint
+        >Maximum amount paid {{ totalAmount | number : "0.2-2" }}</mat-hint
+      >
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    type="submit"
+    style="letter-spacing: 0"
+  >
+    Submit
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Payment Approval Confirmation</h1>
+<mat-dialog-content>
+  <p>Are you sure to confirm {{ data.payments.length }} payment(s)?</p>
+  <div class="banner__warning">
+    <mat-icon>warning</mat-icon>
+    <p class="mb-0">
+      <span>Attention: </span>&nbsp;Please ensure you have selected the correct
+      transaction from the correct bank account before confirming.
+    </p>
+  </div>
+
+  <mat-checkbox [formControl]="agreeControl" class="mt-2" color="primary"
+    >I have read and agree to the terms</mat-checkbox
+  >
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button style="letter-spacing: 0" mat-dialog-close>
+    Cancel
+  </button>
+  <button
+    mat-stroked-button
+    style="letter-spacing: 0"
+    color="primary"
+    (click)="onConfirm()"
+    [disabled]="agreeControl.invalid"
+  >
+    Confirm
+  </button>
+</mat-dialog-actions>

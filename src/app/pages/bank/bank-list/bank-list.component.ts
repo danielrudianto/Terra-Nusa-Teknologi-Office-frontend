@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
@@ -7,12 +7,33 @@ import { BankUpdateComponent } from '../bank-update/bank-update.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { BankCreateComponent } from '../bank-create/bank-create.component';
 
 @Component({
   selector: 'app-bank-list',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatTableModule,
+    CommonModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    HeaderTitleComponent,
+  ],
   templateUrl: './bank-list.component.html',
   styleUrl: './bank-list.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class BankListComponent {
   constructor(
@@ -141,5 +162,9 @@ export class BankListComponent {
     this.router.navigate(['Mutation', id], {
       relativeTo: this.route,
     });
+  }
+
+  createNewBank() {
+    this.dialog.open(BankCreateComponent, {});
   }
 }

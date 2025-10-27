@@ -1,6 +1,9 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Purchase</h1>
-</div>
+<app-header-title
+  [title]="'Purchase'"
+  [description]="'Manage your purchase data here'"
+  [actionButtonLabel]="'Create new purchase'"
+  (onActionButtonClicked)="createNewPurchase()"
+/>
 
 <form [formGroup]="filterFormGroup">
   <mat-chip-listbox
@@ -9,32 +12,38 @@
     aria-label="Filter Selection"
     [disabled]="isLoading"
   >
-    <mat-chip-option (selectionChange)="changeSelection('isDue', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isDue')"
+      (selectionChange)="changeSelection('isDue', $event)"
       >Due</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isNotDue', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isNotDue')"
+      (selectionChange)="changeSelection('isNotDue', $event)"
       >Not yet due</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isPaid', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isPaid')"
+      (selectionChange)="changeSelection('isPaid', $event)"
       >Paid</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isUnpaid', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isUnpaid')"
+      (selectionChange)="changeSelection('isUnpaid', $event)"
       >Unpaid</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isDraft', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isDraft')"
+      (selectionChange)="changeSelection('isDraft', $event)"
       >Draft</mat-chip-option
     >
-    <mat-chip-option (selectionChange)="changeSelection('isReady', $event)"
+    <mat-chip-option
+      [selected]="isChipSelected('isReady')"
+      (selectionChange)="changeSelection('isReady', $event)"
       >Ready</mat-chip-option
     >
   </mat-chip-listbox>
 </form>
-
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Purchase/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
 
 <mat-form-field appearance="outline" class="w-100 mb-2">
   <mat-label>Search</mat-label>
@@ -228,20 +237,22 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let purchase">
-        <span class="d-flex align-items-center gap-2">
-          <mat-icon *ngIf="purchase.lastStatus === 'ready'"
-            >check_circle</mat-icon
-          >
-          <mat-icon *ngIf="purchase.lastStatus === 'draft'">article</mat-icon>
-          {{ purchase.lastStatus == "draft" ? "Draft" : "Ready" }}
-        </span>
+        @if(purchase.lastStatus === 'ready'){
+        <app-pill-success [label]="'Ready'" />
+        } @else {
+        <app-pill-danger [label]="'Draft'" />
+        }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="paidStatus">
       <th mat-header-cell *matHeaderCellDef>Paid status</th>
       <td mat-cell *matCellDef="let purchase">
-        {{ purchase.isPaid ? "Paid" : "Not paid" }}
+        @if(purchase.isPaid){
+        <app-pill-success [label]="'Paid'" />
+        } @else {
+        <app-pill-danger [label]="'Not paid'" />
+        }
       </td>
     </ng-container>
 
@@ -252,23 +263,31 @@
         *matCellDef="let purchase"
         (click)="$event.stopPropagation()"
       >
-        <span style="display: flex; gap: 4px; align-items: center">
-          <button mat-icon-button (click)="openPaymentDetail(purchase.id)">
-            <mat-icon>payments</mat-icon></button
-          ><button
-            mat-icon-button
-            routerLink="/Purchase/Status/{{ purchase.id }}"
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
             [disabled]="purchase.lastStatus !== 'draft'"
+            routerLink="/Purchase/Status/{{ purchase.id }}"
           >
-            <mat-icon>update</mat-icon></button
-          ><button
-            mat-icon-button
-            (click)="openUpdateInternal(purchase.id)"
+            <mat-icon>update</mat-icon>
+            <span>Update status</span>
+          </button>
+          <button mat-menu-item (click)="openPaymentDetail(purchase.id)">
+            <mat-icon>payments</mat-icon>
+            <span>Create payment</span>
+          </button>
+          <button
+            mat-menu-item
             [disabled]="purchase.isInternal == false"
+            (click)="openUpdateInternal(purchase.id)"
           >
             <mat-icon>edit</mat-icon>
+            <span>Update internal</span>
           </button>
-        </span>
+        </mat-menu>
       </td>
     </ng-container>
 

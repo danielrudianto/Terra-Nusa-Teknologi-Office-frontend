@@ -1,0 +1,210 @@
+<form [formGroup]="formGroup">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <app-header-title
+          title="Purchase order"
+          description="Create equipment purchase order (G)"
+        />
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="picker" />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier name</mat-label>
+          <input matInput formControlName="supplierName" readonly />
+          <button mat-icon-button matPrefix (click)="openSupplierSelector()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier address</mat-label>
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            readonly
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Delivery method</mat-label>
+          <mat-select formControlName="deliveryMethod">
+            <mat-option [value]="0">Franco</mat-option>
+            <mat-option [value]="1">Loco</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Delivery address</mat-label>
+          <textarea matInput formControlName="deliveryAddress"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Payment term</mat-label>
+          <mat-select formControlName="paymentTerm">
+            <mat-option [value]="'COD'">Cash on delivery</mat-option>
+            <mat-option [value]="'CBD'">Cash before delivery</mat-option>
+            <mat-option [value]="'PPD'">Prepaid</mat-option>
+            <mat-option [value]="'CR'">Credit</mat-option>
+            <mat-option [value]="'CRD'">Credit with prepaid</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Credit term</mat-label>
+          <input matInput formControlName="creditTerm" />
+          <span matSuffix>days</span>
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Prepaid term</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <span matSuffix>%</span>
+        </mat-form-field>
+      </div>
+      <div class="col-12">
+        <div class="table-responsive bg-transparent">
+          <table class="table bg-black">
+            <thead>
+              <tr>
+                <th class="py-2 px-2">Reference</th>
+                <th class="py-2 px-2">Description</th>
+                <th class="py-2 px-2">Quantity</th>
+                <th class="py-2 px-2">Price</th>
+                <th class="py-2 px-2">Unit</th>
+                <th class="py-2 px-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @if(t.controls.length == 0){
+              <tr>
+                <td colspan="6" class="text-center">No items added yet.</td>
+              </tr>
+              } @else { @for(item of t.controls; track item; let i = $index){
+              <tr [formGroup]="getFormGroupAt(i)">
+                <td>
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>SKU</mat-label>
+                    <input matInput formControlName="sku" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Description</mat-label>
+                    <input matInput formControlName="description" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Quantity</mat-label>
+                    <input matInput formControlName="quantity" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Price</mat-label>
+                    <input matInput formControlName="price" />
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Unit</mat-label>
+                    <mat-select formControlName="unit">
+                      <mat-option value="pcs">Pcs</mat-option>
+                      <mat-option value="set">Set</mat-option>
+                      <mat-option value="Kg">Kilogram</mat-option>
+                      <mat-option value="m">M</mat-option>
+                      <mat-option value="m2">M<sup>2</sup></mat-option>
+                      <mat-option value="m3">M<sup>3</sup></mat-option>
+                      <mat-option value="ton">Ton</mat-option>
+                      <mat-option value="l">Liter</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeAt(i)"
+                    [disabled]="t.controls.length == 1"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </td>
+              </tr>
+              } }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between">
+          <button
+            mat-stroked-button
+            color="primary"
+            style="letter-spacing: 0"
+            type="button"
+            (click)="onAddItem()"
+          >
+            Add item
+          </button>
+          <mat-slide-toggle formControlName="includePPN" color="primary"
+            >PPN</mat-slide-toggle
+          >
+        </div>
+        <div class="banner mt-3">
+          <mat-icon>info</mat-icon>
+          <b>Attention:</b>
+          <span
+            >Apabila PPN dipilih, maka harga tertera di atas sudah termasuk PPN,
+            dan wajib melampirkan faktur pajak pada saat melakukan
+            penagihan.</span
+          >
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier PIC</mat-label>
+          <input matInput formControlName="supplierPICName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier PIC Phone number</mat-label>
+          <input matInput formControlName="supplierPICPhoneNumber" />
+        </mat-form-field>
+      </div>
+      <div class="col-12 mt-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Office PIC</mat-label>
+          <input matInput formControlName="officePICName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Office PIC Phone number</mat-label>
+          <input matInput formControlName="officePICPhoneNumber" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between">
+          <button
+            mat-stroked-button
+            color="primary"
+            style="letter-spacing: 0"
+            type="submit"
+            [disabled]="formGroup.invalid || isSubmitting"
+          >
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

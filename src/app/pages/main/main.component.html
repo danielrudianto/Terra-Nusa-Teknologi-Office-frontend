@@ -1,9 +1,11 @@
-<div class="main__container">
-  <app-side-nav></app-side-nav>
-  <div class="main__body">
-    <app-dashboard-top></app-dashboard-top>
-    <div class="main__content">
+<mat-drawer-container class="dashboard__container">
+  <mat-drawer mode="side" opened class="dashboard__container__side">
+    <app-side-nav [items]="sideNavItems" />
+  </mat-drawer>
+  <mat-drawer-content class="dashboard__container__content">
+    <app-top-navigation [label]="label" />
+    <div class="dashboard__container__router">
       <router-outlet></router-outlet>
     </div>
-  </div>
-</div>
+  </mat-drawer-content>
+</mat-drawer-container>

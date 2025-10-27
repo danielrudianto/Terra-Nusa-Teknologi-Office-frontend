@@ -1,112 +1,36 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Bank">Bank Accounts</a> / Create</h1>
-</div>
+<h2 mat-dialog-title>Create new loan</h2>
 
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Date</mat-label>
-    <input matInput [matDatepicker]="datepicker" formControlName="date" />
-    <mat-datepicker-toggle
-      matIconPrefix
-      [for]="datepicker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #datepicker></mat-datepicker>
-  </mat-form-field>
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Creditor name</mat-label>
-    <input matInput formControlName="creditorName" />
-  </mat-form-field>
+    <!-- CreditorName -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Creditor Name</mat-label>
+      <input matInput formControlName="creditorName" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Creditor address</mat-label>
-    <textarea matInput formControlName="creditorAddress"></textarea>
-  </mat-form-field>
+    <!-- CreditorAddress -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Creditor Address</mat-label>
+      <input matInput formControlName="creditorAddress" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Creditor NPWP</mat-label>
-    <input matInput formControlName="creditorNPWP" />
-  </mat-form-field>
+    <!-- CreditorAddress -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Creditor NPWP</mat-label>
+      <input matInput formControlName="creditorNPWP" />
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description"></textarea>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Debt</mat-label>
-    <input
-      matInput
-      formControlName="debt"
-      prefix="Rp. "
-      thousandSeparator=" "
-      mask="separator.2"
-    />
-    <mat-icon matIconSuffix matTooltip="Amount payable">info</mat-icon>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Received</mat-label>
-    <input
-      matInput
-      formControlName="received"
-      prefix="Rp. "
-      thousandSeparator=" "
-      mask="separator.2"
-    />
-    <mat-icon matIconSuffix matTooltip="Received money">info</mat-icon>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Account name</mat-label>
-    <input
-      matInput
-      formControlName="bankAccountName"
-      type="text"
-      placeholder="Account name"
-      required
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Account number</mat-label>
-    <input
-      matInput
-      formControlName="bankAccountNumber"
-      type="text"
-      placeholder="Account number"
-      required
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank Name</mat-label>
-    <input
-      #input
-      type="text"
-      placeholder="Bank name"
-      matInput
-      formControlName="bankName"
-      [matAutocomplete]="auto"
-      (input)="filter()"
-      (focus)="filter()"
-    />
-    <mat-autocomplete requireSelection #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let option of filteredOptions"
-        [value]="option.name"
-        >{{ option.name }}</mat-option
-      >
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    type="submit"
-    [disabled]="isSubmitting || !formGroup.valid"
-  >
-    Submit
-  </button>
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" />
+    </mat-form-field>
+  </mat-dialog-content>
 </form>

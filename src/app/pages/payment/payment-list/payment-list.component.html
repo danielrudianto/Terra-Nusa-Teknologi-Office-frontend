@@ -1,7 +1,7 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Payments</h1>
-</div>
-
+<app-header-title
+  [title]="'Payments'"
+  [description]="'Manage your payment data here'"
+></app-header-title>
 <mat-chip-listbox
   class="mb-3"
   multiple
@@ -35,6 +35,37 @@
     <th mat-header-cell *matHeaderCellDef>Bank Account</th>
     <td mat-cell *matCellDef="let payment">
       {{ payment.bankAccountName }} -- {{ payment.bankAccountNumber }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let payment">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button
+          mat-menu-item
+          [disabled]="payment.isApprove || payment.isDelete"
+          (click)="approvePayment(payment.id)"
+        >
+          <mat-icon>check</mat-icon>
+          <span>Approve</span>
+        </button>
+        <button
+          mat-menu-item
+          [disabled]="payment.isApprove || payment.isDelete"
+          (click)="rejectPayment(payment.id)"
+        >
+          <mat-icon>close</mat-icon>
+          <span>Reject</span>
+        </button>
+        <button mat-menu-item (click)="viewPayment(payment.id)">
+          <mat-icon>view_comfy_alt</mat-icon>
+          <span>View payment detail</span>
+        </button>
+      </mat-menu>
     </td>
   </ng-container>
 
@@ -100,26 +131,29 @@
   <ng-container matColumnDef="approvalStatus">
     <th mat-header-cell *matHeaderCellDef>Approval Status</th>
     <td mat-cell *matCellDef="let payment">
-      <span *ngIf="payment.isApprove">Approved</span>
-      <span *ngIf="payment.isDelete">Rejected</span>
-      <span *ngIf="!payment.isApprove && !payment.isDelete">Pending</span>
-    </td>
-  </ng-container>
+      @if(payment.isApprove){
+      <app-pill-success [label]="'Approved'" />
+      } @else if(payment.isDelete){
+      <app-pill-danger [label]="'Rejected'" />
+      } @else {
+      <app-pill-warning [label]="'Pending'" />
+      }
+    </td></ng-container
+  >
 
   <ng-container matColumnDef="documentStatus">
     <th mat-header-cell *matHeaderCellDef>Document Status</th>
     <td mat-cell *matCellDef="let payment">
-      <span *ngIf="payment.status === 'ready'">Ready</span>
-      <span *ngIf="payment.status === 'draft'">Draft</span>
+      @if(payment.status === 'ready'){
+      <app-pill-success [label]="'Ready'" />
+      } @else {
+      <app-pill-warning [label]="'Draft'" />
+      }
     </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr
-    mat-row
-    *matRowDef="let row; columns: displayedColumns"
-    (click)="approvePayment(row.id)"
-  ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   <!-- No data row -->
   <tr class="mat-row" *matNoDataRow>
     <td class="mat-cell text-center" [colSpan]="displayedColumns.length">

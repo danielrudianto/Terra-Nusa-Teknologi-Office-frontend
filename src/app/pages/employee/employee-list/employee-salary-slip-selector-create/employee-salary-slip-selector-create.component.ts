@@ -67,13 +67,20 @@ export class EmployeeSalarySlipSelectorCreateComponent {
     ]),
     year: new FormControl('', [
       Validators.required,
-      Validators.min(2024),
+      Validators.min(2023),
       Validators.max(new Date().getFullYear()),
     ]),
   });
 
   ngOnInit(): void {}
 
+  /**
+   * Submit the salary slip form and navigate to the creation page if successful.
+   * It will send a POST request to /salary_slips/check with the user ID, month, and year.
+   * If the request is successful, it will store the user ID, month, and year in the data transfer service,
+   * close all the dialogs, display a snackbar with a success message, and navigate to the salary slip creation page.
+   * If the request fails, it will display a snackbar with an error message.
+   */
   onSubmit() {
     this.isSubmitting = true;
     this.apiService

@@ -1,15 +1,10 @@
-<mat-dialog-content>
-  <h2 class="title">Select Supplier</h2>
-  <p>Select corresponding supplier here.</p>
+<h2 mat-dialog-title>Search supplier</h2>
 
-  <div class="form-field">
-    <input
-      class="input"
-      type="text"
-      [formControl]="searchBar"
-      placeholder="Search supplier"
-    />
-  </div>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Search</mat-label>
+    <input matInput [formControl]="searchBar" placeholder="Search supplier" />
+  </mat-form-field>
   <mat-divider class="my-3"></mat-divider>
   <table class="table bordered table-hover">
     <thead>
@@ -42,3 +37,14 @@
     </tbody>
   </table>
 </mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    mat-dialog-close
+  >
+    Close
+  </button>
+</mat-dialog-actions>

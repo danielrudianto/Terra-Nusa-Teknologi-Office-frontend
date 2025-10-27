@@ -3,21 +3,63 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
 import { PurchasePaymentCreateComponent } from '../../../components/payment-create/purchase-payment-create/purchase-payment-create.component';
-import { FormControl, FormGroup } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
 import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { PurchaseUpdateComponent } from '../purchase-update/purchase-update.component';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
+import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 
 @Component({
   selector: 'app-purchase-list',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatChipsModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    RouterModule,
+    PillSuccessComponent,
+    MatButtonModule,
+    PillDangerComponent,
+    MatIconModule,
+    HeaderTitleComponent,
+  ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class PurchaseListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  private destroy$ = new Subject<void>();
 
   filterFormGroup: FormGroup = new FormGroup({
     isDue: new FormControl(false, { nonNullable: true }),
@@ -27,6 +69,15 @@ export class PurchaseListComponent {
     isReady: new FormControl(false, { nonNullable: true }),
     isDraft: new FormControl(false, { nonNullable: true }),
   });
+
+  chipSelections: { [key: string]: boolean } = {
+    isDue: false,
+    isNotDue: false,
+    isPaid: false,
+    isUnpaid: false,
+    isReady: false,
+    isDraft: false,
+  };
 
   sortBy: string = 'date';
   sortByDirection: string = 'desc';
@@ -51,15 +102,104 @@ export class PurchaseListComponent {
   ];
 
   ngOnInit(): void {
-    this.fetchData();
+    this.loadStateFromQueryParams();
+    this.setupQueryParamListeners();
+  }
 
-    this.searchControl.valueChanges.pipe(debounceTime(500)).subscribe({
-      next: (data) => {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadStateFromQueryParams(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        // Load pagination
+        if (params['page']) this.page = +params['page'];
+        if (params['pageSize']) this.pageSize = +params['pageSize'];
+
+        // Load sort
+        if (params['sortBy']) this.sortBy = params['sortBy'];
+        if (params['sortByDirection'])
+          this.sortByDirection = params['sortByDirection'];
+
+        // Load search
+        if (params['search'])
+          this.searchControl.setValue(params['search'], { emitEvent: false });
+
+        // Load filters
+        const filterKeys = [
+          'isDue',
+          'isNotDue',
+          'isPaid',
+          'isUnpaid',
+          'isReady',
+          'isDraft',
+        ];
+        filterKeys.forEach((key) => {
+          if (params[key] !== undefined) {
+            const value = params[key] === 'true';
+            this.filterFormGroup
+              .get(key)
+              ?.setValue(value, { emitEvent: false });
+            this.chipSelections[key] = value;
+          } else {
+            this.chipSelections[key] = false;
+          }
+        });
+
+        // Fetch data with loaded state
+        this.fetchData(this.page, this.pageSize);
+      });
+  }
+
+  isChipSelected(field: string): boolean {
+    return this.chipSelections[field];
+  }
+
+  private setupQueryParamListeners(): void {
+    this.filterFormGroup.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => {
+        this.updateQueryParams();
+      });
+
+    this.searchControl.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .subscribe((value) => {
+        this.updateQueryParams();
         this.fetchData(1);
-      },
-      error: (error) => {
-        console.error('Error fetching search data:', error);
-      },
+      });
+  }
+
+  private updateQueryParams(): void {
+    const queryParams: any = {
+      page: this.page,
+      pageSize: this.pageSize,
+      sortBy: this.sortBy,
+      sortByDirection: this.sortByDirection,
+      search: this.searchControl.value || null,
+    };
+
+    // Add filter values
+    const filterValue = this.filterFormGroup.value;
+    Object.keys(filterValue).forEach((key) => {
+      queryParams[key] = filterValue[key] ? 'true' : 'false';
+    });
+
+    // Remove null/undefined values
+    Object.keys(queryParams).forEach((key) => {
+      if (queryParams[key] === null || queryParams[key] === undefined) {
+        delete queryParams[key];
+      }
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true, // Prevent adding to browser history on every change
     });
   }
 
@@ -89,15 +229,17 @@ export class PurchaseListComponent {
     if (event.pageSize !== this.pageSize) {
       this.page = 1;
       this.pageSize = event.pageSize;
-      this.fetchData(this.page, this.pageSize);
     } else {
       this.page = event.pageIndex + 1;
-      this.fetchData(this.page, this.pageSize);
     }
+
+    this.updateQueryParams();
+    this.fetchData(this.page, this.pageSize);
   }
 
   changeSelection(field: string, event: any) {
     this.filterFormGroup.get(field)?.setValue(event.selected);
+    this.updateQueryParams();
     this.fetchData(1);
   }
 
@@ -109,6 +251,7 @@ export class PurchaseListComponent {
       this.sortByDirection = 'asc';
     }
 
+    this.updateQueryParams();
     this.fetchData(1);
   }
 
@@ -118,14 +261,13 @@ export class PurchaseListComponent {
     const searchValue = this.searchControl.value;
 
     const filterValue = this.filterFormGroup.value;
-    // if all the filter value is true or all the filter value is false, then filter = {}, filter = 0
+
     if (
       Object.values(filterValue).every((value) => value === true) ||
       Object.values(filterValue).every((value) => value === false)
     ) {
       filter = {};
     } else {
-      // if the filter value is true, then add to filter
       for (const [key, value] of Object.entries(filterValue)) {
         filter[key] = value;
       }
@@ -136,7 +278,6 @@ export class PurchaseListComponent {
       .get('purchases', {
         page: this.page,
         pageSize: pageSize,
-        // if filter is empty, then filter = 0
         filter: Object.keys(filter).length === 0 ? 0 : 1,
         ...filter,
         sortBy: this.sortBy,
@@ -182,7 +323,9 @@ export class PurchaseListComponent {
             .subscribe((result) => {
               if (result === true) {
                 this.apiService.delete(`purchases/${id}`).subscribe({
-                  next: () => {},
+                  next: () => {
+                    this.fetchData(this.page); // Refresh data after deletion
+                  },
                   error: (err) => {
                     console.error('Error deleting purchase:', err);
                   },
@@ -191,5 +334,9 @@ export class PurchaseListComponent {
             });
         }
       });
+  }
+
+  createNewPurchase() {
+    this.router.navigate(['/Purchase/Create']);
   }
 }

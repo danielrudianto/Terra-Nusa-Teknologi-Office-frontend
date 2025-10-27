@@ -1,6 +1,4 @@
 .merge-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
 }
 
@@ -25,15 +23,6 @@
 .content-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-}
-
-.main-content {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  position: relative;
-  min-height: 600px;
 }
 
 // Processing Overlay
@@ -769,5 +758,131 @@
   .quick-selection-patterns {
     justify-content: center;
     text-align: center;
+  }
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+  margin-bottom: 20px;
+}
+
+.island__wrapper {
+  position: fixed;
+  bottom: 1rem;
+  background-color: #333;
+  color: white;
+  border-radius: 1rem;
+  left: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  button {
+    color: white;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    &:disabled {
+      color: #777;
+    }
+
+    mat-icon {
+      width: 2rem;
+      height: 2rem;
+      font-size: 2rem;
+    }
+  }
+}
+
+/* Update main content to account for FAB */
+.main-content {
+  position: relative;
+  min-height: calc(100vh - 65px - 4rem);
+  padding-bottom: 100px; /* Space for FAB */
+}
+
+/* Ensure file drop zone is properly hidden when not needed */
+.file-drop-zone {
+  transition: all 0.3s ease;
+}
+
+/* Selection header sticky styles */
+.selection-header {
+  transition: all 0.3s ease;
+
+  &.sticky-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e9ecef;
+  }
+}
+.selection-header.sticky-header {
+  .selection-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .selection-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .quick-selection-patterns {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Responsive design for sticky header */
+@media (max-width: 768px) {
+  .sticky-header {
+    .selection-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .selection-actions {
+      justify-content: center;
+    }
+
+    .quick-selection-patterns {
+      justify-content: center;
+    }
+  }
+
+  .fab-container {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .fab-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
   }
 }

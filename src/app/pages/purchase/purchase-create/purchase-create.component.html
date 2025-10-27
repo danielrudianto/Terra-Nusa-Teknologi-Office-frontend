@@ -1,60 +1,110 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Purchase">Purchase</a> / Create</h1>
-</div>
+<app-header-title
+  title="Purchase"
+  description="Create new purchase"
+></app-header-title>
+
 <mat-stepper #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Meta Data</ng-template>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Supplier</mat-label>
-        <input
-          matInput
-          formControlName="supplierName"
-          type="text"
-          placeholder="Supplier name"
-          readonly
-        />
-        <button
-          matPrefix
-          mat-icon-button
-          (click)="openSupplierSelector()"
-          type="button"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
+      <div class="row">
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Date</mat-label>
+            <input
+              matInput
+              formControlName="date"
+              placeholder="Date"
+              [matDatepicker]="picker"
+            />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <textarea
-          matInput
-          formControlName="supplierAddress"
-          rows="3"
-          placeholder="Supplier address"
-          readonly
-          style="resize: none"
-        ></textarea>
-      </mat-form-field>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Due date</mat-label>
+            <input
+              matInput
+              formControlName="dueDate"
+              placeholder="Date"
+              [matDatepicker]="duePicker"
+            />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="duePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #duePicker></mat-datepicker>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Invoice name</mat-label>
-        <input
-          matInput
-          formControlName="invoiceName"
-          type="text"
-          placeholder="Invoice name"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Receipt Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="receiptName"
-          placeholder="Receipt Name"
-        />
-      </mat-form-field>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Supplier</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              type="text"
+              placeholder="Supplier name"
+              readonly
+            />
+            <button
+              matPrefix
+              mat-icon-button
+              (click)="openSupplierSelector()"
+              type="button"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Invoice name</mat-label>
+            <input
+              matInput
+              formControlName="invoiceName"
+              type="text"
+              placeholder="Invoice name"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Receipt Name</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="receiptName"
+              placeholder="Receipt Name"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Purchase Order Name</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="purchaseOrderName"
+              placeholder="Purchase Order Name"
+              oninput="this.value = this.value.toUpperCase()"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Project</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="projectName"
+              placeholder="Project name"
+            />
+          </mat-form-field>
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Tax Invoice Name</mat-label>
@@ -65,68 +115,6 @@
           placeholder="Tax Invoice Name"
           maxlength="17"
         />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase Order Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="purchaseOrderName"
-          placeholder="Purchase Order Name"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Project</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="projectName"
-          placeholder="Project name"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase type</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="purchaseType"
-          placeholder="Purchase Type"
-          readonly
-        />
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="w-100 mb-3">
-        <mat-label>Date</mat-label>
-        <input
-          matInput
-          formControlName="date"
-          placeholder="Date"
-          [matDatepicker]="picker"
-        />
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        <mat-hint>DD/MM/YYYY</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100 mb-3">
-        <mat-label>Due date</mat-label>
-        <input
-          matInput
-          formControlName="dueDate"
-          placeholder="Date"
-          [matDatepicker]="duePicker"
-        />
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="duePicker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #duePicker></mat-datepicker>
-        <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -163,7 +151,7 @@
         </mat-hint>
       </mat-form-field>
 
-      <mat-slide-toggle formControlName="isInternal"
+      <mat-slide-toggle formControlName="isInternal" color="primary"
         >Internal purchase</mat-slide-toggle
       >
     </form>
@@ -315,6 +303,7 @@
           <mat-option value="delivery">Delivery fee</mat-option>
           <mat-option value="packing">Packing fee</mat-option>
           <mat-option value="packing">PPh 22</mat-option>
+          <mat-option value="administrative">Administration fee</mat-option>
         </mat-select>
       </mat-form-field>
 

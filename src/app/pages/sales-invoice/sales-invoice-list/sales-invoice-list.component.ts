@@ -4,20 +4,50 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { SalesInvoiceConfirmComponent } from './sales-invoice-confirm/sales-invoice-confirm.component';
 import { SalesInvoicePaymentCreateComponent } from '../../../components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
+import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
+import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-sales-invoice-list',
-  standalone: false,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatMenuModule,
+    HeaderTitleComponent,
+    PillSuccessComponent,
+    PillWarningComponent,
+    PillDangerComponent,
+  ],
   templateUrl: './sales-invoice-list.component.html',
   styleUrl: './sales-invoice-list.component.scss',
+  standalone: true,
 })
 export class SalesInvoiceListComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   salesInvoices: any[] = [];
@@ -66,7 +96,7 @@ export class SalesInvoiceListComponent {
       .subscribe({
         next: (data: any) => {
           this.salesInvoices = data.data;
-          this.count = data.count;
+          this.count = data.total_count;
         },
         error: (error) => {
           console.error('Error fetching sales invoices:', error);
@@ -131,5 +161,9 @@ export class SalesInvoiceListComponent {
           }
         }
       });
+  }
+
+  createNewSalesInvoice() {
+    this.router.navigate(['/Sales-invoice/Create']);
   }
 }

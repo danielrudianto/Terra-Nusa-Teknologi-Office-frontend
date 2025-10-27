@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjslib from 'pdfjs-dist';
@@ -27,7 +27,7 @@ export class PdfMainComponent implements OnInit {
   isDragging = false;
   processingProgress = '';
 
-  selectionMode = false;
+  selectionMode = true;
   allSelected = false;
 
   // Merge options
@@ -41,6 +41,23 @@ export class PdfMainComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  @ViewChild('fileInput') fileInput!: any;
+
+  // Method to open file dialog
+  openFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  // Handle file selection from the FAB
+  async onFilesSelected(event: any): Promise<void> {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      await this.onFilesDropped(files);
+      // Reset the input
+      event.target.value = '';
+    }
+  }
 
   async onFilesDropped(files: FileList): Promise<void> {
     this.isProcessing = true;
@@ -68,10 +85,22 @@ export class PdfMainComponent implements OnInit {
   private async processPdfFile(file: File): Promise<void> {
     try {
       const individualPages = await this.splitPdfIntoPages(file);
-      const pagesWithThumbnails = await this.convertPagesToThumbnails(
-        individualPages,
-        file.name
-      );
+
+      // Process in smaller batches to keep UI responsive
+      const batchSize = 5;
+      const pagesWithThumbnails: PageData[] = [];
+
+      for (let i = 0; i < individualPages.length; i += batchSize) {
+        const batch = individualPages.slice(i, i + batchSize);
+        const batchWithThumbnails = await this.convertPagesToThumbnails(
+          batch,
+          file.name
+        );
+        pagesWithThumbnails.push(...batchWithThumbnails);
+
+        // Allow UI to update between batches
+        await this.delay(100);
+      }
 
       // Add original file reference to each page
       const pagesWithOrigin = pagesWithThumbnails.map((page) => ({
@@ -84,6 +113,10 @@ export class PdfMainComponent implements OnInit {
       console.error(`Error processing ${file.name}:`, error);
       throw error;
     }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private async splitPdfIntoPages(file: File): Promise<string[]> {
@@ -141,27 +174,20 @@ export class PdfMainComponent implements OnInit {
 
   private async convertPdfPageToImage(pdfBase64: string): Promise<string> {
     try {
-      // Convert base64 to Uint8Array
       const pdfData = Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0));
-
-      // Load the PDF document
       const loadingTask = pdfjslib.getDocument({ data: pdfData });
       const pdf = await loadingTask.promise;
-
-      // Get the first page (since each PDF now contains only one page)
       const page = await pdf.getPage(1);
 
-      // Set scale for thumbnail (adjust as needed)
-      const scale = 0.5;
+      // REDUCE QUALITY FOR FASTER PROCESSING
+      const scale = 0.2; // Reduced from 0.5 to 0.2 (60% smaller)
       const viewport = page.getViewport({ scale });
 
-      // Create canvas
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d')!;
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
-      // Render PDF page to canvas
       const renderContext = {
         canvasContext: context,
         viewport: viewport,
@@ -169,8 +195,8 @@ export class PdfMainComponent implements OnInit {
 
       await page.render(renderContext).promise;
 
-      // Convert canvas to base64 image (JPEG with 80% quality)
-      return canvas.toDataURL('image/jpeg', 0.8);
+      // Use even lower quality for JPEG
+      return canvas.toDataURL('image/jpeg', 0.6); // Reduced from 0.8 to 0.6
     } catch (error) {
       console.error('Error in convertPdfPageToImage:', error);
       throw error;
@@ -302,7 +328,10 @@ export class PdfMainComponent implements OnInit {
   }
 
   async mergePdfs(): Promise<void> {
-    if (this.processedDocuments.length < 2) return;
+    if (this.processedDocuments.length < 2) {
+      alert('Please add at least 2 PDFs to merge.');
+      return;
+    }
 
     this.isProcessing = true;
     this.processingProgress = 'Merging PDFs...';
@@ -311,26 +340,34 @@ export class PdfMainComponent implements OnInit {
       const mergedPdf = await PDFDocument.create();
 
       for (const pageData of this.processedDocuments) {
-        const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-          c.charCodeAt(0)
-        );
-        const pagePdf = await PDFDocument.load(pdfBytes);
-        const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
-        mergedPdf.addPage(copiedPage);
+        try {
+          // Convert base64 to Uint8Array
+          const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
+            c.charCodeAt(0)
+          );
+          const pagePdf = await PDFDocument.load(pdfBytes);
+          const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
+          mergedPdf.addPage(copiedPage);
+        } catch (pageError) {
+          console.error(
+            `Error processing page ${pageData.fileName}:`,
+            pageError
+          );
+          // Continue with other pages even if one fails
+        }
       }
 
       const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
 
-      // FIX: Convert to regular ArrayBuffer if needed
-      const blobData =
-        mergedPdfBytes.buffer instanceof SharedArrayBuffer
-          ? new Uint8Array(mergedPdfBytes).buffer
-          : mergedPdfBytes.buffer;
-
-      const blob = new Blob([blobData], { type: 'application/pdf' });
       this.downloadMergedPdf(blob);
+
+      this.showSuccessMessage(
+        `Successfully merged ${this.processedDocuments.length} pages!`
+      );
     } catch (error) {
       console.error('Error merging PDFs:', error);
+      alert('Error merging PDFs. Please try again.');
     } finally {
       this.isProcessing = false;
       this.processingProgress = '';
@@ -359,10 +396,8 @@ export class PdfMainComponent implements OnInit {
       event.stopPropagation();
     }
 
-    if (this.selectionMode) {
-      page.selected = !page.selected;
-      this.updateSelectionState();
-    }
+    page.selected = !page.selected;
+    this.updateSelectionState();
   }
 
   toggleSelectAll(): void {

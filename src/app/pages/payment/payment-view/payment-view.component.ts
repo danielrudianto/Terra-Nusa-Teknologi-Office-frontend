@@ -1,0 +1,91 @@
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { ApiService } from '../../../services/api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
+@Component({
+  selector: 'app-payment-view',
+  providers: [provideNgxMask()],
+  imports: [
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    NgxMaskDirective,
+    MatIconModule,
+    MatButtonModule,
+  ],
+  templateUrl: './payment-view.component.html',
+  styleUrl: './payment-view.component.scss',
+})
+export class PaymentViewComponent {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private datePipe: DatePipe
+  ) {}
+
+  formGroup: FormGroup = new FormGroup({
+    date: new FormControl('', Validators.required),
+    amount: new FormControl(0, Validators.required),
+    bank_account_name: new FormControl('', Validators.required),
+    bank_account_number: new FormControl('', Validators.required),
+    bank_name: new FormControl('', Validators.required),
+    type: new FormControl(''),
+  });
+
+  ngOnInit(): void {
+    this.fetchData();
+  }
+
+  fetchData() {
+    this.apiService.get(`outgoing-payments/${this.data.id}`, {}).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.formGroup.patchValue({
+          date: this.datePipe.transform(data.payment.date, 'dd MMMM YYYY'),
+          amount: data.payment.amount,
+          bank_account_name: data.bankAccount.bankAccountName,
+          bank_account_number: data.bankAccount.bankAccountNumber,
+          bank_name: data.bankAccount.bankName,
+          type:
+            data.expense != null
+              ? 'Expense'
+              : data.reimbursement != null
+              ? 'Reimbursement'
+              : data.purchase != null
+              ? 'Purchase'
+              : data.salarySlip != null
+              ? 'Salary'
+              : 'Loan',
+        });
+      },
+      error: (error) => {
+        this.snackBar.open(error.error.detail, 'Close', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
+  onSelectClicked() {
+    alert('daniel');
+  }
+}

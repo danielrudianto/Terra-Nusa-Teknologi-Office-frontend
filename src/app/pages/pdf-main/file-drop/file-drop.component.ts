@@ -16,6 +16,7 @@ import {
 export class FileDropComponent {
   @Input('allowedExtensions') allowedExtensions: string[] = [];
   @Input('allowMultipleFiles') allowMultipleFiles: boolean = false;
+  @Input('show') show!: boolean;
 
   @Output('onFileDropped') onFileDropped: EventEmitter<FileList> =
     new EventEmitter<FileList>();

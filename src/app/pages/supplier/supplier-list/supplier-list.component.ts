@@ -1,26 +1,56 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
-import { SupplierViewComponent } from './supplier-view/supplier-view.component';
 import { debounceTime } from 'rxjs';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterModule } from '@angular/router';
+import { SupplierUpdateComponent } from '../supplier-update/supplier-update.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-supplier-list',
+  imports: [
+    CommonModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    HeaderTitleComponent,
+    MatIconModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatMenuModule,
+    RouterModule,
+  ],
   templateUrl: './supplier-list.component.html',
   styleUrls: ['./supplier-list.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class SupplierListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
 
   isLoading: boolean = false;
 
   formControl: FormControl = new FormControl('');
 
   suppliers: any[] = [];
-  page: number = 1;
+  page: number = 0;
   pageSize: number = 10;
   count: number = 0;
   displayedColumns: string[] = ['name', 'address', 'phone', 'email', 'action'];
@@ -49,7 +79,9 @@ export class SupplierListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          console.error(err);
+          this.snackBar.open(err.error.detail, 'Close', {
+            duration: 3000,
+          });
         },
       })
       .add(() => {
@@ -59,30 +91,62 @@ export class SupplierListComponent {
 
   changePage(event: any) {
     if (event.pageSize == this.pageSize) {
-      const targetPage = event.pageIndex + 1;
+      const targetPage = event.pageIndex;
       this.fetchSuppliers(targetPage);
     } else {
       this.pageSize = event.pageSize;
-      this.page = 1;
-      this.fetchSuppliers(1);
+      this.fetchSuppliers(0);
     }
   }
 
   onConfirmDelete(id: number) {
-    this.dialog.open(DeleteConfirmationComponent, {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Delete supplier',
+          prompt: 'Are you sure you want to delete this supplier?',
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data == true) {
+          this.apiService.delete(`suppliers/${id}`).subscribe({
+            next: () => {
+              this.snackBar.open('Supplier deleted successfully', 'Close', {
+                duration: 3000,
+              });
+              const index = this.suppliers.findIndex((x) => x.id == id);
+              if (index != -1) {
+                this.suppliers.splice(index, 1);
+              }
+            },
+            error: (err) => {
+              console.error('Error deleting supplier:', err);
+            },
+          });
+        }
+      });
+  }
+
+  onUpdateSupplier(id: number) {
+    this.dialog.open(SupplierUpdateComponent, {
       data: {
-        title: 'Delete supplier',
-        prompt: 'Are you sure you want to delete this supplier?',
+        id: id,
+        readOnly: false,
       },
     });
   }
 
   onViewDetail(id: number) {
-    this.dialog.open(SupplierViewComponent, {
+    this.dialog.open(SupplierUpdateComponent, {
       data: {
         id: id,
+        readOnly: true,
       },
-      maxWidth: '600px',
     });
+  }
+
+  createNewSupplier() {
+    this.router.navigate(['/Supplier/Create']);
   }
 }

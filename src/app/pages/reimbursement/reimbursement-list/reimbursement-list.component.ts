@@ -1,21 +1,64 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { ReimbursementPaymentCreateComponent } from 'src/app/components/payment-create/reimbursement-payment-create/reimbursement-payment-create.component';
 import { ApiService } from 'src/app/services/api.service';
 import { ReimbursementViewComponent } from '../reimbursement-view/reimbursement-view.component';
 import { ReimbursementConfirmComponent } from '../reimbursement-confirm/reimbursement-confirm.component';
-import { FormControl, FormGroup } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { debounceTime, takeUntil, Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatMenuModule } from '@angular/material/menu';
+import { PillDangerComponent } from 'src/app/components/pills/pill-danger/pill-danger.component';
+import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
+import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
+import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 
 @Component({
   selector: 'app-reimbursement-list',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatMenuModule,
+    HeaderTitleComponent,
+    PillDangerComponent,
+    PillSuccessComponent,
+    PillWarningComponent,
+  ],
   templateUrl: './reimbursement-list.component.html',
   styleUrls: ['./reimbursement-list.component.scss'],
-  standalone: false,
+  standalone: true,
 })
-export class ReimbursementListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+export class ReimbursementListComponent implements OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   @ViewChild('table') table!: MatTable<any>;
 
@@ -49,17 +92,119 @@ export class ReimbursementListComponent {
     isUnpaid: new FormControl(false, { nonNullable: true }),
   });
 
-  ngOnInit(): void {
-    this.fetchData();
+  // Add chip selections tracking
+  chipSelections: { [key: string]: boolean } = {
+    isApprove: false,
+    isDelete: false,
+    isPending: false,
+    isPaid: false,
+    isUnpaid: false,
+  };
 
-    this.searchControl.valueChanges.pipe(debounceTime(500)).subscribe({
-      next: (data) => {
+  ngOnInit(): void {
+    this.loadStateFromQueryParams();
+    this.setupQueryParamListeners();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadStateFromQueryParams(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        // Load pagination
+        if (params['page']) this.page = +params['page'];
+        if (params['pageSize']) this.pageSize = +params['pageSize'];
+
+        // Load sort
+        if (params['sortBy']) this.sortBy = params['sortBy'];
+        if (params['sortByDirection'])
+          this.sortByDirection = params['sortByDirection'];
+
+        // Load search
+        if (params['search'])
+          this.searchControl.setValue(params['search'], { emitEvent: false });
+
+        // Load filters and update chip selections - following your exact filter names
+        const filterKeys = [
+          'isApprove',
+          'isDelete',
+          'isPending',
+          'isPaid',
+          'isUnpaid',
+        ];
+        filterKeys.forEach((key) => {
+          if (params[key] !== undefined) {
+            const value = params[key] === 'true';
+            this.filterFormGroup
+              .get(key)
+              ?.setValue(value, { emitEvent: false });
+            this.chipSelections[key] = value;
+          } else {
+            this.chipSelections[key] = false;
+          }
+        });
+
+        // Fetch data with loaded state
+        this.fetchData(this.page);
+      });
+  }
+
+  private setupQueryParamListeners(): void {
+    // Listen to form changes and update URL
+    this.filterFormGroup.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe((value) => {
+        // Update chip selections when form changes
+        Object.keys(value).forEach((key) => {
+          this.chipSelections[key] = value[key];
+        });
+        this.updateQueryParams();
+      });
+
+    this.searchControl.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(500))
+      .subscribe((value) => {
+        this.updateQueryParams();
         this.fetchData(1);
-      },
-      error: (error) => {
-        console.error('Error fetching search data:', error);
-      },
+      });
+  }
+
+  private updateQueryParams(): void {
+    const queryParams: any = {
+      page: this.page,
+      pageSize: this.pageSize,
+      sortBy: this.sortBy,
+      sortByDirection: this.sortByDirection,
+      search: this.searchControl.value || null,
+    };
+
+    // Add filter values - using your exact filter names
+    const filterValue = this.filterFormGroup.value;
+    Object.keys(filterValue).forEach((key) => {
+      queryParams[key] = filterValue[key] ? 'true' : 'false';
     });
+
+    // Remove null/undefined values
+    Object.keys(queryParams).forEach((key) => {
+      if (queryParams[key] === null || queryParams[key] === undefined) {
+        delete queryParams[key];
+      }
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true,
+    });
+  }
+
+  isChipSelected(field: string): boolean {
+    return this.chipSelections[field];
   }
 
   openPaymentDetail(id: number) {
@@ -92,6 +237,25 @@ export class ReimbursementListComponent {
       });
   }
 
+  print(id: number) {
+    this.apiService.get(`reimbursements/${id}`, {}).subscribe({
+      next: (data: any) => {
+        ReimbursementHelper.generatePDF({
+          name: data.reimbursement.name,
+          bankName: data.reimbursement.bankName,
+          bankAccountName: data.reimbursement.bankAccountName,
+          bankAccountNumber: data.reimbursement.bankAccountNumber,
+          date: new Date(data.reimbursement.date),
+          projectName: data.reimbursement.projectName,
+          reimbursementItems: data.reimbursement_items,
+        });
+      },
+      error: (error) => {
+        console.error(`[error]: Error on fetching reimbursement`, error);
+      },
+    });
+  }
+
   viewReimbursementData(id: number) {
     this.dialog.open(ReimbursementViewComponent, {
       data: {
@@ -103,12 +267,13 @@ export class ReimbursementListComponent {
   changePage(event: any) {
     if (event.pageSize !== this.pageSize) {
       this.pageSize = event.pageSize;
-      this.page = 1; // Reset to first page when page size changes
-      this.fetchData(this.page);
+      this.page = 1;
     } else {
-      this.page = event.pageIndex + 1; // MatPaginator uses zero-based index
-      this.fetchData(this.page);
+      this.page = event.pageIndex + 1;
     }
+
+    this.updateQueryParams();
+    this.fetchData(this.page);
   }
 
   changeSortBy(sortBy: string) {
@@ -119,11 +284,15 @@ export class ReimbursementListComponent {
       this.sortByDirection = 'asc';
     }
 
+    this.updateQueryParams();
     this.fetchData(1);
   }
 
   changeSelection(field: string, event: any) {
-    this.filterFormGroup.get(field)?.setValue(event.selected);
+    const isSelected = event.selected;
+    this.filterFormGroup.get(field)?.setValue(isSelected);
+    this.chipSelections[field] = isSelected;
+    this.updateQueryParams();
     this.fetchData(1);
   }
 
@@ -172,5 +341,9 @@ export class ReimbursementListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  createNewReimbursement() {
+    this.router.navigate(['/Reimbursement/Create']);
   }
 }

@@ -1,1 +1,89 @@
-<h2 mat-dialog-title>View expense</h2>
+<h1 mat-dialog-title>View Expense Data</h1>
+<mat-dialog-content>
+  <p class="mb-4">Here are the expense data</p>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Due date</mat-label>
+      <input matInput formControlName="dueDate" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Opponent</mat-label>
+      <textarea matInput formControlName="opponent"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Invoice name</mat-label>
+      <input matInput formControlName="invoiceName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Receipt name</mat-label>
+      <input matInput formControlName="receiptName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Purchase type</mat-label>
+      <input matInput formControlName="purchaseType" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>DPP</mat-label>
+      <input matInput formControlName="dpp" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh</mat-label>
+      <input matInput formControlName="pph" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPh Code</mat-label>
+      <textarea matInput formControlName="pphCode"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PBBKB</mat-label>
+      <input matInput formControlName="pbbkb" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total</mat-label>
+      <input matInput formControlName="total" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank name</mat-label>
+      <input matInput formControlName="bankName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account name</mat-label>
+      <input matInput formControlName="bankAccountName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account number</mat-label>
+      <input matInput formControlName="bankAccountNumber" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    color="primary"
+    style="letter-spacing: 0"
+    mat-dialog-close
+  >
+    Close
+  </button>
+</mat-dialog-actions>

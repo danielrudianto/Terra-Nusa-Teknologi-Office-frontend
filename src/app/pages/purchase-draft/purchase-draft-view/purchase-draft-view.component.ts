@@ -64,8 +64,19 @@ export class PurchaseDraftViewComponent {
     });
   }
 
-  createPurchase() {
-    this.router.navigate(['/Purchase-draft/Update', this.data.id]);
-    this.dialog.close();
+  deletePurchaseDraft() {
+    this.apiService.delete(`purchase-draft/${this.data.id}`).subscribe({
+      next: (data) => {
+        this.snackBar.open('Successfully deleted purchase draft', 'Close', {
+          duration: 3000,
+        });
+        this.dialog.close(true);
+      },
+      error: (error) => {
+        this.snackBar.open(error.error.detail, 'Close', {
+          duration: 3000,
+        });
+      },
+    });
   }
 }

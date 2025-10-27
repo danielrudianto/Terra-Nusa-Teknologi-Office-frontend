@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CalendarDaySelectorComponent } from './calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-calendar',
@@ -9,7 +10,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
   styleUrl: './calendar.component.scss',
 })
 export class CalendarComponent {
-  constructor(private sheet: MatBottomSheet) {}
+  constructor(private dialog: MatDialog) {}
 
   month: number = new Date().getMonth(); // Months are 0-indexed in JS
   year: number = new Date().getFullYear();
@@ -19,7 +20,7 @@ export class CalendarComponent {
   onCalendarBoxClicked(event: number | null) {
     if (event == null) return;
 
-    this.sheet.open(CalendarDaySelectorComponent, {
+    this.dialog.open(CalendarDaySelectorComponent, {
       data: {
         date: event,
         month: this.month,
@@ -28,6 +29,10 @@ export class CalendarComponent {
           return x;
         }),
       },
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
     });
   }
 

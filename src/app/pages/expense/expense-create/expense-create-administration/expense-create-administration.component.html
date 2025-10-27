@@ -1,0 +1,47 @@
+<h1 mat-dialog-title>Create bank administration expense</h1>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Amount -->
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Amount</mat-label>
+      <input
+        matInput
+        formControlName="dpp"
+        prefix="Rp. "
+        thousandSeparator=" "
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Bank account origin</mat-label>
+      <mat-select formControlName="bankAccountID">
+        @for(option of bankAccounts; track option){
+        <mat-option [value]="option.id">
+          {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      color="primary"
+      style="letter-spacing: 0"
+      type="submit"
+      cdkFocusInitial
+      [disabled]="formGroup.invalid || isSubmitting"
+    >
+      Submit
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,7 +1,7 @@
 <!-- file-drop.component.html -->
 <div class="dropzone-container">
   <!-- Main drop zone - now full width/height -->
-  <div class="dropzone" [class.dragover]="isDragging">
+  <div class="dropzone" [class.dragover]="isDragging" *ngIf="show">
     <input
       type="file"
       [accept]="allowedList"

@@ -1,12 +1,7 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Salary Slip</h1>
-</div>
-
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Employee/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<app-header-title
+  [title]="'Salary slip'"
+  [description]="'Manage your salary slip data here'"
+/>
 
 <div class="search__wrapper">
   <mat-form-field appearance="outline" class="w-100">
@@ -17,6 +12,19 @@
       placeholder="Search employee"
       [formControl]="formControl"
     />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Month and Year</mat-label>
+    <input matInput [matDatepicker]="dp" [formControl]="date" />
+    <mat-hint>MM/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker
+      #dp
+      startView="multi-year"
+      (monthSelected)="setMonthAndYear($event, dp)"
+      panelClass="example-month-picker"
+    >
+    </mat-datepicker>
   </mat-form-field>
 </div>
 

@@ -1,9 +1,32 @@
 <h2 mat-dialog-title>Purchase data</h2>
 <mat-dialog-content>
-  <mat-stepper>
-    <mat-step>
-      <ng-template matStepLabel>Meta data</ng-template>
-      <form [formGroup]="metaFormGroup">
+  <form [formGroup]="metaFormGroup">
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input matInput placeholder="Date" formControlName="date" readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="projectName"
+            placeholder="Project name"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Purchase type</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseType"
+            placeholder="Purchase Type"
+            readonly
+          />
+        </mat-form-field>
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Supplier</mat-label>
           <input
@@ -16,6 +39,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Supplier address</mat-label>
           <textarea
             matInput
             formControlName="supplierAddress"
@@ -25,7 +49,17 @@
             style="resize: none"
           ></textarea>
         </mat-form-field>
-
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Due date</mat-label>
+          <input
+            matInput
+            placeholder="Date"
+            formControlName="dueDate"
+            readonly
+          />
+        </mat-form-field>
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Invoice name</mat-label>
           <input
@@ -36,7 +70,6 @@
             readonly
           />
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Receipt Name</mat-label>
           <input
@@ -47,7 +80,6 @@
             readonly
           />
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Tax Invoice Name</mat-label>
           <input
@@ -59,7 +91,6 @@
             readonly
           />
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Purchase Order Name</mat-label>
           <input
@@ -67,57 +98,6 @@
             type="text"
             formControlName="purchaseOrderName"
             placeholder="Purchase Order Name"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="projectName"
-            placeholder="Project name"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase type</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="purchaseType"
-            placeholder="Purchase Type"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
-          <input matInput placeholder="Date" formControlName="date" readonly />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Due date</mat-label>
-          <input
-            matInput
-            placeholder="Date"
-            formControlName="dueDate"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase status</mat-label>
-          <input
-            matInput
-            type="text"
-            [value]="
-              valueFormGroup.get('lastStatus')?.value == 'draft'
-                ? 'Draft'
-                : 'Ready'
-            "
-            placeholder="Purchase Status"
             readonly
           />
         </mat-form-field>
@@ -132,22 +112,8 @@
             readonly
           />
         </mat-form-field>
-
-        <button
-          style="letter-spacing: 0"
-          color="primary"
-          mat-stroked-button
-          matStepperNext
-        >
-          Next
-        </button>
-      </form>
-    </mat-step>
-
-    <mat-step>
-      <ng-template matStepLabel>Value Data</ng-template>
-
-      <form [formGroup]="valueFormGroup">
+      </div>
+      <div class="col-12">
         <mat-form-field appearance="outline" class="w-100 mt-3">
           <mat-label>DPP</mat-label>
           <input
@@ -202,28 +168,8 @@
             mask="separator.2"
           />
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="pphCode"
-            placeholder="PPh Code"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Object Name</mat-label>
-          <input
-            matInput
-            type="text"
-            placeholder="PPh Object Name"
-            formControlName="pphTaxObject"
-            readonly
-          />
-        </mat-form-field>
-
+      </div>
+      <div class="col-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>PPh Percentage</mat-label>
           <input
@@ -234,7 +180,6 @@
             readonly
           />
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>PPh (Rp.)</mat-label>
           <input
@@ -249,133 +194,100 @@
             readonly
           />
         </mat-form-field>
-
+      </div>
+      <div class="col-6">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Other value</mat-label>
+          <mat-label>PPh</mat-label>
           <input
             matInput
             type="text"
-            placeholder="otherValue"
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-            formControlName="otherValue"
-            readonly
+            formControlName="pphCode"
+            placeholder="PPh Code"
           />
-          <mat-hint>{{ valueFormGroup.get("otherValueNote")?.value }}</mat-hint>
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Total</mat-label>
-          <input
+          <mat-label>PPh Object Name</mat-label>
+          <textarea
             matInput
             type="text"
-            formControlName="total"
-            placeholder="Total"
-            prefix="Rp. "
-            thousandSeparator=" "
-            decimalScale="2"
-            [mask]="'separator'"
+            placeholder="PPh Object Name"
+            formControlName="pphTaxObject"
             readonly
-          />
+          ></textarea>
         </mat-form-field>
+      </div>
 
-        <mat-list>
-          <mat-list-item *ngFor="let data of t.controls">
-            <span matListItemTitle>{{
-              data.get("amount")?.value | currency : "Rp."
-            }}</span>
-            <span matListItemLine>{{
-              data.get("date")?.value | date : "dd MMMM YYYY"
-            }}</span>
-          </mat-list-item>
-        </mat-list>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Other value</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="otherValue"
+          prefix="Rp. "
+          thousandSeparator=" "
+          mask="separator.2"
+          formControlName="otherValue"
+          readonly
+        />
+        <mat-hint>{{ metaFormGroup.get("otherValueNote")?.value }}</mat-hint>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100 mt-3">
-          <mat-label>Payment</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="paymentTotal"
-            placeholder="Payment total"
-            prefix="Rp. "
-            thousandSeparator=" "
-            decimalScale="2"
-            [mask]="'separator'"
-            readonly
-          />
-        </mat-form-field>
-      </form>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Total</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="total"
+          placeholder="Total"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          [mask]="'separator'"
+          readonly
+        />
+      </mat-form-field>
 
-      <button
-        style="letter-spacing: 0"
-        class="me-2"
-        mat-stroked-button
-        color="accent"
-        matStepperPrevious
-      >
-        Previous
-      </button>
-      <button
-        matStepperNext
-        style="letter-spacing: 0"
-        mat-stroked-button
-        color="primary"
-      >
-        Next
-      </button>
-    </mat-step>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment Method</mat-label>
+        <mat-select formControlName="paymentMethod">
+          <mat-option value="bank">Bank Transfer</mat-option>
+          <mat-option value="cash">Virtual Account</mat-option>
+          <mat-option value="cash">Cheque</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <mat-step>
-      <ng-template matStepLabel>Payment Data</ng-template>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account number</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountNumber"
+          placeholder="Bank account number"
+          readonly
+        />
+      </mat-form-field>
 
-      <form [formGroup]="paymentFormGroup">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Payment Method</mat-label>
-          <mat-select formControlName="paymentMethod">
-            <mat-option value="bank">Bank Transfer</mat-option>
-            <mat-option value="cash">Virtual Account</mat-option>
-            <mat-option value="cash">Cheque</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank account</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="bankAccountName"
+          placeholder="Bank account name"
+          readonly
+        />
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank account number</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="bankAccountNumber"
-            placeholder="Bank account number"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank account</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="bankAccountName"
-            placeholder="Bank account name"
-            readonly
-          />
-        </mat-form-field>
-      </form>
-
-      <label>Delete purchase data</label>
-      <p>
-        Click <a role="button" (click)="deletePurchaseData()">here</a> if you
-        wish to delete this purchase data.
-      </p>
-
-      <button
-        style="letter-spacing: 0"
-        mat-stroked-button
-        color="accent"
-        matStepperPrevious
-      >
-        Previous
-      </button>
-    </mat-step>
-  </mat-stepper>
+      <mat-list>
+        <mat-list-item *ngFor="let data of t.controls">
+          <span matListItemTitle>{{
+            data.get("amount")?.value | currency : "Rp."
+          }}</span>
+          <span matListItemLine>{{
+            data.get("date")?.value | date : "dd MMMM YYYY"
+          }}</span>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </form>
 </mat-dialog-content>

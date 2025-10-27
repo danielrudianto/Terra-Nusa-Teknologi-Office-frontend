@@ -1,277 +1,191 @@
-<div class="merge-container">
-  <div class="header-section">
-    <h1>Merge PDF</h1>
-    <p>Combine multiple PDFs into one document</p>
+<div class="main-content">
+  <app-file-drop
+    [allowedExtensions]="['.pdf']"
+    [allowMultipleFiles]="true"
+    (onFileDropped)="onFilesDropped($event)"
+    [show]="processedDocuments.length == 0"
+    class="file-drop-zone"
+  />
+
+  <!-- Processing Indicator -->
+  <div *ngIf="isProcessing" class="processing-overlay">
+    <div class="processing-spinner"></div>
+    <p>Processing PDF files...</p>
+    <span class="processing-text">{{ processingProgress }}</span>
   </div>
-
-  <div class="content-wrapper">
-    <div class="main-content">
-      <!-- File Drop Zone -->
-      <app-file-drop
-        [allowedExtensions]="['.pdf']"
-        [allowMultipleFiles]="true"
-        (onFileDropped)="onFilesDropped($event)"
-        class="file-drop-zone"
-      />
-
-      <!-- Processing Indicator -->
-      <div *ngIf="isProcessing" class="processing-overlay">
-        <div class="processing-spinner"></div>
-        <p>Processing PDF files...</p>
-        <span class="processing-text">{{ processingProgress }}</span>
-      </div>
-
-      <!-- Selection Mode Header -->
-      <div *ngIf="processedDocuments.length > 0" class="selection-header">
-        <div class="selection-controls">
-          <button
-            class="btn-selection-mode"
-            [class.active]="selectionMode"
-            (click)="toggleSelectionMode()"
-          >
-            <span class="btn-icon">🎯</span>
-            {{ selectionMode ? "Exit Selection Mode" : "Select Pages" }}
-          </button>
-
-          <div *ngIf="selectionMode" class="selection-actions">
-            <span class="selection-count">
-              {{ selectedCount }} of {{ processedDocuments.length }} selected
-            </span>
-
-            <button class="btn-select-all" (click)="toggleSelectAll()">
-              {{ allSelected ? "Deselect All" : "Select All" }}
-            </button>
-
-            <button
-              class="btn-primary"
-              (click)="saveSelectedPages()"
-              [disabled]="selectedCount === 0"
-            >
-              <span class="btn-icon">💾</span>
-              Save Selected ({{ selectedCount }})
-            </button>
-
-            <button
-              class="btn-secondary"
-              (click)="mergeSelectedPdfs()"
-              [disabled]="selectedCount < 2"
-            >
-              <span class="btn-icon">🔄</span>
-              Merge Selected ({{ selectedCount }})
-            </button>
-          </div>
-        </div>
-
-        <!-- Quick Selection Patterns -->
-        <div *ngIf="selectionMode" class="quick-selection-patterns">
-          <span class="patterns-label">Quick Select:</span>
-          <button class="btn-pattern" (click)="selectOddPages()">
-            Odd Pages
-          </button>
-          <button class="btn-pattern" (click)="selectEvenPages()">
-            Even Pages
-          </button>
-          <button class="btn-pattern" (click)="selectFirstPageOfEachDocument()">
-            First Pages
-          </button>
-          <button class="btn-pattern" (click)="clearAllSelections()">
-            Clear All
-          </button>
-        </div>
-      </div>
-
-      <!-- Uploaded Files Grid -->
+  <!-- Uploaded Files Grid -->
+  <div
+    *ngIf="processedDocuments.length > 0"
+    class="files-section-container"
+    [class.processing]="isProcessing"
+    [class.selection-mode]="selectionMode"
+  >
+    <div
+      class="files-grid"
+      cdkDropList
+      [cdkDropListData]="processedDocuments"
+      (cdkDropListDropped)="onFileDropped($event)"
+    >
       <div
-        *ngIf="processedDocuments.length > 0"
-        class="files-section-container"
-        [class.processing]="isProcessing"
+        *ngFor="let page of processedDocuments; let i = index"
+        cdkDrag
+        class="file-card"
+        [class.selected]="page.selected"
         [class.selection-mode]="selectionMode"
+        [class.dragging]="isDragging"
+        [class.processing]="isProcessing"
+        (click)="togglePageSelection(page, $event)"
       >
-        <div class="section-header">
-          <h3>PDF Pages ({{ processedDocuments.length }})</h3>
-          <div class="header-actions" *ngIf="!selectionMode">
-            <button
-              class="btn-primary"
-              (click)="mergePdfs()"
-              [disabled]="isProcessing || processedDocuments.length < 2"
-            >
-              <span class="btn-icon">🔄</span>
-              Merge All PDFs
-            </button>
-            <button
-              class="btn-secondary"
-              (click)="clearAll()"
-              [disabled]="isProcessing"
-            >
-              <span class="btn-icon">🗑️</span>
-              Clear All
-            </button>
-          </div>
-        </div>
-
-        <div
-          class="files-grid"
-          cdkDropList
-          [cdkDropListData]="processedDocuments"
-          (cdkDropListDropped)="onFileDropped($event)"
-        >
-          <div
-            *ngFor="let page of processedDocuments; let i = index"
-            cdkDrag
-            class="file-card"
-            [class.selected]="page.selected"
-            [class.selection-mode]="selectionMode"
-            [class.dragging]="isDragging"
-            [class.processing]="isProcessing"
+        <!-- Selection Checkbox -->
+        <div class="selection-checkbox">
+          <input
+            type="checkbox"
+            [checked]="page.selected"
             (click)="togglePageSelection(page, $event)"
-          >
-            <!-- Selection Checkbox -->
-            <div class="selection-checkbox" *ngIf="selectionMode">
-              <input
-                type="checkbox"
-                [checked]="page.selected"
-                (click)="togglePageSelection(page, $event)"
-                class="checkbox"
-              />
-              <span class="checkmark"></span>
-            </div>
+            class="checkbox"
+          />
+          <span class="checkmark"></span>
+        </div>
 
-            <!-- Drag Handle -->
-            <div class="drag-handle" cdkDragHandle>
-              <span class="handle-icon">⋮⋮</span>
-            </div>
+        <!-- Drag Handle -->
+        <div class="drag-handle" cdkDragHandle>
+          <span class="handle-icon">⋮⋮</span>
+        </div>
 
-            <!-- Page Thumbnail -->
-            <div class="thumbnail-container">
-              <img
-                [src]="page.thumbnail"
-                [alt]="'Page ' + page.pageNumber"
-                class="thumbnail-image"
-                [class.loading]="isProcessing"
-              />
-              <div class="page-badge">{{ i + 1 }}</div>
+        <!-- Page Thumbnail -->
+        <div class="thumbnail-container">
+          <img
+            [src]="page.thumbnail"
+            [alt]="'Page ' + page.pageNumber"
+            class="thumbnail-image"
+            [class.loading]="isProcessing"
+          />
+          <div class="page-badge">{{ i + 1 }}</div>
 
-              <!-- Selected Overlay -->
-              <div
-                class="selected-overlay"
-                *ngIf="page.selected && selectionMode"
-              >
-                <span class="selected-icon">✓</span>
-              </div>
-            </div>
-
-            <!-- Page Info -->
-            <div class="file-info">
-              <h4 class="file-name" [title]="page.fileName">
-                {{ getShortFileName(page.fileName) }}
-              </h4>
-              <p class="page-info">Page {{ page.pageNumber }}</p>
-              <p class="file-origin" [title]="getFileOrigin(page.fileName)">
-                {{ getFileOrigin(page.fileName) }}
-              </p>
-            </div>
-
-            <!-- Actions -->
-            <div class="file-actions" *ngIf="!selectionMode">
-              <button
-                class="btn-action move-up"
-                (click)="moveFileUp(i); $event.stopPropagation()"
-                [disabled]="i === 0 || isProcessing"
-                title="Move up"
-              >
-                ↑
-              </button>
-              <button
-                class="btn-action move-down"
-                (click)="moveFileDown(i); $event.stopPropagation()"
-                [disabled]="i === processedDocuments.length - 1 || isProcessing"
-                title="Move down"
-              >
-                ↓
-              </button>
-              <button
-                class="btn-action remove"
-                (click)="removeFile(i); $event.stopPropagation()"
-                [disabled]="isProcessing"
-                title="Remove"
-              >
-                ✕
-              </button>
-            </div>
-
-            <!-- Selection Actions -->
-            <div
-              class="selection-actions"
-              *ngIf="selectionMode && page.originalFile"
-            >
-              <button
-                class="btn-action select-doc"
-                (click)="
-                  selectAllFromDocument(page.originalFile!);
-                  $event.stopPropagation()
-                "
-                title="Select all from this document"
-              >
-                📄+
-              </button>
-            </div>
-
-            <!-- Drag Preview -->
-            <div *cdkDragPreview class="drag-preview">
-              <img [src]="page.thumbnail" />
-              <span>{{ getShortFileName(page.fileName) }}</span>
-            </div>
-
-            <!-- Drop Placeholder -->
-            <div *cdkDragPlaceholder class="drop-placeholder"></div>
+          <!-- Selected Overlay -->
+          <div class="selected-overlay" *ngIf="page.selected && selectionMode">
+            <span class="selected-icon">✓</span>
           </div>
         </div>
 
-        <!-- Quick Actions Bar -->
-        <div
-          class="quick-actions"
-          *ngIf="processedDocuments.length > 1 && !selectionMode"
-        >
+        <!-- Page Info -->
+        <div class="file-info">
+          <h4 class="file-name" [title]="page.fileName">
+            {{ getShortFileName(page.fileName) }}
+          </h4>
+          <p class="page-info">Page {{ page.pageNumber }}</p>
+          <p class="file-origin" [title]="getFileOrigin(page.fileName)">
+            {{ getFileOrigin(page.fileName) }}
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="file-actions">
           <button
-            class="btn-quick"
-            (click)="reverseOrder()"
-            [disabled]="isProcessing"
+            class="btn-action move-up"
+            (click)="moveFileUp(i); $event.stopPropagation()"
+            [disabled]="i === 0 || isProcessing"
+            title="Move up"
           >
-            🔄 Reverse Order
+            ↑
           </button>
           <button
-            class="btn-quick"
-            (click)="shuffleOrder()"
-            [disabled]="isProcessing"
+            class="btn-action move-down"
+            (click)="moveFileDown(i); $event.stopPropagation()"
+            [disabled]="i === processedDocuments.length - 1 || isProcessing"
+            title="Move down"
           >
-            🎲 Shuffle
+            ↓
+          </button>
+          <button
+            class="btn-action remove"
+            (click)="removeFile(i); $event.stopPropagation()"
+            [disabled]="isProcessing"
+            title="Remove"
+          >
+            ✕
           </button>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div
-        class="empty-state"
-        *ngIf="processedDocuments.length === 0 && !isProcessing"
-      >
-        <div class="empty-icon">📄</div>
-        <h3>No PDF files added yet</h3>
-        <p>Drag and drop PDF files above or click to browse</p>
-        <div class="empty-features">
-          <div class="feature">
-            <span class="feature-icon">🎯</span>
-            <span>Select specific pages</span>
-          </div>
-          <div class="feature">
-            <span class="feature-icon">🔀</span>
-            <span>Drag to reorder</span>
-          </div>
-          <div class="feature">
-            <span class="feature-icon">⚡</span>
-            <span>Fast processing</span>
-          </div>
+        <!-- Drag Preview -->
+        <div *cdkDragPreview class="drag-preview">
+          <img [src]="page.thumbnail" />
+          <span>{{ getShortFileName(page.fileName) }}</span>
         </div>
+
+        <!-- Drop Placeholder -->
+        <div *cdkDragPlaceholder class="drop-placeholder"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    class="empty-state"
+    *ngIf="processedDocuments.length === 0 && !isProcessing"
+  >
+    <div class="empty-icon">📄</div>
+    <h3>No PDF files added yet</h3>
+    <p>Drag and drop PDF files above or click to browse</p>
+    <div class="empty-features">
+      <div class="feature">
+        <span class="feature-icon">🎯</span>
+        <span>Select specific pages</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔀</span>
+        <span>Drag to reorder</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <span>Fast processing</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="processedDocuments.length > 0" class="fab-container">
+    <div class="island__wrapper">
+      <button (click)="openFileInput()" [matTooltip]="'Add files'">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        [matTooltip]="'Save selected pages'"
+        (click)="saveSelectedPages()"
+        [disabled]="isProcessing || selectedPages.length === 0"
+      >
+        <mat-icon>download</mat-icon>
+      </button>
+      <button
+        (click)="clearAllSelections()"
+        [matTooltip]="'Clear all selection'"
+        [disabled]="isProcessing || selectedPages.length === 0"
+      >
+        <mat-icon>deselect</mat-icon>
+      </button>
+      <button
+        [matTooltip]="'Merge all PDF file'"
+        (click)="mergePdfs()"
+        [disabled]="isProcessing"
+      >
+        <mat-icon>merge</mat-icon>
+      </button>
+      <button
+        [matTooltip]="'Clear all'"
+        (click)="clearAll()"
+        [disabled]="isProcessing"
+      >
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </div>
+
+    <!-- Hidden file input for adding more files -->
+    <input
+      #fileInput
+      type="file"
+      accept=".pdf"
+      multiple
+      (change)="onFilesSelected($event)"
+      style="display: none"
+    />
   </div>
 </div>

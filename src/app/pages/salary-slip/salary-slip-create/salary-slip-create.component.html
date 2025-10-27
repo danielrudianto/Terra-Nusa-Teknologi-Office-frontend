@@ -420,9 +420,9 @@
 
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Last date</mat-label>
-      <input matInput formControlName="lastDate" />
+      <input matInput formControlName="lastDate" [matDatepicker]="picker" />
       <mat-datepicker-toggle
-        matIconSuffix
+        matIconPrefix
         [for]="picker"
       ></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>

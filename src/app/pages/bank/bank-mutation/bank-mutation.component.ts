@@ -16,6 +16,9 @@ import moment from 'moment';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-bank-mutation',
@@ -28,6 +31,9 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
     MatTableModule,
     CommonModule,
     MatPaginatorModule,
+    HeaderTitleComponent,
+    MatIconModule,
+    MatButtonModule,
   ],
   templateUrl: './bank-mutation.component.html',
   styleUrl: './bank-mutation.component.scss',
@@ -38,6 +44,8 @@ export class BankMutationComponent {
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {}
+
+  bankAccount: any = null;
 
   date: Date = new Date();
   endOfMonth = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0);
@@ -69,6 +77,7 @@ export class BankMutationComponent {
   });
 
   ngOnInit(): void {
+    this.fetchMetaData();
     this.fetchData();
   }
 
@@ -79,6 +88,20 @@ export class BankMutationComponent {
     if (dateRangeStart.value && dateRangeEnd.value) {
       this.fetchData(1);
     }
+  }
+
+  fetchMetaData() {
+    const bankAccountID = this.route.snapshot.params['id'];
+    this.apiService.get(`banks/${bankAccountID}`, {}).subscribe({
+      next: (data) => {
+        this.bankAccount = data;
+      },
+      error: (error) => {
+        this.snackBar.open(error.error.detail, 'Close', {
+          duration: 1000,
+        });
+      },
+    });
   }
 
   fetchData(page: number = this.page) {
@@ -98,7 +121,7 @@ export class BankMutationComponent {
           this.dataCount = data.count;
         },
         error: (error) => {
-          this.snackBar.open(error, 'Close', {
+          this.snackBar.open(error.error.detail, 'Close', {
             duration: 1000,
           });
         },
@@ -146,4 +169,6 @@ export class BankMutationComponent {
 
     return 'N/A';
   }
+
+  download() {}
 }

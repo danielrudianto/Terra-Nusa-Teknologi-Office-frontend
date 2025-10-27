@@ -1,10 +1,143 @@
-<mat-list *ngIf="!isLoading">
-  <mat-list-item
-    *ngFor="let data of bankDataSource"
-    (click)="viewData(data.id)"
-  >
-    <mat-icon matListItemIcon>folder</mat-icon>
-    <span matListItemTitle>{{ data.bankAccountName }}</span>
-    <span matListItemLine>{{ data.bankAccountNumber }}</span>
-  </mat-list-item>
-</mat-list>
+<h1 mat-dialog-title class="dialog-header">Daily Financial Overview</h1>
+<mat-dialog-content>
+  @if(isLoading){
+  <div class="loading-container">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>Loading accounts</span>
+  </div>
+  } @else {
+  <div class="accounts-container">
+    <div class="accounts-sidebar">
+      <div class="sidebar-header">
+        <h3>Bank Accounts</h3>
+        <span class="accounts-count"
+          >{{ bankAccountSummaries.length }} accounts</span
+        >
+      </div>
+
+      <div class="accounts-list">
+        @for(account of bankAccountSummaries; track account){
+        <div
+          class="account-folder"
+          [class.selected]="selectedAccount?.id === account.id"
+          [class.has-activities]="account.hasActivities"
+          [class.no-activities]="!account.hasActivities"
+          (click)="selectAccount(account)"
+        >
+          <img
+            src="/assets/vector/calendar.svg"
+            class="folder-icon"
+            width="24"
+          />
+
+          <div class="folder-content">
+            <div class="account-name">{{ account.bankAccountName }}</div>
+            <div class="account-details">
+              <span class="bank-badge">{{
+                getAbbreviatedBankName(account.bankName)
+              }}</span>
+              <span class="account-number"
+                >••••{{ account.bankAccountNumber.slice(-4) }}</span
+              >
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    <div class="account-details-panel p-3">
+      @if(selectedAccount){
+      <div class="details-content">
+        <div class="account-header">
+          <div class="account-title">
+            <h2>{{ selectedAccount.bankAccountName }}</h2>
+            <p class="mb-0">
+              {{ selectedAccount.bankAccountNumber }}
+            </p>
+            <p class="mb-0">
+              {{ selectedAccount.bankName }}
+            </p>
+          </div>
+          <div class="flex-grow-1"></div>
+          <button
+            mat-stroked-button
+            color="warn"
+            style="letter-spacing: 0"
+            [disabled]="selectedPayments.length == 0 || !canConfirm"
+            (click)="reject()"
+          >
+            Reject
+          </button>
+          <button
+            mat-stroked-button
+            color="primary"
+            style="letter-spacing: 0"
+            [disabled]="selectedPayments.length == 0 || !canConfirm"
+            (click)="confirm()"
+          >
+            Confirm
+          </button>
+          <button mat-icon-button (click)="selectAllPayments()">
+            <mat-icon>select_all</mat-icon>
+          </button>
+          <button mat-icon-button (click)="getPaymentText()">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+        <mat-divider class="my-2" />
+        <div class="account-list">
+          <mat-selection-list
+            #paymentSelection
+            (selectionChange)="onValueSelected($event)"
+          >
+            @for(p of payments; track p){
+            <mat-list-option [value]="p.id">
+              @if(p.isApprove){
+              <mat-icon matListItemIcon>check</mat-icon>
+              } @else {
+              <mat-icon matListItemIcon>pending</mat-icon>
+              }
+              <span matListItemTitle>{{ getAccountName(p) }}</span>
+              <span matListItemLine>{{ getProjectName(p) }}</span>
+              {{ p.amount | number : "0.2-2" }}
+            </mat-list-option>
+            } @for(i of interpayments; track i){
+            <mat-list-item>
+              <mat-icon matListItemIcon>folder</mat-icon>
+              <div matListItemTitle>
+                Interpayment to ••••{{
+                  i.destinationBankAccountNumber.slice(-4)
+                }}
+              </div>
+              <div matListItemLine>
+                {{ i.amount | number : "0.2-2" }}
+              </div>
+            </mat-list-item>
+            }
+          </mat-selection-list>
+        </div>
+        <div class="account-footer">
+          <span>Selected</span>
+          <span>{{ selectedAmount | number : "0.2-2" }}</span>
+        </div>
+        <mat-divider class="my-1" />
+        <div class="account-footer">
+          <span>Total Amount</span>
+          <span>{{ totalAmount | number : "0.2-2" }}</span>
+        </div>
+      </div>
+      } @else {
+      <div class="no-account-selected">
+        <mat-icon>account_balance</mat-icon>
+        <h3>Select an Account</h3>
+        <p>Choose a bank account from the sidebar to view details</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

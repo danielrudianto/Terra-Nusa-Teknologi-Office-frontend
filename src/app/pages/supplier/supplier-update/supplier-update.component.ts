@@ -1,23 +1,55 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-supplier-update',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatIconModule,
+  ],
   templateUrl: './supplier-update.component.html',
   styleUrl: './supplier-update.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class SupplierUpdateComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      id: number;
+      readOnly: boolean;
+    }
   ) {}
 
   supplierFormGroup: FormGroup = new FormGroup({
+    id: new FormControl(this.data.id, Validators.required),
     prefix: new FormControl('', Validators.required),
     name: new FormControl('', Validators.required),
     address: new FormControl('', Validators.required),
@@ -89,10 +121,10 @@ export class SupplierUpdateComponent {
   }
 
   onSubmit() {
+    if (this.data.readOnly) return;
     this.isSubmitting = true;
     this.apiService
       .put('suppliers', {
-        id: Number(this.route.snapshot.params['id']),
         ...this.supplierFormGroup.value,
         email: this.supplierFormGroup.value.email || null,
         npwp:
@@ -122,32 +154,30 @@ export class SupplierUpdateComponent {
   }
 
   fetchData() {
-    this.apiService
-      .get('suppliers/' + this.route.snapshot.params['id'], {})
-      .subscribe({
-        next: (data: any) => {
-          this.supplierFormGroup.patchValue({
-            prefix: data.prefix,
-            name: data.name,
-            address: data.address,
-            city: data.city,
-            province: data.province,
-            npwp: data.npwp || '',
-            phoneNumber: data.phoneNumber,
-            email: data.email || '',
-          });
+    this.apiService.get('suppliers/' + this.data.id, {}).subscribe({
+      next: (data: any) => {
+        this.supplierFormGroup.patchValue({
+          prefix: data.prefix,
+          name: data.name,
+          address: data.address,
+          city: data.city,
+          province: data.province,
+          npwp: data.npwp || '',
+          phoneNumber: data.phoneNumber,
+          email: data.email || '',
+        });
 
-          this.items = data.itemsSold.split(',').map((item: string) => {
-            return item;
-          });
+        this.items = data.itemsSold.split(',').map((item: string) => {
+          return item;
+        });
 
-          this.areas = data.serviceArea.split(',').map((item: string) => {
-            return item;
-          });
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+        this.areas = data.serviceArea.split(',').map((item: string) => {
+          return item;
+        });
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }

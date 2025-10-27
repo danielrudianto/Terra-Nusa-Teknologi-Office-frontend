@@ -1,12 +1,9 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Sales Invoice</h1>
-</div>
-
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Sales-invoice/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+<app-header-title
+  [title]="'Sales Invoice'"
+  [description]="'Manage your sales invoice data here'"
+  [actionButtonLabel]="'Create new sales invoice'"
+  (onActionButtonClicked)="createNewSalesInvoice()"
+/>
 
 <mat-form-field appearance="outline" class="w-100">
   <mat-label>Search</mat-label>
@@ -122,13 +119,13 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
-        {{
-          invoice.isDelete
-            ? "Deleted"
-            : invoice.isApprove
-            ? "Approved"
-            : "Pending"
-        }}
+        @if(invoice.isDelete){
+        <app-pill-danger [label]="'Deleted'" />
+        } @else if(invoice.isApprove){
+        <app-pill-success [label]="'Approved'" />
+        } @else {
+        <app-pill-warning [label]="'Pending'" />
+        }
       </td>
     </ng-container>
 
@@ -139,24 +136,29 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let invoice">
-        <button
-          mat-icon-button
-          (click)="openPaymentDetail(invoice.id)"
-          [disabled]="invoice.isDelete || !invoice.isApprove"
-          matTooltip="Create payment"
-        >
-          <mat-icon>payments</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_horiz</mat-icon>
         </button>
-        <button
-          mat-icon-button
-          [disabled]="invoice.isDelete || invoice.isApprove"
-          matTooltip="Confirm sales invoice"
-          (click)="openSalesInvoiceConfirmation(invoice.id)"
-        >
-          <mat-icon>check</mat-icon>
-        </button>
-      </td></ng-container
-    >
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
+            (click)="openPaymentDetail(invoice.id)"
+            [disabled]="invoice.isDelete || !invoice.isApprove"
+          >
+            <mat-icon>payments</mat-icon>
+            <span>Create payment</span>
+          </button>
+          <button
+            mat-menu-item
+            [disabled]="invoice.isDelete || invoice.isApprove"
+            (click)="openSalesInvoiceConfirmation(invoice.id)"
+          >
+            <mat-icon>check</mat-icon>
+            <span>Confirm sales invoice</span>
+          </button>
+        </mat-menu>
+      </td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
