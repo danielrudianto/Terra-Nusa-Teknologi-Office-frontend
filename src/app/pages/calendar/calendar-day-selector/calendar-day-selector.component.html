@@ -94,6 +94,7 @@
             <mat-list-option
               [value]="p.id"
               [matContextMenuTriggerFor]="contextMenu"
+              [matContextMenuTriggerData]="{id: p.id}"
             >
               @if(p.isApprove){
               <mat-icon matListItemIcon>check</mat-icon>
@@ -105,20 +106,13 @@
               {{ p.amount | number : "0.2-2" }}
             </mat-list-option>
             }
-            <mat-menu
-              #contextMenu
-              [overlapTrigger]="false"
-              xPosition="before"
-              yPosition="below"
-            >
-              <button mat-menu-item (click)="editItem()">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button>
-              <button mat-menu-item (click)="deleteItem()">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
+            <mat-menu #contextMenu [overlapTrigger]="false" >
+              <ng-template matMenuContent let-id="id">
+                <button mat-menu-item (click)="moveDate(id)">
+                  <mat-icon>move_up</mat-icon>
+                  <span>Move payment date</span>
+                </button>
+              </ng-template>
             </mat-menu>
             @for(i of interpayments; track i){
             <mat-list-item>

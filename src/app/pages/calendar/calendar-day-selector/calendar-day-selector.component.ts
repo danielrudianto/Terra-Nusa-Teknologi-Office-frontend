@@ -21,6 +21,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DateSelectorComponent } from '../../../components/date-selector/date-selector.component';
 
 interface BankAccountSummary {
   id: number;
@@ -302,8 +303,6 @@ export class CalendarDaySelectorComponent {
   }
 
   get canConfirm() {
-    // Check if all selected isApprove = False and isDelete = False
-    console.log(this.selectedPayments);
     return this.payments
       .filter((x: any) => this.selectedPayments.includes(x.id))
       .every(
@@ -327,7 +326,6 @@ export class CalendarDaySelectorComponent {
   }
 
   onValueSelected(event: MatSelectionListChange) {
-    console.log(event.source.selectedOptions);
     this.selectedPayments = event.source.selectedOptions.selected.map((x) => {
       return x.value;
     });
@@ -465,7 +463,19 @@ export class CalendarDaySelectorComponent {
     this.menuTrigger?.openMenu();
   }
 
-  editItem() {}
-
-  deleteItem() {}
+  moveDate(p: number) {
+    const index = this.rawData.data.findIndex((x: any) => x.id == p);
+    if (index != -1) {
+      const date = new Date(this.rawData.data[index].date);
+      this.dialog.open(DateSelectorComponent, {
+        data: {
+          id: p,
+          date: date,
+          minimumDate: date,
+          // maximum date should be minimumDate + 30
+          maximumDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000),
+        },
+      });
+    }
+  }
 }

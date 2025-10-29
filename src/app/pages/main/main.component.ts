@@ -25,6 +25,7 @@ import { filter, map } from 'rxjs';
 export class MainComponent {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
+  isSidenavigationOpened: boolean = true;
   label: string = '';
 
   ngOnInit(): void {
@@ -60,21 +61,6 @@ export class MainComponent {
           route: '/',
         },
         {
-          name: 'Calendar',
-          icon: 'calendar.svg',
-          route: '/Calendar',
-        },
-        {
-          name: 'Payment',
-          icon: 'payment-method.svg',
-          route: '/Payment',
-        },
-        {
-          name: 'Purchase',
-          icon: 'purchase-invoice.svg',
-          route: '/Purchase',
-        },
-        {
           name: 'Purchase Draft',
           icon: 'purchase-invoice.svg',
           route: '/Purchase-draft',
@@ -83,16 +69,6 @@ export class MainComponent {
           name: 'Purchase Order',
           icon: 'purchase-order.svg',
           route: '/Purchase-order',
-        },
-        {
-          name: 'Reimbursement',
-          icon: 'reimbursement.svg',
-          route: '/Reimbursement',
-        },
-        {
-          name: 'Expense',
-          icon: 'expense.svg',
-          route: '/Expense',
         },
         {
           name: 'Income',
@@ -181,6 +157,36 @@ export class MainComponent {
           routerLinkOptions: {
             exact: true,
           },
+        },
+      ],
+    },
+    {
+      name: 'Implementations',
+      children: [
+        {
+          name: 'Calendar',
+          icon: 'calendar.svg',
+          route: '/Calendar',
+        },
+        {
+          name: 'Payment',
+          icon: 'payment-method.svg',
+          route: '/Payment',
+        },
+        {
+          name: 'Purchase',
+          icon: 'purchase-invoice.svg',
+          route: '/Purchase',
+        },
+        {
+          name: 'Reimbursement',
+          icon: 'reimbursement.svg',
+          route: '/Reimbursement',
+        },
+        {
+          name: 'Expense',
+          icon: 'expense.svg',
+          route: '/Expense',
         },
       ],
     },

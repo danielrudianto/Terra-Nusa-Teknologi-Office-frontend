@@ -1,4 +1,43 @@
-<nav class="top-navigation__wrapper">
+<mat-toolbar class="px-2">
+  <button matIconButton (click)="onMenuClicked()" class="h-100">
+    <mat-icon>menu</mat-icon>
+  </button>
   <app-top-navigation-bookmark [label]="label" />
   <div class="spacer"></div>
-</nav>
+  <button [routerLink]="'Purchase'" [routerLinkActive]="'active'" class="h-100">
+    <img [src]="'/assets/vector/purchase-invoice.svg'" width="18" height="18" />
+    <span>Purchase</span>
+  </button>
+  <button
+    [routerLink]="'Reimbursement'"
+    [routerLinkActive]="'active'"
+    class="h-100 px-3"
+  >
+    <img [src]="'/assets/vector/reimbursement.svg'" width="18" height="18" />
+    <span>Reimbursements</span>
+  </button>
+  <button
+    [routerLink]="'Payment'"
+    [routerLinkActive]="'active'"
+    class="h-100 px-3"
+  >
+    <img [src]="'/assets/vector/overpayment.svg'" width="18" height="18" />
+    <span>Payment</span>
+  </button>
+  <button
+    [routerLink]="'Calendar'"
+    [routerLinkActive]="'active'"
+    class="h-100 px-3"
+  >
+    <img [src]="'/assets/vector/calendar.svg'" width="18" height="18" />
+    <span>Calendar</span>
+  </button>
+  <button
+    [routerLink]="'Expense'"
+    [routerLinkActive]="'active'"
+    class="h-100 px-3"
+  >
+    <img [src]="'/assets/vector/expense.svg'" width="18" height="18" />
+    <span>Expense</span>
+  </button>
+</mat-toolbar>

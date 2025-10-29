@@ -10,3 +10,37 @@
   padding-right: 30px;
   box-sizing: border-box; // Add this line
 }
+
+mat-toolbar {
+  gap: 1rem;
+  button {
+    background: none;
+    border: none;
+    color: #2b2b2b;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: "Poppins";
+    font-size: 1rem;
+
+    img {
+      filter: brightness(0) saturate(100%) invert(12%) sepia(7%) saturate(1%)
+        hue-rotate(315deg) brightness(89%) contrast(84%);
+    }
+
+    &.active {
+      background-color: var(--active-button-color);
+      span {
+        color: var(--on-active-button-color) !important;
+      }
+
+      img {
+        filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
+          saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
+      }
+    }
+  }
+}

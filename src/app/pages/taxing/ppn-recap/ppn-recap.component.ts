@@ -56,10 +56,10 @@ export class PpnRecapComponent {
               worksheet,
               [
                 [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM YYYY'),
-                  x.supplier_prefix,
-                  x.supplier_name,
-                  x.supplier_npwp,
+                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
+                  x.supplier.prefix,
+                  x.supplier.name,
+                  x.supplier.npwp,
                   x.invoiceName,
                   x.receiptName,
                   x.taxInvoiceName,
@@ -96,7 +96,7 @@ export class PpnRecapComponent {
             excelBuffer,
             `PPN Recap ${Number(this.formGroup.value.month)} ${
               this.formGroup.value.year
-            }.xlsx`
+            }`
           );
         },
         error: (error) => {

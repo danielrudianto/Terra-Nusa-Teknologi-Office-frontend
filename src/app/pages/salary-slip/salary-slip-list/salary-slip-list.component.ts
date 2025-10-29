@@ -21,6 +21,9 @@ import {
   MatDatepickerModule,
 } from '@angular/material/datepicker';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import { MatMenuModule } from '@angular/material/menu';
+import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
+import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
 
 const moment = _rollupMoment || _moment;
 
@@ -53,6 +56,9 @@ export const MY_FORMATS = {
     MatPaginatorModule,
     HeaderTitleComponent,
     MatDatepickerModule,
+    MatMenuModule,
+    PillSuccessComponent,
+    PillWarningComponent,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',
@@ -62,7 +68,9 @@ export class SalarySlipListComponent {
   constructor(private apiService: ApiService, private dialog: MatDialog) {}
   month: number = new Date().getMonth();
   year: number = new Date().getFullYear();
-  readonly date = new FormControl(moment());
+  readonly date = new FormControl(
+    moment(new Date(this.year, this.month - 1, 1))
+  );
 
   ngOnInit(): void {
     this.fetchSalarySlips();

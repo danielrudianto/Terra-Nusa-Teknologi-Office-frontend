@@ -1,0 +1,19 @@
+<mat-dialog-content>
+  <mat-calendar
+    style="width: 300px"
+    [(selected)]="selected"
+    [minDate]="data.minimumDate"
+    [maxDate]="data.maximumDate"
+  ></mat-calendar>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    matButton="outlined"
+    color="primary"
+    style="letter-spacing: 0"
+    (click)="onSubmit()"
+    [disabled]="!selected || isSubmitting"
+  >
+    Submit
+  </button>
+</mat-dialog-actions>

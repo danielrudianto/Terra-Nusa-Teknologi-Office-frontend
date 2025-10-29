@@ -1,9 +1,16 @@
 <mat-drawer-container class="dashboard__container">
-  <mat-drawer mode="side" opened class="dashboard__container__side">
-    <app-side-nav [items]="sideNavItems" />
+  <mat-drawer
+    mode="side"
+    [opened]="isSidenavigationOpened"
+    class="dashboard__container__side"
+  >
+    <app-side-nav style="overflow-y: hidden" [items]="sideNavItems" />
   </mat-drawer>
   <mat-drawer-content class="dashboard__container__content">
-    <app-top-navigation [label]="label" />
+    <app-top-navigation
+      [label]="label"
+      (onBookmarkClicked)="isSidenavigationOpened = !isSidenavigationOpened"
+    />
     <div class="dashboard__container__router">
       <router-outlet></router-outlet>
     </div>
