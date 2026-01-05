@@ -1,21 +1,45 @@
+import { DatePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-reimbursement-payment-create',
-  standalone: false,
+  providers: [provideNgxMask()],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatInputModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './reimbursement-payment-create.component.html',
   styleUrl: './reimbursement-payment-create.component.scss',
+  standalone: true,
 })
 export class ReimbursementPaymentCreateComponent {
   constructor(
@@ -23,7 +47,8 @@ export class ReimbursementPaymentCreateComponent {
     private apiService: ApiService,
     private dialog: MatDialogRef<ReimbursementPaymentCreateComponent>,
     private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private datePipe: DatePipe
   ) {}
 
   isLoading: boolean = false;
@@ -52,7 +77,7 @@ export class ReimbursementPaymentCreateComponent {
     dueDate: new FormControl(''),
     date: new FormControl('', Validators.required),
     bankAccountID: new FormControl('', Validators.required),
-    amount: new FormControl(0, [Validators.required, Validators.min(1)]),
+    amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
   });
 
   ngOnInit(): void {
@@ -79,29 +104,15 @@ export class ReimbursementPaymentCreateComponent {
     this.apiService.get('reimbursements/' + this.data.id, {}).subscribe({
       next: (data: any) => {
         this.metaFormGroup.patchValue({
-          date: `${new Date(data.reimbursement.date).toLocaleDateString(
-            'id-ID',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: '2-digit',
-            }
-          )}`,
-          dueDate: `${new Date(data.reimbursement.dueDate).toLocaleDateString(
-            'id-ID',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: '2-digit',
-            }
-          )}`,
-          createdAt: `${new Date(
-            data.reimbursement.createdAt
-          ).toLocaleDateString('id-ID', {
-            year: 'numeric',
-            month: 'long',
-            day: '2-digit',
-          })}`,
+          date: this.datePipe.transform(
+            data.reimbursement.date,
+            'dd MMMM yyyy'
+          ),
+          dueDate: this.datePipe.transform(
+            data.reimbursement.dueDate,
+            'dd MMMM yyyy'
+          ),
+          createdAt: this.datePipe.transform(data.createdAt, 'dd MMMM yyyy'),
           reimbursementName: data.reimbursement.name,
           projectName: data.reimbursement.projectName,
           bankAccountName: data.reimbursement.bankAccountName,
@@ -136,6 +147,7 @@ export class ReimbursementPaymentCreateComponent {
         });
 
         this.formGroup.patchValue({
+          date: new Date(data.reimbursement.dueDate),
           amount: amount,
         });
       },
@@ -161,6 +173,7 @@ export class ReimbursementPaymentCreateComponent {
       .post('outgoing-payments', {
         purchaseID: null,
         expenseID: null,
+        loanID: null,
         reimbursementID: this.data.id,
         date: formattedDate,
         amount: this.formGroup.value.amount,
@@ -169,27 +182,27 @@ export class ReimbursementPaymentCreateComponent {
       .subscribe({
         next: (data) => {
           // create pdf document
-          PaymentSlipHelper.generateReimbursementPaymentSlipPDF({
-            reimbursementName: this.metaFormGroup.value.reimbursementName,
-            projectName: this.metaFormGroup.value.projectName,
-            date: this.metaFormGroup.value.date,
-            paymentDate: formattedDate,
-            dueDate: this.metaFormGroup.value.dueDate,
-            createdAt: this.metaFormGroup.value.createdAt,
-            amount: this.formGroup.value.amount,
-            bankAccountName: this.metaFormGroup.value.bankAccountName,
-            bankAccountNumber: this.metaFormGroup.value.bankAccountNumber,
-            bankName: this.metaFormGroup.value.bankName,
-            bankAccountNameOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankAccountName,
-            bankAccountNumberOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankAccountNumber,
-            bankNameOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankName,
-          });
+          // PaymentSlipHelper.generateReimbursementPaymentSlipPDF({
+          //   reimbursementName: this.metaFormGroup.value.reimbursementName,
+          //   projectName: this.metaFormGroup.value.projectName,
+          //   date: this.metaFormGroup.value.date,
+          //   paymentDate: formattedDate,
+          //   dueDate: this.metaFormGroup.value.dueDate,
+          //   createdAt: this.metaFormGroup.value.createdAt,
+          //   amount: this.formGroup.value.amount,
+          //   bankAccountName: this.metaFormGroup.value.bankAccountName,
+          //   bankAccountNumber: this.metaFormGroup.value.bankAccountNumber,
+          //   bankName: this.metaFormGroup.value.bankName,
+          //   bankAccountNameOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankAccountName,
+          //   bankAccountNumberOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankAccountNumber,
+          //   bankNameOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankName,
+          // });
           this.snackBar.open('Payment created successfully', 'Close', {
             duration: 3000,
           });

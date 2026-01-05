@@ -53,7 +53,7 @@ export class ExpensePaymentCreateComponent {
     dueDate: new FormControl(''),
     date: new FormControl('', Validators.required),
     bankAccountID: new FormControl('', Validators.required),
-    amount: new FormControl(0, [Validators.required, Validators.min(1)]),
+    amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
   });
 
   ngOnInit(): void {
@@ -211,53 +211,53 @@ export class ExpensePaymentCreateComponent {
       .subscribe({
         next: (data) => {
           // create pdf document
-          PaymentSlipHelper.generatePurchasePaymentSlipPDF({
-            invoiceName: this.metaFormGroup.value.invoiceName,
-            taxInvoiceName: this.metaFormGroup.value.taxInvoiceName,
-            purchaseOrderName: this.metaFormGroup.value.purchaseOrderName,
-            projectName: this.metaFormGroup.value.projectName,
-            supplierName: this.metaFormGroup.value.supplierName,
-            supplierAddress: this.metaFormGroup.value.supplierAddress,
-            date: this.metaFormGroup.value.date,
-            paymentDate: formattedDate,
-            dueDate: this.metaFormGroup.value.dueDate,
-            createdAt: this.metaFormGroup.value.createdAt,
-            dpp: this.valueFormGroup.value.dpp,
-            ppn: 0,
-            pphCode: this.valueFormGroup.value.pphCode,
-            pphTaxObject: this.valueFormGroup.value.pphTaxObject,
-            pphPercentage: this.valueFormGroup.value.pphPercentage,
-            pbbkb: this.valueFormGroup.value.pbbkb,
-            otherValue: 0,
-            otherValueNote: '',
-            amount: this.formGroup.value.amount,
-            payments: this.payments.map((x) => {
-              return {
-                id: x.id,
-                date: x.date,
-                amount: x.amount,
-                bankAccountID: x.bankAccountID,
-                bankAccountName: x.bankAccountName,
-                bankAccountNumber: x.bankAccountNumber,
-                bankName: x.bankName,
-                isDelete: x.isDelete,
-                isApprove: x.isApprove,
-              };
-            }),
-            bankAccountName: this.metaFormGroup.value.bankAccountName,
-            bankAccountNumber: this.metaFormGroup.value.bankAccountNumber,
-            bankName: this.metaFormGroup.value.bankName,
-            bankAccountNameOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankAccountName,
-            bankAccountNumberOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankAccountNumber,
-            bankNameOrigin: this.bankAccounts.find(
-              (x) => x.id === this.formGroup.value.bankAccountID
-            )?.bankName,
-            total: this.valueFormGroup.value.total,
-          });
+          // PaymentSlipHelper.generatePurchasePaymentSlipPDF({
+          //   invoiceName: this.metaFormGroup.value.invoiceName,
+          //   taxInvoiceName: this.metaFormGroup.value.taxInvoiceName,
+          //   purchaseOrderName: this.metaFormGroup.value.purchaseOrderName,
+          //   projectName: this.metaFormGroup.value.projectName,
+          //   supplierName: this.metaFormGroup.value.supplierName,
+          //   supplierAddress: this.metaFormGroup.value.supplierAddress,
+          //   date: this.metaFormGroup.value.date,
+          //   paymentDate: formattedDate,
+          //   dueDate: this.metaFormGroup.value.dueDate,
+          //   createdAt: this.metaFormGroup.value.createdAt,
+          //   dpp: this.valueFormGroup.value.dpp,
+          //   ppn: 0,
+          //   pphCode: this.valueFormGroup.value.pphCode,
+          //   pphTaxObject: this.valueFormGroup.value.pphTaxObject,
+          //   pphPercentage: this.valueFormGroup.value.pphPercentage,
+          //   pbbkb: this.valueFormGroup.value.pbbkb,
+          //   otherValue: 0,
+          //   otherValueNote: '',
+          //   amount: this.formGroup.value.amount,
+          //   payments: this.payments.map((x) => {
+          //     return {
+          //       id: x.id,
+          //       date: x.date,
+          //       amount: x.amount,
+          //       bankAccountID: x.bankAccountID,
+          //       bankAccountName: x.bankAccountName,
+          //       bankAccountNumber: x.bankAccountNumber,
+          //       bankName: x.bankName,
+          //       isDelete: x.isDelete,
+          //       isApprove: x.isApprove,
+          //     };
+          //   }),
+          //   bankAccountName: this.metaFormGroup.value.bankAccountName,
+          //   bankAccountNumber: this.metaFormGroup.value.bankAccountNumber,
+          //   bankName: this.metaFormGroup.value.bankName,
+          //   bankAccountNameOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankAccountName,
+          //   bankAccountNumberOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankAccountNumber,
+          //   bankNameOrigin: this.bankAccounts.find(
+          //     (x) => x.id === this.formGroup.value.bankAccountID
+          //   )?.bankName,
+          //   total: this.valueFormGroup.value.total,
+          // });
           this.snackBar.open('Payment created successfully', 'Close', {
             duration: 3000,
           });

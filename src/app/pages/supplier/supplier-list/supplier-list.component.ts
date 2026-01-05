@@ -59,7 +59,7 @@ export class SupplierListComponent {
     this.fetchSuppliers();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe((_) => {
-      this.fetchSuppliers(1);
+      this.fetchSuppliers(0);
     });
   }
 

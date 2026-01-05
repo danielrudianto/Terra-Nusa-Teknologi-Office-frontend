@@ -24,6 +24,10 @@ import { Router } from '@angular/router';
 import moment from 'moment';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { debounceTime } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-interpayment-list',
@@ -38,6 +42,7 @@ import { debounceTime } from 'rxjs';
     MatTableModule,
     MatPaginatorModule,
     HeaderTitleComponent,
+    MatButtonModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',
@@ -45,7 +50,12 @@ import { debounceTime } from 'rxjs';
   standalone: true,
 })
 export class InterpaymentListComponent {
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
   sortBy: string = 'date';
@@ -72,6 +82,7 @@ export class InterpaymentListComponent {
     'bankAccountOrigin',
     'bankAccountDestination',
     'amount',
+    'action',
   ];
 
   ngOnInit(): void {}
@@ -146,5 +157,49 @@ export class InterpaymentListComponent {
 
   createNewInterpayment() {
     this.router.navigate(['/Interpayment/Create']);
+  }
+
+  delete(id: number) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Delete interpayment',
+          prompt: 'Are you sure to delete this interpayment?',
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.apiService.delete(`interpayments/${id}`).subscribe({
+            next: () => {
+              // remove the deleted interpayment from the list
+              this.payments = this.payments.filter(
+                (payment) => payment.id !== id
+              );
+              this.count--;
+              this.snackBar.open(
+                'Interpayment deleted successfully.',
+                'Close',
+                {
+                  duration: 3000,
+                }
+              );
+            },
+            error: (error) => {
+              console.error('Error deleting interpayment:', error);
+              this.snackBar.open(error.error.detail, 'Close', {
+                duration: 3000,
+              });
+            },
+          });
+        }
+      });
+  }
+
+  isDisabled(id: number) {
+    const date = this.payments.find((payment) => payment.id === id)?.date;
+    const momentDate = moment(date);
+    const momentNow = moment();
+    return momentDate.isBefore(momentNow, 'day');
   }
 }

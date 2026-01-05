@@ -306,8 +306,8 @@
 </div>
 <mat-paginator
   [length]="count"
-  [pageSize]="10"
-  [pageIndex]="page - 1"
+  [pageSize]="pageSize"
+  [pageIndex]="page"
   (page)="changePage($event)"
   [pageSizeOptions]="[10, 25, 50]"
   [pageSize]="pageSize"

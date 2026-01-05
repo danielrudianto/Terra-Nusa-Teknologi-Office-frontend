@@ -2,12 +2,25 @@ import { Component } from '@angular/core';
 import { CalendarDaySelectorComponent } from './calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CalendarMonthSelectorComponent } from './calendar-month-selector/calendar-month-selector.component';
+import { CalendarAccountSelectorComponent } from './calendar-account-selector/calendar-account-selector.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CalendarTableComponent } from './calendar-table/calendar-table.component';
 
 @Component({
   selector: 'app-calendar',
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    CalendarMonthSelectorComponent,
+    CalendarAccountSelectorComponent,
+    MatSlideToggleModule,
+    CalendarTableComponent,
+  ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
+  standalone: true,
 })
 export class CalendarComponent {
   constructor(private dialog: MatDialog) {}
@@ -16,6 +29,8 @@ export class CalendarComponent {
   year: number = new Date().getFullYear();
   bankAccounts: any[] = [];
   isLoadingData: boolean = false;
+
+  isBalance: FormControl = new FormControl(false);
 
   onCalendarBoxClicked(event: number | null) {
     if (event == null) return;

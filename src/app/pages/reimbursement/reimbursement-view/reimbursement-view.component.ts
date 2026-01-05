@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
@@ -15,6 +16,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
@@ -30,6 +32,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatButtonModule,
     NgxMaskDirective,
     CommonModule,
+    MatListModule,
   ],
   providers: [DatePipe],
   templateUrl: './reimbursement-view.component.html',
@@ -42,7 +45,8 @@ export class ReimbursementViewComponent {
     private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     private formBuilder: FormBuilder,
-    private dialog: MatDialogRef<ReimbursementViewComponent>
+    private dialog: MatDialogRef<ReimbursementViewComponent>,
+    private clipboard: Clipboard
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -52,6 +56,7 @@ export class ReimbursementViewComponent {
     name: new FormControl(''),
     purchaseType: new FormControl(''),
     items: new FormArray([]),
+    payments: new FormArray([]),
     bankName: new FormControl(''),
     bankAccountName: new FormControl(''),
     bankAccountNumber: new FormControl(''),
@@ -119,6 +124,20 @@ export class ReimbursementViewComponent {
               })
             );
           });
+
+          data.payments.forEach((x: any) => {
+            this.p.push(
+              this.formBuilder.group({
+                id: [x.id],
+                bankAccountName: [x.bankAccountName],
+                bankAccountNumber: [x.bankAccountNumber],
+                bankName: [x.bankName],
+                amount: [x.amount],
+                date: [x.date],
+                isApprove: [x.isApprove],
+              })
+            );
+          });
         },
         error: (error) => {
           this.snackBar.open('Failed to fetch reimbursement data', 'Close', {
@@ -133,11 +152,22 @@ export class ReimbursementViewComponent {
       });
   }
 
+  copyBankAccountNumber() {
+    this.clipboard.copy(this.formGroup.get('bankAccountNumber')!.value);
+    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+      duration: 3000,
+    });
+  }
+
   get f() {
     return this.formGroup.controls;
   }
 
   get t() {
     return this.formGroup.get('items') as FormArray;
+  }
+
+  get p() {
+    return this.formGroup.get('payments') as FormArray;
   }
 }

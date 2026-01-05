@@ -169,6 +169,13 @@
             <mat-icon>payments</mat-icon>
             <span>Create payment</span>
           </button>
+          <button
+            mat-menu-item
+            (click)="viewLoan(purchase.id)"
+          >
+            <mat-icon>view_array</mat-icon>
+            <span>View loan</span>
+          </button>
         </mat-menu>
       </td>
     </ng-container>

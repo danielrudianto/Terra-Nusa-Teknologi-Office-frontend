@@ -60,7 +60,7 @@ export class PaymentViewComponent {
       next: (data: any) => {
         console.log(data);
         this.formGroup.patchValue({
-          date: this.datePipe.transform(data.payment.date, 'dd MMMM YYYY'),
+          date: this.datePipe.transform(data.payment.date, 'dd MMMM yyyy'),
           amount: data.payment.amount,
           bank_account_name: data.bankAccount.bankAccountName,
           bank_account_number: data.bankAccount.bankAccountNumber,

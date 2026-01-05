@@ -50,13 +50,20 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let element">
-        <button mat-icon-button (click)="openUpdateEmployee(element.id)">
-          <mat-icon>edit</mat-icon>
+        <button [matMenuTriggerFor]="menu" matIconButton>
+          <mat-icon>more_horiz</mat-icon>
         </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openUpdateEmployee(element.id)">
+            <mat-icon>edit</mat-icon>
+            Update employee data
+          </button>
 
-        <button mat-icon-button (click)="openSalaryCreate(element.id)">
+        <button mat-menu-item (click)="openSalaryCreate(element.id)">
           <mat-icon>receipt</mat-icon>
+          Create salary slip
         </button>
+        </mat-menu>
       </td>
     </ng-container>
 

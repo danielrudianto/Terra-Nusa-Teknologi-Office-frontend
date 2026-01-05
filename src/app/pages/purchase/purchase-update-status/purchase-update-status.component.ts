@@ -1,14 +1,45 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-purchase-update-status',
+  providers: [provideNgxMask()],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatStepperModule,
+    MatIconModule,
+    HeaderTitleComponent,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatAutocompleteModule,
+    MatSlideToggleModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './purchase-update-status.component.html',
   styleUrl: './purchase-update-status.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class PurchaseUpdateStatusComponent {
   constructor(
@@ -88,7 +119,8 @@ export class PurchaseUpdateStatusComponent {
   fetchData(id: string) {
     this.isLoading = true;
     this.apiService.get('purchases/' + id, {}).subscribe({
-      next: (data: any) => {
+      next: (response: any) => {
+        const data = response.purchase;
         if (data.lastStatus == 'ready') {
           this.snackBar.open('Data is already complete', 'Close', {
             duration: 3000,

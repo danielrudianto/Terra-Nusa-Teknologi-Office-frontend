@@ -609,12 +609,11 @@ export class PurchaseDraftConvertComponent {
       .get(`purchase-draft/${this.router.snapshot.params['id']}`, {})
       .subscribe({
         next: (data: any) => {
-          console.log(data.supplier_id);
           this.metaFormGroup.patchValue({
             date: new Date(data.date),
             supplierID: data.supplier_id,
-            supplierName: data.supplier.name,
-            supplierAddress: data.supplier.address,
+            supplierName: data.supplier_name,
+            supplierAddress: data.supplier_address,
             total: data.dpp + (data.ppn * data.dpp) / 100 + data.pbbkb,
             purchaseOrderName: data.purchaseOrderName,
             purchaseType: data.purchaseType,

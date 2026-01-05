@@ -1,12 +1,16 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MonthSelectorComponent } from 'src/app/components/month-selector/month-selector.component';
 
 @Component({
   selector: 'app-calendar-month-selector',
-  standalone: false,
+  imports: [
+    MatIconModule
+  ],
   templateUrl: './calendar-month-selector.component.html',
   styleUrl: './calendar-month-selector.component.scss',
+  standalone: true,
 })
 export class CalendarMonthSelectorComponent {
   constructor(private dialog: MatDialog) {}

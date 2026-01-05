@@ -403,6 +403,10 @@ export class SalarySlipCreateComponent {
       otherAllowances: this.formGroup.get('otherAllowances')?.value,
       deductions: this.formGroup.get('deductions')?.value,
       lastDate: lastDate,
+      bankAccountName: this.formGroup.get('bankAccountName')?.value,
+      bankAccountNumber: this.formGroup.get('bankAccountNumber')?.value,
+      bankName: this.formGroup.get('bankName')?.value,
+      paymentMethod: this.formGroup.get('paymentMethod')?.value
     };
 
     return data;
@@ -418,8 +422,8 @@ export class SalarySlipCreateComponent {
           this.snackBar.open('Salary slip created successfully', 'Close', {
             duration: 3000,
           });
-          this.generateSalarySlip(this.formGroup.value);
           this.router.navigate(['/Salary-slip']);
+          this.generateSalarySlip(this.formGroup.value);
         },
         error: (error) => {
           console.error('Error creating salary slip:', error);
@@ -438,7 +442,6 @@ export class SalarySlipCreateComponent {
   }
 
   generateSalarySlip(data: any) {
-    console.log(data);
     SalarySlipHelper.createProxyPaymentPDF(data);
   }
 }

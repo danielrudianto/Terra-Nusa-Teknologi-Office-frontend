@@ -19,6 +19,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { BankMutationDownloadComponent } from './bank-mutation-download/bank-mutation-download.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-bank-mutation',
@@ -42,7 +44,8 @@ export class BankMutationComponent {
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   bankAccount: any = null;
@@ -170,5 +173,11 @@ export class BankMutationComponent {
     return 'N/A';
   }
 
-  download() {}
+  download() {
+    this.dialog.open(BankMutationDownloadComponent, {
+      data: {
+        id: this.route.snapshot.params['id'],
+      },
+    });
+  }
 }

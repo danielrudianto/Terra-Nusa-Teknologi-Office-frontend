@@ -14,6 +14,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { EmployeeCreateComponent } from '../employee-create/employee-create.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from "@angular/material/menu";
 
 @Component({
   selector: 'app-employee-list',
@@ -28,7 +29,8 @@ import { MatIconModule } from '@angular/material/icon';
     HeaderTitleComponent,
     MatButtonModule,
     MatIconModule,
-  ],
+    MatMenuModule
+],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
   standalone: true,

@@ -533,12 +533,6 @@ export const availablePPh: IPPh[] = [
     tariff: 1.8,
   },
   {
-    code: '21-100-09',
-    taxObjectName: 'Tidak final - Bukan pegawai lainnya',
-    type: 'PPh 21',
-    tariff: 2.5,
-  },
-  {
     code: '21-100-01',
     taxObjectName:
       'Tidak final -	Pegawai Negeri Sipil, Anggota Tentara Nasional Indonesia, Anggota Polisi Republik Indonesia atau Pejabat Negara',
@@ -622,6 +616,62 @@ export const availablePPh: IPPh[] = [
     taxObjectName: 'Tidak final - Peserta Kegiatan yang menerima imbalan',
     type: 'PPh 21',
     tariff: 2.5,
+  },
+  {
+    code: '21-100-14',
+    taxObjectName:
+      'Imbalan kepada Peserta Rapat, Konferensi, Sidang, Pertemuan, Kunjungan Kerja, Seminar, Lokakarya, atau Pertunjukan, atau Kegiatan Tertentu Lainnya',
+    type: 'PPh 21',
+    tariff: 5,
+  },
+  {
+    code: '21-100-15',
+    taxObjectName:
+      'Imbalan kepada Peserta atau Anggota dalam Suatu Kepanitiaan sebagai Penyelenggara Kegiatan Tertentu',
+    type: 'PPh 21',
+    tariff: 5,
+  },
+
+  {
+    code: '21-100-16',
+    taxObjectName: 'Imbalan kepada Peserta Pendidikan, Pelatihan, dan Magang',
+    type: 'PPh 21',
+    tariff: 5,
+  },
+
+  {
+    code: '21-100-25',
+    taxObjectName:
+      'Penghasilan berupa Uang Pesangon, Uang Manfaat Pensiun, Tunjangan Hari Tua, atau Jaminan Hari Tua yang Terutang atau Dibayarkan pada Tahun Ketiga dan Tahun-Tahun Berikutnya',
+    type: 'PPh 21',
+    tariff: 5,
+  },
+  {
+    code: '21-100-33',
+    taxObjectName:
+      'Imbalan kepada Pemain Musik, Pembawa Acara, Penyanyi, Pelawak, Bintang Film, Bintang Sinetron, Bintang Iklan, Sutradara, Kru Film, Foto Model, Peragawan/Peragawati, Pemain Drama, Penari, Pemahat, Pelukis, Pembuat/Pencipta Konten pada Media yang Dibagikan secara Daring (Influencer, Selebgram, Blogger, Vlogger, dan Sejenis Lainnya), dan Seniman Lainnya',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-34',
+    taxObjectName: 'Imbalan yang Diterima oleh Olahragawan',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
+  {
+    code: '21-100-24',
+    taxObjectName:
+      'Upah Pegawai Tidak Tetap yang Dibayarkan secara Harian, Mingguan, Satuan dan Borongan dengan Penghasilan Bruto sampai dengan Rp2.500.000 Sehari',
+    type: 'PPh 21',
+    tariff: 0,
+  },
+  {
+    code: '21-100-29',
+    taxObjectName:
+      'Upah Pegawai Tidak Tetap yang Dibayarkan secara Harian, Mingguan, Satuan dan Borongan dengan Penghasilan Bruto sampai dengan Rp2.500.000 Sehari yang Mendapat Fasilitas di Daerah Tertentu',
+    type: 'PPh 21',
+    tariff: 0,
   },
 ];
 export const availablePPhSearch = new FuzzySearch(

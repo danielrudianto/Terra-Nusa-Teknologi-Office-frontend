@@ -1,9 +1,10 @@
 <mat-dialog-content>
   <mat-calendar
     style="width: 300px"
-    [(selected)]="selected"
+    [selected]="selectedDate"
     [minDate]="data.minimumDate"
     [maxDate]="data.maximumDate"
+    (selectedChange)="onSelectedChanged($event)"
   ></mat-calendar>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
@@ -12,7 +13,7 @@
     color="primary"
     style="letter-spacing: 0"
     (click)="onSubmit()"
-    [disabled]="!selected || isSubmitting"
+    [disabled]="isSubmitting"
   >
     Submit
   </button>

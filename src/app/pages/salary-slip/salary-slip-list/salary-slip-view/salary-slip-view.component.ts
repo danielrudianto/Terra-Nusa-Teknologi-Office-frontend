@@ -105,7 +105,7 @@ export class SalarySlipViewComponent {
     this.apiService.get(`salary-slips/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
         this.formGroup.patchValue(data.data);
-        data.data.otherAllowances.forEach((x: any) => {
+        data.allowances.forEach((x: any) => {
           this.allowancesFormArray.push(
             this.formBuilder.group({
               id: [x.id],
@@ -118,7 +118,7 @@ export class SalarySlipViewComponent {
           );
         });
 
-        data.data.otherDeductions.forEach((x: any) => {
+        data.deductions.forEach((x: any) => {
           this.deductionsFormArray.push(
             this.formBuilder.group({
               id: [x.id],
@@ -143,10 +143,10 @@ export class SalarySlipViewComponent {
               data.data.transportationAllowanceQuantity +
             data.data.mealAllowanceRate * data.data.mealAllowanceQuantity +
             data.data.overtimeRate * data.data.overtimeQuantity +
-            data.data.otherAllowances.reduce((a: any, b: any) => {
+            data.allowances.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
-            data.data.otherDeductions.reduce((a: any, b: any) => {
+            data.deductions.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0),
           netSalary:
@@ -155,10 +155,10 @@ export class SalarySlipViewComponent {
               data.data.transportationAllowanceQuantity +
             data.data.mealAllowanceRate * data.data.mealAllowanceQuantity +
             data.data.overtimeRate * data.data.overtimeQuantity +
-            data.data.otherAllowances.reduce((a: any, b: any) => {
+            data.allowances.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
-            data.data.otherDeductions.reduce((a: any, b: any) => {
+            data.deductions.reduce((a: any, b: any) => {
               return a + b.amount;
             }, 0) -
             data.data.taxAmount,

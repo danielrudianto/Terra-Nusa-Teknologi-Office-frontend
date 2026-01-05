@@ -469,11 +469,20 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Bank account number</mat-label>
         <!-- Input for bank account name -->
+        <button
+          mat-icon-button
+          type="button"
+          matPrefix
+          (click)="copyBankAccountNumber()"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
         <input
           matInput
           type="text"
           formControlName="bankAccountNumber"
           placeholder="Bank Account Number"
+          mask="9999 9999 9999 9999"
         />
       </mat-form-field>
 

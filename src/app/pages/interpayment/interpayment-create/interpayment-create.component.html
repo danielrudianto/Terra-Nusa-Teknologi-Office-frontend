@@ -16,7 +16,6 @@
       [for]="datePicker"
     ></mat-datepicker-toggle>
     <mat-datepicker #datePicker></mat-datepicker>
-    <mat-hint>DD/MM/YYYY</mat-hint>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="w-100">
@@ -52,6 +51,16 @@
       decimalScale="2"
       mask="separator"
     />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Description</mat-label>
+    <textarea
+      matInput
+      type="text"
+      formControlName="description"
+      placeholder="Enter amount"
+    ></textarea>
   </mat-form-field>
 
   <button

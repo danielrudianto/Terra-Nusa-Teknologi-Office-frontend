@@ -84,7 +84,7 @@ export class PurchaseListComponent {
 
   searchControl: FormControl = new FormControl('');
 
-  page: number = 1;
+  page: number = 0;
   purchases: any[] = [];
   count: number = 0;
   isLoading: boolean = false;
@@ -167,9 +167,10 @@ export class PurchaseListComponent {
 
     this.searchControl.valueChanges
       .pipe(takeUntil(this.destroy$), debounceTime(500))
-      .subscribe((value) => {
+      .subscribe((_) => {
+        this.page = 0;
         this.updateQueryParams();
-        this.fetchData(1);
+        this.fetchData();
       });
   }
 
@@ -227,10 +228,10 @@ export class PurchaseListComponent {
 
   changePage(event: any) {
     if (event.pageSize !== this.pageSize) {
-      this.page = 1;
+      this.page = 0;
       this.pageSize = event.pageSize;
     } else {
-      this.page = event.pageIndex + 1;
+      this.page = event.pageIndex;
     }
 
     this.updateQueryParams();
@@ -240,7 +241,7 @@ export class PurchaseListComponent {
   changeSelection(field: string, event: any) {
     this.filterFormGroup.get(field)?.setValue(event.selected);
     this.updateQueryParams();
-    this.fetchData(1);
+    this.fetchData(0);
   }
 
   changeSortBy(sortBy: string) {
@@ -251,11 +252,13 @@ export class PurchaseListComponent {
       this.sortByDirection = 'asc';
     }
 
+    this.page = 0;
+
     this.updateQueryParams();
-    this.fetchData(1);
+    this.fetchData(0);
   }
 
-  fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
+  fetchData(targetPage: number = 0, pageSize: number = this.pageSize) {
     this.isLoading = true;
     let filter: any = {};
     const searchValue = this.searchControl.value;
@@ -299,7 +302,16 @@ export class PurchaseListComponent {
   }
 
   openProjectSelector() {
-    this.dialog.open(PurchaseReportProjectComponent, {});
+    this.dialog
+      .open(PurchaseReportProjectComponent, {})
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.router.navigate(['Project', data.projectName], {
+            relativeTo: this.route,
+          });
+        }
+      });
   }
 
   viewPurchase(id: number) {

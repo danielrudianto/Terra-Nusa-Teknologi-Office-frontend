@@ -1,3 +1,4 @@
+import { CommonModule, DecimalPipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -6,15 +7,19 @@ import {
   SimpleChange,
   SimpleChanges,
 } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICalendarValue } from 'src/app/model/calendar.model';
+import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-calendar-table',
-  standalone: false,
+  providers: [DecimalPipe],
+  imports: [CommonModule, MatIconModule, ShortCurrencyPipe],
   templateUrl: './calendar-table.component.html',
   styleUrl: './calendar-table.component.scss',
+  standalone: true,
 })
 export class CalendarTableComponent {
   constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
@@ -24,13 +29,16 @@ export class CalendarTableComponent {
   @Input('bankAccounts') bankAccounts: any[] = [];
   @Input('values') values: ICalendarValue[] = [];
   @Input('selectedDay') selectedDay: number | null = null;
+  @Input('isBalance') isBalance!: boolean;
   @Output('onCalendarBoxClicked') onCalendarBoxClicked: EventEmitter<
     number | null
   > = new EventEmitter<number | null>();
 
   weeks: (number | null)[][] = [];
   data: any[] = [];
+  incomeData: any[] = [];
   interpayments: any[] = [];
+  balance: number = 0;
 
   ngOnInit() {
     this.generateCalendar();
@@ -64,7 +72,6 @@ export class CalendarTableComponent {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDate = new Date(this.year, this.month, day);
-      // console.log(currentDate.getDay());
       const currentDayOfWeek = (currentDate.getDay() + 6) % 7;
 
       if (currentDayOfWeek <= 6) {
@@ -97,7 +104,9 @@ export class CalendarTableComponent {
       .subscribe({
         next: (data: any) => {
           this.data = data.payments;
+          this.incomeData = data.incomes;
           this.interpayments = data.interpayments;
+          this.balance = data.balances;
         },
         error: (error) => {
           this.snackBar.open(
@@ -127,7 +136,21 @@ export class CalendarTableComponent {
 
   dataForDay(day: number): number {
     const index = this.data.findIndex((x) => new Date(x.date).getDate() == day);
-    return index == -1 ? 0 : this.data[index].amount;
+    const currentDate = new Date(this.year, this.month, day);
+    if (this.isBalance) {
+      const previousExpenses = this.data
+        .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
+        .reduce((acc, x) => acc + x.amount, 0);
+      const previousIncomes = this.incomeData
+        .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
+        .reduce((acc, x) => acc + x.amount, 0);
+
+      const currentBalance = this.balance + previousExpenses - previousIncomes;
+
+      return currentBalance;
+    } else {
+      return index == -1 ? 0 : this.data[index].amount;
+    }
   }
 
   onDayClick(day: number | null) {

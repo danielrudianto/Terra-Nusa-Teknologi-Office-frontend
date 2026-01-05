@@ -1,0 +1,78 @@
+h1 {
+  font-family:"Poppins";
+  font-size:1rem;
+  font-weight:bold;
+}
+
+h4 {
+  font-family:"Poppins";
+  font-size:0.85rem;
+  font-weight:300;
+}
+
+h2 {
+  font-family:"Poppins";
+  font-size:1.2rem;
+  font-weight:600;
+}
+
+.tree-container {
+  margin-top: 24px;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.purchase-tree {
+  width: 100%;
+}
+
+.mat-tree-node {
+  padding: 0 !important;
+}
+
+.tree-node-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px; /* Keep horizontal padding */
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+// Header (Purchase Type)
+.header-node .tree-node-content {
+  font-weight: bold;
+  background-color: #f0f8ff;
+  border-left: 3px solid #007BFF;
+}
+
+.header-node .node-label {
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+}
+
+.node-label {
+  flex: 1;
+  text-align: left;
+  font-weight: normal;
+}
+
+.node-value {
+  flex: 0 0 auto;
+  margin-left: 16px;
+  color: #333;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.invoice-row {
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #333;
+  white-space: pre;
+}
+
+.tree-invisible {
+  display: none;
+}

@@ -23,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { LoansCreateComponent } from '../loans-create/loans-create.component';
 import { LoanPaymentCreateComponent } from '../../../components/payment-create/loan-payment-create/loan-payment-create.component';
+import { LoansViewComponent } from '../loans-view/loans-view.component';
 
 @Component({
   selector: 'app-loans-list',
@@ -225,5 +226,11 @@ export class LoansListComponent {
     });
   }
 
-  viewLoan(id: number) {}
+  viewLoan(id: number) {
+    this.dialog.open(LoansViewComponent, {
+      data: {
+        id: id,
+      }
+    })
+  }
 }

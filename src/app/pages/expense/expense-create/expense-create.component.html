@@ -9,7 +9,7 @@
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Meta Data</ng-template>
 
-      <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Date</mat-label>
         <input
           matInput
@@ -22,10 +22,9 @@
           [for]="picker"
         ></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-        <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Due date</mat-label>
         <input
           matInput
@@ -38,7 +37,6 @@
           [for]="duePicker"
         ></mat-datepicker-toggle>
         <mat-datepicker #duePicker></mat-datepicker>
-        <mat-hint>DD/MM/YYYY</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -305,7 +303,6 @@
     <form [formGroup]="paymentFormGroup">
       <ng-template matStepLabel>Payment Data</ng-template>
       <mat-divider class="mt-3"></mat-divider>
-      <h2 class="title my-3">Payment data</h2>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Bank name</mat-label>

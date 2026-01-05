@@ -3,37 +3,38 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({
   name: 'shortCurrency',
   pure: false,
-  standalone: false,
+  standalone: true,
 })
 export class ShortCurrencyPipe implements PipeTransform {
   transform(value: number, ...args: unknown[]): string {
     const currency = args[0] || 'Rp. ';
     if (value == null) return '';
-    if (value >= 1_000_000_000) {
+    const _value = Math.abs(value);
+    if (_value >= 1_000_000_000) {
       return (
         currency +
-        (value / 1_000_000_000).toLocaleString('id-ID', {
+        (_value / 1_000_000_000).toLocaleString('id-ID', {
           maximumFractionDigits: 2,
         }) +
         'M'
       );
     }
-    if (value >= 1_000_000) {
+    if (_value >= 1_000_000) {
       return (
         currency +
-        (value / 1_000_000).toLocaleString('id-ID', {
+        (_value / 1_000_000).toLocaleString('id-ID', {
           maximumFractionDigits: 2,
         }) +
         'Jt'
       );
     }
-    if (value >= 1_000) {
+    if (_value >= 1_000) {
       return (
         currency +
-        (value / 1_000).toLocaleString('id-ID', { maximumFractionDigits: 2 }) +
+        (_value / 1_000).toLocaleString('id-ID', { maximumFractionDigits: 2 }) +
         'rb'
       );
     }
-    return currency + value.toLocaleString('id-ID');
+    return (value < 0 ? "-" : "") + currency + _value.toLocaleString('id-ID');
   }
 }

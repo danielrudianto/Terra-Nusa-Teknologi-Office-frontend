@@ -34,7 +34,7 @@ export class SupplierSelectorComponent {
   ) {}
 
   searchBar: FormControl = new FormControl('');
-  page: number = 1;
+  page: number = 0;
   isLoading: boolean = false;
   suppliers: any[] = [];
   supplierCount: number = 0;
@@ -42,7 +42,7 @@ export class SupplierSelectorComponent {
   ngOnInit(): void {
     this.searchBar.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
       const keyword = value.trim();
-      this.search(1);
+      this.search(0);
     });
   }
 
@@ -73,7 +73,6 @@ export class SupplierSelectorComponent {
 
   selectSupplier(supplier: any) {
     // Handle the selection of a supplier
-    console.log('Selected supplier:', supplier);
     // You can emit an event or perform any action you need with the selected supplier
     this.dialog.close(supplier);
   }

@@ -22,6 +22,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DateSelectorComponent } from '../../../components/date-selector/date-selector.component';
+import { PurchaseViewComponent } from '../../purchase/purchase-view/purchase-view.component';
+import { ReimbursementViewComponent } from '../../reimbursement/reimbursement-view/reimbursement-view.component';
+import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.component';
+import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 
 interface BankAccountSummary {
   id: number;
@@ -475,7 +479,50 @@ export class CalendarDaySelectorComponent {
           // maximum date should be minimumDate + 30
           maximumDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000),
         },
-      });
+      }).afterClosed().subscribe((data) => {
+        if(data == "moved"){
+          // remove
+          this.rawData.data.splice(index, 1);
+        }
+      })
+    }
+  }
+
+  viewDocument(id: number){
+    const index = this.rawData.data.findIndex((x: any) => x.id == id);
+    if(index != -1){
+      const data = this.rawData.data[index];
+      if(data.purchaseID != null){
+        this.dialog.open(PurchaseViewComponent, {
+          data: {
+            id: data.purchaseID,
+          }
+        })
+      }
+
+      if(data.reimbursementID != null){
+        this.dialog.open(ReimbursementViewComponent, {
+          data: {
+            id: data.reimbursementID
+          }
+        })
+      }
+
+      if(data.expenseID != null){
+        this.dialog.open(ExpenseViewComponent, {
+          data: {
+            id: data.expenseID
+          }
+        })
+      }
+
+      if(data.loanID != null){
+        this.dialog.open(LoansViewComponent, {
+          data: {
+            id: data.loanID,
+          }
+        })
+      }
     }
   }
 }

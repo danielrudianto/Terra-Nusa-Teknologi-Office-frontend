@@ -291,6 +291,20 @@ export class ExpenseCreateComponent {
                   this.valueFormGroup.reset();
                   this.paymentFormGroup.reset();
                   this.stepper?.reset();
+
+                  this.metaFormGroup.patchValue({
+                    date: new Date(),
+                    dueDate: new Date(),
+                    invoiceName: '',
+                    receiptName: '',
+                  });
+
+                  this.valueFormGroup.patchValue({
+                    dpp: '',
+                    pbbkb: 0,
+                    pphPercentage: 0,
+                    pphCode: '',
+                  });
                 },
                 error: (error) => {
                   this.snackBar.open(error.error.detail, 'Close', {
@@ -318,6 +332,20 @@ export class ExpenseCreateComponent {
             this.valueFormGroup.reset();
             this.paymentFormGroup.reset();
             this.stepper?.reset();
+
+            this.metaFormGroup.patchValue({
+              date: new Date(),
+              dueDate: new Date(),
+              invoiceName: '',
+              receiptName: '',
+            });
+
+            this.valueFormGroup.patchValue({
+              dpp: '',
+              pbbkb: 0,
+              pphPercentage: 0,
+              pphCode: '',
+            });
           },
           error: (error) => {
             this.snackBar.open(error.error.detail, 'Close', {

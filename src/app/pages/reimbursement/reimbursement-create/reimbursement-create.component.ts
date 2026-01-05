@@ -13,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { banks, IBank } from 'src/app/utils/bank';
 import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.component';
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-reimbursement-create',
@@ -25,7 +27,8 @@ export class ReimbursementCreateComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private clipboard: Clipboard
   ) {
     this.filteredOptions = this.options.slice();
   }
@@ -158,6 +161,22 @@ export class ReimbursementCreateComponent {
     }
   }
 
+  onSubmitConfirmation() {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Submit reimbursement data',
+          prompt: 'Are you sure to submit this reimbursement data?',
+        },
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data == true) {
+          this.onSubmit();
+        }
+      });
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     const date = new Date(this.formGroup.get('date')?.value);
@@ -227,5 +246,20 @@ export class ReimbursementCreateComponent {
       .add(() => {
         this.isSubmitting = false;
       });
+  }
+
+  copyBankAccountNumber() {
+    this.clipboard.copy(this.formGroup.get('bankAccountNumber')!.value);
+    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+      duration: 3000,
+    });
+  }
+
+  get total() {
+    let total = 0;
+    for (let i = 0; i < this.items.length; i++) {
+      total += this.items.at(i).get('amount')?.value;
+    }
+    return total;
   }
 }

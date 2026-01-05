@@ -156,6 +156,13 @@
             <mat-icon>check</mat-icon>
             <span>Confirm sales invoice</span>
           </button>
+          <button
+            mat-menu-item
+            (click)="viewSalesInvoice(invoice.id)"
+          >
+            <mat-icon>view_array</mat-icon>
+            <span>View sales invoice</span>
+          </button>
         </mat-menu>
       </td>
     </ng-container>

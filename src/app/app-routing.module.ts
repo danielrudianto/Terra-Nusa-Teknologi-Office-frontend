@@ -67,6 +67,8 @@ import { PurchaseOrderComponent } from './pages/purchase-order/purchase-order.co
 import { PurchaseOrderListComponent } from './pages/purchase-order/purchase-order-list/purchase-order-list.component';
 import { PurchaseOrderCreateComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create.component';
 import { PurchaseOrderCreateGComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component';
+import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
+import { PurchaseReportProjectReportComponent } from './pages/purchase/purchase-report-project-report/purchase-report-project-report.component';
 
 export const routes: Routes = [
   {
@@ -120,6 +122,13 @@ export const routes: Routes = [
               title: 'Purchase',
             },
           },
+          {
+            path: "Project/:projectName",
+            component: PurchaseReportProjectReportComponent,
+            data: {
+              title: 'Purchase',
+            },
+          }
         ],
       },
       {
@@ -193,10 +202,16 @@ export const routes: Routes = [
           {
             path: '',
             component: ReimbursementListComponent,
+            data: {
+              title: 'Reimbursement',
+            },
           },
           {
             path: 'Create',
             component: ReimbursementCreateComponent,
+            data: {
+              title: 'Reimbursement',
+            },
           },
         ],
       },
@@ -270,10 +285,16 @@ export const routes: Routes = [
           {
             path: '',
             component: AssetListComponent,
+            data: {
+              title: 'Asset',
+            },
           },
           {
             path: 'Create',
             component: AssetCreateComponent,
+            data: {
+              title: 'Asset',
+            },
           },
         ],
       },

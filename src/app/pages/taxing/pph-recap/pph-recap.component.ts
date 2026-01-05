@@ -65,10 +65,10 @@ export class PphRecapComponent {
               worksheet,
               [
                 [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM YYYY'),
+                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
                   this.datePipe.transform(
                     new Date(x.payment_date),
-                    'dd MMMM YYYY'
+                    'dd MMMM yyyy'
                   ),
                   x.supplier_prefix,
                   x.supplier_name,
@@ -140,10 +140,10 @@ export class PphRecapComponent {
               expenseWorksheet,
               [
                 [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM YYYY'),
+                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
                   this.datePipe.transform(
                     new Date(x.payment_date),
-                    'dd MMMM YYYY'
+                    'dd MMMM yyyy'
                   ),
                   x.opponent_name,
                   x.opponent_npwp,

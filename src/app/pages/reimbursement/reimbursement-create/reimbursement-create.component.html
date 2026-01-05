@@ -4,7 +4,7 @@
   </h1>
 </div>
 
-<form [formGroup]="formGroup">
+<form [formGroup]="formGroup" (ngSubmit)="onSubmitConfirmation()">
   <mat-form-field appearance="outline" class="w-100">
     <mat-label>Date</mat-label>
     <input
@@ -16,7 +16,6 @@
     />
     <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
-    <mat-hint>DD/MM/YYYY</mat-hint>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="w-100">
@@ -33,7 +32,6 @@
       [for]="dueDatePicker"
     ></mat-datepicker-toggle>
     <mat-datepicker #dueDatePicker></mat-datepicker>
-    <mat-hint>DD/MM/YYYY</mat-hint>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="w-100">
@@ -81,6 +79,14 @@
 
   <mat-form-field appearance="outline" class="w-100">
     <mat-label>Bank account number</mat-label>
+    <button
+      mat-icon-button
+      type="button"
+      matPrefix
+      (click)="copyBankAccountNumber()"
+    >
+      <mat-icon>content_copy</mat-icon>
+    </button>
     <input
       matInput
       type="text"
@@ -88,6 +94,7 @@
       formControlName="bankAccountNumber"
       class="form-control"
       placeholder="Enter account number"
+      mask="9999 9999 9999 9999"
     />
   </mat-form-field>
 
@@ -132,26 +139,35 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody *ngIf="items.length == 0">
+      @if(items.controls.length == 0){
+      <tbody>
         <tr>
           <td colspan="4" class="text-center">No items added yet.</td>
         </tr>
       </tbody>
-
-      <tbody *ngIf="items.length > 0">
-        <tr *ngFor="let item of items.controls; index as i">
-          <td>
-            {{ item.get("date")?.value | date : "dd MMMM yyyy" : "GMT+0700'" }}
-          </td>
-          <td>{{ item.get("description")?.value }}</td>
-          <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
-          <td>
-            <button mat-icon-button (click)="removeItem(i)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </tr>
+      } @else {
+      <tbody>
+        @for(item of items.controls; track item; let i = $index){
+        <td>
+          {{ item.get("date")?.value | date : "dd MMMM yyyy" : "GMT+0700'" }}
+        </td>
+        <td>{{ item.get("description")?.value }}</td>
+        <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+        <td>
+          <button mat-icon-button (click)="removeItem(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+        }
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="1"></td>
+          <td>Total</td>
+          <td colspan="2">{{ total | number : "0.2-2" }}</td>
+        </tr>
+      </tfoot>
+      }
     </table>
   </div>
 
@@ -161,7 +177,8 @@
     style="letter-spacing: 0"
     mat-stroked-button
     color="primary"
-    (click)="onSubmit()"
+    type="button"
+    (click)="onSubmitConfirmation()"
     [disabled]="formGroup.invalid"
   >
     Submit

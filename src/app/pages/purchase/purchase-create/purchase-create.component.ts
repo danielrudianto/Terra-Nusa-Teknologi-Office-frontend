@@ -31,6 +31,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -107,7 +108,8 @@ export class PurchaseCreateComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private clipboard: Clipboard
   ) {}
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
@@ -690,6 +692,13 @@ export class PurchaseCreateComponent {
       bankAccountName: data.bankAccountName,
       totalPayment: data.totalPayment,
       date: new Date(data.date),
+    });
+  }
+
+  copyBankAccountNumber() {
+    this.clipboard.copy(this.paymentFormGroup.get('bankAccountNumber')!.value);
+    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+      duration: 3000,
     });
   }
 

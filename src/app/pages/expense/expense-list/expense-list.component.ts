@@ -177,7 +177,7 @@ export class ExpenseListComponent {
     const isSelected = event.selected;
     this.filterFormGroup.get(field)?.setValue(isSelected);
     this.chipSelections[field] = isSelected;
-    this.fetchData(1);
+    this.fetchData(0);
   }
 
   changeSortBy(sortBy: string) {
@@ -188,7 +188,7 @@ export class ExpenseListComponent {
       this.sortByDirection = 'asc';
     }
 
-    this.fetchData(1);
+    this.fetchData(0);
   }
 
   fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {

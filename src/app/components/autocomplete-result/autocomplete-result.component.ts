@@ -2,10 +2,10 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-autocomplete-result',
-    templateUrl: './autocomplete-result.component.html',
-    styleUrls: ['./autocomplete-result.component.scss'],
-    standalone: false
+  selector: 'app-autocomplete-result',
+  templateUrl: './autocomplete-result.component.html',
+  styleUrls: ['./autocomplete-result.component.scss'],
+  standalone: false,
 })
 export class AutocompleteResultComponent {
   constructor(private router: Router) {}
@@ -18,7 +18,6 @@ export class AutocompleteResultComponent {
   @Input('results') results!: any[];
 
   onClick(event: any) {
-    console.log(event);
     this.router.navigate([event.routerLink]);
   }
 }

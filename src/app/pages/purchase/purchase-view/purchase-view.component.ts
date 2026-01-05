@@ -22,6 +22,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseType } from '../../../utils/purchase-type';
+import { MatIconModule } from '@angular/material/icon';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-purchase-view',
@@ -35,6 +37,7 @@ import { PurchaseType } from '../../../utils/purchase-type';
     ReactiveFormsModule,
     MatSelectModule,
     MatListModule,
+    MatIconModule,
   ],
   providers: [provideNgxMask()],
   templateUrl: './purchase-view.component.html',
@@ -47,7 +50,8 @@ export class PurchaseViewComponent {
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private formBuilder: FormBuilder,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private clipboard: Clipboard
   ) {}
 
   isLoading: boolean = true;
@@ -103,10 +107,11 @@ export class PurchaseViewComponent {
 
   fetchData() {
     this.apiService.get('purchases/' + this.data.id, {}).subscribe({
-      next: (data: any) => {
+      next: (response: any) => {
+        const data = response.purchase;
         this.metaFormGroup.patchValue({
-          date: this.datePipe.transform(data.date, 'dd MMMM YYYY'),
-          dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM YYYY'),
+          date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
+          dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),
           invoiceName: data.invoiceName,
           receiptName: data.receiptName,
           taxInvoiceName: data.taxInvoiceName,
@@ -146,12 +151,16 @@ export class PurchaseViewComponent {
           bankAccountName: data.bankAccountName,
         });
 
-        data.payments.forEach((x: any) => {
+        response.payments.forEach((x: any) => {
           this.t.push(
             this.formBuilder.group({
               id: [x.id],
+              bankAccountName: [x.bankAccountName],
+              bankAccountNumber: [x.bankAccountNumber],
+              bankName: [x.bankName],
               amount: [x.amount],
               date: [x.date],
+              isApprove: [x.isApprove],
             })
           );
         });
@@ -176,5 +185,12 @@ export class PurchaseViewComponent {
 
   deletePurchaseData() {
     this.dialog.close('delete');
+  }
+
+  copyBankAccountNumber() {
+    this.clipboard.copy(this.metaFormGroup.get('bankAccountNumber')!.value);
+    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+      duration: 3000,
+    });
   }
 }

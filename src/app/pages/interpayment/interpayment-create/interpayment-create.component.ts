@@ -51,6 +51,7 @@ export class InterpaymentCreateComponent {
       bankAccountIDOrigin: new FormControl('', Validators.required),
       bankAccountIDDestination: new FormControl('', Validators.required),
       amount: new FormControl(0, [Validators.required, Validators.min(1)]),
+      description: new FormControl("Setoran kas operasional", Validators.required),
     },
     {
       validators: [validateBankAccount()],
@@ -82,6 +83,7 @@ export class InterpaymentCreateComponent {
         bankAccountIDDestination: this.formGroup.value.bankAccountIDDestination,
         amount: this.formGroup.value.amount,
         date: moment(this.formGroup.value.date).format('YYYY-MM-DD'),
+        description: this.formGroup.value.description,
       })
       .subscribe({
         next: (data) => {

@@ -24,6 +24,9 @@ import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
 import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
 import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
+import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 
 const moment = _rollupMoment || _moment;
 
@@ -65,7 +68,7 @@ export const MY_FORMATS = {
   standalone: true,
 })
 export class SalarySlipListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(private apiService: ApiService, private dialog: MatDialog, private snackBar: MatSnackBar,) {}
   month: number = new Date().getMonth();
   year: number = new Date().getFullYear();
   readonly date = new FormControl(
@@ -175,5 +178,30 @@ export class SalarySlipListComponent {
       })
       .afterClosed()
       .subscribe((data) => {});
+  }
+
+  printSalarySlip(id: number){
+    this.apiService.get(`salary-slips/${id}`, {}).subscribe({
+      next:((data: any) => {
+        const pdf = this.generateSalarySlip({
+          ...data.data,
+          otherAllowances: data.allowances,
+          deductions: data.deductions
+        });
+        this.dialog.open(PdfViewerComponent, {
+          data: {
+            file: pdf
+          }
+        })}),
+      error: (error => {
+        this.snackBar.open(error.error.detail, 'Close', {
+          duration: 3000,
+        })
+      }),
+    })
+  }
+
+  generateSalarySlip(data: any) {
+    SalarySlipHelper.createProxyPaymentPDF(data);
   }
 }

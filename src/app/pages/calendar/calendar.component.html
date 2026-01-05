@@ -5,14 +5,17 @@
       [year]="year"
       (onMonthYearSelected)="onMonthChanged($event)"
     ></app-calendar-month-selector>
+    <div class="flex-grow-1"></div>
     <app-calendar-account-selector
       (onBankAccountChanges)="onBankAccountChanges($event)"
     />
+    <mat-slide-toggle color="primary" [formControl]="isBalance">Balance</mat-slide-toggle>
   </div>
   <app-calendar-table
     [month]="month"
     [year]="year"
     [bankAccounts]="bankAccounts"
     (onCalendarBoxClicked)="onCalendarBoxClicked($event)"
+    [isBalance]="isBalance.value"
   ></app-calendar-table>
 </div>

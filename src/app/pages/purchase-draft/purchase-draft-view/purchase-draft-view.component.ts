@@ -41,7 +41,7 @@ export class PurchaseDraftViewComponent {
     this.apiService.get(`purchase-draft/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
         this.formGroup.patchValue({
-          date: this.datePipe.transform(data.date, 'dd MMMM YYYY'),
+          date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           supplierName: data.supplier_name,
           supplierAddress: data.supplier_address,
           dpp: data.dpp,

@@ -1,0 +1,143 @@
+<h1 mat-dialog-title>View sales invoice</h1>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Date</mat-label>
+      <input matInput readonly formControlName="date" />
+    </mat-form-field>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Name</mat-label>
+          <input matInput readonly formControlName="name" />
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project name</mat-label>
+          <input matInput readonly formControlName="projectName" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Client name</mat-label>
+          <input matInput readonly formControlName="clientName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Client NPWP</mat-label>
+          <input matInput readonly formControlName="clientNPWP" />
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Client address</mat-label>
+          <textarea
+            rows="4"
+            matInput
+            readonly
+            formControlName="clientAddress"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <input matInput readonly formControlName="description" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>SPK Number</mat-label>
+      <input matInput readonly formControlName="spkNumber" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>DPP</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="dpp"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>PPN</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="ppn"
+        suffix="%"
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh Code</mat-label>
+          <input matInput readonly formControlName="pphCode" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh Percentage</mat-label>
+          <input
+            matInput
+            readonly
+            formControlName="pphPercentage"
+            suffix="%"
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator.2"
+          />
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>PPh Tax Object Name</mat-label>
+          <textarea
+            rows="4"
+            matInput
+            readonly
+            formControlName="pphTaxObject"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="total"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Total payment</mat-label>
+      <input
+        matInput
+        readonly
+        formControlName="totalPayment"
+        prefix="Rp. "
+        thousandSeparator=" "
+        decimalScale="2"
+        mask="separator.2"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>

@@ -58,6 +58,7 @@ export class SalesInvoiceCreateComponent {
     pphValue: new FormControl(0, Validators.required),
     bpjs: new FormControl(0, [Validators.required, Validators.min(0)]),
     total: new FormControl(0, Validators.required),
+    separate: new FormControl(false),
   });
 
   paymentFormGroup: FormGroup = new FormGroup({
@@ -171,7 +172,6 @@ export class SalesInvoiceCreateComponent {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          console.log(result);
           this.valueFormGroup.patchValue({
             pphCode: result.code,
             pphTaxObjectName: result.taxObjectName,
@@ -285,7 +285,7 @@ export class SalesInvoiceCreateComponent {
               this.valueFormGroup.value.pphCode == ''
                 ? null
                 : this.valueFormGroup.value.pphCode,
-            pphTaxObject: this.valueFormGroup.value.pphTaxObject
+            pphTaxObject: this.valueFormGroup.value.pphTaxObjectName
               ? this.valueFormGroup.value.pphTaxObjectName
               : null,
             pphPercentage: this.valueFormGroup.value.pphPercentage,

@@ -1,15 +1,21 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import {
   NgxExtendedPdfViewerComponent,
+  NgxExtendedPdfViewerModule,
   pdfDefaultOptions,
 } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-pdf-viewer',
+  imports: [MatDialogModule, NgxExtendedPdfViewerModule],
   templateUrl: './pdf-viewer.component.html',
   styleUrls: ['./pdf-viewer.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class PdfViewerComponent {
   @ViewChild(NgxExtendedPdfViewerComponent, { static: false })
@@ -31,7 +37,6 @@ export class PdfViewerComponent {
       });
 
     dialog.beforeClosed().subscribe((result) => {
-      console.log('The dialog is about to be closed');
       // Here's the interesting bit:
       this.pdfViewer.ngOnDestroy();
     });

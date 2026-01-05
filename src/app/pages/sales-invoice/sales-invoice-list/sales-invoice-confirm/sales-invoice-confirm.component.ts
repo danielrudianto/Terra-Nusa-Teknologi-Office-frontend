@@ -78,7 +78,7 @@ export class SalesInvoiceConfirmComponent {
       .subscribe({
         next: (data: any) => {
           this.formGroup.patchValue({
-            date: this.datePipe.transform(data.date, 'dd MMMM YYYY'),
+            date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
             invoiceName: data.name,
             projectName: data.projectName,
             spkNumber: data.spkNumber,

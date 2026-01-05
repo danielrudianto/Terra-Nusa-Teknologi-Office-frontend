@@ -19,6 +19,7 @@ import { PillSuccessComponent } from '../../../components/pills/pill-success/pil
 import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
 import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -165,5 +166,13 @@ export class SalesInvoiceListComponent {
 
   createNewSalesInvoice() {
     this.router.navigate(['/Sales-invoice/Create']);
+  }
+
+  viewSalesInvoice(id: number){
+    this.dialog.open(SalesInvoiceViewComponent, {
+      data: {
+        id: id,
+      }
+    })
   }
 }

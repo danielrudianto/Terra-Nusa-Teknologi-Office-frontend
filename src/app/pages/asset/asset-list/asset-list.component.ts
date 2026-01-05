@@ -1,17 +1,37 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../services/api.service';
-import { MatTable } from '@angular/material/table';
-import { FormControl } from '@angular/forms';
+import { MatTable, MatTableModule } from '@angular/material/table';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-list',
-  standalone: false,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    HeaderTitleComponent,
+  ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',
+  standalone: true,
 })
 export class AssetListComponent {
-  constructor(private dialog: MatDialog, private apiService: ApiService) {}
+  constructor(private dialog: MatDialog, private apiService: ApiService, private router: Router, private route: ActivatedRoute,) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
 
@@ -60,5 +80,15 @@ export class AssetListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  onAddAsset(){
+    this.router.navigate(['Create'], {
+      relativeTo: this.route
+    })
+  }
+
+  onEditAsset(){
+
   }
 }

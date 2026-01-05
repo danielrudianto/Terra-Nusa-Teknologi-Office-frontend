@@ -17,9 +17,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { provideNgxMask } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-purchase-order-create-g',
@@ -35,6 +36,7 @@ import { ApiService } from '../../../../services/api.service';
     MatButtonModule,
     HeaderTitleComponent,
     MatSlideToggleModule,
+    NgxMaskDirective,
   ],
   templateUrl: './purchase-order-create-g.component.html',
   styleUrl: './purchase-order-create-g.component.scss',
@@ -43,12 +45,14 @@ export class PurchaseOrderCreateGComponent {
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private route: ActivatedRoute
   ) {}
 
   isSubmitting: boolean = false;
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
+    purchaseType: new FormControl('G'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -126,13 +130,66 @@ export class PurchaseOrderCreateGComponent {
       });
   }
 
+  formatData() {
+    const dpp = this.formGroup.get('includePPN')?.value
+      ? this.t.value.reduce(
+          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
+          0
+        )
+      : this.t.value.reduce(
+          (acc: any, x: any) => acc + x.price * x.quantity,
+          0
+        );
+    const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
+    return {
+      // convert date to YYYY-mm-dd
+      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      supplierID: this.formGroup.get('supplierID')?.value,
+      purchaseType: this.formGroup.get('purchaseType')?.value,
+      projectName: this.formGroup.get('projectName')?.value,
+      name: '',
+      dpp: dpp,
+      ppn: ppn,
+      templateVersion: '1.0',
+      customData: {
+        deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
+        deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
+        paymentTerm: this.formGroup.get('paymentTerm')?.value,
+        creditTerm: this.formGroup.get('creditTerm')?.value,
+        prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        supplierPICName: this.formGroup.get('supplierPICName')?.value,
+        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
+          ?.value,
+        officePICName: this.formGroup.get('officePICName')?.value,
+        officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        purchase_order: this.t.value.map((x: any) => ({
+          sku: x.sku,
+          description: x.description,
+          price: x.price,
+          quantity: x.quantity,
+          unit: x.unit,
+          note: x.note,
+        })),
+      },
+    };
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
-      .post('purchase-orders', this.formGroup.value)
+      .post('purchase-orders', this.formatData())
       .subscribe()
       .add(() => {
         this.isSubmitting = false;
       });
+  }
+
+  toUpperCase() {
+    const value = this.formGroup.get('projectName')?.value;
+    if (value && value.toUpperCase() !== value) {
+      this.formGroup.patchValue({
+        projectName: value.toUpperCase(),
+      });
+    }
   }
 }

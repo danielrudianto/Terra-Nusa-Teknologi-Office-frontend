@@ -11,6 +11,7 @@ import {
   PageOrientation,
 } from 'pdfmake/interfaces';
 import moment from 'moment';
+import { MatDialogRef } from '@angular/material/dialog';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -21,7 +22,7 @@ pdfMake.vfs = pdfFonts.vfs;
   standalone: false,
 })
 export class PurchaseReportProjectComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(private apiService: ApiService, private snackBar: MatSnackBar, private dialog: MatDialogRef<PurchaseReportProjectComponent>) {}
 
   isLoading: boolean = false;
 
@@ -30,31 +31,12 @@ export class PurchaseReportProjectComponent {
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
-    format: new FormControl('', [Validators.required]),
   });
 
   ngOnInit(): void {}
 
   onSubmit() {
-    this.isLoading = true;
-    this.apiService
-      .get('purchases/report/project', this.formGroup.value)
-      .subscribe({
-        next: (data) => {
-          if (this.formGroup.value.format === 'pdf') {
-            this.generatePDF(data, this.formGroup.value.projectName);
-          }
-        },
-        error: (error) => {
-          console.error('Error generating report:', error);
-          this.snackBar.open('Error generating report', 'Close', {
-            duration: 3000,
-          });
-        },
-      })
-      .add(() => {
-        this.isLoading = false;
-      });
+    this.dialog.close(this.formGroup.value);
   }
 
   toUpperCase() {

@@ -75,6 +75,34 @@
       <mat-label>Bank account number</mat-label>
       <input matInput formControlName="bankAccountNumber" />
     </mat-form-field>
+
+    <h3>Payment history</h3>
+    @if(t.controls.length == 0){
+    <mat-list>
+      <mat-list-item>No payment history</mat-list-item>
+    </mat-list>
+    } @else {
+    <mat-list>
+      @for(data of t.controls;track data){
+      <mat-list-item lines="3">
+        @if(data.get('isApprove')?.value == true){
+        <mat-icon matListItemIcon>check</mat-icon>
+        } @else {
+
+        <mat-icon matListItemIcon>pending</mat-icon>
+        }
+        <span matListItemTitle>{{
+          data.get("amount")?.value | currency : "Rp."
+        }}</span>
+        <span matListItemLine>{{
+          data.get("date")?.value | date : "dd MMMM yyyy"
+        }}</span>
+        {{ data.get("bankAccountNumber")?.value }} --
+        {{ data.get("bankAccountName")?.value }}
+      </mat-list-item>
+      }
+    </mat-list>
+    }
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

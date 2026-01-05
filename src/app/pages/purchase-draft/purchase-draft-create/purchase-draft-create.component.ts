@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
-import { provideNgxMask } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatDatepickerModule,
     HeaderTitleComponent,
+    NgxMaskDirective,
   ],
   templateUrl: './purchase-draft-create.component.html',
   styleUrl: './purchase-draft-create.component.scss',

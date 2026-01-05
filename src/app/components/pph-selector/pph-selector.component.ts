@@ -1,19 +1,35 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
 
 @Component({
-    selector: 'app-pph-selector',
-    templateUrl: './pph-selector.component.html',
-    styleUrls: ['./pph-selector.component.scss'],
-    standalone: false
+  selector: 'app-pph-selector',
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+  ],
+  templateUrl: './pph-selector.component.html',
+  styleUrls: ['./pph-selector.component.scss'],
+  standalone: true,
 })
 export class PphSelectorComponent {
   constructor(private dialog: MatDialogRef<PphSelectorComponent>) {}
 
   pphList: IPPh[] = [];
   pphSearchFormControl: FormControl = new FormControl('');
+  SKBFormControl: FormControl = new FormControl(false);
 
   ngOnInit(): void {
     this.pphList = availablePPh;
@@ -23,7 +39,14 @@ export class PphSelectorComponent {
   }
 
   selectPph(pph: IPPh) {
-    this.dialog.close(pph);
+    if (this.SKBFormControl.value == true) {
+      this.dialog.close({
+        ...pph,
+        tariff: 0,
+      });
+    } else {
+      this.dialog.close(pph);
+    }
   }
 
   onClose() {

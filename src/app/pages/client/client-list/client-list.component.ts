@@ -69,7 +69,7 @@ export class ClientListComponent {
       .subscribe({
         next: (res: any) => {
           this.clients = res.data;
-          this.count = res.count;
+          this.count = res.total_count;
         },
         error: (err) => {
           console.error(err);

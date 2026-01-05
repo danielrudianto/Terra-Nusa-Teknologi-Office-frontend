@@ -1,4 +1,4 @@
-<form [formGroup]="formGroup">
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
@@ -17,9 +17,24 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Project name</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Supplier name</mat-label>
           <input matInput formControlName="supplierName" readonly />
-          <button mat-icon-button matPrefix (click)="openSupplierSelector()">
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="openSupplierSelector()"
+          >
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
@@ -45,6 +60,15 @@
           <mat-label>Delivery address</mat-label>
           <textarea matInput formControlName="deliveryAddress"></textarea>
         </mat-form-field>
+
+        <div class="banner mb-3 mt-0">
+          <mat-icon>info</mat-icon>
+          <b>Attention:</b>
+          <span
+            >Apabila <b>Franco</b> dipilih, maka alamat yang dicantumkan adalah
+            alamat pengiriman</span
+          >
+        </div>
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Payment term</mat-label>
@@ -106,13 +130,24 @@
                 <td>
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Quantity</mat-label>
-                    <input matInput formControlName="quantity" />
+                    <input
+                      matInput
+                      formControlName="quantity"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                    />
                   </mat-form-field>
                 </td>
                 <td>
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Price</mat-label>
-                    <input matInput formControlName="price" />
+                    <input
+                      matInput
+                      formControlName="price"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      prefix="Rp. "
+                    />
                   </mat-form-field>
                 </td>
                 <td>

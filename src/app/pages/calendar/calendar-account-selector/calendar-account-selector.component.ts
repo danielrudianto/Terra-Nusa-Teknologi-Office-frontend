@@ -3,12 +3,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { CalendarAccountSelectorDialogComponent } from './calendar-account-selector-dialog/calendar-account-selector-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-calendar-account-selector',
+  imports: [
+    MatButtonModule,
+  ],
   templateUrl: './calendar-account-selector.component.html',
   styleUrl: './calendar-account-selector.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class CalendarAccountSelectorComponent {
   constructor(

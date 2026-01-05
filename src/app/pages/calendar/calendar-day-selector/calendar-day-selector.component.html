@@ -112,6 +112,10 @@
                   <mat-icon>move_up</mat-icon>
                   <span>Move payment date</span>
                 </button>
+                <button mat-menu-item (click)="viewDocument(id)">
+                  <mat-icon>view_array</mat-icon>
+                  <span>View document</span>
+                </button>
               </ng-template>
             </mat-menu>
             @for(i of interpayments; track i){

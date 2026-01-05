@@ -9,6 +9,7 @@ import {
 } from '@angular/material/dialog';
 import { ApiService } from '../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import moment from 'moment';
 
 @Component({
   selector: 'app-date-selector',
@@ -23,7 +24,7 @@ export class DateSelectorComponent {
     @Inject(MAT_DIALOG_DATA)
     public data: {
       id: number;
-      date: Date | null;
+      date: Date;
       minimumDate: Date | null;
       maximumDate: Date | null;
     },
@@ -32,18 +33,17 @@ export class DateSelectorComponent {
     private snackBar: MatSnackBar
   ) {}
 
-  selected = model<Date | null>(this.data.date);
+  selectedDate: Date = this.data.date;
 
   onSubmit() {
-    if (this.selected == null) return;
     this.apiService
       .post('outgoing-payments/move', {
         id: this.data.id,
-        date: this.selected,
+        date: moment(this.selectedDate).format("YYYY-MM-DD"),
       })
       .subscribe({
         next: (_) => {
-          this.dialog.close(this.selected);
+          this.dialog.close("moved");
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {
@@ -51,5 +51,9 @@ export class DateSelectorComponent {
           });
         },
       });
+  }
+
+  onSelectedChanged(event: any){
+    this.selectedDate = new Date(event);
   }
 }

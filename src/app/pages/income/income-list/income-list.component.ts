@@ -146,7 +146,7 @@ export class IncomeListComponent {
       this.sortByDirection = 'asc';
     }
 
-    this.fetchData(1);
+    this.fetchData(0);
   }
 
   fetchData(targetPage: number = 0, pageSize: number = this.pageSize) {
