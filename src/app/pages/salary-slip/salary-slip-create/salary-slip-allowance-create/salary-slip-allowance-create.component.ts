@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
@@ -22,6 +23,7 @@ import { NgxMaskDirective } from 'ngx-mask';
     NgxMaskDirective,
     MatButtonModule,
     CommonModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './salary-slip-allowance-create.component.html',
   styleUrl: './salary-slip-allowance-create.component.scss',
@@ -38,6 +40,7 @@ export class SalarySlipAllowanceCreateComponent {
       Validators.required,
       Validators.minLength(10),
     ]),
+    isIncluded: new FormControl(false, Validators.required),
   });
 
   onSubmit() {

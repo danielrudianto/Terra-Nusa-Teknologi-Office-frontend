@@ -1,0 +1,72 @@
+<app-header-title
+  title="Invoice"
+  description="Create new invoice"
+></app-header-title>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <form [formGroup]="formGroup">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date</mat-label>
+          <input matInput formControlName="date" type="date" />
+          <mat-datepicker-toggle
+            matPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Opponent</mat-label>
+          <input
+            matInput
+            formControlName="opponent_name"
+            type="text"
+            placeholder="Ex. Anura Aldiansyah"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Location</mat-label>
+          <input
+            matInput
+            formControlName="location"
+            type="text"
+            placeholder="Ex. Bandung"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Invoice Number</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            placeholder="Ex. 001-17-INV-XII-2025"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <input
+            matInput
+            formControlName="description"
+            type="text"
+            placeholder="Ex. Pembayaran atas invoice 001-17-INV-XII-2025"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Bank Account Number</mat-label>
+          <input
+            matInput
+            formControlName="bankAccountNumber"
+            type="text"
+            placeholder="Ex. 8090175441"
+          />
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+</div>

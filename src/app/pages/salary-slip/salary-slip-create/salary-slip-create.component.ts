@@ -214,6 +214,9 @@ export class SalarySlipCreateComponent {
               description: new FormControl(result.description, {
                 nonNullable: true,
               }),
+              isIncluded: new FormControl(result.isIncluded, {
+                nonNullable: true,
+              }),
             })
           );
           this.allowanceTable.renderRows();
@@ -232,6 +235,9 @@ export class SalarySlipCreateComponent {
               name: new FormControl(result.name, { nonNullable: true }),
               amount: new FormControl(result.amount, { nonNullable: true }),
               description: new FormControl(result.description, {
+                nonNullable: true,
+              }),
+              isIncluded: new FormControl(result.isIncluded, {
                 nonNullable: true,
               }),
             })
@@ -277,6 +283,7 @@ export class SalarySlipCreateComponent {
     'name',
     'amount',
     'description',
+    'included',
     'action',
   ];
 
@@ -284,6 +291,7 @@ export class SalarySlipCreateComponent {
     'name',
     'amount',
     'description',
+    'included',
     'action',
   ];
 
@@ -406,7 +414,7 @@ export class SalarySlipCreateComponent {
       bankAccountName: this.formGroup.get('bankAccountName')?.value,
       bankAccountNumber: this.formGroup.get('bankAccountNumber')?.value,
       bankName: this.formGroup.get('bankName')?.value,
-      paymentMethod: this.formGroup.get('paymentMethod')?.value
+      paymentMethod: this.formGroup.get('paymentMethod')?.value,
     };
 
     return data;

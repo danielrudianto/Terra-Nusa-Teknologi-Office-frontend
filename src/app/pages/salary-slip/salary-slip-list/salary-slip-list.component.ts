@@ -68,7 +68,11 @@ export const MY_FORMATS = {
   standalone: true,
 })
 export class SalarySlipListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog, private snackBar: MatSnackBar,) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
   month: number = new Date().getMonth();
   year: number = new Date().getFullYear();
   readonly date = new FormControl(
@@ -126,6 +130,21 @@ export class SalarySlipListComponent {
   ];
   formControl: FormControl = new FormControl('');
 
+  months: { value: number; label: string }[] = [
+    { value: 0, label: 'January' },
+    { value: 1, label: 'February' },
+    { value: 2, label: 'March' },
+    { value: 3, label: 'April' },
+    { value: 4, label: 'May' },
+    { value: 5, label: 'June' },
+    { value: 6, label: 'July' },
+    { value: 7, label: 'August' },
+    { value: 8, label: 'September' },
+    { value: 9, label: 'October' },
+    { value: 10, label: 'November' },
+    { value: 11, label: 'December' },
+  ];
+
   changePage(page: PageEvent) {
     if ((this.pageSize = page.pageSize)) {
       this.fetchSalarySlips(page.pageIndex + 1);
@@ -180,25 +199,27 @@ export class SalarySlipListComponent {
       .subscribe((data) => {});
   }
 
-  printSalarySlip(id: number){
+  printSalarySlip(id: number) {
     this.apiService.get(`salary-slips/${id}`, {}).subscribe({
-      next:((data: any) => {
+      next: (data: any) => {
         const pdf = this.generateSalarySlip({
           ...data.data,
           otherAllowances: data.allowances,
-          deductions: data.deductions
+          deductions: data.deductions,
+          monthName: this.months[data.data.month - 1].label,
         });
         this.dialog.open(PdfViewerComponent, {
           data: {
-            file: pdf
-          }
-        })}),
-      error: (error => {
+            file: pdf,
+          },
+        });
+      },
+      error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {
           duration: 3000,
-        })
-      }),
-    })
+        });
+      },
+    });
   }
 
   generateSalarySlip(data: any) {

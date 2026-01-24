@@ -1,6 +1,8 @@
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
+  FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -12,7 +14,9 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
@@ -21,6 +25,7 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-sales-invoice-view',
   providers: [provideNgxMask()],
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -28,6 +33,8 @@ import { ApiService } from 'src/app/services/api.service';
     MatDialogModule,
     MatSnackBarModule,
     NgxMaskDirective,
+    MatListModule,
+    MatIconModule,
   ],
   templateUrl: './sales-invoice-view.component.html',
   styleUrl: './sales-invoice-view.component.scss',
@@ -38,7 +45,8 @@ export class SalesInvoiceViewComponent {
     private dialog: MatDialogRef<SalesInvoiceViewComponent>,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private formBuilder: FormBuilder
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -58,12 +66,20 @@ export class SalesInvoiceViewComponent {
     pphValue: new FormControl(0),
     total: new FormControl(0),
     totalPayment: new FormControl(0),
+    payments: new FormArray([]),
   });
+
+  get f() {
+    return this.formGroup.controls;
+  }
+
+  get t() {
+    return this.f['payments'] as FormArray;
+  }
 
   ngOnInit(): void {
     this.apiService.get(`sales-invoices/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
-        console.log(data);
         this.formGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           name: data.name,
@@ -84,6 +100,16 @@ export class SalesInvoiceViewComponent {
             (data.ppn * data.dpp) / 100 -
             (data.pphPercentage * data.dpp) / 100,
           projectName: data.projectName,
+        });
+
+        data.payments.forEach((x: any) => {
+          this.t.push(
+            this.formBuilder.group({
+              id: [x.id],
+              amount: [x.amount],
+              date: [x.date],
+            })
+          );
         });
       },
       error: (error) => {

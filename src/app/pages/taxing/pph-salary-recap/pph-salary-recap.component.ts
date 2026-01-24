@@ -46,8 +46,11 @@ export class PphSalaryRecapComponent {
                 'Meal allowance',
                 'Transportation allowance',
                 'Overtime allowance',
-                'Other allowances',
-                'Deduction',
+                'Other allowances (Included in PPh Calculation)',
+                'Other allowances (Excluded in PPh Calculation)',
+                'Deduction (Included in PPh Calculation)',
+                'Deduction (Excluded in PPh Calculation)',
+                'Income (Used for PPh Calculation)',
                 'Tax amount',
                 'Total',
               ],
@@ -70,12 +73,46 @@ export class PphSalaryRecapComponent {
                   x.transportationAllowanceQuantity *
                     x.transportationAllowanceRate,
                   x.overtimeQuantity * x.overtimeRate,
-                  x.allowances.reduce((a: any, b: any) => {
-                    return a + b.amount;
-                  }, 0),
-                  x.deductions.reduce((a: any, b: any) => {
-                    return a + b.amount;
-                  }, 0),
+                  x.allowances
+                    .filter((x: any) => {
+                      return x.isIncluded;
+                    })
+                    .reduce((a: any, b: any) => {
+                      return a + b.amount;
+                    }, 0),
+                  x.allowances
+                    .filter((x: any) => {
+                      return !x.isIncluded;
+                    })
+                    .reduce((a: any, b: any) => {
+                      return a + b.amount;
+                    }, 0),
+                  x.deductions
+                    .filter((x: any) => x.isIncluded)
+                    .reduce((a: any, b: any) => {
+                      return a + b.amount;
+                    }, 0),
+                  x.deductions
+                    .filter((x: any) => !x.isIncluded)
+                    .reduce((a: any, b: any) => {
+                      return a + b.amount;
+                    }, 0),
+                  x.basicSalary +
+                    x.mealAllowanceQuantity * x.mealAllowanceRate +
+                    x.transportationAllowanceQuantity *
+                      x.transportationAllowanceRate +
+                    x.overtimeQuantity * x.overtimeRate +
+                    x.allowances
+                      .filter((x: any) => x.isIncluded)
+                      .reduce((a: any, b: any) => {
+                        return a + b.amount;
+                      }, 0) -
+                    x.deductions
+                      .filter((x: any) => x.isIncluded)
+                      .reduce((a: any, b: any) => {
+                        return a + b.amount;
+                      }, 0),
+
                   x.taxAmount,
                   x.basicSalary +
                     x.mealAllowanceQuantity * x.mealAllowanceRate +

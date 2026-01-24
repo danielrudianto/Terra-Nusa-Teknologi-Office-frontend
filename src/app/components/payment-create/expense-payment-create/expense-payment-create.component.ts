@@ -77,7 +77,7 @@ export class ExpensePaymentCreateComponent {
 
   fetchData() {
     this.apiService
-      .get('expenses/payments/' + this.data.expenseID, {})
+      .get('expenses/' + this.data.expenseID + '/payments', {})
       .subscribe({
         next: (data: any) => {
           this.metaFormGroup.patchValue({

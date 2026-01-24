@@ -257,6 +257,14 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="included">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            @if(allowance.get('isIncluded')?.value == true){ Included for PPh
+            Calculation } @else { Excluded for PPh Calculation }
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="action">
           <th style="width: 100px" mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let allowance; let i = index">
@@ -324,6 +332,14 @@
           </th>
           <td mat-cell *matCellDef="let deduction; let i = index">
             {{ deduction.get("description").value }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="included">
+          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let allowance; let i = index">
+            @if(allowance.get('isIncluded')?.value == true){ Included for PPh
+            Calculation } @else { Excluded for PPh Calculation }
           </td>
         </ng-container>
 

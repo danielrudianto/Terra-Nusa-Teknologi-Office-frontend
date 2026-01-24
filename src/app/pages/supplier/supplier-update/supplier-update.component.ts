@@ -8,7 +8,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -41,11 +45,12 @@ export class SupplierUpdateComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     public route: ActivatedRoute,
+    private dialog: MatDialogRef<SupplierUpdateComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: {
       id: number;
       readOnly: boolean;
-    }
+    },
   ) {}
 
   supplierFormGroup: FormGroup = new FormGroup({
@@ -85,7 +90,7 @@ export class SupplierUpdateComponent {
             });
           }
         }
-      }
+      },
     );
 
     this.supplierFormGroup.controls['serviceAreas'].valueChanges.subscribe(
@@ -100,7 +105,7 @@ export class SupplierUpdateComponent {
             });
           }
         }
-      }
+      },
     );
 
     this.fetchData();
@@ -140,6 +145,8 @@ export class SupplierUpdateComponent {
           this.snackBar.open('Supplier created successfully', 'Close', {
             duration: 3000,
           });
+
+          this.dialog.close(data);
         },
         error: (error) => {
           console.error(`Error: ${error.error.detail}`);

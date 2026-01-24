@@ -69,6 +69,7 @@ import { PurchaseOrderCreateComponent } from './pages/purchase-order/purchase-or
 import { PurchaseOrderCreateGComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component';
 import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
 import { PurchaseReportProjectReportComponent } from './pages/purchase/purchase-report-project-report/purchase-report-project-report.component';
+import { InvoiceComponent } from './pages/invoice/invoice.component';
 
 export const routes: Routes = [
   {
@@ -91,6 +92,13 @@ export const routes: Routes = [
         component: PdfMainComponent,
         data: {
           title: 'PDF',
+        },
+      },
+      {
+        path: 'Invoice',
+        component: InvoiceComponent,
+        data: {
+          title: 'Invoice Generator',
         },
       },
       {
@@ -123,12 +131,12 @@ export const routes: Routes = [
             },
           },
           {
-            path: "Project/:projectName",
+            path: 'Project/:projectName',
             component: PurchaseReportProjectReportComponent,
             data: {
               title: 'Purchase',
             },
-          }
+          },
         ],
       },
       {

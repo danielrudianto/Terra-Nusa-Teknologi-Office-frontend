@@ -176,7 +176,7 @@ export class BankMutationComponent {
   download() {
     this.dialog.open(BankMutationDownloadComponent, {
       data: {
-        id: this.route.snapshot.params['id'],
+        id: Number(this.route.snapshot.params['id']),
       },
     });
   }

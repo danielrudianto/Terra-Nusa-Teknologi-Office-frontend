@@ -139,5 +139,21 @@
         mask="separator.2"
       />
     </mat-form-field>
+
+    <mat-list>
+      @for(payment of t.controls; track payment){
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>folder</mat-icon>
+
+        <span matListItemTitle>{{
+          payment.get("date")?.value | date : "dd MMMM yyyy"
+        }}</span>
+        <span matListItemLine>{{
+          payment.get("amount")?.value | number : "0.2-2"
+        }}</span>
+      </mat-list-item>
+      }
+    </mat-list>
   </form>
 </mat-dialog-content>
