@@ -53,6 +53,8 @@ export class PurchaseType {
         return 'Software';
       case '5.1.11':
         return 'Rounding up';
+      case '5.1.14':
+        return 'Social and Community Expense';
       case '6.3.1':
         return 'Advertising Expense';
       case '6.3.2':

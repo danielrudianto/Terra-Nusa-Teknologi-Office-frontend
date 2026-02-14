@@ -71,12 +71,12 @@ export class SalarySlipListComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
   month: number = new Date().getMonth();
   year: number = new Date().getFullYear();
   readonly date = new FormControl(
-    moment(new Date(this.year, this.month - 1, 1))
+    moment(new Date(this.year, this.month - 1, 1)),
   );
 
   ngOnInit(): void {
@@ -101,7 +101,7 @@ export class SalarySlipListComponent {
 
   setMonthAndYear(
     normalizedMonthAndYear: Moment,
-    datepicker: MatDatepicker<Moment>
+    datepicker: MatDatepicker<Moment>,
   ) {
     const ctrlValue = this.date.value ?? moment();
     ctrlValue.month(normalizedMonthAndYear.month());
@@ -200,19 +200,17 @@ export class SalarySlipListComponent {
   }
 
   printSalarySlip(id: number) {
-    this.apiService.get(`salary-slips/${id}`, {}).subscribe({
+    this.apiService.get(`salary-slips/print/${id}`, {}).subscribe({
       next: (data: any) => {
-        const pdf = this.generateSalarySlip({
-          ...data.data,
-          otherAllowances: data.allowances,
-          deductions: data.deductions,
-          monthName: this.months[data.data.month - 1].label,
-        });
-        this.dialog.open(PdfViewerComponent, {
-          data: {
-            file: pdf,
-          },
-        });
+        // Here I got this from the backend
+        // with open(pdf_path, "rb") as file:
+        //         file_data = file.read()
+        //         return {"file": file_data, "filename": f"Slip Gaji {month_name} {year}.pdf"}
+        // Please create a new tab and focus on it, showing the PDF
+        const blob = new Blob([data.file], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const pdfWindow = window.open(url);
+        pdfWindow?.focus();
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {
@@ -220,6 +218,25 @@ export class SalarySlipListComponent {
         });
       },
     });
+  }
+
+  sendSalarySlip(id: number) {
+    this.apiService
+      .post(`salary-slips/send`, {
+        id: id,
+      })
+      .subscribe({
+        next: (data) => {
+          this.snackBar.open('Salary slip sent successfully', 'Close', {
+            duration: 3000,
+          });
+        },
+        error: (error) => {
+          this.snackBar.open(error.error.detail, 'Close', {
+            duration: 3000,
+          });
+        },
+      });
   }
 
   generateSalarySlip(data: any) {

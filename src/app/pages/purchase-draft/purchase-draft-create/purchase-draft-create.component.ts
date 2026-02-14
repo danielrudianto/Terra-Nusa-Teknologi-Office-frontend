@@ -43,7 +43,7 @@ export class PurchaseDraftCreateComponent {
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
@@ -53,7 +53,7 @@ export class PurchaseDraftCreateComponent {
     this.metaFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
       if (value) {
         this.metaFormGroup.controls['ppnValue'].setValue(
-          ((this.metaFormGroup.controls['dpp'].value * value) / 100).toFixed(2)
+          ((this.metaFormGroup.controls['dpp'].value * value) / 100).toFixed(2),
         );
       } else {
         this.metaFormGroup.controls['ppnValue'].setValue(0);
@@ -63,7 +63,7 @@ export class PurchaseDraftCreateComponent {
     this.metaFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
         this.metaFormGroup.controls['ppnValue'].setValue(
-          ((this.metaFormGroup.controls['ppn'].value * value) / 100).toFixed(2)
+          ((this.metaFormGroup.controls['ppn'].value * value) / 100).toFixed(2),
         );
       } else {
         this.metaFormGroup.controls['ppnValue'].setValue(0);
@@ -75,7 +75,7 @@ export class PurchaseDraftCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -87,7 +87,7 @@ export class PurchaseDraftCreateComponent {
           // set the project name to empty string if the purchase order name is not valid
           this.metaFormGroup.controls['projectName'].setValue('');
         }
-      }
+      },
     );
   }
 
@@ -101,7 +101,7 @@ export class PurchaseDraftCreateComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2)$/
+        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2)$/,
       ),
     ]),
     projectName: new FormControl('', [
@@ -112,7 +112,7 @@ export class PurchaseDraftCreateComponent {
     purchaseType: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2$/
+        /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2$/,
       ),
     ]),
     dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
@@ -142,7 +142,7 @@ export class PurchaseDraftCreateComponent {
     this.isSubmitting = true;
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dateFormatted = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const purchaseData = {
       supplierID: this.metaFormGroup.controls['supplierID'].value,

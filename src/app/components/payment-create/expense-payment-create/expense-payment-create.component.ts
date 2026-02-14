@@ -16,7 +16,7 @@ export class ExpensePaymentCreateComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private dialog: MatDialogRef<ExpensePaymentCreateComponent>,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;
@@ -40,7 +40,7 @@ export class ExpensePaymentCreateComponent {
   });
 
   valueFormGroup: FormGroup = new FormGroup({
-    dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
+    dpp: new FormControl(0, [Validators.required, Validators.min(0.01)]),
     pph: new FormControl(0, Validators.required),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
@@ -88,7 +88,7 @@ export class ExpensePaymentCreateComponent {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
-              }
+              },
             )}`,
             date: new Date(data.expense.date).toLocaleDateString('id-ID', {
               day: '2-digit',
@@ -101,7 +101,7 @@ export class ExpensePaymentCreateComponent {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
-              }
+              },
             ),
             opponentName: data.expense.expense_opponent_name,
             opponentDescription: data.expense.expense_opponent_description,
@@ -133,7 +133,7 @@ export class ExpensePaymentCreateComponent {
           // set form array payments
           this.payments = data.payments.map((payment: any) => {
             const bankIndex = this.bankAccounts.findIndex(
-              (x) => x.id == payment.bankAccountID
+              (x) => x.id == payment.bankAccountID,
             );
             return {
               id: payment.id,
@@ -195,7 +195,7 @@ export class ExpensePaymentCreateComponent {
 
     const date = new Date(this.formGroup.value.date);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     this.isSubmitting = false;

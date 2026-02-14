@@ -51,49 +51,49 @@
     <ng-container matColumnDef="basic">
       <th mat-header-cell *matHeaderCellDef>Basic salary</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.basicSalary | number : "0.2-2" }}
+        {{ element.basicSalary | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="transportation">
       <th mat-header-cell *matHeaderCellDef>Transportation</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.transportation | number : "0.2-2" }}
+        {{ element.transportation | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="meal">
       <th mat-header-cell *matHeaderCellDef>Meal</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.meal | number : "0.2-2" }}
+        {{ element.meal | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="overtime">
       <th mat-header-cell *matHeaderCellDef>Overtime</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.overtime | number : "0.2-2" }}
+        {{ element.overtime | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="allowances">
       <th mat-header-cell *matHeaderCellDef>Allowances</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.allowance ?? 0 | number : "0.2-2" }}
+        {{ element.allowance ?? 0 | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="deductions">
       <th mat-header-cell *matHeaderCellDef>Deductions</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.deduction ?? 0 | number : "0.2-2" }}
+        {{ element.deduction ?? 0 | number: "0.2-2" }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="pph">
       <th mat-header-cell *matHeaderCellDef>PPH</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.taxAmount | number : "0.2-2" }}
+        {{ element.taxAmount | number: "0.2-2" }}
       </td>
     </ng-container>
 
@@ -138,6 +138,14 @@
             <mat-icon>print</mat-icon>
             <span>Reprint salary slip</span>
           </button>
+          <button
+            mat-menu-item
+            (click)="sendSalarySlip(element.id)"
+            [disabled]="element.isDelete"
+          >
+            <mat-icon>send</mat-icon>
+            <span>Send salary slip</span>
+          </button>
         </mat-menu>
       </td>
     </ng-container>
@@ -145,11 +153,10 @@
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let element">
-        @if(element.isPaid){
-        <app-pill-success [label]="'Paid'" />
+        @if (element.isPaid) {
+          <app-pill-success [label]="'Paid'" />
         } @else {
-        <app-pill-warning [label]="'Not paid'" />
-
+          <app-pill-warning [label]="'Not paid'" />
         }
       </td>
     </ng-container>

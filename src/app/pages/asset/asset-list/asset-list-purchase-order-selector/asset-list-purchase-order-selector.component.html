@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Purchase by Purchase Order Name</h1>
+<mat-dialog-content>
+  <mat-list>
+    @for (d of data; track data) {
+      <mat-list-item (click)="openData(d.id)">
+        <mat-icon matListItemIcon>folder</mat-icon>
+        <div matListItemTitle>
+          {{ d.supplier_name }}, {{ d.supplier_prefix }}
+        </div>
+        <div matListItemLine>{{ d.purchaseOrderName }}</div>
+        {{ d.date | date }}
+      </mat-list-item>
+    }
+  </mat-list>
+</mat-dialog-content>

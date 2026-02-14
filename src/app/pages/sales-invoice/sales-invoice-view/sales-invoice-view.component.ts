@@ -46,7 +46,7 @@ export class SalesInvoiceViewComponent {
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private datePipe: DatePipe,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -60,6 +60,7 @@ export class SalesInvoiceViewComponent {
     spkNumber: new FormControl(''),
     dpp: new FormControl(0),
     ppn: new FormControl(0),
+    bpjs: new FormControl(0),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0),
@@ -90,6 +91,7 @@ export class SalesInvoiceViewComponent {
           spkNumber: data.spkNumber,
           dpp: data.dpp,
           ppn: data.ppn,
+          bpjs: data.bpjs,
           pphCode: data.pphCode,
           pphTaxObject: data.pphTaxObject,
           pphPercentage: data.pphPercentage,
@@ -108,7 +110,7 @@ export class SalesInvoiceViewComponent {
               id: [x.id],
               amount: [x.amount],
               date: [x.date],
-            })
+            }),
           );
         });
       },

@@ -20,6 +20,7 @@ export const PURCHASE_TYPE_LABELS: { [key: string]: string } = {
 
   // Other Office
   '5.1.9': 'Administration fees',
+  '5.1.14': 'Social and Community Expense',
   '5.1.10': 'Interests',
   '5.1.13': 'Penalty fees',
   '5.1.11': 'Rounding up',
@@ -37,11 +38,11 @@ export const PURCHASE_TYPE_LABELS: { [key: string]: string } = {
   '6.5.2': 'Training Expense',
 
   // Project Expenses
-  'A': 'Transportation',
-  'B': 'Equipment rental',
-  'C': 'Fuel',
-  'D': 'Manpower',
-  'E': 'Coordination; Consumption; and Accomodation',
-  'F': 'Material',
-  'G': 'Project supporting equipment and supplies',
+  A: 'Transportation',
+  B: 'Equipment rental',
+  C: 'Fuel',
+  D: 'Manpower',
+  E: 'Coordination; Consumption; and Accomodation',
+  F: 'Material',
+  G: 'Project supporting equipment and supplies',
 };
