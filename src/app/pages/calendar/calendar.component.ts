@@ -7,6 +7,8 @@ import { CalendarMonthSelectorComponent } from './calendar-month-selector/calend
 import { CalendarAccountSelectorComponent } from './calendar-account-selector/calendar-account-selector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CalendarTableComponent } from './calendar-table/calendar-table.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-calendar',
@@ -17,6 +19,8 @@ import { CalendarTableComponent } from './calendar-table/calendar-table.componen
     CalendarAccountSelectorComponent,
     MatSlideToggleModule,
     CalendarTableComponent,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',

@@ -1,0 +1,65 @@
+<h1 mat-dialog-title>Download Monthly Recap</h1>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Month</mat-label>
+      <mat-select formControlName="month">
+        <mat-option [value]="1">January</mat-option>
+        <mat-option [value]="2">February</mat-option>
+        <mat-option [value]="3">March</mat-option>
+        <mat-option [value]="4">April</mat-option>
+        <mat-option [value]="5">May</mat-option>
+        <mat-option [value]="6">June</mat-option>
+        <mat-option [value]="7">July</mat-option>
+        <mat-option [value]="8">August</mat-option>
+        <mat-option [value]="9">September</mat-option>
+        <mat-option [value]="10">October</mat-option>
+        <mat-option [value]="11">November</mat-option>
+        <mat-option [value]="12">December</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Year</mat-label>
+      <input matInput formControlName="year" />
+    </mat-form-field>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-slide-toggle class="mb-2" formControlName="mutation"
+          >Mutation</mat-slide-toggle
+        ><br />
+        <mat-slide-toggle class="mb-2" formControlName="purchase"
+          >Purchase</mat-slide-toggle
+        >
+        <br /><mat-slide-toggle class="mb-2" formControlName="sales"
+          >Sales</mat-slide-toggle
+        >
+        <br /><mat-slide-toggle class="mb-2" formControlName="loans"
+          >Loans</mat-slide-toggle
+        >
+      </div>
+      <div class="col-6">
+        <mat-slide-toggle class="mb-2" formControlName="asset"
+          >Asset</mat-slide-toggle
+        >
+        <br /><mat-slide-toggle class="mb-2" formControlName="ar"
+          >Account Receivable</mat-slide-toggle
+        >
+        <br /><mat-slide-toggle class="mb-2" formControlName="ap"
+          >Account Payable</mat-slide-toggle
+        >
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      type="submit"
+      [disabled]="isDownloading || formGroup.invalid"
+      matButton="outlined"
+    >
+      Download
+    </button>
+  </mat-dialog-actions>
+</form>

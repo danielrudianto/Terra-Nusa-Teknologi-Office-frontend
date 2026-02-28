@@ -22,7 +22,10 @@ import { ApiService } from 'src/app/services/api.service';
   standalone: true,
 })
 export class CalendarTableComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+  ) {}
 
   @Input('month') month!: number;
   @Input('year') year!: number;
@@ -51,7 +54,7 @@ export class CalendarTableComponent {
 
     if (this.month === undefined || this.year === undefined) {
       console.error(
-        'Month and year inputs are required for CalendarTableComponent.'
+        'Month and year inputs are required for CalendarTableComponent.',
       );
       return;
     }
@@ -114,7 +117,7 @@ export class CalendarTableComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       });
@@ -145,7 +148,7 @@ export class CalendarTableComponent {
         .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
         .reduce((acc, x) => acc + x.amount, 0);
 
-      const currentBalance = this.balance + previousExpenses - previousIncomes;
+      const currentBalance = this.balance - previousExpenses + previousIncomes;
 
       return currentBalance;
     } else {
@@ -167,7 +170,7 @@ export class CalendarTableComponent {
     }
 
     const index = this.interpayments.findIndex(
-      (x) => new Date(x.date).getDate() == day
+      (x) => new Date(x.date).getDate() == day,
     );
     return index >= 0;
   }

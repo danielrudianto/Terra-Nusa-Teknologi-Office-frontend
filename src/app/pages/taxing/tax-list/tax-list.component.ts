@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PpnRecapComponent } from '../ppn-recap/ppn-recap.component';
 import { PphRecapComponent } from '../pph-recap/pph-recap.component';
 import { PphSalaryRecapComponent } from '../pph-salary-recap/pph-salary-recap.component';
+import { MonthlyRecapComponent } from 'src/app/pages/taxing/monthly-recap/monthly-recap.component';
 
 @Component({
   selector: 'app-tax-list',
@@ -20,10 +21,10 @@ export class TaxListComponent {
       window.innerWidth <= 900
         ? 1
         : window.innerWidth <= 1250
-        ? 2
-        : window.innerWidth <= 1400
-        ? 3
-        : 4;
+          ? 2
+          : window.innerWidth <= 1400
+            ? 3
+            : 4;
   }
 
   openPPNReport() {
@@ -38,14 +39,18 @@ export class TaxListComponent {
     this.dialog.open(PphSalaryRecapComponent, {});
   }
 
+  openMonthlyReport() {
+    this.dialog.open(MonthlyRecapComponent, {});
+  }
+
   onResize(event: any) {
     this.breakpoint =
       window.innerWidth <= 900
         ? 1
         : window.innerWidth <= 1250
-        ? 2
-        : window.innerWidth <= 1400
-        ? 3
-        : 4;
+          ? 2
+          : window.innerWidth <= 1400
+            ? 3
+            : 4;
   }
 }

@@ -70,6 +70,9 @@ import { PurchaseOrderCreateGComponent } from './pages/purchase-order/purchase-o
 import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
 import { PurchaseReportProjectReportComponent } from './pages/purchase/purchase-report-project-report/purchase-report-project-report.component';
 import { InvoiceComponent } from './pages/invoice/invoice.component';
+import { EngineeringComponent } from './pages/engineering/engineering.component';
+import { EngineeringDashboardComponent } from './pages/engineering/engineering-dashboard/engineering-dashboard.component';
+import { EngineeringProjectViewComponent } from './pages/engineering/engineering-project-view/engineering-project-view.component';
 
 export const routes: Routes = [
   {
@@ -86,6 +89,23 @@ export const routes: Routes = [
         data: {
           title: 'Dashboard',
         },
+      },
+      {
+        path: 'Engineering',
+        component: EngineeringComponent,
+        data: {
+          title: 'Engineering',
+        },
+        children: [
+          {
+            path: '',
+            component: EngineeringDashboardComponent,
+          },
+          {
+            path: ':projectName',
+            component: EngineeringProjectViewComponent,
+          },
+        ],
       },
       {
         path: 'PDF',

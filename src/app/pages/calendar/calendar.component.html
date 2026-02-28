@@ -9,7 +9,9 @@
     <app-calendar-account-selector
       (onBankAccountChanges)="onBankAccountChanges($event)"
     />
-    <mat-slide-toggle color="primary" [formControl]="isBalance">Balance</mat-slide-toggle>
+    <mat-slide-toggle color="primary" [formControl]="isBalance"
+      >Balance</mat-slide-toggle
+    >
   </div>
   <app-calendar-table
     [month]="month"
@@ -19,3 +21,4 @@
     [isBalance]="isBalance.value"
   ></app-calendar-table>
 </div>
+<button matButton="outlined"><mat-icon>download</mat-icon> Download</button>
