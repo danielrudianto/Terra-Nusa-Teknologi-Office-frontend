@@ -17,7 +17,7 @@
           [ngClass]="{
             active: day != null,
             selected: day === selectedDay && day != null,
-            inactive: day == null
+            inactive: day == null,
           }"
           (click)="onDayClick(day)"
         >
@@ -25,7 +25,7 @@
             <div
               class="calendar__table__cell__box__date"
               [ngClass]="{
-                today: dayIsToday(day)
+                today: dayIsToday(day),
               }"
             >
               {{ day || "\u00A0" }}
@@ -34,7 +34,7 @@
             <div
               class="calendar__table__cell__interpayment-indicator"
               [ngClass]="{
-                exists: interpaymentExistsForDay(day)
+                exists: interpaymentExistsForDay(day),
               }"
               matTooltip="Interpayment exists"
             >
@@ -43,10 +43,20 @@
           </div>
 
           <div class="calendar__table__cell__box__value" *ngIf="day != null">
-            {{ dataForDay(day) | shortCurrency : "Rp. " }}
+            {{ dataForDay(day) | shortCurrency: "Rp. " }}
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<button
+  matButton="outlined"
+  type="button"
+  color="primary"
+  class="mt-3"
+  [disabled]="isDownloading"
+  (click)="onCalendarDownload()"
+>
+  Download
+</button>
