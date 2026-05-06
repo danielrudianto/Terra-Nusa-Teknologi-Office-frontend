@@ -165,6 +165,10 @@ export class MonthlyRecapComponent {
         return 'Material';
       case 'G':
         return 'Peralatan dan perlengkapan pendukung proyek';
+      case 'H1':
+        return 'Subkontraktor berbadan usaha';
+      case 'H2':
+        return 'Subkontraktor tanpa badan usaha';
 
       // ==== Income =====
       case '7.1':
@@ -294,7 +298,7 @@ export class MonthlyRecapComponent {
                   'Tanggal invoice': new Date(x.date),
                   'Nama klien': x.client_name,
                   Faktur: x.name,
-                  'Faktur pajak': x.tax_invoice_name,
+                  'Faktur pajak': x.taxInvoiceName,
                   'Nomor SPK': x.spkNumber,
                   Deskripsi: x.description,
                   DPP: x.dpp,
@@ -771,7 +775,7 @@ export class MonthlyRecapComponent {
             const worksheet = xlsx.utils.json_to_sheet(
               (data.ap.data as any[]).map((x) => {
                 return {
-                  Tanggal: new Date(x.date),
+                  Tanggal: x.date,
                   'Nama supplier': x.supplier_name,
                   'Nomor invoice': x.invoiceName,
                   'Nomor kwitansi': x.receiptName,

@@ -39,7 +39,7 @@ export class PurchaseUpdateComponent {
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialogRef<PurchaseUpdateComponent>
+    private dialog: MatDialogRef<PurchaseUpdateComponent>,
   ) {}
 
   isSubmitting: boolean = false;
@@ -57,7 +57,7 @@ export class PurchaseUpdateComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/
+        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/,
       ),
     ]),
     projectName: new FormControl('', [
@@ -68,7 +68,7 @@ export class PurchaseUpdateComponent {
     purchaseType: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/
+        /^\A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1$/,
       ),
     ]),
     lastStatus: new FormControl('ready', Validators.required),
@@ -101,7 +101,7 @@ export class PurchaseUpdateComponent {
     isCopAttached: new FormControl(false),
     isCopyPurchaseOrderAttached: new FormControl(
       false,
-      Validators.requiredTrue
+      Validators.requiredTrue,
     ),
   });
 
@@ -124,7 +124,7 @@ export class PurchaseUpdateComponent {
     },
     {
       validators: bankAccountIDRequired(),
-    }
+    },
   );
 
   ngOnInit(): void {
@@ -211,10 +211,10 @@ export class PurchaseUpdateComponent {
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
 
     const dateFormatted = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const dueDateFormatted = `${dueDate.getFullYear()}-${String(
-      dueDate.getMonth() + 1
+      dueDate.getMonth() + 1,
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
 
     this.apiService

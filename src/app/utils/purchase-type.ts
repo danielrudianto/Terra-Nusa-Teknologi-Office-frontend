@@ -15,6 +15,10 @@ export class PurchaseType {
         return 'Material';
       case 'G':
         return 'Project supporting equipment and supplies';
+      case 'H1':
+        return 'Incorporated subcontractor';
+      case 'H2':
+        return 'Unincorporated subcontractor';
       case '5.1.1':
         return 'Asset purchase';
       case '5.1.2':

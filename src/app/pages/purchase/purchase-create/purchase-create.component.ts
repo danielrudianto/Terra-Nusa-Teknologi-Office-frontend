@@ -109,7 +109,7 @@ export class PurchaseCreateComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
   ) {}
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
@@ -142,7 +142,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/,
         ),
       ]),
       projectName: new FormControl('', [
@@ -153,7 +153,7 @@ export class PurchaseCreateComponent {
       purchaseType: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1$/
+          /^\A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1$/,
         ),
       ]),
       documentType: new FormControl('', Validators.required),
@@ -161,7 +161,7 @@ export class PurchaseCreateComponent {
       lastStatusDescription: new FormControl(''),
       isInternal: new FormControl(false, Validators.required),
     },
-    { validators: lastStatusDescriptionRequired() }
+    { validators: lastStatusDescriptionRequired() },
   );
 
   valueFormGroup: FormGroup = new FormGroup({
@@ -189,7 +189,7 @@ export class PurchaseCreateComponent {
     isCopAttached: new FormControl(false),
     isCopyPurchaseOrderAttached: new FormControl(
       false,
-      Validators.requiredTrue
+      Validators.requiredTrue,
     ),
   });
 
@@ -212,7 +212,7 @@ export class PurchaseCreateComponent {
     },
     {
       validators: bankAccountIDRequired(),
-    }
+    },
   );
 
   ngOnInit() {
@@ -234,7 +234,9 @@ export class PurchaseCreateComponent {
     this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
       if (value) {
         this.valueFormGroup.controls['ppnValue'].setValue(
-          ((this.valueFormGroup.controls['dpp'].value * value) / 100).toFixed(2)
+          ((this.valueFormGroup.controls['dpp'].value * value) / 100).toFixed(
+            2,
+          ),
         );
       } else {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
@@ -246,7 +248,9 @@ export class PurchaseCreateComponent {
     this.valueFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
         this.valueFormGroup.controls['ppnValue'].setValue(
-          ((this.valueFormGroup.controls['ppn'].value * value) / 100).toFixed(2)
+          ((this.valueFormGroup.controls['ppn'].value * value) / 100).toFixed(
+            2,
+          ),
         );
 
         const pphPercentage =
@@ -273,7 +277,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/;
+          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name
@@ -285,7 +289,7 @@ export class PurchaseCreateComponent {
           // set the project name to empty string if the purchase order name is not valid
           this.metaFormGroup.controls['projectName'].setValue('');
         }
-      }
+      },
     );
   }
 
@@ -328,7 +332,7 @@ export class PurchaseCreateComponent {
             const dpp = this.valueFormGroup.controls['dpp'].value;
             const pphValue = (dpp * pphPercentage) / 100;
             this.valueFormGroup.controls['pphValue'].setValue(
-              pphValue.toFixed(2)
+              pphValue.toFixed(2),
             );
           } else {
             this.valueFormGroup.patchValue({
@@ -368,7 +372,7 @@ export class PurchaseCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 
@@ -394,11 +398,11 @@ export class PurchaseCreateComponent {
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
 
     const dateFormatted = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const dueDateFormatted = `${dueDate.getFullYear()}-${String(
-      dueDate.getMonth() + 1
+      dueDate.getMonth() + 1,
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
     const proxyPayment = this.paymentFormGroup.controls['proxyPayment'].value;
     const paymentAmount = this.paymentFormGroup.controls['paymentTotal'].value;

@@ -638,7 +638,13 @@ export const availablePPh: IPPh[] = [
     type: 'PPh 21',
     tariff: 5,
   },
-
+  {
+    code: '21-100-20',
+    taxObjectName:
+      'Imbalan kepada pemberi jasa dalam segala bidang (bukan Pegawai)',
+    type: 'PPh 21',
+    tariff: 2.5,
+  },
   {
     code: '21-100-25',
     taxObjectName:
@@ -673,9 +679,15 @@ export const availablePPh: IPPh[] = [
     type: 'PPh 21',
     tariff: 0,
   },
+  {
+    code: '21-100-35',
+    taxObjectName: 'Upah Pegawai Tidak Tetap yang Dibayarkan secara Bulanan',
+    type: 'PPh 21',
+    tariff: 0,
+  },
 ];
 export const availablePPhSearch = new FuzzySearch(
   availablePPh,
   ['taxObjectName', 'code', 'otherKeyword'],
-  { caseSensitive: false, sort: true }
+  { caseSensitive: false, sort: true },
 );

@@ -204,6 +204,23 @@ export class CalendarTableComponent {
 
           const convertDay = (jsDay: number) => (jsDay === 0 ? 6 : jsDay - 1);
 
+          const formatLocalDate = (date: Date): string => {
+            const y = date.getFullYear();
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const d = date.getDate().toString().padStart(2, '0');
+            return `${y}-${m}-${d}`;
+          };
+
+          // [SUMMARY] Kumpulkan semua transaksi dari semua rekening
+          let masterTransactions: any[] = [];
+
+          const border = {
+            top: { style: 'thin' },
+            bottom: { style: 'thin' },
+            left: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+
           data.bank_accounts.forEach((account: any) => {
             const sheetName = account.bankAccountNumber;
             const sheetBankID = account.id;
@@ -225,12 +242,6 @@ export class CalendarTableComponent {
             // STYLE BASE
             // ===============================
             worksheet['!freeze'] = { xSplit: 0, ySplit: 3 };
-            const border = {
-              top: { style: 'thin' },
-              bottom: { style: 'thin' },
-              left: { style: 'thin' },
-              right: { style: 'thin' },
-            };
 
             const center = {
               alignment: { horizontal: 'center', vertical: 'center' },
@@ -258,17 +269,11 @@ export class CalendarTableComponent {
               'Minggu',
             ];
 
-            // ===============================
-            // ISI NAMA HARI (baris ke-2)
-            // ===============================
             days.forEach((day, i) => {
               const cell = xlsx.utils.encode_cell({ r: 2, c: i * 4 });
               worksheet[cell] = { t: 's', v: day, s: headerStyle };
             });
 
-            // ===============================
-            // MERGE HEADER
-            // ===============================
             worksheet['!merges'] = [
               { s: { r: 0, c: 0 }, e: { r: 0, c: 27 } },
               { s: { r: 1, c: 0 }, e: { r: 1, c: 27 } },
@@ -278,9 +283,6 @@ export class CalendarTableComponent {
               })),
             ];
 
-            // ===============================
-            // COLUMN WIDTH (PIXEL BASED)
-            // ===============================
             worksheet['!cols'] = Array.from({ length: 28 }).map((_, i) => {
               const mod = i % 4;
               if (mod === 0) return { wpx: 110 };
@@ -289,14 +291,10 @@ export class CalendarTableComponent {
               return { wpx: 120 };
             });
 
-            // ===============================
-            // H1 & H2 STYLE
-            // ===============================
             worksheet['A1'].s = {
               font: { bold: true, sz: 14 },
               alignment: { horizontal: 'center', vertical: 'center' },
             };
-
             worksheet['A2'].s = {
               font: { bold: true },
               alignment: { horizontal: 'center', vertical: 'center' },
@@ -309,11 +307,12 @@ export class CalendarTableComponent {
               .filter((p: any) => p.bankAccountID === sheetBankID)
               .map((p: any) => ({
                 date: p.date,
+                documentDate: p.documentDate,
                 documentName: p.documentName || '-',
-                counterparty: p.bankAccountName || '-',
+                counterparty: p.opponent || p.bankAccountName || '-',
                 nominal:
                   typeof p.amount === 'object'
-                    ? -Number(p.amount.parsedValue)
+                    ? -Number(p.amount)
                     : -Number(p.amount),
               }));
 
@@ -322,25 +321,51 @@ export class CalendarTableComponent {
                 if (ip.bankAccountIDOrigin === sheetBankID) {
                   return {
                     date: ip.date,
+                    documentDate: ip.date,
                     documentName: `INTER-${ip.id}`,
                     counterparty: ip.destinationBankAccountName,
-                    nominal: -Number(ip.amount.parsedValue),
+                    nominal: -Number(ip.amount),
                   };
                 } else if (ip.bankAccountIDDestination === sheetBankID) {
                   return {
                     date: ip.date,
+                    documentDate: ip.date,
                     documentName: `INTER-${ip.id}`,
                     counterparty: ip.originBankAccountName,
-                    nominal: Number(ip.amount.parsedValue),
+                    nominal: Number(ip.amount),
                   };
                 }
                 return null;
               })
               .filter(Boolean);
 
-            const allTransactions = [...normalPayments, ...interpayments];
+            // ===== INCOMES =====
+            const incomes = (data.incomes || [])
+              .filter((inc: any) => inc.bankAccountID === sheetBankID)
+              .map((inc: any) => ({
+                date: inc.date,
+                documentDate: inc.document_date,
+                documentName: inc.document_name || '-',
+                counterparty: inc.opponent || '-',
+                nominal: Number(inc.amount), // positif (pemasukan)
+              }));
 
-            const grouped: any = {};
+            // Gabungkan semua transaksi
+            const allTransactions = [
+              ...normalPayments,
+              ...interpayments,
+              ...incomes,
+            ];
+
+            // [SUMMARY] Tambahkan ke master
+            masterTransactions.push(...allTransactions);
+
+            if (allTransactions.length === 0) {
+              return; // skip sheet kalau kosong
+            }
+
+            const grouped: Record<string, any[]> = Object.create(null);
+
             allTransactions.forEach((trx: any) => {
               if (!grouped[trx.date]) grouped[trx.date] = [];
               grouped[trx.date].push(trx);
@@ -369,9 +394,7 @@ export class CalendarTableComponent {
               }
               weeks[weekIndex].days.push(day);
 
-              const dateStr = new Date(year, month - 1, day)
-                .toISOString()
-                .split('T')[0];
+              const dateStr = formatLocalDate(new Date(year, month - 1, day));
               const transCount = (grouped[dateStr] || []).length;
               if (transCount > weeks[weekIndex].maxTrans) {
                 weeks[weekIndex].maxTrans = transCount;
@@ -384,18 +407,23 @@ export class CalendarTableComponent {
               }
             }
 
-            // Set minimal 5 baris per hari
             weeks.forEach((w) => {
               w.maxTrans = Math.max(w.maxTrans, 5);
             });
 
-            // Hitung posisi baris awal setiap minggu
-            let currentRow = 3; // baris awal minggu pertama
+            const dayToWeekMap: Record<number, any> = {};
+            weeks.forEach((w) => {
+              w.days.forEach((d: number) => {
+                dayToWeekMap[d] = w;
+              });
+            });
+
+            let currentRow = 3;
             for (let w of weeks) {
               w.startRow = currentRow;
-              currentRow += 3 + w.maxTrans; // 3 baris (tanggal, saldo, header) + maxTrans baris transaksi
+              currentRow += 3 + w.maxTrans;
             }
-            const maxRow = currentRow - 1; // baris terakhir yang ditulis
+            let maxRow = currentRow - 1;
 
             // ===============================
             // PASS 2: Tulis data per hari
@@ -405,21 +433,19 @@ export class CalendarTableComponent {
 
             for (let day = 1; day <= totalDays; day++) {
               const currentDate = new Date(year, month - 1, day);
-              const isoDate = currentDate.toISOString().split('T')[0];
+              const isoDate = formatLocalDate(currentDate);
 
-              // Cari week yang mengandung hari ini
-              const week = weeks.find((w) => w.days.includes(day))!;
+              const week = dayToWeekMap[day];
               const weekStartRow = week.startRow!;
               const maxTrans = week.maxTrans;
 
-              // Hitung colStart berdasarkan posisi hari dalam minggu
               const firstDayOfWeek = week.days[0];
               const firstDateOfWeek = new Date(year, month - 1, firstDayOfWeek);
               const firstCol = convertDay(firstDateOfWeek.getDay());
-              const dayIndexInWeek = day - firstDayOfWeek; // asumsi hari berurutan
+              const dayIndexInWeek = day - firstDayOfWeek;
               const colStart = (firstCol + dayIndexInWeek) * 4;
 
-              // ===== TANGGAL =====
+              // Tanggal
               const tanggalCell = xlsx.utils.encode_cell({
                 r: weekStartRow,
                 c: colStart,
@@ -434,21 +460,13 @@ export class CalendarTableComponent {
                 e: { r: weekStartRow, c: colStart + 3 },
               });
 
-              // ===== SALDO LABEL =====
+              // Saldo label
               worksheet[
                 xlsx.utils.encode_cell({ r: weekStartRow + 1, c: colStart })
-              ] = {
-                t: 's',
-                v: 'Saldo Awal',
-                s: center,
-              };
+              ] = { t: 's', v: 'Saldo Awal', s: center };
               worksheet[
                 xlsx.utils.encode_cell({ r: weekStartRow + 1, c: colStart + 2 })
-              ] = {
-                t: 's',
-                v: 'Saldo Akhir',
-                s: center,
-              };
+              ] = { t: 's', v: 'Saldo Akhir', s: center };
 
               const saldoAwalCell = xlsx.utils.encode_cell({
                 r: weekStartRow + 1,
@@ -459,7 +477,6 @@ export class CalendarTableComponent {
                 c: colStart + 3,
               });
 
-              // Range nominal untuk SUM
               const nominalStart = xlsx.utils.encode_cell({
                 r: weekStartRow + 3,
                 c: colStart + 3,
@@ -469,7 +486,7 @@ export class CalendarTableComponent {
                 c: colStart + 3,
               });
 
-              // ===== SALDO AWAL =====
+              // Saldo awal
               if (isFirstDay) {
                 worksheet[saldoAwalCell] = {
                   t: 'n',
@@ -487,7 +504,7 @@ export class CalendarTableComponent {
                 };
               }
 
-              // ===== SALDO AKHIR =====
+              // Saldo akhir
               worksheet[saldoAkhirCell] = {
                 t: 'n',
                 f: `=${saldoAwalCell}+SUM(${nominalStart}:${nominalEnd})`,
@@ -495,7 +512,7 @@ export class CalendarTableComponent {
                 s: { ...numberStyle, font: { bold: true } },
               };
 
-              // ===== HEADER TABEL =====
+              // Header tabel
               const tableHeaders = [
                 'Tanggal',
                 'Nomor Dokumen',
@@ -508,22 +525,21 @@ export class CalendarTableComponent {
                     r: weekStartRow + 2,
                     c: colStart + i,
                   })
-                ] = {
-                  t: 's',
-                  v: val,
-                  s: headerStyle,
-                };
+                ] = { t: 's', v: val, s: headerStyle };
               });
 
-              // ===== TRANSAKSI =====
+              // Transaksi
               const transaksi = grouped[isoDate] || [];
               for (let i = 0; i < maxTrans; i++) {
                 const row = weekStartRow + 3 + i;
                 if (i < transaksi.length) {
                   const trx = transaksi[i];
+                  const rawDate = trx.documentDate || trx.date || '';
+                  const displayDate = rawDate.substring(0, 10);
+
                   worksheet[xlsx.utils.encode_cell({ r: row, c: colStart })] = {
                     t: 's',
-                    v: trx.date,
+                    v: displayDate,
                     s: center,
                   };
                   worksheet[
@@ -549,7 +565,7 @@ export class CalendarTableComponent {
                     s: numberStyle,
                   };
                 } else {
-                  // Baris kosong: tetap buat sel dengan style agar border muncul
+                  // Baris kosong
                   worksheet[xlsx.utils.encode_cell({ r: row, c: colStart })] = {
                     t: 's',
                     v: '',
@@ -557,25 +573,13 @@ export class CalendarTableComponent {
                   };
                   worksheet[
                     xlsx.utils.encode_cell({ r: row, c: colStart + 1 })
-                  ] = {
-                    t: 's',
-                    v: '',
-                    s: center,
-                  };
+                  ] = { t: 's', v: '', s: center };
                   worksheet[
                     xlsx.utils.encode_cell({ r: row, c: colStart + 2 })
-                  ] = {
-                    t: 's',
-                    v: '',
-                    s: center,
-                  };
+                  ] = { t: 's', v: '', s: center };
                   worksheet[
                     xlsx.utils.encode_cell({ r: row, c: colStart + 3 })
-                  ] = {
-                    t: 's',
-                    v: '',
-                    s: numberStyle,
-                  };
+                  ] = { t: 's', v: '', s: numberStyle };
                 }
               }
 
@@ -591,7 +595,6 @@ export class CalendarTableComponent {
                 if (!worksheet[cellRef]) {
                   worksheet[cellRef] = { t: 's', v: '', s: { border } };
                 }
-                // Jika sudah ada, style-nya sudah mengandung border
               }
             }
 
@@ -603,12 +606,10 @@ export class CalendarTableComponent {
               orientation: 'landscape',
             };
 
-            // Atur tinggi baris sesuai maxRow
             worksheet['!rows'] = Array.from({ length: maxRow + 1 }).map(() => ({
               hpx: 22,
             }));
 
-            // Perbarui range worksheet
             worksheet['!ref'] = xlsx.utils.encode_range({
               s: { r: 0, c: 0 },
               e: { r: maxRow, c: 27 },
@@ -617,9 +618,230 @@ export class CalendarTableComponent {
             xlsx.utils.book_append_sheet(workbook, worksheet, sheetName);
           });
 
+          // ===============================
+          // [SUMMARY] Buat sheet Ringkasan
+          // ===============================
+          // ===============================
+          // [SUMMARY] Buat sheet Ringkasan
+          // ===============================
+          if (masterTransactions.length > 0) {
+            // Hitung total opening balance dari semua rekening
+            let totalOpeningBalance = 0;
+            data.bank_accounts.forEach((account: any) => {
+              totalOpeningBalance += this.getOpeningBalance(
+                data.balances,
+                account.id,
+              );
+            });
+
+            const summarySheetName = 'Ringkasan';
+            const summaryRows: any[][] = [];
+
+            const monthName = new Date(year, month - 1).toLocaleString(
+              'id-ID',
+              {
+                month: 'long',
+              },
+            );
+            summaryRows.push([`Ringkasan Harian - ${monthName} ${year}`]); // r=0
+            summaryRows.push([]); // r=1
+            summaryRows.push([
+              'Tanggal',
+              'Jumlah Transaksi',
+              'Total Pemasukan',
+              'Total Pengeluaran',
+              'Selisih',
+              'Saldo Gabungan',
+            ]); // r=2
+
+            // Baris saldo awal (r=3)
+            summaryRows.push([
+              'Saldo Awal',
+              '',
+              '',
+              '',
+              '',
+              totalOpeningBalance,
+            ]);
+
+            // Group per tanggal, skip interpayment
+            const summaryGroup: Record<
+              string,
+              { count: number; income: number; expense: number }
+            > = {};
+
+            masterTransactions.forEach((trx: any) => {
+              // Lewati interpayment
+              if (
+                trx.documentName &&
+                typeof trx.documentName === 'string' &&
+                trx.documentName.startsWith('INTER-')
+              ) {
+                return;
+              }
+              const date = trx.date;
+              if (!date) return; // lewati jika tidak ada tanggal
+
+              if (!summaryGroup[date]) {
+                summaryGroup[date] = { count: 0, income: 0, expense: 0 };
+              }
+              summaryGroup[date].count++;
+
+              // Pastikan nominal berupa angka
+              const nominal =
+                typeof trx.nominal === 'number'
+                  ? trx.nominal
+                  : Number(trx.nominal) || 0;
+              if (nominal > 0) {
+                summaryGroup[date].income += nominal;
+              } else {
+                summaryGroup[date].expense += Math.abs(nominal);
+              }
+            });
+
+            const sortedDates = Object.keys(summaryGroup).sort();
+            let totalCount = 0,
+              totalIncome = 0,
+              totalExpense = 0;
+
+            sortedDates.forEach((date) => {
+              const { count, income, expense } = summaryGroup[date];
+              totalCount += count;
+              totalIncome += income;
+              totalExpense += expense;
+              summaryRows.push([
+                date,
+                count,
+                income,
+                expense,
+                income - expense,
+                0,
+              ]); // kolom F diisi 0 sementara
+            });
+
+            // Baris total
+            summaryRows.push([
+              'TOTAL',
+              totalCount,
+              totalIncome,
+              totalExpense,
+              totalIncome - totalExpense,
+              0,
+            ]);
+
+            const summaryWs = xlsx.utils.aoa_to_sheet(summaryRows);
+
+            // Style header kolom (6 kolom)
+            const summaryHeaderStyle = {
+              font: { bold: true },
+              alignment: { horizontal: 'center' },
+              border: border,
+            };
+            for (let c = 0; c < 6; c++) {
+              const cell = xlsx.utils.encode_cell({ r: 2, c });
+              if (summaryWs[cell]) summaryWs[cell].s = summaryHeaderStyle;
+            }
+
+            // Tentukan indeks baris
+            const firstDataRow = 4; // r=4 adalah baris data pertama
+            const lastDataRow = firstDataRow + sortedDates.length - 1;
+            const totalRow = lastDataRow + 1;
+
+            // Set formula untuk kolom Saldo Gabungan di baris data
+            for (let r = firstDataRow; r <= lastDataRow; r++) {
+              const cellF = xlsx.utils.encode_cell({ r, c: 5 });
+              summaryWs[cellF] = {
+                t: 'n',
+                f: `=F${r}+E${r + 1}`, // r 0-based: F4 + E5 untuk baris pertama, dst.
+                z: '#,##0',
+                s: { border: border, alignment: { horizontal: 'right' } },
+              };
+            }
+
+            // Baris total: set formula =F${lastDataRow} (ambil nilai dari baris data terakhir)
+            const totalCellF = xlsx.utils.encode_cell({ r: totalRow, c: 5 });
+            summaryWs[totalCellF] = {
+              t: 'n',
+              f: `=F${lastDataRow}`,
+              z: '#,##0',
+              s: {
+                border: border,
+                alignment: { horizontal: 'right' },
+                font: { bold: true },
+              },
+            };
+
+            // Loop semua sel untuk border dan format angka
+            const lastRow = summaryRows.length - 1;
+            for (let r = 0; r <= lastRow; r++) {
+              for (let c = 0; c < 6; c++) {
+                const cellRef = xlsx.utils.encode_cell({ r, c });
+                if (!summaryWs[cellRef]) {
+                  summaryWs[cellRef] = { t: 's', v: '', s: { border: border } };
+                } else {
+                  if (!summaryWs[cellRef].s) summaryWs[cellRef].s = {};
+                  summaryWs[cellRef].s.border = border;
+
+                  // Untuk baris data (r >= 3), atur alignment dan format number
+                  if (r >= 3) {
+                    if (c === 0) {
+                      summaryWs[cellRef].s.alignment = { horizontal: 'left' };
+                    } else {
+                      summaryWs[cellRef].s.alignment = { horizontal: 'right' };
+                      // Format number untuk kolom 2-5 jika berisi angka
+                      if (c >= 2 && c <= 5 && summaryWs[cellRef].t === 'n') {
+                        summaryWs[cellRef].z = '#,##0';
+                      }
+                    }
+                  }
+
+                  // Baris total bold
+                  if (r === totalRow) {
+                    if (!summaryWs[cellRef].s.font)
+                      summaryWs[cellRef].s.font = {};
+                    summaryWs[cellRef].s.font.bold = true;
+                  }
+                }
+              }
+            }
+
+            // Lebar kolom
+            summaryWs['!cols'] = [
+              { wpx: 120 }, // tanggal
+              { wpx: 100 }, // jumlah
+              { wpx: 150 }, // pemasukan
+              { wpx: 150 }, // pengeluaran
+              { wpx: 150 }, // selisih
+              { wpx: 180 }, // saldo gabungan
+            ];
+
+            // Merge judul
+            summaryWs['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }];
+
+            // Page setup
+            summaryWs['!pageSetup'] = {
+              paperSize: 8,
+              orientation: 'landscape',
+            };
+
+            // Tambahkan sheet
+            xlsx.utils.book_append_sheet(workbook, summaryWs, summarySheetName);
+
+            // Pindahkan ke posisi pertama
+            const sheetNames = workbook.SheetNames;
+            const idx = sheetNames.indexOf(summarySheetName);
+            if (idx > 0) {
+              sheetNames.splice(idx, 1);
+              sheetNames.unshift(summarySheetName);
+            }
+          }
+
+          // Tulis file
           const excelBuffer = xlsx.write(workbook, {
             bookType: 'xlsx',
             type: 'array',
+            cellStyles: true,
+            compression: true,
           });
 
           this.saveAsExcelFile(excelBuffer, 'Calendar');
@@ -652,6 +874,6 @@ export class CalendarTableComponent {
       return Number(raw.parsedValue) || 0;
     }
 
-    return 0;
+    return Number(raw) || 0;
   }
 }
