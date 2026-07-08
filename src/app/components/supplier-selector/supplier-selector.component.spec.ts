@@ -8,7 +8,7 @@ describe('SupplierSelectorComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SupplierSelectorComponent]
+      declarations: [SupplierSelectorComponent],
     });
     fixture = TestBed.createComponent(SupplierSelectorComponent);
     component = fixture.componentInstance;

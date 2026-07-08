@@ -56,6 +56,9 @@ export class PurchaseViewComponent {
 
   isLoading: boolean = true;
 
+  /** raw purchase payload, kept for exact numeric calculations + copy */
+  raw: any = null;
+
   metaFormGroup: FormGroup = new FormGroup({
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -105,10 +108,34 @@ export class PurchaseViewComponent {
     return this.f['payments'] as FormArray;
   }
 
+  // ---- computed monetary values (exact, from raw) ----
+  get vDpp(): number {
+    return this.raw?.dpp || 0;
+  }
+  get vPpn(): number {
+    return this.raw ? (this.raw.ppn * this.raw.dpp) / 100 : 0;
+  }
+  get vPph(): number {
+    return this.raw ? (this.raw.pphPercentage * this.raw.dpp) / 100 : 0;
+  }
+  get vPbbkb(): number {
+    return this.raw?.pbbkb || 0;
+  }
+  get vOther(): number {
+    return this.raw?.otherValue || 0;
+  }
+  get vTotalInvoice(): number {
+    return this.vDpp + this.vPpn + this.vPbbkb + this.vOther;
+  }
+  get vTotalPay(): number {
+    return this.vDpp + this.vPpn - this.vPph + this.vPbbkb + this.vOther;
+  }
+
   fetchData() {
     this.apiService.get('purchases/' + this.data.id, {}).subscribe({
       next: (response: any) => {
         const data = response.purchase;
+        this.raw = data;
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),
@@ -164,9 +191,12 @@ export class PurchaseViewComponent {
             }),
           );
         });
+
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error fetching purchase data:', error);
+        this.isLoading = false;
         this.snackBar.open('Error fetching purchase data', 'Close', {
           duration: 3000,
         });
@@ -181,6 +211,42 @@ export class PurchaseViewComponent {
       day: 'numeric',
     };
     return new Date(date).toLocaleDateString('id-ID', options);
+  }
+
+  private rp(n: number): string {
+    return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+  }
+
+  /** Build a WhatsApp-friendly text summary and copy it to the clipboard. */
+  copyDocument(): void {
+    const f = this.metaFormGroup.value;
+    const lines = [
+      '*DATA PURCHASE*',
+      f.supplierName || '-',
+      '',
+      `*Tanggal:* ${f.date || '-'}`,
+      `*Invoice:* ${f.invoiceName || '-'}`,
+      `*Faktur Pajak:* ${f.taxInvoiceName || '-'}`,
+      `*Nomor PO:* ${f.purchaseOrderName || '-'}`,
+      `*Project:* ${f.projectName || '-'}`,
+      '',
+      '*RINCIAN NILAI*',
+      `DPP: ${this.rp(this.vDpp)}`,
+      `PPN: ${this.rp(this.vPpn)}`,
+      `PPh: -${this.rp(this.vPph)}`,
+      `Other Value: ${this.rp(this.vOther)}`,
+      '',
+      `*Total Invoice:* ${this.rp(this.vTotalInvoice)}`,
+      `*Total Harus Dibayar:* ${this.rp(this.vTotalPay)}`,
+    ];
+    this.clipboard.copy(lines.join('\n'));
+    this.snackBar.open(
+      'Detail purchase disalin — siap di-paste ke WhatsApp',
+      'Close',
+      {
+        duration: 3000,
+      },
+    );
   }
 
   deletePurchaseData() {

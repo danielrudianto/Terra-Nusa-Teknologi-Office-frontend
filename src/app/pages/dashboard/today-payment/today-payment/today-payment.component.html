@@ -1,0 +1,85 @@
+<div class="tp">
+  <div class="tp__head">
+    <div>
+      <h2 class="tp__title">Pembayaran Hari Ini</h2>
+      <span class="tp__sub" *ngIf="!isLoading && !errorMsg">
+        {{ formatIDR(total) }} · {{ items.length }} transaksi
+      </span>
+    </div>
+    <button
+      class="tp__refresh"
+      (click)="fetch()"
+      [disabled]="isLoading"
+      title="Perbarui"
+    >
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.spin]="isLoading"
+      >
+        <path d="M23 4v6h-6M1 20v-6h6" />
+        <path
+          d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- error -->
+  <div class="tp__error" *ngIf="errorMsg">
+    <span>{{ errorMsg }}</span>
+    <button (click)="fetch()">Coba lagi</button>
+  </div>
+
+  <!-- loading -->
+  <div class="tp__list" *ngIf="isLoading && !errorMsg">
+    <div class="tp__row" *ngFor="let s of skeletonRows">
+      <span class="tp__dot skeleton"></span>
+      <div class="tp__info">
+        <span class="skeleton sk-line" style="width: 150px"></span>
+        <span class="skeleton sk-line-sm" style="width: 90px"></span>
+      </div>
+      <span class="skeleton sk-line" style="width: 90px"></span>
+    </div>
+  </div>
+
+  <!-- data -->
+  <div class="tp__list" *ngIf="!isLoading && !errorMsg">
+    <div class="tp__row" *ngFor="let it of visibleItems; trackBy: trackById">
+      <span class="tp__dot" [style.background]="it.color"></span>
+      <div class="tp__info">
+        <span class="tp__row-title">
+          {{ it.title }}
+          <span class="tp__pending" *ngIf="!it.isApprove">pending</span>
+        </span>
+        <span class="tp__row-sub">{{ it.bankLabel }}</span>
+      </div>
+      <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
+    </div>
+
+    <div class="tp__empty" *ngIf="items.length === 0">
+      Tidak ada pembayaran hari ini.
+    </div>
+
+    <!-- faded peek of the next hidden row + show more -->
+    <div class="tp__more" *ngIf="hiddenCount > 0">
+      <div class="tp__row faded" *ngFor="let it of [items[maxVisible]]">
+        <span class="tp__dot" [style.background]="it.color"></span>
+        <div class="tp__info">
+          <span class="tp__row-title">{{ it.title }}</span>
+          <span class="tp__row-sub">{{ it.bankLabel }}</span>
+        </div>
+        <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
+      </div>
+      <button class="tp__showmore" (click)="openAll()">
+        Lihat semua ({{ hiddenCount }} lagi)
+      </button>
+    </div>
+  </div>
+</div>

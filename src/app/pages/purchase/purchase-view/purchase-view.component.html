@@ -1,330 +1,173 @@
-<h2 mat-dialog-title>Purchase data</h2>
-<mat-dialog-content>
-  <form [formGroup]="metaFormGroup">
-    <div class="row">
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
-          <input matInput placeholder="Date" formControlName="date" readonly />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="projectName"
-            placeholder="Project name"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase type</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="purchaseType"
-            placeholder="Purchase Type"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier</mat-label>
-          <input
-            matInput
-            formControlName="supplierName"
-            type="text"
-            placeholder="Supplier name"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier address</mat-label>
-          <textarea
-            matInput
-            formControlName="supplierAddress"
-            rows="3"
-            placeholder="Supplier address"
-            readonly
-            style="resize: none"
-          ></textarea>
-        </mat-form-field>
+<div class="pv">
+  <!-- header -->
+  <div mat-dialog-title class="pv-head">
+    <div class="pv-head__left">
+      <span class="pv-avatar">{{
+        (f["supplierName"].value || "?").charAt(0)
+      }}</span>
+      <div>
+        <div class="pv-supplier">{{ f["supplierName"].value || "—" }}</div>
+        <div class="pv-invoice">{{ f["invoiceName"].value || "—" }}</div>
       </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Due date</mat-label>
-          <input
-            matInput
-            placeholder="Date"
-            formControlName="dueDate"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Invoice name</mat-label>
-          <input
-            matInput
-            formControlName="invoiceName"
-            type="text"
-            placeholder="Invoice name"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Receipt Name</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="receiptName"
-            placeholder="Receipt Name"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Tax Invoice Name</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="taxInvoiceName"
-            placeholder="Tax Invoice Name"
-            maxlength="17"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase Order Name</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="purchaseOrderName"
-            placeholder="Purchase Order Name"
-            readonly
-          />
-        </mat-form-field>
+    </div>
+    <div class="pv-chips">
+      <span
+        class="pv-chip"
+        [class.pv-chip--ready]="f['lastStatus'].value === 'ready'"
+        [class.pv-chip--draft]="f['lastStatus'].value !== 'ready'"
+      >
+        {{ f["lastStatus"].value === "ready" ? "Ready" : "Draft" }}
+      </span>
+      <span class="pv-chip pv-chip--muted" *ngIf="f['isInternal'].value">
+        {{ f["isInternal"].value === "Yes" ? "Internal" : "Eksternal" }}
+      </span>
+    </div>
+  </div>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Is internal purchase</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="isInternal"
-            placeholder="Project name"
-            readonly
-          />
-        </mat-form-field>
+  <mat-dialog-content class="pv-content">
+    <!-- document meta -->
+    <div class="pv-section">
+      <div class="pv-grid">
+        <div class="pv-field">
+          <span class="pv-label">Tanggal</span
+          ><span class="pv-value">{{ f["date"].value || "—" }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Jatuh tempo</span
+          ><span class="pv-value">{{ f["dueDate"].value || "—" }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Faktur pajak</span
+          ><span class="pv-value">{{ f["taxInvoiceName"].value || "—" }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Nomor PO</span
+          ><span class="pv-value">{{
+            f["purchaseOrderName"].value || "—"
+          }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Receipt</span
+          ><span class="pv-value">{{ f["receiptName"].value || "—" }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Project</span
+          ><span class="pv-value">{{ f["projectName"].value || "—" }}</span>
+        </div>
+        <div class="pv-field">
+          <span class="pv-label">Tipe</span
+          ><span class="pv-value">{{ f["purchaseType"].value || "—" }}</span>
+        </div>
+        <div class="pv-field pv-field--wide">
+          <span class="pv-label">Alamat supplier</span
+          ><span class="pv-value pv-value--sm">{{
+            f["supplierAddress"].value || "—"
+          }}</span>
+        </div>
       </div>
-      <div class="col-12">
-        <mat-form-field appearance="outline" class="w-100 mt-3">
-          <mat-label>DPP</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="dpp"
-            placeholder="DPP"
-            prefix="Rp. "
-            [thousandSeparator]="' '"
-            [decimalMarker]="','"
-            [mask]="'separator'"
-            readonly
-          />
-        </mat-form-field>
+    </div>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPN (%)</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="ppn"
-            placeholder="PPN"
-            suffix="%"
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPN (Rp.)</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="ppnValue"
-            placeholder="PPN (Rp.)"
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PBBKB</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="pbbkb"
-            placeholder="PBBKB"
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
+    <!-- financial breakdown -->
+    <div class="pv-section">
+      <div class="pv-section__title">Rincian Nilai</div>
+      <div class="pv-money">
+        <div class="pv-money__row">
+          <span>DPP</span
+          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="pv-money__row">
+          <span>PPN</span
+          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="pv-money__row" *ngIf="vPbbkb">
+          <span>PBBKB</span
+          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="pv-money__row">
+          <span
+            >Other value
+            <em *ngIf="f['otherValueNote'].value"
+              >· {{ f["otherValueNote"].value }}</em
+            ></span
+          ><span>+ {{ vOther | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="pv-money__row pv-money__row--sub">
+          <span>Total Invoice</span
+          ><span>{{
+            vTotalInvoice | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+        </div>
+        <div class="pv-money__row pv-money__row--neg">
+          <span>PPh dipotong</span
+          ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="pv-money__total">
+          <span>Total Harus Dibayar</span>
+          <span>{{ vTotalPay | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
       </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Percentage</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="pphPercentage"
-            placeholder="PPh Percentage"
-            readonly
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh (Rp.)</mat-label>
-          <input
-            matInput
-            type="text"
-            placeholder="PPh Value"
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-            formControlName="pph"
-            readonly
-          />
-        </mat-form-field>
+    </div>
+
+    <!-- payments -->
+    <div class="pv-section" *ngIf="t.length > 0">
+      <div class="pv-section__title">Pembayaran ({{ t.length }})</div>
+      <div class="pv-pay" *ngFor="let p of t.controls">
+        <div class="pv-pay__info">
+          <span class="pv-pay__bank"
+            >{{ p.get("bankName")?.value }} ·
+            {{ p.get("bankAccountName")?.value }}</span
+          >
+          <span class="pv-pay__date">{{
+            formatDate(p.get("date")?.value)
+          }}</span>
+        </div>
+        <div class="pv-pay__right">
+          <span class="pv-pay__amount">{{
+            p.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+          <span
+            class="pv-badge"
+            [class.pv-badge--ok]="p.get('isApprove')?.value"
+            [class.pv-badge--wait]="!p.get('isApprove')?.value"
+          >
+            {{ p.get("isApprove")?.value ? "Approved" : "Pending" }}
+          </span>
+        </div>
       </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="pphCode"
-            placeholder="PPh Code"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Object Name</mat-label>
-          <textarea
-            matInput
-            type="text"
-            placeholder="PPh Object Name"
-            formControlName="pphTaxObject"
-            readonly
-          ></textarea>
-        </mat-form-field>
-      </div>
+    </div>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Other value</mat-label>
-        <input
-          matInput
-          type="text"
-          placeholder="otherValue"
-          prefix="Rp. "
-          thousandSeparator=" "
-          mask="separator.2"
-          formControlName="otherValue"
-          readonly
-        />
-        <mat-hint>{{ metaFormGroup.get("otherValueNote")?.value }}</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Total</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="total"
-          placeholder="Total"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          [mask]="'separator'"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Payment Method</mat-label>
-        <mat-select formControlName="paymentMethod">
-          <mat-option value="bank">Bank Transfer</mat-option>
-          <mat-option value="cash">Virtual Account</mat-option>
-          <mat-option value="cash">Cheque</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="bankName"
-          placeholder="Bank name"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account number</mat-label>
+    <!-- bank destination -->
+    <div class="pv-section" *ngIf="f['bankAccountNumber'].value">
+      <div class="pv-section__title">Rekening Tujuan</div>
+      <div class="pv-bank">
+        <div>
+          <div class="pv-value">
+            {{ f["bankName"].value }} · {{ f["bankAccountName"].value }}
+          </div>
+          <div class="pv-value pv-value--sm">
+            {{ f["bankAccountNumber"].value }}
+          </div>
+        </div>
         <button
           mat-icon-button
-          type="button"
-          matPrefix
           (click)="copyBankAccountNumber()"
+          aria-label="Salin nomor rekening"
         >
           <mat-icon>content_copy</mat-icon>
         </button>
-        <input
-          matInput
-          type="text"
-          formControlName="bankAccountNumber"
-          placeholder="Bank account number"
-          readonly
-          mask="9999 9999 9999 9999"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="bankAccountName"
-          placeholder="Bank account name"
-          readonly
-        />
-      </mat-form-field>
-
-      <h3>Payment history</h3>
-      @if(t.controls.length == 0){
-      <mat-list>
-        <mat-list-item>No payment history</mat-list-item>
-      </mat-list>
-      } @else {
-      <mat-list>
-        @for(data of t.controls;track data){
-        <mat-list-item lines="3">
-          @if(data.get('isApprove')?.value == true){
-          <mat-icon matListItemIcon>check</mat-icon>
-          } @else {
-
-          <mat-icon matListItemIcon>pending</mat-icon>
-          }
-          <span matListItemTitle>{{
-            data.get("amount")?.value | currency : "Rp."
-          }}</span>
-          <span matListItemLine>{{
-            data.get("date")?.value | date : "dd MMMM yyyy"
-          }}</span>
-          {{ data.get("bankAccountNumber")?.value }} --
-          {{ data.get("bankAccountName")?.value }}
-        </mat-list-item>
-        }
-      </mat-list>
-      }
+      </div>
     </div>
-  </form>
-</mat-dialog-content>
+  </mat-dialog-content>
+
+  <!-- actions -->
+  <mat-dialog-actions class="pv-actions">
+    <button mat-flat-button class="pv-copy" (click)="copyDocument()">
+      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+    </button>
+    <span class="pv-spacer"></span>
+    <button mat-button class="pv-delete" (click)="deletePurchaseData()">
+      <mat-icon>delete_outline</mat-icon>&nbsp;Hapus
+    </button>
+    <button mat-button mat-dialog-close>Tutup</button>
+  </mat-dialog-actions>
+</div>

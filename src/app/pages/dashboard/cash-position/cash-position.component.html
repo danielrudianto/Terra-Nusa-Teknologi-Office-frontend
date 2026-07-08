@@ -1,0 +1,96 @@
+<div class="cash-position">
+  <!-- Header -->
+  <div class="cp-header">
+    <div>
+      <h2 class="cp-title">Posisi Kas</h2>
+      <span class="cp-subtitle" *ngIf="!isLoading && !errorMsg">
+        Per {{ asOfLabel() }} · {{ accounts.length }} rekening
+      </span>
+    </div>
+    <button
+      class="cp-refresh"
+      (click)="fetch()"
+      [disabled]="isLoading"
+      title="Perbarui"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.spin]="isLoading"
+      >
+        <path d="M23 4v6h-6M1 20v-6h6" />
+        <path
+          d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Total (hero) -->
+  <div class="cp-total" *ngIf="!errorMsg">
+    <span class="cp-total__label">Total Saldo</span>
+    <span
+      class="cp-total__value"
+      *ngIf="!isLoading"
+      [class.negative]="totalBalance < 0"
+    >
+      {{ formatIDR(totalBalance) }}
+    </span>
+    <span class="cp-skeleton cp-skeleton--hero" *ngIf="isLoading"></span>
+  </div>
+
+  <div class="cp-divider" *ngIf="!errorMsg"></div>
+
+  <!-- Error state -->
+  <div class="cp-error" *ngIf="errorMsg">
+    <span>{{ errorMsg }}</span>
+    <button (click)="fetch()">Coba lagi</button>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div class="cp-list" *ngIf="isLoading && !errorMsg">
+    <div class="cp-row" *ngFor="let s of skeletonRows">
+      <div class="cp-row__left">
+        <span class="cp-skeleton cp-skeleton--line" style="width: 140px"></span>
+        <span
+          class="cp-skeleton cp-skeleton--line-sm"
+          style="width: 90px"
+        ></span>
+      </div>
+      <span class="cp-skeleton cp-skeleton--line" style="width: 110px"></span>
+    </div>
+  </div>
+
+  <!-- Accounts -->
+  <div class="cp-list" *ngIf="!isLoading && !errorMsg">
+    <div
+      class="cp-row"
+      *ngFor="let a of accounts; trackBy: trackByAccount"
+      [class.inactive]="!a.hasActivity"
+    >
+      <div class="cp-row__left">
+        <span class="cp-bank">
+          {{ shortBank(a.bankName) }}
+          <span class="cp-badge" *ngIf="!a.hasActivity">tanpa mutasi</span>
+        </span>
+        <span class="cp-meta"
+          >{{ a.bankAccountName }} ·
+          {{ maskAccount(a.bankAccountNumber) }}</span
+        >
+      </div>
+      <span class="cp-balance" [class.negative]="a.balance < 0">
+        {{ formatIDR(a.balance) }}
+      </span>
+    </div>
+
+    <div class="cp-empty" *ngIf="accounts.length === 0">
+      Belum ada rekening aktif.
+    </div>
+  </div>
+</div>

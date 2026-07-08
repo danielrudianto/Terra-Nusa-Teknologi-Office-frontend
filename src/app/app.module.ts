@@ -43,6 +43,8 @@ import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
 import { SalarySlipCreateComponent } from './pages/salary-slip/salary-slip-create/salary-slip-create.component';
 import { CalendarComponent } from './pages/calendar/calendar.component';
 import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
+import { CashPositionComponent } from './pages/dashboard/cash-position/cash-position.component';
+import { TodayPaymentComponent } from './pages/dashboard/today-payment/today-payment/today-payment.component';
 
 // Material
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -213,6 +215,8 @@ export const MY_FORMATS = {
     PurchaseDraftConvertComponent,
     PphSalaryRecapComponent,
     FileDropComponent,
+    CashPositionComponent,
+    TodayPaymentComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
