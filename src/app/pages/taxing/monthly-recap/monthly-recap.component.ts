@@ -149,6 +149,8 @@ export class MonthlyRecapComponent {
         return 'Biaya rekrutmen';
       case '6.5.2':
         return 'Biaya pelatihan';
+      case '6.5.3':
+        return 'Biaya kesehatan';
 
       // ===== Project Expenses =====
       case 'A':

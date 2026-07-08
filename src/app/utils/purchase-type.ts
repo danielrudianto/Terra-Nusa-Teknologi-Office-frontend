@@ -69,6 +69,8 @@ export class PurchaseType {
         return 'Recruitment Expense';
       case '6.5.2':
         return 'Training Expense';
+      case '6.5.3':
+        return 'Healthcare Expense';
       default:
         return purchaseType;
     }

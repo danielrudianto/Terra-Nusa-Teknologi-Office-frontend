@@ -14,6 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseViewComponent } from '../../purchase/purchase-view/purchase-view.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AssetListPurchaseOrderSelectorComponent } from './asset-list-purchase-order-selector/asset-list-purchase-order-selector.component';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-asset-list',
@@ -66,6 +67,10 @@ export class AssetListComponent {
 
   ngOnInit(): void {
     this.fetchClients();
+
+    this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+      this.fetchClients(0);
+    });
   }
 
   changePage(event: PageEvent) {

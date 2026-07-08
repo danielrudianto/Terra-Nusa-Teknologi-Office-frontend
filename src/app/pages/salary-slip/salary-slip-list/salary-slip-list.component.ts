@@ -202,15 +202,7 @@ export class SalarySlipListComponent {
   printSalarySlip(id: number) {
     this.apiService.get(`salary-slips/print/${id}`, {}).subscribe({
       next: (data: any) => {
-        // Here I got this from the backend
-        // with open(pdf_path, "rb") as file:
-        //         file_data = file.read()
-        //         return {"file": file_data, "filename": f"Slip Gaji {month_name} {year}.pdf"}
-        // Please create a new tab and focus on it, showing the PDF
-        const blob = new Blob([data.file], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const pdfWindow = window.open(url);
-        pdfWindow?.focus();
+        console.log(data);
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {
