@@ -2,41 +2,174 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>Dashboard</h1>
-        <p class="accent mb-4">
+        <h1 class="db-title">Dashboard</h1>
+        <p class="db-subtitle mb-4">
           Plan, prioritize, and accomplish your tasks with ease.
         </p>
       </div>
-      <div class="col-10">
-        <div class="dashboard-card half-h">
-          <h1>MERGE, SPLIT, AND SAVE</h1>
-          <h1 class="red">IN THE TIP OF YOUR HAND</h1>
 
-          <button [routerLink]="'/PDF'">Get started</button>
-        </div>
+      <!-- Hero: PDF tools -->
+      <div class="col-8">
+        <a class="hero hero--pdf" [routerLink]="'/PDF'">
+          <div class="hero__content">
+            <span class="hero__eyebrow">Document tools</span>
+            <h2 class="hero__title">Merge, split &amp; save PDF</h2>
+            <p class="hero__desc">
+              Gabung, pisah, dan rapikan dokumen dalam hitungan detik.
+            </p>
+            <span class="hero__cta">
+              Get started
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </span>
+          </div>
+          <svg
+            class="hero__art"
+            viewBox="0 0 120 120"
+            fill="none"
+            aria-hidden="true"
+          >
+            <rect
+              x="30"
+              y="20"
+              width="52"
+              height="66"
+              rx="7"
+              fill="rgba(255,255,255,0.16)"
+            />
+            <rect
+              x="44"
+              y="34"
+              width="52"
+              height="66"
+              rx="7"
+              fill="rgba(255,255,255,0.28)"
+            />
+            <path
+              d="M58 60h26M58 72h18"
+              stroke="rgba(255,255,255,0.85)"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+          </svg>
+        </a>
       </div>
-      <div class="col-2">
-        <div class="dashboard-card half-h">
-          <h1>INVOICE</h1>
-          <h1 class="red">GEN</h1>
 
-          <button [routerLink]="'/Invoice'">Create</button>
-        </div>
+      <!-- Hero: Invoice generator -->
+      <div class="col-4">
+        <a class="hero hero--invoice" [routerLink]="'/Invoice'">
+          <div class="hero__content">
+            <span class="hero__eyebrow">Automation</span>
+            <h2 class="hero__title">Invoice Generator</h2>
+            <p class="hero__desc">Buat invoice tukang sesuai format kami.</p>
+            <span class="hero__cta">
+              Create
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </span>
+          </div>
+          <svg
+            class="hero__art"
+            viewBox="0 0 120 120"
+            fill="none"
+            aria-hidden="true"
+          >
+            <rect
+              x="36"
+              y="18"
+              width="56"
+              height="72"
+              rx="7"
+              fill="rgba(255,255,255,0.14)"
+            />
+            <path
+              d="M48 38h32M48 52h32M48 66h20"
+              stroke="rgba(120,160,255,0.9)"
+              stroke-width="3.4"
+              stroke-linecap="round"
+            />
+          </svg>
+        </a>
       </div>
+
+      <!-- Today's payment (component) -->
       <div class="col-6 mt-3">
         <app-today-payment></app-today-payment>
       </div>
+
+      <!-- Right column: agenda + reimbursements -->
       <div class="col-6 mt-3">
-        <div class="dashboard-card white half-h">
-          <h2>Today's agenda</h2>
-          <mat-list> </mat-list>
+        <div class="dashboard-card white db-panel half-h">
+          <div class="db-panel__head">
+            <h2>Today's agenda</h2>
+          </div>
+          <div class="db-panel__empty">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="3" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+            <span>Belum ada agenda hari ini</span>
+          </div>
         </div>
 
-        <div class="dashboard-card white half-h" style="margin-top: 20px">
-          <h2>Reimbursements</h2>
-          <mat-list> </mat-list>
+        <div
+          class="dashboard-card white db-panel half-h"
+          style="margin-top: 20px"
+        >
+          <div class="db-panel__head">
+            <h2>Reimbursements</h2>
+          </div>
+          <div class="db-panel__empty">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              />
+              <path d="M14 2v6h6M12 18v-6M9 15h6" />
+            </svg>
+            <span>Tidak ada reimbursement tertunda</span>
+          </div>
         </div>
       </div>
+
+      <!-- Cash position (component) -->
       <div class="col-12 mt-3">
         <app-cash-position></app-cash-position>
       </div>

@@ -1,6 +1,5 @@
 <!-- file-drop.component.html -->
 <div class="dropzone-container">
-  <!-- Main drop zone - now full width/height -->
   <div class="dropzone" [class.dragover]="isDragging" *ngIf="show">
     <input
       type="file"
@@ -10,17 +9,48 @@
       (change)="onFileSelected($event)"
       #fileDropRef
     />
-    <label for="fileDropRef">
-      Drag and Drop your file or
-      <b class="bold-blue">browse</b>
-    </label>
+    <div class="dz-inner">
+      <span class="dz-icon">
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <path d="M17 8l-5-5-5 5" />
+          <path d="M12 3v12" />
+        </svg>
+      </span>
+      <p class="dz-title">Drag &amp; drop PDF di sini</p>
+      <p class="dz-sub">atau <b>browse</b> dari komputer</p>
+      <span class="dz-hint">Mendukung banyak file PDF sekaligus</span>
+    </div>
   </div>
 
   <!-- Drag overlay -->
   <div class="drag-overlay" [class.visible]="isDragging">
     <div class="overlay-content">
-      <h3>Drop your files here</h3>
-      <p>Release to upload your files</p>
+      <svg
+        width="34"
+        height="34"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <path d="M17 8l-5-5-5 5" />
+        <path d="M12 3v12" />
+      </svg>
+      <h3>Lepas untuk upload</h3>
+      <p>File PDF-mu akan langsung diproses</p>
     </div>
   </div>
 </div>

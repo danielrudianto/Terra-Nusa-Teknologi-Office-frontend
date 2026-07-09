@@ -84,34 +84,80 @@ export class PdfMainComponent implements OnInit {
 
   private async processPdfFile(file: File): Promise<void> {
     try {
-      const individualPages = await this.splitPdfIntoPages(file);
+      const buffer = await file.arrayBuffer();
 
-      // Process in smaller batches to keep UI responsive
-      const batchSize = 5;
-      const pagesWithThumbnails: PageData[] = [];
+      // Parse ONCE per library (not once per page).
+      // Load pdf-lib first (it reads its own copy synchronously), then give
+      // pdf.js a fresh copy so its worker transfer can't neuter pdf-lib's data.
+      const libDoc = await PDFDocument.load(buffer);
+      const pdfjsDoc = await pdfjslib.getDocument({
+        data: new Uint8Array(buffer.slice(0)),
+      }).promise;
 
-      for (let i = 0; i < individualPages.length; i += batchSize) {
-        const batch = individualPages.slice(i, i + batchSize);
-        const batchWithThumbnails = await this.convertPagesToThumbnails(
-          batch,
-          file.name
-        );
-        pagesWithThumbnails.push(...batchWithThumbnails);
+      const pageCount = pdfjsDoc.numPages;
 
-        // Allow UI to update between batches
-        await this.delay(100);
+      for (let i = 0; i < pageCount; i++) {
+        // 1) thumbnail — rendered from the ALREADY-OPEN pdf.js document
+        let thumbnail: string;
+        try {
+          thumbnail = await this.renderThumbnail(pdfjsDoc, i + 1);
+        } catch (e) {
+          console.error(`Thumbnail failed for page ${i + 1}:`, e);
+          thumbnail = this.createFallbackThumbnail(i + 1);
+        }
+
+        // 2) per-page PDF bytes — still needed for merge / reorder / save,
+        //    but produced from the single pdf-lib doc we already loaded.
+        const singlePagePdf = await PDFDocument.create();
+        const [copiedPage] = await singlePagePdf.copyPages(libDoc, [i]);
+        singlePagePdf.addPage(copiedPage);
+        const pdfBase64 = await singlePagePdf.saveAsBase64({ dataUri: false });
+
+        // 3) push immediately so pages appear progressively as they finish
+        this.processedDocuments.push({
+          pdf: pdfBase64,
+          thumbnail,
+          pageNumber: i + 1,
+          fileName: this.generatePageFileName(file.name, i + 1),
+          originalFile: file.name,
+        } as PageData);
+
+        // Let the UI breathe every few pages (a micro-yield, not a 100ms wall)
+        if ((i & 3) === 3) {
+          await this.delay(0);
+        }
       }
 
-      // Add original file reference to each page
-      const pagesWithOrigin = pagesWithThumbnails.map((page) => ({
-        ...page,
-        originalFile: file.name,
-      }));
-
-      this.processedDocuments.push(...pagesWithOrigin);
+      // Release pdf.js resources
+      try {
+        await (pdfjsDoc as any).cleanup?.();
+        await (pdfjsDoc as any).destroy?.();
+      } catch {}
     } catch (error) {
       console.error(`Error processing ${file.name}:`, error);
       throw error;
+    }
+  }
+
+  /** Render a single page of an already-loaded pdf.js document to a JPEG data URL. */
+  private async renderThumbnail(
+    pdfjsDoc: any,
+    pageNum: number,
+  ): Promise<string> {
+    const page = await pdfjsDoc.getPage(pageNum);
+    try {
+      const scale = 0.4; // slightly sharper than the old 0.2 — still cheap now
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d')!;
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+
+      await page.render({ canvasContext: context, viewport }).promise;
+      return canvas.toDataURL('image/jpeg', 0.7);
+    } finally {
+      (page as any).cleanup?.();
     }
   }
 
@@ -119,93 +165,9 @@ export class PdfMainComponent implements OnInit {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private async splitPdfIntoPages(file: File): Promise<string[]> {
-    const arrayBuffer = await file.arrayBuffer();
-    const sourcePdf = await PDFDocument.load(arrayBuffer);
-    const pageCount = sourcePdf.getPageCount();
-    const pages: string[] = [];
-
-    for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-      // Create a new PDF for each individual page
-      const singlePagePdf = await PDFDocument.create();
-      const [copiedPage] = await singlePagePdf.copyPages(sourcePdf, [
-        pageIndex,
-      ]);
-      singlePagePdf.addPage(copiedPage);
-
-      // Save as base64 (without data URI prefix)
-      const pdfBytes = await singlePagePdf.saveAsBase64({ dataUri: false });
-      pages.push(pdfBytes);
-    }
-
-    return pages;
-  }
-
-  private async convertPagesToThumbnails(
-    pages: string[],
-    fileName: string
-  ): Promise<PageData[]> {
-    const pagesWithThumbnails: PageData[] = [];
-
-    for (let i = 0; i < pages.length; i++) {
-      try {
-        const thumbnail = await this.convertPdfPageToImage(pages[i]);
-
-        pagesWithThumbnails.push({
-          pdf: pages[i],
-          thumbnail: thumbnail,
-          pageNumber: i + 1,
-          fileName: this.generatePageFileName(fileName, i + 1),
-        });
-      } catch (error) {
-        console.error(`Error converting page ${i + 1}:`, error);
-        // Add fallback thumbnail
-        pagesWithThumbnails.push({
-          pdf: pages[i],
-          thumbnail: this.createFallbackThumbnail(i + 1),
-          pageNumber: i + 1,
-          fileName: this.generatePageFileName(fileName, i + 1),
-        });
-      }
-    }
-
-    return pagesWithThumbnails;
-  }
-
-  private async convertPdfPageToImage(pdfBase64: string): Promise<string> {
-    try {
-      const pdfData = Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0));
-      const loadingTask = pdfjslib.getDocument({ data: pdfData });
-      const pdf = await loadingTask.promise;
-      const page = await pdf.getPage(1);
-
-      // REDUCE QUALITY FOR FASTER PROCESSING
-      const scale = 0.2; // Reduced from 0.5 to 0.2 (60% smaller)
-      const viewport = page.getViewport({ scale });
-
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d')!;
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-
-      await page.render(renderContext).promise;
-
-      // Use even lower quality for JPEG
-      return canvas.toDataURL('image/jpeg', 0.6); // Reduced from 0.8 to 0.6
-    } catch (error) {
-      console.error('Error in convertPdfPageToImage:', error);
-      throw error;
-    }
-  }
-
   private generatePageFileName(
     originalName: string,
-    pageNumber: number
+    pageNumber: number,
   ): string {
     const nameWithoutExt = originalName.replace(/\.pdf$/i, '');
     return `${nameWithoutExt}_page_${pageNumber}.pdf`;
@@ -273,7 +235,7 @@ export class PdfMainComponent implements OnInit {
     moveItemInArray(
       this.processedDocuments,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
   }
 
@@ -343,7 +305,7 @@ export class PdfMainComponent implements OnInit {
         try {
           // Convert base64 to Uint8Array
           const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-            c.charCodeAt(0)
+            c.charCodeAt(0),
           );
           const pagePdf = await PDFDocument.load(pdfBytes);
           const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
@@ -351,19 +313,20 @@ export class PdfMainComponent implements OnInit {
         } catch (pageError) {
           console.error(
             `Error processing page ${pageData.fileName}:`,
-            pageError
+            pageError,
           );
           // Continue with other pages even if one fails
         }
       }
 
       const mergedPdfBytes = await mergedPdf.save();
-      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+      const compatibleBytes = new Uint8Array(mergedPdfBytes);
+      const blob = new Blob([compatibleBytes], { type: 'application/pdf' });
 
       this.downloadMergedPdf(blob);
 
       this.showSuccessMessage(
-        `Successfully merged ${this.processedDocuments.length} pages!`
+        `Successfully merged ${this.processedDocuments.length} pages!`,
       );
     } catch (error) {
       console.error('Error merging PDFs:', error);
@@ -416,7 +379,7 @@ export class PdfMainComponent implements OnInit {
 
   private updateSelectionState(): void {
     const selectedCount = this.processedDocuments.filter(
-      (page) => page.selected
+      (page) => page.selected,
     ).length;
     this.allSelected = selectedCount === this.processedDocuments.length;
   }
@@ -445,7 +408,7 @@ export class PdfMainComponent implements OnInit {
 
       for (const pageData of selectedPages) {
         const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-          c.charCodeAt(0)
+          c.charCodeAt(0),
         );
         const pagePdf = await PDFDocument.load(pdfBytes);
         const [copiedPage] = await newPdf.copyPages(pagePdf, [0]);
@@ -461,7 +424,7 @@ export class PdfMainComponent implements OnInit {
 
       // Optional: Show success message
       this.showSuccessMessage(
-        `Successfully created PDF with ${selectedPages.length} selected pages!`
+        `Successfully created PDF with ${selectedPages.length} selected pages!`,
       );
     } catch (error) {
       console.error('Error creating PDF from selected pages:', error);
@@ -488,7 +451,7 @@ export class PdfMainComponent implements OnInit {
 
       for (const pageData of selectedPages) {
         const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
-          c.charCodeAt(0)
+          c.charCodeAt(0),
         );
         const pagePdf = await PDFDocument.load(pdfBytes);
         const [copiedPage] = await mergedPdf.copyPages(pagePdf, [0]);
@@ -501,7 +464,7 @@ export class PdfMainComponent implements OnInit {
       this.downloadPdf(blob, 'selected-pages');
 
       this.showSuccessMessage(
-        `Successfully merged ${selectedPages.length} selected pages!`
+        `Successfully merged ${selectedPages.length} selected pages!`,
       );
     } catch (error) {
       console.error('Error merging selected PDFs:', error);
