@@ -1,5 +1,19 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -7,10 +21,26 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-supplier-create',
   templateUrl: './supplier-create.component.html',
   styleUrls: ['./supplier-create.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatIconModule,
+  ],
 })
 export class SupplierCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialogRef<SupplierCreateComponent>,
+  ) {}
 
   supplierFormGroup: FormGroup = new FormGroup({
     prefix: new FormControl('', Validators.required),
@@ -48,7 +78,7 @@ export class SupplierCreateComponent {
             });
           }
         }
-      }
+      },
     );
 
     this.supplierFormGroup.controls['serviceAreas'].valueChanges.subscribe(
@@ -63,7 +93,7 @@ export class SupplierCreateComponent {
             });
           }
         }
-      }
+      },
     );
   }
 
@@ -79,6 +109,10 @@ export class SupplierCreateComponent {
     if (index >= 0) {
       this.areas.splice(index, 1);
     }
+  }
+
+  onCancel() {
+    this.dialog.close();
   }
 
   onSubmit() {
@@ -101,24 +135,11 @@ export class SupplierCreateComponent {
       })
       .subscribe({
         next: (data) => {
-          console.log('Success:', data);
           this.snackBar.open('Supplier created successfully', 'Close', {
             duration: 3000,
           });
-          this.supplierFormGroup.patchValue({
-            prefix: '',
-            name: '',
-            address: '',
-            city: '',
-            province: '',
-            npwp: '',
-            phoneNumber: '',
-            email: '',
-            soldItems: '',
-            serviceAreas: '',
-          });
-          this.items = [];
-          this.areas = [];
+          // close and signal the list to refresh
+          this.dialog.close(true);
         },
         error: (error) => {
           console.error(`Error: ${error.error.detail}`);

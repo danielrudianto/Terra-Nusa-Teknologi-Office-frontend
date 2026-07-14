@@ -1,154 +1,87 @@
 .side-nav__wrapper {
   height: 100vh;
-  width: 250px;
+  width: 244px;
   background-color: transparent;
   overflow-y: hidden;
 }
 
 .side-nav__body {
   position: fixed;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   z-index: 100;
   background-color: var(--base-color);
-  width: 250px;
-  height: calc(100vh);
+  width: 244px;
+  height: 100vh;
   border-bottom-right-radius: 20px;
-  padding: 20px;
+  padding: 16px 12px 12px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
+/* ---------- logo (pinned) ---------- */
 .side-nav__logo {
-  flex-grow: 0;
-  text-align: center;
-  width: 100%;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 4px 6px 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
   img {
     flex-shrink: 0;
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
   }
 
   span {
-    font-family: "Poppins";
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-family: 'Poppins';
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--on-primary-color);
     flex-grow: 1;
     text-align: start;
-    margin-left: 0.5rem;
+    margin-left: 0.6rem;
+    letter-spacing: 0.01em;
   }
 }
 
+/* ---------- scrollable item list ---------- */
 .side-nav__item-list {
-  flex: 0 1 auto;
-  overflow-y: auto;
-
-  .side-nav__item__title {
-    //upper case
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--on-primary-color);
-  }
-
-  .list-group-item {
-    background-color: var(--base-color);
-    border: none;
-    transition: 0.2s ease-in-out;
-    opacity: 0.5;
-
-    &:hover {
-      background-color: var(--base-color-hover-transparent);
-      transition: 0.2s ease-in-out;
-    }
-
-    &.active {
-      color: var(--primary-color);
-      font-weight: bold;
-      opacity: 1;
-    }
-  }
-
-  .side-navigation__list-label {
-    font-family: "Poppins";
-    font-size: 0.85rem;
-    font-weight: 400;
-    color: var(--disabled-color);
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-}
-
-.side-nav__version {
   flex: 1 1 auto;
-  width: 100%;
-  border-radius: 25px;
-  aspect-ratio: 22/15;
-  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  margin-top: 4px;
 
-  img {
-    width: 100%;
-    height: 100%;
-    transition: all 0.3s ease-in-out;
-    position: absolute;
-    top: 0;
-    left: 0;
+  /* subtle scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.16);
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.28); }
+  &::-webkit-scrollbar-track { background: transparent; }
+
+  /* compact section labels */
+  .side-navigation__list-label {
+    font-family: 'Poppins';
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--disabled-color);
+    margin: 0.85rem 0 0.15rem;
+    padding-left: 13px;
   }
 
-  .cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-    border-radius: 20px;
-    padding: 15px;
-
-    .text__wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: left;
-      color: white;
-      font-size: 1.2rem;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 10px;
-
-      p {
-        color: white;
-        font-size: 0.75rem;
-        line-height: 0.5;
-        font-family: "Montserrat", sans-serif;
-      }
-
-      button {
-        // white button with border radius
-        background-color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 10px 20px;
-        font-size: 12px;
-        font-family: "Montserrat", sans-serif;
-        cursor: pointer;
-        transition: all 0.3s ease-in-out;
-        &:hover {
-          background-color: black;
-          color: white;
-        }
-      }
-    }
-  }
+  /* first label shouldn't push down the whole list */
+  .side-navigation__list-label:first-child { margin-top: 0.25rem; }
 }

@@ -1,46 +1,100 @@
-.top-navigation__wrapper {
-  width: 100%;
-  height: 65px;
-  background-color: var(--surface-color);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-  padding-left: 30px;
-  padding-right: 30px;
-  box-sizing: border-box; // Add this line
+/* Sticky: pins to the top of the scrolling content area (mat-drawer-content) */
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
 
 mat-toolbar {
-  gap: 1rem;
-  button {
+  position: relative;
+  height: 62px;
+  min-height: 62px;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Poppins';
+
+  background: var(--surface-color, #ffffff);
+  border-bottom: 1px solid rgba(16, 24, 40, 0.06);
+  box-shadow: 0 2px 14px rgba(16, 24, 40, 0.05);
+
+  /* lively brand accent strip along the very top */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #154dec 0%, #5b86ff 50%, #154dec 100%);
+  }
+
+  .spacer { flex: 1 1 auto; }
+
+  /* nav link buttons (they contain an <img> + <span>) */
+  button.h-100:has(img) {
+    height: auto !important;
     background: none;
     border: none;
-    color: #2b2b2b;
     cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
-    font-family: "Poppins";
-    font-size: 1rem;
+    padding: 8px 14px;
+    border-radius: 11px;
+    color: #3f4653;
+    font-family: 'Poppins';
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
 
     img {
-      filter: brightness(0) saturate(100%) invert(12%) sepia(7%) saturate(1%)
-        hue-rotate(315deg) brightness(89%) contrast(84%);
+      width: 18px;
+      height: 18px;
+      transition: filter 0.15s ease;
+      /* neutral grey */
+      filter: brightness(0) saturate(100%) invert(30%) sepia(6%) saturate(500%)
+        hue-rotate(185deg) brightness(92%) contrast(88%);
     }
 
-    &.active {
-      background-color: var(--active-button-color);
-      span {
-        color: var(--on-active-button-color) !important;
-      }
-
+    &:hover:not(.active) {
+      background: rgba(21, 77, 236, 0.06);
+      color: #154dec;
       img {
         filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
           saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
       }
+    }
+
+    &.active {
+      background: var(--active-button-color);
+      font-weight: 600;
+      span { color: var(--on-active-button-color) !important; }
+      img {
+        filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
+          saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
+      }
+    }
+  }
+
+  /* hamburger / menu icon button (contains a <mat-icon>) */
+  button:has(mat-icon) {
+    height: 42px !important;
+    width: 42px;
+    padding: 0;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: #3f4653;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: rgba(21, 77, 236, 0.06);
+      color: #154dec;
     }
   }
 }

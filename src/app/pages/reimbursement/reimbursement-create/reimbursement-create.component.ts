@@ -15,12 +15,41 @@ import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.com
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-reimbursement-create',
   templateUrl: './reimbursement-create.component.html',
   styleUrls: ['./reimbursement-create.component.scss'],
-  standalone: false,
+  standalone: true,
+  providers: [provideNgxMask()],
+  imports: [
+    HeaderTitleComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatAutocompleteModule,
+    NgxMaskDirective,
+  ],
 })
 export class ReimbursementCreateComponent {
   constructor(
@@ -28,7 +57,7 @@ export class ReimbursementCreateComponent {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
   ) {
     this.filteredOptions = this.options.slice();
   }
@@ -99,7 +128,7 @@ export class ReimbursementCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 
@@ -124,13 +153,13 @@ export class ReimbursementCreateComponent {
               date: new FormControl(date, Validators.required),
               description: new FormControl(
                 data.description,
-                Validators.required
+                Validators.required,
               ),
               amount: new FormControl(data.amount, [
                 Validators.required,
                 Validators.min(1),
               ]),
-            })
+            }),
           );
         }
       });
@@ -181,11 +210,11 @@ export class ReimbursementCreateComponent {
     this.isSubmitting = true;
     const date = new Date(this.formGroup.get('date')?.value);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const dueDate = new Date(this.formGroup.get('dueDate')?.value);
     const formattedDueDate = `${dueDate.getFullYear()}-${String(
-      dueDate.getMonth() + 1
+      dueDate.getMonth() + 1,
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
 
     this.apiService
@@ -198,7 +227,7 @@ export class ReimbursementCreateComponent {
           return {
             ...item,
             date: `${itemDate.getFullYear()}-${String(
-              itemDate.getMonth() + 1
+              itemDate.getMonth() + 1,
             ).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`,
           };
         }),
@@ -217,10 +246,10 @@ export class ReimbursementCreateComponent {
               return {
                 ...item,
                 date: `${itemDate.getFullYear()}-${String(
-                  itemDate.getMonth() + 1
+                  itemDate.getMonth() + 1,
                 ).padStart(2, '0')}-${String(itemDate.getDate()).padStart(
                   2,
-                  '0'
+                  '0',
                 )}`,
               };
             }),
@@ -239,7 +268,7 @@ export class ReimbursementCreateComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       })

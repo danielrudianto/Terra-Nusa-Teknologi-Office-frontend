@@ -1,78 +1,104 @@
-<app-header-title
-  [title]="'Suppliers'"
-  [description]="'Manage your supplier data here'"
-  [actionButtonLabel]="'Create new supplier'"
-  (onActionButtonClicked)="createNewSupplier()"
-/>
-<div class="search__wrapper">
-  <mat-form-field appearance="outline" class="w-100">
-    <input
-      matInput
-      type="text"
-      class="input"
-      placeholder="Search supplier"
-      [formControl]="formControl"
-    />
-  </mat-form-field>
-</div>
-<div class="table-responsive">
-  <table mat-table [dataSource]="suppliers">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.name }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="address">
-      <th mat-header-cell *matHeaderCellDef>Address</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.address }}, {{ element.city }}, {{ element.province }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="phone">
-      <th mat-header-cell *matHeaderCellDef>Phone number</th>
-      <td mat-cell *matCellDef="let element">{{ element.phone_number }}</td>
-    </ng-container>
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-      <td mat-cell *matCellDef="let element">{{ element.email == "" ? "N/A" : element.email }}</td>
-    </ng-container>
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Action</th>
-      <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_horiz</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="onViewDetail(element.id)">
-            <mat-icon>view_array</mat-icon>
-            <span>View supplier data</span>
-          </button>
-          <button mat-menu-item (click)="onUpdateSupplier(element.id)">
-            <mat-icon>edit</mat-icon>
-            <span>Update supplier data</span>
-          </button>
-          <button mat-menu-item (click)="onConfirmDelete(element.id)">
-            <mat-icon>delete</mat-icon>
-            <span>Delete supplier data</span>
-          </button>
-        </mat-menu>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
-  <mat-paginator
-    [pageIndex]="page"
-    [length]="count"
-    [pageSize]="pageSize"
-    (page)="changePage($event)"
-    [pageSizeOptions]="[10, 25, 50]"
-    [pageSize]="pageSize"
-  ></mat-paginator>
+<div class="supplier-list">
+  <app-header-title
+    [title]="'Suppliers'"
+    [description]="'Manage your supplier data here'"
+    [actionButtonLabel]="'Create new supplier'"
+    (onActionButtonClicked)="createNewSupplier()"
+  />
+
+  <div class="sl-toolbar">
+    <mat-form-field appearance="outline" class="sl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Nama, alamat, telepon, atau email"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+  </div>
+
+  <div class="sl-card" [class.is-loading]="isLoading">
+    <div class="sl-loadingbar" *ngIf="isLoading"><span></span></div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="suppliers">
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="sl-supplier">
+              <span class="sl-avatar">{{ (element.name || "?").charAt(0) }}</span>
+              <span class="sl-primary">{{ element.name || "—" }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Address -->
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef>Address</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="sl-muted">{{ element.address }}, {{ element.city }}, {{ element.province }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Phone -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Phone number</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="sl-mono">{{ element.phone_number || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="sl-muted">{{ element.email == "" ? "N/A" : element.email }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Row actions">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onViewDetail(element.id)">
+                <mat-icon>view_array</mat-icon><span>View supplier data</span>
+              </button>
+              <button mat-menu-item (click)="onUpdateSupplier(element.id)">
+                <mat-icon>edit</mat-icon><span>Update supplier data</span>
+              </button>
+              <button mat-menu-item (click)="onConfirmDelete(element.id)">
+                <mat-icon>delete</mat-icon><span>Delete supplier data</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onViewDetail(row.id)"></tr>
+        <tr class="mat-row sl-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="sl-empty">
+              <mat-icon>inbox</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageIndex]="page"
+      [length]="count"
+      [pageSize]="pageSize"
+      (page)="changePage($event)"
+      [pageSizeOptions]="[10, 25, 50]"
+    ></mat-paginator>
+  </div>
 </div>

@@ -1,186 +1,222 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">
-    <a routerLink="/Reimbursement">Reimbursement</a> / Create
-  </h1>
-</div>
+<div class="rc">
+  <app-header-title
+    title="Reimbursement"
+    description="Create new reimbursement"
+  ></app-header-title>
 
-<form [formGroup]="formGroup" (ngSubmit)="onSubmitConfirmation()">
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Date</mat-label>
-    <input
-      matInput
-      formControlName="date"
-      placeholder="Date"
-      [matDatepicker]="picker"
-      formControlName="date"
-    />
-    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Due Date</mat-label>
-    <input
-      matInput
-      formControlName="dueDate"
-      placeholder="Due date"
-      [matDatepicker]="dueDatePicker"
-      formControlName="dueDate"
-    />
-    <mat-datepicker-toggle
-      matIconPrefix
-      [for]="dueDatePicker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #dueDatePicker></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Expense type</mat-label>
-    <mat-select formControlName="purchaseType">
-      <mat-option *ngFor="let type of expenseTypes" [value]="type.code">{{
-        type.name
-      }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Project Name</mat-label>
-    <input
-      matInput
-      type="text"
-      id="projectName"
-      formControlName="projectName"
-      class="form-control"
-      placeholder="Enter project name"
-      (keyup)="toUpperCase()"
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank Name</mat-label>
-    <input
-      #input
-      type="text"
-      placeholder="Bank name"
-      matInput
-      formControlName="bankName"
-      [matAutocomplete]="auto"
-      (input)="filter()"
-      (focus)="filter()"
-    />
-    <mat-autocomplete requireSelection #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let option of filteredOptions"
-        [value]="option.name"
-        >{{ option.name }}</mat-option
-      >
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank account number</mat-label>
-    <button
-      mat-icon-button
-      type="button"
-      matPrefix
-      (click)="copyBankAccountNumber()"
-    >
-      <mat-icon>content_copy</mat-icon>
-    </button>
-    <input
-      matInput
-      type="text"
-      id="bankAccountNumber"
-      formControlName="bankAccountNumber"
-      class="form-control"
-      placeholder="Enter account number"
-      mask="9999 9999 9999 9999"
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank account name</mat-label>
-    <input
-      matInput
-      type="text"
-      id="bankAccountName"
-      formControlName="bankAccountName"
-      class="form-control"
-      placeholder="Enter account name"
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Payment Method</mat-label>
-    <mat-select formControlName="paymentMethod">
-      <mat-option value="bank">Bank Transfer</mat-option>
-      <mat-option value="va">Virtual Account</mat-option>
-      <mat-option value="cash">Cheque</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <button
-    mat-stroked-button
-    color="primary"
-    type="button"
-    (click)="addItem()"
-    style="letter-spacing: 0"
+  <form
+    [formGroup]="formGroup"
+    (ngSubmit)="onSubmitConfirmation()"
+    class="rc-card"
   >
-    Add reimbursement item
-  </button>
+    <!-- ===== Detail ===== -->
+    <section class="rc-section">
+      <div class="rc-section__title">Detail</div>
+      <div class="rc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            placeholder="Date"
+            [matDatepicker]="picker"
+            formControlName="date"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-  <div class="table-responsive">
-    <table class="table table-bordered hover mt-3">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      @if(items.controls.length == 0){
-      <tbody>
-        <tr>
-          <td colspan="4" class="text-center">No items added yet.</td>
-        </tr>
-      </tbody>
-      } @else {
-      <tbody>
-        @for(item of items.controls; track item; let i = $index){
-        <td>
-          {{ item.get("date")?.value | date : "dd MMMM yyyy" : "GMT+0700'" }}
-        </td>
-        <td>{{ item.get("description")?.value }}</td>
-        <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
-        <td>
-          <button mat-icon-button (click)="removeItem(i)">
-            <mat-icon>delete</mat-icon>
+        <mat-form-field appearance="outline">
+          <mat-label>Due Date</mat-label>
+          <input
+            matInput
+            placeholder="Due date"
+            [matDatepicker]="dueDatePicker"
+            formControlName="dueDate"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="dueDatePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dueDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Expense type</mat-label>
+          <mat-select formControlName="purchaseType">
+            <mat-option *ngFor="let type of expenseTypes" [value]="type.code">{{
+              type.name
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Project Name</mat-label>
+          <input
+            matInput
+            type="text"
+            id="projectName"
+            formControlName="projectName"
+            placeholder="Enter project name"
+            (keyup)="toUpperCase()"
+          />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ===== Bank & payment ===== -->
+    <section class="rc-section">
+      <div class="rc-section__title">Rekening &amp; Pembayaran</div>
+      <div class="rc-grid">
+        <mat-form-field appearance="outline" class="rc-span2">
+          <mat-label>Bank Name</mat-label>
+          <input
+            #input
+            type="text"
+            placeholder="Bank name"
+            matInput
+            formControlName="bankName"
+            [matAutocomplete]="auto"
+            (input)="filter()"
+            (focus)="filter()"
+          />
+          <mat-autocomplete requireSelection #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.name"
+              >{{ option.name }}</mat-option
+            >
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account number</mat-label>
+          <button
+            mat-icon-button
+            type="button"
+            matPrefix
+            (click)="copyBankAccountNumber()"
+          >
+            <mat-icon>content_copy</mat-icon>
           </button>
-        </td>
-        }
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="1"></td>
-          <td>Total</td>
-          <td colspan="2">{{ total | number : "0.2-2" }}</td>
-        </tr>
-      </tfoot>
-      }
-    </table>
-  </div>
+          <input
+            matInput
+            type="text"
+            id="bankAccountNumber"
+            formControlName="bankAccountNumber"
+            placeholder="Enter account number"
+            mask="9999 9999 9999 9999"
+          />
+        </mat-form-field>
 
-  <mat-divider class="my-3"></mat-divider>
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account name</mat-label>
+          <input
+            matInput
+            type="text"
+            id="bankAccountName"
+            formControlName="bankAccountName"
+            placeholder="Enter account name"
+          />
+        </mat-form-field>
 
-  <button
-    style="letter-spacing: 0"
-    mat-stroked-button
-    color="primary"
-    type="button"
-    (click)="onSubmitConfirmation()"
-    [disabled]="formGroup.invalid"
-  >
-    Submit
-  </button>
-</form>
+        <mat-form-field appearance="outline" class="rc-span2">
+          <mat-label>Payment Method</mat-label>
+          <mat-select formControlName="paymentMethod">
+            <mat-option value="bank">Bank Transfer</mat-option>
+            <mat-option value="va">Virtual Account</mat-option>
+            <mat-option value="cash">Cheque</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ===== Items ===== -->
+    <section class="rc-section">
+      <div class="rc-section__head">
+        <div class="rc-section__title">Item Reimbursement</div>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="addItem()"
+          class="rc-additem"
+        >
+          <mat-icon>add</mat-icon>&nbsp;Tambah item
+        </button>
+      </div>
+
+      <div class="rc-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Deskripsi</th>
+              <th class="rc-num">Jumlah</th>
+              <th class="rc-action-col"></th>
+            </tr>
+          </thead>
+
+          @if (items.controls.length == 0) {
+            <tbody>
+              <tr>
+                <td colspan="4" class="rc-empty">
+                  Belum ada item ditambahkan.
+                </td>
+              </tr>
+            </tbody>
+          } @else {
+            <tbody>
+              @for (item of items.controls; track item; let i = $index) {
+                <tr>
+                  <td>
+                    {{
+                      item.get("date")?.value | date: "dd MMM yyyy" : "GMT+0700"
+                    }}
+                  </td>
+                  <td>{{ item.get("description")?.value }}</td>
+                  <td class="rc-num">
+                    {{ item.get("amount")?.value | number: "0.2-2" }}
+                  </td>
+                  <td class="rc-action-col">
+                    <button
+                      mat-icon-button
+                      type="button"
+                      (click)="removeItem(i)"
+                      aria-label="Hapus item"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td></td>
+                <td class="rc-total-label">Total</td>
+                <td class="rc-num rc-total-value">
+                  {{ total | number: "0.2-2" }}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          }
+        </table>
+      </div>
+    </section>
+
+    <div class="rc-footer">
+      <button
+        mat-flat-button
+        type="button"
+        (click)="onSubmitConfirmation()"
+        [disabled]="formGroup.invalid"
+        class="rc-submit"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>

@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { SupplierUpdateComponent } from '../supplier-update/supplier-update.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SupplierCreateComponent } from '../supplier-create/supplier-create.component';
 
 @Component({
   selector: 'app-supplier-list',
@@ -42,7 +43,7 @@ export class SupplierListComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;
@@ -147,6 +148,15 @@ export class SupplierListComponent {
   }
 
   createNewSupplier() {
-    this.router.navigate(['/Supplier/Create']);
+    this.dialog
+      .open(SupplierCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchSuppliers(0);
+      });
   }
 }
