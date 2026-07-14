@@ -1,185 +1,247 @@
-<app-header-title
-  [title]="'Sales Invoice'"
-  [description]="'Manage your sales invoice data here'"
-  [actionButtonLabel]="'Create new sales invoice'"
-  (onActionButtonClicked)="createNewSalesInvoice()"
-/>
+<div class="sales-invoice-list">
+  <app-header-title
+    [title]="'Sales Invoice'"
+    [description]="'Manage your sales invoice data here'"
+    [actionButtonLabel]="'Create new sales invoice'"
+    (onActionButtonClicked)="createNewSalesInvoice()"
+  />
 
-<mat-form-field appearance="outline" class="w-100">
-  <mat-label>Search</mat-label>
-  <input matInput [formControl]="searchFormControl" />
-</mat-form-field>
+  <div class="sil-toolbar">
+    <mat-form-field appearance="outline" class="sil-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Invoice, deskripsi, project, atau klien"
+        [formControl]="searchFormControl"
+      />
+    </mat-form-field>
+  </div>
 
-<div class="table-responsive">
-  <table mat-table [dataSource]="salesInvoices">
-    <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
-        <div class="d-flex d-align-items-center">
-          <span>Date</span>
-          <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
-          >
-          <mat-icon *ngIf="sortBy != 'date'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.date | date : "dd MMM yyyy" }}
-      </td>
-    </ng-container>
+  <div class="sil-card" [class.is-loading]="isLoading">
+    <div class="sil-loadingbar" *ngIf="isLoading"><span></span></div>
 
-    <ng-container matColumnDef="invoiceName">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
-        <div class="d-flex d-align-items-center">
-          <span>Invoice number</span>
-          <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
-          >
-          <mat-icon *ngIf="sortBy != 'name'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.name }}
-      </td>
-    </ng-container>
+    <div class="table-responsive">
+      <table mat-table [dataSource]="salesInvoices">
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
+            <span class="sil-th"
+              >Date
+              <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'date'" class="sil-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="sil-date">{{
+              invoice.date | date: "dd MMM yyyy"
+            }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="invoiceDescription">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Invoice Description</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.description }}
-      </td>
-    </ng-container>
+        <!-- Invoice name -->
+        <ng-container matColumnDef="invoiceName">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
+            <span class="sil-th"
+              >Invoice
+              <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'name'" class="sil-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="sil-primary">{{ invoice.name || "—" }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="projectName">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('project')">
-        <div class="d-flex d-align-items-center">
-          <span>Project name</span>
-          <mat-icon *ngIf="sortBy == 'project' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'project' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
-          >
-          <mat-icon *ngIf="sortBy != 'project'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.projectName }}
-      </td>
-    </ng-container>
+        <!-- Description -->
+        <ng-container matColumnDef="invoiceDescription">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="sil-muted">{{ invoice.description || "—" }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="customer">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('client')">
-        <div class="d-flex d-align-items-center">
-          <span>Client</span>
-          <mat-icon *ngIf="sortBy == 'client' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'client' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
+        <!-- Project -->
+        <ng-container matColumnDef="projectName">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            (click)="changeSortBy('projectName')"
           >
-          <mat-icon *ngIf="sortBy != 'client'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.client_name }}, {{ invoice.client_prefix }}
-      </td>
-    </ng-container>
+            <span class="sil-th"
+              >Project
+              <mat-icon
+                *ngIf="sortBy == 'projectName' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'projectName' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'projectName'" class="sil-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="sil-tag" *ngIf="invoice.projectName">{{
+              invoice.projectName
+            }}</span>
+            <span class="sil-muted" *ngIf="!invoice.projectName">—</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="amount" (click)="changeSortBy('dpp')">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>DPP (Rp.)</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        {{ invoice.dpp | number : "1.2-2" }}
-      </td>
-    </ng-container>
+        <!-- Customer -->
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="sil-client">
+              <span class="sil-avatar">{{
+                (invoice.client_name || "?").charAt(0)
+              }}</span>
+              <div class="sil-client__text">
+                <span class="sil-primary">{{
+                  invoice.client_name || "—"
+                }}</span>
+                <span class="sil-secondary" *ngIf="invoice.client_prefix">{{
+                  invoice.client_prefix
+                }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Status</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        @if(invoice.isDelete){
-        <app-pill-danger [label]="'Deleted'" />
-        } @else if(invoice.isApprove){
-        <app-pill-success [label]="'Approved'" />
-        } @else {
-        <app-pill-warning [label]="'Pending'" />
-        }
-      </td>
-    </ng-container>
+        <!-- Amount -->
+        <ng-container matColumnDef="amount">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="sil-num"
+            (click)="changeSortBy('dpp')"
+          >
+            <span class="sil-th sil-th--right"
+              >DPP
+              <mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'dpp'" class="sil-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let invoice" class="sil-num">
+            <span class="sil-amount">{{
+              invoice.dpp | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="action"
-      ><th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Action</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let invoice">
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_horiz</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button
-            mat-menu-item
-            (click)="openPaymentDetail(invoice.id)"
-            [disabled]="invoice.isDelete || !invoice.isApprove"
-          >
-            <mat-icon>payments</mat-icon>
-            <span>Create payment</span>
-          </button>
-          <button
-            mat-menu-item
-            [disabled]="invoice.isDelete || invoice.isApprove"
-            (click)="openSalesInvoiceConfirmation(invoice.id)"
-          >
-            <mat-icon>check</mat-icon>
-            <span>Confirm sales invoice</span>
-          </button>
-          <button
-            mat-menu-item
-            (click)="viewSalesInvoice(invoice.id)"
-          >
-            <mat-icon>view_array</mat-icon>
-            <span>View sales invoice</span>
-          </button>
-        </mat-menu>
-      </td>
-    </ng-container>
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let invoice">
+            <span
+              class="sil-chip"
+              [class.sil-chip--deleted]="invoice.isDelete"
+              [class.sil-chip--approved]="
+                !invoice.isDelete && invoice.isApprove
+              "
+              [class.sil-chip--pending]="
+                !invoice.isDelete && !invoice.isApprove
+              "
+            >
+              <span class="sil-chip__dot"></span>
+              {{
+                invoice.isDelete
+                  ? "Deleted"
+                  : invoice.isApprove
+                    ? "Approved"
+                    : "Pending"
+              }}
+            </span>
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td
+            mat-cell
+            *matCellDef="let invoice"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Row actions"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                (click)="openPaymentDetail(invoice.id)"
+                [disabled]="invoice.isDelete || !invoice.isApprove"
+              >
+                <mat-icon>payments</mat-icon><span>Create payment</span>
+              </button>
+              <button
+                mat-menu-item
+                [disabled]="invoice.isDelete || invoice.isApprove"
+                (click)="openSalesInvoiceConfirmation(invoice.id)"
+              >
+                <mat-icon>check</mat-icon><span>Confirm sales invoice</span>
+              </button>
+              <button mat-menu-item (click)="viewSalesInvoice(invoice.id)">
+                <mat-icon>view_array</mat-icon><span>View sales invoice</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="viewSalesInvoice(row.id)"
+        ></tr>
+        <tr class="mat-row sil-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="sil-empty">
+              <mat-icon>inbox</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageIndex]="page - 1"
+      [length]="count"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
 </div>
-
-<mat-paginator
-  [pageIndex]="page - 1"
-  [length]="count"
-  [pageSize]="10"
-  (page)="changePage($event)"
-></mat-paginator>

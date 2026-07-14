@@ -20,6 +20,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-sales-invoice-view',
@@ -35,6 +37,7 @@ import { ApiService } from 'src/app/services/api.service';
     NgxMaskDirective,
     MatListModule,
     MatIconModule,
+    MatButtonModule,
   ],
   templateUrl: './sales-invoice-view.component.html',
   styleUrl: './sales-invoice-view.component.scss',
@@ -47,6 +50,7 @@ export class SalesInvoiceViewComponent {
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private datePipe: DatePipe,
     private formBuilder: FormBuilder,
+    private clipboard: Clipboard,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -76,6 +80,111 @@ export class SalesInvoiceViewComponent {
 
   get t() {
     return this.f['payments'] as FormArray;
+  }
+
+  // ---- computed monetary values ----
+  get vDpp(): number {
+    return this.formGroup.get('dpp')?.value || 0;
+  }
+  get vPpn(): number {
+    const ppn = this.formGroup.get('ppn')?.value || 0;
+    return (ppn * this.vDpp) / 100;
+  }
+  get vBpjs(): number {
+    return this.formGroup.get('bpjs')?.value || 0;
+  }
+  get vPph(): number {
+    const pct = this.formGroup.get('pphPercentage')?.value || 0;
+    return (pct * this.vDpp) / 100;
+  }
+  get vTotalInvoice(): number {
+    return this.formGroup.get('total')?.value || 0;
+  }
+  get vTotalPayment(): number {
+    return this.formGroup.get('totalPayment')?.value || 0;
+  }
+
+  /** Total already received from payments. */
+  get vPaid(): number {
+    return this.t.controls.reduce(
+      (sum, p) => sum + (Number(p.get('amount')?.value) || 0),
+      0,
+    );
+  }
+
+  get vOutstanding(): number {
+    return this.vTotalPayment - this.vPaid;
+  }
+
+  /** "[24-100-02] Sewa dan penghasilan lain ..." — empty when no PPh applies. */
+  get pphLabel(): string {
+    const code = this.formGroup.get('pphCode')?.value;
+    const name = this.formGroup.get('pphTaxObject')?.value;
+    if (!code && !name) return '';
+    return `[${code || '-'}] ${name || ''}`.trim();
+  }
+
+  copyPphObject(): void {
+    if (!this.pphLabel) return;
+    this.clipboard.copy(this.pphLabel);
+    this.snackBar.open('Objek PPh disalin', 'Close', { duration: 3000 });
+  }
+
+  formatDate(date: string): string {
+    if (!date) return '-';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+    return d.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  private rp(n: number): string {
+    return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+  }
+
+  /** Build a WhatsApp-friendly summary and copy it to the clipboard. */
+  copyDocument(): void {
+    const f = this.formGroup.value;
+    const lines = [
+      '*SALES INVOICE*',
+      f.name || '-',
+      '',
+      `*Tanggal:* ${f.date || '-'}`,
+      `*Klien:* ${f.clientName || '-'}`,
+      `*Project:* ${f.projectName || '-'}`,
+      `*No. SPK:* ${f.spkNumber || '-'}`,
+      `*Deskripsi:* ${f.description || '-'}`,
+      '',
+      '*RINCIAN NILAI*',
+      `DPP: ${this.rp(this.vDpp)}`,
+      `PPN: ${this.rp(this.vPpn)}`,
+      ...(this.vBpjs ? [`BPJS: ${this.rp(this.vBpjs)}`] : []),
+      `PPh: -${this.rp(this.vPph)}`,
+      ...(this.vPph && this.pphLabel ? [`Objek PPh: ${this.pphLabel}`] : []),
+      '',
+      `*Total Invoice:* ${this.rp(this.vTotalInvoice)}`,
+      `*Total Diterima:* ${this.rp(this.vTotalPayment)}`,
+      ...(this.t.length
+        ? [
+            '',
+            `Sudah dibayar: ${this.rp(this.vPaid)}`,
+            `Sisa: ${this.rp(this.vOutstanding)}`,
+          ]
+        : []),
+    ];
+    this.clipboard.copy(lines.join('\n'));
+    this.snackBar.open(
+      'Detail sales invoice disalin — siap di-paste ke WhatsApp',
+      'Close',
+      { duration: 3000 },
+    );
+  }
+
+  close() {
+    this.dialog.close();
   }
 
   ngOnInit(): void {

@@ -195,7 +195,6 @@ export const MY_FORMATS = {
     SettingsComponent,
     PaymentCreateComponent,
     InterpaymentComponent,
-    InterpaymentCreateComponent,
     IncomeComponent,
     IncomeCreateComponent,
     ExpensePaymentCreateComponent,

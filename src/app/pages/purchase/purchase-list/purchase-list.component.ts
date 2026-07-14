@@ -56,7 +56,7 @@ export class PurchaseListComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   private destroy$ = new Subject<void>();
@@ -98,6 +98,7 @@ export class PurchaseListComponent {
     'total',
     'status',
     'paidStatus',
+    'isInternal',
     'action',
   ];
 

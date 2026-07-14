@@ -28,6 +28,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { InterpaymentCreateComponent } from '../interpayment-create/interpayment-create.component';
+import { InterpaymentViewComponent } from '../interpayment-view/interpayment-view.component';
 
 @Component({
   selector: 'app-interpayment-list',
@@ -41,8 +43,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,
-    HeaderTitleComponent,
     MatButtonModule,
+    InterpaymentCreateComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',
@@ -54,7 +56,7 @@ export class InterpaymentListComponent {
     private apiService: ApiService,
     private router: Router,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
@@ -156,7 +158,25 @@ export class InterpaymentListComponent {
   }
 
   createNewInterpayment() {
-    this.router.navigate(['/Interpayment/Create']);
+    this.dialog
+      .open(InterpaymentCreateComponent, {
+        width: '520px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchData(1);
+      });
+  }
+
+  viewInterpayment(id: number) {
+    this.dialog.open(InterpaymentViewComponent, {
+      data: { id },
+      width: '560px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
   }
 
   delete(id: number) {
@@ -174,7 +194,7 @@ export class InterpaymentListComponent {
             next: () => {
               // remove the deleted interpayment from the list
               this.payments = this.payments.filter(
-                (payment) => payment.id !== id
+                (payment) => payment.id !== id,
               );
               this.count--;
               this.snackBar.open(
@@ -182,7 +202,7 @@ export class InterpaymentListComponent {
                 'Close',
                 {
                   duration: 3000,
-                }
+                },
               );
             },
             error: (error) => {

@@ -1,179 +1,138 @@
-<h1 mat-dialog-title>View reimbursement data</h1>
-<mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" placeholder="Date" readonly />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Due Date</mat-label>
-      <input
-        matInput
-        formControlName="dueDate"
-        placeholder="Due date"
-        readonly
-      />
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Name</mat-label>
-          <input
-            matInput
-            formControlName="name"
-            placeholder="Document name"
-            readonly
-          />
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project Name</mat-label>
-          <input
-            matInput
-            type="text"
-            id="projectName"
-            formControlName="projectName"
-            placeholder="Enter project name"
-            readonly
-          />
-        </mat-form-field>
-      </div>
+<div class="rv">
+  <!-- header -->
+  <div mat-dialog-title class="rv-head">
+    <div class="rv-head__text">
+      <div class="rv-name">{{ f["name"].value || "—" }}</div>
+      <div class="rv-meta">{{ f["projectName"].value || "—" }}</div>
     </div>
+    <span class="rv-chip rv-chip--external">
+      <mat-icon>public</mat-icon>External
+    </span>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Expense type</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="purchaseType"
-        placeholder="Expense type"
-        readonly
-      />
-    </mat-form-field>
+  <mat-dialog-content class="rv-content">
+    <!-- detail -->
+    <section class="rv-section">
+      <div class="rv-grid">
+        <div class="rv-field">
+          <span class="rv-label">Tanggal</span>
+          <span class="rv-value">{{ f["date"].value || "—" }}</span>
+        </div>
+        <div class="rv-field">
+          <span class="rv-label">Jatuh tempo</span>
+          <span class="rv-value">{{ f["dueDate"].value || "—" }}</span>
+        </div>
+        <div class="rv-field">
+          <span class="rv-label">Project</span>
+          <span class="rv-value">{{ f["projectName"].value || "—" }}</span>
+        </div>
+        <div class="rv-field">
+          <span class="rv-label">Metode bayar</span>
+          <span class="rv-value">{{ f["paymentMethod"].value || "—" }}</span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Name</mat-label>
-      <input
-        type="text"
-        placeholder="Bank name"
-        matInput
-        formControlName="bankName"
-        readonly
-      />
-    </mat-form-field>
+    <!-- items -->
+    <section class="rv-section">
+      <div class="rv-section__title">Rincian Item ({{ t.length }})</div>
+      <div class="rv-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Deskripsi</th>
+              <th class="rv-num">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of t.controls">
+              <td class="rv-date">{{ item.get("date")?.value }}</td>
+              <td>{{ item.get("description")?.value }}</td>
+              <td class="rv-num">
+                {{
+                  item.get("amount")?.value
+                    | currency: "Rp " : "symbol" : "1.0-0"
+                }}
+              </td>
+            </tr>
+            <tr *ngIf="t.length === 0">
+              <td colspan="3" class="rv-empty">Belum ada item.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="t.length > 0">
+            <tr>
+              <td></td>
+              <td class="rv-total-label">Total</td>
+              <td class="rv-num rv-total-value">
+                {{ f["total"].value | currency: "Rp " : "symbol" : "1.0-0" }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <button
-        mat-icon-button
-        type="button"
-        (click)="copyBankAccountNumber()"
-        matPrefix
-      >
-        <mat-icon>content_copy</mat-icon>
-      </button>
-      <input
-        matInput
-        type="text"
-        id="bankAccountNumber"
-        formControlName="bankAccountNumber"
-        placeholder="Enter account number"
-        readonly
-        mask="9999 9999 9999 9999"
-      />
-    </mat-form-field>
+    <!-- payments -->
+    <section class="rv-section">
+      <div class="rv-section__title">Riwayat Pembayaran ({{ p.length }})</div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input
-        matInput
-        type="text"
-        id="bankAccountName"
-        formControlName="bankAccountName"
-        placeholder="Enter account name"
-        readonly
-      />
-    </mat-form-field>
+      <div class="rv-nopay" *ngIf="p.length === 0">Belum ada pembayaran.</div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Method</mat-label>
-      <input
-        matInput
-        type="text"
-        id="paymentMethod"
-        formControlName="paymentMethod"
-        placeholder="Payment method"
-        readonly
-      />
-    </mat-form-field>
+      <div class="rv-pay" *ngFor="let pay of p.controls">
+        <div class="rv-pay__info">
+          <span class="rv-pay__bank"
+            >{{ pay.get("bankName")?.value }} ·
+            {{ pay.get("bankAccountName")?.value }}</span
+          >
+          <span class="rv-pay__date">{{
+            formatDate(pay.get("date")?.value)
+          }}</span>
+        </div>
+        <div class="rv-pay__right">
+          <span class="rv-pay__amount">{{
+            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+          <span
+            class="rv-badge"
+            [class.rv-badge--ok]="pay.get('isApprove')?.value"
+            [class.rv-badge--wait]="!pay.get('isApprove')?.value"
+          >
+            {{ pay.get("isApprove")?.value ? "Approved" : "Pending" }}
+          </span>
+        </div>
+      </div>
+    </section>
 
-    <div class="table-responsive">
-      <table class="table hover mt-3">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of t.controls; index as i">
-            <td>
-              {{ item.get("date")?.value }}
-            </td>
-            <td>{{ item.get("description")?.value }}</td>
-            <td>Rp. {{ item.get("amount")?.value | number : "0.2-2" }}</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="2" class="text-end">Total</td>
-            <td>Rp. {{ formGroup.get("total")?.value | number : "0.2-2" }}</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+    <!-- bank destination -->
+    <section class="rv-section" *ngIf="f['bankAccountNumber'].value">
+      <div class="rv-section__title">Rekening Tujuan</div>
+      <div class="rv-bank">
+        <div class="rv-bank__text">
+          <div class="rv-value">
+            {{ f["bankName"].value }} · {{ f["bankAccountName"].value }}
+          </div>
+          <div class="rv-value rv-value--sm">
+            {{ f["bankAccountNumber"].value }}
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          (click)="copyBankAccountNumber()"
+          aria-label="Salin nomor rekening"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </section>
+  </mat-dialog-content>
 
-    <h3>Payment history</h3>
-    @if(p.controls.length == 0){
-    <mat-list>
-      <mat-list-item>No payment history</mat-list-item>
-    </mat-list>
-    } @else {
-    <mat-list>
-      @for(data of p.controls;track data){
-      <mat-list-item lines="3">
-        @if(data.get('isApprove')?.value == true){
-        <mat-icon matListItemIcon>check</mat-icon>
-        } @else {
-
-        <mat-icon matListItemIcon>pending</mat-icon>
-        }
-        <span matListItemTitle>{{
-          data.get("amount")?.value | currency : "Rp."
-        }}</span>
-        <span matListItemLine>{{
-          data.get("date")?.value | date : "dd MMMM yyyy"
-        }}</span>
-        {{ data.get("bankAccountNumber")?.value }} --
-        {{ data.get("bankAccountName")?.value }}
-      </mat-list-item>
-      }
-    </mat-list>
-    }
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    class="me-3"
-    mat-dialog-close
-  >
-    Close
-  </button>
-</mat-dialog-actions>
+  <!-- actions -->
+  <mat-dialog-actions class="rv-actions">
+    <button mat-flat-button class="rv-copy" (click)="copyDocument()">
+      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+    </button>
+    <span class="rv-spacer"></span>
+    <button mat-button (click)="close()">Tutup</button>
+  </mat-dialog-actions>
+</div>

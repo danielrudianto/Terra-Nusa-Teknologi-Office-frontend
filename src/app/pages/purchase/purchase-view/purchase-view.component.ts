@@ -213,6 +213,21 @@ export class PurchaseViewComponent {
     return new Date(date).toLocaleDateString('id-ID', options);
   }
 
+  /** "[24-100-02] Sewa dan penghasilan lain ..." — empty when no PPh applies. */
+  get pphLabel(): string {
+    const code = this.metaFormGroup.get('pphCode')?.value;
+    const name = this.metaFormGroup.get('pphTaxObject')?.value;
+    if (!code && !name) return '';
+    return `[${code || '-'}] ${name || ''}`.trim();
+  }
+
+  /** Copy the PPh object line on its own. */
+  copyPphObject(): void {
+    if (!this.pphLabel) return;
+    this.clipboard.copy(this.pphLabel);
+    this.snackBar.open('Objek PPh disalin', 'Close', { duration: 3000 });
+  }
+
   private rp(n: number): string {
     return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
   }
@@ -234,6 +249,7 @@ export class PurchaseViewComponent {
       `DPP: ${this.rp(this.vDpp)}`,
       `PPN: ${this.rp(this.vPpn)}`,
       `PPh: -${this.rp(this.vPph)}`,
+      ...(this.vPph && this.pphLabel ? [`Objek PPh: ${this.pphLabel}`] : []),
       `Other Value: ${this.rp(this.vOther)}`,
       '',
       `*Total Invoice:* ${this.rp(this.vTotalInvoice)}`,

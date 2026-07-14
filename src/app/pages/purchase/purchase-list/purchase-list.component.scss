@@ -310,6 +310,14 @@ $surface: #ffffff;
     background: #fdecec;
     color: #b3322f;
   }
+  &--internal {
+    background: #e7ecfb;
+    color: #154dec;
+  }
+  &--external {
+    background: #f1f3f7;
+    color: #5f6672;
+  }
 }
 
 /* ---------- empty ---------- */

@@ -1,171 +1,149 @@
-<h1 mat-dialog-title>View sales invoice</h1>
-<mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput readonly formControlName="date" />
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Name</mat-label>
-          <input matInput readonly formControlName="name" />
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project name</mat-label>
-          <input matInput readonly formControlName="projectName" />
-        </mat-form-field>
-      </div>
+<div class="sv">
+  <!-- header -->
+  <div mat-dialog-title class="sv-head">
+    <div class="sv-head__text">
+      <div class="sv-invoice">{{ f["name"].value || "—" }}</div>
+      <div class="sv-client">{{ f["clientName"].value || "—" }}</div>
     </div>
+    <span class="sv-chip" *ngIf="f['projectName'].value">{{
+      f["projectName"].value
+    }}</span>
+  </div>
 
-    <div class="row">
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Client name</mat-label>
-          <input matInput readonly formControlName="clientName" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Client NPWP</mat-label>
-          <input matInput readonly formControlName="clientNPWP" />
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Client address</mat-label>
-          <textarea
-            rows="4"
-            matInput
-            readonly
-            formControlName="clientAddress"
-          ></textarea>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <input matInput readonly formControlName="description" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>SPK Number</mat-label>
-      <input matInput readonly formControlName="spkNumber" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>DPP</mat-label>
-      <input
-        matInput
-        readonly
-        formControlName="dpp"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PPN</mat-label>
-      <input
-        matInput
-        readonly
-        formControlName="ppn"
-        suffix="%"
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Code</mat-label>
-          <input matInput readonly formControlName="pphCode" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Percentage</mat-label>
-          <input
-            matInput
-            readonly
-            formControlName="pphPercentage"
-            suffix="%"
-            thousandSeparator=" "
-            decimalScale="2"
-            mask="separator.2"
-          />
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Tax Object Name</mat-label>
-          <textarea
-            rows="4"
-            matInput
-            readonly
-            formControlName="pphTaxObject"
-          ></textarea>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>BPJS</mat-label>
-      <input
-        matInput
-        readonly
-        formControlName="bpjs"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total</mat-label>
-      <input
-        matInput
-        readonly
-        formControlName="total"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total payment</mat-label>
-      <input
-        matInput
-        readonly
-        formControlName="totalPayment"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-list>
-      @for (payment of t.controls; track payment) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>folder</mat-icon>
-
-          <span matListItemTitle>{{
-            payment.get("date")?.value | date: "dd MMMM yyyy"
+  <mat-dialog-content class="sv-content">
+    <!-- detail -->
+    <section class="sv-section">
+      <div class="sv-grid">
+        <div class="sv-field">
+          <span class="sv-label">Tanggal</span>
+          <span class="sv-value">{{ f["date"].value || "—" }}</span>
+        </div>
+        <div class="sv-field">
+          <span class="sv-label">Nomor SPK</span>
+          <span class="sv-value">{{ f["spkNumber"].value || "—" }}</span>
+        </div>
+        <div class="sv-field sv-field--wide">
+          <span class="sv-label">Deskripsi</span>
+          <span class="sv-value sv-value--sm">{{
+            f["description"].value || "—"
           }}</span>
-          <span matListItemLine>{{
-            payment.get("amount")?.value | number: "0.2-2"
+        </div>
+        <div class="sv-field">
+          <span class="sv-label">NPWP Klien</span>
+          <span class="sv-value">{{ f["clientNPWP"].value || "—" }}</span>
+        </div>
+        <div class="sv-field">
+          <span class="sv-label">Project</span>
+          <span class="sv-value">{{ f["projectName"].value || "—" }}</span>
+        </div>
+        <div class="sv-field sv-field--wide">
+          <span class="sv-label">Alamat Klien</span>
+          <span class="sv-value sv-value--sm">{{
+            f["clientAddress"].value || "—"
           }}</span>
-        </mat-list-item>
-      }
-    </mat-list>
-  </form>
-</mat-dialog-content>
+        </div>
+      </div>
+    </section>
+
+    <!-- money breakdown -->
+    <section class="sv-section">
+      <div class="sv-section__title">Rincian Nilai</div>
+      <div class="sv-money">
+        <div class="sv-money__row">
+          <span>DPP</span
+          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="sv-money__row">
+          <span>PPN ({{ f["ppn"].value }}%)</span
+          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="sv-money__row" *ngIf="vBpjs">
+          <span>BPJS</span
+          ><span>{{ vBpjs | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="sv-money__row sv-money__row--sub">
+          <span>Total Invoice</span
+          ><span>{{
+            vTotalInvoice | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+        </div>
+        <div class="sv-money__row sv-money__row--neg">
+          <span>PPh dipotong ({{ f["pphPercentage"].value }}%)</span
+          ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+
+        <!-- PPh tax object -->
+        <div class="sv-pph" *ngIf="vPph && pphLabel">
+          <div class="sv-pph__text">
+            <span class="sv-pph__code">{{ f["pphCode"].value || "-" }}</span>
+            <span class="sv-pph__name">{{ f["pphTaxObject"].value }}</span>
+          </div>
+          <button
+            mat-icon-button
+            type="button"
+            class="sv-pph__copy"
+            (click)="copyPphObject()"
+            aria-label="Salin objek PPh"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+
+        <div class="sv-money__total">
+          <span>Total Diterima</span>
+          <span>{{
+            vTotalPayment | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- payments -->
+    <section class="sv-section">
+      <div class="sv-section__title">Riwayat Pembayaran ({{ t.length }})</div>
+
+      <div class="sv-nopay" *ngIf="t.length === 0">
+        Belum ada pembayaran diterima.
+      </div>
+
+      <ng-container *ngIf="t.length > 0">
+        <div class="sv-pay" *ngFor="let payment of t.controls">
+          <span class="sv-pay__date">{{
+            formatDate(payment.get("date")?.value)
+          }}</span>
+          <span class="sv-pay__amount">
+            {{
+              payment.get("amount")?.value
+                | currency: "Rp " : "symbol" : "1.0-0"
+            }}
+          </span>
+        </div>
+
+        <div class="sv-summary">
+          <div class="sv-summary__row">
+            <span>Sudah dibayar</span>
+            <span>{{ vPaid | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          </div>
+          <div
+            class="sv-summary__row sv-summary__row--out"
+            [class.is-settled]="vOutstanding <= 0"
+          >
+            <span>{{ vOutstanding <= 0 ? "Lunas" : "Sisa tagihan" }}</span>
+            <span>{{
+              vOutstanding | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+  </mat-dialog-content>
+
+  <!-- actions -->
+  <mat-dialog-actions class="sv-actions">
+    <button mat-flat-button class="sv-copy" (click)="copyDocument()">
+      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+    </button>
+    <span class="sv-spacer"></span>
+    <button mat-button (click)="close()">Tutup</button>
+  </mat-dialog-actions>
+</div>

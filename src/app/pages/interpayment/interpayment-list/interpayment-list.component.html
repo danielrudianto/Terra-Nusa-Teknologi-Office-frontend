@@ -1,105 +1,297 @@
-<app-header-title
-  [title]="'Interpayment'"
-  [description]="'Manage your interpayment data here'"
-  [actionButtonLabel]="'Create new interpayment'"
-  (onActionButtonClicked)="createNewInterpayment()"
-></app-header-title>
+<div class="interpayment-list">
+  <!-- ===== HERO ===== -->
+  <div class="ip-hero">
+    <div class="ip-hero__content">
+      <h1 class="ip-hero__title">Interpayment</h1>
+      <p class="ip-hero__desc">
+        Catat dan pantau perpindahan dana antar rekening perusahaan.
+      </p>
+      <button class="ip-hero__cta" (click)="createNewInterpayment()">
+        <mat-icon>add</mat-icon>
+        Create new interpayment
+      </button>
+    </div>
 
-<form [formGroup]="formGroup">
-  <mat-form-field appearance="outline">
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [rangePicker]="picker">
-      <input matStartDate formControlName="start" placeholder="Start date" />
-      <input matEndDate formControlName="end" placeholder="End date" />
-    </mat-date-range-input>
-    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field>
-</form>
+    <!-- isometric transfer illustration -->
+    <svg
+      class="ip-hero__art"
+      viewBox="0 0 320 200"
+      fill="none"
+      aria-hidden="true"
+    >
+      <!-- ground plane -->
+      <path
+        d="M160 40 300 110 160 180 20 110z"
+        fill="#ffffff"
+        fill-opacity="0.05"
+      />
 
-<div class="table-responsive">
-  <table mat-table [dataSource]="payments" #table>
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
-        <div class="d-flex d-align-items-center">
-          <span>Date</span>
-          <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
+      <!-- origin cube -->
+      <g>
+        <path
+          d="M70 96 110 116 70 136 30 116z"
+          fill="#ffffff"
+          fill-opacity="0.30"
+        />
+        <path
+          d="M30 116 70 136 70 176 30 156z"
+          fill="#ffffff"
+          fill-opacity="0.16"
+        />
+        <path
+          d="M110 116 70 136 70 176 110 156z"
+          fill="#ffffff"
+          fill-opacity="0.10"
+        />
+      </g>
+
+      <!-- destination cube -->
+      <g>
+        <path
+          d="M250 66 290 86 250 106 210 86z"
+          fill="#ffffff"
+          fill-opacity="0.38"
+        />
+        <path
+          d="M210 86 250 106 250 146 210 126z"
+          fill="#ffffff"
+          fill-opacity="0.20"
+        />
+        <path
+          d="M290 86 250 106 250 146 290 126z"
+          fill="#ffffff"
+          fill-opacity="0.12"
+        />
+      </g>
+
+      <!-- transfer arc -->
+      <path
+        d="M88 100 Q 165 34 236 72"
+        stroke="#ffffff"
+        stroke-opacity="0.55"
+        stroke-width="2"
+        stroke-dasharray="6 6"
+        stroke-linecap="round"
+      />
+      <path d="M236 72 229 63 241 62z" fill="#ffffff" fill-opacity="0.75" />
+
+      <!-- floating tokens along the arc -->
+      <rect
+        x="118"
+        y="66"
+        width="13"
+        height="13"
+        rx="2.5"
+        transform="rotate(45 124 72)"
+        fill="#ffffff"
+        fill-opacity="0.55"
+      />
+      <rect
+        x="163"
+        y="49"
+        width="10"
+        height="10"
+        rx="2"
+        transform="rotate(45 168 54)"
+        fill="#ffffff"
+        fill-opacity="0.75"
+      />
+      <rect
+        x="203"
+        y="58"
+        width="8"
+        height="8"
+        rx="2"
+        transform="rotate(45 207 62)"
+        fill="#ffffff"
+        fill-opacity="0.45"
+      />
+
+      <!-- drifting bits -->
+      <rect
+        x="42"
+        y="60"
+        width="7"
+        height="7"
+        rx="1.5"
+        transform="rotate(45 45 63)"
+        fill="#ffffff"
+        fill-opacity="0.28"
+      />
+      <rect
+        x="276"
+        y="150"
+        width="9"
+        height="9"
+        rx="2"
+        transform="rotate(45 280 154)"
+        fill="#ffffff"
+        fill-opacity="0.22"
+      />
+      <circle cx="300" cy="46" r="3.5" fill="#ffffff" fill-opacity="0.35" />
+    </svg>
+  </div>
+
+  <!-- ===== toolbar: date range ===== -->
+  <div class="ip-toolbar">
+    <form [formGroup]="formGroup">
+      <mat-form-field appearance="outline" class="ip-range">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input
+            matStartDate
+            formControlName="start"
+            placeholder="Start date"
+          />
+          <input matEndDate formControlName="end" placeholder="End date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle
+          matIconPrefix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- ===== table card ===== -->
+  <div class="ip-card" [class.is-loading]="isLoading">
+    <div class="ip-pattern" aria-hidden="true"></div>
+
+    <div class="ip-loadingbar" *ngIf="isLoading"><span></span></div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="payments" #table>
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
+            <span class="ip-th"
+              >Date
+              <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'date'" class="ip-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let payment">
+            <span class="ip-date">{{
+              payment.date | date: "dd MMM yyyy"
+            }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Origin -->
+        <ng-container matColumnDef="bankAccountOrigin">
+          <th mat-header-cell *matHeaderCellDef>Origin</th>
+          <td mat-cell *matCellDef="let payment">
+            <div class="ip-acct">
+              <span class="ip-dot ip-dot--out"></span>
+              <div class="ip-acct__text">
+                <span class="ip-primary">{{
+                  payment.originBankAccountName || "—"
+                }}</span>
+                <span class="ip-secondary">{{
+                  payment.originBankAccountNumber
+                }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Destination -->
+        <ng-container matColumnDef="bankAccountDestination">
+          <th mat-header-cell *matHeaderCellDef>Destination</th>
+          <td mat-cell *matCellDef="let payment">
+            <div class="ip-acct">
+              <mat-icon class="ip-arrow">arrow_forward</mat-icon>
+              <span class="ip-dot ip-dot--in"></span>
+              <div class="ip-acct__text">
+                <span class="ip-primary">{{
+                  payment.destinationBankAccountName || "—"
+                }}</span>
+                <span class="ip-secondary">{{
+                  payment.destinationBankAccountNumber
+                }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Amount -->
+        <ng-container matColumnDef="amount">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="ip-num"
+            (click)="changeSortBy('amount')"
           >
-          <mat-icon *ngIf="sortBy != 'date'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let purchase">
-        {{ purchase.date | date : "dd MMMM yyyy" }}
-      </td>
-    </ng-container>
+            <span class="ip-th ip-th--right"
+              >Amount
+              <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'amount'" class="ip-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let payment" class="ip-num">
+            <span class="ip-amount">{{
+              payment.amount | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="bankAccountOrigin">
-      <th mat-header-cell *matHeaderCellDef>Origin</th>
-      <td mat-cell *matCellDef="let purchase">
-        {{ purchase.originBankAccountName }} --
-        {{ purchase.originBankAccountNumber }}
-      </td>
-    </ng-container>
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td mat-cell *matCellDef="let payment">
+            <button
+              mat-icon-button
+              class="ip-delete"
+              (click)="delete(payment.id)"
+              [disabled]="isDisabled(payment.id)"
+              aria-label="Delete interpayment"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="bankAccountDestination">
-      <th mat-header-cell *matHeaderCellDef>Destination</th>
-      <td mat-cell *matCellDef="let purchase">
-        {{ purchase.destinationBankAccountName }} --
-        {{ purchase.destinationBankAccountNumber }}
-      </td>
-    </ng-container>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="viewInterpayment(row.id)"
+        ></tr>
+        <tr class="mat-row ip-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="ip-empty">
+              <mat-icon>swap_horiz</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
 
-    <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('amount')">
-        <div class="d-flex d-align-items-center">
-          <span>Amount</span>
-          <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
-            >arrow_drop_up</mat-icon
-          ><mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'desc'"
-            >arrow_drop_down</mat-icon
-          >
-          <mat-icon *ngIf="sortBy != 'amount'" class="opacity-0"
-            >arrow_drop_down</mat-icon
-          >
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let purchase">
-        Rp. {{ purchase.amount | number : "0.2-2" }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let purchase">
-        <button
-          mat-icon-button
-          (click)="delete(purchase.id)"
-          [disabled]="isDisabled(purchase.id)"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
+    <mat-paginator
+      [length]="count"
+      [pageIndex]="page - 1"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
 </div>
-<mat-paginator
-  [length]="count"
-  [pageSize]="10"
-  [pageIndex]="page - 1"
-  (page)="changePage($event)"
-  [pageSizeOptions]="[10, 25, 50]"
-  [pageSize]="pageSize"
-></mat-paginator>

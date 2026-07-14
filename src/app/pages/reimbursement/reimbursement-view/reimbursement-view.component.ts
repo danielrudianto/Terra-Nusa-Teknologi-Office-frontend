@@ -46,7 +46,7 @@ export class ReimbursementViewComponent {
     private datePipe: DatePipe,
     private formBuilder: FormBuilder,
     private dialog: MatDialogRef<ReimbursementViewComponent>,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -81,35 +81,35 @@ export class ReimbursementViewComponent {
             paymentMethod == 'bank'
               ? 'Bank Transfer'
               : paymentMethod == 'cash'
-              ? 'Cash'
-              : 'Virtual Account';
+                ? 'Cash'
+                : 'Virtual Account';
 
           const purchaseType = data.reimbursement.purchaseType;
           const purchaseTypeText =
             purchaseType == 'A'
               ? 'Transportation'
               : purchaseType == 'E'
-              ? 'Coordination; Consumption; and Accomodation'
-              : 'Document handling & Stationery';
+                ? 'Coordination; Consumption; and Accomodation'
+                : 'Document handling & Stationery';
           this.formGroup.patchValue({
             date: this.datePipe.transform(
               data.reimbursement.date,
-              'dd MMMM yyyy'
+              'dd MMMM yyyy',
             ),
             dueDate: this.datePipe.transform(
               data.reimbursement.date,
-              'dd MMMM yyyy'
+              'dd MMMM yyyy',
             ),
             name: data.reimbursement.name,
             projectName: data.reimbursement.projectName,
-            purchaseType: purchaseTypeText,
+            purchaseType: purchaseType,
             bankName: data.reimbursement.bankName,
             bankAccountName: data.reimbursement.bankAccountName,
             bankAccountNumber: data.reimbursement.bankAccountNumber,
             paymentMethod: paymentMethodText,
             total: data.reimbursement_items.reduce(
               (a: any, b: any) => a + b.amount,
-              0
+              0,
             ),
           });
 
@@ -119,9 +119,9 @@ export class ReimbursementViewComponent {
                 amount: new FormControl(item.amount),
                 description: new FormControl(item.description),
                 date: new FormControl(
-                  this.datePipe.transform(item.date, 'dd MMMM yyyy')
+                  this.datePipe.transform(item.date, 'dd MMMM yyyy'),
                 ),
-              })
+              }),
             );
           });
 
@@ -135,7 +135,7 @@ export class ReimbursementViewComponent {
                 amount: [x.amount],
                 date: [x.date],
                 isApprove: [x.isApprove],
-              })
+              }),
             );
           });
         },
@@ -157,6 +157,58 @@ export class ReimbursementViewComponent {
     this.snackBar.open('Bank account number copied to clipboard', 'Close', {
       duration: 3000,
     });
+  }
+
+  formatDate(date: string): string {
+    if (!date) return '-';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+    return d.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  private rp(n: number): string {
+    return 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+  }
+
+  /** Build a WhatsApp-friendly summary and copy it to the clipboard. */
+  copyDocument(): void {
+    const f = this.formGroup.value;
+    const lines = [
+      '*DATA REIMBURSEMENT*',
+      f.name || '-',
+      '',
+      `*Tanggal:* ${f.date || '-'}`,
+      `*Project:* ${f.projectName || '-'}`,
+      `*Tipe:* ${f.purchaseType || '-'}`,
+      '',
+      '*RINCIAN ITEM*',
+      ...this.t.controls.map((it) => {
+        const d = it.get('date')?.value || '-';
+        const desc = it.get('description')?.value || '-';
+        const amt = this.rp(it.get('amount')?.value);
+        return `• ${d} — ${desc}: ${amt}`;
+      }),
+      '',
+      `*Total:* ${this.rp(f.total)}`,
+      '',
+      '*REKENING TUJUAN*',
+      `${f.bankName || '-'} — ${f.bankAccountName || '-'}`,
+      `${f.bankAccountNumber || '-'}`,
+    ];
+    this.clipboard.copy(lines.join('\n'));
+    this.snackBar.open(
+      'Detail reimbursement disalin — siap di-paste ke WhatsApp',
+      'Close',
+      { duration: 3000 },
+    );
+  }
+
+  close() {
+    this.dialog.close();
   }
 
   get f() {

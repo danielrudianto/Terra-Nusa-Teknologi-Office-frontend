@@ -1,0 +1,152 @@
+<div class="iv">
+  <!-- header -->
+  <div mat-dialog-title class="iv-head">
+    <span class="iv-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 8h14l-3-3M21 16H7l3 3" />
+      </svg>
+    </span>
+    <div class="iv-head__text">
+      <h2 class="iv-title">Detail Interpayment</h2>
+      <span class="iv-sub" *ngIf="ip"
+        >#{{ ip.id }} · {{ formatDate(ip.date) }}</span
+      >
+    </div>
+    <span class="iv-chip iv-chip--deleted" *ngIf="ip?.isDelete">Deleted</span>
+  </div>
+
+  <mat-dialog-content class="iv-content">
+    <!-- loading -->
+    <div class="iv-loading" *ngIf="isLoading">
+      <span class="iv-skeleton" style="height: 74px"></span>
+      <span class="iv-skeleton" style="height: 120px"></span>
+      <span class="iv-skeleton" style="height: 90px"></span>
+    </div>
+
+    <ng-container *ngIf="!isLoading && ip">
+      <!-- amount hero -->
+      <div class="iv-amount">
+        <span class="iv-amount__label">Jumlah Transfer</span>
+        <span class="iv-amount__value">{{
+          ip.amount | currency: "Rp " : "symbol" : "1.0-0"
+        }}</span>
+      </div>
+
+      <!-- transfer flow -->
+      <section class="iv-section">
+        <div class="iv-section__title">Alur Transfer</div>
+
+        <div class="iv-flow">
+          <div class="iv-node">
+            <span class="iv-node__dot iv-node__dot--out"></span>
+            <div class="iv-node__text">
+              <span class="iv-node__label">Dari</span>
+              <span class="iv-node__bank">{{ ip.originBankName || "—" }}</span>
+              <span class="iv-node__acct">
+                {{ ip.originBankAccountName || "—" }} ·
+                {{ ip.originBankAccountNumber || "—" }}
+              </span>
+            </div>
+          </div>
+
+          <div class="iv-flow__arrow" aria-hidden="true">
+            <mat-icon>arrow_downward</mat-icon>
+          </div>
+
+          <div class="iv-node">
+            <span class="iv-node__dot iv-node__dot--in"></span>
+            <div class="iv-node__text">
+              <span class="iv-node__label">Ke</span>
+              <span class="iv-node__bank">{{
+                ip.destinationBankName || "—"
+              }}</span>
+              <span class="iv-node__acct">
+                {{ ip.destinationBankAccountName || "—" }} ·
+                {{ ip.destinationBankAccountNumber || "—" }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- detail -->
+      <section class="iv-section">
+        <div class="iv-section__title">Detail</div>
+        <div class="iv-grid">
+          <div class="iv-field">
+            <span class="iv-label">Tanggal transaksi</span>
+            <span class="iv-value">{{ formatDate(ip.date) }}</span>
+          </div>
+          <div class="iv-field">
+            <span class="iv-label">ID</span>
+            <span class="iv-value">#{{ ip.id }}</span>
+          </div>
+          <div class="iv-field iv-field--wide">
+            <span class="iv-label">Deskripsi</span>
+            <span class="iv-value">{{ ip.description || "—" }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- audit trail -->
+      <section class="iv-section">
+        <div class="iv-section__title">Audit Trail</div>
+
+        <div class="iv-audit">
+          <div class="iv-audit__row">
+            <span class="iv-audit__icon iv-audit__icon--create">
+              <mat-icon>add_circle_outline</mat-icon>
+            </span>
+            <div class="iv-audit__text">
+              <span class="iv-audit__action"
+                >Dibuat oleh {{ ip.createdByName || "—" }}</span
+              >
+              <span class="iv-audit__meta">
+                {{ formatDateTime(ip.createdAt) }}
+                <em *ngIf="ip.createdByEmail"> · {{ ip.createdByEmail }}</em>
+              </span>
+            </div>
+          </div>
+
+          <div class="iv-audit__row" *ngIf="ip.isDelete">
+            <span class="iv-audit__icon iv-audit__icon--delete">
+              <mat-icon>delete_outline</mat-icon>
+            </span>
+            <div class="iv-audit__text">
+              <span class="iv-audit__action"
+                >Dihapus oleh {{ ip.deletedByName || "—" }}</span
+              >
+              <span class="iv-audit__meta">
+                {{ formatDateTime(ip.deletedAt) }}
+                <em *ngIf="ip.deletedByEmail"> · {{ ip.deletedByEmail }}</em>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </mat-dialog-content>
+
+  <!-- actions -->
+  <mat-dialog-actions class="iv-actions">
+    <button
+      mat-flat-button
+      class="iv-copy"
+      (click)="copyDocument()"
+      [disabled]="isLoading || !ip"
+    >
+      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+    </button>
+    <span class="iv-spacer"></span>
+    <button mat-button (click)="close()">Tutup</button>
+  </mat-dialog-actions>
+</div>

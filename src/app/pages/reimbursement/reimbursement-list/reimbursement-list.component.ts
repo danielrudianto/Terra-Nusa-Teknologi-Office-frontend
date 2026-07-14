@@ -22,9 +22,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
-import { PillDangerComponent } from 'src/app/components/pills/pill-danger/pill-danger.component';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 
 @Component({
@@ -42,9 +39,6 @@ import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
     MatChipsModule,
     MatMenuModule,
     HeaderTitleComponent,
-    PillDangerComponent,
-    PillSuccessComponent,
-    PillWarningComponent,
   ],
   templateUrl: './reimbursement-list.component.html',
   styleUrls: ['./reimbursement-list.component.scss'],
@@ -57,7 +51,7 @@ export class ReimbursementListComponent implements OnDestroy {
     private apiService: ApiService,
     private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   @ViewChild('table') table!: MatTable<any>;

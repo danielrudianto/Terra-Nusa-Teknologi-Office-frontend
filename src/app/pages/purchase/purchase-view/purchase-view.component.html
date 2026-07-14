@@ -105,6 +105,22 @@
           <span>PPh dipotong</span
           ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
+        <div class="pv-pph" *ngIf="vPph && pphLabel">
+          <div class="pv-pph__text">
+            <span class="pv-pph__code">{{ f["pphCode"].value || "-" }}</span>
+            <span class="pv-pph__name">{{ f["pphTaxObject"].value }}</span>
+          </div>
+          <button
+            mat-icon-button
+            type="button"
+            class="pv-pph__copy"
+            (click)="copyPphObject()"
+            aria-label="Salin objek PPh"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+
         <div class="pv-money__total">
           <span>Total Harus Dibayar</span>
           <span>{{ vTotalPay | currency: "Rp " : "symbol" : "1.0-0" }}</span>
@@ -119,6 +135,7 @@
         <div class="pv-pay__info">
           <span class="pv-pay__bank"
             >{{ p.get("bankName")?.value }} ·
+            {{ p.get("bankAccountNumber")?.value }} ·
             {{ p.get("bankAccountName")?.value }}</span
           >
           <span class="pv-pay__date">{{
