@@ -33,7 +33,6 @@ import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice
 import { ClientListComponent } from './pages/client/client-list/client-list.component';
 import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
 import { ClientComponent } from './pages/client/client.component';
-import { EmployeeUpdateComponent } from './pages/employee/employee-update/employee-update.component';
 import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
 import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
 import { CashPositionComponent } from './pages/dashboard/cash-position/cash-position.component';
@@ -182,7 +181,6 @@ export const MY_FORMATS = {
     IncomeCreateComponent,
     ExpensePaymentCreateComponent,
     AssetComponent,
-    AssetCreateComponent,
     SalarySlipViewComponent,
     SalaryPaymentCreateComponent,
     PurchaseUpdateComponent,

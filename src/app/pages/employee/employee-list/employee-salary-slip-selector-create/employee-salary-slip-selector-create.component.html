@@ -1,33 +1,60 @@
-<h2 mat-dialog-title>Salary slip</h2>
-<form [formGroup]="salarySlipFormGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Month</mat-label>
-      <mat-select formControlName="month">
-        <mat-option *ngFor="let m of months" [value]="m.value">
-          {{ m.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+<div class="ss">
+  <div class="ss-head" mat-dialog-title>
+    <span class="ss-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="3" />
+        <path d="M16 2v4M8 2v4M3 10h18M8 15h3" />
+      </svg>
+    </span>
+    <div class="ss-head__text">
+      <h2 class="ss-title">Buat Salary Slip</h2>
+      <span class="ss-sub">Pilih periode gaji karyawan</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Year</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="year"
-        placeholder="Enter year"
-      />
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      type="submit"
-      [disabled]="salarySlipFormGroup.invalid"
-      cdkFocusInitial
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+  <form [formGroup]="salarySlipFormGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="ss-content">
+      <div class="ss-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Month</mat-label>
+          <mat-select formControlName="month">
+            <mat-option *ngFor="let m of months" [value]="m.value">{{
+              m.label
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="year"
+            placeholder="Ex. 2026"
+          />
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="ss-actions">
+      <button type="button" class="ss-cancel" mat-dialog-close>Batal</button>
+      <button
+        type="submit"
+        class="ss-submit"
+        [disabled]="salarySlipFormGroup.invalid || isSubmitting"
+        cdkFocusInitial
+      >
+        {{ isSubmitting ? "Memproses..." : "Lanjut" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

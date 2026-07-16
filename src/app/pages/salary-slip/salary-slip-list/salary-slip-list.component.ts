@@ -176,6 +176,9 @@ export class SalarySlipListComponent {
         data: {
           id: id,
         },
+        width: '620px',
+        maxWidth: '94vw',
+        autoFocus: false,
       })
       .afterClosed()
       .subscribe((data) => {

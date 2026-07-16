@@ -1,6 +1,206 @@
-.search__wrapper {
+$brand: #154dec;
+$ink: #16181d;
+$muted: #6b7280;
+$faint: #9aa0ab;
+$line: #eef0f3;
+$surface: #ffffff;
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.salary-slip-list {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+/* toolbar */
+.ssl-toolbar {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 1rem;
+  margin: 0.5rem 0 1rem;
+  .mat-mdc-form-field {
+    margin-bottom: -1.25em;
+  }
+}
+.ssl-search {
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+.ssl-month {
+  width: 210px;
+}
+:host ::ng-deep .ssl-toolbar .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: $surface;
+}
+:host ::ng-deep .ssl-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: $faint;
+  margin: 0 6px 0 4px;
+}
+
+/* card */
+.ssl-card {
+  position: relative;
+  background: $surface;
+  border: 0.5px solid #e3e6eb;
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+  overflow: hidden;
+}
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* table */
+:host ::ng-deep table.mat-mdc-table {
+  width: 100%;
+  background: transparent;
+  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
+}
+:host ::ng-deep .mat-mdc-header-row {
+  background: #fafbfc;
+  min-height: 46px;
+  border-bottom: 1px solid $line;
+}
+:host ::ng-deep .mat-mdc-header-cell {
+  color: $muted;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: none;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+:host ::ng-deep .mat-mdc-row {
+  min-height: 62px;
+  cursor: pointer;
+  transition: background 0.14s ease;
+  border-bottom: 1px solid $line;
+}
+:host ::ng-deep .mat-mdc-row:last-child {
+  border-bottom: none;
+}
+:host ::ng-deep .mat-mdc-row:hover {
+  background: #f6f8ff;
+}
+:host ::ng-deep .mat-mdc-cell {
+  border-bottom: none;
+  padding: 0.5rem 16px;
+  color: $ink;
+  font-size: 0.88rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* cells */
+.ssl-primary {
+  font-weight: 600;
+  color: $ink;
+  font-size: 0.88rem;
+}
+.ssl-muted {
+  font-size: 0.85rem;
+  color: $muted;
+}
+
+.ssl-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ssl-avatar {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e7ecfb;
+  color: $brand;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+}
+
+.ssl-num {
+  text-align: right;
+}
+.ssl-amount {
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+.ssl-money {
+  font-weight: 500;
+  color: #3f4653;
+  font-variant-numeric: tabular-nums;
+  &--pos {
+    color: #1a7f45;
+  }
+  &--neg {
+    color: #b3322f;
+  }
+}
+
+.ssl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &--paid {
+    background: #e6f6ec;
+    color: #1a7f45;
+  }
+  &--unpaid {
+    background: #fdf0e3;
+    color: #a2651a;
+  }
+  &--deleted {
+    background: #fdecec;
+    color: #b3322f;
+    padding: 4px 10px;
+  }
+}
+
+/* empty */
+.ssl-norow .ssl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: $faint;
+  font-size: 0.9rem;
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: #cfd4dc;
+  }
+}
+
+/* paginator */
+:host ::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  border-top: 1px solid $line;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
 }

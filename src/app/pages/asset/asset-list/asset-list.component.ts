@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AssetListPurchaseOrderSelectorComponent } from './asset-list-purchase-order-selector/asset-list-purchase-order-selector.component';
 import { debounceTime } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
+import { AssetCreateComponent } from '../asset-create/asset-create.component';
 
 @Component({
   selector: 'app-asset-list',
@@ -68,19 +69,19 @@ export class AssetListComponent {
   ];
 
   ngOnInit(): void {
-    this.fetchClients();
+    this.fetchAssets();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
-      this.fetchClients(0);
+      this.fetchAssets(0);
     });
   }
 
   changePage(event: PageEvent) {
     if (this.page == event.pageIndex) {
       this.pageSize = event.pageSize;
-      this.fetchClients(0);
+      this.fetchAssets(0);
     } else {
-      this.fetchClients(event.pageIndex);
+      this.fetchAssets(event.pageIndex);
     }
   }
 
@@ -92,10 +93,10 @@ export class AssetListComponent {
       this.sortByDirection = 'asc';
     }
 
-    this.fetchClients(0);
+    this.fetchAssets(0);
   }
 
-  fetchClients(targetPage: number = 0) {
+  fetchAssets(targetPage: number = 0) {
     this.isLoading = true;
 
     this.page = targetPage;
@@ -122,9 +123,7 @@ export class AssetListComponent {
   }
 
   onAddAsset() {
-    this.router.navigate(['Create'], {
-      relativeTo: this.route,
-    });
+    this.dialog.open(AssetCreateComponent);
   }
 
   onEditAsset() {}

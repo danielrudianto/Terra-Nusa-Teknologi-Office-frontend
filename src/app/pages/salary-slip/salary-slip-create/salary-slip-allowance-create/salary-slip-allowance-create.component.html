@@ -1,82 +1,120 @@
-<h2 mat-dialog-title>Add Allowance</h2>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Allowance Name</mat-label>
-      <mat-select formControlName="name">
-        <mat-option value="Bantuan BPJS Ketenagakerjaan"
-          >Bantuan BPJS Ketenagakerjaan</mat-option
-        >
-        <mat-option value="Bonus proyek">Bonus proyek</mat-option>
-        <mat-option value="Bonus tahunan">Bonus tahunan</mat-option>
-        <mat-option value="Bonus kinerja">Bonus kinerja</mat-option>
-        <mat-option value="Tunjangan jabatan">Tunjangan jabatan</mat-option>
-        <mat-option value="Tunjangan kesehatan">Tunjangan kesehatan</mat-option>
-        <mat-option value="Tunjangan transportasi"
-          >Tunjangan transportasi</mat-option
-        >
-        <mat-option value="Tunjangan makan">Tunjangan makan</mat-option>
-        <mat-option value="Tunjangan pendidikan"
-          >Tunjangan pendidikan</mat-option
-        >
-        <mat-option value="Tunjangan perumahan">Tunjangan perumahan</mat-option>
-        <mat-option value="Tunjangan hari raya">Tunjangan hari raya</mat-option>
-        <mat-option value="Tunjangan pensiun">Tunjangan pensiun</mat-option>
-        <mat-option value="Tunjangan lainnya">Tunjangan lainnya</mat-option>
-        <mat-option value="Tunjangan luar pulau"
-          >Tunjangan luar pulau</mat-option
-        >
-        <mat-option value="Tunjangan luar kota">Tunjangan luar kota</mat-option>
-        <mat-option value="Tunjangan kehadiran">Tunjangan kehadiran</mat-option>
-        <mat-option value="Tunjangan ketepatan waktu"
-          >Tunjangan ketepatan waktu</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
+<div class="sa">
+  <div class="sa-head" mat-dialog-title>
+    <span class="sa-badge sa-badge--pos">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </span>
+    <div class="sa-head__text">
+      <h2 class="sa-title">Tambah Allowance</h2>
+      <span class="sa-sub">Tunjangan / bonus untuk karyawan</span>
+    </div>
+  </div>
 
-    <!-- Create toggle either included / not --><mat-slide-toggle
-      class="mb-4"
-      color="primary"
-      formControlName="isIncluded"
-      >Included for PPh Calculation</mat-slide-toggle
-    >
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="sa-content">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Allowance Name</mat-label>
+        <mat-select formControlName="name">
+          <mat-option value="Bantuan BPJS Ketenagakerjaan"
+            >Bantuan BPJS Ketenagakerjaan</mat-option
+          >
+          <mat-option value="Bonus proyek">Bonus proyek</mat-option>
+          <mat-option value="Bonus tahunan">Bonus tahunan</mat-option>
+          <mat-option value="Bonus kinerja">Bonus kinerja</mat-option>
+          <mat-option value="Tunjangan jabatan">Tunjangan jabatan</mat-option>
+          <mat-option value="Tunjangan kesehatan"
+            >Tunjangan kesehatan</mat-option
+          >
+          <mat-option value="Tunjangan transportasi"
+            >Tunjangan transportasi</mat-option
+          >
+          <mat-option value="Tunjangan makan">Tunjangan makan</mat-option>
+          <mat-option value="Tunjangan pendidikan"
+            >Tunjangan pendidikan</mat-option
+          >
+          <mat-option value="Tunjangan perumahan"
+            >Tunjangan perumahan</mat-option
+          >
+          <mat-option value="Tunjangan hari raya"
+            >Tunjangan hari raya</mat-option
+          >
+          <mat-option value="Tunjangan pensiun">Tunjangan pensiun</mat-option>
+          <mat-option value="Tunjangan lainnya">Tunjangan lainnya</mat-option>
+          <mat-option value="Tunjangan luar pulau"
+            >Tunjangan luar pulau</mat-option
+          >
+          <mat-option value="Tunjangan luar kota"
+            >Tunjangan luar kota</mat-option
+          >
+          <mat-option value="Tunjangan kehadiran"
+            >Tunjangan kehadiran</mat-option
+          >
+          <mat-option value="Tunjangan ketepatan waktu"
+            >Tunjangan ketepatan waktu</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="amount"
-        placeholder="Enter allowance amount"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-      />
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Amount</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="amount"
+          placeholder="Nominal tunjangan"
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <textarea
-        matInput
-        formControlName="description"
-        placeholder="Enter allowance description"
-        rows="3"
-        style="resize: none"
-      ></textarea>
-      <mat-hint>{{ formGroup.value.description.length }} / 10</mat-hint>
-    </mat-form-field>
-  </mat-dialog-content>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Keterangan (min. 10 karakter)"
+          rows="3"
+          style="resize: none"
+        ></textarea>
+        <mat-hint>{{ formGroup.value.description.length }} / 10</mat-hint>
+      </mat-form-field>
 
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      type="submit"
-      [disabled]="formGroup.invalid"
-      cdkFocusInitial
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+      <div class="sa-toggle">
+        <div class="sa-toggle__text">
+          <span class="sa-toggle__label">Included for PPh Calculation</span>
+          <span class="sa-toggle__hint"
+            >Aktifkan kalau tunjangan ini dihitung untuk PPh 21.</span
+          >
+        </div>
+        <mat-slide-toggle
+          color="primary"
+          formControlName="isIncluded"
+        ></mat-slide-toggle>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="sa-actions">
+      <button type="button" class="sa-cancel" mat-dialog-close>Batal</button>
+      <button
+        type="submit"
+        class="sa-submit"
+        [disabled]="formGroup.invalid"
+        cdkFocusInitial
+      >
+        Tambah allowance
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

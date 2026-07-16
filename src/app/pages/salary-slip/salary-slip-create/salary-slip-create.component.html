@@ -1,216 +1,216 @@
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <div class="form-group">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Month</mat-label>
-      <input
-        matInput
-        formControlName="monthName"
-        placeholder="Enter month"
-        readonly
-      />
-    </mat-form-field>
+<div class="ssc">
+  <div class="ssc-head">
+    <h1 class="ssc-title">Buat Salary Slip</h1>
+    <p class="ssc-sub"><a routerLink="/Salary-slip">Salary slip</a> / Create</p>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Year</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="year"
-        placeholder="Enter year"
-        readonly
-      />
-    </mat-form-field>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== employee ===== -->
+    <div class="ssc-card">
+      <div class="ssc-section__title">Karyawan</div>
+      <div class="ssc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Month</mat-label>
+          <input
+            matInput
+            formControlName="monthName"
+            placeholder="Month"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="year"
+            placeholder="Year"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ssc-span2">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Nama karyawan"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ssc-span2">
+          <mat-label>Tax Category</mat-label>
+          <mat-select
+            formControlName="taxCategory"
+            placeholder="Select tax category"
+          >
+            <mat-optgroup label="Tidak kawin">
+              <mat-option value="TK/0"
+                >Tidak kawin; 0 tanggungan (TK/0)</mat-option
+              >
+              <mat-option value="TK/1"
+                >Tidak kawin; 1 tanggungan (TK/1)</mat-option
+              >
+              <mat-option value="TK/2"
+                >Tidak kawin; 2 tanggungan (TK/2)</mat-option
+              >
+              <mat-option value="TK/3"
+                >Tidak kawin; 3 tanggungan (TK/3)</mat-option
+              >
+            </mat-optgroup>
+            <mat-optgroup label="Kawin">
+              <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
+              <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
+              <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
+              <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Position</mat-label>
+          <input matInput formControlName="position" placeholder="Jabatan" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <input
+            matInput
+            formControlName="department"
+            placeholder="Departemen"
+          />
+        </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        placeholder="Enter employee name"
-        readonly
-      />
-    </mat-form-field>
+    <!-- ===== bank ===== -->
+    <div class="ssc-card">
+      <div class="ssc-section__title">Bank &amp; Pembayaran</div>
+      <div class="ssc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Bank name</mat-label>
+          <input
+            #input
+            matInput
+            type="text"
+            formControlName="bankName"
+            placeholder="Pilih bank"
+            [matAutocomplete]="auto"
+            (input)="filter()"
+            (focus)="filter()"
+          />
+          <mat-autocomplete requireSelection #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.name"
+              >{{ option.name }}</mat-option
+            >
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Payment Method</mat-label>
+          <mat-select formControlName="paymentMethod">
+            <mat-option value="bank">Bank Transfer</mat-option>
+            <mat-option value="va">Virtual Account</mat-option>
+            <mat-option value="cash">Cheque</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountName"
+            placeholder="Nama rekening"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account number</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountNumber"
+            placeholder="Nomor rekening"
+          />
+        </mat-form-field>
+      </div>
+    </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Tax Category</mat-label>
-      <mat-select
-        formControlName="taxCategory"
-        placeholder="Select tax category"
-      >
-        <mat-optgroup label="Tidak kawin">
-          <mat-option value="TK/0">Tidak kawin; 0 tanggungan (TK/0)</mat-option>
-          <mat-option value="TK/1">Tidak kawin; 1 tanggungan (TK/1)</mat-option>
-          <mat-option value="TK/2">Tidak kawin; 2 tanggungan (TK/2)</mat-option>
-          <mat-option value="TK/3">Tidak kawin; 3 tanggungan (TK/3)</mat-option>
-        </mat-optgroup>
-        <mat-optgroup label="Kawin">
-          <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
-          <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
-          <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
-          <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
-        </mat-optgroup>
-      </mat-select>
-    </mat-form-field>
+    <!-- ===== earnings ===== -->
+    <div class="ssc-card">
+      <div class="ssc-section__title">Pendapatan</div>
+      <div class="ssc-grid">
+        <mat-form-field appearance="outline" class="ssc-span2">
+          <mat-label>Basic salary</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="basicSalary"
+            placeholder="Basic salary"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Position</mat-label>
-      <input
-        matInput
-        formControlName="position"
-        placeholder="Enter employee position"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Department</mat-label>
-      <input
-        matInput
-        formControlName="department"
-        placeholder="Enter employee department"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank name</mat-label>
-      <input
-        #input
-        matInput
-        type="text"
-        formControlName="bankName"
-        placeholder="Bank Name"
-        [matAutocomplete]="auto"
-        (input)="filter()"
-        (focus)="filter()"
-      />
-      <mat-autocomplete requireSelection #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let option of filteredOptions"
-          [value]="option.name"
-          >{{ option.name }}</mat-option
-        >
-      </mat-autocomplete>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="bankAccountName"
-        placeholder="Bank Account Name"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Method</mat-label>
-      <mat-select formControlName="paymentMethod">
-        <mat-option value="bank">Bank Transfer</mat-option>
-        <mat-option value="va">Virtual Account</mat-option>
-        <mat-option value="cash">Cheque</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <!-- Input for bank account name -->
-      <input
-        matInput
-        type="text"
-        formControlName="bankAccountNumber"
-        placeholder="Bank Account Number"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Basic salary</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="basicSalary"
-        placeholder="Enter basic salary"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-      />
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Meal allowance quantity</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Meal quantity</mat-label>
           <input
             matInput
             type="number"
             formControlName="mealAllowanceQuantity"
-            placeholder="Enter meal allowance quantity"
+            placeholder="Qty"
           />
         </mat-form-field>
-      </div>
-      <div class="col-8">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Meal allowance rate</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Meal rate</mat-label>
           <input
             matInput
             type="text"
             formControlName="mealAllowanceRate"
-            placeholder="Enter meal allowance rate"
+            placeholder="Rate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
           />
         </mat-form-field>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Transportation allowance quantity</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Transportation quantity</mat-label>
           <input
             matInput
             type="number"
             formControlName="transportationAllowanceQuantity"
-            placeholder="Enter transportation allowance quantity"
+            placeholder="Qty"
           />
         </mat-form-field>
-      </div>
-      <div class="col-8">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Transportation allowance rate</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Transportation rate</mat-label>
           <input
             matInput
             type="text"
             formControlName="transportationAllowanceRate"
-            placeholder="Enter transportation allowance rate"
+            placeholder="Rate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
           />
         </mat-form-field>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-4">
-        <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field appearance="outline">
           <mat-label>Overtime hours</mat-label>
           <input
             matInput
             type="number"
             formControlName="overtimeQuantity"
-            placeholder="Enter overtime hours"
+            placeholder="Hours"
           />
         </mat-form-field>
-      </div>
-      <div class="col-8">
-        <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field appearance="outline">
           <mat-label>Overtime rate</mat-label>
           <input
             matInput
             type="text"
             formControlName="overtimeRate"
-            placeholder="Enter overtime amount"
+            placeholder="Rate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -219,247 +219,257 @@
       </div>
     </div>
 
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="onAddOtherAllowance()"
-      style="letter-spacing: 0"
-    >
-      Add allowance
-    </button>
-
-    <div class="table-responsive w-100">
-      <table mat-table [dataSource]="allowancesControls" #allowanceTable>
-        <ng-container matColumnDef="name">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            {{ allowance.get("name").value }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="amount">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Amount</th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            Rp. {{ allowance.get("amount").value | number : "1.2-2" }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="description">
-          <th
-            style="width: calc(100% - 800px)"
-            mat-header-cell
-            *matHeaderCellDef
-          >
-            Description
-          </th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            {{ allowance.get("description").value }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="included">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Type</th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            @if(allowance.get('isIncluded')?.value == true){ Included for PPh
-            Calculation } @else { Excluded for PPh Calculation }
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="action">
-          <th style="width: 100px" mat-header-cell *matHeaderCellDef>Action</th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            <button
-              mat-icon-button
-              (click)="onRemoveAllowance(i)"
-              aria-label="Remove allowance"
+    <!-- ===== allowances ===== -->
+    <div class="ssc-card">
+      <div class="ssc-cardhead">
+        <div class="ssc-section__title ssc-section__title--flush">
+          Other Allowances
+        </div>
+        <button type="button" class="ssc-add" (click)="onAddOtherAllowance()">
+          <mat-icon>add</mat-icon> Add allowance
+        </button>
+      </div>
+      <div class="ssc-table">
+        <table mat-table [dataSource]="allowancesControls" #allowanceTable>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let allowance">
+              {{ allowance.get("name").value }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef class="ssc-num">Amount</th>
+            <td mat-cell *matCellDef="let allowance" class="ssc-num ssc-pos">
+              Rp {{ allowance.get("amount").value | number: "1.0-0" }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let allowance">
+              <span class="ssc-desc">{{
+                allowance.get("description").value
+              }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="included">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let allowance">
+              <span
+                class="ssc-tag"
+                [class.ssc-tag--in]="allowance.get('isIncluded')?.value"
+              >
+                {{
+                  allowance.get("isIncluded")?.value
+                    ? "Included PPh"
+                    : "Excluded PPh"
+                }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef aria-label="Action"></th>
+            <td mat-cell *matCellDef="let allowance; let i = index">
+              <button
+                mat-icon-button
+                (click)="onRemoveAllowance(i)"
+                aria-label="Remove allowance"
+                type="button"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedAllowancesColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedAllowancesColumns"
+          ></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell ssc-norow"
+              [attr.colspan]="displayedAllowancesColumns.length"
             >
-              <mat-icon>close</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedAllowancesColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedAllowancesColumns"
-        ></tr>
-        <!-- Empty table -->
-        <tr class="mat-row" *matNoDataRow>
-          <td
-            class="mat-cell text-center"
-            [attr.colspan]="displayedAllowancesColumns.length"
-          >
-            No allowances added yet.
-          </td>
-        </tr>
-      </table>
+              No allowances added yet.
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
-    <mat-divider class="my-3"></mat-divider>
-
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="onAddDeducation()"
-      style="letter-spacing: 0"
-    >
-      Add deduction
-    </button>
-
-    <div class="table-responsive w-100">
-      <table mat-table [dataSource]="deductionsControls" #deductionTable>
-        <ng-container matColumnDef="name">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let deduction; let i = index">
-            {{ deduction.get("name").value }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="amount">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Amount</th>
-          <td mat-cell *matCellDef="let deduction; let i = index">
-            Rp. {{ deduction.get("amount").value | number : "1.2-2" }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="description">
-          <th
-            style="width: calc(100% - 800px)"
-            mat-header-cell
-            *matHeaderCellDef
-          >
-            Description
-          </th>
-          <td mat-cell *matCellDef="let deduction; let i = index">
-            {{ deduction.get("description").value }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="included">
-          <th style="width: 350px" mat-header-cell *matHeaderCellDef>Type</th>
-          <td mat-cell *matCellDef="let allowance; let i = index">
-            @if(allowance.get('isIncluded')?.value == true){ Included for PPh
-            Calculation } @else { Excluded for PPh Calculation }
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="action">
-          <th style="width: 100px" mat-header-cell *matHeaderCellDef>Action</th>
-          <td mat-cell *matCellDef="let deduction; let i = index">
-            <button
-              mat-icon-button
-              (click)="onRemoveDeduction(i)"
-              aria-label="Remove deduction"
+    <!-- ===== deductions ===== -->
+    <div class="ssc-card">
+      <div class="ssc-cardhead">
+        <div class="ssc-section__title ssc-section__title--flush">
+          Deductions
+        </div>
+        <button type="button" class="ssc-add" (click)="onAddDeducation()">
+          <mat-icon>add</mat-icon> Add deduction
+        </button>
+      </div>
+      <div class="ssc-table">
+        <table mat-table [dataSource]="deductionsControls" #deductionTable>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let deduction">
+              {{ deduction.get("name").value }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef class="ssc-num">Amount</th>
+            <td mat-cell *matCellDef="let deduction" class="ssc-num ssc-neg">
+              − Rp {{ deduction.get("amount").value | number: "1.0-0" }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let deduction">
+              <span class="ssc-desc">{{
+                deduction.get("description").value
+              }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="included">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let allowance">
+              <span
+                class="ssc-tag"
+                [class.ssc-tag--in]="allowance.get('isIncluded')?.value"
+              >
+                {{
+                  allowance.get("isIncluded")?.value
+                    ? "Included PPh"
+                    : "Excluded PPh"
+                }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef aria-label="Action"></th>
+            <td mat-cell *matCellDef="let deduction; let i = index">
+              <button
+                mat-icon-button
+                (click)="onRemoveDeduction(i)"
+                aria-label="Remove deduction"
+                type="button"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedDeductionsColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedDeductionsColumns"
+          ></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell ssc-norow"
+              [attr.colspan]="displayedDeductionsColumns.length"
             >
-              <mat-icon>close</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedDeductionsColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedDeductionsColumns"
-        ></tr>
-        <!-- Empty table -->
-        <tr class="mat-row" *matNoDataRow>
-          <td
-            class="mat-cell text-center"
-            [attr.colspan]="displayedDeductionsColumns.length"
-          >
-            No deductions added yet.
-          </td>
-        </tr>
-      </table>
+              No deductions added yet.
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total salary</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="grossSalary"
-        placeholder="Enter total salary"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-        readonly
-      />
-    </mat-form-field>
+    <!-- ===== summary ===== -->
+    <div class="ssc-card">
+      <div class="ssc-cardhead">
+        <div class="ssc-section__title ssc-section__title--flush">
+          Ringkasan &amp; Pajak
+        </div>
+        <button
+          type="button"
+          class="ssc-add ssc-add--calc"
+          [disabled]="isFinal"
+          (click)="calculateSalary()"
+        >
+          <mat-icon>calculate</mat-icon> Hitung gaji
+        </button>
+      </div>
+      <div class="ssc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Total salary (gross)</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="grossSalary"
+            placeholder="Total salary"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>PPh 21</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxAmount"
+            placeholder="PPh 21"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="ssc-span2 ssc-total">
+          <mat-label>Net salary</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="netSalary"
+            placeholder="Net salary"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+            readonly
+          />
+        </mat-form-field>
 
-    <!-- PPh 21 -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PPh 21</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="taxAmount"
-        placeholder="Enter PPh 21"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Is last day?</mat-label>
+          <mat-select formControlName="isLastDay">
+            <mat-option [value]="true">Yes</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last date</mat-label>
+          <input matInput formControlName="lastDate" [matDatepicker]="picker" />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
 
-    <!-- Net salary -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Net salary</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="netSalary"
-        placeholder="Enter net salary"
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-        readonly
-      />
-      <button
-        mat-icon-button
-        matPrefix
-        [disabled]="isFinal"
-        (click)="calculateSalary()"
+      <div
+        class="ssc-error"
+        *ngIf="
+          formGroup.hasError('lastDateRequired') &&
+          formGroup.get('lastDate')?.touched
+        "
       >
-        <mat-icon>calculate</mat-icon>
-      </button>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Is last day?</mat-label>
-      <mat-select formControlName="isLastDay">
-        <mat-option [value]="true">Yes</mat-option>
-        <mat-option [value]="false">No</mat-option>
-      </mat-select>
-    </mat-form-field>
+        <mat-icon>error_outline</mat-icon>
+        <span>Last date wajib diisi kalau ini hari terakhir.</span>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Last date</mat-label>
-      <input matInput formControlName="lastDate" [matDatepicker]="picker" />
-      <mat-datepicker-toggle
-        matIconPrefix
-        [for]="picker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-
-    <div
-      *ngIf="
-        formGroup.hasError('lastDateRequired') &&
-        formGroup.get('lastDate')?.touched
-      "
-    >
-      Last date is required when it's the last day.
+      <div class="ssc-actions">
+        <span class="ssc-spacer"></span>
+        <button
+          type="submit"
+          class="ssc-submit"
+          [disabled]="!isFinal || isSubmitting || formGroup.invalid"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Submit salary slip" }}
+        </button>
+      </div>
     </div>
-
-    <button
-      mat-stroked-button
-      type="submit"
-      style="letter-spacing: 0"
-      [disabled]="!isFinal || isSubmitting || formGroup.invalid"
-    >
-      Submit
-    </button>
-  </div>
-</form>
+  </form>
+</div>
