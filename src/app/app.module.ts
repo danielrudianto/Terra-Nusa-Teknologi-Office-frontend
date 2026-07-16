@@ -10,26 +10,21 @@ import {
 } from '@angular/common/http';
 
 // Pages
-import { SupplierCreateComponent } from './pages/supplier/supplier-create/supplier-create.component';
-import { PurchaseCreateComponent } from './pages/purchase/purchase-create/purchase-create.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SupplierComponent } from './pages/supplier/supplier.component';
 import { PurchaseComponent } from './pages/purchase/purchase.component';
 import { DashboardTopComponent } from './pages/dashboard/dashboard-top/dashboard-top.component';
 import { DashboardBodyComponent } from './pages/dashboard/dashboard-body/dashboard-body.component';
 import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
-import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
 import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
 import { PurchaseReportSelectComponent } from './pages/purchase/purchase-list/purchase-report-select/purchase-report-select.component';
 import { BankUpdateComponent } from './pages/bank/bank-update/bank-update.component';
 import { BankComponent } from './pages/bank/bank.component';
 import { PurchasePaymentCreateComponent } from './components/payment-create/purchase-payment-create/purchase-payment-create.component';
-import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-status/purchase-update-status.component';
 import { ExpenseComponent } from './pages/expense/expense.component';
 import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
 import { EmployeeComponent } from './pages/employee/employee.component';
 import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
-import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
 import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
 import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
 import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
@@ -40,8 +35,6 @@ import { ClientCreateComponent } from './pages/client/client-create/client-creat
 import { ClientComponent } from './pages/client/client.component';
 import { EmployeeUpdateComponent } from './pages/employee/employee-update/employee-update.component';
 import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
-import { SalarySlipCreateComponent } from './pages/salary-slip/salary-slip-create/salary-slip-create.component';
-import { CalendarComponent } from './pages/calendar/calendar.component';
 import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
 import { CashPositionComponent } from './pages/dashboard/cash-position/cash-position.component';
 import { TodayPaymentComponent } from './pages/dashboard/today-payment/today-payment/today-payment.component';
@@ -76,12 +69,7 @@ import { MatCardModule } from '@angular/material/card';
 // Components
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 import { AutocompleteResultComponent } from './components/autocomplete-result/autocomplete-result.component';
-import { PphSelectorComponent } from './components/pph-selector/pph-selector.component';
 import { BankSelectorComponent } from './components/bank-selector/bank-selector.component';
-import { PdfViewerComponent } from './components/pdf-viewer/pdf-viewer.component';
-import { SupplierSelectorComponent } from './components/supplier-selector/supplier-selector.component';
-import { ExpenseOpponentSelectorComponent } from './components/expense-opponent-selector/expense-opponent-selector.component';
-import { ClientSelectorComponent } from './components/client-selector/client-selector.component';
 
 // Interceptors
 import { AuthInterceptor } from './services/auth.interceptor';
@@ -95,8 +83,6 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule, routes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { CalendarTableComponent } from './pages/calendar/calendar-table/calendar-table.component';
-import { ShortCurrencyPipe } from './pipes/short-currency.pipe';
 import { CalendarDayViewComponent } from './pages/calendar/calendar-day-view/calendar-day-view.component';
 import { CalendarMonthSelectorComponent } from './pages/calendar/calendar-month-selector/calendar-month-selector.component';
 import { PaymentComponent } from './pages/payment/payment.component';
@@ -107,7 +93,6 @@ import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component'
 import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { CalendarAccountSelectorComponent } from './pages/calendar/calendar-account-selector/calendar-account-selector.component';
 import { PaymentCreateComponent } from './components/payment-create/payment-create.component';
 import { ReimbursementPaymentCreateComponent } from './components/payment-create/reimbursement-payment-create/reimbursement-payment-create.component';
 import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
@@ -116,7 +101,6 @@ import { IncomeComponent } from './pages/income/income.component';
 import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
 import { ExpensePaymentCreateComponent } from './components/payment-create/expense-payment-create/expense-payment-create.component';
 import { AssetComponent } from './pages/asset/asset.component';
-import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
 import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
 import { SalarySlipViewComponent } from './pages/salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
 import { SalaryPaymentCreateComponent } from './components/payment-create/salary-payment-create/salary-payment-create.component';
@@ -182,7 +166,6 @@ export const MY_FORMATS = {
     ClientComponent,
     ClientListComponent,
     ClientCreateComponent,
-    EmployeeUpdateComponent,
     SalarySlipComponent,
     CalendarDateSelectorComponent,
     CalendarDayViewComponent,

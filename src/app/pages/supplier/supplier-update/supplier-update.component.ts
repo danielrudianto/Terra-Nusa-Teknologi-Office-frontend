@@ -21,6 +21,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-supplier-update',
@@ -35,6 +37,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatChipsModule,
     MatDividerModule,
     MatIconModule,
+    MatButtonModule,
   ],
   templateUrl: './supplier-update.component.html',
   styleUrl: './supplier-update.component.scss',
@@ -46,6 +49,7 @@ export class SupplierUpdateComponent {
     private snackBar: MatSnackBar,
     public route: ActivatedRoute,
     private dialog: MatDialogRef<SupplierUpdateComponent>,
+    private clipboard: Clipboard,
     @Inject(MAT_DIALOG_DATA)
     public data: {
       id: number;
@@ -174,17 +178,58 @@ export class SupplierUpdateComponent {
           email: data.email || '',
         });
 
-        this.items = data.itemsSold.split(',').map((item: string) => {
-          return item;
-        });
+        // Guard against null / empty so .split() can't blow up on older rows
+        this.items = (data.itemsSold || '')
+          .split(',')
+          .map((item: string) => item.trim())
+          .filter((item: string) => !!item);
 
-        this.areas = data.serviceArea.split(',').map((item: string) => {
-          return item;
-        });
+        this.areas = (data.serviceArea || '')
+          .split(',')
+          .map((item: string) => item.trim())
+          .filter((item: string) => !!item);
       },
       error: (error) => {
         console.error(error);
       },
     });
+  }
+
+  // ---- view-mode helpers ----
+  get fullName(): string {
+    const f = this.supplierFormGroup.value;
+    return [f.prefix, f.name].filter(Boolean).join(' ').trim();
+  }
+
+  get fullAddress(): string {
+    const f = this.supplierFormGroup.value;
+    return [f.address, f.city, f.province].filter(Boolean).join(', ');
+  }
+
+  copyDocument(): void {
+    const f = this.supplierFormGroup.value;
+    const lines = [
+      '*DATA SUPPLIER*',
+      this.fullName || '-',
+      '',
+      `*Alamat:* ${this.fullAddress || '-'}`,
+      `*Telepon:* ${f.phoneNumber || '-'}`,
+      `*Email:* ${f.email || '-'}`,
+      `*NPWP:* ${f.npwp || '-'}`,
+      '',
+      `*Items sold:* ${this.items.length ? this.items.join(', ') : '-'}`,
+      `*Service areas:* ${this.areas.length ? this.areas.join(', ') : '-'}`,
+    ];
+    this.clipboard.copy(lines.join('\n'));
+    this.snackBar.open('Detail supplier disalin', 'Close', { duration: 3000 });
+  }
+
+  copyPhone(): void {
+    this.clipboard.copy(this.supplierFormGroup.get('phoneNumber')!.value || '');
+    this.snackBar.open('Nomor telepon disalin', 'Close', { duration: 3000 });
+  }
+
+  close() {
+    this.dialog.close();
   }
 }

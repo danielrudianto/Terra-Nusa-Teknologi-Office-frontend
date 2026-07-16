@@ -15,6 +15,7 @@ import { PurchaseViewComponent } from '../../purchase/purchase-view/purchase-vie
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AssetListPurchaseOrderSelectorComponent } from './asset-list-purchase-order-selector/asset-list-purchase-order-selector.component';
 import { debounceTime } from 'rxjs';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-asset-list',
@@ -28,6 +29,7 @@ import { debounceTime } from 'rxjs';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     HeaderTitleComponent,
   ],
   templateUrl: './asset-list.component.html',

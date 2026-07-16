@@ -1,96 +1,126 @@
-<app-header-title
-  [title]="'Bank accounts'"
-  [description]="'Manage your bank accounts here'"
-  [actionButtonLabel]="'Create new bank account'"
-  (onActionButtonClicked)="createNewBank()"
-></app-header-title>
+<div class="bank-list">
+  <app-header-title
+    [title]="'Bank Accounts'"
+    [description]="'Manage your bank accounts here'"
+    [actionButtonLabel]="'Create new bank account'"
+    (onActionButtonClicked)="createNewBank()"
+  ></app-header-title>
 
-<div class="search__wrapper">
-  <mat-form-field appearance="outline" class="w-100">
-    <input
-      matInput
-      type="text"
-      class="input"
-      placeholder="Search supplier"
-      [formControl]="formControl"
-    />
-  </mat-form-field>
+  <div class="bl-toolbar">
+    <mat-form-field appearance="outline" class="bl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Bank, nomor, atau nama rekening"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+  </div>
+
+  <div class="bl-card" [class.is-loading]="isLoading">
+    <div class="bl-loadingbar" *ngIf="isLoading"><span></span></div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="banks">
+        <!-- Bank -->
+        <ng-container matColumnDef="bankName">
+          <th mat-header-cell *matHeaderCellDef>Bank</th>
+          <td mat-cell *matCellDef="let bank">
+            <div class="bl-bank">
+              <span
+                class="bl-avatar"
+                [style.background-color]="bankTheme(bank.bankName)"
+                >{{ (bank.bankName || "?").charAt(0) }}</span
+              >
+              <span class="bl-primary">{{ bank.bankName || "—" }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Account number -->
+        <ng-container matColumnDef="bankAccountNumber">
+          <th mat-header-cell *matHeaderCellDef>Account number</th>
+          <td mat-cell *matCellDef="let bank">
+            <span class="bl-mono">{{ bank.bankAccountNumber || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Account name -->
+        <ng-container matColumnDef="bankAccountName">
+          <th mat-header-cell *matHeaderCellDef>Account name</th>
+          <td mat-cell *matCellDef="let bank">
+            <span class="bl-muted">{{ bank.bankAccountName || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Balance -->
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell *matHeaderCellDef class="bl-num">Balance</th>
+          <td mat-cell *matCellDef="let bank" class="bl-num">
+            <span class="bl-amount" [class.bl-amount--neg]="bank.balance < 0">{{
+              bank.balance | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td
+            mat-cell
+            *matCellDef="let bank"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Row actions"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onOpenMutation(bank.id)">
+                <mat-icon>format_list_bulleted</mat-icon
+                ><span>Lihat mutasi</span>
+              </button>
+              <button mat-menu-item (click)="onEdit(bank.id)">
+                <mat-icon>edit</mat-icon><span>Ubah rekening</span>
+              </button>
+              <button mat-menu-item (click)="onDelete(bank.id)">
+                <mat-icon>delete</mat-icon><span>Hapus rekening</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="onOpenMutation(row.id)"
+        ></tr>
+        <tr class="mat-row bl-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="bl-empty">
+              <mat-icon>account_balance</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="count"
+      [pageSize]="10"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
 </div>
-
-<div class="table-responsive">
-  <table mat-table [dataSource]="banks">
-    <ng-container matColumnDef="bankAccountName">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Account Name</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let bank">
-        {{ bank.bankAccountName }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="bankName">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Bank Name</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let bank">
-        {{ bank.bankAccountName }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="bankAccountNumber">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Account number</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let bank">
-        {{ bank.bankAccountNumber }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="balance">
-      <th mat-header-cell *matHeaderCellDef>
-        <div class="d-flex d-align-items-center">
-          <span>Balance</span>
-        </div>
-      </th>
-      <td mat-cell *matCellDef="let bank">
-        {{ bank.balance | number : "0.2-2" }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Action</th>
-      <td mat-cell *matCellDef="let bank">
-        <button mat-icon-button (click)="onOpenMutation(bank.id)">
-          <mat-icon>format_list_bulleted</mat-icon>
-        </button>
-        <button mat-icon-button (click)="onEdit(bank.id)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button (click)="onDelete(bank.id)">
-          <mat-icon>close</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
-</div>
-<mat-paginator
-  [length]="count"
-  [pageSize]="10"
-  [pageIndex]="page - 1"
-  (page)="changePage($event)"
->
-</mat-paginator>

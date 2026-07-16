@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-bank-list',
@@ -30,6 +31,7 @@ import { BankCreateComponent } from '../bank-create/bank-create.component';
     MatPaginatorModule,
     MatButtonModule,
     HeaderTitleComponent,
+    MatMenuModule,
   ],
   templateUrl: './bank-list.component.html',
   styleUrl: './bank-list.component.scss',
@@ -41,7 +43,7 @@ export class BankListComponent {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   isLoading: boolean = false;
@@ -106,12 +108,51 @@ export class BankListComponent {
     this.fetchBankAccounts(targetPage);
   }
 
+  /** Brand-associated colour for a bank (used for the avatar).
+   *  Uses each bank's recognisable brand colour + initials — not their
+   *  trademarked logo. Falls back to the app brand blue. */
+  bankTheme(name: string): string {
+    const n = (name || '').toLowerCase();
+    const map: [string, string][] = [
+      ['bca', '#005ca9'],
+      ['central asia', '#005ca9'],
+      ['mandiri', '#063b7c'],
+      ['bri', '#00529c'],
+      ['rakyat indonesia', '#00529c'],
+      ['bni', '#e06000'],
+      ['negara indonesia', '#e06000'],
+      ['danamon', '#0067b1'],
+      ['permata', '#00795c'],
+      ['mega', '#c98a00'],
+      ['ocbc', '#d0021b'],
+      ['cimb', '#862633'],
+      ['niaga', '#862633'],
+      ['syariah indonesia', '#00857a'],
+      ['bsi', '#00857a'],
+      ['tabungan negara', '#c25e12'],
+      ['btn', '#c25e12'],
+      ['maybank', '#b8860b'],
+      ['panin', '#d51317'],
+      ['jago', '#ff6b00'],
+      ['seabank', '#1a56db'],
+    ];
+    for (const [k, c] of map) {
+      if (n.includes(k)) return c;
+    }
+    return '#154dec';
+  }
+
   onEdit(id: number) {
-    this.dialog.open(BankUpdateComponent, {
-      data: {
-        id: id,
-      },
-    });
+    this.dialog
+      .open(BankUpdateComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe(() => {
+        this.fetchBankAccounts(this.page);
+      });
   }
 
   onDelete(id: number) {
@@ -136,7 +177,7 @@ export class BankListComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
               error: (b) => {
@@ -146,7 +187,7 @@ export class BankListComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
             });
@@ -165,6 +206,11 @@ export class BankListComponent {
   }
 
   createNewBank() {
-    this.dialog.open(BankCreateComponent, {});
+    this.dialog
+      .open(BankCreateComponent, {})
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchBankAccounts(1);
+      });
   }
 }

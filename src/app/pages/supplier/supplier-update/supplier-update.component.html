@@ -1,173 +1,272 @@
-<h1 mat-dialog-title>{{ data.readOnly ? "View" : "Update" }} Supplier</h1>
-<form [formGroup]="supplierFormGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100 mt-3">
-      <mat-label>Prefix</mat-label>
-      <mat-select formControlName="prefix" required>
-        <mat-option value="PT.">PT.</mat-option>
-        <mat-option value="CV.">CV.</mat-option>
-        <mat-option value="UD.">UD.</mat-option>
-        <mat-option value="Pribadi">Pribadi</mat-option>
-        <mat-option value="Lainnya">Lainnya</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        type="text"
-        placeholder="Supplier name"
-        required
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Address</mat-label>
-      <textarea
-        matInput
-        formControlName="address"
-        rows="3"
-        placeholder="Supplier address"
-        required
-        style="resize: none"
-      ></textarea>
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-sm-6 col-12">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>City</mat-label>
-          <input
-            matInput
-            formControlName="city"
-            type="text"
-            placeholder="Supplier city"
-            required
-          />
-        </mat-form-field>
-      </div>
-      <div class="col-sm-6 col-12">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Province</mat-label>
-          <input
-            matInput
-            formControlName="province"
-            type="text"
-            placeholder="Supplier province"
-            required
-          />
-        </mat-form-field>
-      </div>
+<div class="su">
+  <!-- ===== header ===== -->
+  <div class="su-head" mat-dialog-title>
+    <span class="su-avatar">{{
+      (supplierFormGroup.get("name")?.value || "?").charAt(0)
+    }}</span>
+    <div class="su-head__text">
+      <h2 class="su-title">{{ fullName || "Supplier" }}</h2>
+      <span class="su-sub">{{
+        data.readOnly ? "Detail supplier" : "Ubah data supplier"
+      }}</span>
     </div>
+    <span class="su-chip" *ngIf="data.readOnly">View only</span>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>NPWP</mat-label>
-      <input
-        matInput
-        formControlName="npwp"
-        type="text"
-        placeholder="Supplier NPWP"
-        maxlength="16"
-      />
-    </mat-form-field>
+  <!-- =========================================================
+       VIEW MODE — clean document, no form fields
+       ========================================================= -->
+  <ng-container *ngIf="data.readOnly">
+    <mat-dialog-content class="su-content">
+      <section class="su-section">
+        <div class="su-grid">
+          <div class="su-field su-field--wide">
+            <span class="su-label">Alamat</span>
+            <span class="su-value su-value--sm">{{ fullAddress || "—" }}</span>
+          </div>
+          <div class="su-field">
+            <span class="su-label">Telepon</span>
+            <span class="su-value su-value--row">
+              {{ supplierFormGroup.get("phoneNumber")?.value || "—" }}
+              <button
+                mat-icon-button
+                class="su-mini"
+                *ngIf="supplierFormGroup.get('phoneNumber')?.value"
+                (click)="copyPhone()"
+                aria-label="Salin nomor telepon"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </span>
+          </div>
+          <div class="su-field">
+            <span class="su-label">Email</span>
+            <span class="su-value">{{
+              supplierFormGroup.get("email")?.value || "—"
+            }}</span>
+          </div>
+          <div class="su-field su-field--wide">
+            <span class="su-label">NPWP</span>
+            <span class="su-value su-value--mono">
+              {{ supplierFormGroup.get("npwp")?.value || "—" }}
+            </span>
+          </div>
+        </div>
+      </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Phone number</mat-label>
-      <input
-        matInput
-        formControlName="phoneNumber"
-        type="tel"
-        placeholder="Supplier Phone number"
-        required
-      />
-    </mat-form-field>
+      <section class="su-section">
+        <div class="su-section__title">Items Sold</div>
+        <div class="su-tags" *ngIf="items.length > 0">
+          <span class="su-tag" *ngFor="let item of items">{{ item }}</span>
+        </div>
+        <div class="su-none" *ngIf="items.length === 0">
+          Belum ada item tercatat.
+        </div>
+      </section>
 
-    <!-- Email -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Email</mat-label>
-      <input
-        matInput
-        formControlName="email"
-        type="email"
-        placeholder="Supplier Email"
-      />
-    </mat-form-field>
+      <section class="su-section">
+        <div class="su-section__title">Service Areas</div>
+        <div class="su-tags" *ngIf="areas.length > 0">
+          <span class="su-tag su-tag--area" *ngFor="let area of areas">{{
+            area
+          }}</span>
+        </div>
+        <div class="su-none" *ngIf="areas.length === 0">
+          Belum ada area tercatat.
+        </div>
+      </section>
+    </mat-dialog-content>
 
-    <mat-divider class="mb-3"></mat-divider>
+    <mat-dialog-actions class="su-actions">
+      <button mat-flat-button class="su-copy" (click)="copyDocument()">
+        <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      </button>
+      <span class="su-spacer"></span>
+      <button mat-button (click)="close()">Tutup</button>
+    </mat-dialog-actions>
+  </ng-container>
 
-    <mat-chip-set
-      aria-label="Items sold selection"
-      *ngIf="items.length > 0"
-      class="mb-3"
-    >
-      @for(item of items; track item){
-      <mat-chip [removable]="true" (removed)="remove(item)">
-        {{ item }}
-        <button matChipRemove aria-label="Remove item">
-          <mat-icon>close</mat-icon>
+  <!-- =========================================================
+       EDIT MODE — form
+       ========================================================= -->
+  <ng-container *ngIf="!data.readOnly">
+    <form [formGroup]="supplierFormGroup" (ngSubmit)="onSubmit()">
+      <mat-dialog-content class="su-content">
+        <div class="su-formgrid">
+          <mat-form-field appearance="outline">
+            <mat-label>Prefix</mat-label>
+            <mat-select formControlName="prefix" required>
+              <mat-option value="PT.">PT.</mat-option>
+              <mat-option value="CV.">CV.</mat-option>
+              <mat-option value="UD.">UD.</mat-option>
+              <mat-option value="Pribadi">Pribadi</mat-option>
+              <mat-option value="Lainnya">Lainnya</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              type="text"
+              placeholder="Supplier name"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="su-span2">
+            <mat-label>Address</mat-label>
+            <textarea
+              matInput
+              formControlName="address"
+              rows="2"
+              placeholder="Supplier address"
+              required
+              style="resize: none"
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>City</mat-label>
+            <input
+              matInput
+              formControlName="city"
+              type="text"
+              placeholder="Supplier city"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Province</mat-label>
+            <input
+              matInput
+              formControlName="province"
+              type="text"
+              placeholder="Supplier province"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>NPWP</mat-label>
+            <input
+              matInput
+              formControlName="npwp"
+              type="text"
+              placeholder="16 digit"
+              maxlength="16"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone number</mat-label>
+            <input
+              matInput
+              formControlName="phoneNumber"
+              type="tel"
+              placeholder="Phone number"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="su-span2">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              type="email"
+              placeholder="Supplier email"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="su-divider"></div>
+
+        <!-- items sold -->
+        <div class="su-tags su-tags--edit" *ngIf="items.length > 0">
+          <mat-chip-set aria-label="Items sold selection">
+            <mat-chip
+              *ngFor="let item of items"
+              [removable]="true"
+              (removed)="remove(item)"
+            >
+              {{ item }}
+              <button matChipRemove class="su-chip-x" aria-label="Remove item">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              </button>
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Items sold</mat-label>
+          <input
+            matInput
+            formControlName="soldItems"
+            type="text"
+            placeholder="Ketik lalu tekan koma (,) untuk menambah"
+          />
+          <mat-hint>Pisahkan dengan koma.</mat-hint>
+        </mat-form-field>
+
+        <!-- service areas -->
+        <div class="su-tags su-tags--edit" *ngIf="areas.length > 0">
+          <mat-chip-set aria-label="Areas selection">
+            <mat-chip
+              *ngFor="let area of areas"
+              [removable]="true"
+              (removed)="removeArea(area)"
+            >
+              {{ area }}
+              <button matChipRemove class="su-chip-x" aria-label="Remove area">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.6"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              </button>
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Service areas</mat-label>
+          <input
+            matInput
+            formControlName="serviceAreas"
+            type="text"
+            placeholder="Ketik lalu tekan koma (,) untuk menambah"
+          />
+          <mat-hint>Pisahkan dengan koma.</mat-hint>
+        </mat-form-field>
+      </mat-dialog-content>
+
+      <mat-dialog-actions class="su-actions">
+        <button type="button" class="su-cancel" (click)="close()">Batal</button>
+        <button
+          type="submit"
+          class="su-submit"
+          [disabled]="isSubmitting || supplierFormGroup.invalid"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
         </button>
-      </mat-chip>
-      }
-    </mat-chip-set>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Items sold</mat-label>
-      <input
-        matInput
-        formControlName="soldItems"
-        type="text"
-        placeholder="Items sold"
-      />
-      <mat-hint
-        >This will help us find the right supplier when searching.</mat-hint
-      >
-    </mat-form-field>
-
-    <mat-chip-set
-      aria-label="Areas selection"
-      *ngIf="areas.length > 0"
-      class="mb-3"
-    >
-      <mat-chip
-        *ngFor="let item of areas"
-        [removable]="true"
-        (removed)="removeArea(item)"
-      >
-        {{ item }}
-        <button matChipRemove aria-label="Remove area">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-chip>
-    </mat-chip-set>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Service areas</mat-label>
-      <input
-        matInput
-        formControlName="serviceAreas"
-        placeholder="Service areas"
-        type="text"
-      /><mat-hint
-        >This will help us find the right supplier when searching.</mat-hint
-      >
-    </mat-form-field>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button
-      class="btn mt-3"
-      type="submit"
-      [disabled]="
-        data.readOnly ||
-        isSubmitting ||
-        supplierFormGroup.invalid ||
-        items.length === 0 ||
-        areas.length === 0
-      "
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+      </mat-dialog-actions>
+    </form>
+  </ng-container>
+</div>

@@ -1,131 +1,151 @@
-<h2 mat-dialog-title>Update Employee Data</h2>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-progress-spinner
-      *ngIf="isLoading"
-      mode="indeterminate"
-      diameter="50"
-      strokeWidth="5"
-      class="mx-auto d-block"
-      color="primary"
-    ></mat-progress-spinner>
-    <div [class.d-none]="isLoading">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Name</mat-label>
-        <input
-          matInput
-          formControlName="name"
-          placeholder="Enter employee name"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Birth date</mat-label>
-        <input
-          matInput
-          formControlName="birthday"
-          placeholder="Enter employee department"
-          [matDatepicker]="picker"
-        />
-        <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>NIK</mat-label>
-        <input
-          matInput
-          formControlName="nik"
-          placeholder="Enter employee NIK (National ID)"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Address</mat-label>
-        <textarea
-          matInput
-          formControlName="address"
-          placeholder="Enter employee address"
-          rows="3"
-          style="resize: none"
-        ></textarea>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Email</mat-label>
-        <input
-          matInput
-          formControlName="email"
-          placeholder="Enter employee email"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Phone number</mat-label>
-        <input
-          matInput
-          formControlName="phoneNumber"
-          placeholder="Enter employee phone number"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Position</mat-label>
-        <input
-          matInput
-          formControlName="position"
-          placeholder="Enter employee position"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Department</mat-label>
-        <input
-          matInput
-          formControlName="department"
-          placeholder="Enter employee department"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Category</mat-label>
-        <mat-select
-          formControlName="taxCategory"
-          placeholder="Select tax category"
-        >
-          <mat-optgroup label="Tidak kawin">
-            <mat-option value="TK/0"
-              >Tidak kawin; 0 tanggungan (TK/0)</mat-option
-            >
-            <mat-option value="TK/1"
-              >Tidak kawin; 1 tanggungan (TK/1)</mat-option
-            >
-            <mat-option value="TK/2"
-              >Tidak kawin; 2 tanggungan (TK/2)</mat-option
-            >
-            <mat-option value="TK/3"
-              >Tidak kawin; 3 tanggungan (TK/3)</mat-option
-            >
-          </mat-optgroup>
-          <mat-optgroup label="Kawin">
-            <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
-            <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
-            <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
-            <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
-          </mat-optgroup>
-        </mat-select>
-      </mat-form-field>
+<div class="eu">
+  <div class="eu-head" mat-dialog-title>
+    <span class="eu-avatar">{{
+      (formGroup.get("name")?.value || "?").charAt(0)
+    }}</span>
+    <div class="eu-head__text">
+      <h2 class="eu-title">{{ formGroup.get("name")?.value || "Employee" }}</h2>
+      <span class="eu-sub">Ubah data karyawan</span>
     </div>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      type="submit"
-      [disabled]="formGroup.invalid || isSubmitting"
-    >
-      Update Employee
-    </button>
-  </mat-dialog-actions>
-</form>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="eu-content">
+      <div class="eu-grid">
+        <mat-form-field appearance="outline" class="eu-span2">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            placeholder="Nama lengkap"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Birth date</mat-label>
+          <input
+            matInput
+            formControlName="birthday"
+            [matDatepicker]="picker"
+            placeholder="Tanggal lahir"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>NIK</mat-label>
+          <input
+            matInput
+            formControlName="nik"
+            type="text"
+            placeholder="16 digit"
+            maxlength="16"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="eu-span2">
+          <mat-label>Address</mat-label>
+          <textarea
+            matInput
+            formControlName="address"
+            rows="2"
+            placeholder="Alamat"
+            required
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="Email"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone number</mat-label>
+          <input
+            matInput
+            formControlName="phoneNumber"
+            type="tel"
+            placeholder="Nomor telepon"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Position</mat-label>
+          <input
+            matInput
+            formControlName="position"
+            type="text"
+            placeholder="Jabatan"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <input
+            matInput
+            formControlName="department"
+            type="text"
+            placeholder="Departemen"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="eu-span2">
+          <mat-label>Tax Category</mat-label>
+          <mat-select
+            formControlName="taxCategory"
+            placeholder="Select tax category"
+          >
+            <mat-optgroup label="Tidak kawin">
+              <mat-option value="TK/0"
+                >Tidak kawin; 0 tanggungan (TK/0)</mat-option
+              >
+              <mat-option value="TK/1"
+                >Tidak kawin; 1 tanggungan (TK/1)</mat-option
+              >
+              <mat-option value="TK/2"
+                >Tidak kawin; 2 tanggungan (TK/2)</mat-option
+              >
+              <mat-option value="TK/3"
+                >Tidak kawin; 3 tanggungan (TK/3)</mat-option
+              >
+            </mat-optgroup>
+            <mat-optgroup label="Kawin">
+              <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
+              <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
+              <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
+              <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="eu-actions">
+      <button type="button" class="eu-cancel" mat-dialog-close>Batal</button>
+      <button
+        type="submit"
+        class="eu-submit"
+        [disabled]="formGroup.invalid || isSubmitting"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -134,7 +134,7 @@
             (click)="changeSortBy('dpp')"
           >
             <span class="sil-th sil-th--right"
-              >DPP
+              >Tagihan
               <mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -148,7 +148,8 @@
           </th>
           <td mat-cell *matCellDef="let invoice" class="sil-num">
             <span class="sil-amount">{{
-              invoice.dpp | currency: "Rp " : "symbol" : "1.0-0"
+              invoice.dpp + (invoice.ppn * invoice.dpp) / 100
+                | currency: "Rp " : "symbol" : "1.0-0"
             }}</span>
           </td>
         </ng-container>

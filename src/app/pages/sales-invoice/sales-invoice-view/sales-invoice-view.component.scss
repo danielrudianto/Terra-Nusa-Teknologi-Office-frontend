@@ -263,14 +263,30 @@ $line: #eef0f3;
   padding: 0.8rem 0.15rem;
   border-bottom: 1px solid $line;
 
-  &__date {
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  &__bank {
     font-size: 0.86rem;
-    color: $muted;
+    font-weight: 500;
+    color: $ink;
+  }
+  &__date {
+    font-size: 0.74rem;
+    color: $faint;
+  }
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
   &__amount {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: $ink;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }

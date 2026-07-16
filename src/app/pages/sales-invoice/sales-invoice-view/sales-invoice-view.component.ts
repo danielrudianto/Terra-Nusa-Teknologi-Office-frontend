@@ -43,6 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './sales-invoice-view.component.scss',
 })
 export class SalesInvoiceViewComponent {
+  path: any;
   constructor(
     private apiService: ApiService,
     private dialog: MatDialogRef<SalesInvoiceViewComponent>,
@@ -219,6 +220,9 @@ export class SalesInvoiceViewComponent {
               id: [x.id],
               amount: [x.amount],
               date: [x.date],
+              bankAccountName: [x.bankAccountName],
+              bankAccountNumber: [x.bankAccountNumber],
+              bankName: [x.bankName],
             }),
           );
         });

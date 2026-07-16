@@ -3,29 +3,29 @@
     <h1>Project expenses</h1>
   </div>
   @for (tile of projectTiles; track tile) {
-  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
-    <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
-      <mat-card-header>
-        <div mat-card-avatar>
-          {{ tile.type }}
-        </div>
-        <mat-card-title>{{ tile.title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content class="flex-grow-1">
-        <p>{{ tile.description }}</p>
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <button
-          mat-stroked-button
-          color="primary"
-          style="letter-spacing: 0"
-          (click)="onCreatePurchaseOrder(tile.type)"
-        >
-          Create
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
+      <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
+        <mat-card-header>
+          <div mat-card-avatar>
+            {{ tile.type }}
+          </div>
+          <mat-card-title>{{ tile.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="flex-grow-1">
+          <p>{{ tile.description }}</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            mat-stroked-button
+            color="primary"
+            style="letter-spacing: 0"
+            (click)="onCreatePurchaseOrder(tile.type)"
+          >
+            Create
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   }
 </div>
 <div class="row mt-3">
@@ -33,28 +33,28 @@
     <h1>Office expenses</h1>
   </div>
   @for (tile of officeTiles; track tile) {
-  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
-    <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
-      <mat-card-header>
-        <div mat-card-avatar>
-          {{ tile.type }}
-        </div>
-        <mat-card-title>{{ tile.title }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content class="flex-grow-1">
-        <p>{{ tile.description }}</p>
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <button
-          mat-stroked-button
-          color="primary"
-          style="letter-spacing: 0"
-          [routerLink]="tile.link"
-        >
-          Create
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
+      <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
+        <mat-card-header>
+          <div mat-card-avatar>
+            {{ tile.type }}
+          </div>
+          <mat-card-title>{{ tile.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="flex-grow-1">
+          <p>{{ tile.description }}</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button
+            mat-stroked-button
+            color="primary"
+            style="letter-spacing: 0"
+            [routerLink]="tile.link"
+          >
+            Create
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   }
 </div>

@@ -27,6 +27,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-purchase-list',
@@ -46,6 +47,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
     PillDangerComponent,
     MatIconModule,
     HeaderTitleComponent,
+    MatSnackBarModule,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],
@@ -57,6 +59,7 @@ export class PurchaseListComponent {
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
   ) {}
 
   private destroy$ = new Subject<void>();
@@ -337,10 +340,20 @@ export class PurchaseListComponent {
               if (result === true) {
                 this.apiService.delete(`purchases/${id}`).subscribe({
                   next: () => {
+                    this.snackBar.open(
+                      'Successfully deleted purchase data',
+                      'Close',
+                      {
+                        duration: 3000,
+                      },
+                    );
                     this.fetchData(this.page); // Refresh data after deletion
                   },
                   error: (err) => {
                     console.error('Error deleting purchase:', err);
+                    this.snackBar.open(err.error.detail, 'Close', {
+                      duration: 3000,
+                    });
                   },
                 });
               }

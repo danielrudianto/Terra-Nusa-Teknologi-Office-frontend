@@ -1,42 +1,33 @@
-<form [formGroup]="formGroup">
-  <h2 mat-dialog-title>Update bank account</h2>
-  <mat-dialog-content>
-    <mat-progress-spinner
-      *ngIf="isLoading"
-      mode="indeterminate"
-      class="loading-spinner"
-      [diameter]="50"
-    ></mat-progress-spinner>
+<div class="bu">
+  <div class="bu-head" mat-dialog-title>
+    <span class="bu-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 10 12 4l9 6M5 10v9h14v-9M9 19v-5h6v5" />
+      </svg>
+    </span>
+    <div class="bu-head__text">
+      <h2 class="bu-title">Ubah Rekening Bank</h2>
+      <span class="bu-sub">Perbarui data rekening perusahaan</span>
+    </div>
+  </div>
 
-    <div [ngClass]="{ 'd-none': isLoading }">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Account name</mat-label>
-        <input
-          matInput
-          formControlName="bankAccountName"
-          type="text"
-          placeholder="Account name"
-          required
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Account number</mat-label>
-        <input
-          matInput
-          formControlName="bankAccountNumber"
-          type="text"
-          placeholder="Account number"
-          required
-        />
-      </mat-form-field>
-
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="bu-content">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Bank Name</mat-label>
         <input
           #input
           type="text"
-          placeholder="Bank name"
+          placeholder="Pilih bank"
           matInput
           formControlName="bankName"
           [matAutocomplete]="auto"
@@ -51,15 +42,44 @@
           >
         </mat-autocomplete>
       </mat-form-field>
-    </div>
-  </mat-dialog-content>
-  <mat-dialog-actions>
-    <button
-      class="btn"
-      (click)="onSubmit()"
-      [disabled]="isLoading || formGroup.invalid"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account name</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountName"
+          type="text"
+          placeholder="Nama pemilik rekening"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account number</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountNumber"
+          type="text"
+          inputmode="numeric"
+          placeholder="Nomor rekening"
+          required
+        />
+        <mat-error
+          *ngIf="formGroup.get('bankAccountNumber')?.hasError('pattern')"
+          >Hanya boleh angka.</mat-error
+        >
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="bu-actions">
+      <button type="button" class="bu-cancel" (click)="onClose()">Batal</button>
+      <button
+        type="submit"
+        class="bu-submit"
+        [disabled]="isSubmitting || formGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -1,84 +1,121 @@
-<app-header-title
-  [title]="'Employees'"
-  [description]="'Manage your employees here'"
-  [actionButtonLabel]="'Create new employee'"
-  (onActionButtonClicked)="createNewEmployee()"
-></app-header-title>
+<div class="employee-list">
+  <app-header-title
+    [title]="'Employees'"
+    [description]="'Manage your employees here'"
+    [actionButtonLabel]="'Create new employee'"
+    (onActionButtonClicked)="createNewEmployee()"
+  ></app-header-title>
 
-<div class="search__wrapper">
-  <mat-form-field appearance="outline" class="w-100">
-    <input
-      matInput
-      type="text"
-      class="input"
-      placeholder="Search employee"
-      [formControl]="formControl"
-    />
-  </mat-form-field>
-</div>
+  <div class="el-toolbar">
+    <mat-form-field appearance="outline" class="el-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Nama, NIK, atau posisi"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+  </div>
 
-<div class="table-responsive">
-  <table mat-table [dataSource]="employees">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.name }}
-      </td>
-    </ng-container>
+  <div class="el-card" [class.is-loading]="isLoading">
+    <div class="el-loadingbar" *ngIf="isLoading"><span></span></div>
 
-    <ng-container matColumnDef="nik">
-      <th mat-header-cell *matHeaderCellDef>NIK</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.nik }}
-      </td>
-    </ng-container>
+    <div class="table-responsive">
+      <table mat-table [dataSource]="employees">
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="el-person">
+              <span class="el-avatar">{{
+                (element.name || "?").charAt(0)
+              }}</span>
+              <span class="el-primary">{{ element.name || "—" }}</span>
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="taxCategory">
-      <th mat-header-cell *matHeaderCellDef>Tax Category</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.taxCategory }}
-      </td>
-    </ng-container>
+        <!-- NIK -->
+        <ng-container matColumnDef="nik">
+          <th mat-header-cell *matHeaderCellDef>NIK</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="el-mono">{{ element.nik || "—" }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef>Position</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.position }}
-      </td>
-    </ng-container>
+        <!-- Tax category -->
+        <ng-container matColumnDef="taxCategory">
+          <th mat-header-cell *matHeaderCellDef>Tax Category</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="el-tag" *ngIf="element.taxCategory">{{
+              element.taxCategory
+            }}</span>
+            <span class="el-muted" *ngIf="!element.taxCategory">—</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let element">
-        <button [matMenuTriggerFor]="menu" matIconButton>
-          <mat-icon>more_horiz</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openUpdateEmployee(element.id)">
-            <mat-icon>edit</mat-icon>
-            Update employee data
-          </button>
+        <!-- Position -->
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef>Position</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="el-muted">{{ element.position || "—" }}</span>
+          </td>
+        </ng-container>
 
-        <button mat-menu-item (click)="openSalaryCreate(element.id)">
-          <mat-icon>receipt</mat-icon>
-          Create salary slip
-        </button>
-        </mat-menu>
-      </td>
-    </ng-container>
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              [matMenuTriggerFor]="menu"
+              mat-icon-button
+              aria-label="Row actions"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openUpdateEmployee(element.id)">
+                <mat-icon>edit</mat-icon><span>Update employee data</span>
+              </button>
+              <button mat-menu-item (click)="openSalaryCreate(element.id)">
+                <mat-icon>receipt</mat-icon><span>Create salary slip</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
-  <mat-paginator
-    [pageIndex]="page - 1"
-    [length]="count"
-    [pageSize]="10"
-    (page)="changePage($event)"
-  ></mat-paginator>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="openUpdateEmployee(row.id)"
+        ></tr>
+        <tr class="mat-row el-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="el-empty">
+              <mat-icon>badge</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageIndex]="page - 1"
+      [length]="count"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
 </div>

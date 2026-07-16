@@ -106,17 +106,23 @@
         Belum ada pembayaran diterima.
       </div>
 
-      <ng-container *ngIf="t.length > 0">
-        <div class="sv-pay" *ngFor="let payment of t.controls">
-          <span class="sv-pay__date">{{
-            formatDate(payment.get("date")?.value)
-          }}</span>
-          <span class="sv-pay__amount">
-            {{
-              payment.get("amount")?.value
-                | currency: "Rp " : "symbol" : "1.0-0"
-            }}
-          </span>
+      <ng-container @if(t.length)>
+        <div class="sv-pay" *ngFor="let p of t.controls">
+          <div class="sv-pay__info">
+            <span class="sv-pay__bank"
+              >{{ p.get("bankName")?.value }} ·
+              {{ p.get("bankAccountNumber")?.value }} ·
+              {{ p.get("bankAccountName")?.value }}</span
+            >
+            <span class="sv-pay__date">{{
+              formatDate(p.get("date")?.value)
+            }}</span>
+          </div>
+          <div class="sv-pay__right">
+            <span class="sv-pay__amount">{{
+              p.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </div>
         </div>
 
         <div class="sv-summary">

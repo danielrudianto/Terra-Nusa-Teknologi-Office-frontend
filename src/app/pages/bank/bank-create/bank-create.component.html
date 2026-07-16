@@ -1,58 +1,88 @@
-<h1 mat-dialog-title>Create new bank account</h1>
-<form [formGroup]="bankFormGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Account name</mat-label>
-      <input
-        matInput
-        formControlName="bankAccountName"
-        type="text"
-        placeholder="Account name"
-        required
-      />
-    </mat-form-field>
+<div class="bc">
+  <div class="bc-head" mat-dialog-title>
+    <span class="bc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 10 12 4l9 6M5 10v9h14v-9M9 19v-5h6v5" />
+      </svg>
+    </span>
+    <div class="bc-head__text">
+      <h2 class="bc-title">Tambah Rekening Bank</h2>
+      <span class="bc-sub">Daftarkan rekening perusahaan baru</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Account number</mat-label>
-      <input
-        matInput
-        formControlName="bankAccountNumber"
-        type="text"
-        placeholder="Account number"
-        required
-      />
-    </mat-form-field>
+  <form [formGroup]="bankFormGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="bc-content">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Bank Name</mat-label>
+        <input
+          #input
+          type="text"
+          placeholder="Pilih bank"
+          matInput
+          formControlName="bankName"
+          [matAutocomplete]="auto"
+          (input)="filter()"
+          (focus)="filter()"
+        />
+        <mat-autocomplete requireSelection #auto="matAutocomplete">
+          <mat-option
+            *ngFor="let option of filteredOptions"
+            [value]="option.name"
+            >{{ option.name }}</mat-option
+          >
+        </mat-autocomplete>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Name</mat-label>
-      <input
-        #input
-        type="text"
-        placeholder="Bank name"
-        matInput
-        formControlName="bankName"
-        [matAutocomplete]="auto"
-        (input)="filter()"
-        (focus)="filter()"
-      />
-      <mat-autocomplete requireSelection #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let option of filteredOptions"
-          [value]="option.name"
-          >{{ option.name }}</mat-option
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account name</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountName"
+          type="text"
+          placeholder="Nama pemilik rekening"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Account number</mat-label>
+        <input
+          matInput
+          formControlName="bankAccountNumber"
+          type="text"
+          inputmode="numeric"
+          placeholder="Nomor rekening"
+          required
+        />
+        <mat-error
+          *ngIf="bankFormGroup.get('bankAccountNumber')?.hasError('pattern')"
         >
-      </mat-autocomplete>
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      type="submit"
-      [disabled]="isSubmitting || bankFormGroup.invalid"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+          Hanya boleh angka.
+        </mat-error>
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="bc-actions">
+      <button type="button" class="bc-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="bc-submit"
+        [disabled]="isSubmitting || bankFormGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan rekening" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

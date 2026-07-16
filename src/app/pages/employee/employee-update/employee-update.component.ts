@@ -1,12 +1,35 @@
 import { Component, Inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-employee-update',
-  standalone: false,
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+  ],
   templateUrl: './employee-update.component.html',
   styleUrl: './employee-update.component.scss',
 })
@@ -15,7 +38,7 @@ export class EmployeeUpdateComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialogRef<EmployeeUpdateComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number }
+    @Inject(MAT_DIALOG_DATA) public data: { id: number },
   ) {}
 
   isLoading: boolean = false;
@@ -83,7 +106,7 @@ export class EmployeeUpdateComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       })

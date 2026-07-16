@@ -37,7 +37,7 @@ export class BankCreateComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialogRef<BankCreateComponent>
+    private dialog: MatDialogRef<BankCreateComponent>,
   ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
@@ -59,8 +59,12 @@ export class BankCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
+  }
+
+  onCancel() {
+    this.dialog.close();
   }
 
   onSubmit() {
@@ -70,13 +74,10 @@ export class BankCreateComponent {
       .subscribe({
         next: (_) => {
           this.snackBar.open('Bank account created successfully', 'Close', {
-            duration: 2000,
-          });
-
-          this.snackBar.open('Bank account created successfully', 'Close', {
             duration: 3000,
           });
-          this.dialog.close();
+          // close and signal the list to refresh
+          this.dialog.close(true);
         },
         error: (err) => {
           this.snackBar.open(err.error.detail, 'Close', {

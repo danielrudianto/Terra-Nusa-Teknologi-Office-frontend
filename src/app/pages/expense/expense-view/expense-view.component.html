@@ -1,117 +1,151 @@
-<h1 mat-dialog-title>View Expense Data</h1>
-<mat-dialog-content>
-  <p class="mb-4">Here are the expense data</p>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Due date</mat-label>
-      <input matInput formControlName="dueDate" />
-    </mat-form-field>
+<div class="ev">
+  <!-- header -->
+  <div mat-dialog-title class="ev-head">
+    <span class="ev-avatar">{{
+      (f["opponentName"].value || "?").charAt(0)
+    }}</span>
+    <div class="ev-head__text">
+      <div class="ev-name">
+        {{ f["invoiceName"].value || f["receiptName"].value || "Expense" }}
+      </div>
+      <div class="ev-meta">{{ f["opponentName"].value || "—" }}</div>
+    </div>
+    <span class="ev-chip" *ngIf="f['purchaseType'].value">{{
+      expenseTypeLabel
+    }}</span>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Opponent</mat-label>
-      <textarea matInput formControlName="opponent"></textarea>
-    </mat-form-field>
+  <mat-dialog-content class="ev-content">
+    <!-- detail -->
+    <section class="ev-section">
+      <div class="ev-grid">
+        <div class="ev-field">
+          <span class="ev-label">Tanggal</span>
+          <span class="ev-value">{{ f["date"].value || "—" }}</span>
+        </div>
+        <div class="ev-field">
+          <span class="ev-label">Jatuh tempo</span>
+          <span class="ev-value">{{ f["dueDate"].value || "—" }}</span>
+        </div>
+        <div class="ev-field">
+          <span class="ev-label">Invoice</span>
+          <span class="ev-value">{{ f["invoiceName"].value || "—" }}</span>
+        </div>
+        <div class="ev-field">
+          <span class="ev-label">Receipt</span>
+          <span class="ev-value">{{ f["receiptName"].value || "—" }}</span>
+        </div>
+        <div
+          class="ev-field ev-field--wide"
+          *ngIf="f['opponentDescription'].value"
+        >
+          <span class="ev-label">Opponent</span>
+          <span class="ev-value">{{ f["opponentName"].value }}</span>
+          <span class="ev-value ev-value--sm">{{
+            f["opponentDescription"].value
+          }}</span>
+        </div>
+        <div class="ev-field ev-field--wide">
+          <span class="ev-label">Deskripsi</span>
+          <span class="ev-value ev-value--sm">{{
+            f["description"].value || "—"
+          }}</span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Invoice name</mat-label>
-      <input matInput formControlName="invoiceName" />
-    </mat-form-field>
+    <!-- money -->
+    <section class="ev-section">
+      <div class="ev-section__title">Rincian Nilai</div>
+      <div class="ev-money">
+        <div class="ev-money__row">
+          <span>DPP</span
+          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="ev-money__row" *ngIf="vPbbkb">
+          <span>PBBKB</span
+          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="ev-money__row ev-money__row--muted" *ngIf="vPph">
+          <span>PPh</span
+          ><span>{{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Receipt name</mat-label>
-      <input matInput formControlName="receiptName" />
-    </mat-form-field>
+        <!-- PPh object -->
+        <div class="ev-pph" *ngIf="vPph && pphLabel">
+          <div class="ev-pph__text">
+            <span class="ev-pph__code">{{ f["pphCode"].value || "-" }}</span>
+            <span class="ev-pph__name">{{ f["pphObject"].value }}</span>
+          </div>
+          <button
+            mat-icon-button
+            type="button"
+            class="ev-pph__copy"
+            (click)="copyPphObject()"
+            aria-label="Salin objek PPh"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Purchase type</mat-label>
-      <input matInput formControlName="purchaseType" />
-    </mat-form-field>
+        <div class="ev-money__total">
+          <span>Total</span>
+          <span>{{ vTotal | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
+    <!-- payments -->
+    <section class="ev-section">
+      <div class="ev-section__title">Riwayat Pembayaran ({{ t.length }})</div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>DPP</mat-label>
-      <input matInput formControlName="dpp" />
-    </mat-form-field>
+      <div class="ev-nopay" *ngIf="t.length === 0">Belum ada pembayaran.</div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PPh</mat-label>
-      <input matInput formControlName="pph" />
-    </mat-form-field>
+      <div class="ev-pay" *ngFor="let pay of t.controls">
+        <div class="ev-pay__info">
+          <span class="ev-pay__bank"
+            >{{ pay.get("bankName")?.value }} ·
+            {{ pay.get("bankAccountName")?.value }}</span
+          >
+          <span class="ev-pay__date">{{
+            formatDate(pay.get("date")?.value)
+          }}</span>
+        </div>
+        <div class="ev-pay__right">
+          <span class="ev-pay__amount">{{
+            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+          }}</span>
+          <span
+            class="ev-badge"
+            [class.ev-badge--ok]="pay.get('isApprove')?.value"
+            [class.ev-badge--wait]="!pay.get('isApprove')?.value"
+          >
+            {{ pay.get("isApprove")?.value ? "Approved" : "Pending" }}
+          </span>
+        </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PPh Code</mat-label>
-      <textarea matInput formControlName="pphCode"></textarea>
-    </mat-form-field>
+    <!-- bank destination -->
+    <section class="ev-section" *ngIf="f['bankAccountNumber'].value">
+      <div class="ev-section__title">Rekening Tujuan</div>
+      <div class="ev-bank">
+        <div class="ev-value">
+          {{ f["bankName"].value }} · {{ f["bankAccountName"].value }}
+        </div>
+        <div class="ev-value ev-value--sm">
+          {{ f["bankAccountNumber"].value }}
+        </div>
+      </div>
+    </section>
+  </mat-dialog-content>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PBBKB</mat-label>
-      <input matInput formControlName="pbbkb" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total</mat-label>
-      <input matInput formControlName="total" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank name</mat-label>
-      <input matInput formControlName="bankName" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input matInput formControlName="bankAccountName" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <input matInput formControlName="bankAccountNumber" />
-    </mat-form-field>
-
-    <h3>Payment history</h3>
-    @if(t.controls.length == 0){
-    <mat-list>
-      <mat-list-item>No payment history</mat-list-item>
-    </mat-list>
-    } @else {
-    <mat-list>
-      @for(data of t.controls;track data){
-      <mat-list-item lines="3">
-        @if(data.get('isApprove')?.value == true){
-        <mat-icon matListItemIcon>check</mat-icon>
-        } @else {
-
-        <mat-icon matListItemIcon>pending</mat-icon>
-        }
-        <span matListItemTitle>{{
-          data.get("amount")?.value | currency : "Rp."
-        }}</span>
-        <span matListItemLine>{{
-          data.get("date")?.value | date : "dd MMMM yyyy"
-        }}</span>
-        {{ data.get("bankAccountNumber")?.value }} --
-        {{ data.get("bankAccountName")?.value }}
-      </mat-list-item>
-      }
-    </mat-list>
-    }
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    mat-dialog-close
-  >
-    Close
-  </button>
-</mat-dialog-actions>
+  <!-- actions -->
+  <mat-dialog-actions class="ev-actions">
+    <button mat-flat-button class="ev-copy" (click)="copyDocument()">
+      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+    </button>
+    <span class="ev-spacer"></span>
+    <button mat-button (click)="close()">Tutup</button>
+  </mat-dialog-actions>
+</div>
