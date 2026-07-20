@@ -1,16 +1,43 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-client-create',
-  standalone: false,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+  ],
   templateUrl: './client-create.component.html',
   styleUrl: './client-create.component.scss',
 })
 export class ClientCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialogRef<ClientCreateComponent>,
+  ) {}
 
   isSubmitting: boolean = false;
   formGroup: FormGroup = new FormGroup({
@@ -26,6 +53,10 @@ export class ClientCreateComponent {
     ]),
     email: new FormControl('', [Validators.email, Validators.maxLength(100)]),
   });
+
+  onCancel() {
+    this.dialog.close();
+  }
 
   onSubmit() {
     this.isSubmitting = true;
@@ -46,6 +77,8 @@ export class ClientCreateComponent {
             duration: 3000,
           });
           this.formGroup.reset();
+          // close and signal the list to refresh
+          this.dialog.close(true);
         },
         error: (error) => {
           this.snackBar.open(
@@ -53,7 +86,7 @@ export class ClientCreateComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       })

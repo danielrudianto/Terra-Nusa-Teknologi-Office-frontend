@@ -1,91 +1,138 @@
-<div class="bank-header">
-  <app-header-title
-    class="flex-grow-1"
-    [title]="bankAccount == null ? 'N/A' : bankAccount.bankAccountName"
-    [description]="
-      bankAccount == null
-        ? ''
-        : bankAccount.bankAccountNumber + ' - ' + bankAccount.bankName
-    "
-  ></app-header-title>
-  <mat-form-field appearance="outline">
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-      <input
-        matStartDate
-        formControlName="start"
-        placeholder="Start date"
-        #dateRangeStart
-      />
-      <input
-        matEndDate
-        formControlName="end"
-        placeholder="End date"
-        #dateRangeEnd
-        (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
-      />
-    </mat-date-range-input>
-    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
+<div class="bm">
+  <!-- account header -->
+  <div class="bm-head">
+    <span class="bm-avatar">{{
+      (bankAccount?.bankName || "?").charAt(0)
+    }}</span>
+    <div class="bm-head__text">
+      <h1 class="bm-title">
+        {{ bankAccount == null ? "N/A" : bankAccount.bankAccountName }}
+      </h1>
+      <p class="bm-sub">
+        <span class="bm-mono">{{ bankAccount?.bankAccountNumber }}</span>
+        <span *ngIf="bankAccount?.bankName"> · {{ bankAccount.bankName }}</span>
+      </p>
+    </div>
+  </div>
 
-    <button mat-icon-button matSuffix type="button" (click)="download()">
-      <mat-icon>download</mat-icon>
+  <!-- toolbar -->
+  <div class="bm-toolbar">
+    <mat-form-field appearance="outline" class="bm-range">
+      <mat-label>Rentang tanggal</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input
+          matStartDate
+          formControlName="start"
+          placeholder="Start date"
+          #dateRangeStart
+        />
+        <input
+          matEndDate
+          formControlName="end"
+          placeholder="End date"
+          #dateRangeEnd
+          (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle
+        matIconPrefix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <button type="button" class="bm-download" (click)="download()">
+      <mat-icon>download</mat-icon> Download
     </button>
-  </mat-form-field>
-</div>
+  </div>
 
-<div class="table-responsive">
-  <mat-table [dataSource]="dataSource">
-    <ng-container matColumnDef="date">
-      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-      <mat-cell *matCellDef="let opponent">
-        {{ opponent.date | date }}
-      </mat-cell>
-    </ng-container>
+  <!-- statement card -->
+  <div class="bm-card">
+    <div class="table-responsive">
+      <mat-table [dataSource]="dataSource" class="bm-table">
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+          <mat-cell *matCellDef="let opponent"
+            ><span class="bm-date">{{
+              opponent.date | date: "dd MMM yyyy"
+            }}</span></mat-cell
+          >
+        </ng-container>
 
-    <ng-container matColumnDef="opponent">
-      <mat-header-cell *matHeaderCellDef> Opponent </mat-header-cell>
-      <mat-cell *matCellDef="let opponent">
-        {{ opponent.opponent }}
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="opponent">
+          <mat-header-cell *matHeaderCellDef>Opponent</mat-header-cell>
+          <mat-cell *matCellDef="let opponent">
+            <div class="bm-opp">
+              <span class="bm-oppav">{{
+                (opponent.opponent || "?").charAt(0)
+              }}</span>
+              <span class="bm-oppname">{{ opponent.opponent || "—" }}</span>
+            </div>
+          </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="document">
-      <mat-header-cell *matHeaderCellDef> Document </mat-header-cell>
-      <mat-cell *matCellDef="let opponent">
-        {{ opponent.document }}
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="document">
+          <mat-header-cell *matHeaderCellDef>Document</mat-header-cell>
+          <mat-cell *matCellDef="let opponent">
+            <span
+              class="bm-doc"
+              *ngIf="opponent.document && opponent.document !== 'N/A'"
+              >{{ opponent.document }}</span
+            >
+            <span
+              class="bm-faint"
+              *ngIf="!opponent.document || opponent.document === 'N/A'"
+              >—</span
+            >
+          </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="amount">
-      <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-      <mat-cell *matCellDef="let opponent">
-        {{ opponent.amount | currency : "Rp." }}
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="amount">
+          <mat-header-cell *matHeaderCellDef class="bm-r"
+            >Amount</mat-header-cell
+          >
+          <mat-cell *matCellDef="let opponent" class="bm-r">
+            <span
+              class="bm-amount"
+              [class.is-in]="opponent.amount >= 0"
+              [class.is-out]="opponent.amount < 0"
+            >
+              {{ opponent.amount < 0 ? "−" : "+" }} Rp
+              {{
+                (opponent.amount < 0 ? -opponent.amount : opponent.amount)
+                  | number: "1.0-0"
+              }}
+            </span>
+          </mat-cell>
+        </ng-container>
 
-    <ng-container matColumnDef="balance">
-      <mat-header-cell *matHeaderCellDef> Balance </mat-header-cell>
-      <mat-cell *matCellDef="let opponent">
-        {{ opponent.balance | currency : "Rp." }}
-      </mat-cell>
-    </ng-container>
+        <ng-container matColumnDef="balance">
+          <mat-header-cell *matHeaderCellDef class="bm-r"
+            >Balance</mat-header-cell
+          >
+          <mat-cell *matCellDef="let opponent" class="bm-r"
+            ><span class="bm-balance"
+              >Rp {{ opponent.balance | number: "1.0-0" }}</span
+            ></mat-cell
+          >
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </mat-table>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        <div class="bm-norow" *matNoDataRow>
+          <mat-icon>account_balance</mat-icon>
+          <span>Tidak ada mutasi pada rentang ini.</span>
+        </div>
+      </mat-table>
+    </div>
 
-  <mat-paginator
-    [pageSizeOptions]="[10, 25, 100]"
-    [pageSize]="pageSize"
-    [showFirstLastButtons]="true"
-    [length]="dataCount"
-    [pageIndex]="page - 1"
-    (page)="onPageChange($event)"
-  ></mat-paginator>
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 100]"
+      [pageSize]="pageSize"
+      [showFirstLastButtons]="true"
+      [length]="dataCount"
+      [pageIndex]="page - 1"
+      (page)="onPageChange($event)"
+    ></mat-paginator>
+  </div>
 </div>

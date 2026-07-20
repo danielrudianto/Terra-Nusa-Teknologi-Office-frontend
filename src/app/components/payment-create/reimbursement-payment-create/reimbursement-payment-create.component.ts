@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
   FormArray,
@@ -27,6 +27,7 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-reimbursement-payment-create',
   providers: [provideNgxMask()],
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -48,7 +49,7 @@ export class ReimbursementPaymentCreateComponent {
     private dialog: MatDialogRef<ReimbursementPaymentCreateComponent>,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {}
 
   isLoading: boolean = false;
@@ -106,11 +107,11 @@ export class ReimbursementPaymentCreateComponent {
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(
             data.reimbursement.date,
-            'dd MMMM yyyy'
+            'dd MMMM yyyy',
           ),
           dueDate: this.datePipe.transform(
             data.reimbursement.dueDate,
-            'dd MMMM yyyy'
+            'dd MMMM yyyy',
           ),
           createdAt: this.datePipe.transform(data.createdAt, 'dd MMMM yyyy'),
           reimbursementName: data.reimbursement.name,
@@ -133,13 +134,13 @@ export class ReimbursementPaymentCreateComponent {
               ],
               description: [item.description, Validators.required],
               amount: [item.amount, [Validators.required, Validators.min(1)]],
-            })
+            }),
           );
         });
 
         const amount = data.reimbursement_items.reduce(
           (a: any, b: any) => a + b.amount,
-          0
+          0,
         );
 
         this.valueFormGroup.patchValue({
@@ -165,7 +166,7 @@ export class ReimbursementPaymentCreateComponent {
 
     const date = new Date(this.formGroup.value.date);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     this.isSubmitting = false;

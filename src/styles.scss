@@ -5,7 +5,7 @@
 /* Brand color lo */
 $brand-primary: #154dec;
 
-/* Generate Material 3 theme */
+/* ===== Material 3 themes ===== */
 $theme: mat.define-theme(
   (
     color: (
@@ -22,7 +22,29 @@ $theme: mat.define-theme(
   )
 );
 
+/* Dark variant — same brand palette, dark surfaces */
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+    ),
+    typography: (
+      brand-family: "Montserrat, sans-serif",
+      plain-family: "Montserrat, sans-serif",
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
 @include mat.all-component-themes($theme);
+
+/* Flip every Material component to dark when data-theme="dark" */
+html[data-theme="dark"] {
+  @include mat.all-component-colors($dark-theme);
+}
 
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 
@@ -87,7 +109,36 @@ $theme: mat.define-theme(
   font-style: normal;
 }
 
+/* ===================================================================
+   DESIGN TOKENS (light defaults)
+   Component SCSS should reference these via var(--x) so dark mode works.
+   =================================================================== */
 :root {
+  /* semantic surface / text / lines used by our custom components */
+  --surface: #ffffff;
+  --surface-2: #fafbfc;
+  --page-bg: #f7f9fb;
+  --ink: #16181d;
+  --muted: #6b7280;
+  --faint: #9aa0ab;
+  --line: #eef0f3;
+  --border: #e3e6eb;
+  --brand: #154dec;
+  --brand-strong: #0f3fd0;
+  --brand-soft: #e7ecfb;
+  --hover: #f6f8ff;
+  --card-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.05);
+
+  /* status tints */
+  --ok-bg: #e6f6ec;
+  --ok-fg: #1a7f45;
+  --warn-bg: #fdf0e3;
+  --warn-fg: #a2651a;
+  --bad-bg: #fdecec;
+  --bad-fg: #b3322f;
+
+  /* existing shell vars */
   --base-color: rgba(247, 249, 251, 1);
   --active-button-color: rgba(213, 232, 255, 1);
   --on-active-button-color: rgba(21, 77, 236, 1);
@@ -110,29 +161,98 @@ $theme: mat.define-theme(
   --paginator-button-border-color-disabled: rgba(232, 232, 232, 1);
 
   --heading-text-color: rgba(0, 0, 0, 1);
+
+  /* text scale (driven by SettingsService) */
+  --app-text-scale: 1;
 }
 
+/* ===================================================================
+   DARK OVERRIDES
+   =================================================================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface: #1a1d24;
+  --surface-2: #20242d;
+  --page-bg: #14161b;
+  --ink: #e7e9ee;
+  --muted: #a0a6b0;
+  --faint: #767c88;
+  --line: #2a2f3a;
+  --border: #2f3540;
+  --brand: #7ba0ff;
+  --brand-strong: #9db8ff;
+  --brand-soft: #22304f;
+  --hover: #1f2531;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.45);
+
+  --ok-bg: #12301f;
+  --ok-fg: #5fd08a;
+  --warn-bg: #33260f;
+  --warn-fg: #e0a54e;
+  --bad-bg: #331717;
+  --bad-fg: #f08585;
+
+  /* shell */
+  --base-color: #14161b;
+  --active-button-color: #22304f;
+  --on-active-button-color: #9db8ff;
+  --inactive-button-color: transparent;
+  --on-inactive-button-color: #cfd3db;
+  --surface-color: #1a1d24;
+  --disabled-color: #6b7280;
+  --heading-text-color: #e7e9ee;
+  --paginator-button-border-color: #2f3540;
+}
+
+/* ===================================================================
+   BASE
+   =================================================================== */
 html {
   height: 100%;
   width: 100%;
   min-width: 600px;
+  /* text-size preference scales all rem-based typography */
+  font-size: calc(16px * var(--app-text-scale, 1));
 }
 
 body {
   height: 100%;
   margin: 0;
   font-family: "Montserrat", sans-serif;
-  font-size: 16px;
-  background-color: var(--background-color);
+  background-color: var(--page-bg);
+  color: var(--ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 html,
 body {
   height: 100%;
 }
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+/* main content area (inside the sidenav drawer) */
+.mat-drawer-content,
+mat-sidenav-content,
+.mat-sidenav-content {
+  background-color: var(--page-bg) !important;
+  color: var(--ink);
+}
+
+/* nicer scrollbars in dark */
+html[data-theme="dark"] ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #333a46;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .loading-spinner {

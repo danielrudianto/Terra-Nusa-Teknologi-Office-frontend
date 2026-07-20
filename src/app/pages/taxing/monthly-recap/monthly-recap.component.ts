@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   AbstractControl,
   Form,
@@ -20,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { saveAs } from 'file-saver';
 import * as xlsx from 'xlsx-js-style';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-monthly-recap',
@@ -32,11 +34,39 @@ import * as xlsx from 'xlsx-js-style';
     MatSlideToggleModule,
     MatInputModule,
     MatButtonModule,
+    CommonModule,
   ],
   templateUrl: './monthly-recap.component.html',
   styleUrl: './monthly-recap.component.scss',
 })
 export class MonthlyRecapComponent {
+  // period passed from the tax hub (select month/year once, reused everywhere)
+  private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
+
+  months: { n: number; label: string }[] = [
+    { n: 1, label: 'Jan' },
+    { n: 2, label: 'Feb' },
+    { n: 3, label: 'Mar' },
+    { n: 4, label: 'Apr' },
+    { n: 5, label: 'Mei' },
+    { n: 6, label: 'Jun' },
+    { n: 7, label: 'Jul' },
+    { n: 8, label: 'Agu' },
+    { n: 9, label: 'Sep' },
+    { n: 10, label: 'Okt' },
+    { n: 11, label: 'Nov' },
+    { n: 12, label: 'Des' },
+  ];
+
+  ngOnInit(): void {
+    if (this.periodData?.month && this.periodData?.year) {
+      this.formGroup.patchValue({
+        month: this.periodData.month,
+        year: this.periodData.year,
+      });
+    }
+  }
+
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,

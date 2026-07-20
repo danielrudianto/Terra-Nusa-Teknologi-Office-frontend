@@ -13,12 +13,14 @@
 
   color: var(--on-inactive-button-color);
   background-color: var(--inactive-button-color);
-  font-family: 'Poppins';
+  font-family: "Poppins";
   font-weight: 500;
   font-size: 0.875rem;
   line-height: 1.2;
   letter-spacing: 0.005em;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
   cursor: pointer;
 
   img {
@@ -26,7 +28,9 @@
     height: 18px;
     flex: 0 0 auto;
     opacity: 0.82;
-    transition: opacity 0.15s ease, filter 0.15s ease;
+    transition:
+      opacity 0.15s ease,
+      filter 0.15s ease;
   }
 
   span {
@@ -39,7 +43,9 @@
   &:hover:not(.active) {
     background-color: rgba(21, 77, 236, 0.06);
     color: var(--on-active-button-color);
-    img { opacity: 1; }
+    img {
+      opacity: 1;
+    }
   }
 
   /* active = brand pill */
@@ -47,12 +53,42 @@
     background-color: var(--active-button-color);
     font-weight: 600;
 
-    span { color: var(--on-active-button-color) !important; }
+    span {
+      color: var(--on-active-button-color) !important;
+    }
 
     img {
       opacity: 1;
       filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
         saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
     }
+  }
+}
+
+/* ===== DARK MODE =====
+   Icons are dark <img> glyphs, so recolor them to light for contrast.
+   brightness(0) normalizes any source to black, then invert() lightens it. */
+:host-context([data-theme="dark"]) .side-navigation-button__wrapper {
+  img {
+    /* idle → soft light grey */
+    filter: brightness(0) invert(0.78);
+    opacity: 0.9;
+  }
+
+  &:hover:not(.active) img {
+    /* hover → pure white */
+    filter: brightness(0) invert(1);
+    opacity: 1;
+  }
+
+  &.active img {
+    /* active → light brand blue to match the pill text */
+    filter: brightness(0) saturate(100%) invert(72%) sepia(38%) saturate(900%)
+      hue-rotate(190deg) brightness(102%) contrast(101%);
+    opacity: 1;
+  }
+
+  &:hover:not(.active) {
+    background-color: rgba(123, 160, 255, 0.12);
   }
 }

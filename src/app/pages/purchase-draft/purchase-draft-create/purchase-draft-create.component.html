@@ -1,154 +1,214 @@
-<app-header-title
-  [title]="'Purchase Draft'"
-  [description]="'Create new purchase draft'"
-/>
-<form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-  <div class="row">
-    <div class="col-12">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Date</mat-label>
-        <input
-          matInput
-          formControlName="date"
-          placeholder="Date"
-          [matDatepicker]="picker"
-        />
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Supplier</mat-label>
-        <input
-          matInput
-          formControlName="supplierName"
-          type="text"
-          placeholder="Supplier name"
-          readonly
-        />
-        <button
-          matPrefix
-          mat-icon-button
-          (click)="openSupplierSelector()"
-          type="button"
-        >
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
-    <div class="col-6">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase Order Name</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="purchaseOrderName"
-          placeholder="Purchase Order Name"
-        />
-      </mat-form-field>
-    </div>
-    <div class="col-6">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Project</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="projectName"
-          placeholder="Project name"
-        />
-      </mat-form-field>
+<div class="pdc">
+  <div class="pdc-head" mat-dialog-title>
+    <span class="pdc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6M9 13h6M9 17h4" />
+      </svg>
+    </span>
+    <div class="pdc-head__text">
+      <h2 class="pdc-title">Buat Purchase Draft</h2>
+      <span class="pdc-sub">Draft pembelian ke supplier</span>
     </div>
   </div>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>DPP</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="dpp"
-      placeholder="DPP"
-      prefix="Rp. "
-      thousandSeparator=" "
-      decimalScale="2"
-      mask="separator"
-    />
-  </mat-form-field>
+  <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="pdc-content">
+      <div class="pdc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Tanggal"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>PPN (%)</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="ppn"
-      placeholder="PPN"
-      suffix="%"
-      thousandSeparator=" "
-      mask="separator.2"
-    />
-  </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            type="text"
+            placeholder="Pilih supplier"
+            readonly
+          />
+          <button
+            matPrefix
+            mat-icon-button
+            (click)="openSupplierSelector()"
+            type="button"
+            aria-label="Pilih supplier"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>PPN (Rp.)</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="ppnValue"
-      placeholder="PPN (Rp.)"
-      prefix="Rp. "
-      thousandSeparator=" "
-      mask="separator.2"
-      readonly
-    />
-  </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          class="pdc-span2"
+          *ngIf="metaFormGroup.get('supplierAddress')?.value"
+        >
+          <mat-label>Supplier address</mat-label>
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="2"
+            placeholder="Alamat supplier"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>PBBKB (Rp.)</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="pbbkb"
-      placeholder="PBBKB (Rp.)"
-      prefix="Rp. "
-      thousandSeparator=" "
-      decimalScale="2"
-      mask="separator.2"
-    />
-  </mat-form-field>
+        <mat-form-field appearance="outline" class="pdc-span2">
+          <mat-label>Purchase Order Name</mat-label>
+          <input
+            #input
+            matInput
+            type="text"
+            formControlName="purchaseOrderName"
+            placeholder="000-PO-XXXX-A"
+          />
+          <mat-hint
+            >Format: 000-PO/SPK/PKS-KODE-TIPE — project &amp; tipe terisi
+            otomatis</mat-hint
+          >
+          <mat-error
+            *ngIf="metaFormGroup.get('purchaseOrderName')?.hasError('pattern')"
+            >Format PO belum sesuai.</mat-error
+          >
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Total</mat-label>
-    <input
-      matInput
-      type="text"
-      [value]="total | number : '0.2-2'"
-      placeholder="Total (Rp.)"
-      prefix="Rp. "
-      thousandSeparator=" "
-      mask="separator.2"
-      readonly
-    />
-  </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Project</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="projectName"
+            placeholder="Otomatis dari PO"
+            readonly
+          />
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Description</mat-label>
-    <textarea
-      matInput
-      formControlName="description"
-      type="text"
-      placeholder="Description"
-    ></textarea>
-  </mat-form-field>
-  
-  <button
-    type="submit"
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    [disabled]="isSubmitting || !metaFormGroup.valid"
-  >
-    Submit
-  </button>
-</form>
+        <mat-form-field appearance="outline">
+          <mat-label>Purchase type</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseType"
+            placeholder="Otomatis dari PO"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pdc-span2">
+          <mat-label>Tax invoice name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxInvoiceName"
+            placeholder="Nomor faktur pajak (opsional)"
+            maxlength="17"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pdc-span2">
+          <mat-label>Description</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="2"
+            placeholder="Deskripsi pembelian"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>DPP</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="dpp"
+            placeholder="DPP"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>PPN (%)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="ppn"
+            placeholder="PPN %"
+            suffix=" %"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>PPN (Rp.)</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="ppnValue"
+            placeholder="PPN otomatis"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>PBBKB</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pbbkb"
+            placeholder="PBBKB"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="pdc-total">
+        <span class="pdc-total__label">Total</span>
+        <span class="pdc-total__value">Rp {{ total | number: "1.0-0" }}</span>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="pdc-actions">
+      <button type="button" class="pdc-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="pdc-submit"
+        [disabled]="metaFormGroup.invalid || isSubmitting"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan draft" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -1,0 +1,283 @@
+/* Palette now references global tokens (var --x) → auto dark-aware.
+   Fallbacks keep light mode identical. This is the migration pattern
+   for every custom component: swap literal hex for var(--token). */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$border: var(--border, #e3e6eb);
+$brand-soft: var(--brand-soft, #e7ecfb);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.settings {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* header */
+.st-head {
+  margin: 0.5rem 0 1.5rem;
+}
+.st-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $ink;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.st-sub {
+  font-size: 0.9rem;
+  color: $muted;
+  margin: 0.3rem 0 0;
+}
+
+/* card */
+.st-card {
+  background: $surface;
+  border: 0.5px solid $border;
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.st-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+.st-card__icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: $brand-soft;
+  color: $brand;
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.st-card__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.st-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $ink;
+  margin: 0;
+}
+.st-card__desc {
+  font-size: 0.8rem;
+  color: $muted;
+}
+
+/* profile head */
+.st-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0.5rem 0 1.25rem;
+}
+.st-avatar {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1d5bff, #0b2fa8);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.28);
+}
+.st-profile__hint {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.st-profile__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $ink;
+}
+.st-profile__role {
+  font-size: 0.82rem;
+  color: $muted;
+}
+
+/* form grid */
+.st-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.25rem;
+}
+.st-span2 {
+  grid-column: 1 / -1;
+}
+:host ::ng-deep .st-grid .mat-mdc-form-field {
+  width: 100%;
+}
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+}
+
+/* actions */
+.st-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+.st-btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.62rem 1.4rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+  &--primary {
+    background: $brand;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+    &:hover:not(:disabled) {
+      background: var(--brand-strong, #0f3fd0);
+    }
+    &:disabled {
+      background: #e6e9ee;
+      color: #9aa0ab;
+      box-shadow: none;
+      cursor: default;
+    }
+  }
+}
+
+/* rows */
+.st-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  &--stack {
+    align-items: flex-start;
+  }
+}
+.st-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.st-row__label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $ink;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.st-row__hint {
+  font-size: 0.78rem;
+  color: $faint;
+  line-height: 1.4;
+  max-width: 42ch;
+}
+.st-divider {
+  height: 1px;
+  background: $line;
+  margin: 1.25rem 0;
+}
+
+.st-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+}
+
+/* text-scale segmented control */
+.st-scale {
+  display: inline-flex;
+  gap: 8px;
+}
+.st-scale__opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 76px;
+  padding: 0.7rem 0.5rem;
+  cursor: pointer;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  transition: all 0.14s ease;
+  &:hover {
+    border-color: #b9c2d0;
+    background: var(--hover, #f9fbff);
+  }
+  &.is-active {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #f3f6ff);
+    box-shadow: 0 0 0 3px rgba(21, 77, 236, 0.12);
+  }
+}
+.st-scale__sample {
+  font-weight: 800;
+  color: $ink;
+  line-height: 1;
+  &--sm {
+    font-size: 0.95rem;
+  }
+  &--md {
+    font-size: 1.25rem;
+  }
+  &--lg {
+    font-size: 1.55rem;
+  }
+}
+.st-scale__opt.is-active .st-scale__sample {
+  color: $brand;
+}
+.st-scale__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $muted;
+}
+.st-scale__opt.is-active .st-scale__label {
+  color: $brand;
+}
+
+@media (max-width: 560px) {
+  .st-grid {
+    grid-template-columns: 1fr;
+  }
+  .st-row--stack {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+}

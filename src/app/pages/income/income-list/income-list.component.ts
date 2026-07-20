@@ -27,6 +27,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { IncomeCreateComponent } from '../income-create/income-create.component';
 
 @Component({
   selector: 'app-income-list',
@@ -56,7 +57,7 @@ export class IncomeListComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
   ) {}
 
   sortBy: string = 'date';
@@ -66,12 +67,12 @@ export class IncomeListComponent {
   startOfMonth: Date = new Date(
     this.date.getFullYear(),
     this.date.getMonth(),
-    1
+    1,
   );
   endOfMonth: Date = new Date(
     this.date.getFullYear(),
     this.date.getMonth() + 1,
-    0
+    0,
   );
 
   formGroup: FormGroup = new FormGroup({
@@ -120,7 +121,16 @@ export class IncomeListComponent {
   }
 
   openCreateOpponentDialog() {
-    this.dialog.open(ExpenseOpponentCreateComponent, {});
+    this.dialog
+      .open(IncomeCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchData(0);
+      });
   }
 
   changePage(event: any) {
@@ -194,7 +204,16 @@ export class IncomeListComponent {
   }
 
   createNewIncome() {
-    this.router.navigate(['/Income/Create']);
+    this.dialog
+      .open(IncomeCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchData(0);
+      });
   }
 
   viewIncome(id: number) {

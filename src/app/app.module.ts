@@ -30,8 +30,6 @@ import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/e
 import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
 import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
 import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
-import { ClientListComponent } from './pages/client/client-list/client-list.component';
-import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
 import { ClientComponent } from './pages/client/client.component';
 import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
 import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
@@ -83,40 +81,27 @@ import { AppRoutingModule, routes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { CalendarDayViewComponent } from './pages/calendar/calendar-day-view/calendar-day-view.component';
-import { CalendarMonthSelectorComponent } from './pages/calendar/calendar-month-selector/calendar-month-selector.component';
 import { PaymentComponent } from './pages/payment/payment.component';
 import { PaymentHistoryComponent } from './pages/payment/payment-history/payment-history.component';
 import { TaxingComponent } from './pages/taxing/taxing.component';
-import { PpnRecapComponent } from './pages/taxing/ppn-recap/ppn-recap.component';
-import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component';
 import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
-import { SettingsComponent } from './pages/settings/settings.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { PaymentCreateComponent } from './components/payment-create/payment-create.component';
-import { ReimbursementPaymentCreateComponent } from './components/payment-create/reimbursement-payment-create/reimbursement-payment-create.component';
 import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
-import { InterpaymentCreateComponent } from './pages/interpayment/interpayment-create/interpayment-create.component';
 import { IncomeComponent } from './pages/income/income.component';
-import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
 import { ExpensePaymentCreateComponent } from './components/payment-create/expense-payment-create/expense-payment-create.component';
 import { AssetComponent } from './pages/asset/asset.component';
-import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
 import { SalarySlipViewComponent } from './pages/salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
 import { SalaryPaymentCreateComponent } from './components/payment-create/salary-payment-create/salary-payment-create.component';
 import { PurchaseUpdateComponent } from './pages/purchase/purchase-update/purchase-update.component';
 import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
-import { PurchaseDraftViewComponent } from './pages/purchase-draft/purchase-draft-view/purchase-draft-view.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SalesInvoicePaymentCreateComponent } from './components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { CalendarDaySelectorComponent } from './pages/calendar/calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { LoansComponent } from './pages/loans/loans.component';
-import { LoansListComponent } from './pages/loans/loans-list/loans-list.component';
-import { LoansCreateComponent } from './pages/loans/loans-create/loans-create.component';
 import { PurchaseDraftConvertComponent } from './pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component';
-import { PphSalaryRecapComponent } from './pages/taxing/pph-salary-recap/pph-salary-recap.component';
 import { FileDropComponent } from './pages/pdf-main/file-drop/file-drop.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -163,35 +148,26 @@ export const MY_FORMATS = {
     SalesInvoiceComponent,
     SalesInvoiceCreateComponent,
     ClientComponent,
-    ClientListComponent,
-    ClientCreateComponent,
     SalarySlipComponent,
     CalendarDateSelectorComponent,
     CalendarDayViewComponent,
     PaymentComponent,
     PaymentHistoryComponent,
     TaxingComponent,
-    PpnRecapComponent,
-    PphRecapComponent,
     TaxListComponent,
-    SettingsComponent,
     PaymentCreateComponent,
     InterpaymentComponent,
     IncomeComponent,
-    IncomeCreateComponent,
     ExpensePaymentCreateComponent,
     AssetComponent,
     SalarySlipViewComponent,
     SalaryPaymentCreateComponent,
     PurchaseUpdateComponent,
     PurchaseDraftComponent,
-    PurchaseDraftViewComponent,
     SalesInvoicePaymentCreateComponent,
     PdfMainComponent,
     LoansComponent,
-    LoansCreateComponent,
     PurchaseDraftConvertComponent,
-    PphSalaryRecapComponent,
     FileDropComponent,
     CashPositionComponent,
     TodayPaymentComponent,

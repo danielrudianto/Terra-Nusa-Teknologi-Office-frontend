@@ -5,12 +5,35 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { NgxMaskDirective } from 'ngx-mask';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-purchase-draft-view',
-  standalone: false,
+  standalone: true,
   templateUrl: './purchase-draft-view.component.html',
   styleUrl: './purchase-draft-view.component.scss',
+  imports: [
+    CommonModule,
+    MatInputModule,
+    MatSelectModule,
+    MatListModule,
+    MatButtonModule,
+    MatStepperModule,
+    MatIconModule,
+    MatDialogModule,
+    NgxMaskDirective,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
 })
 export class PurchaseDraftViewComponent {
   constructor(
@@ -19,7 +42,7 @@ export class PurchaseDraftViewComponent {
     private snackBar: MatSnackBar,
     private apiService: ApiService,
     private datePipe: DatePipe,
-    private router: Router
+    private router: Router,
   ) {}
 
   formGroup: FormGroup = new FormGroup({

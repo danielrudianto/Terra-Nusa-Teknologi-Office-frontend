@@ -1,18 +1,51 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 
 @Component({
   selector: 'app-loans-create',
-  standalone: false,
+  standalone: true,
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatAutocompleteModule,
+    MatIconModule,
+    MatButtonModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './loans-create.component.html',
   styleUrl: './loans-create.component.scss',
 })
 export class LoansCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialogRef<LoansCreateComponent>,
+  ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   filteredOptions: IBank[] = [];
@@ -35,6 +68,10 @@ export class LoansCreateComponent {
     bankName: new FormControl('', Validators.required),
   });
 
+  onCancel() {
+    this.dialog.close();
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
@@ -56,6 +93,8 @@ export class LoansCreateComponent {
           this.snackBar.open('Loan successfully created', 'Close', {
             duration: 3000,
           });
+          // close and signal the list to refresh
+          this.dialog.close(true);
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {
@@ -73,7 +112,7 @@ export class LoansCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 }

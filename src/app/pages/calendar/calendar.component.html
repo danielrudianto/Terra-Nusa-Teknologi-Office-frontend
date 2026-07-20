@@ -1,18 +1,31 @@
 <div class="calendar__container">
-  <div class="top">
-    <app-calendar-month-selector
-      [month]="month"
-      [year]="year"
-      (onMonthYearSelected)="onMonthChanged($event)"
-    ></app-calendar-month-selector>
-    <div class="flex-grow-1"></div>
-    <app-calendar-account-selector
-      (onBankAccountChanges)="onBankAccountChanges($event)"
-    />
-    <mat-slide-toggle color="primary" [formControl]="isBalance"
-      >Balance</mat-slide-toggle
-    >
+  <div class="cal-head">
+    <div class="cal-head__title">
+      <h1 class="cal-title">Payment Calendar</h1>
+      <p class="cal-sub">Jadwal & saldo pembayaran per hari</p>
+    </div>
+
+    <div class="cal-head__controls">
+      <app-calendar-month-selector
+        [month]="month"
+        [year]="year"
+        (onMonthYearSelected)="onMonthChanged($event)"
+      ></app-calendar-month-selector>
+
+      <app-calendar-account-selector
+        (onBankAccountChanges)="onBankAccountChanges($event)"
+      />
+
+      <mat-slide-toggle
+        color="primary"
+        [formControl]="isBalance"
+        class="cal-balance"
+      >
+        Balance
+      </mat-slide-toggle>
+    </div>
   </div>
+
   <app-calendar-table
     [month]="month"
     [year]="year"

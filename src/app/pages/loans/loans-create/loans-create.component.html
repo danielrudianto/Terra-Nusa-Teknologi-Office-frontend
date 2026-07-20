@@ -1,36 +1,172 @@
-<h2 mat-dialog-title>Create new loan</h2>
+<div class="lc">
+  <div class="lc-head" mat-dialog-title>
+    <span class="lc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 10h18M6 14h4M3 6h18v12H3zM16 14h2" />
+      </svg>
+    </span>
+    <div class="lc-head__text">
+      <h2 class="lc-title">Buat Loan</h2>
+      <span class="lc-sub">Catat pinjaman / utang baru</span>
+    </div>
+  </div>
 
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" [matDatepicker]="picker" />
-      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="lc-content">
+      <div class="lc-section__title">Kreditur</div>
+      <div class="lc-grid">
+        <mat-form-field appearance="outline" class="lc-span2">
+          <mat-label>Creditor name</mat-label>
+          <input
+            matInput
+            formControlName="creditorName"
+            placeholder="Nama kreditur"
+          />
+        </mat-form-field>
 
-    <!-- CreditorName -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Creditor Name</mat-label>
-      <input matInput formControlName="creditorName" />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="lc-span2">
+          <mat-label>Creditor address</mat-label>
+          <textarea
+            matInput
+            formControlName="creditorAddress"
+            rows="2"
+            placeholder="Alamat kreditur"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-    <!-- CreditorAddress -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Creditor Address</mat-label>
-      <input matInput formControlName="creditorAddress" />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Creditor NPWP</mat-label>
+          <input
+            matInput
+            formControlName="creditorNPWP"
+            placeholder="NPWP (opsional)"
+          />
+        </mat-form-field>
 
-    <!-- CreditorAddress -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Creditor NPWP</mat-label>
-      <input matInput formControlName="creditorNPWP" />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+            placeholder="Tanggal"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
 
-    <!-- Description -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <input matInput formControlName="description" />
-    </mat-form-field>
-  </mat-dialog-content>
-</form>
+      <div class="lc-section__title lc-section__title--mt">Detail Pinjaman</div>
+      <div class="lc-grid">
+        <mat-form-field appearance="outline" class="lc-span2">
+          <mat-label>Description</mat-label>
+          <input
+            matInput
+            formControlName="description"
+            placeholder="Keterangan pinjaman"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Debt</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="debt"
+            placeholder="Total utang"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Received</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="received"
+            placeholder="Dana diterima"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="lc-section__title lc-section__title--mt">Rekening</div>
+      <div class="lc-grid">
+        <mat-form-field appearance="outline" class="lc-span2">
+          <mat-label>Bank name</mat-label>
+          <input
+            #input
+            matInput
+            formControlName="bankName"
+            placeholder="Pilih bank"
+            [matAutocomplete]="auto"
+            (input)="filter()"
+            (focus)="filter()"
+          />
+          <mat-autocomplete requireSelection #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.name"
+              >{{ option.name }}</mat-option
+            >
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account name</mat-label>
+          <input
+            matInput
+            formControlName="bankAccountName"
+            placeholder="Nama rekening"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Bank account number</mat-label>
+          <input
+            matInput
+            formControlName="bankAccountNumber"
+            placeholder="Nomor rekening"
+            inputmode="numeric"
+          />
+          <mat-error
+            *ngIf="formGroup.get('bankAccountNumber')?.hasError('pattern')"
+            >Hanya angka.</mat-error
+          >
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="lc-actions">
+      <button type="button" class="lc-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="lc-submit"
+        [disabled]="isSubmitting || formGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan loan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

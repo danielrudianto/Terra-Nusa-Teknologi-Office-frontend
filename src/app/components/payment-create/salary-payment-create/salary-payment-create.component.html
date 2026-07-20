@@ -1,186 +1,138 @@
-<h2 mat-dialog-title>Create salary slip payment</h2>
-<form [formGroup]="formGroup" (ngSubmit)="submitForm()">
-  <mat-dialog-content>
-    <div class="form-group">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Month</mat-label>
-        <input
-          matInput
-          formControlName="month"
-          placeholder="Enter month"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Year</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="year"
-          placeholder="Enter year"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Name</mat-label>
-        <input
-          matInput
-          formControlName="name"
-          placeholder="Enter employee name"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Category</mat-label>
-        <mat-select
-          formControlName="taxCategory"
-          placeholder="Select tax category"
+<div class="spc">
+  <div class="spc-head" mat-dialog-title>
+    <span class="spc-avatar">{{
+      (formGroup.value.name || "?").charAt(0)
+    }}</span>
+    <div class="spc-head__text">
+      <h2 class="spc-title">{{ formGroup.value.name || "Bayar Gaji" }}</h2>
+      <span class="spc-sub">
+        Periode {{ formGroup.value.month }}/{{ formGroup.value.year }}
+        <span *ngIf="formGroup.value.taxCategory">
+          · {{ formGroup.value.taxCategory }}</span
         >
-          <mat-optgroup label="Tidak kawin">
-            <mat-option value="TK/0"
-              >Tidak kawin; 0 tanggungan (TK/0)</mat-option
-            >
-            <mat-option value="TK/1"
-              >Tidak kawin; 1 tanggungan (TK/1)</mat-option
-            >
-            <mat-option value="TK/2"
-              >Tidak kawin; 2 tanggungan (TK/2)</mat-option
-            >
-            <mat-option value="TK/3"
-              >Tidak kawin; 3 tanggungan (TK/3)</mat-option
-            >
-          </mat-optgroup>
-          <mat-optgroup label="Kawin">
-            <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
-            <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
-            <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
-            <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
-          </mat-optgroup>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Position</mat-label>
-        <input
-          matInput
-          formControlName="position"
-          placeholder="Enter employee position"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Department</mat-label>
-        <input
-          matInput
-          formControlName="department"
-          placeholder="Enter employee department"
-        />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Total salary</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="grossSalary"
-          placeholder="Enter total salary"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-          readonly
-        />
-      </mat-form-field>
-
-      <!-- PPh 21 -->
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh 21</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="taxAmount"
-          placeholder="Enter PPh 21"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
-
-      <!-- Net salary -->
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Net salary</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="netSalary"
-          placeholder="Enter net salary"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-          readonly
-        />
-      </mat-form-field>
-
-      <mat-divider class="mt-2"></mat-divider>
-
-      <mat-form-field appearance="outline" class="w-100 mt-4">
-        <mat-label>Payment date</mat-label>
-        <input
-          matInput
-          formControlName="date"
-          placeholder="Date"
-          [matDatepicker]="datePicker"
-        />
-        <mat-datepicker-toggle
-          matIconPrefix
-          [for]="datePicker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #datePicker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank Account Number</mat-label>
-        <mat-select formControlName="bankAccount">
-          <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-            >{{ bank.bankAccountNumber }} --
-            {{ bank.bankAccountName }}</mat-option
-          >
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Payment amount</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="amount"
-          placeholder="Enter payment amount"
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
-
-      <div *ngIf="formGroup.errors?.['amountOutOfRange']">
-        Amount must be between 0 and {{ maximumPayment | number : "0.2-2" }}
-      </div>
+      </span>
     </div>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      type="submit"
-      [disabled]="!formGroup.valid || isSubmitting"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
+    <mat-dialog-content class="spc-content">
+      <!-- identity chips -->
+      <div class="spc-chips">
+        <span class="spc-chip" *ngIf="formGroup.value.position"
+          ><span class="spc-chip__k">Posisi</span
+          >{{ formGroup.value.position }}</span
+        >
+        <span class="spc-chip" *ngIf="formGroup.value.department"
+          ><span class="spc-chip__k">Divisi</span
+          >{{ formGroup.value.department }}</span
+        >
+      </div>
+
+      <!-- salary breakdown -->
+      <div class="spc-section__title">Rincian Gaji</div>
+      <div class="spc-money">
+        <div class="spc-money__row">
+          <span>Gaji kotor</span
+          ><span>Rp {{ formGroup.value.grossSalary | number: "1.0-0" }}</span>
+        </div>
+        <div class="spc-money__row">
+          <span>PPh 21</span
+          ><span class="spc-neg"
+            >− Rp {{ formGroup.value.taxAmount | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="spc-money__row spc-money__row--net">
+          <span>Gaji bersih</span
+          ><span>Rp {{ formGroup.value.netSalary | number: "1.0-0" }}</span>
+        </div>
+      </div>
+
+      <!-- paid progress -->
+      <div class="spc-paidrow">
+        <span
+          >Sudah dibayar:
+          <strong>Rp {{ payment | number: "1.0-0" }}</strong></span
+        >
+        <span
+          >Sisa:
+          <strong class="spc-remain"
+            >Rp {{ maximumPayment | number: "1.0-0" }}</strong
+          ></span
+        >
+      </div>
+
+      <!-- payment inputs -->
+      <div class="spc-section__title spc-section__title--mt">Pembayaran</div>
+      <div class="spc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal bayar</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Tanggal"
+            [matDatepicker]="datePicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="datePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rekening pembayar</mat-label>
+          <mat-select formControlName="bankAccount">
+            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
+              {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="spc-span2">
+          <mat-label>Nominal pembayaran</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="amount"
+            placeholder="Nominal"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+          <mat-hint
+            >Maksimal Rp {{ maximumPayment | number: "1.0-0" }}</mat-hint
+          >
+        </mat-form-field>
+      </div>
+
+      <div class="spc-error" *ngIf="formGroup.errors?.['amountOutOfRange']">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+        Nominal harus antara Rp 0 dan Rp {{ maximumPayment | number: "1.0-0" }}.
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="spc-actions">
+      <button type="button" class="spc-cancel" mat-dialog-close>Batal</button>
+      <button
+        type="submit"
+        class="spc-submit"
+        [disabled]="!formGroup.valid || isSubmitting"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Bayar gaji" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -1,0 +1,136 @@
+<div class="mic">
+  <div class="mic-head" mat-dialog-title>
+    <span class="mic-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+        />
+        <path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12" />
+      </svg>
+    </span>
+    <div class="mic-head__text">
+      <h2 class="mic-title">Edit Master Item</h2>
+      <span class="mic-sub">Perbarui data barang di katalog</span>
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="mic-content">
+      <!-- SKU read-only (kunci katalog, tidak diubah) -->
+      <div class="mic-sku">
+        <span class="mic-sku__k">SKU</span>
+        <span class="mic-sku__v">{{ item.sku }}</span>
+        <span class="mic-sku__lock">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          terkunci
+        </span>
+      </div>
+
+      <div class="mic-grid">
+        <mat-form-field appearance="outline" class="mic-span2">
+          <mat-label>Deskripsi</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="2"
+            placeholder="Nama & spesifikasi barang"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Brand</mat-label>
+          <input
+            matInput
+            formControlName="brand"
+            maxlength="45"
+            placeholder="Ex. Kobelco"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipe</mat-label>
+          <input
+            matInput
+            formControlName="type"
+            maxlength="45"
+            placeholder="Ex. Kawat Las"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Satuan</mat-label>
+          <mat-select formControlName="unit">
+            <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="mic-span2 mic-types-field">
+          <div class="mic-typeslabel">
+            Tipe PO <span class="mic-req">wajib pilih min. 1</span>
+          </div>
+          <div class="mic-types">
+            <button
+              type="button"
+              class="mic-type"
+              *ngFor="let t of purchaseTypes"
+              [class.is-on]="isTypeSelected(t.code)"
+              (click)="toggleType(t.code)"
+            >
+              <span class="mic-type__code">{{ t.code }}</span>
+              <span class="mic-type__label">{{ t.label }}</span>
+              <span class="mic-type__check">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="mic-actions">
+      <button type="button" class="mic-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="mic-submit"
+        [disabled]="isSubmitting || !canSubmit"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -1,133 +1,196 @@
-.calendar__table__wrapper {
-  width: 100%;
-  overflow-y: auto;
+/* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
 }
 
-
-
-.calendar__table {
-  display: table;
+.cal {
   width: 100%;
-  height: 100%;
-  min-width: 1400px;
+}
 
-  .calendar__table__header {
-    display: table-row;
-    background-color: var(--color-bg-header);
-    color: var(--color-text-header);
-    font-weight: bold;
+/* weekday header */
+.cal-dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+  min-width: 900px;
+  > div {
     text-align: center;
-    width: 12.5%;
-
-    .calendar__table__cell {
-      display: table-cell;
-      padding: 8px;
-      border-bottom: 1px solid var(--color-border);
-      // disable user selection
-      user-select: none;
-      width: 12.5%;
-      border-bottom: 1px solid #888;
-    }
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: $muted;
+    padding: 4px 0;
+    user-select: none;
   }
-  .calendar__table__spacer-row {
-    display: table-row;
-    height: 12px; // or your desired space
+  &--we {
+    color: $faint;
   }
+}
 
-  .calendar__table__row {
-    display: table-row;
+/* day grid */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  min-width: 900px;
+}
 
-    .calendar__table__cell {
-      display: table-cell;
-      padding: 8px;
+/* cell */
+.cal-cell {
+  min-height: 108px;
+  border-radius: 16px;
+  padding: 0.85rem;
+  border: 1px solid $border;
+  background: $surface;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    background 0.14s ease,
+    border-color 0.14s ease;
 
-      .calendar__table__cell__box {
-        width: 100%;
-        height: 100%;
-        border-radius: 20px;
-        padding: 1rem;
-        border: 1px solid #888;
-        // user selection
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        display: flex;
-        flex-direction: column;
+  &.is-active {
+    cursor: pointer;
+  }
+  &.is-active:hover {
+    background: var(--hover, #f6f8ff);
+    border-color: #cdd7f7;
+    box-shadow: 0 6px 18px rgba(21, 77, 236, 0.1);
+    transform: translateY(-2px);
+  }
+  &.is-empty {
+    visibility: hidden;
+  }
+  &.is-selected {
+    border-color: $brand;
+    background: $brandSoft;
+    box-shadow: 0 0 0 3px rgba(21, 77, 236, 0.14);
+  }
+}
 
-        &.inactive {
-          visibility: hidden;
-        }
+/* weekend tint (6th & 7th of each 7-col row) */
+.cal-grid .cal-cell:nth-child(7n + 6),
+.cal-grid .cal-cell:nth-child(7n) {
+  background: $surface2;
+}
+.cal-grid .cal-cell.is-selected:nth-child(7n + 6),
+.cal-grid .cal-cell.is-selected:nth-child(7n) {
+  background: $brandSoft;
+}
 
-        &:hover {
-          background-color: #ddd;
+.cal-cell__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-          .calendar__table__cell__box__date {
-            background-color: rgba(21, 77, 236, 1);
-            color: white;
-            transition: background-color 0.3s ease;
-          }
-        }
-        &.selected {
-          background-color: var(--base-color-hover);
-        }
+/* date pill */
+.cal-date {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $ink;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease;
 
-        .calendar__table__cell__box__header {
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
-        }
+  &.is-today {
+    background: $brand;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(21, 77, 236, 0.32);
+  }
+}
+.cal-cell.is-active:hover .cal-date:not(.is-today) {
+  background: rgba(21, 77, 236, 0.1);
+  color: $brand;
+}
 
-        .calendar__table__cell__box__value {
-          font-size: 1.55rem;
-          font-weight: bold;
-          color: var(--color-text);
-          text-align: right;
-        }
+/* interpayment indicator */
+.cal-ip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+  &.is-shown {
+    display: flex;
+  }
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
 
-        .calendar__table__cell__box__date {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 1px solid var(--color-border);
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background-color 0.3s ease;
+/* value */
+.cal-cell__value {
+  margin-top: auto;
+  text-align: right;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-          &.today {
-            background-color: rgba(21, 77, 236, 1);
-            border: 1px solid rgba(21, 77, 236, 1);
-            color: white;
-          }
-        }
-
-        .calendar__table__cell__interpayment-indicator {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 1px solid var(--color-border);
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background-color 0.3s ease;
-          display: none;
-
-          &.exists {
-            background-color: rgba(0, 0, 0, 0.1);
-            display: block;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            mat-icon {
-              color: #333;
-            }
-          }
-        }
-      }
-    }
+/* footer / download */
+.cal-foot {
+  margin-top: 1.25rem;
+}
+.cal-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.6rem 1.3rem;
+  cursor: pointer;
+  border: 1px solid $border;
+  background: $surface;
+  color: $brand;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--hover, #f3f6ff);
+    border-color: #cdd7f7;
+  }
+  &:disabled {
+    color: $faint;
+    cursor: default;
   }
 }

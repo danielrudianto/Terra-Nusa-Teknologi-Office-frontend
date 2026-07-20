@@ -1,3 +1,131 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Settings</h1>
+<div class="settings">
+  <div class="st-head">
+    <h1 class="st-title">Settings</h1>
+    <p class="st-sub">Atur profil dan tampilan aplikasi</p>
+  </div>
+
+  <!-- ===== PROFILE ===== -->
+  <section class="st-card">
+    <div class="st-card__head">
+      <span class="st-card__icon">
+        <mat-icon>person</mat-icon>
+      </span>
+      <div class="st-card__titles">
+        <h2 class="st-card__title">Profil</h2>
+        <span class="st-card__desc">Informasi akun kamu</span>
+      </div>
+    </div>
+
+    <div class="st-profile">
+      <div class="st-avatar">{{ initials }}</div>
+      <div class="st-profile__hint">
+        <span class="st-profile__name">{{
+          profileFormGroup.get("name")?.value || "—"
+        }}</span>
+        <span class="st-profile__role">{{
+          profileFormGroup.get("position")?.value || "Owner"
+        }}</span>
+      </div>
+    </div>
+
+    <form [formGroup]="profileFormGroup" (ngSubmit)="onSaveProfile()">
+      <div class="st-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nama</mat-label>
+          <input matInput formControlName="name" placeholder="Nama lengkap" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="nama@email.com"
+          />
+          <mat-error *ngIf="profileFormGroup.get('email')?.hasError('email')"
+            >Email tidak valid.</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="st-span2">
+          <mat-label>Jabatan</mat-label>
+          <input
+            matInput
+            formControlName="position"
+            placeholder="Ex. Owner / Finance"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="st-actions">
+        <button
+          type="submit"
+          class="st-btn st-btn--primary"
+          [disabled]="profileFormGroup.invalid || isSaving"
+        >
+          {{ isSaving ? "Menyimpan..." : "Simpan profil" }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== APPEARANCE ===== -->
+  <section class="st-card">
+    <div class="st-card__head">
+      <span class="st-card__icon">
+        <mat-icon>palette</mat-icon>
+      </span>
+      <div class="st-card__titles">
+        <h2 class="st-card__title">Tampilan</h2>
+        <span class="st-card__desc"
+          >Sesuaikan tampilan sesuai kenyamanan kamu</span
+        >
+      </div>
+    </div>
+
+    <!-- text size -->
+    <div class="st-row st-row--stack">
+      <div class="st-row__text">
+        <span class="st-row__label">Ukuran teks</span>
+        <span class="st-row__hint"
+          >Perbesar atau perkecil teks di seluruh aplikasi.</span
+        >
+      </div>
+      <div class="st-scale">
+        <button
+          type="button"
+          *ngFor="let s of textScales"
+          class="st-scale__opt"
+          [class.is-active]="settings.textScale === s.value"
+          (click)="selectTextScale(s.value)"
+        >
+          <span
+            class="st-scale__sample"
+            [ngClass]="'st-scale__sample--' + s.value"
+            >{{ s.sample }}</span
+          >
+          <span class="st-scale__label">{{ s.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
+    <!-- dark mode -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">Dark mode</span>
+        <span class="st-row__hint"
+          >Gelapin tampilan. Shell &amp; komponen Material udah ikut; kartu
+          custom nyusul bertahap.</span
+        >
+      </div>
+      <mat-slide-toggle
+        color="primary"
+        [checked]="settings.theme === 'dark'"
+        (change)="settings.setTheme($event.checked ? 'dark' : 'light')"
+      ></mat-slide-toggle>
+    </div>
+  </section>
 </div>

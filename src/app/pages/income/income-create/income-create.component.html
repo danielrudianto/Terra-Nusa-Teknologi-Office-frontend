@@ -1,120 +1,155 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Income / Create</h1>
-</div>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline" class="w-100 mb-3">
-    <mat-label>Date</mat-label>
-    <input
-      matInput
-      formControlName="date"
-      placeholder="Date"
-      [matDatepicker]="picker"
-    />
-    <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Opponent</mat-label>
-    <input
-      matInput
-      formControlName="opponentName"
-      type="text"
-      placeholder="Opponent name"
-      readonly
-    />
-    <button
-      matPrefix
-      mat-icon-button
-      (click)="openOpponentSelector()"
-      type="button"
-    >
-      <mat-icon>search</mat-icon>
-    </button>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <textarea
-      matInput
-      formControlName="opponentDescription"
-      rows="3"
-      placeholder="Opponent description"
-      readonly
-      style="resize: none"
-    ></textarea>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Purchase type</mat-label>
-    <mat-select formControlName="incomeType">
-      <mat-optgroup label="Other income">
-        <mat-option value="7.1">Income from interest</mat-option>
-        <mat-option value="7.2">Income from royalty</mat-option>
-        <mat-option value="7.3">Income from dividend</mat-option>
-        <mat-option value="7.5">Other income</mat-option>
-      </mat-optgroup>
-      <mat-optgroup label="Miscelanous income">
-        <mat-option value="7.4">Income from rounding up</mat-option>
-      </mat-optgroup>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Income description</mat-label>
-    <textarea
-      matInput
-      formControlName="description"
-      rows="3"
-      placeholder="Description"
-      style="resize: none"
-    ></textarea>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100 mb-3">
-    <mat-label>Payment date</mat-label>
-    <input
-      matInput
-      formControlName="paymentDate"
-      placeholder="Date"
-      [matDatepicker]="paymentPicker"
-    />
-    <mat-datepicker-toggle
-      matIconPrefix
-      [for]="paymentPicker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #paymentPicker></mat-datepicker>
-
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Amount</mat-label>
-    <input
-      matInput
-      type="text"
-      formControlName="amount"
-      placeholder="Amount"
-      prefix="Rp. "
-      thousandSeparator=" "
-      mask="separator.2"
-    />
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Bank Account Number</mat-label>
-    <mat-select formControlName="bankAccountID">
-      <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-        >{{ bank.bankAccountNumber }} -- {{ bank.bankAccountName }}</mat-option
+<div class="ic">
+  <div class="ic-head" mat-dialog-title>
+    <span class="ic-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-    </mat-select>
-  </mat-form-field>
+        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    </span>
+    <div class="ic-head__text">
+      <h2 class="ic-title">Tambah Income</h2>
+      <span class="ic-sub">Catat pemasukan lain-lain</span>
+    </div>
+  </div>
 
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    [disabled]="isSubmitting"
-  >
-    Submit
-  </button>
-</form>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="ic-content">
+      <div class="ic-grid">
+        <mat-form-field appearance="outline" class="ic-span2">
+          <mat-label>Opponent</mat-label>
+          <input
+            matInput
+            formControlName="opponentName"
+            type="text"
+            placeholder="Pilih opponent"
+            readonly
+          />
+          <button
+            matPrefix
+            mat-icon-button
+            (click)="openOpponentSelector()"
+            type="button"
+            aria-label="Pilih opponent"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="outline"
+          class="ic-span2"
+          *ngIf="formGroup.get('opponentDescription')?.value"
+        >
+          <mat-label>Opponent description</mat-label>
+          <textarea
+            matInput
+            formControlName="opponentDescription"
+            rows="2"
+            placeholder="Deskripsi opponent"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ic-span2">
+          <mat-label>Income type</mat-label>
+          <mat-select formControlName="incomeType">
+            <mat-optgroup label="Other income">
+              <mat-option value="7.1">Income from interest</mat-option>
+              <mat-option value="7.2">Income from royalty</mat-option>
+              <mat-option value="7.3">Income from dividend</mat-option>
+              <mat-option value="7.5">Other income</mat-option>
+            </mat-optgroup>
+            <mat-optgroup label="Miscelanous income">
+              <mat-option value="7.4">Income from rounding up</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ic-span2">
+          <mat-label>Income description</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="2"
+            placeholder="Deskripsi pemasukan"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Tanggal"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Payment date</mat-label>
+          <input
+            matInput
+            formControlName="paymentDate"
+            placeholder="Tanggal bayar"
+            [matDatepicker]="paymentPicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="paymentPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #paymentPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Amount</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="amount"
+            placeholder="Nominal"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Bank Account</mat-label>
+          <mat-select formControlName="bankAccountID">
+            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
+              {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="ic-actions">
+      <button type="button" class="ic-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="ic-submit"
+        [disabled]="isSubmitting || formGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan income" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

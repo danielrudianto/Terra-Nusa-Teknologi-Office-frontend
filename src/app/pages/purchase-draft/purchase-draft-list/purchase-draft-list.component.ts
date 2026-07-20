@@ -22,6 +22,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
 import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-draft-create.component';
 
 @Component({
   selector: 'app-purchase-draft-list',
@@ -53,7 +54,7 @@ export class PurchaseDraftListComponent {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
@@ -170,6 +171,15 @@ export class PurchaseDraftListComponent {
   }
 
   createNewPurchaseDraft() {
-    this.router.navigate(['Purchase-draft/Create']);
+    this.dialog
+      .open(PurchaseDraftCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchData(1);
+      });
   }
 }

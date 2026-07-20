@@ -6,8 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatStepper } from '@angular/material/stepper';
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { SupplierSelectorComponent } from '../../../components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +19,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -29,10 +31,10 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     FormsModule,
     MatIconModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    HeaderTitleComponent,
     NgxMaskDirective,
   ],
   templateUrl: './purchase-draft-create.component.html',
@@ -44,6 +46,7 @@ export class PurchaseDraftCreateComponent {
     private dialog: MatDialog,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
+    private dialogRef: MatDialogRef<PurchaseDraftCreateComponent>,
   ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
@@ -121,6 +124,10 @@ export class PurchaseDraftCreateComponent {
     pbbkb: new FormControl(0, [Validators.required, Validators.min(0)]),
   });
 
+  onCancel() {
+    this.dialogRef.close();
+  }
+
   openSupplierSelector() {
     this.dialog
       .open(SupplierSelectorComponent, {
@@ -164,6 +171,8 @@ export class PurchaseDraftCreateComponent {
             duration: 3000,
           });
           this.metaFormGroup.reset();
+          // close and signal the list to refresh
+          this.dialogRef.close(true);
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {

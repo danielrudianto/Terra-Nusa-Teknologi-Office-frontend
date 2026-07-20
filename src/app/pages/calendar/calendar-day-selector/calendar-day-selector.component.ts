@@ -26,6 +26,7 @@ import { PurchaseViewComponent } from '../../purchase/purchase-view/purchase-vie
 import { ReimbursementViewComponent } from '../../reimbursement/reimbursement-view/reimbursement-view.component';
 import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.component';
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface BankAccountSummary {
   id: number;
@@ -49,6 +50,7 @@ interface BankAccountSummary {
     MatMenuModule,
     MatProgressSpinnerModule,
     MatListModule,
+    MatTooltipModule,
   ],
   templateUrl: './calendar-day-selector.component.html',
   styleUrl: './calendar-day-selector.component.scss',
@@ -67,7 +69,7 @@ export class CalendarDaySelectorComponent {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private clipboard: Clipboard,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
   ) {}
 
   @ViewChild('paymentSelection') paymentSelection: MatSelectionList | undefined;
@@ -92,7 +94,7 @@ export class CalendarDaySelectorComponent {
       .get('calendar/daily', {
         date: `${this.data.year}-${String(this.data.month + 1).padStart(
           2,
-          '0'
+          '0',
         )}-${String(this.data.date).padStart(2, '0')}`,
         bankAccounts: this.data.bankAccountID
           .filter((x) => x.selected)
@@ -119,14 +121,14 @@ export class CalendarDaySelectorComponent {
   get payments() {
     if (this.selectAccount == null) return [];
     return this.rawData.data.filter(
-      (payment: any) => payment.bankAccountID === this.selectedAccount?.id
+      (payment: any) => payment.bankAccountID === this.selectedAccount?.id,
     );
   }
 
   get interpayments() {
     if (this.selectAccount == null) return [];
     return this.rawData.interpayments.filter(
-      (ip: any) => ip.bankAccountIDOrigin === this.selectedAccount?.id
+      (ip: any) => ip.bankAccountIDOrigin === this.selectedAccount?.id,
     );
   }
 
@@ -195,20 +197,20 @@ export class CalendarDaySelectorComponent {
   private processSummaries(data: any) {
     this.bankAccountSummaries = data.bankAccounts.map((bankAccount: any) => {
       const payments = data.data.filter(
-        (payment: any) => payment.bankAccountID === bankAccount.id
+        (payment: any) => payment.bankAccountID === bankAccount.id,
       );
 
       const incomingInterpayments = data.interpayments.filter(
-        (ip: any) => ip.bankAccountIDDestination === bankAccount.id
+        (ip: any) => ip.bankAccountIDDestination === bankAccount.id,
       );
 
       const outgoingInterpayments = data.interpayments.filter(
-        (ip: any) => ip.bankAccountIDOrigin === bankAccount.id
+        (ip: any) => ip.bankAccountIDOrigin === bankAccount.id,
       );
 
       const totalAmount = payments.reduce(
         (sum: number, payment: any) => sum + payment.amount,
-        0
+        0,
       );
 
       const hasActivities =
@@ -231,7 +233,7 @@ export class CalendarDaySelectorComponent {
 
     // Auto-select first account with activities, or first account
     const accountWithActivities = this.bankAccountSummaries.find(
-      (acc) => acc.hasActivities
+      (acc) => acc.hasActivities,
     );
     if (accountWithActivities) {
       this.selectAccount(accountWithActivities);
@@ -271,16 +273,16 @@ export class CalendarDaySelectorComponent {
 
   viewAccountDetails(account: BankAccountSummary) {
     const bankAccountData = this.rawData.bankAccounts.find(
-      (ba: any) => ba.id === account.id
+      (ba: any) => ba.id === account.id,
     );
     const payments = this.rawData.data.filter(
-      (payment: any) => payment.bankAccountID === account.id
+      (payment: any) => payment.bankAccountID === account.id,
     );
     const incomingInterpayments = this.rawData.interpayments.filter(
-      (ip: any) => ip.bankAccountIDDestination === account.id
+      (ip: any) => ip.bankAccountIDDestination === account.id,
     );
     const outgoingInterpayments = this.rawData.interpayments.filter(
-      (ip: any) => ip.bankAccountIDOrigin === account.id
+      (ip: any) => ip.bankAccountIDOrigin === account.id,
     );
 
     this.dialog.open(CalendarDayViewComponent, {
@@ -297,7 +299,7 @@ export class CalendarDaySelectorComponent {
   getTotalDailyAmount(): number {
     return this.bankAccountSummaries.reduce(
       (sum, account) => sum + account.totalAmount,
-      0
+      0,
     );
   }
 
@@ -311,7 +313,7 @@ export class CalendarDaySelectorComponent {
       .filter((x: any) => this.selectedPayments.includes(x.id))
       .every(
         (payment: any) =>
-          payment.isApprove === false && payment.isDelete === false
+          payment.isApprove === false && payment.isDelete === false,
       );
   }
 
@@ -357,7 +359,7 @@ export class CalendarDaySelectorComponent {
     const paymentLines = this.payments
       .map((x: any, index: number) => {
         return `  • ${this.getAccountName(x)} Rp. ${formatCurrency(
-          x.amount
+          x.amount,
         )} ${this.getDocumentName(x)}`;
       })
       .join('\n');
@@ -365,7 +367,7 @@ export class CalendarDaySelectorComponent {
     const interpaymentLines = this.interpayments
       .map((x: any) => {
         return `  • Interpayment to ••••${x.destinationBankAccountNumber.slice(
-          -4
+          -4,
         )} Rp. ${formatCurrency(x.amount)}`;
       })
       .join('\n');
@@ -398,7 +400,7 @@ export class CalendarDaySelectorComponent {
               'outgoing-payments/approve/bulk',
               this.selectedPayments.map((payment: any) => {
                 return payment;
-              })
+              }),
             )
             .subscribe({
               next: (_) => {
@@ -407,7 +409,7 @@ export class CalendarDaySelectorComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
               error: (error) => {
@@ -439,7 +441,7 @@ export class CalendarDaySelectorComponent {
               'outgoing-payments/reject/bulk',
               this.selectedPayments.map((payment: any) => {
                 return payment;
-              })
+              }),
             )
             .subscribe({
               next: (_) => {
@@ -448,7 +450,7 @@ export class CalendarDaySelectorComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
               error: (error) => {
@@ -471,57 +473,60 @@ export class CalendarDaySelectorComponent {
     const index = this.rawData.data.findIndex((x: any) => x.id == p);
     if (index != -1) {
       const date = new Date(this.rawData.data[index].date);
-      this.dialog.open(DateSelectorComponent, {
-        data: {
-          id: p,
-          date: date,
-          minimumDate: date,
-          // maximum date should be minimumDate + 30
-          maximumDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000),
-        },
-      }).afterClosed().subscribe((data) => {
-        if(data == "moved"){
-          // remove
-          this.rawData.data.splice(index, 1);
-        }
-      })
+      this.dialog
+        .open(DateSelectorComponent, {
+          data: {
+            id: p,
+            date: date,
+            minimumDate: date,
+            // maximum date should be minimumDate + 30
+            maximumDate: new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000),
+          },
+        })
+        .afterClosed()
+        .subscribe((data) => {
+          if (data == 'moved') {
+            // remove
+            this.rawData.data.splice(index, 1);
+          }
+        });
     }
   }
 
-  viewDocument(id: number){
+  viewDocument(id: number) {
     const index = this.rawData.data.findIndex((x: any) => x.id == id);
-    if(index != -1){
+    if (index != -1) {
       const data = this.rawData.data[index];
-      if(data.purchaseID != null){
+      if (data.purchaseID != null) {
         this.dialog.open(PurchaseViewComponent, {
           data: {
             id: data.purchaseID,
-          }
-        })
+          },
+        });
       }
 
-      if(data.reimbursementID != null){
+      if (data.reimbursementID != null) {
         this.dialog.open(ReimbursementViewComponent, {
           data: {
-            id: data.reimbursementID
-          }
-        })
+            id: data.reimbursementID,
+          },
+        });
       }
 
-      if(data.expenseID != null){
+      if (data.expenseID != null) {
         this.dialog.open(ExpenseViewComponent, {
           data: {
-            id: data.expenseID
-          }
-        })
+            id: data.expenseID,
+          },
+        });
       }
 
-      if(data.loanID != null){
+      if (data.loanID != null) {
         this.dialog.open(LoansViewComponent, {
           data: {
             id: data.loanID,
-          }
-        })
+          },
+        });
       }
     }
   }

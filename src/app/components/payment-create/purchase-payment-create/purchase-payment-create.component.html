@@ -1,68 +1,245 @@
-<h2 mat-dialog-title>Payment data</h2>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content class="mat-typography">
-    <p>
-      Please fill in the payment information below. The payment date is
-      required.
-    </p>
-    <p>
-      This document is due on
-      {{ metaFormGroup.get("dueDate")?.value }}
-    </p>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Date</mat-label>
-      <input
-        matInput
-        formControlName="paymentDate"
-        placeholder="Payment date"
-        [matDatepicker]="paymentDatePicker"
-        formControlName="date"
-      />
-      <mat-datepicker-toggle
-        matIconPrefix
-        [for]="paymentDatePicker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #paymentDatePicker></mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Account Number</mat-label>
-      <mat-select formControlName="bankAccountID">
-        <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-          >{{ bank.bankAccountNumber }} --
-          {{ bank.bankAccountName }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
-      <input
-        matInput
-        formControlName="amount"
-        type="text"
-        placeholder="Payment amount"
-        required
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-      <button matSuffix mat-icon-button type="button" (click)="fullAmount()">
-        <mat-icon>check_circle</mat-icon>
-      </button>
-      <mat-hint
-        >Maximum amount paid {{ totalAmount | number : "0.2-2" }}</mat-hint
+<div class="ppc">
+  <div class="ppc-head" mat-dialog-title>
+    <span class="ppc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      type="submit"
-      style="letter-spacing: 0"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6M9 13h6M9 17h4" />
+      </svg>
+    </span>
+    <div class="ppc-head__text">
+      <h2 class="ppc-title">
+        {{ metaFormGroup.get("invoiceName")?.value || "Bayar Purchase" }}
+      </h2>
+      <span class="ppc-sub">{{
+        metaFormGroup.get("supplierName")?.value || "Pembayaran purchase"
+      }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="ppc-content">
+      <!-- meta chips -->
+      <div class="ppc-chips">
+        <span
+          class="ppc-chip"
+          *ngIf="metaFormGroup.get('purchaseOrderName')?.value"
+          ><span class="ppc-chip__k">PO</span
+          >{{ metaFormGroup.get("purchaseOrderName")?.value }}</span
+        >
+        <span class="ppc-chip" *ngIf="metaFormGroup.get('projectName')?.value"
+          ><span class="ppc-chip__k">Project</span
+          >{{ metaFormGroup.get("projectName")?.value }}</span
+        >
+        <span
+          class="ppc-chip"
+          *ngIf="metaFormGroup.get('taxInvoiceName')?.value"
+          ><span class="ppc-chip__k">Faktur</span
+          >{{ metaFormGroup.get("taxInvoiceName")?.value }}</span
+        >
+        <span
+          class="ppc-chip ppc-chip--due"
+          *ngIf="metaFormGroup.get('dueDate')?.value"
+          ><span class="ppc-chip__k">Jatuh tempo</span
+          >{{ metaFormGroup.get("dueDate")?.value }}</span
+        >
+      </div>
+
+      <!-- value breakdown -->
+      <div class="ppc-section__title">Rincian Nilai</div>
+      <div class="ppc-money">
+        <div class="ppc-money__row">
+          <span>DPP</span
+          ><span
+            >Rp {{ valueFormGroup.get("dpp")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="ppc-money__row">
+          <span>PPN</span
+          ><span class="ppc-pos"
+            >+ Rp {{ valueFormGroup.get("ppn")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div
+          class="ppc-money__row"
+          *ngIf="valueFormGroup.get('pbbkb')?.value > 0"
+        >
+          <span>PBBKB</span
+          ><span class="ppc-pos"
+            >+ Rp
+            {{ valueFormGroup.get("pbbkb")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div
+          class="ppc-money__row"
+          *ngIf="valueFormGroup.get('otherValue')?.value > 0"
+        >
+          <span
+            >Lainnya<span
+              class="ppc-note"
+              *ngIf="valueFormGroup.get('otherValueNote')?.value"
+            >
+              · {{ valueFormGroup.get("otherValueNote")?.value }}</span
+            ></span
+          >
+          <span class="ppc-pos"
+            >+ Rp
+            {{
+              valueFormGroup.get("otherValue")?.value | number: "1.0-0"
+            }}</span
+          >
+        </div>
+        <div class="ppc-money__row">
+          <span>PPh</span
+          ><span class="ppc-neg"
+            >− Rp {{ valueFormGroup.get("pph")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="ppc-money__row ppc-money__row--total">
+          <span>Total tagihan</span
+          ><span
+            >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+      </div>
+
+      <!-- paid progress -->
+      <div class="ppc-paidrow">
+        <span
+          >Sudah dibayar:
+          <strong
+            >Rp
+            {{
+              +valueFormGroup.get("total")?.value - totalAmount
+                | number: "1.0-0"
+            }}</strong
+          ></span
+        >
+        <span
+          >Sisa:
+          <strong class="ppc-remain"
+            >Rp {{ totalAmount | number: "1.0-0" }}</strong
+          ></span
+        >
+      </div>
+
+      <!-- payment history -->
+      <div *ngIf="payments && payments.length > 0">
+        <div class="ppc-section__title ppc-section__title--mt">
+          Riwayat Pembayaran
+        </div>
+        <div class="ppc-history">
+          <div class="ppc-hist" *ngFor="let p of payments">
+            <span class="ppc-hist__icon" [class.is-pending]="!p.isApprove">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <span class="ppc-hist__main">
+              <span class="ppc-hist__date">{{
+                p.date | date: "dd MMM yyyy"
+              }}</span>
+              <span class="ppc-hist__bank" *ngIf="p.bankName"
+                >{{ p.bankName }} · {{ p.bankAccountNumber }}</span
+              >
+            </span>
+            <span class="ppc-hist__chip" [class.is-pending]="!p.isApprove">{{
+              p.isApprove ? "Approved" : "Pending"
+            }}</span>
+            <span class="ppc-hist__amt"
+              >Rp {{ p.amount | number: "1.0-0" }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- payment inputs -->
+      <div class="ppc-section__title ppc-section__title--mt">Pembayaran</div>
+      <div class="ppc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal bayar</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Tanggal bayar"
+            [matDatepicker]="paymentDatePicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="paymentDatePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #paymentDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rekening pembayar</mat-label>
+          <mat-select formControlName="bankAccountID">
+            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
+              >{{ bank.bankAccountNumber }} —
+              {{ bank.bankAccountName }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ppc-span2">
+          <mat-label>Nominal pembayaran</mat-label>
+          <input
+            matInput
+            formControlName="amount"
+            type="text"
+            placeholder="Nominal"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+          />
+          <mat-hint>Maksimal Rp {{ totalAmount | number: "1.0-0" }}</mat-hint>
+        </mat-form-field>
+      </div>
+      <button type="button" class="ppc-full" (click)="fullAmount()">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        Bayar penuh (Rp {{ totalAmount | number: "1.0-0" }})
+      </button>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="ppc-actions">
+      <button type="button" class="ppc-cancel" (click)="onClose()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="ppc-submit"
+        [disabled]="isLoading || isSubmitting || !formGroup.valid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Bayar purchase" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

@@ -1,46 +1,105 @@
-<h2 mat-dialog-title>PPN Report</h2>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Month</mat-label>
-      <mat-select formControlName="month" required>
-        <mat-option value="1">January</mat-option>
-        <mat-option value="2">February</mat-option>
-        <mat-option value="3">March</mat-option>
-        <mat-option value="4">April</mat-option>
-        <mat-option value="5">May</mat-option>
-        <mat-option value="6">June</mat-option>
-        <mat-option value="7">July</mat-option>
-        <mat-option value="8">August</mat-option>
-        <mat-option value="9">September</mat-option>
-        <mat-option value="10">October</mat-option>
-        <mat-option value="11">November</mat-option>
-        <mat-option value="12">December</mat-option>
-      </mat-select>
-    </mat-form-field>
+<div class="txr">
+  <div class="txr-head" mat-dialog-title>
+    <span class="txr-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M19 5 5 19M6.5 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17.5 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
+        />
+      </svg>
+    </span>
+    <div class="txr-head__text">
+      <h2 class="txr-title">Rekap PPN</h2>
+      <span class="txr-sub">Unduh laporan PPN periode terpilih</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Year</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="year"
-        placeholder="Year"
-        required
-        min="2000"
-        max="2100"
-      />
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      type="submit"
-      style="letter-spacing: 0"
-      [disabled]="formGroup.invalid || isLoading"
-    >
-      Download
-    </button>
-  </mat-dialog-actions>
-</form>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="txr-content">
+      <div class="txr-yearrow">
+        <span class="txr-label">Periode</span>
+        <div class="txr-year">
+          <button
+            type="button"
+            (click)="formGroup.patchValue({ year: +formGroup.value.year - 1 })"
+            aria-label="Tahun sebelumnya"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <span>{{ formGroup.value.year }}</span>
+          <button
+            type="button"
+            (click)="formGroup.patchValue({ year: +formGroup.value.year + 1 })"
+            aria-label="Tahun berikutnya"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="txr-months">
+        <button
+          type="button"
+          class="txr-month"
+          *ngFor="let m of months"
+          [class.is-active]="+formGroup.value.month === m.n"
+          (click)="formGroup.patchValue({ month: m.n })"
+        >
+          {{ m.label }}
+        </button>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions class="txr-actions">
+      <button
+        type="submit"
+        class="txr-submit"
+        [disabled]="formGroup.invalid || isLoading"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+          />
+        </svg>
+        {{ isLoading ? "Menyiapkan..." : "Download" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

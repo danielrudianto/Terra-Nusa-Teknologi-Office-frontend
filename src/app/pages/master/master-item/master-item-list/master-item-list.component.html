@@ -1,0 +1,153 @@
+<div class="mi">
+  <app-header-title
+    [title]="'Master Item'"
+    [description]="'Katalog barang untuk purchase order'"
+  ></app-header-title>
+
+  <div class="mi-toolbar">
+    <mat-form-field appearance="outline" class="mi-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Cari SKU, deskripsi, brand, atau tipe"
+        [formControl]="searchControl"
+      />
+    </mat-form-field>
+
+    <span class="mi-spacer"></span>
+
+    <button type="button" class="mi-btn mi-btn--brand" (click)="createItem()">
+      <mat-icon>add</mat-icon> Tambah item
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      accept=".csv"
+      hidden
+      (change)="onFileSelected($event)"
+    />
+    <button
+      type="button"
+      class="mi-btn mi-btn--ghost"
+      (click)="fileInput.click()"
+      [disabled]="isImporting"
+    >
+      <mat-icon>upload_file</mat-icon>
+      {{ isImporting ? "Mengimpor..." : "Import CSV" }}
+    </button>
+  </div>
+
+  <div class="mi-card">
+    <mat-progress-bar
+      *ngIf="isLoading || isImporting"
+      mode="indeterminate"
+      class="mi-progress"
+    ></mat-progress-bar>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="items">
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef>SKU</th>
+          <td mat-cell *matCellDef="let item">
+            <div class="mi-sku">
+              <span class="mi-badge">{{ (item.sku || "?").charAt(0) }}</span>
+              <span class="mi-mono">{{ item.sku }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Deskripsi</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="mi-primary">{{ item.description || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="brand">
+          <th mat-header-cell *matHeaderCellDef>Brand</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="mi-muted">{{ item.brand || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Tipe</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="mi-tag">{{ item.type || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="unit">
+          <th mat-header-cell *matHeaderCellDef>Satuan</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="mi-muted">{{ item.unit || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="availablePurchaseType">
+          <th mat-header-cell *matHeaderCellDef>Tipe PO</th>
+          <td mat-cell *matCellDef="let item">
+            <span
+              class="mi-po"
+              *ngFor="let t of typeChips(item)"
+              [matTooltip]="typeLabel(t)"
+              >{{ t }}</span
+            >
+            <span class="mi-faint" *ngIf="typeChips(item).length === 0">—</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td
+            mat-cell
+            *matCellDef="let item"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Row actions"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="editItem(item)">
+                <mat-icon>edit</mat-icon><span>Edit item</span>
+              </button>
+              <button mat-menu-item (click)="deleteItem(item)">
+                <mat-icon>delete</mat-icon><span>Hapus item</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row mi-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="mi-empty">
+              <mat-icon>inventory_2</mat-icon>
+              <span
+                >Belum ada item. Import CSV untuk mulai mengisi katalog.</span
+              >
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="count"
+      [pageSize]="pageSize"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
+</div>

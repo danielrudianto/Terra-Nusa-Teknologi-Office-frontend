@@ -1,60 +1,78 @@
-<div class="row">
-  <div class="col-12">
-    <h1>Project expenses</h1>
+<div class="poc">
+  <div class="poc-head">
+    <h1 class="poc-title">Buat Purchase Order</h1>
+    <p class="poc-sub">Pilih jenis pembelian yang mau dibuat</p>
   </div>
-  @for (tile of projectTiles; track tile) {
-    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
-      <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
-        <mat-card-header>
-          <div mat-card-avatar>
-            {{ tile.type }}
-          </div>
-          <mat-card-title>{{ tile.title }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="flex-grow-1">
-          <p>{{ tile.description }}</p>
-        </mat-card-content>
-        <mat-card-actions align="end">
-          <button
-            mat-stroked-button
-            color="primary"
-            style="letter-spacing: 0"
-            (click)="onCreatePurchaseOrder(tile.type)"
-          >
-            Create
-          </button>
-        </mat-card-actions>
-      </mat-card>
+
+  <!-- Project expenses -->
+  <div class="poc-section">
+    <div class="poc-section__head">
+      <span class="poc-section__title">Project expenses</span>
+      <span class="poc-section__count">{{ projectTiles.length }}</span>
     </div>
-  }
-</div>
-<div class="row mt-3">
-  <div class="col-12">
-    <h1>Office expenses</h1>
+    <div class="poc-grid">
+      @for (tile of projectTiles; track tile) {
+        <button
+          type="button"
+          class="poc-tile"
+          (click)="onCreatePurchaseOrder(tile.type)"
+        >
+          <span class="poc-tile__badge">{{ tile.type }}</span>
+          <span class="poc-tile__body">
+            <span class="poc-tile__title">{{ tile.title }}</span>
+            <span class="poc-tile__desc">{{ tile.description }}</span>
+          </span>
+          <span class="poc-tile__arrow">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </span>
+        </button>
+      }
+    </div>
   </div>
-  @for (tile of officeTiles; track tile) {
-    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 d-flex">
-      <mat-card appearance="outlined" class="my-2 d-flex flex-column w-100">
-        <mat-card-header>
-          <div mat-card-avatar>
-            {{ tile.type }}
-          </div>
-          <mat-card-title>{{ tile.title }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="flex-grow-1">
-          <p>{{ tile.description }}</p>
-        </mat-card-content>
-        <mat-card-actions align="end">
-          <button
-            mat-stroked-button
-            color="primary"
-            style="letter-spacing: 0"
-            [routerLink]="tile.link"
-          >
-            Create
-          </button>
-        </mat-card-actions>
-      </mat-card>
+
+  <!-- Office expenses -->
+  <div class="poc-section">
+    <div class="poc-section__head">
+      <span class="poc-section__title">Office expenses</span>
+      <span class="poc-section__count">{{ officeTiles.length }}</span>
     </div>
-  }
+    <div class="poc-grid">
+      @for (tile of officeTiles; track tile) {
+        <a class="poc-tile" [routerLink]="tile.link">
+          <span class="poc-tile__badge poc-tile__badge--num">{{
+            tile.type
+          }}</span>
+          <span class="poc-tile__body">
+            <span class="poc-tile__title">{{ tile.title }}</span>
+            <span class="poc-tile__desc">{{ tile.description }}</span>
+          </span>
+          <span class="poc-tile__arrow">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </span>
+        </a>
+      }
+    </div>
+  </div>
 </div>

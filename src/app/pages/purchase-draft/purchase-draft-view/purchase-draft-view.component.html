@@ -1,97 +1,108 @@
-<h2 mat-dialog-title>Purchase draft</h2>
-<mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" />
-    </mat-form-field>
+<div class="pdv">
+  <div mat-dialog-title class="pdv-head">
+    <span class="pdv-avatar">{{
+      (formGroup.get("supplierName")?.value || "?").charAt(0)
+    }}</span>
+    <div class="pdv-head__text">
+      <div class="pdv-name">
+        {{ formGroup.get("purchaseOrderName")?.value || "Purchase draft" }}
+      </div>
+      <div class="pdv-meta">
+        {{ formGroup.get("supplierName")?.value
+        }}<ng-container *ngIf="formGroup.get('date')?.value">
+          · {{ formGroup.get("date")?.value }}</ng-container
+        >
+      </div>
+    </div>
+    <span class="pdv-chip">Draft</span>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Supplier name</mat-label>
-      <input matInput formControlName="supplierName" />
-    </mat-form-field>
+  <mat-dialog-content class="pdv-content">
+    <form [formGroup]="formGroup">
+      <!-- supplier -->
+      <section class="pdv-section">
+        <div class="pdv-section__title">Supplier</div>
+        <div class="pdv-field">
+          <span class="pdv-label">Name</span>
+          <span class="pdv-value">{{
+            formGroup.get("supplierName")?.value || "—"
+          }}</span>
+        </div>
+        <div class="pdv-field" *ngIf="formGroup.get('supplierAddress')?.value">
+          <span class="pdv-label">Address</span>
+          <span class="pdv-value pdv-value--multi">{{
+            formGroup.get("supplierAddress")?.value
+          }}</span>
+        </div>
+      </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Supplier address</mat-label>
-      <textarea matInput formControlName="supplierAddress"></textarea>
-    </mat-form-field>
+      <!-- purchase info -->
+      <section class="pdv-section">
+        <div class="pdv-section__title">Informasi Purchase</div>
+        <div class="pdv-grid">
+          <div class="pdv-field">
+            <span class="pdv-label">Project</span>
+            <span class="pdv-value">{{
+              formGroup.get("projectName")?.value || "—"
+            }}</span>
+          </div>
+          <div class="pdv-field">
+            <span class="pdv-label">Purchase type</span>
+            <span class="pdv-value"
+              ><span class="pdv-code">{{
+                formGroup.get("purchaseType")?.value || "—"
+              }}</span></span
+            >
+          </div>
+        </div>
+        <div class="pdv-field" *ngIf="formGroup.get('description')?.value">
+          <span class="pdv-label">Description</span>
+          <span class="pdv-value pdv-value--multi">{{
+            formGroup.get("description")?.value
+          }}</span>
+        </div>
+      </section>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
+      <!-- money -->
+      <section class="pdv-section">
+        <div class="pdv-section__title">Rincian Nilai</div>
+        <div class="pdv-money">
+          <div class="pdv-money__row">
+            <span>DPP</span>
+            <span>Rp {{ formGroup.get("dpp")?.value | number: "1.0-0" }}</span>
+          </div>
+          <div class="pdv-money__row">
+            <span>PPN</span>
+            <span>Rp {{ formGroup.get("ppn")?.value | number: "1.0-0" }}</span>
+          </div>
+          <div class="pdv-money__row">
+            <span>PBBKB</span>
+            <span
+              >Rp {{ formGroup.get("pbbkb")?.value | number: "1.0-0" }}</span
+            >
+          </div>
+          <div class="pdv-money__row pdv-money__row--total">
+            <span>Total</span>
+            <span
+              >Rp {{ formGroup.get("total")?.value | number: "1.0-0" }}</span
+            >
+          </div>
+        </div>
+      </section>
+    </form>
+  </mat-dialog-content>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Purchase order name</mat-label>
-      <input matInput formControlName="purchaseOrderName" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Project name</mat-label>
-      <input matInput formControlName="projectName" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Purchase type</mat-label>
-      <input matInput formControlName="purchaseType" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>DPP</mat-label>
-      <input
-        matInput
-        formControlName="dpp"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PPN</mat-label>
-      <input
-        matInput
-        formControlName="ppn"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>PBBKB</mat-label>
-      <input
-        matInput
-        formControlName="pbbkb"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total</mat-label>
-      <input
-        matInput
-        formControlName="total"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    (click)="deletePurchaseDraft()"
-  >
-    Delete purchase draft
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions class="pdv-actions">
+    <button
+      type="button"
+      class="pdv-btn pdv-btn--danger"
+      (click)="deletePurchaseDraft()"
+    >
+      Delete purchase draft
+    </button>
+    <span class="pdv-spacer"></span>
+    <button type="button" class="pdv-btn pdv-btn--ghost" mat-dialog-close>
+      Tutup
+    </button>
+  </mat-dialog-actions>
+</div>

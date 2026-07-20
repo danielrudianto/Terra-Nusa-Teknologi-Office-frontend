@@ -1,65 +1,145 @@
-<h1 mat-dialog-title>Download Monthly Recap</h1>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Month</mat-label>
-      <mat-select formControlName="month">
-        <mat-option [value]="1">January</mat-option>
-        <mat-option [value]="2">February</mat-option>
-        <mat-option [value]="3">March</mat-option>
-        <mat-option [value]="4">April</mat-option>
-        <mat-option [value]="5">May</mat-option>
-        <mat-option [value]="6">June</mat-option>
-        <mat-option [value]="7">July</mat-option>
-        <mat-option [value]="8">August</mat-option>
-        <mat-option [value]="9">September</mat-option>
-        <mat-option [value]="10">October</mat-option>
-        <mat-option [value]="11">November</mat-option>
-        <mat-option [value]="12">December</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Year</mat-label>
-      <input matInput formControlName="year" />
-    </mat-form-field>
-
-    <div class="row">
-      <div class="col-6">
-        <mat-slide-toggle class="mb-2" formControlName="mutation"
-          >Mutation</mat-slide-toggle
-        ><br />
-        <mat-slide-toggle class="mb-2" formControlName="purchase"
-          >Purchase</mat-slide-toggle
-        >
-        <br /><mat-slide-toggle class="mb-2" formControlName="sales"
-          >Sales</mat-slide-toggle
-        >
-        <br /><mat-slide-toggle class="mb-2" formControlName="loans"
-          >Loans</mat-slide-toggle
-        >
-      </div>
-      <div class="col-6">
-        <mat-slide-toggle class="mb-2" formControlName="asset"
-          >Asset</mat-slide-toggle
-        >
-        <br /><mat-slide-toggle class="mb-2" formControlName="ar"
-          >Account Receivable</mat-slide-toggle
-        >
-        <br /><mat-slide-toggle class="mb-2" formControlName="ap"
-          >Account Payable</mat-slide-toggle
-        >
-      </div>
+<div class="txr">
+  <div class="txr-head" mat-dialog-title>
+    <span class="txr-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="3" />
+        <path d="M16 2v4M8 2v4M3 10h18M8 15h3M8 18h6" />
+      </svg>
+    </span>
+    <div class="txr-head__text">
+      <h2 class="txr-title">Monthly Report</h2>
+      <span class="txr-sub">Rekap pajak bulanan menyeluruh</span>
     </div>
-  </mat-dialog-content>
+  </div>
 
-  <mat-dialog-actions align="end">
-    <button
-      type="submit"
-      [disabled]="isDownloading || formGroup.invalid"
-      matButton="outlined"
-    >
-      Download
-    </button>
-  </mat-dialog-actions>
-</form>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="txr-content">
+      <div class="txr-yearrow">
+        <span class="txr-label">Periode</span>
+        <div class="txr-year">
+          <button
+            type="button"
+            (click)="formGroup.patchValue({ year: +formGroup.value.year - 1 })"
+            aria-label="Tahun sebelumnya"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <span>{{ formGroup.value.year }}</span>
+          <button
+            type="button"
+            (click)="formGroup.patchValue({ year: +formGroup.value.year + 1 })"
+            aria-label="Tahun berikutnya"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="txr-months">
+        <button
+          type="button"
+          class="txr-month"
+          *ngFor="let m of months"
+          [class.is-active]="+formGroup.value.month === m.n"
+          (click)="formGroup.patchValue({ month: m.n })"
+        >
+          {{ m.label }}
+        </button>
+      </div>
+
+      <div class="txr-sections">
+        <span class="txr-label">Bagian laporan</span>
+        <div class="txr-toggles">
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="mutation" color="primary"
+              >Mutasi Bank</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="purchase" color="primary"
+              >Purchase</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="sales" color="primary"
+              >Sales</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="asset" color="primary"
+              >Asset</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="ar" color="primary"
+              >Account Receivable</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="ap" color="primary"
+              >Account Payable</mat-slide-toggle
+            >
+          </div>
+          <div class="txr-toggle">
+            <mat-slide-toggle formControlName="loans" color="primary"
+              >Loans</mat-slide-toggle
+            >
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions class="txr-actions">
+      <button
+        type="submit"
+        class="txr-submit"
+        [disabled]="isDownloading || formGroup.invalid"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+          />
+        </svg>
+        {{ isDownloading ? "Menyiapkan..." : "Download" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

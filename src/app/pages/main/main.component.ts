@@ -23,7 +23,10 @@ import { filter, map } from 'rxjs';
   standalone: true,
 })
 export class MainComponent {
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   isSidenavigationOpened: boolean = true;
   label: string = '';
@@ -44,7 +47,7 @@ export class MainComponent {
             }
           }
           return child || this.route;
-        })
+        }),
       )
       .subscribe((route: ActivatedRoute) => {
         this.label = route.snapshot.data['title'];
@@ -137,29 +140,7 @@ export class MainComponent {
         },
       ],
     },
-    {
-      name: 'General',
-      children: [
-        {
-          name: 'Settings',
-          icon: 'setting.svg',
-          route: '/Settings',
-        },
-        {
-          name: 'Logout',
-          icon: 'logout.svg',
-          click: () => {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
 
-            this.router.navigate(['/Login']);
-          },
-          routerLinkOptions: {
-            exact: true,
-          },
-        },
-      ],
-    },
     {
       name: 'Implementations',
       children: [
@@ -187,6 +168,29 @@ export class MainComponent {
           name: 'Expense',
           icon: 'expense.svg',
           route: '/Expense',
+        },
+      ],
+    },
+    {
+      name: 'General',
+      children: [
+        {
+          name: 'Settings',
+          icon: 'setting.svg',
+          route: '/Settings',
+        },
+        {
+          name: 'Logout',
+          icon: 'logout.svg',
+          click: () => {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            this.router.navigate(['/Login']);
+          },
+          routerLinkOptions: {
+            exact: true,
+          },
         },
       ],
     },

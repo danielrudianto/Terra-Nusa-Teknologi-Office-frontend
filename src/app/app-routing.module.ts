@@ -73,6 +73,7 @@ import { InvoiceComponent } from './pages/invoice/invoice.component';
 import { EngineeringComponent } from './pages/engineering/engineering.component';
 import { EngineeringDashboardComponent } from './pages/engineering/engineering-dashboard/engineering-dashboard.component';
 import { EngineeringProjectViewComponent } from './pages/engineering/engineering-project-view/engineering-project-view.component';
+import { MasterItemListComponent } from './pages/master/master-item/master-item-list/master-item-list.component';
 
 export const routes: Routes = [
   {
@@ -549,6 +550,13 @@ export const routes: Routes = [
             component: PphRecapComponent,
           },
         ],
+      },
+      {
+        path: 'Item',
+        component: MasterItemListComponent,
+        data: {
+          title: 'Item list',
+        },
       },
       {
         path: 'Settings',

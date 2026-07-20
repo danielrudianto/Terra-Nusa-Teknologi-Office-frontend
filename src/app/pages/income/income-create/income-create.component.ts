@@ -1,14 +1,46 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import moment from 'moment';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
 import { ApiService } from '../../../services/api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import moment from 'moment';
 
 @Component({
   selector: 'app-income-create',
-  standalone: false,
+  standalone: true,
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    NgxMaskDirective,
+  ],
   templateUrl: './income-create.component.html',
   styleUrl: './income-create.component.scss',
 })
@@ -16,7 +48,8 @@ export class IncomeCreateComponent {
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialogRef: MatDialogRef<IncomeCreateComponent>,
   ) {}
 
   bankAccounts: any[] = [];
@@ -36,6 +69,10 @@ export class IncomeCreateComponent {
 
   ngOnInit(): void {
     this.fetchBankData();
+  }
+
+  onCancel() {
+    this.dialogRef.close();
   }
 
   openOpponentSelector() {
@@ -74,7 +111,7 @@ export class IncomeCreateComponent {
       .post(`income`, {
         date: moment(this.formGroup.value.date).format('YYYY-MM-DD'),
         paymentDate: moment(this.formGroup.value.paymentDate).format(
-          'YYYY-MM-DD'
+          'YYYY-MM-DD',
         ),
         amount: this.formGroup.value.amount,
         incomeType: this.formGroup.value.incomeType,
@@ -87,8 +124,9 @@ export class IncomeCreateComponent {
           this.snackBar.open('Income successfully created', 'Close', {
             duration: 3000,
           });
-
           this.formGroup.reset();
+          // close and signal the list to refresh
+          this.dialogRef.close(true);
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {

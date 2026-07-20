@@ -5,15 +5,38 @@ import { ClientUpdateComponent } from '../client-update/client-update.component'
 import { ApiService } from '../../../services/api.service';
 import { MatTable } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { ClientCreateComponent } from '../client-create/client-create.component';
 
 @Component({
   selector: 'app-client-list',
-  standalone: false,
+  standalone: true,
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss',
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatInputModule,
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatPaginatorModule,
+    MatIconModule,
+    MatButtonModule,
+  ],
 })
 export class ClientListComponent {
-  constructor(private dialog: MatDialog, private apiService: ApiService) {}
+  constructor(
+    private dialog: MatDialog,
+    private apiService: ApiService,
+  ) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
 
@@ -77,6 +100,19 @@ export class ClientListComponent {
       })
       .add(() => {
         this.isLoading = false;
+      });
+  }
+
+  onAddClient() {
+    this.dialog
+      .open(ClientCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) this.fetchClients(1);
       });
   }
 }

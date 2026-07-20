@@ -20,12 +20,15 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-purchase-order-create-g',
   providers: [provideNgxMask()],
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -46,7 +49,9 @@ export class PurchaseOrderCreateGComponent {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private snackBar: MatSnackBar,
   ) {}
 
   isSubmitting: boolean = false;
@@ -111,8 +116,41 @@ export class PurchaseOrderCreateGComponent {
         quantity: [0, [Validators.required, Validators.min(0)]],
         unit: ['', Validators.required],
         note: [''],
-      })
+      }),
     );
+  }
+
+  // ----- live summary (read-only, safe getters) -----
+  get rawTotal(): number {
+    return this.t.value.reduce(
+      (acc: number, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
+  }
+
+  get subTotal(): number {
+    // DPP (tax base). When PPN is included, listed prices already contain PPN.
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal / 1.11
+      : this.rawTotal;
+  }
+
+  get ppnAmount(): number {
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal - this.rawTotal / 1.11
+      : 0;
+  }
+
+  get grandTotal(): number {
+    return this.rawTotal;
+  }
+
+  get lineTotal(): (i: number) => number {
+    return (i: number) => {
+      const g = this.getFormGroupAt(i).value;
+      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
+    };
   }
 
   openSupplierSelector() {
@@ -134,23 +172,27 @@ export class PurchaseOrderCreateGComponent {
     const dpp = this.formGroup.get('includePPN')?.value
       ? this.t.value.reduce(
           (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0
+          0,
         )
       : this.t.value.reduce(
           (acc: any, x: any) => acc + x.price * x.quantity,
-          0
+          0,
         );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
+    const projectCode = this.formGroup.get('projectName')?.value;
     return {
       // convert date to YYYY-mm-dd
       date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: this.formGroup.get('purchaseType')?.value,
-      projectName: this.formGroup.get('projectName')?.value,
+      projectName: projectCode,
+      projectCode: projectCode,
       name: '',
       dpp: dpp,
       ppn: ppn,
+      payment_term: this.formGroup.get('paymentTerm')?.value,
       templateVersion: '1.0',
+      billing_requirements: {},
       customData: {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
@@ -178,7 +220,23 @@ export class PurchaseOrderCreateGComponent {
     this.isSubmitting = true;
     this.apiService
       .post('purchase-orders', this.formatData())
-      .subscribe()
+      .subscribe({
+        next: (res: any) => {
+          this.snackBar.open(
+            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            'Close',
+            { duration: 3000 },
+          );
+          this.router.navigate(['/Purchase-order']);
+        },
+        error: (error) => {
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal membuat purchase order',
+            'Close',
+            { duration: 3000 },
+          );
+        },
+      })
       .add(() => {
         this.isSubmitting = false;
       });

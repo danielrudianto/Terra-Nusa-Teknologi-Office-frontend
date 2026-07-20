@@ -1,14 +1,22 @@
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <app-header-title
-          title="Purchase order"
-          description="Create equipment purchase order (G)"
-        />
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
-          <input matInput formControlName="date" [matDatepicker]="picker" />
+<div class="pog">
+  <app-header-title
+    title="Purchase Order — Kode G"
+    description="Pembelian Peralatan & Perlengkapan Penunjang Proyek"
+  />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== 1. Informasi PO ===== -->
+    <div class="pog-card">
+      <div class="pog-section__title">Informasi PO</div>
+      <div class="pog-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+            placeholder="Tanggal PO"
+          />
           <mat-datepicker-toggle
             matIconPrefix
             [for]="picker"
@@ -16,230 +24,273 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project name</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
           <input
             matInput
             formControlName="projectName"
             maxlength="5"
             (keyup)="toUpperCase()"
+            placeholder="Ex. MICZ"
           />
+          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-error *ngIf="f['projectName'].hasError('pattern')"
+            >Harus 4–5 karakter kapital.</mat-error
+          >
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier name</mat-label>
-          <input matInput formControlName="supplierName" readonly />
+        <mat-form-field appearance="outline" class="pog-span2">
+          <mat-label>Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            placeholder="Pilih supplier"
+          />
           <button
             mat-icon-button
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
+            aria-label="Pilih supplier"
           >
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier address</mat-label>
+        <mat-form-field appearance="outline" class="pog-span2">
+          <mat-label>Alamat Supplier</mat-label>
           <textarea
             matInput
             formControlName="supplierAddress"
+            rows="2"
             readonly
+            style="resize: none"
           ></textarea>
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Delivery method</mat-label>
-          <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">Franco</mat-option>
-            <mat-option [value]="1">Loco</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Delivery address</mat-label>
-          <textarea matInput formControlName="deliveryAddress"></textarea>
-        </mat-form-field>
-
-        <div class="banner mb-3 mt-0">
-          <mat-icon>info</mat-icon>
-          <b>Attention:</b>
-          <span
-            >Apabila <b>Franco</b> dipilih, maka alamat yang dicantumkan adalah
-            alamat pengiriman</span
-          >
-        </div>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Payment term</mat-label>
-          <mat-select formControlName="paymentTerm">
-            <mat-option [value]="'COD'">Cash on delivery</mat-option>
-            <mat-option [value]="'CBD'">Cash before delivery</mat-option>
-            <mat-option [value]="'PPD'">Prepaid</mat-option>
-            <mat-option [value]="'CR'">Credit</mat-option>
-            <mat-option [value]="'CRD'">Credit with prepaid</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Credit term</mat-label>
-          <input matInput formControlName="creditTerm" />
-          <span matSuffix>days</span>
-        </mat-form-field>
-      </div>
-      <div class="col-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Prepaid term</mat-label>
-          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <span matSuffix>%</span>
-        </mat-form-field>
-      </div>
-      <div class="col-12">
-        <div class="table-responsive bg-transparent">
-          <table class="table bg-black">
-            <thead>
-              <tr>
-                <th class="py-2 px-2">Reference</th>
-                <th class="py-2 px-2">Description</th>
-                <th class="py-2 px-2">Quantity</th>
-                <th class="py-2 px-2">Price</th>
-                <th class="py-2 px-2">Unit</th>
-                <th class="py-2 px-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @if(t.controls.length == 0){
-              <tr>
-                <td colspan="6" class="text-center">No items added yet.</td>
-              </tr>
-              } @else { @for(item of t.controls; track item; let i = $index){
-              <tr [formGroup]="getFormGroupAt(i)">
-                <td>
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>SKU</mat-label>
-                    <input matInput formControlName="sku" />
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Description</mat-label>
-                    <input matInput formControlName="description" />
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Quantity</mat-label>
-                    <input
-                      matInput
-                      formControlName="quantity"
-                      thousandSeparator=" "
-                      mask="separator.2"
-                    />
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Price</mat-label>
-                    <input
-                      matInput
-                      formControlName="price"
-                      thousandSeparator=" "
-                      mask="separator.2"
-                      prefix="Rp. "
-                    />
-                  </mat-form-field>
-                </td>
-                <td>
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Unit</mat-label>
-                    <mat-select formControlName="unit">
-                      <mat-option value="pcs">Pcs</mat-option>
-                      <mat-option value="set">Set</mat-option>
-                      <mat-option value="Kg">Kilogram</mat-option>
-                      <mat-option value="m">M</mat-option>
-                      <mat-option value="m2">M<sup>2</sup></mat-option>
-                      <mat-option value="m3">M<sup>3</sup></mat-option>
-                      <mat-option value="ton">Ton</mat-option>
-                      <mat-option value="l">Liter</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </td>
-                <td>
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="removeAt(i)"
-                    [disabled]="t.controls.length == 1"
-                  >
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </td>
-              </tr>
-              } }
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="col-12">
-        <div class="d-flex align-items-center justify-content-between">
-          <button
-            mat-stroked-button
-            color="primary"
-            style="letter-spacing: 0"
-            type="button"
-            (click)="onAddItem()"
-          >
-            Add item
-          </button>
-          <mat-slide-toggle formControlName="includePPN" color="primary"
-            >PPN</mat-slide-toggle
-          >
-        </div>
-        <div class="banner mt-3">
-          <mat-icon>info</mat-icon>
-          <b>Attention:</b>
-          <span
-            >Apabila PPN dipilih, maka harga tertera di atas sudah termasuk PPN,
-            dan wajib melampirkan faktur pajak pada saat melakukan
-            penagihan.</span
-          >
-        </div>
-      </div>
-      <div class="col-12 mt-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier PIC</mat-label>
-          <input matInput formControlName="supplierPICName" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier PIC Phone number</mat-label>
-          <input matInput formControlName="supplierPICPhoneNumber" />
-        </mat-form-field>
-      </div>
-      <div class="col-12 mt-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Office PIC</mat-label>
-          <input matInput formControlName="officePICName" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Office PIC Phone number</mat-label>
-          <input matInput formControlName="officePICPhoneNumber" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-12">
-        <div class="d-flex align-items-center justify-content-between">
-          <button
-            mat-stroked-button
-            color="primary"
-            style="letter-spacing: 0"
-            type="submit"
-            [disabled]="formGroup.invalid || isSubmitting"
-          >
-            Create
-          </button>
-        </div>
       </div>
     </div>
-  </div>
-</form>
+
+    <!-- ===== 2. Daftar Barang ===== -->
+    <div class="pog-card">
+      <div class="pog-cardhead">
+        <div class="pog-section__title pog-section__title--flush">
+          Daftar Barang
+        </div>
+        <button type="button" class="pog-add" (click)="onAddItem()">
+          <mat-icon>add</mat-icon> Tambah barang
+        </button>
+      </div>
+
+      <div class="pog-items">
+        <div class="pog-items__head">
+          <span>Referensi (SKU)</span>
+          <span>Nama Barang</span>
+          <span class="pog-r">Volume</span>
+          <span>Satuan</span>
+          <span class="pog-r">Harga Satuan</span>
+          <span class="pog-r">Jumlah</span>
+          <span></span>
+        </div>
+
+        @if (t.controls.length === 0) {
+          <div class="pog-items__empty">Belum ada barang.</div>
+        } @else {
+          @for (item of t.controls; track item; let i = $index) {
+            <div class="pog-items__row" [formGroup]="getFormGroupAt(i)">
+              <mat-form-field appearance="outline" class="pog-f">
+                <input matInput formControlName="sku" placeholder="SKU" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="pog-f">
+                <input
+                  matInput
+                  formControlName="description"
+                  placeholder="Nama barang"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="pog-f pog-r">
+                <input
+                  matInput
+                  formControlName="quantity"
+                  thousandSeparator=" "
+                  mask="separator.2"
+                  placeholder="0"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="pog-f">
+                <mat-select formControlName="unit" placeholder="Unit">
+                  <mat-option value="pcs">Pcs</mat-option>
+                  <mat-option value="set">Set</mat-option>
+                  <mat-option value="Kg">Kilogram</mat-option>
+                  <mat-option value="m">M</mat-option>
+                  <mat-option value="m2">M²</mat-option>
+                  <mat-option value="m3">M³</mat-option>
+                  <mat-option value="ton">Ton</mat-option>
+                  <mat-option value="l">Liter</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="pog-f pog-r">
+                <input
+                  matInput
+                  formControlName="price"
+                  thousandSeparator=" "
+                  mask="separator.2"
+                  prefix="Rp. "
+                  placeholder="0"
+                />
+              </mat-form-field>
+              <div class="pog-linetotal">
+                Rp {{ lineTotal(i) | number: "1.0-0" }}
+              </div>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeAt(i)"
+                [disabled]="t.controls.length === 1"
+                aria-label="Hapus barang"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="pog-items__foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary"
+          >Termasuk PPN 11%</mat-slide-toggle
+        >
+        <div class="pog-summary">
+          <div class="pog-summary__row">
+            <span>Subtotal (DPP)</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="pog-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="pog-summary__row pog-summary__row--total">
+            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pog-note">
+        <mat-icon>info</mat-icon>
+        <span
+          >Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib
+          melampirkan faktur pajak saat penagihan.</span
+        >
+      </div>
+    </div>
+
+    <!-- ===== 3. Pengiriman ===== -->
+    <div class="pog-card">
+      <div class="pog-section__title">Pengiriman</div>
+      <div class="pog-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Metode Pengiriman</mat-label>
+          <mat-select formControlName="deliveryMethod">
+            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
+            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pog-span2">
+          <mat-label>Alamat Pengiriman / Pengambilan</mat-label>
+          <textarea
+            matInput
+            formControlName="deliveryAddress"
+            rows="2"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+      <div class="pog-note">
+        <mat-icon>info</mat-icon>
+        <span
+          >Bila <b>Franco</b> dipilih, alamat di atas adalah alamat
+          pengiriman.</span
+        >
+      </div>
+    </div>
+
+    <!-- ===== 4. Pembayaran ===== -->
+    <div class="pog-card">
+      <div class="pog-section__title">Pembayaran</div>
+      <div class="pog-grid">
+        <mat-form-field appearance="outline" class="pog-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <mat-select formControlName="paymentTerm">
+            <mat-option value="COD">Cash on delivery</mat-option>
+            <mat-option value="CBD">Cash before delivery</mat-option>
+            <mat-option value="PPD">Prepaid</mat-option>
+            <mat-option value="CR">Credit</mat-option>
+            <mat-option value="CRD">Credit with prepaid</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" />
+          <span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== 5. Kontak PIC ===== -->
+    <div class="pog-card">
+      <div class="pog-section__title">Kontak Penanggung Jawab</div>
+      <div class="pog-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>PIC Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierPICName"
+            placeholder="Nama PIC supplier"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierPICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>PIC Kantor</mat-label>
+          <input
+            matInput
+            formControlName="officePICName"
+            placeholder="Nama PIC kantor"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Kantor</mat-label>
+          <input
+            matInput
+            formControlName="officePICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="pog-actions">
+        <span class="pog-spacer"></span>
+        <button
+          type="submit"
+          class="pog-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

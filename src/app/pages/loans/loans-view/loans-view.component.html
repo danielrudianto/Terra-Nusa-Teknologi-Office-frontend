@@ -1,1 +1,141 @@
-<p>loans-view works!</p>
+<div class="lv">
+  <div mat-dialog-title class="lv-head">
+    <span class="lv-avatar">{{ (loan?.creditorName || "?").charAt(0) }}</span>
+    <div class="lv-head__text">
+      <div class="lv-name">{{ loan?.creditorName || "Loan" }}</div>
+      <div class="lv-meta">{{ loan?.description || "Detail pinjaman" }}</div>
+    </div>
+    <span
+      class="lv-chip"
+      *ngIf="loan"
+      [class.lv-chip--paid]="loan.isPaid"
+      [class.lv-chip--unpaid]="!loan.isPaid"
+    >
+      {{ loan.isPaid ? "Lunas" : "Belum lunas" }}
+    </span>
+  </div>
+
+  <mat-dialog-content class="lv-content">
+    <div class="lv-loading" *ngIf="isLoading">
+      <mat-spinner diameter="34"></mat-spinner>
+      <span>Memuat data…</span>
+    </div>
+
+    <div *ngIf="!isLoading && loan">
+      <!-- progress -->
+      <section class="lv-progress">
+        <div class="lv-progress__top">
+          <span class="lv-progress__label">Pelunasan</span>
+          <span class="lv-progress__pct">{{ progress }}%</span>
+        </div>
+        <div class="lv-bar"><span [style.width.%]="progress"></span></div>
+        <div class="lv-progress__amts">
+          <span
+            >Terbayar:
+            <strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
+          >
+          <span class="lv-remaining"
+            >Sisa: <strong>Rp {{ remaining | number: "1.0-0" }}</strong></span
+          >
+        </div>
+      </section>
+
+      <!-- money breakdown -->
+      <section class="lv-section">
+        <div class="lv-section__title">Nilai Pinjaman</div>
+        <div class="lv-money">
+          <div class="lv-money__row">
+            <span>Total utang (debt)</span>
+            <span>Rp {{ loan.debt | number: "1.0-0" }}</span>
+          </div>
+          <div class="lv-money__row">
+            <span>Dana diterima (received)</span>
+            <span>Rp {{ loan.received | number: "1.0-0" }}</span>
+          </div>
+          <div class="lv-money__row lv-money__row--total">
+            <span>Sisa utang</span>
+            <span>Rp {{ remaining | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- creditor -->
+      <section class="lv-section">
+        <div class="lv-section__title">Kreditur</div>
+        <div class="lv-grid">
+          <div class="lv-field">
+            <span class="lv-label">Tanggal</span>
+            <span class="lv-value">{{ loan.date | date: "dd MMM yyyy" }}</span>
+          </div>
+          <div class="lv-field" *ngIf="loan.creditorNPWP">
+            <span class="lv-label">NPWP</span>
+            <span class="lv-value lv-mono">{{ loan.creditorNPWP }}</span>
+          </div>
+          <div class="lv-field lv-field--full" *ngIf="loan.creditorAddress">
+            <span class="lv-label">Alamat</span>
+            <span class="lv-value lv-value--multi">{{
+              loan.creditorAddress
+            }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- bank -->
+      <section
+        class="lv-section"
+        *ngIf="loan.bankName || loan.bankAccountNumber"
+      >
+        <div class="lv-section__title">Rekening</div>
+        <div class="lv-bank">
+          <div class="lv-value">
+            {{ loan.bankName
+            }}<span *ngIf="loan.bankAccountName">
+              · {{ loan.bankAccountName }}</span
+            >
+          </div>
+          <div
+            class="lv-value lv-value--sm lv-mono"
+            *ngIf="loan.bankAccountNumber"
+          >
+            {{ loan.bankAccountNumber }}
+          </div>
+        </div>
+      </section>
+
+      <!-- payment history -->
+      <section class="lv-section">
+        <div class="lv-section__title">
+          Riwayat Pembayaran
+          <span class="lv-count">{{ activePayments.length }}</span>
+        </div>
+        <div class="lv-payments" *ngIf="activePayments.length > 0">
+          <div class="lv-pay" *ngFor="let p of activePayments">
+            <span class="lv-pay__icon"><mat-icon>payments</mat-icon></span>
+            <span class="lv-pay__date">{{
+              p.date || p.paymentDate | date: "dd MMM yyyy"
+            }}</span>
+            <span class="lv-pay__amt">Rp {{ p.amount | number: "1.0-0" }}</span>
+          </div>
+        </div>
+        <div class="lv-empty" *ngIf="activePayments.length === 0">
+          <mat-icon>receipt_long</mat-icon>
+          <span>Belum ada pembayaran.</span>
+        </div>
+      </section>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="lv-actions" *ngIf="!isLoading && loan">
+    <button
+      type="button"
+      class="lv-btn lv-btn--brand"
+      (click)="copyForWhatsApp()"
+    >
+      <mat-icon>content_copy</mat-icon> Copy untuk WhatsApp
+    </button>
+    <span class="lv-spacer"></span>
+    <button type="button" class="lv-btn lv-btn--ghost" (click)="close()">
+      Tutup
+    </button>
+  </mat-dialog-actions>
+</div>

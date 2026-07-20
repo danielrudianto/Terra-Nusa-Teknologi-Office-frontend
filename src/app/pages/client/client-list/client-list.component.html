@@ -1,76 +1,123 @@
-<div class="title__wrapper mb-4">
-  <h1 class="title">Client</h1>
-</div>
+<div class="client-list">
+  <div class="cl-head">
+    <div>
+      <h1 class="cl-title">Client</h1>
+      <p class="cl-sub">Kelola data klien perusahaan</p>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      class="cl-add"
+      (click)="onAddClient()"
+    >
+      <mat-icon>add</mat-icon> Tambah client
+    </button>
+  </div>
 
-<div class="position-absolute bottom-0 end-0 m-3">
-  <button mat-fab color="primary" routerLink="/Client/Create">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+  <div class="cl-toolbar">
+    <mat-form-field appearance="outline" class="cl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Cari nama, kota, atau NPWP"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+  </div>
 
-<div class="search__wrapper">
-  <mat-form-field appearance="outline" class="w-100">
-    <input
-      matInput
-      type="text"
-      class="input"
-      placeholder="Search employee"
-      [formControl]="formControl"
-    />
-  </mat-form-field>
-</div>
+  <div class="cl-card" [class.is-loading]="isLoading">
+    <div class="cl-loadingbar" *ngIf="isLoading"><span></span></div>
 
-<div class="table-responsive">
-  <table mat-table [dataSource]="clients" #table>
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.name }}, {{ element.prefix }}
-      </td>
-    </ng-container>
+    <div class="table-responsive">
+      <table mat-table [dataSource]="clients" #table>
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="cl-person">
+              <span class="cl-avatar">{{
+                (element.name || "?").charAt(0)
+              }}</span>
+              <span class="cl-primary"
+                >{{ element.name
+                }}<span class="cl-faint" *ngIf="element.prefix"
+                  >, {{ element.prefix }}</span
+                ></span
+              >
+            </div>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="address">
-      <th mat-header-cell *matHeaderCellDef>Address</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.address }}
-      </td>
-    </ng-container>
+        <!-- Address -->
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef>Address</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="cl-muted">{{ element.address || "—" }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="city">
-      <th mat-header-cell *matHeaderCellDef>City</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.city }}
-      </td>
-    </ng-container>
+        <!-- City -->
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef>City</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="cl-muted">{{ element.city || "—" }}</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="npwp">
-      <th mat-header-cell *matHeaderCellDef>NPWP</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.npwp ?? "N/A" }}
-      </td>
-    </ng-container>
+        <!-- NPWP -->
+        <ng-container matColumnDef="npwp">
+          <th mat-header-cell *matHeaderCellDef>NPWP</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="cl-npwp" *ngIf="element.npwp">{{ element.npwp }}</span>
+            <span class="cl-faint" *ngIf="!element.npwp">N/A</span>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button (click)="openUpdateClient(element.id)">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-    </ng-container>
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              mat-icon-button
+              (click)="openUpdateClient(element.id)"
+              aria-label="Edit client"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
-        No data matching the filter.
-      </td>
-    </tr>
-  </table>
-  <mat-paginator
-    [pageIndex]="page - 1"
-    [length]="count"
-    [pageSize]="10"
-    (page)="changePage($event)"
-  ></mat-paginator>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="openUpdateClient(row.id)"
+        ></tr>
+        <tr class="mat-row cl-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="cl-empty">
+              <mat-icon>apartment</mat-icon>
+              <span>No data matching the filter.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageIndex]="page - 1"
+      [length]="count"
+      [pageSize]="10"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
 </div>

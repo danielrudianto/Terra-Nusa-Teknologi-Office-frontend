@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import {
@@ -7,6 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   FormControl,
   FormGroup,
@@ -19,9 +21,12 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-client-update',
+  standalone: true,
   imports: [
+    CommonModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatFormFieldModule,
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
@@ -36,7 +41,7 @@ export class ClientUpdateComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private dialog: MatDialogRef<ClientUpdateComponent>,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
   ) {}
 
   isSubmitting: boolean = false;
@@ -60,6 +65,10 @@ export class ClientUpdateComponent {
     email: new FormControl('', [Validators.email, Validators.maxLength(100)]),
   });
 
+  onCancel() {
+    this.dialog.close();
+  }
+
   fetchByID(id: number) {
     this.apiService.get('clients/' + id, {}).subscribe({
       next: (data) => {
@@ -75,6 +84,7 @@ export class ClientUpdateComponent {
   }
 
   submit() {
+    this.isSubmitting = true;
     this.apiService
       .put('clients/' + this.data.id, this.formGroup.value)
       .subscribe({
@@ -89,6 +99,9 @@ export class ClientUpdateComponent {
             duration: 1000,
           });
         },
+      })
+      .add(() => {
+        this.isSubmitting = false;
       });
   }
 }

@@ -14,6 +14,24 @@ import { MonthlyRecapComponent } from 'src/app/pages/taxing/monthly-recap/monthl
 export class TaxListComponent {
   breakpoint = 3;
 
+  // ---- period chosen once, reused by every report ----
+  month: number = new Date().getMonth() + 1;
+  year: number = new Date().getFullYear();
+  months: { n: number; label: string }[] = [
+    { n: 1, label: 'Jan' },
+    { n: 2, label: 'Feb' },
+    { n: 3, label: 'Mar' },
+    { n: 4, label: 'Apr' },
+    { n: 5, label: 'Mei' },
+    { n: 6, label: 'Jun' },
+    { n: 7, label: 'Jul' },
+    { n: 8, label: 'Agu' },
+    { n: 9, label: 'Sep' },
+    { n: 10, label: 'Okt' },
+    { n: 11, label: 'Nov' },
+    { n: 12, label: 'Des' },
+  ];
+
   constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
@@ -27,20 +45,36 @@ export class TaxListComponent {
             : 4;
   }
 
+  selectMonth(n: number) {
+    this.month = n;
+  }
+
+  prevYear() {
+    this.year--;
+  }
+
+  nextYear() {
+    this.year++;
+  }
+
+  private period() {
+    return { month: this.month, year: this.year };
+  }
+
   openPPNReport() {
-    this.dialog.open(PpnRecapComponent, {});
+    this.dialog.open(PpnRecapComponent, { data: this.period() });
   }
 
   openPPHReport() {
-    this.dialog.open(PphRecapComponent, {});
+    this.dialog.open(PphRecapComponent, { data: this.period() });
   }
 
   openPPHSalaryReport() {
-    this.dialog.open(PphSalaryRecapComponent, {});
+    this.dialog.open(PphSalaryRecapComponent, { data: this.period() });
   }
 
   openMonthlyReport() {
-    this.dialog.open(MonthlyRecapComponent, {});
+    this.dialog.open(MonthlyRecapComponent, { data: this.period() });
   }
 
   onResize(event: any) {

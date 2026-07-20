@@ -1,102 +1,132 @@
-<h2 mat-dialog-title>Update client data</h2>
-<form [formGroup]="formGroup" (ngSubmit)="submit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Prefix</mat-label>
-      <mat-select formControlName="prefix">
-        <mat-option value="PT.">PT.</mat-option>
-        <mat-option value="CV.">CV.</mat-option>
-        <mat-option value="UD.">UD.</mat-option>
-        <mat-option value="Yayasan">Yayasan</mat-option>
-        <mat-option value="Perorangan">Perorangan</mat-option>
-        <mat-option value="Lainnya">Lainnya</mat-option>
-      </mat-select>
-    </mat-form-field>
+<div class="cc">
+  <div class="cc-head" mat-dialog-title>
+    <span class="cc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 21h18M6 21V7l6-4 6 4v14M10 12h4M10 16h4M10 8h4" />
+      </svg>
+    </span>
+    <div class="cc-head__text">
+      <h2 class="cc-title">Edit Client</h2>
+      <span class="cc-sub">{{
+        formGroup.get("name")?.value || "Perbarui data klien"
+      }}</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        type="text"
-        placeholder="Enter client name"
-      />
-    </mat-form-field>
+  <form [formGroup]="formGroup" (ngSubmit)="submit()">
+    <mat-dialog-content class="cc-content">
+      <div class="cc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Prefix</mat-label>
+          <mat-select formControlName="prefix">
+            <mat-option value="PT.">PT.</mat-option>
+            <mat-option value="CV.">CV.</mat-option>
+            <mat-option value="UD.">UD.</mat-option>
+            <mat-option value="Yayasan">Yayasan</mat-option>
+            <mat-option value="Perorangan">Perorangan</mat-option>
+            <mat-option value="Lainnya">Lainnya</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-    <mat-label></mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            placeholder="Nama klien"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Email</mat-label>
-      <input
-        matInput
-        formControlName="email"
-        type="email"
-        placeholder="Enter client email"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="nama@email.com"
+          />
+          <mat-error *ngIf="formGroup.get('email')?.hasError('email')"
+            >Email tidak valid.</mat-error
+          >
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Phone</mat-label>
-      <input
-        matInput
-        formControlName="phoneNumber"
-        type="tel"
-        placeholder="Enter client phone number"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input
+            matInput
+            formControlName="phoneNumber"
+            type="tel"
+            placeholder="08xxxxxxxxxx"
+          />
+          <mat-error *ngIf="formGroup.get('phoneNumber')?.hasError('pattern')"
+            >Nomor telepon tidak valid.</mat-error
+          >
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Address</mat-label>
-      <textarea
-        matInput
-        formControlName="address"
-        placeholder="Enter client address"
-        rows="3"
-        style="resize: none"
-      ></textarea>
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="cc-span2">
+          <mat-label>Address</mat-label>
+          <textarea
+            matInput
+            formControlName="address"
+            placeholder="Alamat klien"
+            rows="2"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>City</mat-label>
-      <input
-        matInput
-        formControlName="city"
-        type="text"
-        placeholder="Enter client city"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>City</mat-label>
+          <input
+            matInput
+            formControlName="city"
+            type="text"
+            placeholder="Kota"
+          />
+        </mat-form-field>
 
-    <!-- Province -->
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Province</mat-label>
-      <input
-        matInput
-        formControlName="province"
-        type="text"
-        placeholder="Enter client province"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Province</mat-label>
+          <input
+            matInput
+            formControlName="province"
+            type="text"
+            placeholder="Provinsi"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>NPWP</mat-label>
-      <input
-        matInput
-        formControlName="npwp"
-        type="text"
-        placeholder="Enter client NPWP"
-      />
-    </mat-form-field>
-  </mat-dialog-content>
+        <mat-form-field appearance="outline" class="cc-span2">
+          <mat-label>NPWP</mat-label>
+          <input
+            matInput
+            formControlName="npwp"
+            type="text"
+            placeholder="Nomor NPWP (opsional)"
+          />
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      type="submit"
-      [disabled]="isSubmitting"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+    <mat-dialog-actions class="cc-actions">
+      <button type="button" class="cc-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="cc-submit"
+        [disabled]="isSubmitting || formGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

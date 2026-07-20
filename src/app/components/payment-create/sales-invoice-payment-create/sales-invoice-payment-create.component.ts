@@ -28,7 +28,7 @@ export class SalesInvoicePaymentCreateComponent {
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<SalesInvoicePaymentCreateComponent>,
     private snackBar: MatSnackBar,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {}
 
   isLoading: boolean = false;
@@ -57,6 +57,17 @@ export class SalesInvoicePaymentCreateComponent {
 
   get t(): FormArray {
     return this.f['payments'] as FormArray;
+  }
+
+  get totalPaid(): number {
+    return this.t.controls.reduce(
+      (a, c) => a + (Number(c.get('amount')?.value) || 0),
+      0,
+    );
+  }
+
+  get remaining(): number {
+    return (Number(this.formGroup.get('total')?.value) || 0) - this.totalPaid;
   }
 
   ngOnInit(): void {
@@ -102,7 +113,7 @@ export class SalesInvoicePaymentCreateComponent {
                 id: [x.id],
                 amount: [x.amount],
                 date: [x.date],
-              })
+              }),
             );
           });
         },

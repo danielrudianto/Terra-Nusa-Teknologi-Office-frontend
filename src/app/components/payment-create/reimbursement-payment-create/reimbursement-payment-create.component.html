@@ -1,66 +1,131 @@
-<h2 mat-dialog-title>Payment data</h2>
-<form [formGroup]="formGroup">
-<mat-dialog-content class="mat-typography">
-    <p>
-      This document is due on
-      {{ metaFormGroup.get("dueDate")?.value }}
-    </p>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Date</mat-label>
-      <input
-        matInput
-        formControlName="paymentDate"
-        placeholder="Payment date"
-        [matDatepicker]="paymentDatePicker"
-        formControlName="date"
-      />
-      <mat-datepicker-toggle
-        matIconPrefix
-        [for]="paymentDatePicker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #paymentDatePicker></mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Account Number</mat-label>
-      <mat-select formControlName="bankAccountID">
-        @for(bank of bankAccounts; track bank){
-
-        <mat-option [value]="bank.id"
-        >{{ bank.bankAccountNumber }} --
-        {{ bank.bankAccountName }}</mat-option
+<div class="rpc">
+  <div class="rpc-head" mat-dialog-title>
+    <span class="rpc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-        }
-      </mat-select>
-    </mat-form-field>
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <path d="M2 10h20M6 15h4" />
+      </svg>
+    </span>
+    <div class="rpc-head__text">
+      <h2 class="rpc-title">
+        {{
+          metaFormGroup.get("reimbursementName")?.value || "Bayar Reimbursement"
+        }}
+      </h2>
+      <span class="rpc-sub">Buat pembayaran reimbursement</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
-      <input
-        matInput
-        formControlName="amount"
-        type="text"
-        placeholder="Payment amount"
-        required
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-        readonly
-      />
-    </mat-form-field>
+  <form [formGroup]="formGroup">
+    <mat-dialog-content class="rpc-content">
+      <!-- meta chips -->
+      <div class="rpc-chips">
+        <span class="rpc-chip" *ngIf="metaFormGroup.get('projectName')?.value">
+          <span class="rpc-chip__k">Project</span
+          >{{ metaFormGroup.get("projectName")?.value }}
+        </span>
+        <span class="rpc-chip" *ngIf="metaFormGroup.get('date')?.value">
+          <span class="rpc-chip__k">Tanggal</span
+          >{{ metaFormGroup.get("date")?.value }}
+        </span>
+        <span
+          class="rpc-chip rpc-chip--due"
+          *ngIf="metaFormGroup.get('dueDate')?.value"
+        >
+          <span class="rpc-chip__k">Jatuh tempo</span
+          >{{ metaFormGroup.get("dueDate")?.value }}
+        </span>
+      </div>
 
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    (click)="onSubmit()"
-    [disabled]="
-      !formGroup.valid || isSubmitting
-    "
-  >
-    Submit
-  </button>
-</mat-dialog-actions>
-</form>
+      <!-- items -->
+      <div class="rpc-section__title">Rincian Item</div>
+      <div class="rpc-items">
+        <div class="rpc-item" *ngFor="let item of t.controls">
+          <div class="rpc-item__main">
+            <span class="rpc-item__desc">{{ item.value.description }}</span>
+            <span class="rpc-item__date">{{ item.value.date }}</span>
+          </div>
+          <span class="rpc-item__amt"
+            >Rp {{ item.value.amount | number: "1.0-0" }}</span
+          >
+        </div>
+
+        <div class="rpc-total">
+          <span>Total</span>
+          <span class="rpc-total__val"
+            >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+      </div>
+
+      <!-- payment inputs -->
+      <div class="rpc-section__title rpc-section__title--mt">Pembayaran</div>
+      <div class="rpc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal bayar</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Tanggal bayar"
+            [matDatepicker]="paymentDatePicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="paymentDatePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #paymentDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rekening pembayar</mat-label>
+          <mat-select formControlName="bankAccountID">
+            @for (bank of bankAccounts; track bank) {
+              <mat-option [value]="bank.id"
+                >{{ bank.bankAccountNumber }} —
+                {{ bank.bankAccountName }}</mat-option
+              >
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rpc-span2">
+          <mat-label>Nominal pembayaran</mat-label>
+          <input
+            matInput
+            formControlName="amount"
+            type="text"
+            placeholder="Nominal"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+            readonly
+          />
+          <mat-hint>Sesuai total reimbursement</mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="rpc-actions">
+      <button type="button" class="rpc-cancel" (click)="onClose()">
+        Batal
+      </button>
+      <button
+        type="button"
+        class="rpc-submit"
+        (click)="onSubmit()"
+        [disabled]="!formGroup.valid || isSubmitting"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Bayar reimbursement" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

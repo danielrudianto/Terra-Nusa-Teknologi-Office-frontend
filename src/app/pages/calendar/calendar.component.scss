@@ -1,3 +1,56 @@
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.calendar__container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+.cal-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.5rem 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $line;
+
+  &__title {
+    min-width: 0;
+  }
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+}
+.cal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $ink;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.cal-sub {
+  font-size: 0.85rem;
+  color: $muted;
+  margin: 0.25rem 0 0;
+}
+.cal-balance {
+  font-weight: 600;
+}
+
+/* legacy side-dialog styles (kept, token-aware) */
 .side-dialog {
   position: fixed;
   top: 0;
@@ -5,7 +58,7 @@
   width: 400px;
   max-width: 100vw;
   height: 100vh;
-  background: #fff;
+  background: var(--surface, #fff);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -14,30 +67,24 @@
   display: flex;
   flex-direction: column;
 }
-
 .side-dialog--active {
   transform: translateX(0);
 }
-
 .side-dialog-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.3); // semi-transparent
-  z-index: 999; // just below your dialog
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
 }
 
-.calendar__container {
-  display: flex;
-  flex-direction: column;
-
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    gap: 1rem;
+@media (max-width: 640px) {
+  .cal-head {
+    align-items: flex-start;
+  }
+  .cal-head__controls {
+    width: 100%;
   }
 }

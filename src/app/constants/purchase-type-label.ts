@@ -46,3 +46,19 @@ export const PURCHASE_TYPE_LABELS: { [key: string]: string } = {
   F: 'Material',
   G: 'Project supporting equipment and supplies',
 };
+
+export const MASTER_ITEM_PURCHASE_TYPES: string[] = [
+  'F',
+  'G',
+  'C',
+  'B',
+  'E',
+  '5.1.1',
+  '5.1.2',
+  '5.1.6',
+  '5.1.12',
+  '6.3.1',
+  '6.3.2',
+  '6.5.1',
+  '6.5.2',
+];

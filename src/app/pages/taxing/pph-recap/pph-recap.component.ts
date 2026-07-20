@@ -1,6 +1,19 @@
-import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import * as xlsx from 'xlsx';
@@ -8,15 +21,53 @@ import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-pph-recap',
-  standalone: false,
+  standalone: true,
   templateUrl: './pph-recap.component.html',
   styleUrl: './pph-recap.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
 })
 export class PphRecapComponent {
+  // period passed from the tax hub (select month/year once, reused everywhere)
+  private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
+
+  months: { n: number; label: string }[] = [
+    { n: 1, label: 'Jan' },
+    { n: 2, label: 'Feb' },
+    { n: 3, label: 'Mar' },
+    { n: 4, label: 'Apr' },
+    { n: 5, label: 'Mei' },
+    { n: 6, label: 'Jun' },
+    { n: 7, label: 'Jul' },
+    { n: 8, label: 'Agu' },
+    { n: 9, label: 'Sep' },
+    { n: 10, label: 'Okt' },
+    { n: 11, label: 'Nov' },
+    { n: 12, label: 'Des' },
+  ];
+
+  ngOnInit(): void {
+    if (this.periodData?.month && this.periodData?.year) {
+      this.formGroup.patchValue({
+        month: this.periodData.month,
+        year: this.periodData.year,
+      });
+    }
+  }
+
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {}
 
   isLoading: boolean = false;
@@ -57,7 +108,7 @@ export class PphRecapComponent {
                 'Previous payment',
               ],
             ],
-            { origin: 0 }
+            { origin: 0 },
           );
 
           data.purchase.forEach((x: any) => {
@@ -68,7 +119,7 @@ export class PphRecapComponent {
                   this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
                   this.datePipe.transform(
                     new Date(x.payment_date),
-                    'dd MMMM yyyy'
+                    'dd MMMM yyyy',
                   ),
                   x.supplier_prefix,
                   x.supplier_name,
@@ -88,7 +139,7 @@ export class PphRecapComponent {
                   x.previous_amount,
                 ],
               ],
-              { origin: -1 }
+              { origin: -1 },
             );
           });
 
@@ -132,7 +183,7 @@ export class PphRecapComponent {
                 'Previous payment',
               ],
             ],
-            { origin: 0 }
+            { origin: 0 },
           );
 
           data.expense.forEach((x: any) => {
@@ -143,7 +194,7 @@ export class PphRecapComponent {
                   this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
                   this.datePipe.transform(
                     new Date(x.payment_date),
-                    'dd MMMM yyyy'
+                    'dd MMMM yyyy',
                   ),
                   x.opponent_name,
                   x.opponent_npwp,
@@ -158,7 +209,7 @@ export class PphRecapComponent {
                   x.previous_amount,
                 ],
               ],
-              { origin: -1 }
+              { origin: -1 },
             );
           });
 
@@ -191,7 +242,7 @@ export class PphRecapComponent {
             excelBuffer,
             `PPh Recap ${Number(this.formGroup.value.month)} ${
               this.formGroup.value.year
-            }`
+            }`,
           );
         },
         error: (error) => {
