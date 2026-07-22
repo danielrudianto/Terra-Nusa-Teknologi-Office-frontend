@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
+import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
@@ -55,6 +56,29 @@ export class PurchaseOrderCreateGComponent {
   ) {}
 
   isSubmitting: boolean = false;
+
+  units: string[] = [
+    'pcs',
+    'set',
+    'Kg',
+    'gram',
+    'ton',
+    'm',
+    'm2',
+    'm3',
+    'batang',
+    'lembar',
+    'roll',
+    'dus',
+    'sak',
+    'pasang',
+    'lusin',
+    'unit',
+    'liter',
+    'box',
+    'kaleng',
+  ];
+
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
     purchaseType: new FormControl('G'),
@@ -78,16 +102,8 @@ export class PurchaseOrderCreateGComponent {
     supplierPICPhoneNumber: new FormControl('', Validators.required),
     officePICName: new FormControl('', Validators.required),
     officePICPhoneNumber: new FormControl('', Validators.required),
-    purchase_order: new FormArray([
-      this.formBuilder.group({
-        sku: ['', Validators.required],
-        description: ['', Validators.required],
-        price: [0, [Validators.required, Validators.min(0)]],
-        quantity: [0, [Validators.required, Validators.min(0)]],
-        unit: ['', Validators.required],
-        note: [''],
-      }),
-    ]),
+    // items are picked from the master-item catalog (type G)
+    purchase_order: new FormArray([]),
     includePPN: new FormControl(true),
   });
 
@@ -107,17 +123,41 @@ export class PurchaseOrderCreateGComponent {
     this.t.removeAt(i);
   }
 
-  onAddItem() {
-    this.t.controls.push(
-      this.formBuilder.group({
-        sku: ['', Validators.required],
-        description: ['', Validators.required],
-        price: [0, [Validators.required, Validators.min(0)]],
-        quantity: [0, [Validators.required, Validators.min(0)]],
-        unit: ['', Validators.required],
-        note: [''],
-      }),
-    );
+  private buildItemGroup(item: any): FormGroup {
+    return this.formBuilder.group({
+      equipment_id: [item.id, Validators.required],
+      sku: [item.sku],
+      description: [item.description],
+      unit: [item.unit || '', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      price: [0, [Validators.required, Validators.min(0)]],
+      remarks: [''],
+    });
+  }
+
+  openItemSelector() {
+    this.dialog
+      .open(MasterItemSelectorComponent, {
+        data: { purchaseType: 'G' },
+        width: '560px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((item) => {
+        if (!item) return;
+        // prevent adding the exact same catalog item twice
+        const exists = this.t.value.some(
+          (x: any) => x.equipment_id === item.id,
+        );
+        if (exists) {
+          this.snackBar.open('Barang sudah ada di daftar', 'Close', {
+            duration: 2500,
+          });
+          return;
+        }
+        this.t.push(this.buildItemGroup(item));
+      });
   }
 
   // ----- live summary (read-only, safe getters) -----
@@ -130,7 +170,6 @@ export class PurchaseOrderCreateGComponent {
   }
 
   get subTotal(): number {
-    // DPP (tax base). When PPN is included, listed prices already contain PPN.
     return this.formGroup.get('includePPN')?.value
       ? this.rawTotal / 1.11
       : this.rawTotal;
@@ -181,7 +220,6 @@ export class PurchaseOrderCreateGComponent {
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      // convert date to YYYY-mm-dd
       date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: this.formGroup.get('purchaseType')?.value,
@@ -204,13 +242,15 @@ export class PurchaseOrderCreateGComponent {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
+          equipment_id: x.equipment_id,
           sku: x.sku,
           description: x.description,
-          price: x.price,
           quantity: x.quantity,
+          price: x.price,
           unit: x.unit,
-          note: x.note,
+          remarks: x.remarks,
         })),
       },
     };
@@ -245,9 +285,7 @@ export class PurchaseOrderCreateGComponent {
   toUpperCase() {
     const value = this.formGroup.get('projectName')?.value;
     if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({
-        projectName: value.toUpperCase(),
-      });
+      this.formGroup.patchValue({ projectName: value.toUpperCase() });
     }
   }
 }

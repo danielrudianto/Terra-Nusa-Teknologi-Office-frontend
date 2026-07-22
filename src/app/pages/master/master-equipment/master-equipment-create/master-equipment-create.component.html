@@ -1,0 +1,95 @@
+<div class="mec">
+  <div class="mec-head" mat-dialog-title>
+    <span class="mec-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M2 15V7h10v8" />
+        <path d="M12 10h4l3 3v2h-7z" />
+        <circle cx="6" cy="17" r="1.6" />
+        <circle cx="16" cy="17" r="1.6" />
+      </svg>
+    </span>
+    <div class="mec-head__text">
+      <h2 class="mec-title">Tambah Equipment</h2>
+      <span class="mec-sub">Daftarkan alat berat ke katalog sewa</span>
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="mec-content">
+      <div class="mec-grid">
+        <mat-form-field appearance="outline" class="mec-span2">
+          <mat-label>Nama equipment</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            maxlength="100"
+            placeholder="Ex. Excavator PC200"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kategori</mat-label>
+          <mat-select formControlName="category">
+            <mat-option *ngFor="let c of categories" [value]="c">{{
+              c
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kapasitas</mat-label>
+          <input
+            matInput
+            formControlName="capacity"
+            placeholder="Ex. 20 ton / 250 kVA"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Brand</mat-label>
+          <input matInput formControlName="brand" placeholder="Ex. Komatsu" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Satuan sewa</mat-label>
+          <mat-select formControlName="unit">
+            <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="mec-span2">
+          <mat-label>Deskripsi</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="2"
+            placeholder="Spesifikasi / catatan"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="mec-actions">
+      <button type="button" class="mec-cancel" (click)="onCancel()">
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="mec-submit"
+        [disabled]="isSubmitting || formGroup.invalid"
+      >
+        {{ isSubmitting ? "Menyimpan..." : "Simpan equipment" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

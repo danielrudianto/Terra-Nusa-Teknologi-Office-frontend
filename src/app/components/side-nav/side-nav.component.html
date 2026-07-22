@@ -5,35 +5,144 @@
         src="assets/images/logo.png"
         alt="Logo"
         class="side-nav__logo-icon"
+        routerLink="/"
       />
       <span>TERRABOT</span>
     </div>
-    <div class="side-nav__item-list">
-      @for (item of items; track item) {
-      <div class="side-navigation__list-label">{{ item.name }}</div>
-        @for(i of item.children; track i){
-        <app-side-nav-item
-          [label]="i.name"
-          [routerLink]="i.route"
-          [icon]="i.icon"
-        />
-        } 
-      }
+
+    <!-- search -->
+    <div class="snav-search">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="filter"
+        placeholder="Cari menu..."
+        aria-label="Cari menu"
+      />
+      <button
+        *ngIf="isFiltering"
+        class="snav-search__clear"
+        type="button"
+        (click)="clearFilter()"
+        aria-label="Bersihkan"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
     </div>
 
-    <mat-menu #trigger>
-      <button mat-menu-item>
-        <mat-icon>dialpad</mat-icon>
-        <span>Redial</span>
-      </button>
-      <button mat-menu-item disabled>
-        <mat-icon>voicemail</mat-icon>
-        <span>Check voice mail</span>
-      </button>
-      <button mat-menu-item>
-        <mat-icon>notifications_off</mat-icon>
-        <span>Disable alerts</span>
-      </button>
-    </mat-menu>
+    <!-- scrollable groups -->
+    <div class="side-nav__scroll">
+      <!-- pinned -->
+      <div class="snav-group" *ngIf="pinnedItems.length && !isFiltering">
+        <div class="snav-group__label">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="12" y1="17" x2="12" y2="22" />
+            <path
+              d="M9 9V3.8a.8.8 0 0 1 .8-.8h4.4a.8.8 0 0 1 .8.8V9l2.4 2.6a1 1 0 0 1 .26.68V13a1 1 0 0 1-1 1H7.34a1 1 0 0 1-1-1v-.72a1 1 0 0 1 .26-.68z"
+            />
+          </svg>
+          Pinned
+        </div>
+        <div class="snav-group__items">
+          <app-side-nav-item
+            *ngFor="let i of pinnedItems"
+            [label]="i.name"
+            [routerLink]="i.route"
+            [icon]="i.icon"
+            [pinned]="true"
+            (pinToggle)="togglePin(i)"
+          />
+        </div>
+      </div>
+
+      <!-- collapsible groups -->
+      <ng-container *ngFor="let group of topGroups">
+        <div class="snav-group" *ngIf="groupHasMatch(group)">
+          <button
+            class="snav-group__header"
+            type="button"
+            (click)="toggleGroup(group.name)"
+            [disabled]="isFiltering"
+          >
+            <span class="snav-group__name">{{ group.name }}</span>
+            <span class="snav-group__count">{{ group.children.length }}</span>
+            <svg
+              class="snav-group__chev"
+              [class.is-collapsed]="isCollapsed(group.name) && !isFiltering"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          <div
+            class="snav-group__items"
+            [class.is-collapsed]="isCollapsed(group.name) && !isFiltering"
+          >
+            <ng-container *ngFor="let i of group.children">
+              <app-side-nav-item
+                *ngIf="matches(i)"
+                [label]="i.name"
+                [routerLink]="i.route"
+                [icon]="i.icon"
+                [pinned]="isPinned(i.route)"
+                (pinToggle)="togglePin(i)"
+              />
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- bottom fixed group (Settings & Logout) -->
+    <div class="snav-bottom" *ngIf="bottomGroup">
+      <app-side-nav-item
+        *ngFor="let i of bottomGroup.children"
+        [label]="i.name"
+        [routerLink]="i.route"
+        [action]="i.click"
+        [icon]="i.icon"
+        [showPin]="false"
+      />
+    </div>
   </div>
 </div>

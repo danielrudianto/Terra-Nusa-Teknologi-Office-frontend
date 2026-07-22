@@ -1,0 +1,147 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+
+.fid {
+  font-family: "Montserrat", sans-serif;
+  color: $ink;
+  width: 100%;
+  box-sizing: border-box;
+}
+.fid *,
+.fid *::before,
+.fid *::after {
+  box-sizing: border-box;
+}
+
+.fid-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--surface-2, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+.fid-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+.fid-sub {
+  font-size: 0.78rem;
+  color: $muted;
+}
+.fid-close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.04);
+  color: $muted;
+  cursor: pointer;
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: $ink;
+  }
+}
+
+.fid-content {
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: hidden;
+  max-height: 74vh;
+}
+
+.fid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fid-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.8rem 0.9rem;
+  border: 0.5px solid $border;
+  border-radius: 13px;
+  background: $surface;
+  &__ico {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+    padding: 8px;
+    display: grid;
+    place-items: center;
+    background: $brandSoft;
+    color: $brand;
+  }
+  &__body {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  &__name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: $ink;
+  }
+  &__spec {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 4px 0 3px;
+  }
+  &__dim {
+    font-size: 0.74rem;
+    color: $faint;
+    font-variant-numeric: tabular-nums;
+  }
+}
+.fid-chip {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+  &--soft {
+    background: $surface2;
+    color: $muted;
+  }
+}
+.fid-note {
+  font-size: 0.74rem;
+  color: $faint;
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .fid-grid {
+    grid-template-columns: 1fr;
+  }
+}

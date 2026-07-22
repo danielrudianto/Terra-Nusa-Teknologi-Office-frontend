@@ -1,6 +1,137 @@
-<app-header-title
-  [title]="'Purchase order'"
-  [description]="'Manage your purchase order data here'"
-  [actionButtonLabel]="'Create new purchase order'"
-  (onActionButtonClicked)="createNewPurchaseOrder()"
-></app-header-title>
+<div class="pol">
+  <app-header-title
+    [title]="'Purchase order'"
+    [description]="'Kelola purchase order di sini'"
+    [actionButtonLabel]="'Buat purchase order'"
+    (onActionButtonClicked)="createNewPurchaseOrder()"
+  ></app-header-title>
+
+  <div class="pol-toolbar">
+    <mat-form-field appearance="outline" class="pol-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Cari nomor PO, project, atau supplier"
+        [formControl]="searchControl"
+      />
+    </mat-form-field>
+  </div>
+
+  <div class="pol-card">
+    <mat-progress-bar
+      *ngIf="isLoading"
+      mode="indeterminate"
+      class="pol-progress"
+    ></mat-progress-bar>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="orders">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>No. PO</th>
+          <td mat-cell *matCellDef="let po">
+            <span class="pol-mono">{{ po.name }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Tanggal</th>
+          <td mat-cell *matCellDef="let po">
+            <span class="pol-date">{{ po.date | date: "dd MMM yyyy" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="supplier">
+          <th mat-header-cell *matHeaderCellDef>Supplier</th>
+          <td mat-cell *matCellDef="let po">
+            <div class="pol-sup">
+              <span class="pol-avatar">{{
+                (po.supplier_name || "?").charAt(0)
+              }}</span>
+              <span class="pol-supname">{{ supplierLabel(po) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="project">
+          <th mat-header-cell *matHeaderCellDef>Project</th>
+          <td mat-cell *matCellDef="let po">
+            <span class="pol-tag">{{ po.projectName || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Tipe</th>
+          <td mat-cell *matCellDef="let po">
+            <span class="pol-po" [matTooltip]="typeLabel(po.purchaseType)">{{
+              po.purchaseType
+            }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef class="pol-r">Nilai</th>
+          <td mat-cell *matCellDef="let po" class="pol-r">
+            <span class="pol-amount">Rp {{ total(po) | number: "1.0-0" }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let po">
+            <span class="pol-chip" [ngClass]="'is-' + (po.status || 'draft')">{{
+              po.status || "draft"
+            }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td mat-cell *matCellDef="let po" (click)="$event.stopPropagation()">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Row actions"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                (click)="approve(po)"
+                [disabled]="po.isApproved || po.status === 'cancelled'"
+              >
+                <mat-icon>check_circle</mat-icon><span>Setujui</span>
+              </button>
+              <button mat-menu-item (click)="deleteOrder(po)">
+                <mat-icon>delete</mat-icon><span>Hapus</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row pol-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="pol-empty">
+              <mat-icon>receipt_long</mat-icon>
+              <span>Belum ada purchase order.</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="count"
+      [pageSize]="pageSize"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="changePage($event)"
+    ></mat-paginator>
+  </div>
+</div>

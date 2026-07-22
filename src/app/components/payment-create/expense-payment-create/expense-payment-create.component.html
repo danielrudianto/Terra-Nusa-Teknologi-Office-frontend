@@ -1,252 +1,156 @@
-<h2 mat-dialog-title>Payment data</h2>
-<mat-dialog-content class="mat-typography">
-  <mat-stepper [linear]="true">
-    <mat-step [stepControl]="metaFormGroup">
-      <ng-template matStepLabel>Document information</ng-template>
-      <p>
-        Please fill in the payment information below. The payment date is
-        required.
-      </p>
-      <form [formGroup]="metaFormGroup">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
-          <input
-            matInput
-            formControlName="date"
-            placeholder="Document date"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Due date</mat-label>
-          <input
-            matInput
-            formControlName="dueDate"
-            placeholder="Due date"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Invoice name</mat-label>
-          <input
-            matInput
-            formControlName="invoiceName"
-            type="text"
-            placeholder="Invoice name"
-            required
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Tax invoice name</mat-label>
-          <input
-            matInput
-            formControlName="taxInvoiceName"
-            type="text"
-            placeholder="Tax invoice name"
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Opponent name</mat-label>
-          <input
-            matInput
-            formControlName="opponentName"
-            type="text"
-            placeholder="Opponent name"
-            required
-            readonly
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Opponent description</mat-label>
-          <input
-            matInput
-            formControlName="opponentDescription"
-            type="text"
-            placeholder="Opponent description"
-            required
-            readonly
-          />
-        </mat-form-field>
-      </form>
-
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        matStepperNext
+<div class="epc">
+  <div class="epc-head" mat-dialog-title>
+    <span class="epc-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-        Next
-      </button>
-    </mat-step>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6M9 13h6M9 17h4" />
+      </svg>
+    </span>
+    <div class="epc-head__text">
+      <h2 class="epc-title">
+        {{ metaFormGroup.get("invoiceName")?.value || "Bayar Expense" }}
+      </h2>
+      <span class="epc-sub">{{
+        metaFormGroup.get("opponentName")?.value || "Pembayaran expense"
+      }}</span>
+    </div>
+  </div>
 
-    <mat-step [stepControl]="valueFormGroup">
-      <ng-template matStepLabel>Value information</ng-template>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="epc-content">
+      <!-- meta chips -->
+      <div class="epc-chips">
+        <span
+          class="epc-chip"
+          *ngIf="metaFormGroup.get('opponentDescription')?.value"
+          ><span class="epc-chip__k">Ket</span
+          >{{ metaFormGroup.get("opponentDescription")?.value }}</span
+        >
+        <span
+          class="epc-chip"
+          *ngIf="metaFormGroup.get('taxInvoiceName')?.value"
+          ><span class="epc-chip__k">Faktur</span
+          >{{ metaFormGroup.get("taxInvoiceName")?.value }}</span
+        >
+        <span
+          class="epc-chip epc-chip--due"
+          *ngIf="metaFormGroup.get('dueDate')?.value"
+          ><span class="epc-chip__k">Jatuh tempo</span
+          >{{ metaFormGroup.get("dueDate")?.value }}</span
+        >
+      </div>
 
-      <form [formGroup]="valueFormGroup">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>DPP (Rp.)</mat-label>
-          <input
-            matInput
-            formControlName="dpp"
-            type="text"
-            placeholder="DPP amount"
-            required
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
+      <!-- value breakdown -->
+      <div class="epc-section__title">Rincian Nilai</div>
+      <div class="epc-money">
+        <div class="epc-money__row">
+          <span>DPP</span
+          ><span
+            >Rp {{ valueFormGroup.get("dpp")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div
+          class="epc-money__row"
+          *ngIf="valueFormGroup.get('pbbkb')?.value > 0"
+        >
+          <span>PBBKB</span
+          ><span class="epc-pos"
+            >+ Rp
+            {{ valueFormGroup.get("pbbkb")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="epc-money__row">
+          <span>PPh</span
+          ><span class="epc-neg"
+            >− Rp {{ valueFormGroup.get("pph")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="epc-money__row epc-money__row--total">
+          <span>Total tagihan</span
+          ><span
+            >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
+          >
+        </div>
+      </div>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PBBKB (Rp.)</mat-label>
-          <input
-            matInput
-            formControlName="pbbkb"
-            type="text"
-            placeholder="PBBKB amount"
-            required
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
+      <!-- paid progress -->
+      <div class="epc-paidrow">
+        <span
+          >Sudah dibayar:
+          <strong
+            >Rp
+            {{
+              +valueFormGroup.get("total")?.value - totalAmount
+                | number: "1.0-0"
+            }}</strong
+          ></span
+        >
+        <span
+          >Sisa:
+          <strong class="epc-remain"
+            >Rp {{ totalAmount | number: "1.0-0" }}</strong
+          ></span
+        >
+      </div>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh 23 (Rp.)</mat-label>
-          <input
-            matInput
-            formControlName="pph"
-            type="text"
-            placeholder="PPh 23 amount"
-            required
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Total (Rp.)</mat-label>
-          <input
-            matInput
-            formControlName="total"
-            type="text"
-            placeholder="Total amount"
-            required
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            mask="separator.2"
-          />
-        </mat-form-field>
-      </form>
-
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        class="me-3"
-        matStepperPrevious
-      >
-        Previous
-      </button>
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        matStepperNext
-      >
-        Next
-      </button>
-    </mat-step>
-
-    <mat-step>
-      <ng-template matStepLabel>Payment history information</ng-template>
-      <h3>Payment history</h3>
-      <p *ngIf="payments.length === 0">No payment history available.</p>
-      <mat-list *ngIf="payments.length > 0">
-        <mat-list-item *ngFor="let payment of payments">
-          <mat-list-item>
-            <mat-icon
-              matListItemIcon
-              [matTooltip]="
-                payment.isApprove
-                  ? 'Payment approved'
-                  : payment.isDelete
-                  ? 'Payment deleted'
-                  : 'Payment pending'
-              "
-            >
-              {{
-                payment.isApprove
-                  ? "check_circle"
-                  : payment.isDelete
-                  ? "cancel"
-                  : "payment"
-              }}
-            </mat-icon>
-            <span matListItemTitle
-              >Rp. {{ payment.amount | number : "0.2-2" }}</span
-            >
-            <span matListItemLine
-              >{{ payment.bankAccountName }}
-              {{ payment.bankAccountNumber }}</span
-            >
-            <span matListItemLine>{{
-              payment.date | date : "dd MMM yyyy"
+      <!-- payment history -->
+      <div *ngIf="payments && payments.length > 0">
+        <div class="epc-section__title epc-section__title--mt">
+          Riwayat Pembayaran
+        </div>
+        <div class="epc-history">
+          <div class="epc-hist" *ngFor="let p of payments">
+            <span class="epc-hist__icon" [class.is-pending]="!p.isApprove">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <span class="epc-hist__main">
+              <span class="epc-hist__date">{{
+                p.date | date: "dd MMM yyyy"
+              }}</span>
+              <span class="epc-hist__bank" *ngIf="p.bankName"
+                >{{ p.bankName }} · {{ p.bankAccountNumber }}</span
+              >
+            </span>
+            <span class="epc-hist__chip" [class.is-pending]="!p.isApprove">{{
+              p.isApprove ? "Approved" : "Pending"
             }}</span>
-          </mat-list-item>
-        </mat-list-item>
-      </mat-list>
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        class="me-3"
-        matStepperPrevious
-      >
-        Previous
-      </button>
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        matStepperNext
-      >
-        Next
-      </button>
-    </mat-step>
+            <span class="epc-hist__amt"
+              >Rp {{ p.amount | number: "1.0-0" }}</span
+            >
+          </div>
+        </div>
+      </div>
 
-    <mat-step [stepControl]="formGroup">
-      <ng-template matStepLabel>Payment information</ng-template>
-      <p>
-        Please fill in the payment information below. The payment date is
-        required.
-      </p>
-
-      <form [formGroup]="formGroup">
-        <p>
-          This document is due on
-          {{ metaFormGroup.get("dueDate")?.value | date : "dd MMMM yyyy" }}
-        </p>
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Payment Date</mat-label>
+      <!-- payment inputs -->
+      <div class="epc-section__title epc-section__title--mt">Pembayaran</div>
+      <div class="epc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal bayar</mat-label>
           <input
             matInput
-            formControlName="paymentDate"
-            placeholder="Payment date"
-            [matDatepicker]="paymentDatePicker"
             formControlName="date"
+            placeholder="Tanggal bayar"
+            [matDatepicker]="paymentDatePicker"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -255,58 +159,58 @@
           <mat-datepicker #paymentDatePicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank Account Number</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Rekening pembayar</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-              >{{ bank.bankAccountNumber }} --
+              >{{ bank.bankAccountNumber }} —
               {{ bank.bankAccountName }}</mat-option
             >
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Amount</mat-label>
+        <mat-form-field appearance="outline" class="epc-span2">
+          <mat-label>Nominal pembayaran</mat-label>
           <input
             matInput
             formControlName="amount"
             type="text"
-            placeholder="Payment amount"
-            required
+            placeholder="Nominal"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
           />
-          <button
-            matSuffix
-            mat-icon-button
-            type="button"
-            (click)="fullAmount()"
-          >
-            <mat-icon>check_circle</mat-icon>
-          </button>
-          <mat-hint
-            >Maximum amount paid {{ totalAmount | number : "0.2-2" }}</mat-hint
-          >
+          <mat-hint>Maksimal Rp {{ totalAmount | number: "1.0-0" }}</mat-hint>
         </mat-form-field>
-      </form>
-      <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        class="me-3"
-        matStepperPrevious
-      >
-        Previous
+      </div>
+      <button type="button" class="epc-full" (click)="fullAmount()">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        Bayar penuh (Rp {{ totalAmount | number: "1.0-0" }})
+      </button>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="epc-actions">
+      <button type="button" class="epc-cancel" (click)="onClose()">
+        Batal
       </button>
       <button
-        mat-stroked-button
-        color="primary"
-        style="letter-spacing: 0"
-        (click)="onSubmit()"
+        type="submit"
+        class="epc-submit"
+        [disabled]="isLoading || isSubmitting || !formGroup.valid"
       >
-        Submit
+        {{ isSubmitting ? "Menyimpan..." : "Bayar expense" }}
       </button>
-    </mat-step>
-  </mat-stepper>
-</mat-dialog-content>
+    </mat-dialog-actions>
+  </form>
+</div>

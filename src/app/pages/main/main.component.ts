@@ -59,11 +59,6 @@ export class MainComponent {
       name: 'Menu',
       children: [
         {
-          name: 'Dashboard',
-          icon: 'dashboard.svg',
-          route: '/',
-        },
-        {
           name: 'Purchase Draft',
           icon: 'purchase-invoice.svg',
           route: '/Purchase-draft',
@@ -122,6 +117,11 @@ export class MainComponent {
           name: 'Asset',
           icon: 'asset.svg',
           route: '/Asset',
+        },
+        {
+          name: 'Master Item',
+          icon: 'package.svg',
+          route: '/Item',
         },
       ],
     },

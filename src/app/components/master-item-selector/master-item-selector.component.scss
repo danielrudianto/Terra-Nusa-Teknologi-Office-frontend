@@ -1,0 +1,195 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+$hover: var(--hover, #f6f8ff);
+
+.mis {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  color: $ink;
+}
+.mis *,
+.mis *::before,
+.mis *::after {
+  box-sizing: border-box;
+}
+
+.mis-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #eef2fe) 0%,
+    var(--surface-2, #f6f8ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-right: auto;
+  }
+}
+.mis-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: $surface;
+  color: $brand;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+.mis-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+.mis-sub {
+  font-size: 0.76rem;
+  color: $muted;
+}
+
+.mis-content {
+  padding: 1.25rem 1.5rem !important;
+  overflow-x: hidden;
+  min-width: 460px;
+  max-width: 560px;
+}
+.mis-search {
+  width: 100%;
+}
+:host ::ng-deep .mis-search {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+}
+.mis-progress {
+  margin: 2px 0 8px;
+}
+
+.mis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 52vh;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+.mis-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: 0.5px solid $border;
+  background: $surface;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.13s ease;
+  &:hover {
+    border-color: #cdd7f7;
+    background: $hover;
+    .mis-item__arrow {
+      color: $brand;
+      transform: translateX(2px);
+    }
+  }
+  &__badge {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: $brandSoft;
+    color: $brand;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  &__desc {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $ink;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__meta {
+    font-size: 0.75rem;
+    color: $muted;
+  }
+  &__sku {
+    font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
+    font-weight: 600;
+  }
+  &__arrow {
+    flex: 0 0 auto;
+    color: $faint;
+    transition:
+      transform 0.13s ease,
+      color 0.13s ease;
+  }
+}
+.mis-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 2.5rem 1rem;
+  color: $faint;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.mis-actions {
+  padding: 0.85rem 1.5rem 1.1rem !important;
+  display: flex !important;
+  justify-content: flex-end;
+  border-top: 1px solid $line;
+}
+.mis-cancel {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.55rem 1.3rem;
+  cursor: pointer;
+  border: 0.5px solid $border;
+  background: $surface;
+  color: $ink;
+  &:hover {
+    background: var(--hover, #f3f5f9);
+  }
+}
+
+@media (max-width: 560px) {
+  .mis-content {
+    min-width: 0;
+  }
+}

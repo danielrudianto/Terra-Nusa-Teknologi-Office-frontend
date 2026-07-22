@@ -74,6 +74,11 @@ import { EngineeringComponent } from './pages/engineering/engineering.component'
 import { EngineeringDashboardComponent } from './pages/engineering/engineering-dashboard/engineering-dashboard.component';
 import { EngineeringProjectViewComponent } from './pages/engineering/engineering-project-view/engineering-project-view.component';
 import { MasterItemListComponent } from './pages/master/master-item/master-item-list/master-item-list.component';
+import { PurchaseOrderCreateFComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component';
+import { PurchaseOrderCreate516Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component';
+import { PurchaseOrderCreateAComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component';
+import { PurchaseOrderCreateCComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component';
+import { MasterEquipmentListComponent } from './pages/master/master-equipment/master-equipment-list/master-equipment-list.component';
 
 export const routes: Routes = [
   {
@@ -215,6 +220,34 @@ export const routes: Routes = [
           {
             path: 'Create/G',
             component: PurchaseOrderCreateGComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/F',
+            component: PurchaseOrderCreateFComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/516',
+            component: PurchaseOrderCreate516Component,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/A',
+            component: PurchaseOrderCreateAComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/C',
+            component: PurchaseOrderCreateCComponent,
             data: {
               title: 'Purchase order',
             },
@@ -554,6 +587,13 @@ export const routes: Routes = [
       {
         path: 'Item',
         component: MasterItemListComponent,
+        data: {
+          title: 'Item list',
+        },
+      },
+      {
+        path: 'Equipment',
+        component: MasterEquipmentListComponent,
         data: {
           title: 'Item list',
         },

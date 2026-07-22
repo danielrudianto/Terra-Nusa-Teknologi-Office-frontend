@@ -77,84 +77,91 @@
         <div class="pog-section__title pog-section__title--flush">
           Daftar Barang
         </div>
-        <button type="button" class="pog-add" (click)="onAddItem()">
+        <button type="button" class="pog-add" (click)="openItemSelector()">
           <mat-icon>add</mat-icon> Tambah barang
         </button>
       </div>
 
-      <div class="pog-items">
-        <div class="pog-items__head">
-          <span>Referensi (SKU)</span>
-          <span>Nama Barang</span>
-          <span class="pog-r">Volume</span>
-          <span>Satuan</span>
-          <span class="pog-r">Harga Satuan</span>
-          <span class="pog-r">Jumlah</span>
-          <span></span>
+      @if (t.controls.length === 0) {
+        <div class="pog-empty">
+          <mat-icon>inventory_2</mat-icon>
+          <span
+            >Belum ada barang. Klik "Tambah barang" untuk memilih dari
+            katalog.</span
+          >
         </div>
-
-        @if (t.controls.length === 0) {
-          <div class="pog-items__empty">Belum ada barang.</div>
-        } @else {
+      } @else {
+        <div class="pog-itemlist">
           @for (item of t.controls; track item; let i = $index) {
-            <div class="pog-items__row" [formGroup]="getFormGroupAt(i)">
-              <mat-form-field appearance="outline" class="pog-f">
-                <input matInput formControlName="sku" placeholder="SKU" />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="pog-f">
-                <input
-                  matInput
-                  formControlName="description"
-                  placeholder="Nama barang"
-                />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="pog-f pog-r">
-                <input
-                  matInput
-                  formControlName="quantity"
-                  thousandSeparator=" "
-                  mask="separator.2"
-                  placeholder="0"
-                />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="pog-f">
-                <mat-select formControlName="unit" placeholder="Unit">
-                  <mat-option value="pcs">Pcs</mat-option>
-                  <mat-option value="set">Set</mat-option>
-                  <mat-option value="Kg">Kilogram</mat-option>
-                  <mat-option value="m">M</mat-option>
-                  <mat-option value="m2">M²</mat-option>
-                  <mat-option value="m3">M³</mat-option>
-                  <mat-option value="ton">Ton</mat-option>
-                  <mat-option value="l">Liter</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="pog-f pog-r">
-                <input
-                  matInput
-                  formControlName="price"
-                  thousandSeparator=" "
-                  mask="separator.2"
-                  prefix="Rp. "
-                  placeholder="0"
-                />
-              </mat-form-field>
-              <div class="pog-linetotal">
-                Rp {{ lineTotal(i) | number: "1.0-0" }}
+            <div class="pog-itemcard" [formGroup]="getFormGroupAt(i)">
+              <div class="pog-itemcard__id">
+                <span class="pog-itembadge">{{
+                  (getFormGroupAt(i).value.sku || "?").charAt(0)
+                }}</span>
+                <div class="pog-itemid__text">
+                  <span class="pog-itemdesc">{{
+                    getFormGroupAt(i).value.description
+                  }}</span>
+                  <span class="pog-itemsku">{{
+                    getFormGroupAt(i).value.sku
+                  }}</span>
+                </div>
+                <div class="pog-itemtotal">
+                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                </div>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeAt(i)"
+                  aria-label="Hapus barang"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
-              <button
-                mat-icon-button
-                type="button"
-                (click)="removeAt(i)"
-                [disabled]="t.controls.length === 1"
-                aria-label="Hapus barang"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
+
+              <div class="pog-itemcard__inputs">
+                <mat-form-field appearance="outline">
+                  <mat-label>Qty</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    placeholder="0"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Satuan</mat-label>
+                  <mat-select formControlName="unit">
+                    <mat-option *ngFor="let u of units" [value]="u">{{
+                      u
+                    }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Harga satuan</mat-label>
+                  <input
+                    matInput
+                    formControlName="price"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    prefix="Rp. "
+                    placeholder="0"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="pog-itemremarks">
+                  <mat-label>Remarks</mat-label>
+                  <input
+                    matInput
+                    formControlName="remarks"
+                    placeholder="Catatan (opsional)"
+                  />
+                </mat-form-field>
+              </div>
             </div>
           }
-        }
-      </div>
+        </div>
+      }
 
       <div class="pog-items__foot">
         <mat-slide-toggle formControlName="includePPN" color="primary"

@@ -1,0 +1,407 @@
+<div class="poa">
+  <app-header-title
+    title="Purchase Order — Kode A"
+    description="Transportation"
+  />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== Informasi PO ===== -->
+    <div class="poa-card">
+      <div class="poa-section__title">Informasi PO</div>
+      <div class="poa-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal PO</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+            placeholder="Tanggal PO"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+            placeholder="Ex. MICZ"
+          />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')"
+            >Harus 4–5 karakter kapital.</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="poa-span2">
+          <mat-label>Vendor Transportasi</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            placeholder="Pilih vendor"
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="openSupplierSelector()"
+            aria-label="Pilih vendor"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>PIC asal</mat-label>
+          <input
+            matInput
+            formControlName="picFromName"
+            placeholder="Nama PIC di asal"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>PIC tujuan</mat-label>
+          <input
+            matInput
+            formControlName="picToName"
+            placeholder="Nama PIC di tujuan"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Daftar Pengiriman ===== -->
+    <div class="poa-card">
+      <div class="poa-cardhead">
+        <div class="poa-section__title poa-section__title--flush">
+          Daftar Pengiriman
+        </div>
+        <button type="button" class="poa-add" (click)="addShipment()">
+          <mat-icon>add</mat-icon> Tambah pengiriman
+        </button>
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="poa-empty">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Belum ada pengiriman. Klik "Tambah pengiriman".</span>
+        </div>
+      } @else {
+        <div class="poa-list">
+          @for (leg of t.controls; track leg; let i = $index) {
+            <div class="poa-leg" [formGroup]="getFormGroupAt(i)">
+              <div class="poa-leg__head">
+                <span class="poa-leg__no">#{{ i + 1 }}</span>
+                <span class="poa-leg__route">
+                  <span class="poa-leg__loc">{{
+                    getFormGroupAt(i).value.from || "…"
+                  }}</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                  <span class="poa-leg__loc">{{
+                    getFormGroupAt(i).value.to || "…"
+                  }}</span>
+                </span>
+                <span class="poa-leg__amt"
+                  >Rp
+                  {{ getFormGroupAt(i).value.amount | number: "1.0-0" }}</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeAt(i)"
+                  aria-label="Hapus pengiriman"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+
+              <div class="poa-modes">
+                @for (m of modes; track m.value) {
+                  <button
+                    type="button"
+                    class="poa-mode"
+                    [class.is-on]="getFormGroupAt(i).value.mode === m.value"
+                    (click)="setMode(i, m.value)"
+                  >
+                    <span class="poa-mode__ico" [ngSwitch]="m.value">
+                      <svg
+                        *ngSwitchCase="'darat'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M2 15V7h10v8" />
+                        <path d="M12 10h4l3 3v2h-7z" />
+                        <circle cx="6" cy="17" r="1.6" />
+                        <circle cx="16" cy="17" r="1.6" />
+                      </svg>
+                      <svg
+                        *ngSwitchCase="'laut'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M3 15h18l-2 5H5z" />
+                        <path d="M12 3v9M7 9h10l-1 3H8z" />
+                      </svg>
+                      <svg
+                        *ngSwitchCase="'udara'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M17.8 19.2 16 11l3.5-3.5a2.1 2.1 0 0 0-3-3L13 8 4.8 6.2a1 1 0 0 0-.9 1.7l6 3.5-2 3-2.5-.5-.8 1.5 3.5 1.5 1.5 3.5 1.5-.8-.5-2.5 3-2z"
+                        />
+                      </svg>
+                      <svg
+                        *ngSwitchCase="'ekspedisi'"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="m21 8-9-5-9 5 9 5 9-5z" />
+                        <path d="M3 8v8l9 5 9-5V8M12 13v8" />
+                      </svg>
+                    </span>
+                    <span class="poa-mode__lbl">{{ m.label }}</span>
+                  </button>
+                }
+              </div>
+
+              <div class="poa-leg__grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Tanggal pengiriman</mat-label>
+                  <input
+                    matInput
+                    formControlName="deliveryDate"
+                    [matDatepicker]="dp"
+                    placeholder="Tanggal"
+                  />
+                  <mat-datepicker-toggle
+                    matIconPrefix
+                    [for]="dp"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dp></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nominal</mat-label>
+                  <input
+                    matInput
+                    formControlName="amount"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    prefix="Rp. "
+                    placeholder="0"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="poa-addr">
+                  <mat-label>Dari (asal)</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="from"
+                    placeholder="Lokasi asal"
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="4"
+                  ></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="poa-addr">
+                  <mat-label>Ke (tujuan)</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="to"
+                    placeholder="Lokasi tujuan"
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="4"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+
+              <!-- mode-specific fields -->
+              @if (getFormGroupAt(i).value.mode === "darat") {
+                <div class="poa-vehlabel">
+                  Jenis kendaraan
+                  <button
+                    type="button"
+                    class="poa-veh-info"
+                    (click)="openFleetInfo()"
+                    aria-label="Info jenis kendaraan"
+                  >
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                    Lihat panduan
+                  </button>
+                </div>
+                <div class="poa-vehicles">
+                  @for (fleet of fleets; track fleet.id) {
+                    <button
+                      type="button"
+                      class="poa-veh"
+                      [class.is-on]="
+                        getFormGroupAt(i).value.fleet_id === fleet.id
+                      "
+                      [title]="
+                        fleet.name +
+                        ' — maks ' +
+                        (fleet.maxLoad | number) +
+                        ' kg'
+                      "
+                      (click)="selectFleet(i, fleet.id)"
+                    >
+                      <span class="poa-veh__ico"
+                        ><app-fleet-icon [icon]="fleet.icon"></app-fleet-icon
+                      ></span>
+                      <span class="poa-veh__lbl">{{ fleet.name }}</span>
+                    </button>
+                  }
+                  @if (fleets.length === 0) {
+                    <span class="poa-nofleet">Belum ada data fleet.</span>
+                  }
+                </div>
+                <div class="poa-leg__grid poa-leg__grid--tail">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nomor polisi</mat-label>
+                    <input
+                      matInput
+                      formControlName="nopol"
+                      placeholder="Ex. B 1234 XYZ"
+                      style="text-transform: uppercase"
+                    />
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    class="poa-span2 poa-addr"
+                  >
+                    <mat-label>Nama & NIK supir</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="driver"
+                      placeholder="Nama lengkap & NIK supir"
+                      cdkTextareaAutosize
+                      cdkAutosizeMinRows="2"
+                      cdkAutosizeMaxRows="4"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
+              } @else {
+                <div class="poa-leg__grid poa-leg__grid--tail">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{
+                      providerLabel(getFormGroupAt(i).value.mode)
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="provider"
+                      placeholder="Nama penyedia"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{
+                      refLabel(getFormGroupAt(i).value.mode)
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="refNumber"
+                      placeholder="Nomor referensi"
+                    />
+                  </mat-form-field>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="poa-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary"
+          >Termasuk PPN 11%</mat-slide-toggle
+        >
+        <div class="poa-summary">
+          <div class="poa-summary__row">
+            <span>Subtotal (DPP)</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="poa-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="poa-summary__row poa-summary__row--total">
+            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Pembayaran ===== -->
+    <div class="poa-card">
+      <div class="poa-section__title">Pembayaran</div>
+      <div class="poa-grid">
+        <mat-form-field appearance="outline" class="poa-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <input
+            matInput
+            formControlName="paymentTerm"
+            placeholder="Ex. Tempo 30 hari / CASH"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" />
+          <span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+
+      <div class="poa-actions">
+        <span class="poa-spacer"></span>
+        <button
+          type="submit"
+          class="poa-submit"
+          [disabled]="
+            formGroup.invalid || t.controls.length === 0 || isSubmitting
+          "
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

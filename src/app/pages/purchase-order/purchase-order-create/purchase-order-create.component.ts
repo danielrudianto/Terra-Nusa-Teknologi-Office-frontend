@@ -30,7 +30,7 @@ export class PurchaseOrderCreateComponent {
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   projectTiles = [
@@ -153,6 +153,28 @@ export class PurchaseOrderCreateComponent {
         this.router.navigate(['G'], {
           relativeTo: this.route,
         });
+        break;
+      case 'F':
+        this.router.navigate(['F'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '5.1.6':
+        this.router.navigate(['516'], {
+          relativeTo: this.route,
+        });
+        break;
+      case 'A':
+        this.router.navigate(['A'], {
+          relativeTo: this.route,
+        });
+        break;
+
+      case 'C':
+        this.router.navigate(['C'], {
+          relativeTo: this.route,
+        });
+        break;
     }
   }
 }

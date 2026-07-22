@@ -1,0 +1,99 @@
+<div class="mis">
+  <div class="mis-head" mat-dialog-title>
+    <span class="mis-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+        />
+        <path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12" />
+      </svg>
+    </span>
+    <div class="mis-head__text">
+      <h2 class="mis-title">Pilih Barang</h2>
+      <span class="mis-sub"
+        >Katalog tersedia untuk tipe {{ purchaseType }}</span
+      >
+    </div>
+  </div>
+
+  <mat-dialog-content class="mis-content">
+    <mat-form-field appearance="outline" class="mis-search">
+      <mat-label>Cari barang</mat-label>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="SKU, deskripsi, atau brand"
+        autocomplete="off"
+      />
+    </mat-form-field>
+
+    <mat-progress-bar
+      *ngIf="isLoading"
+      mode="indeterminate"
+      class="mis-progress"
+    ></mat-progress-bar>
+
+    <div class="mis-list">
+      <button
+        type="button"
+        class="mis-item"
+        *ngFor="let item of items"
+        (click)="select(item)"
+      >
+        <span class="mis-item__badge">{{ (item.sku || "?").charAt(0) }}</span>
+        <span class="mis-item__body">
+          <span class="mis-item__desc">{{ item.description }}</span>
+          <span class="mis-item__meta">
+            <span class="mis-item__sku">{{ item.sku }}</span>
+            <span *ngIf="item.brand"> · {{ item.brand }}</span>
+            <span *ngIf="item.unit"> · {{ item.unit }}</span>
+          </span>
+        </span>
+        <span class="mis-item__arrow">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
+      </button>
+
+      <div class="mis-empty" *ngIf="!isLoading && items.length === 0">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <span>Tidak ada barang tipe {{ purchaseType }} yang cocok.</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="mis-actions">
+    <button type="button" class="mis-cancel" (click)="onCancel()">Tutup</button>
+  </mat-dialog-actions>
+</div>

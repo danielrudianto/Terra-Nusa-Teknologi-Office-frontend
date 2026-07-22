@@ -27,6 +27,7 @@ import { ReimbursementViewComponent } from '../../reimbursement/reimbursement-vi
 import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.component';
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
 
 interface BankAccountSummary {
   id: number;
@@ -525,6 +526,14 @@ export class CalendarDaySelectorComponent {
         this.dialog.open(LoansViewComponent, {
           data: {
             id: data.loanID,
+          },
+        });
+      }
+
+      if (data.salarySlipID != null) {
+        this.dialog.open(SalarySlipViewComponent, {
+          data: {
+            id: data.salarySlipID,
           },
         });
       }

@@ -39,7 +39,7 @@
   }
 
   span {
-    font-family: 'Poppins';
+    font-family: "Poppins";
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--on-primary-color);
@@ -50,38 +50,213 @@
   }
 }
 
-/* ---------- scrollable item list ---------- */
-.side-nav__item-list {
+/* ---------- search ---------- */
+.snav-search {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 2px 6px;
+  padding: 0 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.045);
+  border: 1px solid transparent;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  &:focus-within {
+    border-color: rgba(21, 77, 236, 0.35);
+    background: rgba(21, 77, 236, 0.05);
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--disabled-color);
+  }
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 8px 2px;
+    font-family: "Poppins";
+    font-size: 0.82rem;
+    color: var(--on-primary-color);
+
+    &::placeholder {
+      color: var(--disabled-color);
+    }
+  }
+
+  &__clear {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: none;
+    background: transparent;
+    color: var(--disabled-color);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 5px;
+    &:hover {
+      color: var(--on-primary-color);
+    }
+  }
+}
+
+/* ---------- scrollable groups ---------- */
+.side-nav__scroll {
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
-  margin-top: 4px;
+  margin-top: 2px;
 
-  /* subtle scrollbar */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
-
-  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.16);
     border-radius: 6px;
   }
-  &::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.28); }
-  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.28);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
 
-  /* compact section labels */
-  .side-navigation__list-label {
-    font-family: 'Poppins';
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--disabled-color);
-    margin: 0.85rem 0 0.15rem;
-    padding-left: 13px;
+.snav-group {
+  margin-bottom: 2px;
+}
+
+/* group header (clickable / collapsible) */
+.snav-group__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.7rem 10px 0.3rem 13px;
+  font-family: "Poppins";
+
+  &[disabled] {
+    cursor: default;
   }
 
-  /* first label shouldn't push down the whole list */
-  .side-navigation__list-label:first-child { margin-top: 0.25rem; }
+  &:hover:not([disabled]) .snav-group__name,
+  &:hover:not([disabled]) .snav-group__chev {
+    color: var(--on-primary-color);
+  }
+}
+
+/* static label (Pinned) */
+.snav-group__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.7rem 10px 0.3rem 13px;
+  font-family: "Poppins";
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--active-button-color);
+
+  svg {
+    color: var(--active-button-color);
+  }
+}
+
+.snav-group__name {
+  flex: 1 1 auto;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--disabled-color);
+  transition: color 0.15s ease;
+}
+
+.snav-group__count {
+  flex: 0 0 auto;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--disabled-color);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  padding: 1px 7px;
+  line-height: 1.5;
+}
+
+.snav-group__chev {
+  flex: 0 0 auto;
+  color: var(--disabled-color);
+  transition:
+    transform 0.22s ease,
+    color 0.15s ease;
+  &.is-collapsed {
+    transform: rotate(-90deg);
+  }
+}
+
+/* collapsible items */
+.snav-group__items {
+  overflow: hidden;
+  max-height: 1200px;
+  opacity: 1;
+  transition:
+    max-height 0.28s ease,
+    opacity 0.2s ease;
+
+  &.is-collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+/* ---------- bottom fixed group ---------- */
+.snav-bottom {
+  flex: 0 0 auto;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ===== dark mode ===== */
+:host-context([data-theme="dark"]) {
+  .side-nav__logo {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+  .snav-bottom {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+  .snav-search {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .snav-search:focus-within {
+    background: rgba(123, 160, 255, 0.12);
+    border-color: rgba(123, 160, 255, 0.4);
+  }
+  .snav-group__count {
+    background: rgba(255, 255, 255, 0.09);
+  }
+  .side-nav__scroll {
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
 }

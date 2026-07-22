@@ -1,53 +1,70 @@
-<h1 mat-dialog-title>View Income Data</h1>
-<mat-dialog-content>
-  <p>Here are the income data</p>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Opponent name</mat-label>
-      <input matInput formControlName="opponent_name" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Opponent description</mat-label>
-      <textarea matInput formControlName="opponent_description"></textarea>
-    </mat-form-field>
+<div class="iv">
+  <div class="iv-head" mat-dialog-title>
+    <span class="iv-badge">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    </span>
+    <div class="iv-head__text">
+      <h2 class="iv-title">{{ formGroup.value.opponent_name || "Income" }}</h2>
+      <span class="iv-sub">{{ formGroup.value.date }}</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Income type</mat-label>
-      <mat-select formControlName="incomeType">
-        <mat-optgroup label="Other income">
-          <mat-option value="7.1">Income from interest</mat-option>
-          <mat-option value="7.2">Income from royalty</mat-option>
-          <mat-option value="7.3">Income from dividend</mat-option>
-          <mat-option value="7.5">Other income</mat-option>
-        </mat-optgroup>
-        <mat-optgroup label="Miscelanous income">
-          <mat-option value="7.4">Income from rounding up</mat-option>
-        </mat-optgroup>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
-      <span matTextPrefix>Rp.&nbsp;</span>
-      <input matInput formControlName="amount" />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+  <mat-dialog-content class="iv-content">
+    <!-- amount highlight -->
+    <div class="iv-amount">
+      <span class="iv-amount__k">Jumlah</span>
+      <span class="iv-amount__v">+ Rp {{ formGroup.value.amount }}</span>
+    </div>
 
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    mat-dialog-close
-  >
-    Close
-  </button>
-</mat-dialog-actions>
+    <!-- income type -->
+    <div class="iv-typerow" *ngIf="formGroup.value.incomeType">
+      <span class="iv-type" [ngSwitch]="formGroup.value.incomeType">
+        <span *ngSwitchCase="'7.1'">Income from interest</span>
+        <span *ngSwitchCase="'7.2'">Income from royalty</span>
+        <span *ngSwitchCase="'7.3'">Income from dividend</span>
+        <span *ngSwitchCase="'7.4'">Income from rounding up</span>
+        <span *ngSwitchCase="'7.5'">Other income</span>
+        <span *ngSwitchDefault>{{ formGroup.value.incomeType }}</span>
+      </span>
+    </div>
+
+    <!-- detail rows -->
+    <div class="iv-rows">
+      <div class="iv-row">
+        <span class="iv-row__k">Tanggal</span>
+        <span class="iv-row__v">{{ formGroup.value.date || "—" }}</span>
+      </div>
+      <div class="iv-row" *ngIf="formGroup.value.description">
+        <span class="iv-row__k">Deskripsi</span>
+        <span class="iv-row__v">{{ formGroup.value.description }}</span>
+      </div>
+      <div class="iv-row">
+        <span class="iv-row__k">Opponent</span>
+        <span class="iv-row__v">{{
+          formGroup.value.opponent_name || "—"
+        }}</span>
+      </div>
+      <div class="iv-row" *ngIf="formGroup.value.opponent_description">
+        <span class="iv-row__k">Ket. opponent</span>
+        <span class="iv-row__v">{{
+          formGroup.value.opponent_description
+        }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="iv-actions">
+    <button type="button" class="iv-close" mat-dialog-close>Tutup</button>
+  </mat-dialog-actions>
+</div>

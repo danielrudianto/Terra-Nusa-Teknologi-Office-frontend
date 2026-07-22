@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -11,9 +11,26 @@ import { RouterModule } from '@angular/router';
 export class SideNavItemComponent {
   @Input('label') label!: string;
   @Input('icon') icon!: string;
-  @Input('routerLink') routerLink!: string;
+  @Input('routerLink') routerLink?: string;
+  @Input('action') action?: () => void;
+  @Input('pinned') pinned: boolean = false;
+  @Input('showPin') showPin: boolean = true;
+  @Output('pinToggle') pinToggle = new EventEmitter<void>();
 
   get iconSource(): string {
     return '/assets/vector/' + this.icon;
+  }
+
+  onActivate() {
+    // items without a route (e.g. Logout) run their action instead
+    if (!this.routerLink && this.action) {
+      this.action();
+    }
+  }
+
+  onPin(event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.pinToggle.emit();
   }
 }

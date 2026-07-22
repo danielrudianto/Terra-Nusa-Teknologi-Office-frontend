@@ -28,6 +28,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { IncomeCreateComponent } from '../income-create/income-create.component';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 
 @Component({
   selector: 'app-income-list',
@@ -46,6 +47,7 @@ import { IncomeCreateComponent } from '../income-create/income-create.component'
     PillSuccessComponent,
     MatDatepickerModule,
     MatSlideToggleModule,
+    DeleteConfirmationComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './income-list.component.html',
@@ -222,5 +224,32 @@ export class IncomeListComponent {
         id: id,
       },
     });
+  }
+
+  deleteIncome(id: number) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: 'Delete income',
+          prompt: 'Are you sure you want to delete this income record?',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.apiService.delete('income/' + id).subscribe({
+          next: () => {
+            this.snackBar.open('Income deleted', 'Close', { duration: 2000 });
+            this.fetchData(0);
+          },
+          error: (error) => {
+            this.snackBar.open(
+              error?.error?.detail || 'Failed to delete income',
+              'Close',
+              { duration: 3000 },
+            );
+          },
+        });
+      });
   }
 }

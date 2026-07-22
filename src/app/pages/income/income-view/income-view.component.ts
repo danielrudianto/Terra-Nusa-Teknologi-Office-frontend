@@ -24,10 +24,11 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './income-view.component.html',
   styleUrl: './income-view.component.scss',
+  providers: [DatePipe, DecimalPipe],
 })
 export class IncomeViewComponent {
   constructor(
@@ -35,7 +36,7 @@ export class IncomeViewComponent {
     private snackbar: MatSnackBar,
     private datePipe: DatePipe,
     private decimalPipe: DecimalPipe,
-    @Inject(MAT_DIALOG_DATA) private data: { id: number }
+    @Inject(MAT_DIALOG_DATA) private data: { id: number },
   ) {}
 
   isLoading: boolean = false;

@@ -92,3 +92,64 @@
     background-color: rgba(123, 160, 255, 0.12);
   }
 }
+
+/* ===== row wrapper + pin button ===== */
+.snav-row {
+  position: relative;
+  display: block;
+}
+
+.snav-pin {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--disabled-color);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+
+  &:hover {
+    opacity: 1 !important;
+    background: rgba(21, 77, 236, 0.1);
+    color: var(--active-button-color);
+  }
+
+  /* pinned = always visible + brand */
+  &.on {
+    opacity: 1;
+    color: var(--active-button-color);
+  }
+}
+
+/* reveal pin on row hover */
+.snav-row:hover .snav-pin {
+  opacity: 0.5;
+}
+
+/* keep label from colliding with the pin when it's shown */
+.snav-row:hover .side-navigation-button__wrapper span,
+.snav-row .snav-pin.on ~ .side-navigation-button__wrapper span {
+  padding-right: 22px;
+}
+
+/* dark mode */
+:host-context([data-theme="dark"]) .snav-pin {
+  &:hover {
+    background: rgba(123, 160, 255, 0.16);
+    color: #9db8ff;
+  }
+  &.on {
+    color: #9db8ff;
+  }
+}

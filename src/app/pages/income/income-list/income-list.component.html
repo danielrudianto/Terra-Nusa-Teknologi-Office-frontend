@@ -191,6 +191,7 @@
               mat-icon-button
               [matMenuTriggerFor]="rowMenu"
               aria-label="Row actions"
+              (click)="$event.stopPropagation()"
             >
               <mat-icon>more_horiz</mat-icon>
             </button>
@@ -198,7 +199,7 @@
               <button mat-menu-item (click)="viewIncome(purchase.id)">
                 <mat-icon>view_comfy_alt</mat-icon><span>View income data</span>
               </button>
-              <button mat-menu-item (click)="viewIncome(purchase.id)">
+              <button mat-menu-item (click)="deleteIncome(purchase.id)">
                 <mat-icon>delete</mat-icon><span>Delete income data</span>
               </button>
             </mat-menu>

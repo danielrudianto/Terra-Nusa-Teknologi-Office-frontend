@@ -34,7 +34,7 @@ export class LoginComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
   ) {}
 
   isSubmitting: boolean = false;
@@ -56,7 +56,14 @@ export class LoginComponent {
         localStorage.setItem('refresh_token', refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
 
-        this.router.navigate(['/']);
+        // return to the page the user was on before the session expired
+        const returnUrl = localStorage.getItem('returnUrl');
+        localStorage.removeItem('returnUrl');
+        if (returnUrl && !returnUrl.startsWith('/Login')) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {
