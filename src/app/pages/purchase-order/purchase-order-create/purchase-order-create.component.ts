@@ -169,9 +169,18 @@ export class PurchaseOrderCreateComponent {
           relativeTo: this.route,
         });
         break;
-
+      case 'B':
+        this.router.navigate(['B'], {
+          relativeTo: this.route,
+        });
+        break;
       case 'C':
         this.router.navigate(['C'], {
+          relativeTo: this.route,
+        });
+        break;
+      case 'D':
+        this.router.navigate(['D'], {
           relativeTo: this.route,
         });
         break;

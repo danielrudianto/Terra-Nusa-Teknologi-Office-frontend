@@ -85,36 +85,20 @@
       @if (t.controls.length === 0) {
         <div class="pog-empty">
           <mat-icon>inventory_2</mat-icon>
-          <span
-            >Belum ada barang. Klik "Tambah barang" untuk memilih dari
-            katalog.</span
-          >
+          <span>Belum ada barang. Klik "Tambah barang" untuk memilih dari katalog.</span>
         </div>
       } @else {
         <div class="pog-itemlist">
           @for (item of t.controls; track item; let i = $index) {
             <div class="pog-itemcard" [formGroup]="getFormGroupAt(i)">
               <div class="pog-itemcard__id">
-                <span class="pog-itembadge">{{
-                  (getFormGroupAt(i).value.sku || "?").charAt(0)
-                }}</span>
+                <span class="pog-itembadge">{{ (getFormGroupAt(i).value.sku || "?").charAt(0) }}</span>
                 <div class="pog-itemid__text">
-                  <span class="pog-itemdesc">{{
-                    getFormGroupAt(i).value.description
-                  }}</span>
-                  <span class="pog-itemsku">{{
-                    getFormGroupAt(i).value.sku
-                  }}</span>
+                  <span class="pog-itemdesc">{{ getFormGroupAt(i).value.description }}</span>
+                  <span class="pog-itemsku">{{ getFormGroupAt(i).value.sku }}</span>
                 </div>
-                <div class="pog-itemtotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
-                </div>
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="removeAt(i)"
-                  aria-label="Hapus barang"
-                >
+                <div class="pog-itemtotal">Rp {{ lineTotal(i) | number: "1.0-0" }}</div>
+                <button mat-icon-button type="button" (click)="removeAt(i)" aria-label="Hapus barang">
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
@@ -122,40 +106,21 @@
               <div class="pog-itemcard__inputs">
                 <mat-form-field appearance="outline">
                   <mat-label>Qty</mat-label>
-                  <input
-                    matInput
-                    formControlName="quantity"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                    placeholder="0"
-                  />
+                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Satuan</mat-label>
                   <mat-select formControlName="unit">
-                    <mat-option *ngFor="let u of units" [value]="u">{{
-                      u
-                    }}</mat-option>
+                    <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Harga satuan</mat-label>
-                  <input
-                    matInput
-                    formControlName="price"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                    prefix="Rp. "
-                    placeholder="0"
-                  />
+                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="pog-itemremarks">
                   <mat-label>Remarks</mat-label>
-                  <input
-                    matInput
-                    formControlName="remarks"
-                    placeholder="Catatan (opsional)"
-                  />
+                  <input matInput formControlName="remarks" placeholder="Catatan (opsional)" />
                 </mat-form-field>
               </div>
             </div>
@@ -287,6 +252,17 @@
           />
         </mat-form-field>
       </div>
+
+    </div>
+
+    <!-- ===== 6. Catatan / Poin Perjanjian ===== -->
+    <div class="pog-card">
+      <div class="pog-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: garansi barang, toleransi keterlambatan, syarat retur, ketentuan pengiriman, dll"
+      ></app-wysiwyg>
 
       <div class="pog-actions">
         <span class="pog-spacer"></span>

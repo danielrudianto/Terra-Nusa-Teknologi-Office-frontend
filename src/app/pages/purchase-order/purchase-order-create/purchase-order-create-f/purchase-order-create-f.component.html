@@ -288,6 +288,32 @@
         </mat-form-field>
       </div>
 
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="pof-card">
+      <div class="pof-section__title">Catatan / Poin Perjanjian</div>
+
+      @if (hasSteelItem) {
+        <div class="pof-clause">
+          <div class="pof-clause__ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <div class="pof-clause__body">
+            <div class="pof-clause__title">Terdeteksi material besi</div>
+            <mat-checkbox formControlName="steelTestRequired" color="primary" class="pof-clause__check">
+              {{ steelTestClause }}
+            </mat-checkbox>
+          </div>
+        </div>
+      }
+
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: garansi material, toleransi dimensi, syarat retur, ketentuan pengiriman, dll"
+      ></app-wysiwyg>
+
       <div class="pof-actions">
         <span class="pof-spacer"></span>
         <button

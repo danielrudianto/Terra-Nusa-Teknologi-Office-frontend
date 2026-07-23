@@ -288,6 +288,17 @@
         </mat-form-field>
       </div>
 
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="poc-card">
+      <div class="poc-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: lingkup pekerjaan, garansi, termin progres, denda keterlambatan, dll"
+      ></app-wysiwyg>
+
       <div class="poc-actions">
         <span class="poc-spacer"></span>
         <button

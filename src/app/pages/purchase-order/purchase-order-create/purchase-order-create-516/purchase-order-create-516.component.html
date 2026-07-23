@@ -288,6 +288,17 @@
         </mat-form-field>
       </div>
 
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="po516-card">
+      <div class="po516-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: garansi, syarat retur, ketentuan pengiriman, dll"
+      ></app-wysiwyg>
+
       <div class="po516-actions">
         <span class="po516-spacer"></span>
         <button

@@ -385,3 +385,6 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     grid-column: 1 / -1;
   }
 }
+
+/* rich-text notes */
+app-wysiwyg { display: block; margin-bottom: 0.5rem; }

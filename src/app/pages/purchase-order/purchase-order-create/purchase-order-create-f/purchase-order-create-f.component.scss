@@ -385,3 +385,26 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     grid-column: 1 / -1;
   }
 }
+
+/* rich-text notes */
+app-wysiwyg { display: block; margin-bottom: 0.5rem; }
+
+/* auto-surfaced steel (besi) clause */
+.pof-clause {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 0.85rem 1rem; margin-bottom: 1rem;
+  border: 0.5px solid var(--warn-fg, #a2651a);
+  border-radius: 13px;
+  background: var(--warn-bg, #fdf0e3);
+  &__ico { flex: 0 0 auto; color: var(--warn-fg, #a2651a); display: grid; place-items: center; margin-top: 1px; }
+  &__body { flex: 1 1 auto; min-width: 0; }
+  &__title {
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--warn-fg, #a2651a); margin-bottom: 4px;
+  }
+  &__check {
+    display: block;
+    ::ng-deep .mdc-form-field { align-items: flex-start; }
+    ::ng-deep label { font-size: 0.85rem; line-height: 1.45; color: var(--ink, #16181d); padding-top: 9px; }
+  }
+}

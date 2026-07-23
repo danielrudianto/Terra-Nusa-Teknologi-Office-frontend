@@ -1,0 +1,143 @@
+<div class="pob">
+  <app-header-title title="Purchase Order — Kode B" description="Equipment rental" />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- Informasi PO -->
+    <div class="pob-card">
+      <div class="pob-section__title">Informasi PO</div>
+      <div class="pob-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal PO</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Tanggal PO" />
+          <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input matInput formControlName="projectName" maxlength="5" (keyup)="toUpperCase()" placeholder="Ex. MICZ" />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">Harus 4–5 karakter kapital.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="pob-span2">
+          <mat-label>Vendor Rental</mat-label>
+          <input matInput formControlName="supplierName" readonly placeholder="Pilih vendor" />
+          <button mat-icon-button matPrefix type="button" (click)="openSupplierSelector()" aria-label="Pilih vendor">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Daftar Sewa -->
+    <div class="pob-card">
+      <div class="pob-cardhead">
+        <div class="pob-section__title pob-section__title--flush">Daftar Sewa Equipment</div>
+        <button type="button" class="pob-add" (click)="openEquipmentSelector()">
+          <mat-icon>add</mat-icon> Tambah equipment
+        </button>
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="pob-empty">
+          <mat-icon>precision_manufacturing</mat-icon>
+          <span>Belum ada equipment. Klik "Tambah equipment" untuk pilih dari katalog.</span>
+        </div>
+      } @else {
+        <div class="pob-list">
+          @for (item of t.controls; track item; let i = $index) {
+            <div class="pob-rental" [formGroup]="getFormGroupAt(i)">
+              <div class="pob-rental__id">
+                <span class="pob-rentbadge">{{ (getFormGroupAt(i).value.name || "?").charAt(0) }}</span>
+                <div class="pob-rentid__text">
+                  <span class="pob-rentname">{{ getFormGroupAt(i).value.name }}</span>
+                  <span class="pob-rentcap">
+                    <span class="pob-rentcat">{{ getFormGroupAt(i).value.category }}</span>
+                    <span *ngIf="getFormGroupAt(i).value.capacity"> · {{ getFormGroupAt(i).value.capacity }}</span>
+                  </span>
+                </div>
+                <div class="pob-renttotal">Rp {{ lineTotal(i) | number: "1.0-0" }}</div>
+                <button mat-icon-button type="button" (click)="removeAt(i)" aria-label="Hapus"><mat-icon>close</mat-icon></button>
+              </div>
+
+              <div class="pob-rental__grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Volume</mat-label>
+                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Satuan</mat-label>
+                  <mat-select formControlName="unit" (selectionChange)="onUnitChange(i)">
+                    <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
+                  </mat-select>
+                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">Lump sum — volume dikunci 1</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Harga satuan</mat-label>
+                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Dari tanggal</mat-label>
+                  <input matInput formControlName="fromDate" [matDatepicker]="dp1" placeholder="Mulai sewa" />
+                  <mat-datepicker-toggle matIconPrefix [for]="dp1"></mat-datepicker-toggle>
+                  <mat-datepicker #dp1></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Sampai tanggal</mat-label>
+                  <input matInput formControlName="toDate" [matDatepicker]="dp2" placeholder="Selesai sewa" />
+                  <mat-datepicker-toggle matIconPrefix [for]="dp2"></mat-datepicker-toggle>
+                  <mat-datepicker #dp2></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="pob-span2">
+                  <mat-label>Lokasi kerja</mat-label>
+                  <input matInput formControlName="location" placeholder="Lokasi penempatan equipment" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="pob-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">Termasuk PPN 11%</mat-slide-toggle>
+        <div class="pob-summary">
+          <div class="pob-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
+          <div class="pob-summary__row"><span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
+          <div class="pob-summary__row pob-summary__row--total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perjanjian & Pembayaran -->
+    <div class="pob-card">
+      <div class="pob-section__title">Poin Perjanjian &amp; Pembayaran</div>
+      <label class="pob-wyslabel">Catatan / poin perjanjian</label>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: operator disediakan vendor, BBM ditanggung penyewa, jam kerja 08.00–17.00, denda keterlambatan, dll"
+      ></app-wysiwyg>
+
+      <div class="pob-grid">
+        <mat-form-field appearance="outline" class="pob-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <input matInput formControlName="paymentTerm" placeholder="Ex. Tempo 30 hari / CASH" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" /><span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" /><span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+
+      <div class="pob-actions">
+        <span class="pob-spacer"></span>
+        <button type="submit" class="pob-submit" [disabled]="formGroup.invalid || t.controls.length === 0 || isSubmitting">
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -77,7 +77,9 @@ import { MasterItemListComponent } from './pages/master/master-item/master-item-
 import { PurchaseOrderCreateFComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component';
 import { PurchaseOrderCreate516Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component';
 import { PurchaseOrderCreateAComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component';
+import { PurchaseOrderCreateBComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component';
 import { PurchaseOrderCreateCComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component';
+import { PurchaseOrderCreateDComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component';
 import { MasterEquipmentListComponent } from './pages/master/master-equipment/master-equipment-list/master-equipment-list.component';
 
 export const routes: Routes = [
@@ -246,8 +248,22 @@ export const routes: Routes = [
             },
           },
           {
+            path: 'Create/B',
+            component: PurchaseOrderCreateBComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
             path: 'Create/C',
             component: PurchaseOrderCreateCComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/D',
+            component: PurchaseOrderCreateDComponent,
             data: {
               title: 'Purchase order',
             },

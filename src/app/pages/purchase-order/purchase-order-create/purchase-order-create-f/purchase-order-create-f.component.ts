@@ -18,8 +18,10 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
+import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -39,7 +41,9 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     HeaderTitleComponent,
+    WysiwygComponent,
     MatSlideToggleModule,
+    MatCheckboxModule,
     NgxMaskDirective,
   ],
   templateUrl: './purchase-order-create-f.component.html',
@@ -104,6 +108,9 @@ export class PurchaseOrderCreateFComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
+    notes: new FormControl(''),
+    // auto-surfaced clause when a steel ("besi") item is in the order
+    steelTestRequired: new FormControl(true),
     includePPN: new FormControl(true),
   });
 
@@ -121,6 +128,17 @@ export class PurchaseOrderCreateFComponent {
 
   removeAt(i: number) {
     this.t.removeAt(i);
+  }
+
+  /** True when any line item looks like steel ("besi") — drives the mill-test clause. */
+  get hasSteelItem(): boolean {
+    return (this.t.value || []).some((x: any) =>
+      `${x?.description ?? ''} ${x?.sku ?? ''}`.toLowerCase().includes('besi'),
+    );
+  }
+
+  get steelTestClause(): string {
+    return 'Supplier wajib menyediakan hasil uji material (mill certificate / uji tarik) untuk seluruh material besi yang dikirim.';
   }
 
   private buildItemGroup(item: any): FormGroup {
@@ -242,6 +260,13 @@ export class PurchaseOrderCreateFComponent {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        // rich-text agreement points / notes (HTML string)
+        notes: this.formGroup.get('notes')?.value,
+        // steel (besi) mill-test clause — only meaningful when a steel item exists
+        steelTestRequired: this.hasSteelItem
+          ? !!this.formGroup.get('steelTestRequired')?.value
+          : false,
+        steelTestClause: this.hasSteelItem ? this.steelTestClause : null,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
           equipment_id: x.equipment_id,

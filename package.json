@@ -33,6 +33,7 @@
     "ng2-pdf-viewer": "^10.4.0",
     "ngx-extended-pdf-viewer": "^23.2.0",
     "ngx-mask": "^19.0.7",
+    "ngx-quill": "^28.0.2",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^3.11.174",
     "pdfmake": "^0.2.20",

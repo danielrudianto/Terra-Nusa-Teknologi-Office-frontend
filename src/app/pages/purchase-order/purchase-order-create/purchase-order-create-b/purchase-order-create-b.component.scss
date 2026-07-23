@@ -1,0 +1,444 @@
+/* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.pob {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* card */
+.pob-card {
+  background: $surface;
+  border: 0.5px solid $border;
+  border-radius: 18px;
+  box-shadow: var(
+    --card-shadow,
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05)
+  );
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.pob-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.pob-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $faint;
+  margin-bottom: 0.9rem;
+  &--flush {
+    margin-bottom: 0;
+  }
+}
+
+/* grid */
+.pob-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.25rem;
+}
+.pob-span2 {
+  grid-column: 1 / -1;
+}
+:host ::ng-deep .pob-grid .mat-mdc-form-field {
+  width: 100%;
+}
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
+}
+
+/* add / calc buttons */
+.pob-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: $surface;
+  color: $brand;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
+}
+
+/* item rows (grid table) */
+.pob-items {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pob-items__head,
+.pob-items__row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.6fr 0.9fr 0.9fr 1.2fr 1.1fr 40px;
+  gap: 0.5rem;
+  align-items: center;
+}
+.pob-items__head {
+  background: $surface2;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid $line;
+  span {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+}
+.pob-items__row {
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid $line;
+}
+.pob-items__row:last-child {
+  border-bottom: none;
+}
+.pob-r {
+  text-align: right;
+}
+:host ::ng-deep .pob-f {
+  width: 100%;
+}
+:host ::ng-deep .pob-f .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+:host ::ng-deep .pob-f .mat-mdc-text-field-wrapper {
+  background: transparent;
+}
+:host ::ng-deep .pob-f.pob-r input {
+  text-align: right;
+}
+.pob-linetotal {
+  text-align: right;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  padding-bottom: 1.25em;
+}
+.pob-items__empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: $faint;
+  font-size: 0.85rem;
+}
+
+/* items foot: PPN toggle + summary */
+.pob-items__foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.pob-summary {
+  min-width: 260px;
+  margin-left: auto;
+}
+.pob-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+  span:first-child {
+    color: $muted;
+  }
+  span:last-child {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  &--total {
+    border-top: 1px solid $line;
+    margin-top: 4px;
+    padding-top: 0.6rem;
+    span:first-child {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      color: $ink;
+    }
+    span:last-child {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: $brand;
+    }
+  }
+}
+
+/* info banner */
+.pob-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  background: $brandSoft;
+  border-radius: 10px;
+  color: var(--brand-strong, #0f3fd0);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+  }
+}
+
+/* actions */
+.pob-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $line;
+}
+.pob-spacer {
+  flex: 1;
+}
+.pob-submit {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.6rem;
+  cursor: pointer;
+  border: none;
+  background: $brand;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  transition: background 0.15s ease;
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  &:disabled {
+    background: #e6e9ee;
+    color: #9aa0ab;
+    box-shadow: none;
+    cursor: default;
+  }
+}
+
+@media (max-width: 860px) {
+  .pob-grid {
+    grid-template-columns: 1fr;
+  }
+  .pob-items__head {
+    display: none;
+  }
+  .pob-items__row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.75rem;
+  }
+  .pob-linetotal {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* ===== catalog item cards ===== */
+.pob-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 2.5rem 1rem; text-align: center; color: $faint; font-size: 0.86rem;
+  border: 1px dashed $border; border-radius: 14px;
+  mat-icon { font-size: 32px; width: 32px; height: 32px; color: $faint; }
+}
+
+.pob-itemlist { display: flex; flex-direction: column; gap: 10px; }
+
+.pob-itemcard {
+  border: 0.5px solid $border; border-radius: 14px; overflow: hidden;
+  background: $surface;
+
+  &__id {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0.75rem 0.9rem; background: $surface2; border-bottom: 1px solid $line;
+  }
+  &__inputs {
+    display: grid; grid-template-columns: 0.8fr 1fr 1.2fr; gap: 0.25rem 1rem;
+    padding: 0.9rem 0.9rem 0.2rem;
+    align-items: start;
+  }
+}
+
+.pob-itembadge {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+  background: $brandSoft; color: $brand; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+}
+.pob-itemid__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pob-itemdesc { font-size: 0.9rem; font-weight: 600; color: $ink; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pob-itemsku { font-family: 'SFMono-Regular', ui-monospace, Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: $muted; }
+.pob-itemtotal { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+:host ::ng-deep .pob-itemcard__inputs .mat-mdc-form-field { width: 100%; }
+.pob-itemremarks { grid-column: 1 / -1; }
+
+@media (max-width: 720px) {
+  .pob-itemcard__inputs { grid-template-columns: 1fr 1fr; }
+  .pob-itemremarks { grid-column: 1 / -1; }
+}
+
+/* ===== shipment legs ===== */
+.pob-list { display: flex; flex-direction: column; gap: 12px; }
+.pob-leg { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.pob-leg__head {
+  display: flex; align-items: center; gap: 12px; padding: 0.7rem 0.9rem;
+  background: $surface2; border-bottom: 1px solid $line;
+}
+.pob-leg__no { flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: $brand; background: $brandSoft; border-radius: 8px; padding: 3px 9px; }
+.pob-leg__route {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: flex-start; gap: 6px;
+  font-size: 0.85rem; font-weight: 600; color: $ink;
+  mat-icon { flex: 0 0 auto; font-size: 16px; width: 16px; height: 16px; color: $faint; margin-top: 2px; }
+}
+.pob-leg__loc {
+  flex: 1 1 0; min-width: 0; line-height: 1.3;
+  white-space: normal; word-break: break-word; overflow-wrap: anywhere;
+}
+.pob-leg__amt { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pob-leg__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
+}
+:host ::ng-deep .pob-leg__grid .mat-mdc-form-field { width: 100%; }
+
+/* vehicle picker */
+.pob-vehlabel { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: $faint; padding: 0.3rem 0.9rem 0.5rem; }
+.pob-vehicles { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0.9rem 1rem; }
+.pob-veh {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+  width: 78px; padding: 0.6rem 0.4rem; border-radius: 12px;
+  border: 1px solid $border; background: $surface; color: $muted;
+  font-family: 'Montserrat', sans-serif; transition: all 0.13s ease;
+  &__ico svg { width: 30px; height: 30px; display: block; }
+  &__lbl { font-size: 0.7rem; font-weight: 600; }
+  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: $ink; }
+  &.is-on {
+    border-color: $brand; background: $brandSoft; color: $brand;
+    box-shadow: 0 3px 10px rgba(21, 77, 236, 0.18);
+    .pob-veh__lbl { font-weight: 700; }
+  }
+}
+
+@media (max-width: 720px) {
+  .pob-leg__grid { grid-template-columns: 1fr; }
+  .pob-veh { width: calc(25% - 6px); }
+}
+
+.pob-nofleet { font-size: 0.82rem; color: var(--faint, #9aa0ab); padding: 0.5rem 0.2rem; }
+
+/* dari/ke addresses: fixed 50% column, wrap long text */
+.pob-addr { min-width: 0; }
+.pob-addr textarea {
+  resize: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* ===== transport mode segmented control ===== */
+.pob-modes {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  padding: 0.9rem 0.9rem 0.2rem;
+}
+.pob-mode {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+  padding: 0.55rem 0.3rem; border-radius: 11px;
+  border: 1px solid $border; background: $surface; color: $muted;
+  font-family: 'Montserrat', sans-serif; transition: all 0.13s ease;
+  &__ico svg { width: 22px; height: 22px; display: block; }
+  &__lbl { font-size: 0.72rem; font-weight: 600; }
+  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: $ink; }
+  &.is-on {
+    border-color: $brand; background: $brandSoft; color: $brand;
+    box-shadow: 0 2px 8px rgba(21, 77, 236, 0.16);
+    .pob-mode__lbl { font-weight: 700; }
+  }
+}
+.pob-leg__grid--tail { padding-top: 0.4rem; }
+
+@media (max-width: 560px) { .pob-modes { grid-template-columns: repeat(2, 1fr); } }
+
+/* fleet info button in the "Jenis kendaraan" label */
+.pob-vehlabel { display: flex; align-items: center; gap: 10px; }
+.pob-veh-info {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600;
+  border: 0.5px solid var(--border, #cdd7f7); background: transparent; color: var(--brand, #154dec);
+  border-radius: 8px; padding: 3px 9px; cursor: pointer; text-transform: none; letter-spacing: 0;
+  transition: background 0.14s ease;
+  &:hover { background: var(--brand-soft, #eef2fe); border-style: solid; }
+}
+
+/* ===== rental item cards ===== */
+.pob-list { display: flex; flex-direction: column; gap: 12px; }
+.pob-rental { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.pob-rental__id {
+  display: flex; align-items: center; gap: 12px; padding: 0.75rem 0.9rem;
+  background: $surface2; border-bottom: 1px solid $line;
+}
+.pob-rentbadge {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+  background: $brandSoft; color: $brand; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+}
+.pob-rentid__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pob-rentname { font-size: 0.9rem; font-weight: 700; color: $ink; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pob-rentcap { font-size: 0.75rem; color: $muted; }
+.pob-rentcat { font-weight: 600; }
+.pob-renttotal { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pob-rental__grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
+}
+:host ::ng-deep .pob-rental__grid .mat-mdc-form-field { width: 100%; }
+.pob-full { width: 100%; }
+:host ::ng-deep .pob-full.mat-mdc-form-field { width: 100%; }
+
+@media (max-width: 820px) { .pob-rental__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .pob-rental__grid { grid-template-columns: 1fr; } }
+
+/* wysiwyg notes label */
+.pob-wyslabel { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink, #16181d); margin: 0.2rem 0 0.5rem; }
+app-wysiwyg { display: block; margin-bottom: 1.25rem; }

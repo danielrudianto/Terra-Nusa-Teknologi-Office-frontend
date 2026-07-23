@@ -18,6 +18,7 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
+import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
@@ -39,6 +40,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     HeaderTitleComponent,
+    WysiwygComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
@@ -104,6 +106,7 @@ export class PurchaseOrderCreateCComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
+    notes: new FormControl(''),
     includePPN: new FormControl(true),
   });
 
@@ -242,6 +245,8 @@ export class PurchaseOrderCreateCComponent {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        // rich-text agreement points / notes (HTML string)
+        notes: this.formGroup.get('notes')?.value,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
           equipment_id: x.equipment_id,

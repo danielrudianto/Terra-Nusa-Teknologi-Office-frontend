@@ -1,0 +1,12 @@
+<div class="wys" [class.is-disabled]="isDisabled">
+  <quill-editor
+    [modules]="modules"
+    [placeholder]="placeholder"
+    [readOnly]="isDisabled || readOnly"
+    [ngModel]="value"
+    (onContentChanged)="onContentChanged($event)"
+    (onBlur)="onTouched()"
+    [style.--wys-min]="minHeight + 'px'"
+    [style.--wys-max]="maxHeight + 'px'"
+  ></quill-editor>
+</div>

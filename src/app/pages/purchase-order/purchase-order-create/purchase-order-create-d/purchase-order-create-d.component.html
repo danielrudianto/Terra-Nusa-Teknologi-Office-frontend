@@ -1,0 +1,149 @@
+<div class="pod">
+  <app-header-title title="Purchase Order — Kode D" description="Tenaga kerja" />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== Informasi PO ===== -->
+    <div class="pod-card">
+      <div class="pod-section__title">Informasi PO</div>
+      <div class="pod-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal PO</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Tanggal PO" />
+          <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input matInput formControlName="projectName" maxlength="5" (keyup)="toUpperCase()" placeholder="Ex. MICZ" />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">Harus 4–5 karakter kapital.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pod-span2">
+          <mat-label>Vendor / Mandor</mat-label>
+          <input matInput formControlName="supplierName" readonly placeholder="Pilih vendor" />
+          <button mat-icon-button matPrefix type="button" (click)="openSupplierSelector()" aria-label="Pilih vendor">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Daftar Pekerjaan ===== -->
+    <div class="pod-card">
+      <div class="pod-cardhead">
+        <div class="pod-section__title pod-section__title--flush">Daftar Pekerjaan</div>
+        <button type="button" class="pod-add" (click)="addWorker()">
+          <mat-icon>add</mat-icon> Tambah pekerjaan
+        </button>
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="pod-empty">
+          <mat-icon>engineering</mat-icon>
+          <span>Belum ada pekerjaan. Klik "Tambah pekerjaan".</span>
+        </div>
+      } @else {
+        <div class="pod-list">
+          @for (item of t.controls; track item; let i = $index) {
+            <div class="pod-worker" [formGroup]="getFormGroupAt(i)">
+              <div class="pod-worker__head">
+                <span class="pod-worker__no">#{{ i + 1 }}</span>
+                <span class="pod-worker__label">
+                  {{ getFormGroupAt(i).value.task || "Pekerjaan belum diisi" }}
+                  <span class="pod-worker__who" *ngIf="getFormGroupAt(i).value.name">
+                    · {{ getFormGroupAt(i).value.name }}
+                  </span>
+                </span>
+                <span class="pod-worker__amt">Rp {{ lineTotal(i) | number: "1.0-0" }}</span>
+                <button mat-icon-button type="button" (click)="removeAt(i)" aria-label="Hapus pekerjaan">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+
+              <div class="pod-worker__grid">
+                <mat-form-field appearance="outline" class="pod-span2">
+                  <mat-label>Nama pekerjaan</mat-label>
+                  <input matInput formControlName="task" maxlength="100" placeholder="Ex. Tukang cor, Mandor cor, Helper" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Volume</mat-label>
+                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Satuan</mat-label>
+                  <mat-select formControlName="unit" (selectionChange)="onUnitChange(i)">
+                    <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
+                  </mat-select>
+                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">Lump sum — volume dikunci 1</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Harga satuan</mat-label>
+                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nama pekerja</mat-label>
+                  <input matInput formControlName="name" placeholder="Nama lengkap" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>No. KTP</mat-label>
+                  <input matInput formControlName="idCard" placeholder="16 digit NIK" maxlength="16" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="pod-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">Termasuk PPN 11%</mat-slide-toggle>
+        <div class="pod-summary">
+          <div class="pod-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
+          <div class="pod-summary__row"><span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
+          <div class="pod-summary__row pod-summary__row--total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Pembayaran ===== -->
+    <div class="pod-card">
+      <div class="pod-section__title">Pembayaran</div>
+      <div class="pod-grid">
+        <mat-form-field appearance="outline" class="pod-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <input matInput formControlName="paymentTerm" placeholder="Ex. Mingguan / Tempo 30 hari" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" /><span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" /><span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="pod-card">
+      <div class="pod-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: jam kerja, lembur, APD wajib, BPJS ketenagakerjaan, denda keterlambatan, dll"
+      ></app-wysiwyg>
+
+      <div class="pod-actions">
+        <span class="pod-spacer"></span>
+        <button type="submit" class="pod-submit" [disabled]="formGroup.invalid || t.controls.length === 0 || isSubmitting">
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

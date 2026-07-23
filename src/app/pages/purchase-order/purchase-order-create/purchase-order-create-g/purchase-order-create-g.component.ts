@@ -18,6 +18,7 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
+import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
@@ -39,6 +40,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     HeaderTitleComponent,
+    WysiwygComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
@@ -58,25 +60,9 @@ export class PurchaseOrderCreateGComponent {
   isSubmitting: boolean = false;
 
   units: string[] = [
-    'pcs',
-    'set',
-    'Kg',
-    'gram',
-    'ton',
-    'm',
-    'm2',
-    'm3',
-    'batang',
-    'lembar',
-    'roll',
-    'dus',
-    'sak',
-    'pasang',
-    'lusin',
-    'unit',
-    'liter',
-    'box',
-    'kaleng',
+    'pcs', 'set', 'Kg', 'gram', 'ton', 'm', 'm2', 'm3',
+    'batang', 'lembar', 'roll', 'dus', 'sak', 'pasang',
+    'lusin', 'unit', 'liter', 'box', 'kaleng',
   ];
 
   formGroup: FormGroup = new FormGroup({
@@ -104,6 +90,7 @@ export class PurchaseOrderCreateGComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
+    notes: new FormControl(''),
     includePPN: new FormControl(true),
   });
 
@@ -125,7 +112,7 @@ export class PurchaseOrderCreateGComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
+      item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -148,7 +135,7 @@ export class PurchaseOrderCreateGComponent {
         if (!item) return;
         // prevent adding the exact same catalog item twice
         const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
+          (x: any) => x.item_id === item.id,
         );
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
@@ -213,10 +200,7 @@ export class PurchaseOrderCreateGComponent {
           (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
           0,
         )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+      : this.t.value.reduce((acc: any, x: any) => acc + x.price * x.quantity, 0);
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -238,13 +222,15 @@ export class PurchaseOrderCreateGComponent {
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
         supplierPICName: this.formGroup.get('supplierPICName')?.value,
-        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
-          ?.value,
+        supplierPICPhoneNumber:
+          this.formGroup.get('supplierPICPhoneNumber')?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        // rich-text agreement points / notes (HTML string)
+        notes: this.formGroup.get('notes')?.value,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
+          item_id: x.item_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,
