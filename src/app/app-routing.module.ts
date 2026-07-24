@@ -76,11 +76,14 @@ import { EngineeringProjectViewComponent } from './pages/engineering/engineering
 import { MasterItemListComponent } from './pages/master/master-item/master-item-list/master-item-list.component';
 import { PurchaseOrderCreateFComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component';
 import { PurchaseOrderCreate516Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component';
+import { PurchaseOrderCreate511Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-511/purchase-order-create-511.component';
 import { PurchaseOrderCreateAComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component';
 import { PurchaseOrderCreateBComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component';
 import { PurchaseOrderCreateCComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component';
 import { PurchaseOrderCreateDComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component';
 import { MasterEquipmentListComponent } from './pages/master/master-equipment/master-equipment-list/master-equipment-list.component';
+import { PurchaseOrderCreate63Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component';
+import { PurchaseOrderCreate512Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component';
 
 export const routes: Routes = [
   {
@@ -227,8 +230,15 @@ export const routes: Routes = [
             },
           },
           {
-            path: 'Create/F',
-            component: PurchaseOrderCreateFComponent,
+            path: 'Create/511',
+            component: PurchaseOrderCreate511Component,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/512',
+            component: PurchaseOrderCreate512Component,
             data: {
               title: 'Purchase order',
             },
@@ -238,6 +248,30 @@ export const routes: Routes = [
             component: PurchaseOrderCreate516Component,
             data: {
               title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/631',
+            component: PurchaseOrderCreate63Component,
+            data: {
+              title: 'Purchase order',
+              purchaseType: '6.3.1',
+            },
+          },
+          {
+            path: 'Create/632',
+            component: PurchaseOrderCreate63Component,
+            data: {
+              title: 'Purchase order',
+              purchaseType: '6.3.2',
+            },
+          },
+          {
+            path: 'Create/641',
+            component: PurchaseOrderCreate63Component,
+            data: {
+              title: 'Purchase order',
+              purchaseType: '6.4.1',
             },
           },
           {
@@ -264,6 +298,13 @@ export const routes: Routes = [
           {
             path: 'Create/D',
             component: PurchaseOrderCreateDComponent,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          {
+            path: 'Create/F',
+            component: PurchaseOrderCreateFComponent,
             data: {
               title: 'Purchase order',
             },

@@ -27,7 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-purchase-order-create-g',
+  selector: 'app-purchase-order-create-511',
   providers: [provideNgxMask()],
   imports: [
     CommonModule,
@@ -44,10 +44,10 @@ import { CommonModule } from '@angular/common';
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
-  templateUrl: './purchase-order-create-g.component.html',
-  styleUrl: './purchase-order-create-g.component.scss',
+  templateUrl: './purchase-order-create-511.component.html',
+  styleUrl: './purchase-order-create-511.component.scss',
 })
-export class PurchaseOrderCreateGComponent {
+export class PurchaseOrderCreate511Component {
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -60,14 +60,30 @@ export class PurchaseOrderCreateGComponent {
   isSubmitting: boolean = false;
 
   units: string[] = [
-    'pcs', 'set', 'Kg', 'gram', 'ton', 'm', 'm2', 'm3',
-    'batang', 'lembar', 'roll', 'dus', 'sak', 'pasang',
-    'lusin', 'unit', 'liter', 'box', 'kaleng',
+    'pcs',
+    'set',
+    'Kg',
+    'gram',
+    'ton',
+    'm',
+    'm2',
+    'm3',
+    'batang',
+    'lembar',
+    'roll',
+    'dus',
+    'sak',
+    'pasang',
+    'lusin',
+    'unit',
+    'liter',
+    'box',
+    'kaleng',
   ];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
-    purchaseType: new FormControl('G'),
+    purchaseType: new FormControl('5.1.1'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -112,7 +128,7 @@ export class PurchaseOrderCreateGComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      item_id: [item.id, Validators.required],
+      equipment_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -125,7 +141,7 @@ export class PurchaseOrderCreateGComponent {
   openItemSelector() {
     this.dialog
       .open(MasterItemSelectorComponent, {
-        data: { purchaseType: 'G' },
+        data: { purchaseType: '5.1.1' },
         width: '560px',
         maxWidth: '94vw',
         autoFocus: false,
@@ -135,7 +151,7 @@ export class PurchaseOrderCreateGComponent {
         if (!item) return;
         // prevent adding the exact same catalog item twice
         const exists = this.t.value.some(
-          (x: any) => x.item_id === item.id,
+          (x: any) => x.equipment_id === item.id,
         );
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
@@ -200,7 +216,10 @@ export class PurchaseOrderCreateGComponent {
           (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
           0,
         )
-      : this.t.value.reduce((acc: any, x: any) => acc + x.price * x.quantity, 0);
+      : this.t.value.reduce(
+          (acc: any, x: any) => acc + x.price * x.quantity,
+          0,
+        );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -222,21 +241,21 @@ export class PurchaseOrderCreateGComponent {
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
         supplierPICName: this.formGroup.get('supplierPICName')?.value,
-        supplierPICPhoneNumber:
-          this.formGroup.get('supplierPICPhoneNumber')?.value,
+        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
+          ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // rich-text agreement points / notes (HTML string)
         notes: this.formGroup.get('notes')?.value,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
+          equipment_id: x.equipment_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,
           price: x.price,
           unit: x.unit,
-          remarks_1: x.remarks, // item note -> remarks_1 column
+          remarks: x.remarks,
         })),
       },
     };

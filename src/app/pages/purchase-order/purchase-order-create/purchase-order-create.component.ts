@@ -88,50 +88,50 @@ export class PurchaseOrderCreateComponent {
       type: '5.1.1',
       title: 'Asset acquisition',
       description: 'Purchase orders used to create Asset purchases expense',
-      link: '5.1.1',
+      link: '511',
     },
     {
       type: '5.1.2',
       title: 'Asset maintenance',
       description: 'Purchase orders used to create Asset maintenance expense',
-      link: '5.1.2',
+      link: '512',
     },
     {
       type: '5.1.6',
       title: 'Office supplies',
       description: 'Purchase orders used to create Office supplies expense',
-      link: '5.1.6',
+      link: '516',
     },
     {
       type: '5.1.12',
       title: 'Software purchase',
       description: 'Purchase orders used to create Software purchase expense',
-      link: '5.1.12',
+      link: '512',
     },
     {
       type: '6.3.1',
       title: 'Advertising purchase',
       description: 'Purchase orders used to create advertising expense',
-      link: '6.3.1',
+      link: '631',
     },
     {
       type: '6.3.2',
       title: 'Promotional merchandise purchase',
       description: 'Purchase orders used to create merchendise expense',
-      link: '6.3.2',
+      link: '632',
     },
     {
       type: '6.4.1',
       title: 'Legal document',
       description:
         'Purchase orders used to create legal document expense, i.e. Akta, SBU, etc.',
-      link: '6.4.1',
+      link: '641',
     },
     {
       type: '6.4.2',
       title: 'Insurance',
       description: 'Purchase orders used to create insurance document expense',
-      link: '6.4.2',
+      link: '642',
     },
     {
       type: '6.5.1',
@@ -149,18 +149,33 @@ export class PurchaseOrderCreateComponent {
 
   onCreatePurchaseOrder(type: string) {
     switch (type) {
-      case 'G':
-        this.router.navigate(['G'], {
+      case '5.1.1':
+        this.router.navigate(['511'], {
           relativeTo: this.route,
         });
         break;
-      case 'F':
-        this.router.navigate(['F'], {
+      case '5.1.2':
+        this.router.navigate(['512'], {
           relativeTo: this.route,
         });
         break;
       case '5.1.6':
         this.router.navigate(['516'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '6.3.1':
+        this.router.navigate(['631'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '6.3.2':
+        this.router.navigate(['632'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '6.4.1':
+        this.router.navigate(['641'], {
           relativeTo: this.route,
         });
         break;
@@ -181,6 +196,16 @@ export class PurchaseOrderCreateComponent {
         break;
       case 'D':
         this.router.navigate(['D'], {
+          relativeTo: this.route,
+        });
+        break;
+      case 'F':
+        this.router.navigate(['F'], {
+          relativeTo: this.route,
+        });
+        break;
+      case 'G':
+        this.router.navigate(['G'], {
           relativeTo: this.route,
         });
         break;

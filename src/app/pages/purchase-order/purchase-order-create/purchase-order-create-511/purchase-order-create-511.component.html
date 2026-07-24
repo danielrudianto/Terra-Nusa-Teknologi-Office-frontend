@@ -1,0 +1,314 @@
+<div class="po511">
+  <app-header-title
+    title="Purchase Order — Kode 5.1.1"
+    description="Asset purchase — pembelian aset"
+  />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== 1. Informasi PO ===== -->
+    <div class="po511-card">
+      <div class="po511-section__title">Informasi PO</div>
+      <div class="po511-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+            placeholder="Tanggal PO"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+            placeholder="Ex. MICZ"
+          />
+          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-error *ngIf="f['projectName'].hasError('pattern')"
+            >Harus 4–5 karakter kapital.</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po511-span2">
+          <mat-label>Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            placeholder="Pilih supplier"
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="openSupplierSelector()"
+            aria-label="Pilih supplier"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po511-span2">
+          <mat-label>Alamat Supplier</mat-label>
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="2"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== 2. Daftar Barang ===== -->
+    <div class="po511-card">
+      <div class="po511-cardhead">
+        <div class="po511-section__title po511-section__title--flush">
+          Daftar Barang
+        </div>
+        <button type="button" class="po511-add" (click)="openItemSelector()">
+          <mat-icon>add</mat-icon> Tambah barang
+        </button>
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="po511-empty">
+          <mat-icon>inventory_2</mat-icon>
+          <span
+            >Belum ada barang. Klik "Tambah barang" untuk memilih dari
+            katalog.</span
+          >
+        </div>
+      } @else {
+        <div class="po511-itemlist">
+          @for (item of t.controls; track item; let i = $index) {
+            <div class="po511-itemcard" [formGroup]="getFormGroupAt(i)">
+              <div class="po511-itemcard__id">
+                <span class="po511-itembadge">{{
+                  (getFormGroupAt(i).value.sku || "?").charAt(0)
+                }}</span>
+                <div class="po511-itemid__text">
+                  <span class="po511-itemdesc">{{
+                    getFormGroupAt(i).value.description
+                  }}</span>
+                  <span class="po511-itemsku">{{
+                    getFormGroupAt(i).value.sku
+                  }}</span>
+                </div>
+                <div class="po511-itemtotal">
+                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                </div>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeAt(i)"
+                  aria-label="Hapus barang"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+
+              <div class="po511-itemcard__inputs">
+                <mat-form-field appearance="outline">
+                  <mat-label>Qty</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    placeholder="0"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Satuan</mat-label>
+                  <mat-select formControlName="unit">
+                    <mat-option *ngFor="let u of units" [value]="u">{{
+                      u
+                    }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Harga satuan</mat-label>
+                  <input
+                    matInput
+                    formControlName="price"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    prefix="Rp. "
+                    placeholder="0"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="po511-itemremarks">
+                  <mat-label>Remarks</mat-label>
+                  <input
+                    matInput
+                    formControlName="remarks"
+                    placeholder="Catatan (opsional)"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po511-items__foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary"
+          >Termasuk PPN 11%</mat-slide-toggle
+        >
+        <div class="po511-summary">
+          <div class="po511-summary__row">
+            <span>Subtotal (DPP)</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="po511-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="po511-summary__row po511-summary__row--total">
+            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="po511-note">
+        <mat-icon>info</mat-icon>
+        <span
+          >Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib
+          melampirkan faktur pajak saat penagihan.</span
+        >
+      </div>
+    </div>
+
+    <!-- ===== 3. Pengiriman ===== -->
+    <div class="po511-card">
+      <div class="po511-section__title">Pengiriman</div>
+      <div class="po511-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Metode Pengiriman</mat-label>
+          <mat-select formControlName="deliveryMethod">
+            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
+            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po511-span2">
+          <mat-label>Alamat Pengiriman / Pengambilan</mat-label>
+          <textarea
+            matInput
+            formControlName="deliveryAddress"
+            rows="2"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+      <div class="po511-note">
+        <mat-icon>info</mat-icon>
+        <span
+          >Bila <b>Franco</b> dipilih, alamat di atas adalah alamat
+          pengiriman.</span
+        >
+      </div>
+    </div>
+
+    <!-- ===== 4. Pembayaran ===== -->
+    <div class="po511-card">
+      <div class="po511-section__title">Pembayaran</div>
+      <div class="po511-grid">
+        <mat-form-field appearance="outline" class="po511-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <mat-select formControlName="paymentTerm">
+            <mat-option value="COD">Cash on delivery</mat-option>
+            <mat-option value="CBD">Cash before delivery</mat-option>
+            <mat-option value="PPD">Prepaid</mat-option>
+            <mat-option value="CR">Credit</mat-option>
+            <mat-option value="CRD">Credit with prepaid</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" />
+          <span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== 5. Kontak PIC ===== -->
+    <div class="po511-card">
+      <div class="po511-section__title">Kontak Penanggung Jawab</div>
+      <div class="po511-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>PIC Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierPICName"
+            placeholder="Nama PIC supplier"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Supplier</mat-label>
+          <input
+            matInput
+            formControlName="supplierPICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>PIC Kantor</mat-label>
+          <input
+            matInput
+            formControlName="officePICName"
+            placeholder="Nama PIC kantor"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Kantor</mat-label>
+          <input
+            matInput
+            formControlName="officePICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="po511-card">
+      <div class="po511-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: garansi, syarat retur, ketentuan pengiriman, dll"
+      ></app-wysiwyg>
+
+      <div class="po511-actions">
+        <span class="po511-spacer"></span>
+        <button
+          type="submit"
+          class="po511-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

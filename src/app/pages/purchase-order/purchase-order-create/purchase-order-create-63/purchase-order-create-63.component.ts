@@ -1,33 +1,39 @@
 import { Component } from '@angular/core';
 import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormArray, FormBuilder, FormControl, FormGroup, FormsModule,
+  ReactiveFormsModule, Validators,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TextFieldModule } from '@angular/cdk/text-field';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
-import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label';
 
+/**
+ * Marketing purchase orders. One form serves both codes because they mix the
+ * same two kinds of lines:
+ *   6.3.1 Advertising Expense      — mostly services (shoot video, foto, compro)
+ *   6.3.2 Promotional Merchandise  — mostly goods (mug, kaos, payung)
+ * The active code comes from the route data, so the master-item selector and
+ * the saved purchaseType always match the tile the user clicked.
+ */
 @Component({
-  selector: 'app-purchase-order-create-g',
+  selector: 'app-purchase-order-create-63',
+  standalone: true,
   providers: [provideNgxMask()],
   imports: [
     CommonModule,
@@ -39,15 +45,16 @@ import { CommonModule } from '@angular/common';
     MatSelectModule,
     MatIconModule,
     MatButtonModule,
+    MatSlideToggleModule,
+    TextFieldModule,
+    NgxMaskDirective,
     HeaderTitleComponent,
     WysiwygComponent,
-    MatSlideToggleModule,
-    NgxMaskDirective,
   ],
-  templateUrl: './purchase-order-create-g.component.html',
-  styleUrl: './purchase-order-create-g.component.scss',
+  templateUrl: './purchase-order-create-63.component.html',
+  styleUrl: './purchase-order-create-63.component.scss',
 })
-export class PurchaseOrderCreateGComponent {
+export class PurchaseOrderCreate63Component {
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -57,17 +64,22 @@ export class PurchaseOrderCreateGComponent {
     private snackBar: MatSnackBar,
   ) {}
 
-  isSubmitting: boolean = false;
+  isSubmitting = false;
 
-  units: string[] = [
-    'pcs', 'set', 'Kg', 'gram', 'ton', 'm', 'm2', 'm3',
-    'batang', 'lembar', 'roll', 'dus', 'sak', 'pasang',
-    'lusin', 'unit', 'liter', 'box', 'kaleng',
+  /** '6.3.1' or '6.3.2', taken from the route definition */
+  purchaseType: string = '6.3.2';
+
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS[this.purchaseType] || this.purchaseType;
+  }
+
+  serviceUnits: string[] = [
+    'LS', 'kegiatan', 'hari', 'jam', 'paket', 'video', 'sesi', 'bulan',
   ];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
-    purchaseType: new FormControl('G'),
+    purchaseType: new FormControl('6.3.2'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -75,8 +87,6 @@ export class PurchaseOrderCreateGComponent {
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
-    deliveryMethod: new FormControl('', Validators.required),
-    deliveryAddress: new FormControl('', Validators.required),
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
     prepaidTerm: new FormControl(0, [
@@ -84,48 +94,73 @@ export class PurchaseOrderCreateGComponent {
       Validators.min(0),
       Validators.max(100),
     ]),
-    supplierPICName: new FormControl('', Validators.required),
-    supplierPICPhoneNumber: new FormControl('', Validators.required),
-    officePICName: new FormControl('', Validators.required),
-    officePICPhoneNumber: new FormControl('', Validators.required),
-    // items are picked from the master-item catalog (type G)
-    purchase_order: new FormArray([]),
     notes: new FormControl(''),
+    lines: new FormArray([]),
     includePPN: new FormControl(true),
   });
+
+  ngOnInit(): void {
+    const routeType = this.route.snapshot.data?.['purchaseType'];
+    if (routeType) {
+      this.purchaseType = routeType;
+      this.formGroup.patchValue({ purchaseType: routeType });
+    }
+  }
 
   get f() {
     return this.formGroup.controls;
   }
-
   get t() {
-    return this.formGroup.get('purchase_order') as FormArray;
+    return this.formGroup.get('lines') as FormArray;
   }
-
   getFormGroupAt(i: number) {
     return this.t.at(i) as FormGroup;
   }
-
   removeAt(i: number) {
     this.t.removeAt(i);
   }
 
-  private buildItemGroup(item: any): FormGroup {
+  isGoods(i: number): boolean {
+    return this.getFormGroupAt(i).value.kind === 'goods';
+  }
+
+  // ---- service line (free text, like PO-D) ----
+  private buildServiceLine(): FormGroup {
     return this.formBuilder.group({
+      kind: ['service'],
+      task: ['', [Validators.required, Validators.maxLength(100)]],
+      item_id: [null],
+      sku: [''],
+      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      unit: ['LS', Validators.required],
+      price: [0, [Validators.required, Validators.min(0)]],
+      note: [''],
+    });
+  }
+
+  addService() {
+    this.t.push(this.buildServiceLine());
+  }
+
+  // ---- goods line (from master item, like PO-G) ----
+  private buildGoodsLine(item: any): FormGroup {
+    return this.formBuilder.group({
+      kind: ['goods'],
+      task: [''],
       item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
-      unit: [item.unit || '', Validators.required],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
+      unit: [item.unit || 'pcs', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
-      remarks: [''],
+      note: [''],
     });
   }
 
   openItemSelector() {
     this.dialog
       .open(MasterItemSelectorComponent, {
-        data: { purchaseType: 'G' },
+        data: { purchaseType: this.purchaseType },
         width: '560px',
         maxWidth: '94vw',
         autoFocus: false,
@@ -133,50 +168,49 @@ export class PurchaseOrderCreateGComponent {
       .afterClosed()
       .subscribe((item) => {
         if (!item) return;
-        // prevent adding the exact same catalog item twice
         const exists = this.t.value.some(
-          (x: any) => x.item_id === item.id,
+          (x: any) => x.kind === 'goods' && x.item_id === item.id,
         );
         if (exists) {
-          this.snackBar.open('Barang sudah ada di daftar', 'Close', {
-            duration: 2500,
-          });
+          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', { duration: 2500 });
           return;
         }
-        this.t.push(this.buildItemGroup(item));
+        this.t.push(this.buildGoodsLine(item));
       });
   }
 
-  // ----- live summary (read-only, safe getters) -----
-  get rawTotal(): number {
-    return this.t.value.reduce(
-      (acc: number, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+  /** LS (lump sum) locks the volume to 1 */
+  onUnitChange(i: number) {
+    const g = this.getFormGroupAt(i);
+    const qty = g.get('quantity');
+    if (g.get('unit')?.value === 'LS') {
+      qty?.setValue(1);
+      qty?.disable();
+    } else {
+      qty?.enable();
+    }
   }
 
+  lineTotal(i: number): number {
+    const g = this.getFormGroupAt(i).getRawValue();
+    return (Number(g.price) || 0) * (Number(g.quantity) || 0);
+  }
+
+  get rawTotal(): number {
+    return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
+  }
   get subTotal(): number {
     return this.formGroup.get('includePPN')?.value
       ? this.rawTotal / 1.11
       : this.rawTotal;
   }
-
   get ppnAmount(): number {
     return this.formGroup.get('includePPN')?.value
       ? this.rawTotal - this.rawTotal / 1.11
       : 0;
   }
-
   get grandTotal(): number {
     return this.rawTotal;
-  }
-
-  get lineTotal(): (i: number) => number {
-    return (i: number) => {
-      const g = this.getFormGroupAt(i).value;
-      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
-    };
   }
 
   openSupplierSelector() {
@@ -194,19 +228,26 @@ export class PurchaseOrderCreateGComponent {
       });
   }
 
+  toUpperCase() {
+    const v = this.formGroup.get('projectName')?.value;
+    if (v && v.toUpperCase() !== v) {
+      this.formGroup.patchValue({ projectName: v.toUpperCase() });
+    }
+  }
+
+  private toISO(d: any): string | null {
+    return d ? new Date(d).toISOString().split('T')[0] : null;
+  }
+
   formatData() {
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce((acc: any, x: any) => acc + x.price * x.quantity, 0);
-    const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
+    const includePPN = this.formGroup.get('includePPN')?.value;
+    const dpp = includePPN ? this.rawTotal / 1.11 : this.rawTotal;
+    const ppn = includePPN ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      date: this.toISO(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
-      purchaseType: this.formGroup.get('purchaseType')?.value,
+      purchaseType: this.purchaseType,
       projectName: projectCode,
       projectCode: projectCode,
       name: '',
@@ -215,29 +256,25 @@ export class PurchaseOrderCreateGComponent {
       payment_term: this.formGroup.get('paymentTerm')?.value,
       templateVersion: '1.0',
       billing_requirements: {},
+      // mixed lines -> purchase_order_items
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          // goods carry the catalogue id; services carry a free-text task
+          item_id: x.kind === 'goods' ? x.item_id : null,
+          task: x.kind === 'service' ? x.task : null,
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.note, // catatan (ex. sablon 1 warna, ukuran, deadline)
+        };
+      }),
       customData: {
-        deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
-        deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
-        supplierPICName: this.formGroup.get('supplierPICName')?.value,
-        supplierPICPhoneNumber:
-          this.formGroup.get('supplierPICPhoneNumber')?.value,
-        officePICName: this.formGroup.get('officePICName')?.value,
-        officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // rich-text agreement points / notes (HTML string)
         notes: this.formGroup.get('notes')?.value,
-        // catalog-referenced items -> maps to purchase_order_items later
-        purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
-          sku: x.sku,
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks_1: x.remarks, // item note -> remarks_1 column
-        })),
       },
     };
   }
@@ -255,23 +292,13 @@ export class PurchaseOrderCreateGComponent {
           );
           this.router.navigate(['/Purchase-order']);
         },
-        error: (error) => {
+        error: (error) =>
           this.snackBar.open(
             error?.error?.detail ?? 'Gagal membuat purchase order',
             'Close',
             { duration: 3000 },
-          );
-        },
+          ),
       })
-      .add(() => {
-        this.isSubmitting = false;
-      });
-  }
-
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
-    }
+      .add(() => (this.isSubmitting = false));
   }
 }

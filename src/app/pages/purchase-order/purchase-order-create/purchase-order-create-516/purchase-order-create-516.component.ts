@@ -141,9 +141,7 @@ export class PurchaseOrderCreate516Component {
   openItemSelector() {
     this.dialog
       .open(MasterItemSelectorComponent, {
-        data: { purchaseType: 'F' },
-        width: '560px',
-        maxWidth: '94vw',
+        data: { purchaseType: '5.1.6' },
         autoFocus: false,
       })
       .afterClosed()

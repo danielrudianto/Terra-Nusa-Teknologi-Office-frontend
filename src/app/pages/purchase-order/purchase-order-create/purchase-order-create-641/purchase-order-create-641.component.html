@@ -1,0 +1,149 @@
+<div class="pos">
+  <app-header-title title="Purchase Order — Kode 6.4.1" [description]="typeLabel" />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <div class="po641-card">
+      <div class="po641-section__title">Informasi PO</div>
+      <div class="po641-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal PO</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Tanggal PO" />
+          <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input matInput formControlName="projectName" maxlength="5" (keyup)="toUpperCase()" placeholder="Ex. MICZ" />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">Harus 4–5 karakter kapital.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="po641-span2">
+          <mat-label>Vendor</mat-label>
+          <input matInput formControlName="supplierName" readonly placeholder="Pilih vendor" />
+          <button mat-icon-button matPrefix type="button" (click)="openSupplierSelector()" aria-label="Pilih vendor">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="po641-card">
+      <div class="po641-cardhead">
+        <div class="po641-section__title po641-section__title--flush">Dokumen Legal</div>
+        <button type="button" class="po641-add" (click)="addLine()"><mat-icon>add</mat-icon> Tambah dokumen</button>
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="po641-empty"><mat-icon>description</mat-icon><span>Belum ada dokumen. Klik "Tambah dokumen".</span></div>
+      } @else {
+        <div class="po641-list">
+          @for (line of t.controls; track line; let i = $index) {
+            <div class="po641-line" [formGroup]="getFormGroupAt(i)">
+              <div class="po641-line__head">
+                <span class="po641-line__no">#{{ i + 1 }}</span>
+                <span class="po641-line__label">
+                  {{ resolvedType(i) || "Dokumen belum dipilih" }}
+                  <span class="po641-validity" *ngIf="getFormGroupAt(i).value.validUntil">
+                    s/d {{ getFormGroupAt(i).value.validUntil | date: "dd MMM yyyy" }}
+                  </span>
+                </span>
+                <span class="po641-line__amt">Rp {{ lineTotal(i) | number: "1.0-0" }}</span>
+                <button mat-icon-button type="button" (click)="removeAt(i)" aria-label="Hapus"><mat-icon>close</mat-icon></button>
+              </div>
+              <div class="po641-line__grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Jenis dokumen</mat-label>
+                  <mat-select formControlName="documentType" (selectionChange)="onDocumentTypeChange(i)">
+                    <mat-option *ngFor="let d of documentTypes" [value]="d">{{ d }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                @if (isOther(i)) {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nama dokumen</mat-label>
+                    <input matInput formControlName="customType" maxlength="100" placeholder="Tulis nama dokumennya" />
+                  </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nomor dokumen</mat-label>
+                  <input matInput formControlName="documentNumber" placeholder="Ex. 0123/SBU/2026" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Berlaku dari</mat-label>
+                  <input matInput formControlName="validFrom" [matDatepicker]="dpFrom" placeholder="Mulai berlaku" />
+                  <mat-datepicker-toggle matIconPrefix [for]="dpFrom"></mat-datepicker-toggle>
+                  <mat-datepicker #dpFrom></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Berlaku sampai</mat-label>
+                  <input matInput formControlName="validUntil" [matDatepicker]="dpUntil" placeholder="Masa berlaku habis" />
+                  <mat-datepicker-toggle matIconPrefix [for]="dpUntil"></mat-datepicker-toggle>
+                  <mat-datepicker #dpUntil></mat-datepicker>
+                  <mat-hint>Kosongkan kalau tidak ada masa berlaku</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Volume</mat-label>
+                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Satuan</mat-label>
+                  <mat-select formControlName="unit" (selectionChange)="onUnitChange(i)">
+                    <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
+                  </mat-select>
+                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">Lump sum — volume dikunci 1</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Biaya</mat-label>
+                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po641-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">Termasuk PPN 11%</mat-slide-toggle>
+        <div class="po641-summary">
+          <div class="po641-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
+          <div class="po641-summary__row"><span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
+          <div class="po641-summary__row po641-summary__row--total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="po641-card">
+      <div class="po641-section__title">Pembayaran</div>
+      <div class="po641-grid">
+        <mat-form-field appearance="outline" class="po641-span2">
+          <mat-label>Termin Pembayaran</mat-label>
+          <input matInput formControlName="paymentTerm" placeholder="Ex. Tempo 30 hari / CASH" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Jangka Kredit</mat-label>
+          <input matInput formControlName="creditTerm" /><span matSuffix>&nbsp;hari</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" /><span matSuffix>&nbsp;%</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="po641-card">
+      <div class="po641-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg formControlName="notes" [minHeight]="200" placeholder="Poin perjanjian, ketentuan, dll"></app-wysiwyg>
+      <div class="po641-actions">
+        <span class="po641-spacer"></span>
+        <button type="submit" class="po641-submit" [disabled]="formGroup.invalid || t.controls.length === 0 || isSubmitting">
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
