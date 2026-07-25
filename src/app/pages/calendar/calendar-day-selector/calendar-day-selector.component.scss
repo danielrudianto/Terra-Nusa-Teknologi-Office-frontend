@@ -287,23 +287,82 @@ $hover: var(--hover, #f6f8ff);
   min-height: 0;
   padding: 0.35rem 0.5rem;
 }
-:host ::ng-deep .ds-list .mat-mdc-list-option,
-:host ::ng-deep .ds-list .mat-mdc-list-item {
+
+/* custom row: checkbox (calculation) + clickable body (opens document) */
+.ds-opt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   border-radius: 12px;
   margin-bottom: 2px;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: $hover;
+  }
+  &.is-checked {
+    background: var(--brand-soft, #e7ecfb);
+  }
+
+  &__check {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.5rem 0.75rem 0.5rem 0.25rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    border-radius: 12px;
+
+    &:hover .ds-opt__title {
+      color: $brand;
+      text-decoration: underline;
+    }
+    &--static {
+      cursor: default;
+      &:hover .ds-opt__title {
+        color: $ink;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  &__title {
+    font-weight: 600;
+    color: $ink;
+    font-size: 0.86rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__sub {
+    color: $muted;
+    font-size: 0.78rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
-:host ::ng-deep .ds-list .mat-mdc-list-option:hover {
-  background: $hover;
-}
-:host ::ng-deep .ds-list .mdc-list-item__primary-text {
-  font-weight: 600;
-  color: $ink;
-  font-size: 0.86rem;
-}
-:host ::ng-deep .ds-list .mdc-list-item__secondary-text {
-  color: $muted;
-  font-size: 0.78rem;
-}
+
 .ds-optamt {
   font-weight: 700;
   color: $ink;

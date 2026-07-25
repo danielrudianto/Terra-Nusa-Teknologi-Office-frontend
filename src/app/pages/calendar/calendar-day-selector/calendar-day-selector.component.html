@@ -103,61 +103,73 @@
             </div>
 
             <div class="ds-list">
-              <mat-selection-list
-                #paymentSelection
-                (selectionChange)="onValueSelected($event)"
-              >
-                @for (p of payments; track p) {
-                  <mat-list-option
-                    [value]="p.id"
-                    [matContextMenuTriggerFor]="contextMenu"
-                    [matContextMenuTriggerData]="{ id: p.id }"
-                    class="ds-opt"
+              @for (p of payments; track p) {
+                <div
+                  class="ds-opt"
+                  [class.is-checked]="isSelected(p.id)"
+                  [matContextMenuTriggerFor]="contextMenu"
+                  [matContextMenuTriggerData]="{ id: p.id }"
+                >
+                  <!-- checkbox: the ONLY control that affects the calculation -->
+                  <mat-checkbox
+                    class="ds-opt__check"
+                    color="primary"
+                    [checked]="isSelected(p.id)"
+                    (change)="togglePayment(p.id, $event.checked)"
+                    (click)="$event.stopPropagation()"
+                  ></mat-checkbox>
+
+                  <!-- clicking the body opens the document -->
+                  <button
+                    type="button"
+                    class="ds-opt__body"
+                    (click)="viewDocument(p.id)"
                   >
                     @if (p.isApprove) {
-                      <mat-icon matListItemIcon class="ds-ic ds-ic--ok"
-                        >check_circle</mat-icon
-                      >
+                      <mat-icon class="ds-ic ds-ic--ok">check_circle</mat-icon>
                     } @else {
-                      <mat-icon matListItemIcon class="ds-ic ds-ic--wait"
-                        >pending</mat-icon
-                      >
+                      <mat-icon class="ds-ic ds-ic--wait">pending</mat-icon>
                     }
-                    <span matListItemTitle>{{ getAccountName(p) }}</span>
-                    <span matListItemLine>{{ getProjectName(p) }}</span>
-                    <span matListItemMeta class="ds-optamt"
+                    <span class="ds-opt__text">
+                      <span class="ds-opt__title">{{ getAccountName(p) }}</span>
+                      <span class="ds-opt__sub">{{ getProjectName(p) }}</span>
+                    </span>
+                    <span class="ds-optamt"
                       >Rp {{ p.amount | number: "0.2-2" }}</span
                     >
-                  </mat-list-option>
-                }
+                  </button>
+                </div>
+              }
 
-                <mat-menu #contextMenu [overlapTrigger]="false">
-                  <ng-template matMenuContent let-id="id">
-                    <button mat-menu-item (click)="moveDate(id)">
-                      <mat-icon>move_up</mat-icon><span>Move payment date</span>
-                    </button>
-                    <button mat-menu-item (click)="viewDocument(id)">
-                      <mat-icon>view_array</mat-icon><span>View document</span>
-                    </button>
-                  </ng-template>
-                </mat-menu>
+              <mat-menu #contextMenu [overlapTrigger]="false">
+                <ng-template matMenuContent let-id="id">
+                  <button mat-menu-item (click)="moveDate(id)">
+                    <mat-icon>move_up</mat-icon><span>Move payment date</span>
+                  </button>
+                  <button mat-menu-item (click)="viewDocument(id)">
+                    <mat-icon>view_array</mat-icon><span>View document</span>
+                  </button>
+                </ng-template>
+              </mat-menu>
 
-                @for (i of interpayments; track i) {
-                  <mat-list-item class="ds-ip">
-                    <mat-icon matListItemIcon class="ds-ic ds-ic--ip"
-                      >swap_horiz</mat-icon
-                    >
-                    <div matListItemTitle>
-                      Interpayment to ••••{{
-                        i.destinationBankAccountNumber.slice(-4)
-                      }}
-                    </div>
-                    <span matListItemMeta class="ds-optamt"
+              @for (i of interpayments; track i) {
+                <div class="ds-opt ds-ip">
+                  <span class="ds-opt__check"></span>
+                  <div class="ds-opt__body ds-opt__body--static">
+                    <mat-icon class="ds-ic ds-ic--ip">swap_horiz</mat-icon>
+                    <span class="ds-opt__text">
+                      <span class="ds-opt__title"
+                        >Interpayment to ••••{{
+                          i.destinationBankAccountNumber.slice(-4)
+                        }}</span
+                      >
+                    </span>
+                    <span class="ds-optamt"
                       >Rp {{ i.amount | number: "0.2-2" }}</span
                     >
-                  </mat-list-item>
-                }
-              </mat-selection-list>
+                  </div>
+                </div>
+              }
 
               <div
                 class="ds-empty"

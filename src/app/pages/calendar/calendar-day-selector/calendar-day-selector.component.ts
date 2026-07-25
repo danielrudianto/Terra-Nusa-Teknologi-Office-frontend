@@ -7,12 +7,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { CalendarDayViewComponent } from '../calendar-day-view/calendar-day-view.component';
-import {
-  MatList,
-  MatListModule,
-  MatSelectionList,
-  MatSelectionListChange,
-} from '@angular/material/list';
+import { MatList, MatListModule } from '@angular/material/list';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CalendarPaymentConfirmComponent } from '../calendar-payment-confirm/calendar-payment-confirm.component';
@@ -28,6 +23,7 @@ import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.co
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 interface BankAccountSummary {
   id: number;
@@ -51,6 +47,7 @@ interface BankAccountSummary {
     MatMenuModule,
     MatProgressSpinnerModule,
     MatListModule,
+    MatCheckboxModule,
     MatTooltipModule,
   ],
   templateUrl: './calendar-day-selector.component.html',
@@ -73,7 +70,6 @@ export class CalendarDaySelectorComponent {
     private decimalPipe: DecimalPipe,
   ) {}
 
-  @ViewChild('paymentSelection') paymentSelection: MatSelectionList | undefined;
   @ViewChild('menuTrigger') menuTrigger: MatMenuTrigger | undefined;
 
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -318,33 +314,51 @@ export class CalendarDaySelectorComponent {
       );
   }
 
+  /** whether every visible payment is currently ticked */
+  get allSelected(): boolean {
+    return (
+      this.payments.length > 0 &&
+      this.payments.every((p: any) => this.selectedPayments.includes(p.id))
+    );
+  }
+
   selectAllPayments() {
     if (this.selectedAccount == null) return;
 
-    this.paymentSelection?.selectAll();
-    this.selectedAmount = this.totalAmount;
-    this.selectedPayments = this.payments
-      .filter((x: any) => x.bankAccountID == this.selectedAccount!.id)
-      .map((payment: any) => payment.id);
+    if (this.allSelected) {
+      // toggle off
+      this.selectedPayments = [];
+    } else {
+      this.selectedPayments = this.payments.map((payment: any) => payment.id);
+    }
+    this.recomputeSelectedAmount();
   }
 
   getAccountsWithActivities(): BankAccountSummary[] {
     return this.bankAccountSummaries.filter((acc) => acc.hasActivities);
   }
 
-  onValueSelected(event: MatSelectionListChange) {
-    this.selectedPayments = event.source.selectedOptions.selected.map((x) => {
-      return x.value;
-    });
+  isSelected(id: number): boolean {
+    return this.selectedPayments.includes(id);
+  }
 
-    // I want to have the total amount from rawData.data where the id is included in the MatSelectionList value
+  /** recompute the selected total from the current id list */
+  private recomputeSelectedAmount() {
     this.selectedAmount = this.rawData.data
-      .filter((x: any) => {
-        return this.selectedPayments.includes(x.id);
-      })
-      .reduce((a: any, b: any) => {
-        return a + b.amount;
-      }, 0);
+      .filter((x: any) => this.selectedPayments.includes(x.id))
+      .reduce((a: any, b: any) => a + b.amount, 0);
+  }
+
+  /** checkbox toggle — this is the ONLY thing that affects the calculation */
+  togglePayment(id: number, checked: boolean) {
+    if (checked) {
+      if (!this.selectedPayments.includes(id)) {
+        this.selectedPayments = [...this.selectedPayments, id];
+      }
+    } else {
+      this.selectedPayments = this.selectedPayments.filter((x) => x !== id);
+    }
+    this.recomputeSelectedAmount();
   }
 
   getPaymentText() {

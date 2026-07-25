@@ -1,164 +1,294 @@
 <div class="po63">
-  <app-header-title [title]="'Purchase Order — Kode ' + purchaseType" [description]="typeLabel" />
+  <app-header-title
+    [title]="'Purchase Order — Kode ' + purchaseType"
+    [description]="typeLabel"
+  />
 
-  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-    <!-- ===== Informasi PO ===== -->
-    <div class="po63-card">
-      <div class="po63-section__title">Informasi PO</div>
-      <div class="po63-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Tanggal PO</mat-label>
-          <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Tanggal PO" />
-          <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+  @if (mode) {
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <!-- ===== Informasi PO ===== -->
+      <div class="po63-card">
+        <div class="po63-cardhead">
+          <div class="po63-section__title po63-section__title--flush">
+            Informasi PO
+          </div>
+          <span class="po63-modechip">
+            <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
+            <button
+              type="button"
+              class="po63-modechip__btn"
+              (click)="askMode()"
+            >
+              Ganti
+            </button>
+          </span>
+        </div>
+        <div class="po63-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Tanggal PO</mat-label>
+            <input
+              matInput
+              formControlName="date"
+              [matDatepicker]="picker"
+              placeholder="Tanggal PO"
+            />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
-          <input matInput formControlName="projectName" maxlength="5" (keyup)="toUpperCase()" placeholder="Ex. MICZ" />
-          <mat-error *ngIf="f['projectName'].hasError('pattern')">Harus 4–5 karakter kapital.</mat-error>
-        </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Kode Project</mat-label>
+            <input
+              matInput
+              formControlName="projectName"
+              maxlength="5"
+              (keyup)="toUpperCase()"
+              placeholder="Ex. MICZ"
+            />
+            <mat-error *ngIf="f['projectName'].hasError('pattern')"
+              >Harus 4–5 karakter kapital.</mat-error
+            >
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="po63-span2">
-          <mat-label>Vendor</mat-label>
-          <input matInput formControlName="supplierName" readonly placeholder="Pilih vendor" />
-          <button mat-icon-button matPrefix type="button" (click)="openSupplierSelector()" aria-label="Pilih vendor">
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- ===== Daftar Item ===== -->
-    <div class="po63-card">
-      <div class="po63-cardhead">
-        <div class="po63-section__title po63-section__title--flush">Daftar Item</div>
-        <div class="po63-addgroup">
-          <button type="button" class="po63-add" (click)="addService()">
-            <mat-icon>design_services</mat-icon> Tambah jasa
-          </button>
-          <button type="button" class="po63-add po63-add--alt" (click)="openItemSelector()">
-            <mat-icon>inventory_2</mat-icon> Tambah barang
-          </button>
+          <mat-form-field appearance="outline" class="po63-span2">
+            <mat-label>Vendor</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              readonly
+              placeholder="Pilih vendor"
+            />
+            <button
+              mat-icon-button
+              matPrefix
+              type="button"
+              (click)="openSupplierSelector()"
+              aria-label="Pilih vendor"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
         </div>
       </div>
 
-      @if (t.controls.length === 0) {
-        <div class="po63-empty">
-          <mat-icon>campaign</mat-icon>
-          <span>Belum ada item. Tambah <strong>jasa</strong> (shoot video, foto, company profile) atau <strong>barang</strong> (mug, kaos, payung).</span>
-        </div>
-      } @else {
-        <div class="po63-list">
-          @for (line of t.controls; track line; let i = $index) {
-            <div class="po63-line" [formGroup]="getFormGroupAt(i)">
-              <div class="po63-line__head">
-                <span class="po63-kind" [class.is-goods]="isGoods(i)">
-                  {{ isGoods(i) ? "BARANG" : "JASA" }}
-                </span>
-                <span class="po63-line__label">
-                  @if (isGoods(i)) {
-                    {{ getFormGroupAt(i).value.description || getFormGroupAt(i).value.sku }}
-                    <span class="po63-sku">{{ getFormGroupAt(i).value.sku }}</span>
-                  } @else {
-                    {{ getFormGroupAt(i).value.task || "Jasa belum diisi" }}
-                  }
-                </span>
-                <span class="po63-line__amt">Rp {{ lineTotal(i) | number: "1.0-0" }}</span>
-                <button mat-icon-button type="button" (click)="removeAt(i)" aria-label="Hapus"><mat-icon>close</mat-icon></button>
-              </div>
-
-              <div class="po63-line__grid">
-                @if (!isGoods(i)) {
-                  <mat-form-field appearance="outline" class="po63-span3">
-                    <mat-label>Uraian jasa</mat-label>
-                    <input matInput formControlName="task" maxlength="100" placeholder="Ex. Shooting video profil, Foto produk, Desain company profile" />
-                  </mat-form-field>
-                }
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Volume</mat-label>
-                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Satuan</mat-label>
-                  @if (isGoods(i)) {
-                    <input matInput formControlName="unit" placeholder="pcs" />
-                  } @else {
-                    <mat-select formControlName="unit" (selectionChange)="onUnitChange(i)">
-                      <mat-option *ngFor="let u of serviceUnits" [value]="u">{{ u }}</mat-option>
-                    </mat-select>
-                  }
-                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">Lump sum — volume dikunci 1</mat-hint>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Harga satuan</mat-label>
-                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="po63-span3 po63-note">
-                  <mat-label>{{ isGoods(i) ? "Catatan barang (sablon, warna, ukuran)" : "Catatan jasa (durasi, revisi, deadline)" }}</mat-label>
-                  <textarea
-                    matInput
-                    formControlName="note"
-                    cdkTextareaAutosize
-                    cdkAutosizeMinRows="1"
-                    cdkAutosizeMaxRows="4"
-                    placeholder="Ex. Sablon logo 1 warna, mug putih 11oz"
-                  ></textarea>
-                </mat-form-field>
-              </div>
-            </div>
+      <!-- ===== Daftar Item ===== -->
+      <div class="po63-card">
+        <div class="po63-cardhead">
+          <div class="po63-section__title po63-section__title--flush">
+            Daftar Item
+          </div>
+          @if (isGoods) {
+            <button type="button" class="po63-add" (click)="openItemSelector()">
+              <mat-icon>inventory_2</mat-icon> Tambah barang
+            </button>
+          } @else {
+            <button type="button" class="po63-add" (click)="addService()">
+              <mat-icon>design_services</mat-icon> Tambah jasa
+            </button>
           }
         </div>
-      }
 
-      <div class="po63-foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary">Termasuk PPN 11%</mat-slide-toggle>
-        <div class="po63-summary">
-          <div class="po63-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
-          <div class="po63-summary__row"><span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
-          <div class="po63-summary__row po63-summary__row--total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+        @if (t.controls.length === 0) {
+          <div class="po63-empty">
+            <mat-icon>campaign</mat-icon>
+            <span>{{
+              isGoods
+                ? 'Belum ada barang. Klik "Tambah barang".'
+                : 'Belum ada jasa. Klik "Tambah jasa".'
+            }}</span>
+          </div>
+        } @else {
+          <div class="po63-list">
+            @for (line of t.controls; track line; let i = $index) {
+              <div class="po63-line" [formGroup]="getFormGroupAt(i)">
+                <div class="po63-line__head">
+                  <span class="po63-line__no">#{{ i + 1 }}</span>
+                  <span class="po63-line__label">
+                    @if (isGoods) {
+                      {{
+                        getFormGroupAt(i).value.description ||
+                          getFormGroupAt(i).value.sku
+                      }}
+                      <span class="po63-sku">{{
+                        getFormGroupAt(i).value.sku
+                      }}</span>
+                    } @else {
+                      {{ getFormGroupAt(i).value.task || "Jasa belum diisi" }}
+                    }
+                  </span>
+                  <span class="po63-line__amt"
+                    >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                  >
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeAt(i)"
+                    aria-label="Hapus"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="po63-line__grid">
+                  @if (!isGoods) {
+                    <mat-form-field appearance="outline" class="po63-span3">
+                      <mat-label>Uraian jasa</mat-label>
+                      <input
+                        matInput
+                        formControlName="task"
+                        maxlength="100"
+                        placeholder="Ex. Shooting video profil, Foto produk, Desain company profile"
+                      />
+                    </mat-form-field>
+                  }
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Volume</mat-label>
+                    <input
+                      matInput
+                      formControlName="quantity"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Satuan</mat-label>
+                    @if (isGoods) {
+                      <input
+                        matInput
+                        formControlName="unit"
+                        placeholder="pcs"
+                      />
+                    } @else {
+                      <mat-select
+                        formControlName="unit"
+                        (selectionChange)="onUnitChange(i)"
+                      >
+                        <mat-option
+                          *ngFor="let u of serviceUnits"
+                          [value]="u"
+                          >{{ u }}</mat-option
+                        >
+                      </mat-select>
+                    }
+                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
+                      >Lump sum — volume dikunci 1</mat-hint
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Harga satuan</mat-label>
+                    <input
+                      matInput
+                      formControlName="price"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      prefix="Rp. "
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field
+                    appearance="outline"
+                    class="po63-span3 po63-note"
+                  >
+                    <mat-label>{{
+                      isGoods
+                        ? "Catatan barang (sablon, warna, ukuran)"
+                        : "Catatan jasa (durasi, revisi, deadline)"
+                    }}</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="note"
+                      cdkTextareaAutosize
+                      cdkAutosizeMinRows="2"
+                      cdkAutosizeMaxRows="5"
+                      placeholder="Ex. Sablon logo 1 warna, mug putih 11oz"
+                    ></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="po63-foot">
+          <mat-slide-toggle formControlName="includePPN" color="primary"
+            >Termasuk PPN 11%</mat-slide-toggle
+          >
+          <div class="po63-summary">
+            <div class="po63-summary__row">
+              <span>Subtotal (DPP)</span
+              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            </div>
+            <div class="po63-summary__row">
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            </div>
+            <div class="po63-summary__row po63-summary__row--total">
+              <span>Total</span
+              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ===== Pembayaran ===== -->
-    <div class="po63-card">
-      <div class="po63-section__title">Pembayaran</div>
-      <div class="po63-grid">
-        <mat-form-field appearance="outline" class="po63-span2">
-          <mat-label>Termin Pembayaran</mat-label>
-          <input matInput formControlName="paymentTerm" placeholder="Ex. DP 50% / Tempo 30 hari" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Jangka Kredit</mat-label>
-          <input matInput formControlName="creditTerm" /><span matSuffix>&nbsp;hari</span>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Prepaid</mat-label>
-          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" /><span matSuffix>&nbsp;%</span>
-        </mat-form-field>
+      <!-- ===== Pembayaran ===== -->
+      <div class="po63-card">
+        <div class="po63-section__title">Pembayaran</div>
+        <div class="po63-grid">
+          <mat-form-field appearance="outline" class="po63-span2">
+            <mat-label>Termin Pembayaran</mat-label>
+            <input
+              matInput
+              formControlName="paymentTerm"
+              placeholder="Ex. DP 50% / Tempo 30 hari"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Jangka Kredit</mat-label>
+            <input matInput formControlName="creditTerm" /><span matSuffix
+              >&nbsp;hari</span
+            >
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Prepaid</mat-label>
+            <input
+              matInput
+              formControlName="prepaidTerm"
+              [min]="0"
+              [max]="100"
+            /><span matSuffix>&nbsp;%</span>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
 
-    <!-- ===== Catatan / Poin Perjanjian ===== -->
-    <div class="po63-card">
-      <div class="po63-section__title">Catatan / Poin Perjanjian</div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: hak pakai materi, jumlah revisi, jadwal produksi, denda keterlambatan, dll"
-      ></app-wysiwyg>
+      <!-- ===== Catatan / Poin Perjanjian ===== -->
+      <div class="po63-card">
+        <div class="po63-section__title">Catatan / Poin Perjanjian</div>
+        <app-wysiwyg
+          formControlName="notes"
+          [minHeight]="200"
+          placeholder="Contoh: hak pakai materi, jumlah revisi, jadwal produksi, denda keterlambatan, dll"
+        ></app-wysiwyg>
 
-      <div class="po63-actions">
-        <span class="po63-spacer"></span>
-        <button type="submit" class="po63-submit" [disabled]="formGroup.invalid || t.controls.length === 0 || isSubmitting">
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
+        <div class="po63-actions">
+          <span class="po63-spacer"></span>
+          <button
+            type="submit"
+            class="po63-submit"
+            [disabled]="
+              formGroup.invalid || t.controls.length === 0 || isSubmitting
+            "
+          >
+            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          </button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  }
 </div>

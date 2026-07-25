@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import {
-  FormArray, FormBuilder, FormControl, FormGroup, FormsModule,
-  ReactiveFormsModule, Validators,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -22,14 +27,14 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label';
+import { PurchaseOrderCreate63ModeDialogComponent } from './purchase-order-create-63-mode-dialog/purchase-order-create-63-mode-dialog.component';
 
 /**
- * Marketing purchase orders. One form serves both codes because they mix the
- * same two kinds of lines:
- *   6.3.1 Advertising Expense      — mostly services (shoot video, foto, compro)
- *   6.3.2 Promotional Merchandise  — mostly goods (mug, kaos, payung)
- * The active code comes from the route data, so the master-item selector and
- * the saved purchaseType always match the tile the user clicked.
+ * Marketing purchase orders:
+ *   6.3.1 Advertising Expense
+ *   6.3.2 Promotional Merchandise
+ * The code comes from the route data. Goods and services are never mixed in
+ * one order — the mode is chosen up front and drives the whole line editor.
  */
 @Component({
   selector: 'app-purchase-order-create-63',
@@ -66,6 +71,9 @@ export class PurchaseOrderCreate63Component {
 
   isSubmitting = false;
 
+  /** null until the mode dialog is answered — a PO is either goods or services */
+  mode: 'barang' | 'jasa' | null = null;
+
   /** '6.3.1' or '6.3.2', taken from the route definition */
   purchaseType: string = '6.3.2';
 
@@ -74,7 +82,14 @@ export class PurchaseOrderCreate63Component {
   }
 
   serviceUnits: string[] = [
-    'LS', 'kegiatan', 'hari', 'jam', 'paket', 'video', 'sesi', 'bulan',
+    'LS',
+    'kegiatan',
+    'hari',
+    'jam',
+    'paket',
+    'video',
+    'sesi',
+    'bulan',
   ];
 
   formGroup: FormGroup = new FormGroup({
@@ -105,6 +120,37 @@ export class PurchaseOrderCreate63Component {
       this.purchaseType = routeType;
       this.formGroup.patchValue({ purchaseType: routeType });
     }
+    this.askMode(true);
+  }
+
+  /** `initial` = dismissing sends the user back to the PO hub */
+  askMode(initial: boolean = false) {
+    this.dialog
+      .open(PurchaseOrderCreate63ModeDialogComponent, {
+        width: '600px',
+        maxWidth: '94vw',
+        autoFocus: false,
+        disableClose: initial,
+        data: { typeLabel: this.typeLabel },
+      })
+      .afterClosed()
+      .subscribe((picked) => {
+        if (!picked) {
+          if (initial) this.router.navigate(['/Purchase-order/Create']);
+          return;
+        }
+        if (picked === this.mode) return;
+        this.mode = picked;
+        this.t.clear(); // line shape differs per mode
+        if (picked === 'jasa') this.addService();
+      });
+  }
+
+  get isGoods(): boolean {
+    return this.mode === 'barang';
+  }
+  get modeLabel(): string {
+    return this.mode === 'barang' ? 'Barang / merchandise' : 'Jasa';
   }
 
   get f() {
@@ -120,14 +166,9 @@ export class PurchaseOrderCreate63Component {
     this.t.removeAt(i);
   }
 
-  isGoods(i: number): boolean {
-    return this.getFormGroupAt(i).value.kind === 'goods';
-  }
-
   // ---- service line (free text, like PO-D) ----
   private buildServiceLine(): FormGroup {
     return this.formBuilder.group({
-      kind: ['service'],
       task: ['', [Validators.required, Validators.maxLength(100)]],
       item_id: [null],
       sku: [''],
@@ -145,7 +186,6 @@ export class PurchaseOrderCreate63Component {
   // ---- goods line (from master item, like PO-G) ----
   private buildGoodsLine(item: any): FormGroup {
     return this.formBuilder.group({
-      kind: ['goods'],
       task: [''],
       item_id: [item.id, Validators.required],
       sku: [item.sku],
@@ -168,11 +208,11 @@ export class PurchaseOrderCreate63Component {
       .afterClosed()
       .subscribe((item) => {
         if (!item) return;
-        const exists = this.t.value.some(
-          (x: any) => x.kind === 'goods' && x.item_id === item.id,
-        );
+        const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
-          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', { duration: 2500 });
+          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', {
+            duration: 2500,
+          });
           return;
         }
         this.t.push(this.buildGoodsLine(item));
@@ -261,8 +301,8 @@ export class PurchaseOrderCreate63Component {
         const x = c.getRawValue();
         return {
           // goods carry the catalogue id; services carry a free-text task
-          item_id: x.kind === 'goods' ? x.item_id : null,
-          task: x.kind === 'service' ? x.task : null,
+          item_id: this.isGoods ? x.item_id : null,
+          task: this.isGoods ? null : x.task,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
@@ -270,6 +310,7 @@ export class PurchaseOrderCreate63Component {
         };
       }),
       customData: {
+        marketingMode: this.mode, // 'barang' | 'jasa'
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
