@@ -34,6 +34,18 @@ export interface ClauseContext {
   supplierPICPhoneNumber?: string;
   officePICName?: string;
   officePICPhoneNumber?: string;
+  // PO-C (fuel): whether the fuel-analysis / calibration clause is required.
+  // Stored on the PO so old POs re-render with the same on/off state.
+  fuelReportRequired?: boolean;
+  // PO-5.1.12 (software) fields
+  softwareIsSubscription?: boolean; // true = langganan, false = beli putus
+  subscriptionStartDate?: string; // ISO / display date
+  subscriptionDuration?: number; // angka durasi
+  subscriptionDurationUnit?: string; // 'bulan' | 'tahun'
+  autoRenew?: boolean;
+  licenseDelivery?: string; // 'email' | 'account' | 'download' | 'other'
+  // PO-5.1.2 (maintenance): 'barang' (sparepart) | 'jasa' (perbaikan)
+  maintenanceMode?: string;
 }
 
 export interface ClauseTemplate {
@@ -72,6 +84,11 @@ function joinContact(name?: string, phone?: string): string {
   return [name, phone].filter(Boolean).join(' - ') || '—';
 }
 
+/** wrap text in <s>..</s> when a clause is switched off, so it shows struck-through */
+function strikeIf(off: boolean, text: string): string {
+  return off ? `<s>${text}</s>` : text;
+}
+
 // ---- PO-G : Barang / Equipment purchase -----------------------------------
 
 const G_CLAUSES: ClauseTemplate[] = [
@@ -106,6 +123,136 @@ const G_CLAUSES: ClauseTemplate[] = [
   // New POs will use it automatically; old POs stay on 1.0.
 ];
 
+// ---- PO-C : Fuel ----------------------------------------------------------
+
+const C_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const loco = isLoco(ctx);
+      const fuelOn = ctx.fuelReportRequired !== false; // default ON
+
+      const points: string[] = [
+        paymentSentence(ctx),
+        `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
+        `Alamat pengiriman / pengambilan barang: ${ctx.deliveryAddress || '—'}.`,
+        `Kontak penanggung jawab pengambil / pengirim: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        `Kontak penanggung jawab pengambil / penerima: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        // 6 & 7 are a linked pair: toggling 6 off strikes both through.
+        strikeIf(
+          !fuelOn,
+          `Fuel Analysis Report dan Sertifikat Kalibrasi harus dikirimkan dan disetujui oleh pihak pembeli sebelum dokumen pembelian ini berlaku.`,
+        ),
+        strikeIf(
+          !fuelOn,
+          `Barang yang dikirim harus sesuai dengan Fuel Analysis Report dan dikirim menggunakan kendaraan khusus pengantar BBM dengan Sertifikat Kalibrasi yang sama.`,
+        ),
+        // --- poin teknis khusus BBM (mutu & kuantitas) ---
+        `PIHAK PEMBELI berhak melakukan pengujian mutu dan/atau pengambilan sampel BBM pada saat serah terima. Apabila hasil pengujian tidak sesuai dengan spesifikasi yang disepakati, PIHAK PEMBELI berhak menolak sebagian atau seluruh barang, dan biaya pengembalian menjadi tanggung jawab PIHAK PENJUAL.`,
+        `Kuantitas BBM yang menjadi dasar penagihan diukur menggunakan alat ukur tersegel/tertera pada saat serah terima di lokasi PIHAK PEMBELI. Toleransi susut (losses) yang diperkenankan adalah maksimal 0,5% dari volume; selisih kuantitas yang melebihi toleransi tersebut menjadi tanggung jawab PIHAK PENJUAL.`,
+        `Volume penagihan adalah volume yang telah disetujui oleh perwakilan pembeli.`,
+        `Tata cara penagihan dan pembayaran dapat dilihat di lembar terlampir.`,
+      ];
+      return points;
+    },
+  },
+];
+
+// ---- PO-5.1.12 : Software --------------------------------------------------
+
+function licenseDeliverySentence(ctx: ClauseContext): string {
+  switch (ctx.licenseDelivery) {
+    case 'email':
+      return 'License key / kredensial dikirim melalui e-mail resmi PIHAK PEMBELI.';
+    case 'account':
+      return 'Lisensi diaktifkan langsung pada akun yang ditunjuk PIHAK PEMBELI.';
+    case 'download':
+      return 'Perangkat lunak beserta lisensi disediakan melalui tautan unduhan resmi.';
+    default:
+      return 'Metode penyerahan lisensi disepakati kedua belah pihak.';
+  }
+}
+
+const SOFTWARE_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const isSub = ctx.softwareIsSubscription !== false; // default langganan
+      const points: string[] = [paymentSentence(ctx)];
+
+      if (isSub) {
+        const dur =
+          ctx.subscriptionDuration && ctx.subscriptionDurationUnit
+            ? `${ctx.subscriptionDuration} ${ctx.subscriptionDurationUnit}`
+            : '—';
+        points.push(
+          `Pembelian bersifat langganan (subscription) dengan masa berlaku ${dur}` +
+            (ctx.subscriptionStartDate
+              ? ` terhitung sejak ${ctx.subscriptionStartDate}.`
+              : `.`),
+        );
+        points.push(
+          ctx.autoRenew
+            ? `Langganan diperpanjang otomatis (auto-renew) pada akhir periode, kecuali dibatalkan oleh PIHAK PEMBELI sebelum jatuh tempo.`
+            : `Langganan tidak diperpanjang otomatis; perpanjangan memerlukan dokumen pembelian baru.`,
+        );
+      } else {
+        points.push(
+          `Pembelian bersifat beli putus (lisensi perpetual); lisensi berlaku tanpa batas waktu sesuai ketentuan penerbit perangkat lunak.`,
+        );
+      }
+
+      points.push(licenseDeliverySentence(ctx));
+      points.push(
+        `Kontak penanggung jawab dari PIHAK PENJUAL: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+      );
+      points.push(
+        `Kontak penanggung jawab dari PIHAK PEMBELI: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+      );
+      points.push(
+        `Lisensi/akun harus aktif dan dapat digunakan selambat-lambatnya 3 (tiga) hari kerja setelah pembayaran diterima, kecuali disepakati lain.`,
+      );
+      points.push(
+        `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan dokumen pembelian ini.`,
+      );
+      return points;
+    },
+  },
+];
+
+// ---- PO-5.1.2 : Maintenance (sparepart / jasa) ----------------------------
+
+const MAINTENANCE_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const isGoods = ctx.maintenanceMode !== 'jasa'; // default barang
+      const points: string[] = [paymentSentence(ctx)];
+
+      if (isGoods) {
+        points.push(
+          `Barang/sparepart diperiksa oleh PIHAK PEMBELI pada saat serah terima dan harus sesuai dengan spesifikasi yang disepakati; barang yang tidak sesuai dapat ditolak dan menjadi tanggung jawab PIHAK PENJUAL.`,
+        );
+        points.push(
+          `Garansi barang mengikuti ketentuan yang berlaku dari PIHAK PENJUAL / penerbit barang.`,
+        );
+      } else {
+        points.push(
+          `Pekerjaan dinyatakan selesai setelah diperiksa dan disetujui oleh perwakilan PIHAK PEMBELI; hasil yang tidak sesuai wajib diperbaiki oleh PIHAK PENJUAL tanpa biaya tambahan.`,
+        );
+        points.push(
+          `PIHAK PENJUAL memberikan garansi atas hasil pekerjaan sesuai kesepakatan kedua belah pihak.`,
+        );
+      }
+
+      points.push(
+        `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan dokumen pembelian ini.`,
+      );
+      return points;
+    },
+  },
+];
+
 // ---- registry -------------------------------------------------------------
 
 /**
@@ -114,6 +261,11 @@ const G_CLAUSES: ClauseTemplate[] = [
  */
 export const CLAUSE_TEMPLATES: { [poType: string]: ClauseTemplate[] } = {
   G: G_CLAUSES,
+  C: C_CLAUSES,
+  '5.1.12': SOFTWARE_CLAUSES,
+  '5.1.2': MAINTENANCE_CLAUSES,
+  // 5.1.6 sengaja berbagi template dengan G — ubah G = ubah 5.1.6 juga (satu kebijakan).
+  '5.1.6': G_CLAUSES,
 };
 
 /** Latest version string for a PO type (what a new PO should store). */
@@ -123,10 +275,7 @@ export function latestClauseVersion(poType: string): string {
 }
 
 /** Resolve a specific template; falls back to the latest if not found. */
-function resolveTemplate(
-  poType: string,
-  version?: string,
-): ClauseTemplate | null {
+function resolveTemplate(poType: string, version?: string): ClauseTemplate | null {
   const list = CLAUSE_TEMPLATES[poType];
   if (!list || !list.length) return null;
   if (version) {
@@ -141,9 +290,15 @@ export function buildClauseLines(
   poType: string,
   ctx: ClauseContext,
   version?: string,
+  additional?: string[],
 ): string[] {
   const template = resolveTemplate(poType, version);
-  return template ? template.build(ctx) : [];
+  const base = template ? template.build(ctx) : [];
+  // user-supplied points are appended AFTER the baked-in ones (nomor lanjutan).
+  const extra = (additional || [])
+    .map((x) => (x || '').trim())
+    .filter((x) => x.length > 0);
+  return [...base, ...extra];
 }
 
 /** Same as above, rendered as an ordered-list HTML string for notes/preview. */
@@ -151,8 +306,9 @@ export function buildClauseHtml(
   poType: string,
   ctx: ClauseContext,
   version?: string,
+  additional?: string[],
 ): string {
-  const lines = buildClauseLines(poType, ctx, version);
+  const lines = buildClauseLines(poType, ctx, version, additional);
   if (!lines.length) return '';
   return `<ol>${lines.map((p) => `<li>${p}</li>`).join('')}</ol>`;
 }

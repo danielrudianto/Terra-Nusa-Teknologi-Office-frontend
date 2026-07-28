@@ -12,16 +12,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
+import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
@@ -38,9 +39,9 @@ import { CommonModule } from '@angular/common';
     MatDatepickerModule,
     MatSelectModule,
     MatIconModule,
+    MatCheckboxModule,
     MatButtonModule,
     HeaderTitleComponent,
-    WysiwygComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
@@ -58,6 +59,8 @@ export class PurchaseOrderCreateCComponent {
   ) {}
 
   isSubmitting: boolean = false;
+
+  templateVersion = latestClauseVersion('C');
 
   units: string[] = [
     'pcs',
@@ -83,7 +86,7 @@ export class PurchaseOrderCreateCComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
-    purchaseType: new FormControl('G'),
+    purchaseType: new FormControl('C'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -106,9 +109,16 @@ export class PurchaseOrderCreateCComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
-    notes: new FormControl(''),
+    additionalClauses: new FormArray([]),
+    fuelReportRequired: new FormControl(true),
+    pph22: new FormControl(0),          // PPh 22 — nominal, diisi manual
+    pbbkbPercent: new FormControl(0),   // PBBKB — persen, dikali DPP
     includePPN: new FormControl(true),
   });
+
+  ngOnInit(): void {
+    this.onPaymentTermChange();
+  }
 
   get f() {
     return this.formGroup.controls;
@@ -116,6 +126,23 @@ export class PurchaseOrderCreateCComponent {
 
   get t() {
     return this.formGroup.get('purchase_order') as FormArray;
+  }
+
+  // --- poin perjanjian tambahan (custom, ditulis user) ---
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  private get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[]) || [];
   }
 
   getFormGroupAt(i: number) {
@@ -141,7 +168,7 @@ export class PurchaseOrderCreateCComponent {
   openItemSelector() {
     this.dialog
       .open(MasterItemSelectorComponent, {
-        data: { purchaseType: 'G' },
+        data: { purchaseType: 'C' },
         width: '560px',
         maxWidth: '94vw',
         autoFocus: false,
@@ -184,8 +211,20 @@ export class PurchaseOrderCreateCComponent {
       : 0;
   }
 
+  /** PBBKB = percentage of DPP */
+  get pbbkbAmount(): number {
+    const pct = Number(this.formGroup.get('pbbkbPercent')?.value) || 0;
+    return (this.subTotal * pct) / 100;
+  }
+
+  get pph22Amount(): number {
+    return Number(this.formGroup.get('pph22')?.value) || 0;
+  }
+
   get grandTotal(): number {
-    return this.rawTotal;
+    // PBBKB adds to the bill; PPh 22 is withheld (subtracted)
+    // untuk BBM, PPh22 ditambahkan (bukan dipotong) — sesuai data purchases (otherValueNote='PPH22')
+    return this.rawTotal + this.pbbkbAmount + this.pph22Amount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -210,6 +249,62 @@ export class PurchaseOrderCreateCComponent {
       });
   }
 
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+
+  onPaymentTermChange() {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  get fuelReportRequired(): boolean {
+    return !!this.formGroup.get('fuelReportRequired')?.value;
+  }
+
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      deliveryMethod: v.deliveryMethod,
+      deliveryAddress: v.deliveryAddress,
+      supplierPICName: v.supplierPICName,
+      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+      officePICName: v.officePICName,
+      officePICPhoneNumber: v.officePICPhoneNumber,
+      fuelReportRequired: v.fuelReportRequired,
+    };
+  }
+
+  get clausePreview(): string {
+    return buildClauseHtml(
+      'C',
+      this.clauseContext(),
+      this.templateVersion,
+      this.additionalClauseValues,
+    );
+  }
+
   formatData() {
     const dpp = this.formGroup.get('includePPN')?.value
       ? this.t.value.reduce(
@@ -232,21 +327,32 @@ export class PurchaseOrderCreateCComponent {
       dpp: dpp,
       ppn: ppn,
       payment_term: this.formGroup.get('paymentTerm')?.value,
-      templateVersion: '1.0',
+      templateVersion: this.templateVersion,
+      // fuel tax columns
+      pbbkb: this.pbbkbAmount,
+      // PPh22 BBM disimpan sebagai otherValue (penambah), sesuai pola data purchases
+      otherValue: this.pph22Amount > 0 ? this.pph22Amount : null,
+      otherValueNote: this.pph22Amount > 0 ? 'PPH22' : null,
       billing_requirements: {},
       customData: {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
-        creditTerm: this.formGroup.get('creditTerm')?.value,
-        prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        creditTerm: this.formGroup.getRawValue().creditTerm,
+        prepaidTerm: this.formGroup.getRawValue().prepaidTerm,
         supplierPICName: this.formGroup.get('supplierPICName')?.value,
         supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // rich-text agreement points / notes (HTML string)
-        notes: this.formGroup.get('notes')?.value,
+        // auto-generated, locked clause block
+        notes: this.clausePreview,
+        // poin tambahan user (mentah) biar bisa render ulang persis
+        additionalClauses: this.additionalClauseValues
+          .map((x) => (x || '').trim())
+          .filter((x) => x.length > 0),
+        // fuel-analysis clause on/off, stored so old POs re-render identically
+        fuelReportRequired: this.fuelReportRequired,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
           equipment_id: x.equipment_id,

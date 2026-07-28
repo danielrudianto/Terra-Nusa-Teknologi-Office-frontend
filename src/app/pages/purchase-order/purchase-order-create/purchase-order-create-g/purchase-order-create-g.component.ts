@@ -21,10 +21,7 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import {
-  buildClauseHtml,
-  latestClauseVersion,
-} from '../../../../constants/clause-templates';
+import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
@@ -60,9 +57,6 @@ export class PurchaseOrderCreateGComponent {
   ) {}
 
   isSubmitting: boolean = false;
-
-  /** always the newest G template; stored on the PO so old POs stay pinned */
-  templateVersion = latestClauseVersion('G');
 
   units: string[] = [
     'pcs',
@@ -111,13 +105,9 @@ export class PurchaseOrderCreateGComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
-    notes: new FormControl(''),
+    additionalClauses: new FormArray([]),
     includePPN: new FormControl(true),
   });
-
-  ngOnInit(): void {
-    this.onPaymentTermChange();
-  }
 
   get f() {
     return this.formGroup.controls;
@@ -125,6 +115,53 @@ export class PurchaseOrderCreateGComponent {
 
   get t() {
     return this.formGroup.get('purchase_order') as FormArray;
+  }
+
+  templateVersion = latestClauseVersion('G');
+
+  // --- poin perjanjian tambahan (custom, ditulis user) ---
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  clauseCtrlAt(i: number): FormControl {
+    return this.additionalClauses.at(i) as FormControl;
+  }
+
+  private get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[]) || [];
+  }
+
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      deliveryMethod: v.deliveryMethod,
+      deliveryAddress: v.deliveryAddress,
+      supplierPICName: v.supplierPICName,
+      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+      officePICName: v.officePICName,
+      officePICPhoneNumber: v.officePICPhoneNumber,
+    };
+  }
+
+  get clausePreview(): string {
+    return buildClauseHtml(
+      'G',
+      this.clauseContext(),
+      this.templateVersion,
+      this.additionalClauseValues,
+    );
   }
 
   getFormGroupAt(i: number) {
@@ -137,7 +174,7 @@ export class PurchaseOrderCreateGComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      item_id: [item.id, Validators.required],
+      equipment_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -159,7 +196,9 @@ export class PurchaseOrderCreateGComponent {
       .subscribe((item) => {
         if (!item) return;
         // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some((x: any) => x.item_id === item.id);
+        const exists = this.t.value.some(
+          (x: any) => x.equipment_id === item.id,
+        );
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
             duration: 2500,
@@ -217,60 +256,6 @@ export class PurchaseOrderCreateGComponent {
       });
   }
 
-  /** which payment terms enable the credit / prepaid inputs */
-  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
-  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
-
-  get creditEnabled(): boolean {
-    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
-  }
-  get prepaidEnabled(): boolean {
-    return this.PREPAID_TERMS.includes(
-      this.formGroup.get('paymentTerm')?.value,
-    );
-  }
-
-  /** enable/disable + reset credit & prepaid based on the chosen payment term */
-  onPaymentTermChange() {
-    const credit = this.formGroup.get('creditTerm');
-    const prepaid = this.formGroup.get('prepaidTerm');
-
-    if (this.creditEnabled) {
-      credit?.enable();
-    } else {
-      credit?.setValue(0);
-      credit?.disable();
-    }
-
-    if (this.prepaidEnabled) {
-      prepaid?.enable();
-    } else {
-      prepaid?.setValue(0);
-      prepaid?.disable();
-    }
-  }
-
-  /** ctx passed to the versioned clause template */
-  private clauseContext() {
-    const v = this.formGroup.getRawValue();
-    return {
-      paymentTerm: v.paymentTerm,
-      creditTerm: v.creditTerm,
-      prepaidTerm: v.prepaidTerm,
-      deliveryMethod: v.deliveryMethod,
-      deliveryAddress: v.deliveryAddress,
-      supplierPICName: v.supplierPICName,
-      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
-      officePICName: v.officePICName,
-      officePICPhoneNumber: v.officePICPhoneNumber,
-    };
-  }
-
-  /** rendered clause block (points 1-5 from the form, 6+ fixed per version) */
-  get clausePreview(): string {
-    return buildClauseHtml('G', this.clauseContext(), this.templateVersion);
-  }
-
   formatData() {
     const dpp = this.formGroup.get('includePPN')?.value
       ? this.t.value.reduce(
@@ -299,24 +284,28 @@ export class PurchaseOrderCreateGComponent {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
-        creditTerm: this.formGroup.getRawValue().creditTerm,
-        prepaidTerm: this.formGroup.getRawValue().prepaidTerm,
+        creditTerm: this.formGroup.get('creditTerm')?.value,
+        prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
         supplierPICName: this.formGroup.get('supplierPICName')?.value,
         supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // rich-text agreement points / notes (HTML string)
-        notes: this.clausePreview, // auto-generated, locked clause block
+        // locked auto-clause (poin 1-9) + poin tambahan user, sudah jadi HTML
+        notes: this.clausePreview,
+        // simpan poin tambahan mentah biar bisa di-render ulang persis
+        additionalClauses: this.additionalClauseValues
+          .map((x) => (x || '').trim())
+          .filter((x) => x.length > 0),
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
+          equipment_id: x.equipment_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,
           price: x.price,
           unit: x.unit,
-          remarks_1: x.remarks, // item note -> remarks_1 column
+          remarks: x.remarks,
         })),
       },
     };

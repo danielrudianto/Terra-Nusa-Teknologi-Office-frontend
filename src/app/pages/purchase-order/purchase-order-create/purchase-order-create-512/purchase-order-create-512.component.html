@@ -114,7 +114,7 @@
 
                 <mat-form-field appearance="outline" class="po512-span3 po512-note">
                   <mat-label>Catatan</mat-label>
-                  <textarea matInput formControlName="note" cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="4"
+                  <textarea matInput formControlName="note" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"
                     [placeholder]="isGoods ? 'Ex. spesifikasi part, merek pengganti' : 'Ex. termasuk sparepart, garansi 3 bulan'"></textarea>
                 </mat-form-field>
               </div>
@@ -152,14 +152,43 @@
       </div>
     </div>
 
-    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <!-- ===== Poin Tambahan (custom) ===== -->
     <div class="po512-card">
-      <div class="po512-section__title">Catatan / Poin Perjanjian</div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        [placeholder]="isGoods ? 'Contoh: garansi part, syarat retur, ketentuan pengiriman, dll' : 'Contoh: garansi pekerjaan, sparepart ditanggung siapa, waktu pengerjaan, dll'"
-      ></app-wysiwyg>
+      <div class="po512-cardhead">
+        <div class="po512-section__title">Poin Tambahan (opsional)</div>
+        <button type="button" class="po512-addclause" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="po512-clausenote">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan menggantikannya.
+      </p>
+      <div formArrayName="additionalClauses">
+        @for (c of additionalClauses.controls; track c; let i = $index) {
+          <div class="po512-clauserow">
+            <span class="po512-clausenum">{{ i + 1 }}.</span>
+            <mat-form-field appearance="outline" class="po512-clausefield">
+              <input matInput [formControlName]="i" [placeholder]="isGoods ? 'Cth: Garansi part 3 bulan' : 'Cth: Garansi servis 30 hari'" />
+            </mat-form-field>
+            <button type="button" class="po512-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+        @if (additionalClauses.length === 0) {
+          <div class="po512-clauseempty">Belum ada poin tambahan.</div>
+        }
+      </div>
+    </div>
+
+    <!-- ===== Poin Perjanjian (preview) ===== -->
+    <div class="po512-card">
+      <div class="po512-section__title">Poin Perjanjian</div>
+      <div class="po512-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span>Poin terisi otomatis sesuai mode ({{ isGoods ? "barang/sparepart" : "jasa/perbaikan" }}) &amp; termin pembayaran. Poin tambahan menyusul di bawahnya. Teks inilah yang tersimpan.</span>
+      </div>
+      <div class="po512-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="po512-actions">
         <span class="po512-spacer"></span>

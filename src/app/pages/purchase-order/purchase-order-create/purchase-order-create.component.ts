@@ -106,7 +106,7 @@ export class PurchaseOrderCreateComponent {
       type: '5.1.12',
       title: 'Software purchase',
       description: 'Purchase orders used to create Software purchase expense',
-      link: '512',
+      link: '5112',
     },
     {
       type: '6.3.1',
@@ -161,6 +161,11 @@ export class PurchaseOrderCreateComponent {
         break;
       case '5.1.6':
         this.router.navigate(['516'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '5.1.12':
+        this.router.navigate(['5112'], {
           relativeTo: this.route,
         });
         break;

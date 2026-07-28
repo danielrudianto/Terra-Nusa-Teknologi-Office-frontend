@@ -12,22 +12,25 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
-import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-purchase-order-create-516',
+  selector: 'app-purchase-order-create-5112',
   providers: [provideNgxMask()],
   imports: [
     CommonModule,
@@ -38,15 +41,16 @@ import { CommonModule } from '@angular/common';
     MatDatepickerModule,
     MatSelectModule,
     MatIconModule,
+    MatCheckboxModule,
     MatButtonModule,
     HeaderTitleComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
-  templateUrl: './purchase-order-create-516.component.html',
-  styleUrl: './purchase-order-create-516.component.scss',
+  templateUrl: './purchase-order-create-5112.component.html',
+  styleUrl: './purchase-order-create-5112.component.scss',
 })
-export class PurchaseOrderCreate516Component {
+export class PurchaseOrderCreate5112Component {
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -58,33 +62,26 @@ export class PurchaseOrderCreate516Component {
 
   isSubmitting: boolean = false;
 
-  templateVersion = latestClauseVersion('5.1.6');
+  templateVersion = latestClauseVersion('5.1.12');
 
+  // satuan yang relevan buat software
   units: string[] = [
-    'pcs',
-    'set',
-    'Kg',
-    'gram',
-    'ton',
-    'm',
-    'm2',
-    'm3',
-    'batang',
-    'lembar',
-    'roll',
-    'dus',
-    'sak',
-    'pasang',
-    'lusin',
+    'account',
+    'license',
+    'user',
+    'seat',
+    'domain',
+    'kontrak',
+    'device',
+    'subscription',
     'unit',
-    'liter',
-    'box',
-    'kaleng',
   ];
+
+  durationUnits: string[] = ['bulan', 'tahun'];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
-    purchaseType: new FormControl('5.1.6'),
+    purchaseType: new FormControl('5.1.12'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -92,8 +89,7 @@ export class PurchaseOrderCreate516Component {
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
-    deliveryMethod: new FormControl('', Validators.required),
-    deliveryAddress: new FormControl('', Validators.required),
+    // payment
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
     prepaidTerm: new FormControl(0, [
@@ -101,11 +97,19 @@ export class PurchaseOrderCreate516Component {
       Validators.min(0),
       Validators.max(100),
     ]),
+    // software-specific
+    isSubscription: new FormControl(true),
+    subscriptionStartDate: new FormControl(''),
+    subscriptionDuration: new FormControl(1),
+    subscriptionDurationUnit: new FormControl('tahun'),
+    autoRenew: new FormControl(false),
+    licenseDelivery: new FormControl('account', Validators.required),
+    // contacts
     supplierPICName: new FormControl('', Validators.required),
     supplierPICPhoneNumber: new FormControl('', Validators.required),
     officePICName: new FormControl('', Validators.required),
     officePICPhoneNumber: new FormControl('', Validators.required),
-    // items are picked from the master-item catalog (type G)
+    // free-form items
     purchase_order: new FormArray([]),
     additionalClauses: new FormArray([]),
     includePPN: new FormControl(true),
@@ -113,6 +117,8 @@ export class PurchaseOrderCreate516Component {
 
   ngOnInit(): void {
     this.onPaymentTermChange();
+    this.onSubscriptionChange();
+    if (this.t.length === 0) this.addItem();
   }
 
   get f() {
@@ -121,6 +127,30 @@ export class PurchaseOrderCreate516Component {
 
   get t() {
     return this.formGroup.get('purchase_order') as FormArray;
+  }
+
+  // --- item bebas (bukan dari katalog) ---
+  private buildItemGroup(): FormGroup {
+    return this.formBuilder.group({
+      description: ['', Validators.required],
+      unit: ['account', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      price: [0, [Validators.required, Validators.min(0)]],
+      remarks: [''],
+    });
+  }
+
+  addItem() {
+    this.t.push(this.buildItemGroup());
+  }
+
+  getFormGroupAt(i: number) {
+    return this.t.at(i) as FormGroup;
+  }
+
+  removeAt(i: number) {
+    this.t.removeAt(i);
+    if (this.t.length === 0) this.addItem();
   }
 
   // --- poin perjanjian tambahan (custom, ditulis user) ---
@@ -136,60 +166,65 @@ export class PurchaseOrderCreate516Component {
     this.additionalClauses.removeAt(i);
   }
 
-  clauseCtrlAt(i: number): FormControl {
-    return this.additionalClauses.at(i) as FormControl;
-  }
-
   private get additionalClauseValues(): string[] {
     return (this.additionalClauses.value as string[]) || [];
   }
 
-  getFormGroupAt(i: number) {
-    return this.t.at(i) as FormGroup;
+  // --- subscription toggle ---
+  get isSubscription(): boolean {
+    return !!this.formGroup.get('isSubscription')?.value;
   }
 
-  removeAt(i: number) {
-    this.t.removeAt(i);
+  onSubscriptionChange() {
+    const start = this.formGroup.get('subscriptionStartDate');
+    const dur = this.formGroup.get('subscriptionDuration');
+    const durUnit = this.formGroup.get('subscriptionDurationUnit');
+    const renew = this.formGroup.get('autoRenew');
+    if (this.isSubscription) {
+      start?.enable();
+      dur?.enable();
+      durUnit?.enable();
+      renew?.enable();
+    } else {
+      start?.setValue('');
+      start?.disable();
+      dur?.setValue(0);
+      dur?.disable();
+      durUnit?.disable();
+      renew?.setValue(false);
+      renew?.disable();
+    }
   }
 
-  private buildItemGroup(item: any): FormGroup {
-    return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
-      sku: [item.sku],
-      description: [item.description],
-      unit: [item.unit || '', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
-      price: [0, [Validators.required, Validators.min(0)]],
-      remarks: [''],
-    });
+  // --- payment logic (sama kaya G/C) ---
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
   }
 
-  openItemSelector() {
-    this.dialog
-      .open(MasterItemSelectorComponent, {
-        data: { purchaseType: '5.1.6' },
-        width: '560px',
-        maxWidth: '94vw',
-        autoFocus: false,
-      })
-      .afterClosed()
-      .subscribe((item) => {
-        if (!item) return;
-        // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
-        );
-        if (exists) {
-          this.snackBar.open('Barang sudah ada di daftar', 'Close', {
-            duration: 2500,
-          });
-          return;
-        }
-        this.t.push(this.buildItemGroup(item));
-      });
+  onPaymentTermChange() {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
   }
 
-  // ----- live summary (read-only, safe getters) -----
+  // ----- live summary -----
   get rawTotal(): number {
     return this.t.value.reduce(
       (acc: number, x: any) =>
@@ -236,30 +271,17 @@ export class PurchaseOrderCreate516Component {
       });
   }
 
-  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
-  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
-
-  get creditEnabled(): boolean {
-    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
-  }
-  get prepaidEnabled(): boolean {
-    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
-  }
-
-  onPaymentTermChange() {
-    const credit = this.formGroup.get('creditTerm');
-    const prepaid = this.formGroup.get('prepaidTerm');
-    if (this.creditEnabled) {
-      credit?.enable();
-    } else {
-      credit?.setValue(0);
-      credit?.disable();
-    }
-    if (this.prepaidEnabled) {
-      prepaid?.enable();
-    } else {
-      prepaid?.setValue(0);
-      prepaid?.disable();
+  private displayDate(v: any): string {
+    if (!v) return '';
+    try {
+      const d = v instanceof Date ? v : new Date(v);
+      return d.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    } catch {
+      return '';
     }
   }
 
@@ -269,18 +291,22 @@ export class PurchaseOrderCreate516Component {
       paymentTerm: v.paymentTerm,
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,
-      deliveryMethod: v.deliveryMethod,
-      deliveryAddress: v.deliveryAddress,
       supplierPICName: v.supplierPICName,
       supplierPICPhoneNumber: v.supplierPICPhoneNumber,
       officePICName: v.officePICName,
       officePICPhoneNumber: v.officePICPhoneNumber,
+      softwareIsSubscription: v.isSubscription,
+      subscriptionStartDate: this.displayDate(v.subscriptionStartDate),
+      subscriptionDuration: v.subscriptionDuration,
+      subscriptionDurationUnit: v.subscriptionDurationUnit,
+      autoRenew: v.autoRenew,
+      licenseDelivery: v.licenseDelivery,
     };
   }
 
   get clausePreview(): string {
     return buildClauseHtml(
-      '5.1.6',
+      '5.1.12',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
@@ -288,15 +314,13 @@ export class PurchaseOrderCreate516Component {
   }
 
   formatData() {
+    const v = this.formGroup.getRawValue();
     const dpp = this.formGroup.get('includePPN')?.value
       ? this.t.value.reduce(
           (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
           0,
         )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+      : this.t.value.reduce((acc: any, x: any) => acc + x.price * x.quantity, 0);
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -312,26 +336,26 @@ export class PurchaseOrderCreate516Component {
       templateVersion: this.templateVersion,
       billing_requirements: {},
       customData: {
-        deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
-        deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
-        paymentTerm: this.formGroup.get('paymentTerm')?.value,
-        creditTerm: this.formGroup.getRawValue().creditTerm,
-        prepaidTerm: this.formGroup.getRawValue().prepaidTerm,
-        supplierPICName: this.formGroup.get('supplierPICName')?.value,
-        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
-          ?.value,
-        officePICName: this.formGroup.get('officePICName')?.value,
-        officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // auto-generated, locked clause block (shares template with G)
+        paymentTerm: v.paymentTerm,
+        creditTerm: v.creditTerm,
+        prepaidTerm: v.prepaidTerm,
+        isSubscription: v.isSubscription,
+        subscriptionStartDate: v.subscriptionStartDate
+          ? new Date(v.subscriptionStartDate).toISOString().split('T')[0]
+          : null,
+        subscriptionDuration: v.subscriptionDuration,
+        subscriptionDurationUnit: v.subscriptionDurationUnit,
+        autoRenew: v.autoRenew,
+        licenseDelivery: v.licenseDelivery,
+        supplierPICName: v.supplierPICName,
+        supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+        officePICName: v.officePICName,
+        officePICPhoneNumber: v.officePICPhoneNumber,
         notes: this.clausePreview,
-        // poin tambahan user (mentah) biar bisa render ulang persis
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
-        // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
-          sku: x.sku,
           description: x.description,
           quantity: x.quantity,
           price: x.price,
@@ -343,35 +367,28 @@ export class PurchaseOrderCreate516Component {
   }
 
   onSubmit() {
-    this.isSubmitting = true;
-    this.apiService
-      .post('purchase-orders', this.formatData())
-      .subscribe({
-        next: (res: any) => {
-          this.snackBar.open(
-            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
-            'Close',
-            { duration: 3000 },
-          );
-          this.router.navigate(['/Purchase-order']);
-        },
-        error: (error) => {
-          this.snackBar.open(
-            error?.error?.detail ?? 'Gagal membuat purchase order',
-            'Close',
-            { duration: 3000 },
-          );
-        },
-      })
-      .add(() => {
-        this.isSubmitting = false;
-      });
-  }
-
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
+    if (this.formGroup.invalid) {
+      this.formGroup.markAllAsTouched();
+      return;
     }
+    this.isSubmitting = true;
+    this.apiService.post('purchase-orders', this.formatData()).subscribe({
+      next: (res: any) => {
+        this.snackBar.open(
+          `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+          'Close',
+          { duration: 3000 },
+        );
+        this.router.navigate(['/Purchase-order']);
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        this.snackBar.open(
+          error?.error?.detail ?? 'Gagal membuat purchase order',
+          'Close',
+          { duration: 3000 },
+        );
+      },
+    });
   }
 }

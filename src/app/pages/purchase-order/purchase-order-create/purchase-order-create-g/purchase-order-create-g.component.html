@@ -227,11 +227,7 @@
       <div class="pog-grid">
         <mat-form-field appearance="outline" class="pog-span2">
           <mat-label>Termin Pembayaran</mat-label>
-          <mat-select
-            formControlName="paymentTerm"
-            (selectionChange)="onPaymentTermChange()"
-          >
-            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
+          <mat-select formControlName="paymentTerm">
             <mat-option value="COD">Cash on delivery</mat-option>
             <mat-option value="CBD">Cash before delivery</mat-option>
             <mat-option value="PPD">Prepaid</mat-option>
@@ -244,17 +240,11 @@
           <mat-label>Jangka Kredit</mat-label>
           <input matInput formControlName="creditTerm" />
           <span matSuffix>&nbsp;hari</span>
-          <mat-hint *ngIf="!creditEnabled"
-            >Tidak berlaku untuk termin ini</mat-hint
-          >
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Prepaid</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <mat-hint *ngIf="!prepaidEnabled"
-            >Tidak berlaku untuk termin ini</mat-hint
-          >
           <span matSuffix>&nbsp;%</span>
         </mat-form-field>
       </div>
@@ -299,15 +289,47 @@
       </div>
     </div>
 
-    <!-- ===== 6. Poin Perjanjian (otomatis) ===== -->
+    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+    <div class="pog-card">
+      <div class="pog-cardhead">
+        <div class="pog-section__title">Poin Tambahan (opsional)</div>
+        <button type="button" class="pog-addclause" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="pog-clausenote">
+        Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan), bukan menggantikannya.
+        Contoh: jadwal pengiriman, syarat khusus, dsb.
+      </p>
+
+      <div formArrayName="additionalClauses">
+        @for (c of additionalClauses.controls; track c; let i = $index) {
+          <div class="pog-clauserow">
+            <span class="pog-clausenum">{{ i + 1 }}.</span>
+            <mat-form-field appearance="outline" class="pog-clausefield">
+              <input
+                matInput
+                [formControlName]="i"
+                placeholder="Contoh: Barang dikirim paling lambat 15 Agustus 2026"
+              />
+            </mat-form-field>
+            <button type="button" class="pog-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+        @if (additionalClauses.length === 0) {
+          <div class="pog-clauseempty">Belum ada poin tambahan.</div>
+        }
+      </div>
+    </div>
+
+    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
     <div class="pog-card">
       <div class="pog-section__title">Poin Perjanjian</div>
       <div class="pog-clausehint">
         <mat-icon>lock</mat-icon>
-        <span
-          >Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks
-          ini yang akan tersimpan.</span
-        >
+        <span>Poin 1-5 terisi otomatis dari form, poin 6-9 baku. Poin tambahan menyusul di bawahnya. Teks inilah yang tersimpan.</span>
       </div>
       <div class="pog-clausebox" [innerHTML]="clausePreview"></div>
 

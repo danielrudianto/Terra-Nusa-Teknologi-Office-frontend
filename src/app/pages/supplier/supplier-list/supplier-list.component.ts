@@ -13,8 +13,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import { SupplierUpdateComponent } from '../supplier-update/supplier-update.component';
+import { SupplierBlacklistDialogComponent } from '../supplier-blacklist-dialog/supplier-blacklist-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierCreateComponent } from '../supplier-create/supplier-create.component';
 
@@ -32,6 +34,7 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
     MatPaginatorModule,
     MatButtonModule,
     MatMenuModule,
+    MatTooltipModule,
     RouterModule,
   ],
   templateUrl: './supplier-list.component.html',
@@ -98,6 +101,25 @@ export class SupplierListComponent {
       this.pageSize = event.pageSize;
       this.fetchSuppliers(0);
     }
+  }
+
+  openBlacklist(element: any) {
+    this.dialog
+      .open(SupplierBlacklistDialogComponent, {
+        width: '460px',
+        maxWidth: '94vw',
+        autoFocus: false,
+        data: {
+          id: element.id,
+          name: element.name,
+          isBlacklist: element.isBlacklist,
+          blacklistReason: element.blacklistReason,
+        },
+      })
+      .afterClosed()
+      .subscribe((changed) => {
+        if (changed) this.fetchSuppliers(this.page);
+      });
   }
 
   onConfirmDelete(id: number) {

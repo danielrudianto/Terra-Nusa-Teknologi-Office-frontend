@@ -45,6 +45,18 @@ export class ApiService {
     });
   }
 
+  patch(url: string, body: any) {
+    const access_token = `Bearer ${localStorage.getItem('access_token')}`;
+    const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;
+
+    return this.http.patch(environment.url + url, body, {
+      headers: {
+        Authorization: access_token,
+        'X-Refresh-Token': refresh_token,
+      },
+    });
+  }
+
   delete(url: string) {
     const access_token = `Bearer ${localStorage.getItem('access_token')}`;
     const refresh_token = `Bearer ${localStorage.getItem('refresh_token')}`;

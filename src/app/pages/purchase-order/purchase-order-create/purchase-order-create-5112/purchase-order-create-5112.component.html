@@ -1,0 +1,245 @@
+<div class="po5112-wrap">
+  <app-header-title
+    title="Buat Purchase Order — Software"
+    subtitle="Langganan, beli putus, maintenance, atau domain"
+  ></app-header-title>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== Info Umum ===== -->
+    <div class="po5112-card">
+      <div class="po5112-section__title">Informasi Umum</div>
+      <div class="po5112-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal</mat-label>
+          <input matInput [matDatepicker]="dp" formControlName="date" />
+          <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kode Project</mat-label>
+          <input matInput formControlName="projectName" placeholder="Cth: PUSAT" />
+          <mat-hint>4-5 huruf/angka kapital</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po5112-span2">
+          <mat-label>Supplier / Vendor</mat-label>
+          <input matInput formControlName="supplierName" readonly (click)="openSupplierSelector()" placeholder="Pilih supplier" />
+          <button matSuffix mat-icon-button type="button" (click)="openSupplierSelector()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po5112-span2">
+          <mat-label>Alamat Supplier</mat-label>
+          <input matInput formControlName="supplierAddress" readonly placeholder="Otomatis dari supplier" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Tipe Pembelian (toggle) ===== -->
+    <div class="po5112-card">
+      <div class="po5112-section__title">Tipe Pembelian</div>
+      <div class="po5112-typetoggle">
+        <mat-slide-toggle formControlName="isSubscription" (change)="onSubscriptionChange()" color="primary">
+          {{ isSubscription ? "Langganan (subscription)" : "Beli putus (perpetual)" }}
+        </mat-slide-toggle>
+        <span class="po5112-typehint">
+          {{ isSubscription
+            ? "Berulang per-periode — cocok untuk Google Workspace, M365, domain, maintenance."
+            : "Sekali bayar, lisensi berlaku tanpa batas waktu." }}
+        </span>
+      </div>
+
+      @if (isSubscription) {
+        <div class="po5112-grid po5112-subfields">
+          <mat-form-field appearance="outline">
+            <mat-label>Tanggal mulai</mat-label>
+            <input matInput [matDatepicker]="sd" formControlName="subscriptionStartDate" />
+            <mat-datepicker-toggle matSuffix [for]="sd"></mat-datepicker-toggle>
+            <mat-datepicker #sd></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Durasi</mat-label>
+            <input matInput type="number" formControlName="subscriptionDuration" min="1" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Satuan durasi</mat-label>
+            <mat-select formControlName="subscriptionDurationUnit">
+              @for (u of durationUnits; track u) {
+                <mat-option [value]="u">{{ u }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="po5112-renew">
+            <mat-checkbox formControlName="autoRenew" color="primary">
+              Perpanjang otomatis (auto-renew)
+            </mat-checkbox>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ===== Item Software (bebas) ===== -->
+    <div class="po5112-card">
+      <div class="po5112-cardhead">
+        <div class="po5112-section__title">Rincian Software / Lisensi</div>
+        <button type="button" class="po5112-additem" (click)="addItem()">
+          <mat-icon>add</mat-icon> Tambah baris
+        </button>
+      </div>
+
+      <div formArrayName="purchase_order">
+        @for (row of t.controls; track row; let i = $index) {
+          <div class="po5112-itemrow" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="po5112-itemdesc">
+              <mat-label>Nama software / item</mat-label>
+              <input matInput formControlName="description" placeholder="Cth: Google Workspace Business Standard" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="po5112-itemqty">
+              <mat-label>Qty</mat-label>
+              <input matInput type="number" formControlName="quantity" min="0.01" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="po5112-itemunit">
+              <mat-label>Satuan</mat-label>
+              <mat-select formControlName="unit">
+                @for (u of units; track u) {
+                  <mat-option [value]="u">{{ u }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="po5112-itemprice">
+              <mat-label>Harga satuan</mat-label>
+              <input matInput formControlName="price" thousandSeparator=" " mask="separator.0" prefix="Rp. " placeholder="0" />
+            </mat-form-field>
+            <button type="button" class="po5112-itemremove" (click)="removeAt(i)" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+
+      <mat-checkbox formControlName="includePPN" color="primary" class="po5112-ppn">
+        Harga sudah termasuk PPN 11%
+      </mat-checkbox>
+
+      <div class="po5112-summary">
+        <div class="po5112-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
+        <div class="po5112-summary__row" *ngIf="ppnAmount > 0"><span>PPN 11%</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
+        <div class="po5112-summary__row po5112-summary__total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+      </div>
+    </div>
+
+    <!-- ===== Pembayaran & Penyerahan ===== -->
+    <div class="po5112-card">
+      <div class="po5112-section__title">Pembayaran &amp; Penyerahan Lisensi</div>
+      <div class="po5112-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Termin pembayaran</mat-label>
+          <mat-select formControlName="paymentTerm" (selectionChange)="onPaymentTermChange()">
+            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
+            <mat-option value="COD">Cash on delivery</mat-option>
+            <mat-option value="CBD">Cash before delivery</mat-option>
+            <mat-option value="PPD">Prepaid</mat-option>
+            <mat-option value="CR">Credit</mat-option>
+            <mat-option value="CRD">Credit with prepaid</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cara penyerahan lisensi</mat-label>
+          <mat-select formControlName="licenseDelivery">
+            <mat-option value="account">Aktivasi akun</mat-option>
+            <mat-option value="email">Email license key</mat-option>
+            <mat-option value="download">Download link</mat-option>
+            <mat-option value="other">Lainnya</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Termin kredit (hari)</mat-label>
+          <input matInput formControlName="creditTerm" />
+          <mat-hint *ngIf="!creditEnabled">Tidak berlaku untuk termin ini</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prepaid (%)</mat-label>
+          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <mat-hint *ngIf="!prepaidEnabled">Tidak berlaku untuk termin ini</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Kontak PJ ===== -->
+    <div class="po5112-card">
+      <div class="po5112-section__title">Kontak Penanggung Jawab</div>
+      <div class="po5112-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nama PIC Supplier</mat-label>
+          <input matInput formControlName="supplierPICName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Supplier</mat-label>
+          <input matInput formControlName="supplierPICPhoneNumber" placeholder="08xxxxxxxxxx" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nama PIC Kantor</mat-label>
+          <input matInput formControlName="officePICName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>No. HP PIC Kantor</mat-label>
+          <input matInput formControlName="officePICPhoneNumber" placeholder="08xxxxxxxxxx" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Poin Tambahan (custom) ===== -->
+    <div class="po5112-card">
+      <div class="po5112-cardhead">
+        <div class="po5112-section__title">Poin Tambahan (opsional)</div>
+        <button type="button" class="po5112-addclause" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="po5112-clausenote">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan menggantikannya.
+      </p>
+      <div formArrayName="additionalClauses">
+        @for (c of additionalClauses.controls; track c; let i = $index) {
+          <div class="po5112-clauserow">
+            <span class="po5112-clausenum">{{ i + 1 }}.</span>
+            <mat-form-field appearance="outline" class="po5112-clausefield">
+              <input matInput [formControlName]="i" placeholder="Cth: Termasuk pelatihan admin 1 sesi" />
+            </mat-form-field>
+            <button type="button" class="po5112-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+        @if (additionalClauses.length === 0) {
+          <div class="po5112-clauseempty">Belum ada poin tambahan.</div>
+        }
+      </div>
+    </div>
+
+    <!-- ===== Poin Perjanjian (preview) ===== -->
+    <div class="po5112-card">
+      <div class="po5112-section__title">Poin Perjanjian</div>
+      <div class="po5112-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span>Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang tersimpan.</span>
+      </div>
+      <div class="po5112-clausebox" [innerHTML]="clausePreview"></div>
+
+      <div class="po5112-actions">
+        <span class="po5112-spacer"></span>
+        <button type="submit" class="po5112-submit" [disabled]="formGroup.invalid || isSubmitting">
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

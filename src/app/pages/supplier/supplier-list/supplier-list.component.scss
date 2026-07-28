@@ -1,4 +1,3 @@
-
 $brand: #154dec;
 $ink: #16181d;
 $muted: #6b7280;
@@ -160,4 +159,17 @@ $surface: #ffffff;
   border-top: 1px solid $line;
   color: $muted;
   font-family: 'Montserrat', sans-serif;
+}
+/* blacklist badge + avatar tint */
+.sl-avatar.is-blacklist {
+  background: var(--bad-bg, #fdecec) !important;
+  color: var(--bad-fg, #b3322f) !important;
+}
+.sl-primary { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sl-blacklist {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.03em;
+  padding: 2px 8px 2px 5px; border-radius: 999px;
+  background: var(--bad-bg, #fdecec); color: var(--bad-fg, #b3322f);
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
 }

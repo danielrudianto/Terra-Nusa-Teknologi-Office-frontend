@@ -29,8 +29,13 @@
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let element">
             <div class="sl-supplier">
-              <span class="sl-avatar">{{ (element.name || "?").charAt(0) }}</span>
-              <span class="sl-primary">{{ element.name || "—" }}</span>
+              <span class="sl-avatar" [class.is-blacklist]="element.isBlacklist">{{ (element.name || "?").charAt(0) }}</span>
+              <span class="sl-primary">
+                {{ element.name || "—" }}
+                <span class="sl-blacklist" *ngIf="element.isBlacklist" [matTooltip]="element.blacklistReason || 'Supplier di-blacklist'">
+                  <mat-icon>block</mat-icon> Blacklist
+                </span>
+              </span>
             </div>
           </td>
         </ng-container>
@@ -72,6 +77,10 @@
               </button>
               <button mat-menu-item (click)="onUpdateSupplier(element.id)">
                 <mat-icon>edit</mat-icon><span>Update supplier data</span>
+              </button>
+              <button mat-menu-item (click)="openBlacklist(element)">
+                <mat-icon>{{ element.isBlacklist ? "check_circle" : "block" }}</mat-icon>
+                <span>{{ element.isBlacklist ? "Cabut blacklist" : "Blacklist supplier" }}</span>
               </button>
               <button mat-menu-item (click)="onConfirmDelete(element.id)">
                 <mat-icon>delete</mat-icon><span>Delete supplier data</span>

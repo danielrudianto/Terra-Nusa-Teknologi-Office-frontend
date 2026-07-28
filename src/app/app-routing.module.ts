@@ -84,6 +84,7 @@ import { PurchaseOrderCreateDComponent } from './pages/purchase-order/purchase-o
 import { MasterEquipmentListComponent } from './pages/master/master-equipment/master-equipment-list/master-equipment-list.component';
 import { PurchaseOrderCreate63Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component';
 import { PurchaseOrderCreate512Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component';
+import { PurchaseOrderCreate5112Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-5112/purchase-order-create-5112.component';
 
 export const routes: Routes = [
   {
@@ -246,6 +247,14 @@ export const routes: Routes = [
           {
             path: 'Create/516',
             component: PurchaseOrderCreate516Component,
+            data: {
+              title: 'Purchase order',
+            },
+          },
+          
+          {
+            path: 'Create/5112',
+            component: PurchaseOrderCreate5112Component,
             data: {
               title: 'Purchase order',
             },

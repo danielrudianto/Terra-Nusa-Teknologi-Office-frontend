@@ -175,6 +175,28 @@
           <div class="poc-summary__row">
             <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
+
+          <!-- fuel-specific tax inputs -->
+          <div class="poc-taxcol">
+            <mat-form-field appearance="outline" class="poc-taxfield">
+              <mat-label>PPh 22</mat-label>
+              <input matInput formControlName="pph22" thousandSeparator=" " mask="separator.0" prefix="Rp. " placeholder="0" />
+              <mat-hint>Nominal, ditambahkan ke total (khusus BBM)</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="poc-taxfield">
+              <mat-label>PBBKB</mat-label>
+              <input matInput formControlName="pbbkbPercent" mask="separator.2" suffix=" %" placeholder="0" />
+              <mat-hint>% dari DPP = Rp {{ pbbkbAmount | number: "1.0-0" }}</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="poc-summary__row" *ngIf="pbbkbAmount > 0">
+            <span>PBBKB</span><span>+ Rp {{ pbbkbAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="poc-summary__row" *ngIf="pph22Amount > 0">
+            <span>PPh 22</span><span>+ Rp {{ pph22Amount | number: "1.0-0" }}</span>
+          </div>
+
           <div class="poc-summary__row poc-summary__row--total">
             <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
           </div>
@@ -227,7 +249,8 @@
       <div class="poc-grid">
         <mat-form-field appearance="outline" class="poc-span2">
           <mat-label>Termin Pembayaran</mat-label>
-          <mat-select formControlName="paymentTerm">
+          <mat-select formControlName="paymentTerm" (selectionChange)="onPaymentTermChange()">
+            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
             <mat-option value="COD">Cash on delivery</mat-option>
             <mat-option value="CBD">Cash before delivery</mat-option>
             <mat-option value="PPD">Prepaid</mat-option>
@@ -239,12 +262,14 @@
         <mat-form-field appearance="outline">
           <mat-label>Jangka Kredit</mat-label>
           <input matInput formControlName="creditTerm" />
+          <mat-hint *ngIf="!creditEnabled">Tidak berlaku untuk termin ini</mat-hint>
           <span matSuffix>&nbsp;hari</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Prepaid</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
+          <mat-hint *ngIf="!prepaidEnabled">Tidak berlaku untuk termin ini</mat-hint>
           <span matSuffix>&nbsp;%</span>
         </mat-form-field>
       </div>
@@ -290,14 +315,57 @@
 
     </div>
 
-    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Catatan / Poin Perjanjian</div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: lingkup pekerjaan, garansi, termin progres, denda keterlambatan, dll"
-      ></app-wysiwyg>
+      <div class="poc-cardhead">
+        <div class="poc-section__title">Poin Tambahan (opsional)</div>
+        <button type="button" class="poc-addclause" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="poc-clausenote">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan menggantikannya.
+      </p>
+      <div formArrayName="additionalClauses">
+        @for (c of additionalClauses.controls; track c; let i = $index) {
+          <div class="poc-clauserow">
+            <span class="poc-clausenum">{{ i + 1 }}.</span>
+            <mat-form-field appearance="outline" class="poc-clausefield">
+              <input
+                matInput
+                [formControlName]="i"
+                placeholder="Contoh: Pengiriman bertahap sesuai jadwal terlampir"
+              />
+            </mat-form-field>
+            <button type="button" class="poc-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+        @if (additionalClauses.length === 0) {
+          <div class="poc-clauseempty">Belum ada poin tambahan.</div>
+        }
+      </div>
+    </div>
+
+    <!-- ===== Poin Perjanjian (otomatis) ===== -->
+    <div class="poc-card">
+      <div class="poc-section__title">Poin Perjanjian</div>
+
+      <div class="poc-fuel">
+        <mat-checkbox formControlName="fuelReportRequired" color="primary">
+          Wajibkan Fuel Analysis Report &amp; Sertifikat Kalibrasi (poin 6-7)
+        </mat-checkbox>
+        <span class="poc-fuel__hint">
+          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak berlaku).
+        </span>
+      </div>
+
+      <div class="poc-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span>Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks ini yang akan tersimpan.</span>
+      </div>
+      <div class="poc-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="poc-actions">
         <span class="poc-spacer"></span>

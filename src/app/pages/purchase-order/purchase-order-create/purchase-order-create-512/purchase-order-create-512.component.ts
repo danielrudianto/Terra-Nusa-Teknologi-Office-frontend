@@ -19,8 +19,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
 import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-dialog/purchase-order-512-mode-dialog.component';
 
 /**
@@ -37,7 +40,7 @@ import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-d
     CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule,
     MatInputModule, MatDatepickerModule, MatSelectModule, MatIconModule,
     MatButtonModule, MatSlideToggleModule, TextFieldModule, NgxMaskDirective,
-    HeaderTitleComponent, WysiwygComponent,
+    HeaderTitleComponent,
   ],
   templateUrl: './purchase-order-create-512.component.html',
   styleUrl: './purchase-order-create-512.component.scss',
@@ -52,6 +55,8 @@ export class PurchaseOrderCreate512Component {
   ) {}
 
   isSubmitting = false;
+
+  templateVersion = latestClauseVersion('5.1.2');
 
   /** null until the mode dialog is answered */
   mode: 'barang' | 'jasa' | null = null;
@@ -71,7 +76,7 @@ export class PurchaseOrderCreate512Component {
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
     prepaidTerm: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(100)]),
-    notes: new FormControl(''),
+    additionalClauses: new FormArray([]),
     lines: new FormArray([]),
     includePPN: new FormControl(true),
   });
@@ -200,6 +205,39 @@ export class PurchaseOrderCreate512Component {
     if (v && v.toUpperCase() !== v) this.formGroup.patchValue({ projectName: v.toUpperCase() });
   }
 
+  // --- poin perjanjian tambahan (custom) ---
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+  private get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[]) || [];
+  }
+
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      maintenanceMode: this.mode || 'barang',
+    };
+  }
+
+  get clausePreview(): string {
+    return buildClauseHtml(
+      '5.1.2',
+      this.clauseContext(),
+      this.templateVersion,
+      this.additionalClauseValues,
+    );
+  }
+
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;
   }
@@ -219,7 +257,7 @@ export class PurchaseOrderCreate512Component {
       dpp: dpp,
       ppn: ppn,
       payment_term: this.formGroup.get('paymentTerm')?.value,
-      templateVersion: '1.0',
+      templateVersion: this.templateVersion,
       billing_requirements: {},
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
@@ -238,7 +276,11 @@ export class PurchaseOrderCreate512Component {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
-        notes: this.formGroup.get('notes')?.value,
+        // locked auto-clause (baku, mode-aware) + poin tambahan user
+        notes: this.clausePreview,
+        additionalClauses: this.additionalClauseValues
+          .map((x) => (x || '').trim())
+          .filter((x) => x.length > 0),
       },
     };
   }
