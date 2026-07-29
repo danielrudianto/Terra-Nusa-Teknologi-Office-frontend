@@ -18,11 +18,13 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
+    MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,

@@ -15,11 +15,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
+import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.component';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -35,9 +33,6 @@ import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-v
     MatButtonModule,
     MatMenuModule,
     HeaderTitleComponent,
-    PillSuccessComponent,
-    PillWarningComponent,
-    PillDangerComponent,
   ],
   templateUrl: './sales-invoice-list.component.html',
   styleUrl: './sales-invoice-list.component.scss',
@@ -48,7 +43,7 @@ export class SalesInvoiceListComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {}
 
   salesInvoices: any[] = [];
@@ -69,6 +64,7 @@ export class SalesInvoiceListComponent {
     'customer',
     'amount',
     'status',
+    'taxingStatus',
     'action',
   ];
 
@@ -168,11 +164,31 @@ export class SalesInvoiceListComponent {
     this.router.navigate(['/Sales-invoice/Create']);
   }
 
-  viewSalesInvoice(id: number){
+  viewSalesInvoice(id: number) {
     this.dialog.open(SalesInvoiceViewComponent, {
       data: {
         id: id,
-      }
-    })
+      },
+    });
+  }
+
+  openIncomeTax(invoice: any): void {
+    this.dialog
+      .open(IncomeTaxCreateComponent, {
+        data: {
+          id: invoice.id,
+          name: invoice.name,
+          incomeTaxInvoiceName: invoice.incomeTaxInvoiceName,
+        },
+        width: '440px',
+        maxWidth: '92vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.fetchData();
+        }
+      });
   }
 }

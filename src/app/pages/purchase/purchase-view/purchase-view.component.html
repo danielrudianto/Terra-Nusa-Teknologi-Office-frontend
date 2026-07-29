@@ -178,6 +178,10 @@
         </button>
       </div>
     </div>
+
+    <p class="pv-created" *ngIf="f['createdAt'].value">
+      Dokumen dibuat pada {{ f["createdAt"].value }}
+    </p>
   </mat-dialog-content>
 
   <!-- actions -->

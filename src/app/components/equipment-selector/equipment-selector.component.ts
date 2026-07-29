@@ -7,11 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-equipment-selector',
   standalone: true,
   imports: [
+    MatProgressSpinnerModule,
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatProgressBarModule,
   ],

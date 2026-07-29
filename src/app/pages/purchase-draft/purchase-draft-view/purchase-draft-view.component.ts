@@ -47,6 +47,7 @@ export class PurchaseDraftViewComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
+    createdAt: new FormControl(''),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -65,6 +66,7 @@ export class PurchaseDraftViewComponent {
       next: (data: any) => {
         this.formGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
+          createdAt: this.datePipe.transform(data.createdAt, 'dd MMMM yyyy'),
           supplierName: data.supplier_name,
           supplierAddress: data.supplier_address,
           dpp: data.dpp,

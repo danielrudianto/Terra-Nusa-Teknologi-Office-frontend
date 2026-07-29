@@ -17,8 +17,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { LoansCreateComponent } from '../loans-create/loans-create.component';
@@ -39,8 +37,6 @@ import { LoansViewComponent } from '../loans-view/loans-view.component';
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule,
-    PillSuccessComponent,
-    PillDangerComponent,
     MatButtonModule,
   ],
   templateUrl: './loans-list.component.html',
@@ -52,7 +48,7 @@ export class LoansListComponent {
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   private destroy$ = new Subject<void>();
@@ -230,7 +226,7 @@ export class LoansListComponent {
     this.dialog.open(LoansViewComponent, {
       data: {
         id: id,
-      }
-    })
+      },
+    });
   }
 }

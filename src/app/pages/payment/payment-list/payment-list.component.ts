@@ -5,9 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil, debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,9 +29,6 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
     MatMenuModule,
     MatButtonModule,
     HeaderTitleComponent,
-    PillSuccessComponent,
-    PillWarningComponent,
-    PillDangerComponent,
     MatMenuModule,
   ],
   templateUrl: './payment-list.component.html',
@@ -47,7 +41,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   private destroy$ = new Subject<void>();

@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
@@ -28,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
   templateUrl: './sales-invoice-payment-create.component.html',
   styleUrl: './sales-invoice-payment-create.component.scss',
   imports: [
+    MatInputModule,
     MatDialogModule,
     CommonModule,
     FormsModule,

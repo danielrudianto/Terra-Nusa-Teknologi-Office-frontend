@@ -56,6 +56,7 @@ export class SalesInvoiceViewComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl(''),
+    createdAt: new FormControl(''),
     name: new FormControl(''),
     projectName: new FormControl(''),
     clientName: new FormControl(''),
@@ -70,6 +71,9 @@ export class SalesInvoiceViewComponent {
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0),
     pphValue: new FormControl(0),
+    taxInvoiceName: new FormControl(''),
+    incomeTaxInvoiceName: new FormControl(''),
+    taxingStatus: new FormControl(''),
     total: new FormControl(0),
     totalPayment: new FormControl(0),
     payments: new FormArray([]),
@@ -193,6 +197,7 @@ export class SalesInvoiceViewComponent {
       next: (data: any) => {
         this.formGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
+          createdAt: this.datePipe.transform(data.createdAt, 'dd MMMM yyyy'),
           name: data.name,
           clientName: `${data.client_name}, ${data.client_prefix}`,
           clientAddress: `${data.client_address}, ${data.client_city}, ${data.client_province}`,
@@ -206,6 +211,9 @@ export class SalesInvoiceViewComponent {
           pphTaxObject: data.pphTaxObject,
           pphPercentage: data.pphPercentage,
           pphValue: data.pphValue,
+          taxInvoiceName: data.taxInvoiceName,
+          incomeTaxInvoiceName: data.incomeTaxInvoiceName,
+          taxingStatus: data.taxingStatus,
           total: data.dpp + (data.ppn * data.dpp) / 100,
           totalPayment:
             data.dpp +

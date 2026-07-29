@@ -51,6 +51,7 @@ export class ReimbursementViewComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl(''),
+    createdAt: new FormControl(''),
     dueDate: new FormControl(''),
     projectName: new FormControl(''),
     name: new FormControl(''),
@@ -98,6 +99,10 @@ export class ReimbursementViewComponent {
             ),
             dueDate: this.datePipe.transform(
               data.reimbursement.date,
+              'dd MMMM yyyy',
+            ),
+            createdAt: this.datePipe.transform(
+              data.reimbursement.createdAt,
               'dd MMMM yyyy',
             ),
             name: data.reimbursement.name,

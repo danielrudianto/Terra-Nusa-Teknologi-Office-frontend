@@ -1,3 +1,8 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
 
 :host {
   display: block;
@@ -5,7 +10,7 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 0.5rem 0 3rem;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 
 /* header spacing (app-header-title brings its own styles) */
@@ -16,8 +21,8 @@
 
 /* ---------- card ---------- */
 .rc-card {
-  background: #fff;
-  border: 0.5px solid #e3e6eb;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   padding: 1.75rem;
   box-shadow:
@@ -38,7 +43,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin-bottom: 0.9rem;
 }
 .rc-section__head {
@@ -69,12 +74,12 @@
 /* brand-themed outline fields (same language as create-purchase) */
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
-  --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-outline-color: #{$brand};
+  --mdc-outlined-text-field-caret-color: #{$brand};
+  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
+  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
+  --mat-select-focused-arrow-color: #{$brand};
 }
 
 /* ---------- add-item button ---------- */
@@ -84,7 +89,7 @@
   font-weight: 600;
   letter-spacing: 0;
   --mdc-outlined-button-outline-color: #c3d0f7;
-  color: var(--brand, #154dec) !important;
+  color: $brand !important;
 
   mat-icon {
     font-size: 18px;
@@ -96,7 +101,7 @@
 
 /* ---------- items table ---------- */
 .rc-table {
-  border: 0.5px solid #e6e9ee;
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 14px;
   overflow: hidden;
 
@@ -111,20 +116,20 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--muted, #6b7280);
-    background: #fafbfc;
+    color: $muted;
+    background: var(--surface-2, #fafbfc);
     padding: 0.7rem 1rem;
-    border-bottom: 1px solid var(--line, #eef0f3);
+    border-bottom: 1px solid $line;
   }
 
   tbody td {
     padding: 0.75rem 1rem;
     font-size: 0.88rem;
-    color: var(--ink, #16181d);
-    border-bottom: 1px solid var(--line, #eef0f3);
+    color: $ink;
+    border-bottom: 1px solid $line;
   }
   tbody tr:hover td {
-    background: #f6f8ff;
+    background: var(--hover, #f6f8ff);
   }
 
   .rc-num {
@@ -139,14 +144,14 @@
 
   .rc-empty {
     text-align: center;
-    color: var(--faint, #9aa0ab);
+    color: $faint;
     font-size: 0.85rem;
     padding: 1.75rem 1rem;
   }
 
   tfoot td {
     padding: 0.85rem 1rem;
-    background: #fafbfc;
+    background: var(--surface-2, #fafbfc);
     border-top: 1px solid #e6e9ee;
   }
   .rc-total-label {
@@ -155,19 +160,19 @@
     text-transform: uppercase;
     font-size: 0.76rem;
     letter-spacing: 0.03em;
-    color: var(--muted, #6b7280);
+    color: $muted;
   }
   .rc-total-value {
     font-weight: 800;
     font-size: 1rem;
-    color: var(--brand, #154dec);
+    color: $brand;
   }
 
   :host ::ng-deep .mat-mdc-icon-button {
     width: 36px;
     height: 36px;
     padding: 6px;
-    color: #b3322f;
+    color: var(--bad-fg, #b3322f);
   }
 }
 
@@ -177,10 +182,10 @@
   justify-content: flex-end;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line, #eef0f3);
+  border-top: 1px solid $line;
 }
 .rc-submit {
-  --mdc-filled-button-container-color: var(--brand, #154dec);
+  --mdc-filled-button-container-color: #{$brand};
   --mdc-filled-button-label-text-color: #fff;
   border-radius: 12px !important;
   font-family: "Montserrat", sans-serif;
@@ -190,8 +195,8 @@
   min-width: 140px;
 
   &:disabled {
-    --mdc-filled-button-disabled-container-color: #e6e9ee;
-    --mdc-filled-button-disabled-label-text-color: #9aa0ab;
+    --mdc-filled-button-disabled-container-color: var(--line, #e6e9ee);
+    --mdc-filled-button-disabled-label-text-color: var(--faint, #9aa0ab);
   }
 }
 

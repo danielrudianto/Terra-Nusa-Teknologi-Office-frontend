@@ -16,11 +16,13 @@ import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmat
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { ApiService } from 'src/app/services/api.service';
 import { MasterEquipmentCreateComponent } from '../master-equipment-create/master-equipment-create.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-master-equipment-list',
   standalone: true,
   imports: [
+    MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,

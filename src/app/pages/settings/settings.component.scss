@@ -1,6 +1,14 @@
 /* Palette now references global tokens (var --x) → auto dark-aware.
    Fallbacks keep light mode identical. This is the migration pattern
    for every custom component: swap literal hex for var(--token). */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$border: var(--border, #e3e6eb);
+$brand-soft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -21,20 +29,20 @@
 .st-title {
   font-size: 1.6rem;
   font-weight: 800;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
   letter-spacing: -0.01em;
 }
 .st-sub {
   font-size: 0.9rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   margin: 0.3rem 0 0;
 }
 
 /* card */
 .st-card {
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
+  background: $surface;
+  border: 0.5px solid $border;
   border-radius: 18px;
   box-shadow: var(--card-shadow);
   padding: 1.5rem;
@@ -53,8 +61,8 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  background: $brand-soft;
+  color: $brand;
   mat-icon {
     font-size: 22px;
     width: 22px;
@@ -69,12 +77,12 @@
 .st-card__title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
 }
 .st-card__desc {
   font-size: 0.8rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 
 /* profile head */
@@ -106,11 +114,11 @@
 .st-profile__name {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .st-profile__role {
   font-size: 0.82rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 
 /* form grid */
@@ -148,15 +156,15 @@
   border: none;
   transition: background 0.15s ease;
   &--primary {
-    background: var(--brand, #154dec);
+    background: $brand;
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover:not(:disabled) {
       background: var(--brand-strong, #0f3fd0);
     }
     &:disabled {
-      background: #e6e9ee;
-      color: #9aa0ab;
+      background: var(--line, #e6e9ee);
+      color: var(--faint, #9aa0ab);
       box-shadow: none;
       cursor: default;
     }
@@ -182,20 +190,20 @@
 .st-row__label {
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--ink, #16181d);
+  color: $ink;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 .st-row__hint {
   font-size: 0.78rem;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   line-height: 1.4;
   max-width: 42ch;
 }
 .st-divider {
   height: 1px;
-  background: var(--line, #eef0f3);
+  background: $line;
   margin: 1.25rem 0;
 }
 
@@ -223,12 +231,12 @@
   width: 76px;
   padding: 0.7rem 0.5rem;
   cursor: pointer;
-  background: var(--surface, #ffffff);
-  border: 1px solid var(--border, #e3e6eb);
+  background: $surface;
+  border: 1px solid $border;
   border-radius: 12px;
   transition: all 0.14s ease;
   &:hover {
-    border-color: #b9c2d0;
+    border-color: var(--faint, #b9c2d0);
     background: var(--hover, #f9fbff);
   }
   &.is-active {
@@ -239,7 +247,7 @@
 }
 .st-scale__sample {
   font-weight: 800;
-  color: var(--ink, #16181d);
+  color: $ink;
   line-height: 1;
   &--sm {
     font-size: 0.95rem;
@@ -252,15 +260,15 @@
   }
 }
 .st-scale__opt.is-active .st-scale__sample {
-  color: var(--brand, #154dec);
+  color: $brand;
 }
 .st-scale__label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 .st-scale__opt.is-active .st-scale__label {
-  color: var(--brand, #154dec);
+  color: $brand;
 }
 
 @media (max-width: 560px) {

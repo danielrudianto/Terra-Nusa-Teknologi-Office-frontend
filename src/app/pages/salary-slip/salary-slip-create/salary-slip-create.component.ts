@@ -30,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { RouterModule } from '@angular/router';
 
 const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   const group = control as FormGroup;
@@ -47,6 +48,7 @@ const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   selector: 'app-salary-slip-create',
   providers: [provideNgxMask()],
   imports: [
+    RouterModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

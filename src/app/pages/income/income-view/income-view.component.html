@@ -62,6 +62,10 @@
         }}</span>
       </div>
     </div>
+
+    <p class="iv-created" *ngIf="formGroup.value.createdAt">
+      Dokumen dibuat pada {{ formGroup.value.createdAt }}
+    </p>
   </mat-dialog-content>
 
   <mat-dialog-actions class="iv-actions">

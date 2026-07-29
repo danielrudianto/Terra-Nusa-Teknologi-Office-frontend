@@ -1,10 +1,15 @@
 /* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
 
 .cc {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .cc *,
 .cc *::before,
@@ -43,20 +48,20 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--surface, #ffffff);
-  color: var(--brand, #154dec);
+  background: $surface;
+  color: $brand;
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 .cc-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
   line-height: 1.2;
 }
 .cc-sub {
   font-size: 0.76rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 
 .cc-content {
@@ -88,7 +93,7 @@
   display: flex !important;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid var(--line, #eef0f3);
+  border-top: 1px solid $line;
 }
 .cc-cancel,
 .cc-submit {
@@ -103,23 +108,23 @@
 .cc-cancel {
   border: none;
   background: transparent;
-  color: var(--muted, #6b7280);
+  color: $muted;
   &:hover {
     background: var(--hover, #f3f5f9);
-    color: var(--ink, #16181d);
+    color: $ink;
   }
 }
 .cc-submit {
   border: none;
-  background: var(--brand, #154dec);
+  background: $brand;
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   &:hover:not(:disabled) {
     background: var(--brand-strong, #0f3fd0);
   }
   &:disabled {
-    background: #e6e9ee;
-    color: #9aa0ab;
+    background: var(--line, #e6e9ee);
+    color: var(--faint, #9aa0ab);
     box-shadow: none;
     cursor: default;
   }

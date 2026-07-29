@@ -26,6 +26,11 @@ import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -80,6 +85,11 @@ function bankAccountIDRequired(): ValidatorFn {
   templateUrl: './purchase-draft-convert.component.html',
   styleUrl: './purchase-draft-convert.component.scss',
   imports: [
+    RouterModule,
+    MatTooltipModule,
+    MatSlideToggleModule,
+    MatButtonModule,
+    CommonModule,
     MatStepperModule,
     MatDatepickerModule,
     MatFormFieldModule,

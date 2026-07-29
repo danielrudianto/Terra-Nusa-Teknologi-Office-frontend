@@ -125,6 +125,10 @@
         </button>
       </div>
     </section>
+
+    <p class="rv-created" *ngIf="f['createdAt'].value">
+      Dokumen dibuat pada {{ f["createdAt"].value }}
+    </p>
   </mat-dialog-content>
 
   <!-- actions -->

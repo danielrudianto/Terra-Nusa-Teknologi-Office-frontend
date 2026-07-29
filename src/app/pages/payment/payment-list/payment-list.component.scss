@@ -1,30 +1,177 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.payment-list {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+/* ===== toolbar / chips ===== */
+.pl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 1rem 0 1.1rem;
+}
+.pl-chips {
+  display: flex;
+  gap: 8px;
+}
+:host ::ng-deep .pl-chips .mat-mdc-chip {
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
+  color: var(--muted, #6b7280);
+}
+:host ::ng-deep .pl-chips .mat-mdc-chip.mdc-evolution-chip--selected,
+:host ::ng-deep .pl-chips .mat-mdc-chip-selected {
+  background: var(--brand-soft, #e7ecfb) !important;
+  color: var(--brand, #154dec) !important;
+  border-color: var(--brand, #154dec);
+}
+
+/* ===== card ===== */
+.pl-card {
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+}
+
+/* ===== table ===== */
 .table-responsive {
   display: block;
   width: 100%;
   overflow-x: auto;
+}
+:host ::ng-deep .mat-mdc-table {
+  width: 100%;
+  min-width: 1100px;
+  background: transparent;
+  --mat-table-background-color: transparent;
+  font-family: "Montserrat", sans-serif;
+}
 
-  .mat-mdc-table {
-    width: 1200px;
+/* header row */
+:host ::ng-deep .mat-mdc-header-row {
+  background: var(--surface-2, #fafbfc);
+  min-height: 46px;
+  border-bottom: 1px solid var(--line, #eef0f3);
+}
+:host ::ng-deep .mat-mdc-header-cell {
+  color: var(--muted, #6b7280);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: none;
+  white-space: nowrap;
+  .d-flex {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  .opacity-0 {
+    opacity: 0;
   }
 }
 
-mat-row,
-mat-header-row {
-  display: table-row;
+/* body rows */
+:host ::ng-deep .mat-mdc-row {
+  min-height: 52px;
+  transition: background 0.13s ease;
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
 }
-mat-cell,
-mat-header-cell {
-  word-wrap: initial;
-  display: table-cell;
-  padding: 0px 5px;
-  line-break: unset;
-  width: auto;
+:host ::ng-deep .mat-mdc-cell {
+  color: var(--ink, #16181d);
+  font-size: 0.86rem;
+  border-bottom: 1px solid var(--line, #eef0f3);
   white-space: nowrap;
-  overflow: hidden;
-  vertical-align: middle;
 }
-.mdc-data-table__cell,
-.mdc-data-table__header-cell {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+:host ::ng-deep .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none;
+}
+
+/* no data */
+:host ::ng-deep .mat-mdc-no-data-row .text-center,
+.text-center {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--faint, #9aa0ab);
+  font-size: 0.88rem;
+}
+
+/* paginator */
+:host ::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+}
+
+/* menu icon button */
+:host ::ng-deep .mat-mdc-icon-button {
+  color: var(--faint, #9aa0ab);
+}
+
+/* ===== status chips (pola purchase, token-based) ===== */
+.pl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  &--ready {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+    .pl-chip__dot {
+      background: var(--ok-fg, #22a75a);
+    }
+  }
+  &--draft {
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn-fg, #a2651a);
+    .pl-chip__dot {
+      background: var(--warn-fg, #e0942e);
+    }
+  }
+  &--paid {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+  }
+  &--unpaid {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+  }
 }

@@ -33,7 +33,7 @@
 .bl-card {
   position: relative;
   background: var(--surface, #ffffff);
-  border: 0.5px solid #e3e6eb;
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -47,7 +47,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   overflow: hidden;
   z-index: 3;
 
@@ -88,7 +88,7 @@
 }
 
 :host ::ng-deep .mat-mdc-header-row {
-  background: #fafbfc;
+  background: var(--surface-2, #fafbfc);
   min-height: 46px;
   border-bottom: 1px solid var(--line, #eef0f3);
 }
@@ -112,7 +112,7 @@
   border-bottom: none;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: #f6f8ff;
+  background: var(--hover, #f6f8ff);
 }
 
 :host ::ng-deep .mat-mdc-cell {
@@ -172,7 +172,7 @@
   white-space: nowrap;
 
   &--neg {
-    color: #b3322f;
+    color: var(--bad-fg, #b3322f);
   }
 }
 
@@ -190,7 +190,7 @@
     font-size: 34px;
     width: 34px;
     height: 34px;
-    color: #cfd4dc;
+    color: var(--faint, #cfd4dc);
   }
 }
 

@@ -17,13 +17,15 @@ import { PaymentHistoryComponent } from '../../payment/payment-history/payment-h
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-calendar-day-view',
   standalone: true,
   templateUrl: './calendar-day-view.component.html',
   styleUrl: './calendar-day-view.component.scss',
-  imports: [MatDialogModule, MatListModule, MatTooltipModule, CommonModule],
+  imports: [
+    MatIconModule,MatDialogModule, MatListModule, MatTooltipModule, CommonModule],
 })
 export class CalendarDayViewComponent {
   constructor(

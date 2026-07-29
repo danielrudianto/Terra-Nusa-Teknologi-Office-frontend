@@ -21,7 +21,6 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
 import { IncomeViewComponent } from '../income-view/income-view.component';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -29,10 +28,12 @@ import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { IncomeCreateComponent } from '../income-create/income-create.component';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-income-list',
   imports: [
+    RouterModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -44,7 +45,6 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
     MatPaginatorModule,
     MatFormFieldModule,
     HeaderTitleComponent,
-    PillSuccessComponent,
     MatDatepickerModule,
     MatSlideToggleModule,
     DeleteConfirmationComponent,

@@ -43,6 +43,7 @@ export class IncomeViewComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl(''),
+    createdAt: new FormControl(''),
     description: new FormControl(''),
     opponent_name: new FormControl(''),
     opponent_description: new FormControl(''),
@@ -62,6 +63,10 @@ export class IncomeViewComponent {
         next: (data: any) => {
           this.formGroup.patchValue({
             date: this.datePipe.transform(data.income.date, 'dd MMMM yyyy'),
+            createdAt: this.datePipe.transform(
+              data.income.createdAt,
+              'dd MMMM yyyy',
+            ),
             description: data.income.description,
             opponent_name: data.income.opponent.name,
             opponent_description: data.income.opponent.description,

@@ -41,10 +41,10 @@
 :host ::ng-deep .mat-mdc-chip-option {
   --mdc-chip-container-height: 34px;
   --mdc-chip-elevated-container-color: #ffffff;
-  --mdc-chip-elevated-selected-container-color: #e7ecfb;
-  --mdc-chip-label-text-color: #5f6672;
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
   --mdc-chip-selected-label-text-color: var(--brand, #154dec);
-  --mdc-chip-outline-color: #d9dce2;
+  --mdc-chip-outline-color: var(--border, #d9dce2);
   --mdc-chip-outline-width: 0.5px;
   --mdc-chip-selected-outline-width: 0px;
   --mdc-chip-focus-state-layer-opacity: 0;
@@ -62,14 +62,14 @@
   letter-spacing: 0.01em;
 }
 :host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
-  --mdc-chip-elevated-container-color: #f6f8ff;
+  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
 }
 
 /* ---------- card ---------- */
 .pl-card {
   position: relative;
   background: var(--surface, #ffffff);
-  border: 0.5px solid #e3e6eb;
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -84,7 +84,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   overflow: hidden;
   z-index: 3;
 
@@ -125,7 +125,7 @@
 }
 
 :host ::ng-deep .mat-mdc-header-row {
-  background: #fafbfc;
+  background: var(--surface-2, #fafbfc);
   min-height: 46px;
   border-bottom: 1px solid var(--line, #eef0f3);
 }
@@ -152,7 +152,7 @@
   border-bottom: none;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: #f6f8ff;
+  background: var(--hover, #f6f8ff);
 }
 
 :host ::ng-deep .mat-mdc-cell {
@@ -177,7 +177,7 @@
     color: var(--brand, #154dec);
   }
   &__idle {
-    color: #cfd4dc !important;
+    color: var(--faint, #cfd4dc) !important;
   }
   &--right {
     justify-content: flex-end;
@@ -217,7 +217,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 0.95rem;
@@ -236,8 +236,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
-  background: #f1f3f7;
-  color: #3f4653;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #3f4653);
   font-size: 0.76rem;
   font-weight: 500;
   padding: 4px 10px;
@@ -283,34 +283,34 @@
   }
 
   &--ready {
-    background: #e6f6ec;
-    color: #1a7f45;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
     .pl-chip__dot {
-      background: #22a75a;
+      background: var(--ok-fg, #22a75a);
     }
   }
   &--draft {
-    background: #fdf0e3;
-    color: #a2651a;
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn-fg, #a2651a);
     .pl-chip__dot {
-      background: #e0942e;
+      background: var(--warn-fg, #e0942e);
     }
   }
   &--paid {
-    background: #e6f6ec;
-    color: #1a7f45;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
   &--unpaid {
-    background: #fdecec;
-    color: #b3322f;
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
   }
   &--internal {
-    background: #e7ecfb;
-    color: #154dec;
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
   }
   &--external {
-    background: #f1f3f7;
-    color: #5f6672;
+    background: var(--surface-2, #f1f3f7);
+    color: var(--muted, #5f6672);
   }
 }
 
@@ -328,7 +328,7 @@
     font-size: 34px;
     width: 34px;
     height: 34px;
-    color: #cfd4dc;
+    color: var(--faint, #cfd4dc);
   }
 }
 

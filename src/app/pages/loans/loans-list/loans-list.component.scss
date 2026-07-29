@@ -1,4 +1,13 @@
 /* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+$hover: var(--hover, #f6f8ff);
 
 :host {
   display: block;
@@ -16,7 +25,7 @@
 }
 :host ::ng-deep .ll-chips .mat-mdc-chip-option {
   --mdc-chip-elevated-container-color: var(--surface-2, #f1f3f7);
-  --mdc-chip-label-text-color: #5f6672;
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
   border-radius: 999px;
   font-weight: 600;
 }
@@ -48,18 +57,18 @@
 }
 :host ::ng-deep .ll-search .mat-mdc-text-field-wrapper {
   border-radius: 14px;
-  background: var(--surface, #ffffff);
+  background: $surface;
 }
 :host ::ng-deep .ll-search .mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin: 0 6px 0 4px;
 }
 
 /* card */
 .ll-card {
   position: relative;
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
+  background: $surface;
+  border: 0.5px solid $border;
   border-radius: 18px;
   box-shadow: var(
     --card-shadow,
@@ -74,14 +83,14 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--brand-soft, #e7ecfb);
+  background: $brandSoft;
   overflow: hidden;
   z-index: 5;
   span {
     position: absolute;
     height: 100%;
     width: 40%;
-    background: var(--brand, #154dec);
+    background: $brand;
     animation: ll-indeterminate 1.1s infinite ease-in-out;
   }
 }
@@ -107,10 +116,10 @@
 :host ::ng-deep .mat-mdc-header-row {
   background: var(--surface-2, #fafbfc);
   min-height: 46px;
-  border-bottom: 1px solid var(--line, #eef0f3);
+  border-bottom: 1px solid $line;
 }
 :host ::ng-deep .mat-mdc-header-cell {
-  color: var(--muted, #6b7280);
+  color: $muted;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -125,18 +134,18 @@
   min-height: 66px;
   cursor: pointer;
   transition: background 0.14s ease;
-  border-bottom: 1px solid var(--line, #eef0f3);
+  border-bottom: 1px solid $line;
 }
 :host ::ng-deep .mat-mdc-row:last-child {
   border-bottom: none;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: var(--hover, #f6f8ff);
+  background: $hover;
 }
 :host ::ng-deep .mat-mdc-cell {
   border-bottom: none;
   padding: 0.5rem 16px;
-  color: var(--ink, #16181d);
+  color: $ink;
   font-size: 0.88rem;
   vertical-align: middle;
 }
@@ -156,26 +165,26 @@
   height: 18px;
 }
 .ll-th__idle {
-  color: #cfd4dc;
+  color: var(--faint, #cfd4dc);
 }
 
 /* cells */
 .ll-primary {
   font-weight: 600;
-  color: var(--ink, #16181d);
+  color: $ink;
   display: block;
 }
 .ll-muted {
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 .ll-faint {
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   font-weight: 400;
   font-size: 0.78rem;
   display: block;
 }
 .ll-date {
-  color: #3f4653;
+  color: var(--muted, #3f4653);
   font-variant-numeric: tabular-nums;
 }
 
@@ -193,8 +202,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  background: $brandSoft;
+  color: $brand;
   font-weight: 700;
   font-size: 0.9rem;
   display: grid;
@@ -249,20 +258,20 @@
   align-items: center;
   gap: 8px;
   padding: 3rem 1rem;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   font-size: 0.9rem;
   mat-icon {
     font-size: 34px;
     width: 34px;
     height: 34px;
-    color: var(--faint, #9aa0ab);
+    color: $faint;
   }
 }
 
 /* paginator */
 :host ::ng-deep .mat-mdc-paginator {
   background: transparent;
-  border-top: 1px solid var(--line, #eef0f3);
-  color: var(--muted, #6b7280);
+  border-top: 1px solid $line;
+  color: $muted;
   font-family: "Montserrat", sans-serif;
 }

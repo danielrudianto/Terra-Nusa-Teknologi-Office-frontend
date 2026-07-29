@@ -6,13 +6,15 @@ import {
   Output,
   HostListener,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-file-drop',
   templateUrl: './file-drop.component.html',
   styleUrl: './file-drop.component.scss',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule,],
 })
 export class FileDropComponent {
   @Input('allowedExtensions') allowedExtensions: string[] = [];

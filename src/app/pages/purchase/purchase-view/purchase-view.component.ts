@@ -76,6 +76,7 @@ export class PurchaseViewComponent {
     lastStatus: new FormControl(''),
     date: new FormControl('', Validators.required),
     dueDate: new FormControl('', Validators.required),
+    createdAt: new FormControl(''),
     isInternal: new FormControl('', Validators.required),
     dpp: new FormControl(''),
     ppn: new FormControl(''),
@@ -139,6 +140,7 @@ export class PurchaseViewComponent {
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),
+          createdAt: this.datePipe.transform(data.createdAt, 'dd MMMM yyyy'),
           invoiceName: data.invoiceName,
           receiptName: data.receiptName,
           taxInvoiceName: data.taxInvoiceName,

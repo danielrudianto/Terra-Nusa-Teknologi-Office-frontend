@@ -20,11 +20,13 @@ import { MasterItemUpdateComponent } from '../master-item-update/master-item-upd
 import { ApiService } from 'src/app/services/api.service';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-master-item-list',
   standalone: true,
   imports: [
+    MatProgressSpinnerModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

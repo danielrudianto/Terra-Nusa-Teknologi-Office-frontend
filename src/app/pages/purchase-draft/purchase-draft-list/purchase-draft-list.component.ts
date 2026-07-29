@@ -19,8 +19,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-draft-create.component';
 
@@ -40,8 +38,6 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
     MatChipsModule,
     MatPaginatorModule,
     HeaderTitleComponent,
-    PillSuccessComponent,
-    PillDangerComponent,
     MatMenuModule,
   ],
   templateUrl: './purchase-draft-list.component.html',

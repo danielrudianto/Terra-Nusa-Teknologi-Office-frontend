@@ -14,5 +14,5 @@ export class AppComponent {
     this.settings.init();
   }
 
-  title = 'terra-nusa-teknologi-office-frontend';
+  title = 'TerraBot PT. Alpha Konstruksi Nusantara';
 }

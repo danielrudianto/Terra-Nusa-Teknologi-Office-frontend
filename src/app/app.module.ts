@@ -10,26 +10,15 @@ import {
 } from '@angular/common/http';
 
 // Pages
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SupplierComponent } from './pages/supplier/supplier.component';
 import { PurchaseComponent } from './pages/purchase/purchase.component';
 import { DashboardTopComponent } from './pages/dashboard/dashboard-top/dashboard-top.component';
 import { DashboardBodyComponent } from './pages/dashboard/dashboard-body/dashboard-body.component';
-import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
-import { ReimbursementCreateItemDialogComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create-item-dialog/reimbursement-create-item-dialog.component';
-import { PurchaseReportSelectComponent } from './pages/purchase/purchase-list/purchase-report-select/purchase-report-select.component';
-import { BankUpdateComponent } from './pages/bank/bank-update/bank-update.component';
 import { BankComponent } from './pages/bank/bank.component';
-import { PurchasePaymentCreateComponent } from './components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import { ExpenseComponent } from './pages/expense/expense.component';
-import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
 import { EmployeeComponent } from './pages/employee/employee.component';
-import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
 import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
-import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
-import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
 import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
-import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
 import { ClientComponent } from './pages/client/client.component';
 import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
 import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
@@ -95,7 +84,6 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { LoansComponent } from './pages/loans/loans.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
 import { NumberFormatInputPipe } from './pipes/number-format-input.pipe';
 import { MatExpansionModule } from '@angular/material/expansion';
 
@@ -112,12 +100,7 @@ export const MY_FORMATS = {
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DashboardCardComponent,
-    BankSelectorComponent,
-    TaxListComponent,
-  ],
+  declarations: [AppComponent, DashboardCardComponent, BankSelectorComponent],
   bootstrap: [AppComponent],
   imports: [
     PaymentCreateComponent,

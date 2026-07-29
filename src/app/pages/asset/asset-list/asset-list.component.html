@@ -190,6 +190,9 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onEditAsset(element)">
+                <mat-icon>edit</mat-icon><span>Edit asset</span>
+              </button>
               <button
                 mat-menu-item
                 [disabled]="!element.purchaseOrderName"

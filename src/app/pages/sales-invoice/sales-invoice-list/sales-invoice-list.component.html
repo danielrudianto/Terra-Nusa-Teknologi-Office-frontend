@@ -180,6 +180,47 @@
           </td>
         </ng-container>
 
+        <!-- Taxing status (status pajak) -->
+        <ng-container matColumnDef="taxingStatus">
+          <th mat-header-cell *matHeaderCellDef>Status pajak</th>
+          <td mat-cell *matCellDef="let invoice">
+            <span
+              class="sil-tax"
+              [class.sil-tax--faktur]="
+                invoice.taxingStatus === 'tax_invoice_not_published'
+              "
+              [class.sil-tax--waiting]="
+                invoice.taxingStatus === 'waiting_for_payment'
+              "
+              [class.sil-tax--buktipotong]="
+                invoice.taxingStatus === 'income_tax_not_published'
+              "
+              [class.sil-tax--done]="invoice.taxingStatus === 'fully_published'"
+              *ngIf="invoice.taxingStatus"
+            >
+              <mat-icon>{{
+                invoice.taxingStatus === "fully_published"
+                  ? "verified"
+                  : invoice.taxingStatus === "waiting_for_payment"
+                    ? "schedule"
+                    : "error_outline"
+              }}</mat-icon>
+              {{
+                invoice.taxingStatus === "tax_invoice_not_published"
+                  ? "Faktur belum terbit"
+                  : invoice.taxingStatus === "waiting_for_payment"
+                    ? "Menunggu pembayaran"
+                    : invoice.taxingStatus === "income_tax_not_published"
+                      ? "Bukti potong belum ada"
+                      : "Selesai"
+              }}
+            </span>
+            <span class="sil-tax sil-tax--none" *ngIf="!invoice.taxingStatus"
+              >—</span
+            >
+          </td>
+        </ng-container>
+
         <!-- Action -->
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
@@ -212,6 +253,13 @@
               </button>
               <button mat-menu-item (click)="viewSalesInvoice(invoice.id)">
                 <mat-icon>view_array</mat-icon><span>View sales invoice</span>
+              </button>
+              <button
+                mat-menu-item
+                (click)="openIncomeTax(invoice)"
+                [disabled]="invoice.taxingStatus !== 'income_tax_not_published'"
+              >
+                <mat-icon>receipt_long</mat-icon><span>Input bukti potong</span>
               </button>
             </mat-menu>
           </td>

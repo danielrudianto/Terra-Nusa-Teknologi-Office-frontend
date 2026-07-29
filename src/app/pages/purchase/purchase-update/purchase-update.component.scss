@@ -1,0 +1,156 @@
+.pu {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+  width: 100%;
+  box-sizing: border-box;
+}
+.pu *,
+.pu *::before,
+.pu *::after {
+  box-sizing: border-box;
+}
+
+/* header */
+.pu-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.15rem 1.4rem !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #e7ecfb) 0%,
+    var(--surface-2, #f3f6ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e3e6eb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    margin-right: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+.pu-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(21, 77, 236, 0.1);
+  color: var(--brand, #154dec);
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.pu-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink, #16181d);
+}
+.pu-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  white-space: nowrap;
+}
+
+.pu-content {
+  padding: 1rem 1.4rem 1.25rem !important;
+  overflow-x: hidden;
+}
+
+.w-100 {
+  width: 100%;
+}
+.d-none {
+  display: none !important;
+}
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.my-3 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.mt-3 {
+  margin-top: 1rem;
+}
+.ms-2 {
+  margin-left: 0.5rem;
+}
+
+/* stepper — dark aware */
+:host ::ng-deep .mat-stepper-vertical,
+:host ::ng-deep .mat-stepper-horizontal {
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+}
+:host ::ng-deep .mat-step-header {
+  border-radius: 10px;
+  &:hover {
+    background: var(--hover, #f6f8ff) !important;
+  }
+}
+:host ::ng-deep .mat-step-header .mat-step-label {
+  color: var(--muted, #6b7280);
+  font-weight: 600;
+  &.mat-step-label-active {
+    color: var(--ink, #16181d);
+  }
+  &.mat-step-label-selected {
+    color: var(--brand, #154dec);
+  }
+}
+:host ::ng-deep .mat-step-header .mat-step-icon {
+  background: var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  &.mat-step-icon-selected,
+  &.mat-step-icon-state-done,
+  &.mat-step-icon-state-edit {
+    background: var(--brand, #154dec);
+    color: #fff;
+  }
+}
+:host ::ng-deep .mat-stepper-horizontal-line,
+:host ::ng-deep .mat-stepper-vertical-line::before {
+  border-color: var(--line, #eef0f3);
+}
+
+/* divider */
+:host ::ng-deep .mat-divider {
+  border-top-color: var(--line, #eef0f3);
+}
+
+/* slide toggle label */
+:host ::ng-deep .mat-mdc-slide-toggle label {
+  color: var(--ink, #16181d);
+  font-size: 0.88rem;
+}
+
+/* buttons */
+:host ::ng-deep .mat-mdc-outlined-button {
+  border-radius: 11px !important;
+  font-weight: 600 !important;
+  height: 42px;
+  border-color: var(--border, #e3e6eb) !important;
+}
+:host ::ng-deep button[matStepperNext],
+:host ::ng-deep button[color="primary"].mat-mdc-outlined-button {
+  border-color: var(--brand, #154dec) !important;
+  color: var(--brand, #154dec) !important;
+}
+
+/* form field labels/inputs already themed by material tokens,
+   but ensure readonly fields blend in dark */
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}

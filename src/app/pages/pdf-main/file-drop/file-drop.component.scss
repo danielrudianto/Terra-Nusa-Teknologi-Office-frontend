@@ -1,4 +1,10 @@
 // file-drop.component.scss — on-brand redesign
+$brand: var(--brand, #154dec);
+$brand-soft: #f5f8ff;
+$brand-border: #c3d0f7;
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
 
 .dropzone-container {
   position: relative;
@@ -18,8 +24,8 @@
   padding: 2rem;
   box-sizing: border-box;
   text-align: center;
-  background: var(--brand-soft, #e7ecfb);
-  border: 2px dashed var(--brand-strong, #cdd7f7);
+  background: $brand-soft;
+  border: 2px dashed $brand-border;
   border-radius: 20px;
   transition:
     background 0.2s ease,
@@ -27,12 +33,12 @@
     transform 0.2s ease;
 
   &:hover {
-    border-color: var(--brand, #154dec);
-    background: #eef2fe;
+    border-color: $brand;
+    background: var(--brand-soft, #eef2fe);
   }
   &.dragover {
-    border-color: var(--brand, #154dec);
-    background: #e7ecfb;
+    border-color: $brand;
+    background: var(--brand-soft, #e7ecfb);
     transform: scale(1.005);
   }
 }
@@ -64,29 +70,29 @@ input {
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: #e7ecfb;
-  color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb);
+  color: $brand;
   margin-bottom: 0.75rem;
 }
 
 .dz-title {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
 }
 .dz-sub {
   font-size: 0.86rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   margin: 0;
   b {
-    color: var(--brand, #154dec);
+    color: $brand;
     font-weight: 700;
   }
 }
 .dz-hint {
   font-size: 0.74rem;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin-top: 0.5rem;
 }
 
@@ -114,7 +120,7 @@ input {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  color: var(--brand, #154dec);
+  color: $brand;
 
   h3 {
     font-size: 1.05rem;
@@ -123,7 +129,7 @@ input {
   }
   p {
     font-size: 0.82rem;
-    color: var(--muted, #6b7280);
+    color: $muted;
     margin: 0;
   }
 }

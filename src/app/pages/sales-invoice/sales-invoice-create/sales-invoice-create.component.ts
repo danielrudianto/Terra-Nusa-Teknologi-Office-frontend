@@ -22,6 +22,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { RouterModule } from '@angular/router';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -31,6 +35,10 @@ pdfMake.vfs = pdfFonts.vfs;
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
   imports: [
+    RouterModule,
+    MatSelectModule,
+    MatButtonModule,
+    CommonModule,
     ClientSelectorComponent,
     PphSelectorComponent,
     MatStepperModule,

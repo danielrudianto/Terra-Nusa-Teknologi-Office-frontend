@@ -17,6 +17,7 @@ import { AssetListPurchaseOrderSelectorComponent } from './asset-list-purchase-o
 import { debounceTime } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
 import { AssetCreateComponent } from '../asset-create/asset-create.component';
+import { AssetUpdateComponent } from '../asset-update/asset-update.component';
 
 @Component({
   selector: 'app-asset-list',
@@ -123,10 +124,27 @@ export class AssetListComponent {
   }
 
   onAddAsset() {
-    this.dialog.open(AssetCreateComponent);
+    this.dialog
+      .open(AssetCreateComponent)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) this.fetchAssets(0);
+      });
   }
 
-  onEditAsset() {}
+  onEditAsset(asset: any) {
+    this.dialog
+      .open(AssetUpdateComponent, {
+        data: { id: asset.id },
+        width: '720px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) this.fetchAssets(0);
+      });
+  }
 
   openPurchase(purchaseOrderName: string) {
     this.apiService

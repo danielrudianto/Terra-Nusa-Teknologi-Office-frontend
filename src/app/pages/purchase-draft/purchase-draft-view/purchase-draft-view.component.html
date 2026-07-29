@@ -90,6 +90,10 @@
         </div>
       </section>
     </form>
+
+    <p class="pdv-created" *ngIf="formGroup.get('createdAt')?.value">
+      Dokumen dibuat pada {{ formGroup.get("createdAt")?.value }}
+    </p>
   </mat-dialog-content>
 
   <mat-dialog-actions class="pdv-actions">

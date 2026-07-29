@@ -23,8 +23,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { ExpenseViewComponent } from '../expense-view/expense-view.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -48,8 +46,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatChipsModule,
     MatPaginatorModule,
     HeaderTitleComponent,
-    PillSuccessComponent,
-    PillDangerComponent,
     MatDatepickerModule,
     MatSlideToggleModule,
   ],
@@ -65,7 +61,7 @@ export class ExpenseListComponent {
     private dialog: MatDialog,
     private router: Router,
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   filterFormGroup: FormGroup = new FormGroup({
@@ -79,12 +75,12 @@ export class ExpenseListComponent {
   startOfMonth: Date = new Date(
     this.date.getFullYear(),
     this.date.getMonth(),
-    1
+    1,
   );
   endOfMonth: Date = new Date(
     this.date.getFullYear(),
     this.date.getMonth() + 1,
-    0
+    0,
   );
 
   formGroup: FormGroup = new FormGroup({

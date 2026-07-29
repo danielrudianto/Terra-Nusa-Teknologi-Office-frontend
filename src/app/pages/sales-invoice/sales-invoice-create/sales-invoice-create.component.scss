@@ -1,3 +1,9 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
 
 :host {
   display: block;
@@ -18,16 +24,16 @@
 .sic-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
   letter-spacing: -0.01em;
 }
 .sic-sub {
   font-size: 0.85rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   margin: 0.25rem 0 0;
   a {
-    color: var(--brand, #154dec);
+    color: $brand;
     text-decoration: none;
     &:hover {
       text-decoration: underline;
@@ -48,22 +54,22 @@
 :host ::ng-deep .sic-stepper .mat-step-header {
   border-radius: 12px;
   &:hover {
-    background: #f6f8ff;
+    background: var(--hover, #f6f8ff);
   }
   .mat-step-icon-selected,
   .mat-step-icon-state-edit {
-    background-color: var(--brand, #154dec);
+    background-color: $brand;
   }
   .mat-step-label.mat-step-label-active {
-    color: var(--ink, #16181d);
+    color: $ink;
     font-weight: 600;
   }
 }
 
 /* card */
 .sic-card {
-  background: var(--surface, #ffffff);
-  border: 0.5px solid #e3e6eb;
+  background: $surface;
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -77,7 +83,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin-bottom: 0.9rem;
   &--mt {
     margin-top: 1.4rem;
@@ -99,25 +105,25 @@
 }
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
-  --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-outline-color: #{$brand};
+  --mdc-outlined-text-field-caret-color: #{$brand};
+  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
+  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
+  --mat-select-focused-arrow-color: #{$brand};
 }
 :host ::ng-deep .mat-mdc-form-field-icon-prefix .mat-mdc-icon-button {
-  color: var(--brand, #154dec);
+  color: $brand;
 }
 
 /* highlighted total */
 :host ::ng-deep .sic-total .mat-mdc-text-field-wrapper {
-  background: #f3f6ff;
+  background: var(--brand-soft, #f3f6ff);
 }
 :host ::ng-deep .sic-total input {
   font-weight: 800 !important;
   font-size: 1.05rem !important;
-  color: var(--brand, #154dec) !important;
+  color: $brand !important;
 }
 
 /* actions */
@@ -127,7 +133,7 @@
   gap: 10px;
   margin-top: 1rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line, #eef0f3);
+  border-top: 1px solid $line;
 }
 .sic-spacer {
   flex: 1;
@@ -145,22 +151,22 @@
 
   &--ghost {
     background: transparent;
-    color: var(--muted, #6b7280);
+    color: $muted;
     &:hover {
-      background: #f3f5f9;
-      color: var(--ink, #16181d);
+      background: var(--surface-2, #f3f5f9);
+      color: $ink;
     }
   }
   &--primary {
-    background: var(--brand, #154dec);
+    background: $brand;
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover:not(:disabled) {
-      background: #0f3fd0;
+      background: var(--brand-strong, #0f3fd0);
     }
     &:disabled {
-      background: #e6e9ee;
-      color: #9aa0ab;
+      background: var(--line, #e6e9ee);
+      color: var(--faint, #9aa0ab);
       box-shadow: none;
       cursor: default;
     }

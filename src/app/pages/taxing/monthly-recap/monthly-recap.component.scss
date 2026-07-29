@@ -1,4 +1,13 @@
 /* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -9,7 +18,7 @@
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .txr *,
 .txr *::before,
@@ -50,20 +59,20 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--surface, #ffffff);
-  color: var(--brand, #154dec);
+  background: $surface;
+  color: $brand;
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 .txr-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
+  color: $ink;
   margin: 0;
   line-height: 1.2;
 }
 .txr-sub {
   font-size: 0.76rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 
 /* content */
@@ -79,7 +88,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
 }
 .txr-yearrow {
   display: flex;
@@ -91,8 +100,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--surface-2, #fafbfc);
-  border: 0.5px solid var(--border, #e3e6eb);
+  background: $surface2;
+  border: 0.5px solid $border;
   border-radius: 10px;
   padding: 3px;
   button {
@@ -103,12 +112,12 @@
     border-radius: 8px;
     border: none;
     background: transparent;
-    color: var(--ink, #16181d);
+    color: $ink;
     cursor: pointer;
     transition: background 0.14s ease;
     &:hover {
       background: var(--hover, #e9eefc);
-      color: var(--brand, #154dec);
+      color: $brand;
     }
   }
   span {
@@ -116,7 +125,7 @@
     text-align: center;
     font-weight: 800;
     font-size: 0.95rem;
-    color: var(--ink, #16181d);
+    color: $ink;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -132,18 +141,18 @@
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 0.8rem;
-  border: 0.5px solid var(--border, #e3e6eb);
-  background: var(--surface, #ffffff);
-  color: var(--muted, #6b7280);
+  border: 0.5px solid $border;
+  background: $surface;
+  color: $muted;
   transition: all 0.13s ease;
   &:hover {
-    border-color: #c2ccde;
-    color: var(--ink, #16181d);
+    border-color: var(--faint, #c2ccde);
+    color: $ink;
     background: var(--hover, #f6f8ff);
   }
   &.is-active {
-    background: var(--brand, #154dec);
-    border-color: var(--brand, #154dec);
+    background: $brand;
+    border-color: $brand;
     color: #fff;
     box-shadow: 0 3px 10px rgba(21, 77, 236, 0.28);
   }
@@ -164,8 +173,8 @@
   align-items: center;
   padding: 0.6rem 0.85rem;
   border-radius: 12px;
-  border: 0.5px solid var(--border, #e3e6eb);
-  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid $border;
+  background: $surface2;
   ::ng-deep .mdc-form-field {
     width: 100%;
   }
@@ -173,7 +182,7 @@
     font-family: "Montserrat", sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--ink, #16181d);
+    color: $ink;
   }
 }
 
@@ -182,7 +191,7 @@
   padding: 1rem 1.5rem 1.25rem !important;
   display: flex !important;
   justify-content: flex-end;
-  border-top: 1px solid var(--line, #eef0f3);
+  border-top: 1px solid $line;
 }
 .txr-submit {
   display: inline-flex;
@@ -195,7 +204,7 @@
   padding: 0.65rem 1.5rem;
   cursor: pointer;
   border: none;
-  background: var(--brand, #154dec);
+  background: $brand;
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   transition: background 0.15s ease;
@@ -206,8 +215,8 @@
     background: var(--brand-strong, #0f3fd0);
   }
   &:disabled {
-    background: #e6e9ee;
-    color: #9aa0ab;
+    background: var(--line, #e6e9ee);
+    color: var(--faint, #9aa0ab);
     box-shadow: none;
     cursor: default;
   }

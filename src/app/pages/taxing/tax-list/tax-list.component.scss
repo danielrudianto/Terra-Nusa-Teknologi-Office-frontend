@@ -1,10 +1,14 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
 
 .tx {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 
 /* ---------- hero ---------- */
@@ -19,7 +23,7 @@
   padding: 1.75rem 2rem;
   border-radius: 22px;
   overflow: hidden;
-  background: linear-gradient(135deg, #2f6bff 0%, #154dec 55%, #0b2fa8 100%);
+  background: linear-gradient(135deg, #2f6bff 0%, var(--brand, #154dec) 55%, #0b2fa8 100%);
   box-shadow: 0 12px 34px rgba(21, 77, 236, 0.22);
 
   &__content {
@@ -75,8 +79,8 @@
   gap: 0.9rem;
   text-align: left;
   padding: 1.35rem 1.35rem 1.15rem;
-  background: #fff;
-  border: 0.5px solid #e3e6eb;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -91,7 +95,7 @@
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
-    border-color: #d7deea;
+    border-color: var(--border, #d7deea);
   }
 
   &__icon {
@@ -102,19 +106,19 @@
     place-items: center;
 
     &--blue {
-      background: #e7ecfb;
-      color: #154dec;
+      background: var(--brand-soft, #e7ecfb);
+      color: var(--brand, #154dec);
     }
     &--violet {
       background: #efe9fd;
       color: #6b3fd4;
     }
     &--green {
-      background: #e6f6ec;
-      color: #1a7f45;
+      background: var(--ok-bg, #e6f6ec);
+      color: var(--ok-fg, #1a7f45);
     }
     &--amber {
-      background: #fdf0e3;
+      background: var(--warn-bg, #fdf0e3);
       color: #b5731a;
     }
   }
@@ -128,14 +132,14 @@
   &__title {
     font-size: 1.02rem;
     font-weight: 700;
-    color: var(--ink, #16181d);
+    color: $ink;
   }
   &__desc {
     font-size: 0.82rem;
     line-height: 1.45;
-    color: var(--muted, #6b7280);
+    color: $muted;
     b {
-      color: #3f4653;
+      color: var(--muted, #3f4653);
       font-weight: 600;
     }
   }
@@ -146,7 +150,7 @@
     gap: 6px;
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--brand, #154dec);
+    color: $brand;
     margin-top: 0.1rem;
 
     svg {
@@ -242,7 +246,7 @@
   color: var(--muted, #6b7280);
   transition: all 0.13s ease;
   &:hover {
-    border-color: #c2ccde;
+    border-color: var(--faint, #c2ccde);
     color: var(--ink, #16181d);
     background: var(--hover, #f6f8ff);
   }

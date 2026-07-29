@@ -1,42 +1,51 @@
-<h2 mat-dialog-title>Select opponent</h2>
-<mat-dialog-content>
-  <form [formGroup]="searchFormGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        matInput
-        formControlName="search"
-        placeholder="Search by name or email"
-      />
-    </mat-form-field>
-  </form>
-
-  <div class="table-responsive">
-    <mat-table [dataSource]="opponents">
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-        <mat-cell *matCellDef="let opponent"> {{ opponent.name }} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-        <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-        <mat-cell *matCellDef="let opponent">
-          {{ opponent.description }}
-        </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        (click)="selectOpponent(row)"
-      ></mat-row>
-      <tr class="mat-row" *matNoDataRow>
-        <td
-          class="mat-cell text-center"
-          [attr.colspan]="displayedColumns.length"
-        >
-          No data matching the filter.
-        </td>
-      </tr>
-    </mat-table>
+<div class="eos">
+  <div class="eos-head" mat-dialog-title>
+    <span class="eos-badge">
+      <mat-icon>groups</mat-icon>
+    </span>
+    <div class="eos-head__text">
+      <h2 class="eos-title">Pilih lawan transaksi</h2>
+      <span class="eos-sub">Cari berdasarkan nama atau deskripsi</span>
+    </div>
   </div>
-</mat-dialog-content>
+
+  <mat-dialog-content class="eos-content">
+    <form [formGroup]="searchFormGroup" class="eos-search">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          formControlName="search"
+          placeholder="Ketik untuk mencari..."
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </form>
+
+    <div class="eos-list">
+      <button
+        type="button"
+        class="eos-row"
+        *ngFor="let opponent of opponents"
+        (click)="selectOpponent(opponent)"
+      >
+        <span class="eos-avatar">{{ (opponent.name || "?").charAt(0) }}</span>
+        <span class="eos-info">
+          <span class="eos-name">{{ opponent.name }}</span>
+          <span class="eos-desc" *ngIf="opponent.description">{{
+            opponent.description
+          }}</span>
+          <span class="eos-pay" *ngIf="opponent.paymentNumber">{{
+            opponent.paymentNumber
+          }}</span>
+        </span>
+        <mat-icon class="eos-chevron">chevron_right</mat-icon>
+      </button>
+
+      <div class="eos-empty" *ngIf="opponents.length === 0">
+        <mat-icon>person_search</mat-icon>
+        <span>Tidak ada data yang cocok.</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

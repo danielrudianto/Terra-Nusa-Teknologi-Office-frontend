@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormControl,
   FormGroup,
@@ -10,6 +11,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
@@ -20,12 +23,15 @@ import { banks, IBank } from 'src/app/utils/bank';
   styleUrl: './expense-opponent-create.component.scss',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
   ],
 })
 export class ExpenseOpponentCreateComponent {

@@ -7,7 +7,7 @@ import { MonthlyRecapComponent } from 'src/app/pages/taxing/monthly-recap/monthl
 
 @Component({
   selector: 'app-tax-list',
-  standalone: false,
+  standalone: true,
   templateUrl: './tax-list.component.html',
   styleUrl: './tax-list.component.scss',
 })

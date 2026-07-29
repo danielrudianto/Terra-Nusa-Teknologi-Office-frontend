@@ -1,0 +1,121 @@
+.prp {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+  width: 100%;
+  box-sizing: border-box;
+}
+.prp *,
+.prp *::before,
+.prp *::after {
+  box-sizing: border-box;
+}
+
+.prp-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.15rem 1.4rem !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #e7ecfb) 0%,
+    var(--surface-2, #f3f6ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e3e6eb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    margin-right: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+.prp-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(21, 77, 236, 0.1);
+  color: var(--brand, #154dec);
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.prp-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink, #16181d);
+}
+.prp-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  white-space: nowrap;
+}
+
+.prp-content {
+  padding: 1.35rem 1.4rem 0.5rem !important;
+  overflow-x: hidden;
+}
+.w-100 {
+  width: 100%;
+}
+
+.prp-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  background: var(--surface-2, #fafbfc);
+  color: var(--muted, #6b7280);
+  border: 0.5px solid var(--border, #e3e6eb);
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: var(--brand, #154dec);
+  }
+}
+
+.prp-actions {
+  padding: 0.75rem 1.4rem 1.15rem !important;
+  gap: 10px;
+}
+.prp-btn {
+  letter-spacing: 0 !important;
+  border-radius: 11px !important;
+  font-weight: 600 !important;
+  height: 42px;
+  padding: 0 1.1rem !important;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
+  &--ghost {
+    color: var(--muted, #6b7280) !important;
+    border: 1px solid var(--border, #e3e6eb) !important;
+  }
+  &--primary {
+    background: var(--brand, #154dec) !important;
+    color: #fff !important;
+    &:disabled {
+      opacity: 0.55;
+    }
+  }
+}

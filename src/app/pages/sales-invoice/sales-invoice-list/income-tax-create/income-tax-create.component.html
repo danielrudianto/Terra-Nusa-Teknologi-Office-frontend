@@ -1,0 +1,50 @@
+<div class="itc">
+  <div class="itc-head" mat-dialog-title>
+    <span class="itc-badge">
+      <mat-icon>description</mat-icon>
+    </span>
+    <div class="itc-head__text">
+      <h2 class="itc-title">Bukti potong PPh</h2>
+      <span class="itc-sub" *ngIf="data.name">{{ data.name }}</span>
+      <span class="itc-sub" *ngIf="!data.name"
+        >Masukkan nomor bukti potong</span
+      >
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="itc-content">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nomor bukti potong</mat-label>
+        <input
+          matInput
+          formControlName="incomeTaxInvoiceName"
+          placeholder="Contoh: BP-2026-0001"
+          autocomplete="off"
+          maxlength="100"
+        />
+        <mat-hint>Nomor bukti pemotongan PPh dari client</mat-hint>
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="itc-actions">
+      <button
+        type="button"
+        mat-stroked-button
+        (click)="onCancel()"
+        class="itc-btn itc-btn--ghost"
+      >
+        Batal
+      </button>
+      <button
+        type="submit"
+        mat-flat-button
+        [disabled]="isSubmitting || formGroup.invalid"
+        class="itc-btn itc-btn--primary"
+      >
+        <mat-icon *ngIf="!isSubmitting">check</mat-icon>
+        {{ isSubmitting ? "Menyimpan..." : "Simpan" }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

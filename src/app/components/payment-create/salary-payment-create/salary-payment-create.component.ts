@@ -21,6 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { MatInputModule } from '@angular/material/input';
 
 export const amountValidator: ValidatorFn = (
   control: AbstractControl,
@@ -46,6 +47,7 @@ export const amountValidator: ValidatorFn = (
   templateUrl: './salary-payment-create.component.html',
   styleUrl: './salary-payment-create.component.scss',
   imports: [
+    MatInputModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,

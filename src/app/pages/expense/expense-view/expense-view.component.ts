@@ -101,6 +101,7 @@ export class ExpenseViewComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl(''),
+    createdAt: new FormControl(''),
     dueDate: new FormControl(''),
     invoiceName: new FormControl(''),
     receiptName: new FormControl(''),
@@ -149,6 +150,7 @@ export class ExpenseViewComponent {
 
           this.formGroup.patchValue({
             date: this.datePipe.transform(e.date, 'dd MMMM yyyy'),
+            createdAt: this.datePipe.transform(e.createdAt, 'dd MMMM yyyy'),
             dueDate: this.datePipe.transform(e.dueDate, 'dd MMMM yyyy'),
             invoiceName: e.invoiceName,
             receiptName: e.receiptName,

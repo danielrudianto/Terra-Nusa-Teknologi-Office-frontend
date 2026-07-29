@@ -16,8 +16,6 @@ import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmat
 import { PurchaseUpdateComponent } from '../purchase-update/purchase-update.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillDangerComponent } from '../../../components/pills/pill-danger/pill-danger.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -42,9 +40,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatMenuModule,
     MatPaginatorModule,
     RouterModule,
-    PillSuccessComponent,
     MatButtonModule,
-    PillDangerComponent,
     MatIconModule,
     HeaderTitleComponent,
     MatSnackBarModule,

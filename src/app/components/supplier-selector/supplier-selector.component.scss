@@ -1,4 +1,3 @@
-
 .ss {
   font-family: "Montserrat", sans-serif;
   box-sizing: border-box;
@@ -100,7 +99,7 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1rem;
@@ -169,4 +168,62 @@
   font-weight: 600;
   color: var(--muted, #6b7280) !important;
   border-radius: 10px;
+}
+
+/* ===== blacklist: galak mode ===== */
+.ss-avatar--danger {
+  background: var(--bad-bg, #fdecec);
+  color: var(--bad-fg, #b3322f);
+  animation: ss-pulse 1.8s ease-in-out infinite;
+}
+@keyframes ss-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(179, 50, 47, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(179, 50, 47, 0);
+  }
+}
+
+/* row blacklist: aksen merah tegas */
+.ss-row--blacklist {
+  border-color: var(--bad-fg, #b3322f) !important;
+  border-left: 3px solid var(--bad-fg, #b3322f) !important;
+  background: var(--bad-bg, #fdecec) !important;
+  &:hover {
+    background: var(--bad-bg, #fbe0e0) !important;
+  }
+  .ss-name {
+    color: var(--bad-fg, #b3322f);
+  }
+}
+
+/* badge blacklist: merah solid, galak */
+.ss-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--bad-fg, #b3322f);
+  color: #fff;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* alasan blacklist */
+.ss-blacklist-reason {
+  margin-top: 3px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--bad-fg, #b3322f);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }

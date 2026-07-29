@@ -22,9 +22,6 @@ import {
 } from '@angular/material/datepicker';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
-import { PillSuccessComponent } from '../../../components/pills/pill-success/pill-success.component';
-import { PillWarningComponent } from '../../../components/pills/pill-warning/pill-warning.component';
-import { PdfViewerComponent } from 'src/app/components/pdf-viewer/pdf-viewer.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 
@@ -60,8 +57,6 @@ export const MY_FORMATS = {
     HeaderTitleComponent,
     MatDatepickerModule,
     MatMenuModule,
-    PillSuccessComponent,
-    PillWarningComponent,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',

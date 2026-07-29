@@ -9,6 +9,7 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-reimbursement-create-item-dialog',
@@ -16,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   styleUrls: ['./reimbursement-create-item-dialog.component.scss'],
   standalone: true,
   imports: [
+    MatInputModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,

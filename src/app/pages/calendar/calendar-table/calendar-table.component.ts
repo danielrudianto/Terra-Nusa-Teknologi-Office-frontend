@@ -15,11 +15,13 @@ import { ICalendarValue } from 'src/app/model/calendar.model';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
 import * as xlsx from 'xlsx-js-style';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-calendar-table',
   providers: [DecimalPipe],
-  imports: [CommonModule, MatIconModule, ShortCurrencyPipe, MatButtonModule],
+  imports: [
+    MatTooltipModule,CommonModule, MatIconModule, ShortCurrencyPipe, MatButtonModule],
   templateUrl: './calendar-table.component.html',
   styleUrl: './calendar-table.component.scss',
   standalone: true,

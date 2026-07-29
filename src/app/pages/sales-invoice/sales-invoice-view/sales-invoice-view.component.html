@@ -45,6 +45,62 @@
       </div>
     </section>
 
+    <!-- Informasi pajak -->
+    <section class="sv-section">
+      <div class="sv-section__title">Informasi Pajak</div>
+      <div class="sv-grid">
+        <div class="sv-field">
+          <span class="sv-label">Faktur pajak</span>
+          <span class="sv-value">{{ f["taxInvoiceName"].value || "N/A" }}</span>
+        </div>
+        <div class="sv-field">
+          <span class="sv-label">Nomor bukti potong</span>
+          <span class="sv-value">{{
+            f["incomeTaxInvoiceName"].value || "N/A"
+          }}</span>
+        </div>
+        <div class="sv-field sv-field--wide">
+          <span class="sv-label">Status pajak</span>
+          <span class="sv-value">
+            <span
+              class="sv-tax"
+              [class.sv-tax--faktur]="
+                f['taxingStatus'].value === 'tax_invoice_not_published'
+              "
+              [class.sv-tax--waiting]="
+                f['taxingStatus'].value === 'waiting_for_payment'
+              "
+              [class.sv-tax--buktipotong]="
+                f['taxingStatus'].value === 'income_tax_not_published'
+              "
+              [class.sv-tax--done]="
+                f['taxingStatus'].value === 'fully_published'
+              "
+              *ngIf="f['taxingStatus'].value"
+            >
+              <mat-icon>{{
+                f["taxingStatus"].value === "fully_published"
+                  ? "verified"
+                  : f["taxingStatus"].value === "waiting_for_payment"
+                    ? "schedule"
+                    : "error_outline"
+              }}</mat-icon>
+              {{
+                f["taxingStatus"].value === "tax_invoice_not_published"
+                  ? "Faktur belum terbit"
+                  : f["taxingStatus"].value === "waiting_for_payment"
+                    ? "Menunggu pembayaran"
+                    : f["taxingStatus"].value === "income_tax_not_published"
+                      ? "Bukti potong belum ada"
+                      : "Selesai"
+              }}
+            </span>
+            <span *ngIf="!f['taxingStatus'].value">—</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
     <!-- money breakdown -->
     <section class="sv-section">
       <div class="sv-section__title">Rincian Nilai</div>
@@ -142,6 +198,10 @@
         </div>
       </ng-container>
     </section>
+
+    <p class="sv-created" *ngIf="f['createdAt'].value">
+      Dokumen dibuat pada {{ f["createdAt"].value }}
+    </p>
   </mat-dialog-content>
 
   <!-- actions -->

@@ -138,6 +138,10 @@
         </div>
       </div>
     </section>
+
+    <p class="ev-created" *ngIf="f['createdAt'].value">
+      Dokumen dibuat pada {{ f["createdAt"].value }}
+    </p>
   </mat-dialog-content>
 
   <!-- actions -->

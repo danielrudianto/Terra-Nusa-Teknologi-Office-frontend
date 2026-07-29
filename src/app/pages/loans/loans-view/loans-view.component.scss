@@ -1,10 +1,18 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
 
 .lv {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .lv *,
 .lv *::before,
@@ -40,8 +48,8 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: var(--surface, #ffffff);
-  color: var(--brand, #154dec);
+  background: $surface;
+  color: $brand;
   font-weight: 700;
   font-size: 1.2rem;
   display: grid;
@@ -59,7 +67,7 @@
 }
 .lv-meta {
   font-size: 0.8rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -95,7 +103,7 @@
   align-items: center;
   gap: 12px;
   padding: 2.5rem 1rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   font-size: 0.9rem;
 }
 
@@ -110,7 +118,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin-bottom: 0.8rem;
   display: flex;
   align-items: center;
@@ -118,7 +126,7 @@
 }
 .lv-count {
   background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  color: $brand;
   border-radius: 999px;
   padding: 1px 8px;
   font-size: 0.7rem;
@@ -127,7 +135,7 @@
 /* progress */
 .lv-progress {
   background: var(--brand-soft, #eef2fe);
-  border: 0.5px solid color-mix(in srgb, var(--brand, #154dec) 22%, transparent);
+  border: 0.5px solid color-mix(in srgb, $brand 22%, transparent);
   border-radius: 16px;
   padding: 1rem 1.15rem;
   margin-bottom: 1.5rem;
@@ -143,23 +151,23 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--brand, #154dec);
+  color: $brand;
 }
 .lv-progress__pct {
   font-size: 1rem;
   font-weight: 800;
-  color: var(--brand, #154dec);
+  color: $brand;
 }
 .lv-bar {
   height: 9px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--brand, #154dec) 15%, transparent);
+  background: color-mix(in srgb, $brand 15%, transparent);
   overflow: hidden;
   span {
     display: block;
     height: 100%;
     border-radius: 999px;
-    background: var(--brand, #154dec);
+    background: $brand;
     transition: width 0.4s ease;
   }
 }
@@ -169,9 +177,9 @@
   gap: 12px;
   margin-top: 8px;
   font-size: 0.8rem;
-  color: var(--muted, #6b7280);
+  color: $muted;
   strong {
-    color: var(--ink, #16181d);
+    color: $ink;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -181,8 +189,8 @@
 
 /* money */
 .lv-money {
-  background: var(--surface-2, #fafbfc);
-  border: 0.5px solid #e6e9ee;
+  background: $surface2;
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 14px;
   padding: 0.3rem 1.15rem;
 }
@@ -193,12 +201,12 @@
   gap: 12px;
   padding: 0.7rem 0;
   font-size: 0.88rem;
-  border-bottom: 1px solid var(--line, #eef0f3);
+  border-bottom: 1px solid $line;
   &:last-child {
     border-bottom: none;
   }
   span:first-child {
-    color: var(--muted, #6b7280);
+    color: $muted;
   }
   span:last-child {
     font-weight: 600;
@@ -211,12 +219,12 @@
       text-transform: uppercase;
       font-size: 0.78rem;
       letter-spacing: 0.03em;
-      color: var(--ink, #16181d);
+      color: $ink;
     }
     span:last-child {
       font-size: 1.1rem;
       font-weight: 800;
-      color: var(--brand, #154dec);
+      color: $brand;
     }
   }
 }
@@ -241,24 +249,24 @@
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
 }
 .lv-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--ink, #16181d);
+  color: $ink;
   word-break: break-word;
 }
 .lv-value--sm {
   font-size: 0.83rem;
   font-weight: 400;
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 .lv-value--multi {
   white-space: pre-line;
   line-height: 1.5;
   font-weight: 400;
-  color: #3f4653;
+  color: var(--muted, #3f4653);
 }
 .lv-mono {
   font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
@@ -267,8 +275,8 @@
 
 /* bank */
 .lv-bank {
-  background: var(--surface-2, #fafbfc);
-  border: 0.5px solid #e6e9ee;
+  background: $surface2;
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
   padding: 0.9rem 1.15rem;
 }
@@ -284,9 +292,9 @@
   align-items: center;
   gap: 12px;
   padding: 0.65rem 0.9rem;
-  border: 0.5px solid #e6e9ee;
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
-  background: var(--surface, #ffffff);
+  background: $surface;
   &__icon {
     flex: 0 0 auto;
     width: 32px;
@@ -305,7 +313,7 @@
   &__date {
     flex: 1 1 auto;
     font-size: 0.85rem;
-    color: var(--ink, #16181d);
+    color: $ink;
   }
   &__amt {
     font-weight: 700;
@@ -321,13 +329,13 @@
   align-items: center;
   gap: 8px;
   padding: 1.5rem 1rem;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   font-size: 0.85rem;
   mat-icon {
     font-size: 30px;
     width: 30px;
     height: 30px;
-    color: var(--faint, #9aa0ab);
+    color: $faint;
   }
 }
 
@@ -337,7 +345,7 @@
   align-items: center;
   gap: 8px;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid var(--line, #eef0f3);
+  border-top: 1px solid $line;
 }
 .lv-spacer {
   flex: 1;
@@ -360,7 +368,7 @@
     height: 18px;
   }
   &--brand {
-    background: var(--brand, #154dec);
+    background: $brand;
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover {
@@ -369,7 +377,7 @@
   }
   &--ghost {
     background: var(--surface-2, #f1f3f7);
-    color: #3f4653;
+    color: var(--muted, #3f4653);
     &:hover {
       background: var(--hover, #e7eaef);
     }

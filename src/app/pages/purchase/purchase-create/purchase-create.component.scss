@@ -1,3 +1,9 @@
+$brand: var(--brand, #154dec);
+$brand-soft: #e7ecfb;
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
 
 :host {
   display: block;
@@ -5,7 +11,7 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 0.5rem 0 3rem;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 
 /* ============ STEPPER SHELL ============ */
@@ -16,8 +22,8 @@
 
 /* header row -> clean progress bar inside a card */
 :host ::ng-deep .mat-horizontal-stepper-header-container {
-  background: #fff;
-  border: 0.5px solid #e3e6eb;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 16px;
   padding: 0.4rem 0.6rem;
   margin-bottom: 1.25rem;
@@ -31,15 +37,15 @@
   padding: 0.6rem 0.9rem;
 
   &:hover {
-    background: #f6f8ff;
+    background: var(--hover, #f6f8ff);
   }
   .mat-step-label {
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--muted, #6b7280);
+    color: $muted;
   }
   .mat-step-label-selected {
-    color: var(--brand, #154dec);
+    color: $brand;
     font-weight: 600;
   }
 }
@@ -47,25 +53,25 @@
 /* step number bubbles */
 :host ::ng-deep .mat-step-icon {
   background-color: #eef1f6;
-  color: var(--muted, #6b7280);
+  color: $muted;
   font-weight: 600;
 }
 :host ::ng-deep .mat-step-icon-selected,
 :host ::ng-deep .mat-step-icon-state-edit,
 :host ::ng-deep .mat-step-icon-state-done {
-  background-color: var(--brand, #154dec) !important;
+  background-color: $brand !important;
   color: #fff !important;
 }
 
 /* connector line between steps */
 :host ::ng-deep .mat-stepper-horizontal-line {
-  border-top-color: #e3e6eb;
+  border-top-color: var(--border, #e3e6eb);
 }
 
 /* step body -> white card */
 :host ::ng-deep .mat-horizontal-content-container {
-  background: #fff;
-  border: 0.5px solid #e3e6eb;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   padding: 1.75rem 1.75rem 1.25rem;
   box-shadow:
@@ -77,11 +83,11 @@
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
-  --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
-  --mdc-outlined-text-field-outline-color: #dfe3ea;
+  --mdc-outlined-text-field-focus-outline-color: #{$brand};
+  --mdc-outlined-text-field-caret-color: #{$brand};
+  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
+  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
   --mdc-outlined-text-field-label-text-font: "Montserrat", sans-serif;
   --mdc-outlined-text-field-input-text-font: "Montserrat", sans-serif;
 }
@@ -98,7 +104,7 @@
 
 /* divider */
 :host ::ng-deep .mat-divider {
-  border-top-color: var(--line, #eef0f3);
+  border-top-color: $line;
   margin: 1.1rem 0;
 }
 
@@ -106,7 +112,7 @@
 /* primary actions (Next / Create / triggers) */
 :host ::ng-deep .mat-mdc-raised-button.mat-primary,
 :host ::ng-deep .mat-mdc-raised-button:not([disabled]):not(.mat-warn) {
-  --mdc-protected-button-container-color: var(--brand, #154dec);
+  --mdc-protected-button-container-color: #{$brand};
   --mdc-protected-button-label-text-color: #fff;
   border-radius: 12px;
   font-family: "Montserrat", sans-serif;
@@ -121,13 +127,13 @@
   border-radius: 12px;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: var(--muted, #6b7280);
+  color: $muted;
   height: 42px;
 }
 
 :host ::ng-deep .mat-mdc-outlined-button {
   border-radius: 12px;
-  --mdc-outlined-button-outline-color: #dfe3ea;
+  --mdc-outlined-button-outline-color: var(--border, #dfe3ea);
   font-weight: 600;
   height: 42px;
 }
@@ -146,17 +152,17 @@
 
 /* ============ CHECKBOXES (attachments step) ============ */
 :host ::ng-deep .mat-mdc-checkbox {
-  --mdc-checkbox-selected-icon-color: var(--brand, #154dec);
-  --mdc-checkbox-selected-focus-icon-color: var(--brand, #154dec);
-  --mdc-checkbox-selected-hover-icon-color: var(--brand, #154dec);
-  --mdc-checkbox-selected-pressed-icon-color: var(--brand, #154dec);
-  --mdc-checkbox-selected-container-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-icon-color: #{$brand};
+  --mdc-checkbox-selected-focus-icon-color: #{$brand};
+  --mdc-checkbox-selected-hover-icon-color: #{$brand};
+  --mdc-checkbox-selected-pressed-icon-color: #{$brand};
+  --mdc-checkbox-selected-container-color: #{$brand};
 
   display: block;
   padding: 0.15rem 0;
   .mdc-form-field label {
     font-size: 0.9rem;
-    color: var(--ink, #16181d);
+    color: $ink;
     font-family: "Montserrat", sans-serif;
   }
 }

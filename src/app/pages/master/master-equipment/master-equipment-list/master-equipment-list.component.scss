@@ -1,4 +1,14 @@
 /* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+$hover: var(--hover, #f6f8ff);
 
 :host {
   display: block;
@@ -30,10 +40,10 @@
 }
 :host ::ng-deep .me-search .mat-mdc-text-field-wrapper {
   border-radius: 14px;
-  background: var(--surface, #ffffff);
+  background: $surface;
 }
 :host ::ng-deep .me-search .mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   margin: 0 6px 0 4px;
 }
 
@@ -55,15 +65,15 @@
     height: 18px;
   }
   &--ghost {
-    border: 0.5px solid var(--border, #e3e6eb);
-    background: var(--surface, #ffffff);
-    color: var(--brand, #154dec);
+    border: 0.5px solid $border;
+    background: $surface;
+    color: $brand;
     &:hover:not(:disabled) {
       background: var(--hover, #f3f6ff);
-      border-color: #cdd7f7;
+      border-color: var(--brand-soft, #cdd7f7);
     }
     &:disabled {
-      color: var(--faint, #9aa0ab);
+      color: $faint;
       cursor: default;
     }
   }
@@ -72,8 +82,8 @@
 /* card */
 .me-card {
   position: relative;
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
+  background: $surface;
+  border: 0.5px solid $border;
   border-radius: 18px;
   box-shadow: var(
     --card-shadow,
@@ -104,12 +114,12 @@
   --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
 }
 :host ::ng-deep .mat-mdc-header-row {
-  background: var(--surface-2, #fafbfc);
+  background: $surface2;
   min-height: 46px;
-  border-bottom: 1px solid var(--line, #eef0f3);
+  border-bottom: 1px solid $line;
 }
 :host ::ng-deep .mat-mdc-header-cell {
-  color: var(--muted, #6b7280);
+  color: $muted;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -120,19 +130,19 @@
 }
 :host ::ng-deep .mat-mdc-row {
   min-height: 60px;
-  border-bottom: 1px solid var(--line, #eef0f3);
+  border-bottom: 1px solid $line;
   transition: background 0.14s ease;
 }
 :host ::ng-deep .mat-mdc-row:last-child {
   border-bottom: none;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: var(--hover, #f6f8ff);
+  background: $hover;
 }
 :host ::ng-deep .mat-mdc-cell {
   border-bottom: none;
   padding: 0.5rem 16px;
-  color: var(--ink, #16181d);
+  color: $ink;
   font-size: 0.88rem;
   vertical-align: middle;
 }
@@ -150,8 +160,8 @@
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  background: $brandSoft;
+  color: $brand;
   font-weight: 800;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -160,25 +170,25 @@
   font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-weight: 600;
   font-size: 0.83rem;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .me-primary {
   font-weight: 500;
-  color: var(--ink, #16181d);
+  color: $ink;
 }
 .me-muted {
-  color: var(--muted, #6b7280);
+  color: $muted;
 }
 .me-faint {
-  color: var(--faint, #9aa0ab);
+  color: $faint;
 }
 .me-tag {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 7px;
-  background: var(--surface-2, #fafbfc);
-  color: #5f6672;
+  background: $surface2;
+  color: var(--muted, #5f6672);
   white-space: nowrap;
 }
 .me-po {
@@ -189,8 +199,8 @@
   padding: 2px 8px;
   border-radius: 6px;
   margin-right: 4px;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
+  background: $brandSoft;
+  color: $brand;
 }
 
 /* empty */
@@ -200,22 +210,22 @@
   align-items: center;
   gap: 8px;
   padding: 3rem 1rem;
-  color: var(--faint, #9aa0ab);
+  color: $faint;
   font-size: 0.9rem;
   text-align: center;
   mat-icon {
     font-size: 34px;
     width: 34px;
     height: 34px;
-    color: var(--faint, #9aa0ab);
+    color: $faint;
   }
 }
 
 /* paginator */
 :host ::ng-deep .mat-mdc-paginator {
   background: transparent;
-  border-top: 1px solid var(--line, #eef0f3);
-  color: var(--muted, #6b7280);
+  border-top: 1px solid $line;
+  color: $muted;
   font-family: "Montserrat", sans-serif;
 }
 

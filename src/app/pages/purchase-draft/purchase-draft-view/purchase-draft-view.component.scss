@@ -1,4 +1,3 @@
-
 .pdv {
   font-family: "Montserrat", sans-serif;
   width: 100%;
@@ -215,4 +214,15 @@
       background: #fdecec;
     }
   }
+}
+
+/* footnote tanggal dibuat */
+.pdv-created {
+  margin: 1.25rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line, #eef0f3);
+  font-size: 0.78rem;
+  color: var(--faint, #9aa0ab);
+  text-align: right;
+  font-style: italic;
 }

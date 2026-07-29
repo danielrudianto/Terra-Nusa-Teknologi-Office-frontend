@@ -1,3 +1,7 @@
+$ink: var(--ink, #0d0d0d);
+$muted: var(--muted, #8a8f98);
+$line: var(--line, #eef0f3);
+$brand: var(--brand, #154dec);
 
 .tpd {
   font-family: "Montserrat", sans-serif;
@@ -14,19 +18,19 @@
   &__title {
     font-size: 1.15rem;
     font-weight: 700;
-    color: var(--ink, #16181d);
+    color: $ink;
     margin: 0;
   }
 
   &__sub {
     font-size: 0.78rem;
-    color: var(--muted, #6b7280);
+    color: $muted;
   }
 
   &__close {
     border: none;
-    background: #f3f5f9;
-    color: var(--muted, #6b7280);
+    background: var(--surface-2, #f3f5f9);
+    color: $muted;
     width: 34px;
     height: 34px;
     border-radius: 10px;
@@ -36,7 +40,7 @@
 
     &:hover {
       background: #e9edf3;
-      color: var(--ink, #16181d);
+      color: $ink;
     }
   }
 
@@ -51,7 +55,7 @@
 
     span {
       font-size: 0.8rem;
-      color: var(--muted, #6b7280);
+      color: $muted;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -59,7 +63,7 @@
     strong {
       font-size: 1.35rem;
       font-weight: 800;
-      color: var(--brand, #154dec);
+      color: $brand;
     }
   }
 
@@ -78,19 +82,19 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.35rem 0.25rem 0.5rem;
-    border-bottom: 1.5px solid var(--line, #eef0f3);
+    border-bottom: 1.5px solid $line;
     margin-bottom: 0.25rem;
   }
 
   &__bank {
     font-size: 0.82rem;
     font-weight: 700;
-    color: var(--ink, #16181d);
+    color: $ink;
   }
   &__subtotal {
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--muted, #6b7280);
+    color: $muted;
     font-variant-numeric: tabular-nums;
   }
 
@@ -119,7 +123,7 @@
   &__row-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--ink, #16181d);
+    color: $ink;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -140,14 +144,14 @@
     font-weight: 700;
     text-transform: uppercase;
     color: #9a6a00;
-    background: #fff4d6;
+    background: var(--warn-bg, #fff4d6);
     border-radius: 6px;
     padding: 2px 6px;
   }
 
   &__row-sub {
     font-size: 0.74rem;
-    color: var(--muted, #6b7280);
+    color: $muted;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -156,7 +160,7 @@
   &__amount {
     font-size: 0.92rem;
     font-weight: 700;
-    color: var(--ink, #16181d);
+    color: $ink;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -164,7 +168,7 @@
   &__empty {
     padding: 2rem 0;
     text-align: center;
-    color: var(--muted, #6b7280);
+    color: $muted;
     font-size: 0.85rem;
   }
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormControl,
   FormGroup,
@@ -21,6 +22,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -30,12 +32,14 @@ pdfMake.vfs = pdfFonts.vfs;
   styleUrl: './purchase-report-project.component.scss',
   standalone: true,
   imports: [
+    CommonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
+    MatButtonModule,
   ],
 })
 export class PurchaseReportProjectComponent {

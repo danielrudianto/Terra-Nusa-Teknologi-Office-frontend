@@ -22,6 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from 'src/app/services/api.service';
 
 function bankAccountIDRequired(): ValidatorFn {
@@ -47,6 +48,7 @@ function bankAccountIDRequired(): ValidatorFn {
   templateUrl: './purchase-update.component.html',
   styleUrl: './purchase-update.component.scss',
   imports: [
+    MatIconModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,

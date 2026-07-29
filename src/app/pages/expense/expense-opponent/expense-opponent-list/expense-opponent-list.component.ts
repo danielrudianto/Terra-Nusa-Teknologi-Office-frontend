@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -16,6 +17,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './expense-opponent-list.component.scss',
   standalone: true,
   imports: [
+    RouterModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,

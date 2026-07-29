@@ -10,6 +10,8 @@ import {
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -22,6 +24,8 @@ import { ApiService } from 'src/app/services/api.service';
     MatInputModule,
     MatTableModule,
     MatDialogModule,
+    MatIconModule,
+    MatFormFieldModule,
   ],
   templateUrl: './expense-opponent-selector.component.html',
   styleUrl: './expense-opponent-selector.component.scss',
@@ -30,7 +34,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class ExpenseOpponentSelectorComponent {
   constructor(
     private apiService: ApiService,
-    private dialog: MatDialogRef<ExpenseOpponentSelectorComponent>
+    private dialog: MatDialogRef<ExpenseOpponentSelectorComponent>,
   ) {}
 
   opponents: any[] = [];

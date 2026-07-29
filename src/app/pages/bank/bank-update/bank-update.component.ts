@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-bank-update',
@@ -24,6 +25,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   styleUrl: './bank-update.component.scss',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
