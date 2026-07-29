@@ -1,0 +1,89 @@
+<div class="dr">
+  <div class="dr__head">
+    <div>
+      <h2 class="dr__title">Reimbursements</h2>
+      <span class="dr__sub" *ngIf="!isLoading && !errorMsg">
+        {{ items.length }} menunggu persetujuan
+      </span>
+    </div>
+    <button
+      class="dr__refresh"
+      (click)="fetch()"
+      [disabled]="isLoading"
+      title="Perbarui"
+    >
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        [class.spin]="isLoading"
+      >
+        <path d="M23 4v6h-6M1 20v-6h6" />
+        <path
+          d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- error -->
+  <div class="dr__error" *ngIf="errorMsg">
+    <span>{{ errorMsg }}</span>
+    <button (click)="fetch()">Coba lagi</button>
+  </div>
+
+  <!-- loading -->
+  <div class="dr__list" *ngIf="isLoading && !errorMsg">
+    <div class="dr__row" *ngFor="let s of skeletonRows">
+      <span class="dr__avatar skeleton"></span>
+      <div class="dr__info">
+        <span class="skeleton sk-line" style="width: 150px"></span>
+        <span class="skeleton sk-line-sm" style="width: 90px"></span>
+      </div>
+      <span class="skeleton sk-line" style="width: 90px"></span>
+    </div>
+  </div>
+
+  <!-- data -->
+  <div class="dr__list" *ngIf="!isLoading && !errorMsg">
+    <div
+      class="dr__row"
+      *ngFor="let it of visibleItems; trackBy: trackById"
+      (click)="viewReimbursement(it.id)"
+    >
+      <span class="dr__avatar">{{ initial(it.name) }}</span>
+      <div class="dr__info">
+        <span class="dr__row-title">
+          {{ it.name }}
+          <span class="dr__pending">pending</span>
+        </span>
+        <span class="dr__row-sub">{{ it.projectName }}</span>
+      </div>
+      <span class="dr__amount">{{ formatIDR(it.amount) }}</span>
+    </div>
+
+    <div class="dr__empty" *ngIf="items.length === 0">
+      Tidak ada reimbursement tertunda.
+    </div>
+
+    <!-- peek baris tersembunyi + lihat semua -->
+    <div class="dr__more" *ngIf="hiddenCount > 0">
+      <div class="dr__row faded" *ngFor="let it of [items[maxVisible]]">
+        <span class="dr__avatar">{{ initial(it.name) }}</span>
+        <div class="dr__info">
+          <span class="dr__row-title">{{ it.name }}</span>
+          <span class="dr__row-sub">{{ it.projectName }}</span>
+        </div>
+        <span class="dr__amount">{{ formatIDR(it.amount) }}</span>
+      </div>
+      <button class="dr__showmore" (click)="openList()">
+        Lihat semua ({{ hiddenCount }} lagi)
+      </button>
+    </div>
+  </div>
+</div>

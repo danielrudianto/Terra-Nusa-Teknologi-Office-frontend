@@ -1,19 +1,9 @@
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
-$hover: var(--hover, #f6f8ff);
 
 .mis {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .mis *,
 .mis *::before,
@@ -52,8 +42,8 @@ $hover: var(--hover, #f6f8ff);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $surface;
-  color: $brand;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 .mis-title {
@@ -63,7 +53,7 @@ $hover: var(--hover, #f6f8ff);
 }
 .mis-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 .mis-content {
@@ -100,15 +90,15 @@ $hover: var(--hover, #f6f8ff);
   cursor: pointer;
   padding: 0.7rem 0.85rem;
   border-radius: 12px;
-  border: 0.5px solid $border;
-  background: $surface;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
   font-family: "Montserrat", sans-serif;
   transition: all 0.13s ease;
   &:hover {
     border-color: #cdd7f7;
-    background: $hover;
+    background: var(--hover, #f6f8ff);
     .mis-item__arrow {
-      color: $brand;
+      color: var(--brand, #154dec);
       transform: translateX(2px);
     }
   }
@@ -119,8 +109,8 @@ $hover: var(--hover, #f6f8ff);
     border-radius: 9px;
     display: grid;
     place-items: center;
-    background: $brandSoft;
-    color: $brand;
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
     font-weight: 800;
     font-size: 0.9rem;
     text-transform: uppercase;
@@ -135,14 +125,14 @@ $hover: var(--hover, #f6f8ff);
   &__desc {
     font-size: 0.88rem;
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   &__meta {
     font-size: 0.75rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   &__sku {
     font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
@@ -150,7 +140,7 @@ $hover: var(--hover, #f6f8ff);
   }
   &__arrow {
     flex: 0 0 auto;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     transition:
       transform 0.13s ease,
       color 0.13s ease;
@@ -162,7 +152,7 @@ $hover: var(--hover, #f6f8ff);
   align-items: center;
   gap: 8px;
   padding: 2.5rem 1rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
   text-align: center;
 }
@@ -171,7 +161,7 @@ $hover: var(--hover, #f6f8ff);
   padding: 0.85rem 1.5rem 1.1rem !important;
   display: flex !important;
   justify-content: flex-end;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .mis-cancel {
   font-family: "Montserrat", sans-serif;
@@ -180,9 +170,9 @@ $hover: var(--hover, #f6f8ff);
   border-radius: 11px;
   padding: 0.55rem 1.3rem;
   cursor: pointer;
-  border: 0.5px solid $border;
-  background: $surface;
-  color: $ink;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
+  color: var(--ink, #16181d);
   &:hover {
     background: var(--hover, #f3f5f9);
   }

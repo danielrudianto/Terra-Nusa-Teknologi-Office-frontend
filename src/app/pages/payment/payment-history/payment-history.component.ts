@@ -1,18 +1,42 @@
 import { Component, Inject, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { Observable, map } from 'rxjs';
 import { StepperOrientation } from '@angular/cdk/stepper';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-payment-history',
-  standalone: false,
+  standalone: true,
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss',
+  imports: [
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatStepperModule,
+    AsyncPipe,
+    CommonModule,
+  ],
 })
 export class PaymentHistoryComponent {
   stepperOrientation: Observable<StepperOrientation>;
@@ -23,7 +47,7 @@ export class PaymentHistoryComponent {
     private snackBar: MatSnackBar,
     private apiService: ApiService,
     private datePipe: DatePipe,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {
     const breakpointObserver = inject(BreakpointObserver);
 
@@ -170,7 +194,7 @@ export class PaymentHistoryComponent {
             this.reimbursementFormGroup.patchValue({
               date: this.datePipe.transform(
                 data.reimbursement.date,
-                'dd MMMM yyyy'
+                'dd MMMM yyyy',
               ),
               name: data.reimbursement.name,
               projectName: data.reimbursement.projectName,
@@ -184,7 +208,7 @@ export class PaymentHistoryComponent {
                   date: [this.datePipe.transform(item.date, 'dd MMMM yyyy')],
                   description: [item.description],
                   amount: [item.amount],
-                })
+                }),
               );
             });
 

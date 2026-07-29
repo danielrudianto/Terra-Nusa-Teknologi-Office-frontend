@@ -1,15 +1,10 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .ev {
   font-family: "Montserrat", sans-serif;
   width: min(540px, 94vw);
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .ev *,
 .ev *::before,
@@ -43,7 +38,7 @@ $line: #eef0f3;
   height: 46px;
   border-radius: 50%;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
   display: grid;
@@ -60,7 +55,7 @@ $line: #eef0f3;
 }
 .ev-meta {
   font-size: 0.82rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin-top: 2px;
 }
 .ev-chip {
@@ -70,7 +65,7 @@ $line: #eef0f3;
   padding: 5px 11px;
   border-radius: 999px;
   background: #e7ecfb;
-  color: $brand;
+  color: var(--brand, #154dec);
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -93,7 +88,7 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
 }
 
@@ -116,18 +111,18 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .ev-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 }
 .ev-value--sm {
   font-size: 0.83rem;
   font-weight: 400;
-  color: $muted;
+  color: var(--muted, #6b7280);
   line-height: 1.5;
 }
 
@@ -145,10 +140,10 @@ $line: #eef0f3;
     gap: 12px;
     padding: 0.6rem 0;
     font-size: 0.88rem;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
 
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
     }
     span:last-child {
       font-weight: 600;
@@ -157,7 +152,7 @@ $line: #eef0f3;
     }
 
     &--muted span:last-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
       font-weight: 500;
     }
   }
@@ -174,12 +169,12 @@ $line: #eef0f3;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.25rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
@@ -208,7 +203,7 @@ $line: #eef0f3;
     font-family: "Roboto Mono", ui-monospace, monospace;
     font-size: 0.72rem;
     font-weight: 700;
-    color: $brand;
+    color: var(--brand, #154dec);
     background: #e2e9fd;
     border-radius: 6px;
     padding: 2px 7px;
@@ -217,12 +212,12 @@ $line: #eef0f3;
   &__name {
     font-size: 0.78rem;
     line-height: 1.45;
-    color: $muted;
+    color: var(--muted, #6b7280);
     word-break: break-word;
   }
   &__copy {
     flex: 0 0 auto;
-    color: $brand !important;
+    color: var(--brand, #154dec) !important;
     mat-icon {
       font-size: 18px;
       width: 18px;
@@ -235,7 +230,7 @@ $line: #eef0f3;
 .ev-nopay {
   padding: 1.25rem;
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
   background: #fafbfc;
   border: 0.5px solid #e6e9ee;
@@ -247,7 +242,7 @@ $line: #eef0f3;
   justify-content: space-between;
   gap: 12px;
   padding: 0.8rem 0;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 
   &:last-child {
     border-bottom: none;
@@ -261,11 +256,11 @@ $line: #eef0f3;
   &__bank {
     font-size: 0.86rem;
     font-weight: 500;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
   &__date {
     font-size: 0.74rem;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
   &__right {
     display: flex;
@@ -309,14 +304,14 @@ $line: #eef0f3;
   display: flex !important;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 8px;
 }
 .ev-spacer {
   flex: 1;
 }
 .ev-copy {
-  background: $brand !important;
+  background: var(--brand, #154dec) !important;
   color: #fff !important;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;

@@ -2,7 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import {
+  DeleteConfirmationComponent,
+  DeleteConfirmationData,
+} from '../delete-confirmation/delete-confirmation.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,7 +38,8 @@ import { ApiService } from 'src/app/services/api.service';
 export class SupplierSelectorComponent {
   constructor(
     private apiService: ApiService,
-    private dialog: MatDialogRef<SupplierSelectorComponent>
+    private dialog: MatDialogRef<SupplierSelectorComponent>,
+    private confirmDialog: MatDialog,
   ) {}
 
   searchBar: FormControl = new FormControl('');
@@ -72,8 +81,29 @@ export class SupplierSelectorComponent {
   }
 
   selectSupplier(supplier: any) {
-    // Handle the selection of a supplier
-    // You can emit an event or perform any action you need with the selected supplier
+    // Supplier yang di-blacklist tetap boleh dipilih, tapi wajib konfirmasi dulu.
+    if (supplier?.isBlacklist) {
+      const reason = (supplier.blacklistReason || '').trim();
+      const data: DeleteConfirmationData = {
+        title: 'Supplier di-blacklist',
+        prompt:
+          `${supplier.name} termasuk dalam daftar blacklist` +
+          (reason ? ` dengan alasan: "${reason}".` : '.') +
+          ' Apakah Anda tetap ingin memilih supplier ini?',
+      };
+      this.confirmDialog
+        .open(DeleteConfirmationComponent, {
+          data,
+          width: '440px',
+          maxWidth: '94vw',
+          autoFocus: false,
+        })
+        .afterClosed()
+        .subscribe((confirmed) => {
+          if (confirmed) this.dialog.close(supplier);
+        });
+      return;
+    }
     this.dialog.close(supplier);
   }
 }

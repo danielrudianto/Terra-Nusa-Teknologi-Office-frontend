@@ -1,11 +1,20 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
-    selector: 'app-purchase-report-select',
-    templateUrl: './purchase-report-select.component.html',
-    styleUrls: ['./purchase-report-select.component.scss'],
-    standalone: false
+  selector: 'app-purchase-report-select',
+  templateUrl: './purchase-report-select.component.html',
+  styleUrls: ['./purchase-report-select.component.scss'],
+  standalone: true,
+  imports: [MatDialogModule, MatSelectModule, FormsModule, ReactiveFormsModule],
 })
 export class PurchaseReportSelectComponent {
   formGroup: FormGroup = new FormGroup({

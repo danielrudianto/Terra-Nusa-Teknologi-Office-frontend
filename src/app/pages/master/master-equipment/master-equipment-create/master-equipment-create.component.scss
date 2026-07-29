@@ -1,15 +1,10 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
 
 .mec {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .mec *,
 .mec *::before,
@@ -48,20 +43,20 @@ $surface: var(--surface, #ffffff);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $surface;
-  color: $brand;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 .mec-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .mec-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 .mec-content {
@@ -93,7 +88,7 @@ $surface: var(--surface, #ffffff);
   display: flex !important;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .mec-cancel,
 .mec-submit {
@@ -108,15 +103,15 @@ $surface: var(--surface, #ffffff);
 .mec-cancel {
   border: none;
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   &:hover {
     background: var(--hover, #f3f5f9);
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 .mec-submit {
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   &:hover:not(:disabled) {

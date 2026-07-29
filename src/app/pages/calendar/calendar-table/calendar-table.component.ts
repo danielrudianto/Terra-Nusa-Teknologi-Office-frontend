@@ -35,7 +35,7 @@ export class CalendarTableComponent {
   @Input('bankAccounts') bankAccounts: any[] = [];
   @Input('values') values: ICalendarValue[] = [];
   @Input('selectedDay') selectedDay: number | null = null;
-  @Input('isBalance') isBalance!: boolean;
+  @Input('viewMode') viewMode: 'expense' | 'income' | 'balance' = 'expense';
   @Output('onCalendarBoxClicked') onCalendarBoxClicked: EventEmitter<
     number | null
   > = new EventEmitter<number | null>();
@@ -142,9 +142,9 @@ export class CalendarTableComponent {
   }
 
   dataForDay(day: number): number {
-    const index = this.data.findIndex((x) => new Date(x.date).getDate() == day);
     const currentDate = new Date(this.year, this.month, day);
-    if (this.isBalance) {
+
+    if (this.viewMode === 'balance') {
       const previousExpenses = this.data
         .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
         .reduce((acc, x) => acc + x.amount, 0);
@@ -152,10 +152,17 @@ export class CalendarTableComponent {
         .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
         .reduce((acc, x) => acc + x.amount, 0);
 
-      const currentBalance = this.balance - previousExpenses + previousIncomes;
-
-      return currentBalance;
+      return this.balance - previousExpenses + previousIncomes;
+    } else if (this.viewMode === 'income') {
+      // total pemasukan di hari itu
+      return this.incomeData
+        .filter((x) => new Date(x.date).getDate() == day)
+        .reduce((acc, x) => acc + (Number(x.amount) || 0), 0);
     } else {
+      // expense (default): total pengeluaran di hari itu
+      const index = this.data.findIndex(
+        (x) => new Date(x.date).getDate() == day,
+      );
       return index == -1 ? 0 : this.data[index].amount;
     }
   }
@@ -166,6 +173,23 @@ export class CalendarTableComponent {
       return;
     }
     this.onCalendarBoxClicked.emit(day);
+  }
+
+  /** kelas warna untuk nominal per cell sesuai mode & nilai */
+  valueClass(day: number | null): string {
+    if (day == null) return '';
+    const v = this.dataForDay(day);
+    if (this.viewMode === 'income') {
+      return v > 0 ? 'is-income' : '';
+    }
+    if (this.viewMode === 'expense') {
+      return v > 0 ? 'is-expense' : '';
+    }
+    // balance: hijau kalau positif, merah kalau minus
+    if (this.viewMode === 'balance') {
+      return v < 0 ? 'is-expense' : v > 0 ? 'is-income' : '';
+    }
+    return '';
   }
 
   interpaymentExistsForDay(day: number | null): boolean {

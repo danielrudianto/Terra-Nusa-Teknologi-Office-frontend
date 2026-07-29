@@ -1,14 +1,6 @@
 /* Palette now references global tokens (var --x) → auto dark-aware.
    Fallbacks keep light mode identical. This is the migration pattern
    for every custom component: swap literal hex for var(--token). */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$border: var(--border, #e3e6eb);
-$brand-soft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -29,20 +21,20 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-title {
   font-size: 1.6rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .st-sub {
   font-size: 0.9rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 0.3rem 0 0;
 }
 
 /* card */
 .st-card {
-  background: $surface;
-  border: 0.5px solid $border;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow: var(--card-shadow);
   padding: 1.5rem;
@@ -61,8 +53,8 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $brand-soft;
-  color: $brand;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
   mat-icon {
     font-size: 22px;
     width: 22px;
@@ -77,12 +69,12 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-card__title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
 }
 .st-card__desc {
   font-size: 0.8rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* profile head */
@@ -114,11 +106,11 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-profile__name {
   font-size: 1rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .st-profile__role {
   font-size: 0.82rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* form grid */
@@ -156,7 +148,7 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   border: none;
   transition: background 0.15s ease;
   &--primary {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover:not(:disabled) {
@@ -190,20 +182,20 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-row__label {
   font-size: 0.92rem;
   font-weight: 600;
-  color: $ink;
+  color: var(--ink, #16181d);
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 .st-row__hint {
   font-size: 0.78rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   line-height: 1.4;
   max-width: 42ch;
 }
 .st-divider {
   height: 1px;
-  background: $line;
+  background: var(--line, #eef0f3);
   margin: 1.25rem 0;
 }
 
@@ -231,8 +223,8 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   width: 76px;
   padding: 0.7rem 0.5rem;
   cursor: pointer;
-  background: $surface;
-  border: 1px solid $border;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 12px;
   transition: all 0.14s ease;
   &:hover {
@@ -247,7 +239,7 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 }
 .st-scale__sample {
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   line-height: 1;
   &--sm {
     font-size: 0.95rem;
@@ -260,15 +252,15 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   }
 }
 .st-scale__opt.is-active .st-scale__sample {
-  color: $brand;
+  color: var(--brand, #154dec);
 }
 .st-scale__label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 .st-scale__opt.is-active .st-scale__label {
-  color: $brand;
+  color: var(--brand, #154dec);
 }
 
 @media (max-width: 560px) {

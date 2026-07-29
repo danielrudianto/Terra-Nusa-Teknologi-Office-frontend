@@ -203,9 +203,48 @@ export class SalarySlipListComponent {
   }
 
   printSalarySlip(id: number) {
-    this.apiService.get(`salary-slips/print/${id}`, {}).subscribe({
-      next: (data: any) => {
-        console.log(data);
+    // Ambil detail lengkap lalu cetak lewat helper YANG SAMA dengan create & view,
+    // supaya format PDF-nya seragam di semua tempat.
+    this.apiService.get(`salary-slips/${id}`, {}).subscribe({
+      next: (res: any) => {
+        const d = res.data || {};
+        const allowances = res.allowances || [];
+        const deductions = res.deductions || [];
+        const data = {
+          name: d.name,
+          nik: d.nik ?? d.userID ?? '',
+          department: d.department,
+          position: d.position,
+          address: d.address,
+          taxCategory: d.taxCategory,
+          taxAmount: d.taxAmount ?? 0,
+          basicSalary: d.basicSalary ?? 0,
+          transportationAllowanceQuantity:
+            d.transportationAllowanceQuantity ?? 0,
+          transportationAllowanceRate: d.transportationAllowanceRate ?? 0,
+          mealAllowanceQuantity: d.mealAllowanceQuantity ?? 0,
+          mealAllowanceRate: d.mealAllowanceRate ?? 0,
+          overtimeQuantity: d.overtimeQuantity ?? 0,
+          overtimeRate: d.overtimeRate ?? 0,
+          paymentMethod: d.paymentMethod ?? '',
+          year: d.year,
+          month: d.month,
+          monthName: this.months[d.month - 1]?.label || '',
+          otherAllowances: allowances.map((x: any) => ({
+            name: x.name,
+            description: x.description,
+            amount: x.amount,
+          })),
+          deductions: deductions.map((x: any) => ({
+            name: x.name,
+            description: x.description,
+            amount: x.amount,
+          })),
+          bankAccountName: d.bankAccountName,
+          bankAccountNumber: d.bankAccountNumber,
+          bankName: d.bankName,
+        };
+        SalarySlipHelper.createProxyPaymentPDF(data as any);
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {

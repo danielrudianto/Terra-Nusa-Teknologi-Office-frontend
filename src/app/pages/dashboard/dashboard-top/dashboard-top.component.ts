@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
   selector: 'app-dashboard-top',
   templateUrl: './dashboard-top.component.html',
   styleUrls: ['./dashboard-top.component.scss'],
-  standalone: false,
+  standalone: true,
 })
 export class DashboardTopComponent {
   constructor(public authService: AuthService) {}

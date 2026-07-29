@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-calendar-date-selector',
   templateUrl: './calendar-date-selector.component.html',
   styleUrl: './calendar-date-selector.component.scss',
-  standalone: false,
+  standalone: true,
 })
 export class CalendarDateSelectorComponent {
   selectedDate: Date = new Date();

@@ -1,18 +1,10 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
 
 .iv {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .iv *,
 .iv *::before,
@@ -53,14 +45,14 @@ $border: var(--border, #e3e6eb);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $surface;
+  background: var(--surface, #ffffff);
   color: var(--ok-fg, #1a7f45);
   box-shadow: 0 2px 6px rgba(26, 127, 69, 0.14);
 }
 .iv-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
   overflow: hidden;
@@ -69,7 +61,7 @@ $border: var(--border, #e3e6eb);
 }
 .iv-sub {
   font-size: 0.78rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* content */
@@ -126,7 +118,7 @@ $border: var(--border, #e3e6eb);
 
 /* detail rows */
 .iv-rows {
-  border: 0.5px solid $border;
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -135,7 +127,7 @@ $border: var(--border, #e3e6eb);
   align-items: flex-start;
   gap: 16px;
   padding: 0.85rem 1.1rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   &:last-child {
     border-bottom: none;
   }
@@ -145,13 +137,13 @@ $border: var(--border, #e3e6eb);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     padding-top: 2px;
   }
   &__v {
     flex: 1 1 auto;
     font-size: 0.88rem;
-    color: $ink;
+    color: var(--ink, #16181d);
     line-height: 1.5;
     word-break: break-word;
   }
@@ -162,7 +154,7 @@ $border: var(--border, #e3e6eb);
   padding: 1rem 1.5rem 1.25rem !important;
   display: flex !important;
   justify-content: flex-end;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .iv-close {
   font-family: "Montserrat", sans-serif;
@@ -171,9 +163,9 @@ $border: var(--border, #e3e6eb);
   border-radius: 11px;
   padding: 0.6rem 1.4rem;
   cursor: pointer;
-  border: 0.5px solid $border;
-  background: $surface;
-  color: $ink;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
+  color: var(--ink, #16181d);
   transition: background 0.15s ease;
   &:hover {
     background: var(--hover, #f3f5f9);

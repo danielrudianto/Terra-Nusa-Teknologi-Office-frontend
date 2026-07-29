@@ -1,0 +1,218 @@
+$ink: var(--ink, #0d0d0d);
+$muted: var(--muted, #8a8f98);
+$line: var(--line, #eef0f3);
+$brand: var(--brand, #154dec);
+$negative: var(--bad-fg, #ca2929);
+
+.tp {
+  font-family: "Montserrat", sans-serif;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid #ccc;
+  border-radius: 27px;
+  padding: 1.75rem 1.75rem 1.25rem;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $ink;
+    margin: 0;
+  }
+  &__sub {
+    font-size: 0.78rem;
+    color: $muted;
+  }
+
+  &__refresh {
+    border: none;
+    background: var(--surface-2, #f3f5f9);
+    color: $brand;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--brand-soft, #e7ecfb);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .spin {
+      animation: tp-spin 0.9s linear infinite;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.7rem 0.15rem;
+    border-bottom: 1px solid $line;
+
+    &:last-child {
+      border-bottom: none;
+    }
+    &.faded {
+      opacity: 0.4;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+      mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+      pointer-events: none;
+    }
+  }
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__row-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $ink;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__pending {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9a6a00;
+    background: var(--warn-bg, #fff4d6);
+    border-radius: 6px;
+    padding: 2px 6px;
+    flex: 0 0 auto;
+  }
+
+  &__row-sub {
+    font-size: 0.74rem;
+    color: $muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__amount {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $ink;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__more {
+    position: relative;
+  }
+
+  &__showmore {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    border: none;
+    background: var(--surface-2, #f3f5f9);
+    color: $brand;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.6rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: var(--brand-soft, #e7ecfb);
+    }
+  }
+
+  &__empty {
+    padding: 1.5rem 0;
+    text-align: center;
+    color: $muted;
+    font-size: 0.85rem;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    background: var(--bad-bg, #fdecec);
+    border-radius: 14px;
+    color: $negative;
+    font-size: 0.83rem;
+
+    button {
+      border: none;
+      background: $negative;
+      color: #fff;
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+  }
+}
+
+.skeleton {
+  display: inline-block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--line, #eef0f3) 25%, #e2e6ec 37%, var(--line, #eef0f3) 63%);
+  background-size: 400% 100%;
+  animation: tp-shimmer 1.3s ease infinite;
+
+  &.sk-line {
+    height: 13px;
+  }
+  &.sk-line-sm {
+    height: 9px;
+    margin-top: 4px;
+  }
+}
+
+@keyframes tp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tp-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

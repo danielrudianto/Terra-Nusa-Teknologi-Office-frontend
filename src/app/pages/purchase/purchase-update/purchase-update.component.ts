@@ -1,14 +1,27 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 import { ApiService } from 'src/app/services/api.service';
 
 function bankAccountIDRequired(): ValidatorFn {
@@ -30,9 +43,21 @@ function bankAccountIDRequired(): ValidatorFn {
 
 @Component({
   selector: 'app-purchase-update',
-  standalone: false,
+  standalone: true,
   templateUrl: './purchase-update.component.html',
   styleUrl: './purchase-update.component.scss',
+  imports: [
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatStepperModule,
+    MatDatepickerModule,
+    MatDividerModule,
+    MatSelectModule,
+    CommonModule,
+  ],
 })
 export class PurchaseUpdateComponent {
   constructor(

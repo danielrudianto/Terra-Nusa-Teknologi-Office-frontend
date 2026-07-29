@@ -1,16 +1,10 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
-$danger: #b3322f;
 
 .cf {
   font-family: "Montserrat", sans-serif;
   width: min(520px, 94vw);
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .cf *,
 .cf *::before,
@@ -50,20 +44,20 @@ $danger: #b3322f;
   display: grid;
   place-items: center;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 
 .cf-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .cf-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* ---------- content ---------- */
@@ -82,7 +76,7 @@ $danger: #b3322f;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
 }
 
@@ -106,18 +100,18 @@ $danger: #b3322f;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .cf-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 }
 .cf-value--sm {
   font-size: 0.83rem;
   font-weight: 400;
-  color: $muted;
+  color: var(--muted, #6b7280);
   line-height: 1.5;
 }
 
@@ -135,10 +129,10 @@ $danger: #b3322f;
     gap: 12px;
     padding: 0.6rem 0;
     font-size: 0.88rem;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
 
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
     }
     span:last-child {
       font-weight: 600;
@@ -147,7 +141,7 @@ $danger: #b3322f;
     }
 
     &--neg span:last-child {
-      color: $danger;
+      color: var(--bad-fg, #b3322f);
     }
   }
 
@@ -163,12 +157,12 @@ $danger: #b3322f;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.25rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
@@ -191,7 +185,7 @@ $danger: #b3322f;
     font-family: "Roboto Mono", ui-monospace, monospace;
     font-size: 0.72rem;
     font-weight: 700;
-    color: $brand;
+    color: var(--brand, #154dec);
     background: #e2e9fd;
     border-radius: 6px;
     padding: 2px 7px;
@@ -199,7 +193,7 @@ $danger: #b3322f;
   &__name {
     font-size: 0.78rem;
     line-height: 1.45;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
 }
 
@@ -216,13 +210,13 @@ $danger: #b3322f;
     gap: 7px;
     font-size: 0.82rem;
     font-weight: 700;
-    color: $brand;
+    color: var(--brand, #154dec);
     margin-bottom: 0.75rem;
   }
 
   &__hint {
     font-size: 0.75rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
     margin: 0.15rem 0 0.5rem;
     line-height: 1.4;
   }
@@ -236,9 +230,9 @@ $danger: #b3322f;
 }
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 11px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
 }
 
 /* ---------- loading ---------- */
@@ -269,7 +263,7 @@ $danger: #b3322f;
   display: flex !important;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 8px;
 }
 .cf-spacer {
@@ -295,14 +289,14 @@ $danger: #b3322f;
 
   &--reject {
     background: transparent;
-    color: $danger;
+    color: var(--bad-fg, #b3322f);
     &:hover:not(:disabled) {
       background: #fdecec;
     }
   }
 
   &--confirm {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover:not(:disabled) {

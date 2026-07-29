@@ -1,0 +1,337 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* full width — no max-width cap */
+.reimbursement-list {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+/* ---------- toolbar ---------- */
+.rl-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.rl-search {
+  width: 100%;
+}
+
+:host ::ng-deep .rl-search .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: $surface;
+}
+:host ::ng-deep .rl-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: $faint;
+  margin: 0 6px 0 4px;
+}
+
+/* filter chips (clean toggle pills) */
+:host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
+  gap: 8px;
+}
+:host ::ng-deep .mat-mdc-chip-option {
+  --mdc-chip-container-height: 34px;
+  --mdc-chip-elevated-container-color: #ffffff;
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
+  --mdc-chip-selected-label-text-color: #{$brand};
+  --mdc-chip-outline-color: #d9dce2;
+  --mdc-chip-outline-width: 0.5px;
+  --mdc-chip-selected-outline-width: 0px;
+  --mdc-chip-focus-state-layer-opacity: 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__text-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+:host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
+  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
+}
+
+/* ---------- card ---------- */
+.rl-card {
+  position: relative;
+  background: $surface;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+  overflow: hidden;
+}
+
+.rl-loadingbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand-soft, #e7ecfb);
+  overflow: hidden;
+  z-index: 3;
+
+  span {
+    position: absolute;
+    height: 100%;
+    width: 40%;
+    background: $brand;
+    border-radius: 3px;
+    animation: rl-indeterminate 1.1s ease-in-out infinite;
+  }
+}
+@keyframes rl-indeterminate {
+  0% {
+    left: -40%;
+  }
+  60% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+.rl-card.is-loading .table-responsive {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* ---------- mat-table ---------- */
+:host ::ng-deep table.mat-mdc-table {
+  width: 100%;
+  background: transparent;
+  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
+}
+
+:host ::ng-deep .mat-mdc-header-row {
+  background: var(--surface-2, #fafbfc);
+  min-height: 46px;
+  border-bottom: 1px solid $line;
+}
+:host ::ng-deep .mat-mdc-header-cell {
+  color: $muted;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: none;
+  padding: 0 16px;
+  user-select: none;
+  cursor: pointer;
+}
+
+:host ::ng-deep .mat-mdc-row {
+  min-height: 64px;
+  cursor: pointer;
+  transition: background 0.14s ease;
+  border-bottom: 1px solid $line;
+}
+:host ::ng-deep .mat-mdc-row:last-child {
+  border-bottom: none;
+}
+:host ::ng-deep .mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
+}
+
+:host ::ng-deep .mat-mdc-cell {
+  border-bottom: none;
+  padding: 0.6rem 16px;
+  color: $ink;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.rl-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $brand;
+  }
+  &__idle {
+    color: var(--faint, #cfd4dc) !important;
+  }
+  &--right {
+    justify-content: flex-end;
+  }
+}
+
+/* ---------- cell content ---------- */
+.rl-date {
+  color: $muted;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rl-primary {
+  font-weight: 600;
+  color: $ink;
+  font-size: 0.9rem;
+}
+.rl-muted {
+  font-size: 0.82rem;
+  color: $ink;
+}
+
+.rl-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.rl-avatar {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand-soft, #e7ecfb);
+  color: $brand;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+}
+
+.rl-tag {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #3f4653);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.rl-num {
+  text-align: right;
+}
+.rl-amount {
+  font-weight: 700;
+  color: $ink;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- chips ---------- */
+.rl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  &--approved {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+    .rl-chip__dot {
+      background: #22a75a;
+    }
+  }
+  &--pending {
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn-fg, #a2651a);
+    .rl-chip__dot {
+      background: #e0942e;
+    }
+  }
+  &--rejected {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+    .rl-chip__dot {
+      background: #d9534f;
+    }
+  }
+  &--paid {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+  }
+  &--unpaid {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+  }
+}
+
+/* ---------- empty ---------- */
+.rl-norow .rl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: $faint;
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--faint, #cfd4dc);
+  }
+}
+
+/* ---------- paginator ---------- */
+:host ::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  border-top: 1px solid $line;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ---------- responsive ---------- */
+@media (min-width: 900px) {
+  .rl-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rl-search {
+    max-width: 380px;
+    margin-bottom: -1.25em;
+  }
+}

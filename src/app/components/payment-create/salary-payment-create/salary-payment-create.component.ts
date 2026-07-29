@@ -1,19 +1,29 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 export const amountValidator: ValidatorFn = (
-  control: AbstractControl
+  control: AbstractControl,
 ): ValidationErrors | null => {
   const form = control as FormGroup;
 
@@ -32,16 +42,25 @@ export const amountValidator: ValidatorFn = (
 
 @Component({
   selector: 'app-salary-payment-create',
-  standalone: false,
+  standalone: true,
   templateUrl: './salary-payment-create.component.html',
   styleUrl: './salary-payment-create.component.scss',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatSelectModule,
+  ],
 })
 export class SalaryPaymentCreateComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
     private dialog: MatDialogRef<SalaryPaymentCreateComponent>,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   formGroup: FormGroup = new FormGroup(
@@ -62,7 +81,7 @@ export class SalaryPaymentCreateComponent {
     },
     {
       validators: amountValidator,
-    }
+    },
   );
 
   bankAccounts: any[] = [];
@@ -133,7 +152,7 @@ export class SalaryPaymentCreateComponent {
 
     const date = new Date(this.formGroup.get('date')?.value);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     this.apiService

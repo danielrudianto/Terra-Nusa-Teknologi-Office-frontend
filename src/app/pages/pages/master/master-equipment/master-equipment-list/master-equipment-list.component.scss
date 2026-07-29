@@ -1,0 +1,250 @@
+/* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+$hover: var(--hover, #f6f8ff);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.me {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+/* toolbar */
+.me-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0.25rem 0 1rem;
+}
+.me-search {
+  flex: 1 1 340px;
+  min-width: 240px;
+}
+.me-search .mat-mdc-form-field {
+  margin-bottom: -1.25em;
+}
+.me-spacer {
+  flex: 1;
+}
+:host ::ng-deep .me-search .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: $surface;
+}
+:host ::ng-deep .me-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: $faint;
+  margin: 0 6px 0 4px;
+}
+
+.me-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.62rem 1.3rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &--ghost {
+    border: 0.5px solid $border;
+    background: $surface;
+    color: $brand;
+    &:hover:not(:disabled) {
+      background: var(--hover, #f3f6ff);
+      border-color: var(--brand-soft, #cdd7f7);
+    }
+    &:disabled {
+      color: $faint;
+      cursor: default;
+    }
+  }
+}
+
+/* card */
+.me-card {
+  position: relative;
+  background: $surface;
+  border: 0.5px solid $border;
+  border-radius: 18px;
+  box-shadow: var(
+    --card-shadow,
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05)
+  );
+  overflow: hidden;
+}
+.me-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+}
+:host ::ng-deep .me-progress .mdc-linear-progress__bar-inner {
+  border-color: var(--brand, #154dec);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* table */
+:host ::ng-deep table.mat-mdc-table {
+  width: 100%;
+  background: transparent;
+  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
+}
+:host ::ng-deep .mat-mdc-header-row {
+  background: $surface2;
+  min-height: 46px;
+  border-bottom: 1px solid $line;
+}
+:host ::ng-deep .mat-mdc-header-cell {
+  color: $muted;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: none;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+:host ::ng-deep .mat-mdc-row {
+  min-height: 60px;
+  border-bottom: 1px solid $line;
+  transition: background 0.14s ease;
+}
+:host ::ng-deep .mat-mdc-row:last-child {
+  border-bottom: none;
+}
+:host ::ng-deep .mat-mdc-row:hover {
+  background: $hover;
+}
+:host ::ng-deep .mat-mdc-cell {
+  border-bottom: none;
+  padding: 0.5rem 16px;
+  color: $ink;
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+/* cells */
+.me-sku {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.me-badge {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: $brandSoft;
+  color: $brand;
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+.me-mono {
+  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
+  font-weight: 600;
+  font-size: 0.83rem;
+  color: $ink;
+}
+.me-primary {
+  font-weight: 500;
+  color: $ink;
+}
+.me-muted {
+  color: $muted;
+}
+.me-faint {
+  color: $faint;
+}
+.me-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 7px;
+  background: $surface2;
+  color: var(--muted, #5f6672);
+  white-space: nowrap;
+}
+.me-po {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-right: 4px;
+  background: $brandSoft;
+  color: $brand;
+}
+
+/* empty */
+.me-norow .me-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: $faint;
+  font-size: 0.9rem;
+  text-align: center;
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: $faint;
+  }
+}
+
+/* paginator */
+:host ::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  border-top: 1px solid $line;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
+}
+
+.me-btn--brand {
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+}
+
+.me-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 7px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  white-space: nowrap;
+}

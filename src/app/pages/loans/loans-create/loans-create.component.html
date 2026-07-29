@@ -107,9 +107,24 @@
             mask="separator"
           />
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="lc-span2">
+          <mat-label>Rekening Penerima (perusahaan)</mat-label>
+          <mat-select formControlName="bankAccountID">
+            <mat-option *ngFor="let acc of bankAccounts" [value]="acc.id">
+              {{ acc.bankName }} - {{ acc.bankAccountNumber }}
+              <span *ngIf="acc.bankAccountName">
+                ({{ acc.bankAccountName }})</span
+              >
+            </mat-option>
+          </mat-select>
+          <mat-hint>Rekening perusahaan tempat dana pinjaman diterima</mat-hint>
+        </mat-form-field>
       </div>
 
-      <div class="lc-section__title lc-section__title--mt">Rekening</div>
+      <div class="lc-section__title lc-section__title--mt">
+        Rekening Kreditur
+      </div>
       <div class="lc-grid">
         <mat-form-field appearance="outline" class="lc-span2">
           <mat-label>Bank name</mat-label>

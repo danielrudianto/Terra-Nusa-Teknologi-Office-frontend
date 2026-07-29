@@ -1,22 +1,47 @@
 import { Component, Inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-purchase-payment-create',
   templateUrl: './purchase-payment-create.component.html',
   styleUrls: ['./purchase-payment-create.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+  ],
 })
 export class PurchasePaymentCreateComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private dialog: MatDialogRef<PurchasePaymentCreateComponent>,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;
@@ -93,7 +118,7 @@ export class PurchasePaymentCreateComponent {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
-              }
+              },
             )}`,
             date: new Date(data.purchase.date).toLocaleDateString('id-ID', {
               day: '2-digit',
@@ -106,7 +131,7 @@ export class PurchasePaymentCreateComponent {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric',
-              }
+              },
             ),
             purchaseOrderName: data.purchase.purchaseOrderName,
             projectName: data.purchase.projectName,
@@ -148,7 +173,7 @@ export class PurchasePaymentCreateComponent {
           // set form array payments
           this.payments = data.payments.map((payment: any) => {
             const bankIndex = this.bankAccounts.findIndex(
-              (x) => x.id == payment.bankAccountID
+              (x) => x.id == payment.bankAccountID,
             );
             return {
               id: payment.id,
@@ -219,7 +244,7 @@ export class PurchasePaymentCreateComponent {
 
     const date = new Date(this.formGroup.value.date);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     this.isSubmitting = false;

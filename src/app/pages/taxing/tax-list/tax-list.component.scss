@@ -1,14 +1,10 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
 
 .tx {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 
 /* ---------- hero ---------- */
@@ -132,12 +128,12 @@ $faint: #9aa0ab;
   &__title {
     font-size: 1.02rem;
     font-weight: 700;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
   &__desc {
     font-size: 0.82rem;
     line-height: 1.45;
-    color: $muted;
+    color: var(--muted, #6b7280);
     b {
       color: #3f4653;
       font-weight: 600;
@@ -150,7 +146,7 @@ $faint: #9aa0ab;
     gap: 6px;
     font-size: 0.82rem;
     font-weight: 600;
-    color: $brand;
+    color: var(--brand, #154dec);
     margin-top: 0.1rem;
 
     svg {

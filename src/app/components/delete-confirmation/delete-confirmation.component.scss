@@ -1,7 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$danger: #e5484d;
 
 .dc {
   font-family: "Montserrat", sans-serif;
@@ -58,7 +54,7 @@ $danger: #e5484d;
 .dc-title {
   font-size: 1.15rem !important;
   font-weight: 700 !important;
-  color: $ink !important;
+  color: var(--ink, #16181d) !important;
   margin: 0.75rem 0 0 !important;
   padding: 0 !important;
   text-align: center;
@@ -75,7 +71,7 @@ $danger: #e5484d;
   p {
     font-size: 0.88rem;
     line-height: 1.5;
-    color: $muted;
+    color: var(--muted, #6b7280);
     margin: 0;
   }
 }
@@ -114,7 +110,7 @@ $danger: #e5484d;
   }
 
   &--confirm {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.24);
     &:hover {
@@ -124,7 +120,7 @@ $danger: #e5484d;
 }
 
 .dc--danger .dc-btn--confirm {
-  background: $danger;
+  background: var(--bad-fg, #b3322f);
   box-shadow: 0 4px 12px rgba(229, 72, 77, 0.28);
   &:hover {
     background: #cf3b40;

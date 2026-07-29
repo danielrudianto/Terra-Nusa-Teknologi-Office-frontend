@@ -1,15 +1,10 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .sv {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .sv *,
 .sv *::before,
@@ -43,7 +38,7 @@ $line: #eef0f3;
   height: 46px;
   border-radius: 50%;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
   display: grid;
@@ -60,7 +55,7 @@ $line: #eef0f3;
 }
 .sv-meta {
   font-size: 0.8rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin-top: 2px;
 }
 .sv-chip {
@@ -94,13 +89,13 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
 }
 .sv-subtitle {
   font-size: 0.75rem;
   font-weight: 600;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 1rem 0 0.5rem;
 }
 
@@ -120,18 +115,18 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .sv-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 }
 .sv-value--sm {
   font-size: 0.83rem;
   font-weight: 400;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* money list */
@@ -151,13 +146,13 @@ $line: #eef0f3;
     gap: 12px;
     padding: 0.6rem 0;
     font-size: 0.88rem;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
     &:last-child {
       border-bottom: none;
     }
 
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
     }
     span:last-child {
       font-weight: 600;
@@ -166,7 +161,7 @@ $line: #eef0f3;
     }
     em {
       font-style: normal;
-      color: $faint;
+      color: var(--faint, #9aa0ab);
       font-size: 0.76rem;
       margin-left: 4px;
     }
@@ -193,7 +188,7 @@ $line: #eef0f3;
   min-height: 40px;
 }
 :host ::ng-deep .sv-table .mat-mdc-header-cell {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -203,13 +198,13 @@ $line: #eef0f3;
 }
 :host ::ng-deep .sv-table .mat-mdc-row {
   min-height: 44px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 :host ::ng-deep .sv-table .mat-mdc-cell {
   border: none;
   padding: 0.4rem 14px;
   font-size: 0.83rem;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .sv-num {
   text-align: right;
@@ -225,12 +220,12 @@ $line: #eef0f3;
   font-weight: 600;
 }
 .sv-desc {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.8rem;
 }
 .sv-norow {
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.82rem;
   padding: 1rem !important;
 }
@@ -251,7 +246,7 @@ $line: #eef0f3;
     font-size: 0.88rem;
     border-bottom: 1px solid #e0e7fb;
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
     }
     span:last-child {
       font-weight: 600;
@@ -269,12 +264,12 @@ $line: #eef0f3;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.35rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
       font-variant-numeric: tabular-nums;
     }
   }
@@ -294,7 +289,7 @@ $line: #eef0f3;
   align-items: center;
   gap: 8px;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .sv-spacer {
   flex: 1;

@@ -1,8 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .sv {
   font-family: "Montserrat", sans-serif;
@@ -10,7 +5,7 @@ $line: #eef0f3;
   max-width: 94vw;
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .sv *,
 .sv *::before,
@@ -53,7 +48,7 @@ $line: #eef0f3;
 }
 .sv-client {
   font-size: 0.82rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin-top: 2px;
 }
 
@@ -64,7 +59,7 @@ $line: #eef0f3;
   padding: 5px 11px;
   border-radius: 999px;
   background: #e7ecfb;
-  color: $brand;
+  color: var(--brand, #154dec);
   white-space: nowrap;
   max-width: 180px;
   overflow: hidden;
@@ -89,7 +84,7 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
 }
 
@@ -113,18 +108,18 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .sv-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 }
 .sv-value--sm {
   font-size: 0.84rem;
   font-weight: 400;
-  color: $muted;
+  color: var(--muted, #6b7280);
   line-height: 1.45;
 }
 
@@ -142,10 +137,10 @@ $line: #eef0f3;
     gap: 12px;
     padding: 0.6rem 0;
     font-size: 0.88rem;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
 
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
       min-width: 0;
     }
     span:last-child {
@@ -157,11 +152,11 @@ $line: #eef0f3;
 
     &--sub {
       span:first-child {
-        color: $ink;
+        color: var(--ink, #16181d);
         font-weight: 600;
       }
       span:last-child {
-        color: $ink;
+        color: var(--ink, #16181d);
       }
     }
     &--neg span:last-child {
@@ -181,13 +176,13 @@ $line: #eef0f3;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
       min-width: 0;
     }
     span:last-child {
       font-size: 1.3rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
       flex-shrink: 0;
@@ -219,7 +214,7 @@ $line: #eef0f3;
     font-family: "Roboto Mono", ui-monospace, monospace;
     font-size: 0.72rem;
     font-weight: 700;
-    color: $brand;
+    color: var(--brand, #154dec);
     background: #e2e9fd;
     border-radius: 6px;
     padding: 2px 7px;
@@ -229,13 +224,13 @@ $line: #eef0f3;
   &__name {
     font-size: 0.8rem;
     line-height: 1.45;
-    color: $muted;
+    color: var(--muted, #6b7280);
     word-break: break-word;
   }
 
   &__copy {
     flex: 0 0 auto;
-    color: $brand !important;
+    color: var(--brand, #154dec) !important;
     mat-icon {
       font-size: 18px;
       width: 18px;
@@ -248,7 +243,7 @@ $line: #eef0f3;
 .sv-nopay {
   padding: 1.25rem;
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
   background: #fafbfc;
   border: 0.5px solid #e6e9ee;
@@ -261,7 +256,7 @@ $line: #eef0f3;
   justify-content: space-between;
   gap: 12px;
   padding: 0.8rem 0.15rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 
   &__info {
     display: flex;
@@ -272,11 +267,11 @@ $line: #eef0f3;
   &__bank {
     font-size: 0.86rem;
     font-weight: 500;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
   &__date {
     font-size: 0.74rem;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
   &__right {
     display: flex;
@@ -308,7 +303,7 @@ $line: #eef0f3;
     padding: 0.25rem 0;
 
     span:first-child {
-      color: $muted;
+      color: var(--muted, #6b7280);
     }
     span:last-child {
       font-weight: 700;
@@ -319,10 +314,10 @@ $line: #eef0f3;
     &--out {
       margin-top: 0.35rem;
       padding-top: 0.6rem;
-      border-top: 1px solid $line;
+      border-top: 1px solid var(--line, #eef0f3);
 
       span:first-child {
-        color: $ink;
+        color: var(--ink, #16181d);
         font-weight: 600;
       }
       span:last-child {
@@ -342,7 +337,7 @@ $line: #eef0f3;
   display: flex !important;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 8px;
 }
 .sv-spacer {
@@ -350,7 +345,7 @@ $line: #eef0f3;
 }
 
 .sv-copy {
-  background: $brand !important;
+  background: var(--brand, #154dec) !important;
   color: #fff !important;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;

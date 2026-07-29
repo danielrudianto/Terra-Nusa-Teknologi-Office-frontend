@@ -1,13 +1,4 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -23,8 +14,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* card */
 .poh-card {
-  background: $surface;
-  border: 0.5px solid $border;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow: var(
     --card-shadow,
@@ -46,7 +37,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.9rem;
   &--flush {
     margin-bottom: 0;
@@ -82,8 +73,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-weight: 600;
   font-size: 0.82rem;
   border: 0.5px solid #d7deea;
-  background: $surface;
-  color: $brand;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
   border-radius: 10px;
   padding: 0.45rem 0.9rem;
   cursor: pointer;
@@ -100,7 +91,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* item rows (grid table) */
 .poh-items {
-  border: 0.5px solid $border;
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -112,20 +103,20 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   align-items: center;
 }
 .poh-items__head {
-  background: $surface2;
+  background: var(--surface-2, #fafbfc);
   padding: 0.6rem 0.9rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   span {
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
 }
 .poh-items__row {
   padding: 0.5rem 0.9rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 }
 .poh-items__row:last-child {
   border-bottom: none;
@@ -148,7 +139,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .poh-linetotal {
   text-align: right;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
   padding-bottom: 1.25em;
@@ -156,7 +147,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .poh-items__empty {
   padding: 1.5rem;
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
 }
 
@@ -181,14 +172,14 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   padding: 0.35rem 0;
   font-size: 0.85rem;
   span:first-child {
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   span:last-child {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
   &--total {
-    border-top: 1px solid $line;
+    border-top: 1px solid var(--line, #eef0f3);
     margin-top: 4px;
     padding-top: 0.6rem;
     span:first-child {
@@ -196,12 +187,12 @@ $brandSoft: var(--brand-soft, #e7ecfb);
       text-transform: uppercase;
       font-size: 0.78rem;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.15rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
     }
   }
 }
@@ -213,7 +204,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   gap: 8px;
   margin-top: 1rem;
   padding: 0.7rem 0.9rem;
-  background: $brandSoft;
+  background: var(--brand-soft, #e7ecfb);
   border-radius: 10px;
   color: var(--brand-strong, #0f3fd0);
   font-size: 0.78rem;
@@ -233,7 +224,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   gap: 10px;
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .poh-spacer {
   flex: 1;
@@ -246,7 +237,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   padding: 0.7rem 1.6rem;
   cursor: pointer;
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   transition: background 0.15s ease;
@@ -282,20 +273,20 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 /* ===== catalog item cards ===== */
 .poh-empty {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 2.5rem 1rem; text-align: center; color: $faint; font-size: 0.86rem;
-  border: 1px dashed $border; border-radius: 14px;
-  mat-icon { font-size: 32px; width: 32px; height: 32px; color: $faint; }
+  padding: 2.5rem 1rem; text-align: center; color: var(--faint, #9aa0ab); font-size: 0.86rem;
+  border: 1px dashed var(--border, #e3e6eb); border-radius: 14px;
+  mat-icon { font-size: 32px; width: 32px; height: 32px; color: var(--faint, #9aa0ab); }
 }
 
 .poh-itemlist { display: flex; flex-direction: column; gap: 10px; }
 
 .poh-itemcard {
-  border: 0.5px solid $border; border-radius: 14px; overflow: hidden;
-  background: $surface;
+  border: 0.5px solid var(--border, #e3e6eb); border-radius: 14px; overflow: hidden;
+  background: var(--surface, #ffffff);
 
   &__id {
     display: flex; align-items: center; gap: 12px;
-    padding: 0.75rem 0.9rem; background: $surface2; border-bottom: 1px solid $line;
+    padding: 0.75rem 0.9rem; background: var(--surface-2, #fafbfc); border-bottom: 1px solid var(--line, #eef0f3);
   }
   &__inputs {
     display: grid; grid-template-columns: 0.8fr 1fr 1.2fr; gap: 0.25rem 1rem;
@@ -306,12 +297,12 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 .poh-itembadge {
   flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
-  background: $brandSoft; color: $brand; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+  background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec); font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
 }
 .poh-itemid__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.poh-itemdesc { font-size: 0.9rem; font-weight: 600; color: $ink; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.poh-itemsku { font-family: 'SFMono-Regular', ui-monospace, Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: $muted; }
-.poh-itemtotal { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.poh-itemdesc { font-size: 0.9rem; font-weight: 600; color: var(--ink, #16181d); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.poh-itemsku { font-family: 'SFMono-Regular', ui-monospace, Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: var(--muted, #6b7280); }
+.poh-itemtotal { flex: 0 0 auto; font-weight: 700; color: var(--ink, #16181d); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 :host ::ng-deep .poh-itemcard__inputs .mat-mdc-form-field { width: 100%; }
 .poh-itemremarks { grid-column: 1 / -1; }
@@ -323,40 +314,40 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* ===== shipment legs ===== */
 .poh-list { display: flex; flex-direction: column; gap: 12px; }
-.poh-leg { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.poh-leg { border: 0.5px solid var(--border, #e3e6eb); border-radius: 14px; overflow: hidden; background: var(--surface, #ffffff); }
 .poh-leg__head {
   display: flex; align-items: center; gap: 12px; padding: 0.7rem 0.9rem;
-  background: $surface2; border-bottom: 1px solid $line;
+  background: var(--surface-2, #fafbfc); border-bottom: 1px solid var(--line, #eef0f3);
 }
-.poh-leg__no { flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: $brand; background: $brandSoft; border-radius: 8px; padding: 3px 9px; }
+.poh-leg__no { flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: var(--brand, #154dec); background: var(--brand-soft, #e7ecfb); border-radius: 8px; padding: 3px 9px; }
 .poh-leg__route {
   flex: 1 1 auto; min-width: 0; display: flex; align-items: flex-start; gap: 6px;
-  font-size: 0.85rem; font-weight: 600; color: $ink;
-  mat-icon { flex: 0 0 auto; font-size: 16px; width: 16px; height: 16px; color: $faint; margin-top: 2px; }
+  font-size: 0.85rem; font-weight: 600; color: var(--ink, #16181d);
+  mat-icon { flex: 0 0 auto; font-size: 16px; width: 16px; height: 16px; color: var(--faint, #9aa0ab); margin-top: 2px; }
 }
 .poh-leg__loc {
   flex: 1 1 0; min-width: 0; line-height: 1.3;
   white-space: normal; word-break: break-word; overflow-wrap: anywhere;
 }
-.poh-leg__amt { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.poh-leg__amt { flex: 0 0 auto; font-weight: 700; color: var(--ink, #16181d); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .poh-leg__grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
 }
 :host ::ng-deep .poh-leg__grid .mat-mdc-form-field { width: 100%; }
 
 /* vehicle picker */
-.poh-vehlabel { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: $faint; padding: 0.3rem 0.9rem 0.5rem; }
+.poh-vehlabel { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--faint, #9aa0ab); padding: 0.3rem 0.9rem 0.5rem; }
 .poh-vehicles { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0.9rem 1rem; }
 .poh-veh {
   display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
   width: 78px; padding: 0.6rem 0.4rem; border-radius: 12px;
-  border: 1px solid $border; background: $surface; color: $muted;
+  border: 1px solid var(--border, #e3e6eb); background: var(--surface, #ffffff); color: var(--muted, #6b7280);
   font-family: 'Montserrat', sans-serif; transition: all 0.13s ease;
   &__ico svg { width: 30px; height: 30px; display: block; }
   &__lbl { font-size: 0.7rem; font-weight: 600; }
-  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: $ink; }
+  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: var(--ink, #16181d); }
   &.is-on {
-    border-color: $brand; background: $brandSoft; color: $brand;
+    border-color: var(--brand, #154dec); background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec);
     box-shadow: 0 3px 10px rgba(21, 77, 236, 0.18);
     .poh-veh__lbl { font-weight: 700; }
   }
@@ -387,13 +378,13 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .poh-mode {
   display: inline-flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
   padding: 0.55rem 0.3rem; border-radius: 11px;
-  border: 1px solid $border; background: $surface; color: $muted;
+  border: 1px solid var(--border, #e3e6eb); background: var(--surface, #ffffff); color: var(--muted, #6b7280);
   font-family: 'Montserrat', sans-serif; transition: all 0.13s ease;
   &__ico svg { width: 22px; height: 22px; display: block; }
   &__lbl { font-size: 0.72rem; font-weight: 600; }
-  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: $ink; }
+  &:hover { border-color: #c2ccde; background: var(--hover, #f6f8ff); color: var(--ink, #16181d); }
   &.is-on {
-    border-color: $brand; background: $brandSoft; color: $brand;
+    border-color: var(--brand, #154dec); background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec);
     box-shadow: 0 2px 8px rgba(21, 77, 236, 0.16);
     .poh-mode__lbl { font-weight: 700; }
   }
@@ -415,20 +406,20 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* ===== rental item cards ===== */
 .poh-list { display: flex; flex-direction: column; gap: 12px; }
-.poh-rental { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.poh-rental { border: 0.5px solid var(--border, #e3e6eb); border-radius: 14px; overflow: hidden; background: var(--surface, #ffffff); }
 .poh-rental__id {
   display: flex; align-items: center; gap: 12px; padding: 0.75rem 0.9rem;
-  background: $surface2; border-bottom: 1px solid $line;
+  background: var(--surface-2, #fafbfc); border-bottom: 1px solid var(--line, #eef0f3);
 }
 .poh-rentbadge {
   flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
-  background: $brandSoft; color: $brand; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+  background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec); font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
 }
 .poh-rentid__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.poh-rentname { font-size: 0.9rem; font-weight: 700; color: $ink; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.poh-rentcap { font-size: 0.75rem; color: $muted; }
+.poh-rentname { font-size: 0.9rem; font-weight: 700; color: var(--ink, #16181d); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.poh-rentcap { font-size: 0.75rem; color: var(--muted, #6b7280); }
 .poh-rentcat { font-weight: 600; }
-.poh-renttotal { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.poh-renttotal { flex: 0 0 auto; font-weight: 700; color: var(--ink, #16181d); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .poh-rental__grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
 }
@@ -445,21 +436,21 @@ app-wysiwyg { display: block; margin-bottom: 1.25rem; }
 
 /* ===== manpower rows ===== */
 .poh-list { display: flex; flex-direction: column; gap: 12px; }
-.poh-worker { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.poh-worker { border: 0.5px solid var(--border, #e3e6eb); border-radius: 14px; overflow: hidden; background: var(--surface, #ffffff); }
 .poh-worker__head {
   display: flex; align-items: center; gap: 12px; padding: 0.7rem 0.9rem;
-  background: $surface2; border-bottom: 1px solid $line;
+  background: var(--surface-2, #fafbfc); border-bottom: 1px solid var(--line, #eef0f3);
 }
 .poh-worker__no {
-  flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: $brand;
-  background: $brandSoft; border-radius: 8px; padding: 3px 9px;
+  flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb); border-radius: 8px; padding: 3px 9px;
 }
 .poh-worker__label {
-  flex: 1 1 auto; min-width: 0; font-size: 0.85rem; font-weight: 600; color: $ink;
+  flex: 1 1 auto; min-width: 0; font-size: 0.85rem; font-weight: 600; color: var(--ink, #16181d);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.poh-worker__who { color: $muted; font-weight: 500; }
-.poh-worker__amt { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.poh-worker__who { color: var(--muted, #6b7280); font-weight: 500; }
+.poh-worker__amt { flex: 0 0 auto; font-weight: 700; color: var(--ink, #16181d); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .poh-worker__grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
 }
@@ -473,56 +464,56 @@ app-wysiwyg { display: block; margin-bottom: 0.5rem; }
 
 /* ===== step 0: subtype chooser ===== */
 .poh-choose { text-align: center; }
-.poh-choose__title { font-size: 1.05rem; font-weight: 700; color: $ink; }
-.poh-choose__sub { font-size: 0.84rem; color: $muted; margin: 4px 0 1.4rem; }
+.poh-choose__title { font-size: 1.05rem; font-weight: 700; color: var(--ink, #16181d); }
+.poh-choose__sub { font-size: 0.84rem; color: var(--muted, #6b7280); margin: 4px 0 1.4rem; }
 .poh-choose__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .poh-pick {
   display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer;
   padding: 1.6rem 1.2rem; border-radius: 16px; text-align: center;
-  border: 1px solid $border; background: $surface; font-family: 'Montserrat', sans-serif;
+  border: 1px solid var(--border, #e3e6eb); background: var(--surface, #ffffff); font-family: 'Montserrat', sans-serif;
   transition: all 0.15s ease;
-  &__ico { color: $brand; svg { width: 34px; height: 34px; display: block; } }
+  &__ico { color: var(--brand, #154dec); svg { width: 34px; height: 34px; display: block; } }
   &__code {
     margin-top: 6px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em;
-    padding: 2px 9px; border-radius: 999px; background: $brandSoft; color: $brand;
+    padding: 2px 9px; border-radius: 999px; background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec);
   }
-  &__name { font-size: 0.98rem; font-weight: 700; color: $ink; }
-  &__desc { font-size: 0.78rem; color: $muted; line-height: 1.4; }
+  &__name { font-size: 0.98rem; font-weight: 700; color: var(--ink, #16181d); }
+  &__desc { font-size: 0.78rem; color: var(--muted, #6b7280); line-height: 1.4; }
   &:hover {
-    border-color: $brand; background: var(--hover, #f6f8ff);
+    border-color: var(--brand, #154dec); background: var(--hover, #f6f8ff);
     box-shadow: 0 6px 18px rgba(21, 77, 236, 0.14); transform: translateY(-2px);
   }
 }
 
 /* subtype chip in the header */
 .poh-typechip {
-  display: inline-flex; align-items: center; gap: 8px; font-size: 0.76rem; color: $muted;
-  background: $surface2; border: 0.5px solid $border; border-radius: 999px; padding: 4px 6px 4px 12px;
-  strong { color: $brand; font-weight: 800; letter-spacing: 0.03em; }
+  display: inline-flex; align-items: center; gap: 8px; font-size: 0.76rem; color: var(--muted, #6b7280);
+  background: var(--surface-2, #fafbfc); border: 0.5px solid var(--border, #e3e6eb); border-radius: 999px; padding: 4px 6px 4px 12px;
+  strong { color: var(--brand, #154dec); font-weight: 800; letter-spacing: 0.03em; }
   &__btn {
     border: none; cursor: pointer; font-family: 'Montserrat', sans-serif;
-    font-size: 0.72rem; font-weight: 700; color: $brand;
-    background: $brandSoft; border-radius: 999px; padding: 3px 10px;
+    font-size: 0.72rem; font-weight: 700; color: var(--brand, #154dec);
+    background: var(--brand-soft, #e7ecfb); border-radius: 999px; padding: 3px 10px;
     &:hover { background: var(--brand, #154dec); color: #fff; }
   }
 }
 
 /* ===== scope rows ===== */
 .poh-list { display: flex; flex-direction: column; gap: 12px; }
-.poh-scope { border: 0.5px solid $border; border-radius: 14px; overflow: hidden; background: $surface; }
+.poh-scope { border: 0.5px solid var(--border, #e3e6eb); border-radius: 14px; overflow: hidden; background: var(--surface, #ffffff); }
 .poh-scope__head {
   display: flex; align-items: center; gap: 12px; padding: 0.7rem 0.9rem;
-  background: $surface2; border-bottom: 1px solid $line;
+  background: var(--surface-2, #fafbfc); border-bottom: 1px solid var(--line, #eef0f3);
 }
 .poh-scope__no {
-  flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: $brand;
-  background: $brandSoft; border-radius: 8px; padding: 3px 9px;
+  flex: 0 0 auto; font-weight: 800; font-size: 0.8rem; color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb); border-radius: 8px; padding: 3px 9px;
 }
 .poh-scope__label {
-  flex: 1 1 auto; min-width: 0; font-size: 0.85rem; font-weight: 600; color: $ink;
+  flex: 1 1 auto; min-width: 0; font-size: 0.85rem; font-weight: 600; color: var(--ink, #16181d);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.poh-scope__amt { flex: 0 0 auto; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.poh-scope__amt { flex: 0 0 auto; font-weight: 700; color: var(--ink, #16181d); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .poh-scope__grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.25rem 1rem; padding: 0.9rem 0.9rem 0.1rem;
 }
@@ -536,7 +527,7 @@ app-wysiwyg { display: block; margin-bottom: 0.5rem; }
   padding: 0.35rem 0.2rem;
   &__no {
     display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px;
-    background: $surface2; color: $muted; font-size: 0.74rem; font-weight: 700;
+    background: var(--surface-2, #fafbfc); color: var(--muted, #6b7280); font-size: 0.74rem; font-weight: 700;
   }
 }
 :host ::ng-deep .poh-worker .mat-mdc-form-field { width: 100%; }

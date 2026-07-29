@@ -37,7 +37,11 @@
           </div>
         </div>
 
-        <div class="cal-cell__value" *ngIf="day != null">
+        <div
+          class="cal-cell__value"
+          *ngIf="day != null"
+          [ngClass]="valueClass(day)"
+        >
           {{ dataForDay(day) | shortCurrency: "Rp. " }}
         </div>
       </div>

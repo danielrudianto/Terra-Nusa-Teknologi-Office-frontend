@@ -1,11 +1,23 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
+import { TodayPaymentComponent } from '../today-payment/today-payment/today-payment.component';
+import { CashPositionComponent } from '../cash-position/cash-position.component';
+import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dashboard-reimbursement.component';
 
 @Component({
   selector: 'app-dashboard-body',
   templateUrl: './dashboard-body.component.html',
   styleUrls: ['./dashboard-body.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    TodayPaymentComponent,
+    CashPositionComponent,
+    DashboardReimbursementComponent,
+  ],
 })
 export class DashboardBodyComponent {
   constructor(private apiService: ApiService) {}

@@ -1,0 +1,261 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.exc {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* header */
+.exc-head {
+  margin: 0.5rem 0 1.25rem;
+}
+.exc-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $ink;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.exc-sub {
+  font-size: 0.85rem;
+  color: $muted;
+  margin: 0.25rem 0 0;
+  a {
+    color: $brand;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* stepper */
+.exc-stepper {
+  background: transparent;
+}
+:host ::ng-deep .exc-stepper .mat-horizontal-content-container {
+  padding: 0;
+}
+:host ::ng-deep .exc-stepper .mat-horizontal-stepper-header-container {
+  margin-bottom: 0.75rem;
+}
+:host ::ng-deep .exc-stepper .mat-step-header {
+  border-radius: 12px;
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+  .mat-step-icon-selected,
+  .mat-step-icon-state-edit {
+    background-color: $brand;
+  }
+  .mat-step-label.mat-step-label-active {
+    color: $ink;
+    font-weight: 600;
+  }
+}
+
+/* card */
+.exc-card {
+  background: $surface;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+  padding: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.exc-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $faint;
+  margin-bottom: 0.9rem;
+  &--mt {
+    margin-top: 1.4rem;
+  }
+}
+
+/* grid */
+.exc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.25rem;
+}
+.exc-span2 {
+  grid-column: 1 / -1;
+}
+
+:host ::ng-deep .exc-grid .mat-mdc-form-field {
+  width: 100%;
+}
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: #{$brand};
+  --mdc-outlined-text-field-caret-color: #{$brand};
+  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
+  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
+  --mat-select-focused-arrow-color: #{$brand};
+}
+:host ::ng-deep .mat-mdc-form-field-icon-prefix .mat-mdc-icon-button {
+  color: $brand;
+}
+
+/* highlighted total */
+:host ::ng-deep .exc-total .mat-mdc-text-field-wrapper {
+  background: var(--brand-soft, #f3f6ff);
+}
+:host ::ng-deep .exc-total input {
+  font-weight: 800 !important;
+  font-size: 1.05rem !important;
+  color: $brand !important;
+}
+
+/* actions */
+.exc-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $line;
+}
+.exc-spacer {
+  flex: 1;
+}
+
+.exc-btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+
+  &--ghost {
+    background: transparent;
+    color: $muted;
+    &:hover {
+      background: var(--surface-2, #f3f5f9);
+      color: $ink;
+    }
+  }
+  &--primary {
+    background: $brand;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+    &:hover:not(:disabled) {
+      background: var(--brand-strong, #0f3fd0);
+    }
+    &:disabled {
+      background: var(--line, #e6e9ee);
+      color: var(--faint, #9aa0ab);
+      box-shadow: none;
+      cursor: default;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .exc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* card head (title + inline action) */
+.exc-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.exc-section__title--flush {
+  margin-bottom: 0;
+}
+
+/* add / calc button */
+.exc-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid var(--border, #d7deea);
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--brand-soft, #f3f6ff);
+  }
+  &:disabled {
+    color: var(--faint, #9aa0ab);
+    border-color: var(--line, #e6e9ee);
+    cursor: default;
+  }
+  &--calc {
+    background: var(--brand-soft, #e7ecfb);
+    border-color: transparent;
+  }
+}
+
+/* toggle row */
+.exc-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  margin-top: 0.5rem;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 12px;
+  --mdc-switch-selected-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-handle-color: var(--brand, #154dec);
+  --mdc-switch-selected-focus-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-hover-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-pressed-track-color: var(--brand, #154dec);
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  &__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+  }
+  &__hint {
+    font-size: 0.74rem;
+    color: var(--faint, #9aa0ab);
+    line-height: 1.35;
+  }
+}

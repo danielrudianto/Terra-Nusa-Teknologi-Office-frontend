@@ -1,13 +1,8 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .pp {
   font-family: "Montserrat", sans-serif;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
   padding: 1rem;
 }
 .pp *,
@@ -32,12 +27,12 @@ $line: #eef0f3;
 }
 .pp-sub {
   font-size: 0.78rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .pp-x {
   border: none;
   background: #f3f5f9;
-  color: $muted;
+  color: var(--muted, #6b7280);
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -47,7 +42,7 @@ $line: #eef0f3;
   flex: 0 0 auto;
   &:hover {
     background: #e9edf3;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
@@ -67,11 +62,11 @@ $line: #eef0f3;
 .pp-search {
   flex: 1;
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   &__icon {
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     margin: 0 8px 0 2px;
   }
 }
@@ -82,14 +77,14 @@ $line: #eef0f3;
   gap: 2px;
   padding-bottom: 1.1rem;
   flex: 0 0 auto;
-  --mdc-switch-selected-track-color: #{$brand};
+  --mdc-switch-selected-track-color: var(--brand, #154dec);
   --mdc-switch-selected-handle-color: #fff;
-  --mdc-switch-selected-focus-track-color: #{$brand};
-  --mdc-switch-selected-hover-track-color: #{$brand};
-  --mdc-switch-selected-pressed-track-color: #{$brand};
+  --mdc-switch-selected-focus-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-hover-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-pressed-track-color: var(--brand, #154dec);
   &__hint {
     font-size: 0.66rem;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
 }
 
@@ -109,7 +104,7 @@ $line: #eef0f3;
   text-align: left;
   background: transparent;
   border: none;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   padding: 0.7rem 0.5rem;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
@@ -129,7 +124,7 @@ $line: #eef0f3;
   font-family: "Roboto Mono", ui-monospace, monospace;
   font-size: 0.78rem;
   font-weight: 600;
-  color: $brand;
+  color: var(--brand, #154dec);
   background: #eef2fe;
   border-radius: 8px;
   padding: 4px 8px;
@@ -139,14 +134,14 @@ $line: #eef0f3;
   min-width: 0;
   font-size: 0.86rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   line-height: 1.35;
 }
 .pp-tariff {
   flex: 0 0 auto;
   font-size: 0.82rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   &--zero {
@@ -157,7 +152,7 @@ $line: #eef0f3;
 .pp-empty {
   padding: 2.5rem 0;
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
 }
 
@@ -169,6 +164,6 @@ $line: #eef0f3;
 .pp-none {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: $brand !important;
+  color: var(--brand, #154dec) !important;
   border-radius: 10px;
 }

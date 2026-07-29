@@ -1,14 +1,9 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .su {
   font-family: "Montserrat", sans-serif;
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .su *,
 .su *::before,
@@ -47,7 +42,7 @@ $line: #eef0f3;
   height: 46px;
   border-radius: 50%;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
   display: grid;
@@ -59,7 +54,7 @@ $line: #eef0f3;
 .su-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
   overflow: hidden;
@@ -67,7 +62,7 @@ $line: #eef0f3;
 }
 .su-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 .su-chip {
@@ -101,7 +96,7 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.75rem;
 }
 
@@ -126,18 +121,18 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .su-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 
   &--sm {
     font-size: 0.86rem;
     font-weight: 400;
-    color: $muted;
+    color: var(--muted, #6b7280);
     line-height: 1.5;
   }
   &--mono {
@@ -155,7 +150,7 @@ $line: #eef0f3;
   width: 28px !important;
   height: 28px !important;
   padding: 0 !important;
-  color: $brand;
+  color: var(--brand, #154dec);
 
   mat-icon {
     font-size: 15px;
@@ -175,7 +170,7 @@ $line: #eef0f3;
   padding: 5px 11px;
   border-radius: 8px;
   background: #e7ecfb;
-  color: $brand;
+  color: var(--brand, #154dec);
 
   &--area {
     background: #e6f6ec;
@@ -185,7 +180,7 @@ $line: #eef0f3;
 
 .su-none {
   font-size: 0.84rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   padding: 0.9rem 1rem;
   background: #fafbfc;
   border: 0.5px solid #e6e9ee;
@@ -208,17 +203,17 @@ $line: #eef0f3;
 
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
   --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: #{$brand};
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 .su-divider {
   height: 1px;
-  background: $line;
+  background: var(--line, #eef0f3);
   margin: 0.6rem 0 1.15rem;
 }
 
@@ -227,13 +222,13 @@ $line: #eef0f3;
 }
 :host ::ng-deep .su-tags--edit .mat-mdc-chip {
   --mdc-chip-elevated-container-color: #e7ecfb;
-  --mdc-chip-label-text-color: #{$brand};
-  --mdc-chip-with-trailing-icon-trailing-icon-color: #{$brand};
+  --mdc-chip-label-text-color: var(--brand, #154dec);
+  --mdc-chip-with-trailing-icon-trailing-icon-color: var(--brand, #154dec);
   background-color: #e7ecfb;
   font-weight: 600;
 }
 :host ::ng-deep .su-tags--edit .mat-mdc-chip .mdc-evolution-chip__text-label {
-  color: #{$brand};
+  color: var(--brand, #154dec);
 }
 
 /* inline X on the remove button (font-independent, force-visible) */
@@ -257,7 +252,7 @@ $line: #eef0f3;
   border: none !important;
   background: transparent !important;
   cursor: pointer;
-  color: #{$brand} !important;
+  color: var(--brand, #154dec) !important;
   opacity: 0.8;
   transition: opacity 0.15s ease;
 
@@ -277,7 +272,7 @@ $line: #eef0f3;
   display: flex !important;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 10px;
 }
 .su-spacer {
@@ -285,7 +280,7 @@ $line: #eef0f3;
 }
 
 .su-copy {
-  background: $brand !important;
+  background: var(--brand, #154dec) !important;
   color: #fff !important;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
@@ -314,17 +309,17 @@ $line: #eef0f3;
 .su-cancel {
   border: none;
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin-left: auto;
   &:hover {
     background: #f3f5f9;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
 .su-submit {
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
 

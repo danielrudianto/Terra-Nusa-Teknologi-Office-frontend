@@ -66,6 +66,7 @@
       <button
         type="button"
         class="ss-row"
+        [class.ss-row--blacklist]="supplier.isBlacklist"
         *ngFor="let supplier of suppliers"
         (click)="selectSupplier(supplier)"
       >
@@ -76,8 +77,15 @@
             }}<span class="ss-prefix" *ngIf="supplier.prefix"
               >, {{ supplier.prefix }}</span
             >
+            <span class="ss-badge" *ngIf="supplier.isBlacklist">Blacklist</span>
           </span>
           <span class="ss-addr">{{ supplier.address || "—" }}</span>
+          <span
+            class="ss-blacklist-reason"
+            *ngIf="supplier.isBlacklist && supplier.blacklistReason"
+          >
+            Alasan: {{ supplier.blacklistReason }}
+          </span>
         </span>
         <svg
           class="ss-chevron"

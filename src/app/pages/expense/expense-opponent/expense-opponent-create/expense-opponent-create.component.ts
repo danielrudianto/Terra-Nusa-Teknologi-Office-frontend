@@ -1,5 +1,15 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
@@ -8,10 +18,21 @@ import { banks, IBank } from 'src/app/utils/bank';
   selector: 'app-expense-opponent-create',
   templateUrl: './expense-opponent-create.component.html',
   styleUrl: './expense-opponent-create.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
 })
 export class ExpenseOpponentCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+  ) {}
 
   isSubmitting: boolean = false;
 

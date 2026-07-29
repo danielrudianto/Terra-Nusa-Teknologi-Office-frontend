@@ -1,6 +1,3 @@
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$line: var(--line, #eef0f3);
 
 :host {
   display: block;
@@ -22,7 +19,7 @@ $line: var(--line, #eef0f3);
   gap: 1rem;
   margin: 0.5rem 0 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 
   &__title {
     min-width: 0;
@@ -37,13 +34,13 @@ $line: var(--line, #eef0f3);
 .cal-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .cal-sub {
   font-size: 0.85rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 0.25rem 0 0;
 }
 .cal-balance {

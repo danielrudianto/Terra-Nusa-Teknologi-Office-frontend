@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 
 interface CashAccount {
@@ -22,7 +23,8 @@ interface CashPositionResponse {
   selector: 'app-cash-position',
   templateUrl: './cash-position.component.html',
   styleUrls: ['./cash-position.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
 })
 export class CashPositionComponent implements OnInit {
   accounts: CashAccount[] = [];

@@ -1,6 +1,19 @@
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
@@ -9,14 +22,22 @@ import { banks, IBank } from 'src/app/utils/bank';
   selector: 'app-bank-update',
   templateUrl: './bank-update.component.html',
   styleUrl: './bank-update.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatDialogModule,
+  ],
 })
 export class BankUpdateComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialogRef<BankUpdateComponent>
+    private dialog: MatDialogRef<BankUpdateComponent>,
   ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
@@ -70,7 +91,7 @@ export class BankUpdateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 

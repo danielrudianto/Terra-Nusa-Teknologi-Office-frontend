@@ -1,7 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
 
 .dashboard-body__wrapper {
   width: 100%;
@@ -15,12 +11,12 @@ $faint: #9aa0ab;
   font-family: "Montserrat", sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
 }
 .db-subtitle {
   font-family: "Montserrat", sans-serif;
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.9rem;
 }
 
@@ -168,7 +164,7 @@ $faint: #9aa0ab;
       font-family: "Montserrat", sans-serif;
       font-size: 1rem;
       font-weight: 700;
-      color: $ink;
+      color: var(--ink, #16181d);
       margin: 0;
     }
   }
@@ -180,7 +176,7 @@ $faint: #9aa0ab;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     font-size: 0.82rem;
 
     svg {

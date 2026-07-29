@@ -1,14 +1,9 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .eu {
   font-family: "Montserrat", sans-serif;
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .eu *,
 .eu *::before,
@@ -47,7 +42,7 @@ $line: #eef0f3;
   height: 46px;
   border-radius: 50%;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
   display: grid;
@@ -59,7 +54,7 @@ $line: #eef0f3;
 .eu-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
   overflow: hidden;
@@ -67,7 +62,7 @@ $line: #eef0f3;
 }
 .eu-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* ---------- content ---------- */
@@ -92,12 +87,12 @@ $line: #eef0f3;
 
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
   --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: #{$brand};
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 /* ---------- actions ---------- */
@@ -106,7 +101,7 @@ $line: #eef0f3;
   justify-content: flex-end;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 10px;
 }
 
@@ -124,16 +119,16 @@ $line: #eef0f3;
 .eu-cancel {
   border: none;
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   &:hover {
     background: #f3f5f9;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
 .eu-submit {
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
 

@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -9,13 +14,22 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-expense-opponent-list',
   templateUrl: './expense-opponent-list.component.html',
   styleUrl: './expense-opponent-list.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+  ],
 })
 export class ExpenseOpponentListComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;

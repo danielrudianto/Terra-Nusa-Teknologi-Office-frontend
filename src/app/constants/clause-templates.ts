@@ -227,24 +227,21 @@ const MAINTENANCE_CLAUSES: ClauseTemplate[] = [
     version: '1.0',
     build: (ctx) => {
       const isGoods = ctx.maintenanceMode !== 'jasa'; // default barang
-      const points: string[] = [paymentSentence(ctx)];
 
+      // Mode BARANG (sparepart): pakai klausul G persis (poin 1-8).
+      // Sengaja delegasi ke G_CLAUSES v1.0 -> kalau G berubah, barang ikut berubah.
       if (isGoods) {
-        points.push(
-          `Barang/sparepart diperiksa oleh PIHAK PEMBELI pada saat serah terima dan harus sesuai dengan spesifikasi yang disepakati; barang yang tidak sesuai dapat ditolak dan menjadi tanggung jawab PIHAK PENJUAL.`,
-        );
-        points.push(
-          `Garansi barang mengikuti ketentuan yang berlaku dari PIHAK PENJUAL / penerbit barang.`,
-        );
-      } else {
-        points.push(
-          `Pekerjaan dinyatakan selesai setelah diperiksa dan disetujui oleh perwakilan PIHAK PEMBELI; hasil yang tidak sesuai wajib diperbaiki oleh PIHAK PENJUAL tanpa biaya tambahan.`,
-        );
-        points.push(
-          `PIHAK PENJUAL memberikan garansi atas hasil pekerjaan sesuai kesepakatan kedua belah pihak.`,
-        );
+        return G_CLAUSES[0].build(ctx);
       }
 
+      // Mode JASA (perbaikan): klausul ringkas (verifikasi + garansi).
+      const points: string[] = [paymentSentence(ctx)];
+      points.push(
+        `Pekerjaan dinyatakan selesai setelah diperiksa dan disetujui oleh perwakilan PIHAK PEMBELI; hasil yang tidak sesuai wajib diperbaiki oleh PIHAK PENJUAL tanpa biaya tambahan.`,
+      );
+      points.push(
+        `PIHAK PENJUAL memberikan garansi atas hasil pekerjaan sesuai kesepakatan kedua belah pihak.`,
+      );
       points.push(
         `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan dokumen pembelian ini.`,
       );
@@ -275,7 +272,10 @@ export function latestClauseVersion(poType: string): string {
 }
 
 /** Resolve a specific template; falls back to the latest if not found. */
-function resolveTemplate(poType: string, version?: string): ClauseTemplate | null {
+function resolveTemplate(
+  poType: string,
+  version?: string,
+): ClauseTemplate | null {
   const list = CLAUSE_TEMPLATES[poType];
   if (!list || !list.length) return null;
   if (version) {

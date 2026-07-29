@@ -16,13 +16,15 @@
         (onBankAccountChanges)="onBankAccountChanges($event)"
       />
 
-      <mat-slide-toggle
-        color="primary"
-        [formControl]="isBalance"
-        class="cal-balance"
+      <mat-button-toggle-group
+        [formControl]="viewMode"
+        class="cal-viewmode"
+        hideSingleSelectionIndicator
       >
-        Balance
-      </mat-slide-toggle>
+        <mat-button-toggle value="expense">Pengeluaran</mat-button-toggle>
+        <mat-button-toggle value="income">Pemasukan</mat-button-toggle>
+        <mat-button-toggle value="balance">Saldo</mat-button-toggle>
+      </mat-button-toggle-group>
     </div>
   </div>
 
@@ -31,6 +33,6 @@
     [year]="year"
     [bankAccounts]="bankAccounts"
     (onCalendarBoxClicked)="onCalendarBoxClicked($event)"
-    [isBalance]="isBalance.value"
+    [viewMode]="viewMode.value"
   ></app-calendar-table>
 </div>

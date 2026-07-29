@@ -3,13 +3,22 @@ import {
   AbstractControl,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { ActivatedRoute } from '@angular/router';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
@@ -67,9 +76,21 @@ function bankAccountIDRequired(): ValidatorFn {
 
 @Component({
   selector: 'app-purchase-draft-convert',
-  standalone: false,
+  standalone: true,
   templateUrl: './purchase-draft-convert.component.html',
   styleUrl: './purchase-draft-convert.component.scss',
+  imports: [
+    MatStepperModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatIconModule,
+    MatAutocompleteModule,
+  ],
 })
 export class PurchaseDraftConvertComponent {
   constructor(

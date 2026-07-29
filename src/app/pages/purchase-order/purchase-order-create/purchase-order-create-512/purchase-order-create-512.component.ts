@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import {
-  FormArray, FormBuilder, FormControl, FormGroup, FormsModule,
-  ReactiveFormsModule, Validators,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -37,9 +42,18 @@ import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-d
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatDatepickerModule, MatSelectModule, MatIconModule,
-    MatButtonModule, MatSlideToggleModule, TextFieldModule, NgxMaskDirective,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    TextFieldModule,
+    NgxMaskDirective,
     HeaderTitleComponent,
   ],
   templateUrl: './purchase-order-create-512.component.html',
@@ -61,7 +75,15 @@ export class PurchaseOrderCreate512Component {
   /** null until the mode dialog is answered */
   mode: 'barang' | 'jasa' | null = null;
 
-  serviceUnits: string[] = ['LS', 'unit', 'kali', 'hari', 'jam', 'paket', 'orang'];
+  serviceUnits: string[] = [
+    'LS',
+    'unit',
+    'kali',
+    'hari',
+    'jam',
+    'paket',
+    'orang',
+  ];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -75,7 +97,18 @@ export class PurchaseOrderCreate512Component {
     ]),
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
-    prepaidTerm: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(100)]),
+    prepaidTerm: new FormControl(0, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(100),
+    ]),
+    // dipakai clause mode BARANG (persis G). Divalidasi kondisional lewat setGoodsValidators().
+    deliveryMethod: new FormControl(0),
+    deliveryAddress: new FormControl(''),
+    supplierPICName: new FormControl(''),
+    supplierPICPhoneNumber: new FormControl(''),
+    officePICName: new FormControl(''),
+    officePICPhoneNumber: new FormControl(''),
     additionalClauses: new FormArray([]),
     lines: new FormArray([]),
     includePPN: new FormControl(true),
@@ -103,19 +136,32 @@ export class PurchaseOrderCreate512Component {
         if (picked === this.mode) return;
         this.mode = picked;
         this.t.clear(); // line shape differs per mode
+        this.setGoodsValidators();
         if (picked === 'jasa') this.addService();
       });
   }
 
-  get isGoods(): boolean { return this.mode === 'barang'; }
+  get isGoods(): boolean {
+    return this.mode === 'barang';
+  }
   get modeLabel(): string {
-    return this.mode === 'barang' ? 'Beli barang (sparepart)' : 'Pesan jasa (perbaikan)';
+    return this.mode === 'barang'
+      ? 'Beli barang (sparepart)'
+      : 'Pesan jasa (perbaikan)';
   }
 
-  get f() { return this.formGroup.controls; }
-  get t() { return this.formGroup.get('lines') as FormArray; }
-  getFormGroupAt(i: number) { return this.t.at(i) as FormGroup; }
-  removeAt(i: number) { this.t.removeAt(i); }
+  get f() {
+    return this.formGroup.controls;
+  }
+  get t() {
+    return this.formGroup.get('lines') as FormArray;
+  }
+  getFormGroupAt(i: number) {
+    return this.t.at(i) as FormGroup;
+  }
+  removeAt(i: number) {
+    this.t.removeAt(i);
+  }
 
   // ---- jasa lines ----
   private buildServiceLine(): FormGroup {
@@ -128,7 +174,9 @@ export class PurchaseOrderCreate512Component {
       note: [''],
     });
   }
-  addService() { this.t.push(this.buildServiceLine()); }
+  addService() {
+    this.t.push(this.buildServiceLine());
+  }
 
   // ---- barang lines ----
   private buildGoodsLine(item: any): FormGroup {
@@ -156,7 +204,9 @@ export class PurchaseOrderCreate512Component {
       .subscribe((item) => {
         if (!item) return;
         if (this.t.value.some((x: any) => x.item_id === item.id)) {
-          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', { duration: 2500 });
+          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', {
+            duration: 2500,
+          });
           return;
         }
         this.t.push(this.buildGoodsLine(item));
@@ -183,26 +233,38 @@ export class PurchaseOrderCreate512Component {
     return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
   }
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value ? this.rawTotal / 1.11 : this.rawTotal;
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal / 1.11
+      : this.rawTotal;
   }
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value ? this.rawTotal - this.rawTotal / 1.11 : 0;
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal - this.rawTotal / 1.11
+      : 0;
   }
-  get grandTotal(): number { return this.rawTotal; }
+  get grandTotal(): number {
+    return this.rawTotal;
+  }
 
   openSupplierSelector() {
-    this.dialog.open(SupplierSelectorComponent, {}).afterClosed().subscribe((data) => {
-      if (data) {
-        this.formGroup.patchValue({
-          supplierID: data.id, supplierName: data.name, supplierAddress: data.address,
-        });
-      }
-    });
+    this.dialog
+      .open(SupplierSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.formGroup.patchValue({
+            supplierID: data.id,
+            supplierName: data.name,
+            supplierAddress: data.address,
+          });
+        }
+      });
   }
 
   toUpperCase() {
     const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) this.formGroup.patchValue({ projectName: v.toUpperCase() });
+    if (v && v.toUpperCase() !== v)
+      this.formGroup.patchValue({ projectName: v.toUpperCase() });
   }
 
   // --- poin perjanjian tambahan (custom) ---
@@ -226,7 +288,37 @@ export class PurchaseOrderCreate512Component {
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,
       maintenanceMode: this.mode || 'barang',
+      // dipakai mode barang (clause G)
+      deliveryMethod: v.deliveryMethod,
+      deliveryAddress: v.deliveryAddress,
+      supplierPICName: v.supplierPICName,
+      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+      officePICName: v.officePICName,
+      officePICPhoneNumber: v.officePICPhoneNumber,
     };
+  }
+
+  /** field pengiriman + kontak PJ wajib hanya saat mode barang */
+  private setGoodsValidators() {
+    const goods = this.isGoods;
+    const req = [
+      'deliveryAddress',
+      'supplierPICName',
+      'supplierPICPhoneNumber',
+      'officePICName',
+      'officePICPhoneNumber',
+    ];
+    for (const name of req) {
+      const c = this.formGroup.get(name);
+      if (!c) continue;
+      if (goods) {
+        c.addValidators(Validators.required);
+      } else {
+        c.clearValidators();
+        c.setValue('');
+      }
+      c.updateValueAndValidity({ emitEvent: false });
+    }
   }
 
   get clausePreview(): string {
@@ -276,6 +368,14 @@ export class PurchaseOrderCreate512Component {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        // field pengiriman + kontak PJ (mode barang), biar PO lama render ulang persis
+        deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
+        deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
+        supplierPICName: this.formGroup.get('supplierPICName')?.value,
+        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
+          ?.value,
+        officePICName: this.formGroup.get('officePICName')?.value,
+        officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // locked auto-clause (baku, mode-aware) + poin tambahan user
         notes: this.clausePreview,
         additionalClauses: this.additionalClauseValues
@@ -287,12 +387,24 @@ export class PurchaseOrderCreate512Component {
 
   onSubmit() {
     this.isSubmitting = true;
-    this.apiService.post('purchase-orders', this.formatData()).subscribe({
-      next: (res: any) => {
-        this.snackBar.open(`Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`, 'Close', { duration: 3000 });
-        this.router.navigate(['/Purchase-order']);
-      },
-      error: (error) => this.snackBar.open(error?.error?.detail ?? 'Gagal membuat purchase order', 'Close', { duration: 3000 }),
-    }).add(() => (this.isSubmitting = false));
+    this.apiService
+      .post('purchase-orders', this.formatData())
+      .subscribe({
+        next: (res: any) => {
+          this.snackBar.open(
+            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            'Close',
+            { duration: 3000 },
+          );
+          this.router.navigate(['/Purchase-order']);
+        },
+        error: (error) =>
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal membuat purchase order',
+            'Close',
+            { duration: 3000 },
+          ),
+      })
+      .add(() => (this.isSubmitting = false));
   }
 }

@@ -1,13 +1,8 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .ss {
   font-family: "Montserrat", sans-serif;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
   padding: 1rem;
 }
 .ss *,
@@ -32,12 +27,12 @@ $line: #eef0f3;
 }
 .ss-sub {
   font-size: 0.78rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .ss-x {
   border: none;
   background: #f3f5f9;
-  color: $muted;
+  color: var(--muted, #6b7280);
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -47,7 +42,7 @@ $line: #eef0f3;
   flex: 0 0 auto;
   &:hover {
     background: #e9edf3;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
@@ -60,11 +55,11 @@ $line: #eef0f3;
 .ss-search {
   width: 100%;
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   &__icon {
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     margin: 0 8px 0 2px;
   }
 }
@@ -86,7 +81,7 @@ $line: #eef0f3;
   text-align: left;
   background: transparent;
   border: none;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   padding: 0.7rem 0.5rem;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
@@ -106,7 +101,7 @@ $line: #eef0f3;
   height: 38px;
   border-radius: 50%;
   background: #e7ecfb;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1rem;
   display: grid;
@@ -124,18 +119,18 @@ $line: #eef0f3;
 .ss-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: $ink;
+  color: var(--ink, #16181d);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .ss-prefix {
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-weight: 500;
 }
 .ss-addr {
   font-size: 0.76rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -157,7 +152,7 @@ $line: #eef0f3;
   align-items: center;
   gap: 8px;
   padding: 2.5rem 0;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
   svg {
     color: #cfd4dc;
@@ -172,6 +167,6 @@ $line: #eef0f3;
 .ss-close {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: $muted !important;
+  color: var(--muted, #6b7280) !important;
   border-radius: 10px;
 }

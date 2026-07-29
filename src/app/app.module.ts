@@ -80,29 +80,19 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule, routes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { CalendarDayViewComponent } from './pages/calendar/calendar-day-view/calendar-day-view.component';
-import { PaymentComponent } from './pages/payment/payment.component';
-import { PaymentHistoryComponent } from './pages/payment/payment-history/payment-history.component';
 import { TaxingComponent } from './pages/taxing/taxing.component';
 import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { PaymentCreateComponent } from './components/payment-create/payment-create.component';
 import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
 import { IncomeComponent } from './pages/income/income.component';
-import { ExpensePaymentCreateComponent } from './components/payment-create/expense-payment-create/expense-payment-create.component';
 import { AssetComponent } from './pages/asset/asset.component';
-import { SalarySlipViewComponent } from './pages/salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
-import { SalaryPaymentCreateComponent } from './components/payment-create/salary-payment-create/salary-payment-create.component';
-import { PurchaseUpdateComponent } from './pages/purchase/purchase-update/purchase-update.component';
 import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { SalesInvoicePaymentCreateComponent } from './components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { LoansComponent } from './pages/loans/loans.component';
-import { PurchaseDraftConvertComponent } from './pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component';
-import { FileDropComponent } from './pages/pdf-main/file-drop/file-drop.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
@@ -125,55 +115,32 @@ export const MY_FORMATS = {
   declarations: [
     AppComponent,
     DashboardCardComponent,
-    DashboardComponent,
-    SupplierComponent,
-    PurchaseComponent,
-    DashboardTopComponent,
-    DashboardBodyComponent,
-    AutocompleteResultComponent,
     BankSelectorComponent,
-    ReimbursementComponent,
-    ReimbursementCreateItemDialogComponent,
-    PurchaseReportSelectComponent,
-    BankComponent,
-    PurchasePaymentCreateComponent,
-    BankUpdateComponent,
-    ExpenseComponent,
-    PurchaseReportProjectComponent,
-    EmployeeComponent,
-    EmployeeCreateComponent,
-    ExpenseOpponentComponent,
-    ExpenseOpponentListComponent,
-    ExpenseOpponentCreateComponent,
-    SalesInvoiceComponent,
-    SalesInvoiceCreateComponent,
-    ClientComponent,
-    SalarySlipComponent,
-    CalendarDateSelectorComponent,
-    CalendarDayViewComponent,
-    PaymentComponent,
-    PaymentHistoryComponent,
-    TaxingComponent,
     TaxListComponent,
-    PaymentCreateComponent,
-    InterpaymentComponent,
-    IncomeComponent,
-    ExpensePaymentCreateComponent,
-    AssetComponent,
-    SalarySlipViewComponent,
-    SalaryPaymentCreateComponent,
-    PurchaseUpdateComponent,
-    PurchaseDraftComponent,
-    SalesInvoicePaymentCreateComponent,
-    PdfMainComponent,
-    LoansComponent,
-    PurchaseDraftConvertComponent,
-    FileDropComponent,
-    CashPositionComponent,
-    TodayPaymentComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
+    PaymentCreateComponent,
+    LoansComponent,
+    AssetComponent,
+    SalarySlipComponent,
+    SupplierComponent,
+    InterpaymentComponent,
+    BankComponent,
+    EmployeeComponent,
+    PurchaseComponent,
+    IncomeComponent,
+    ClientComponent,
+    ExpenseComponent,
+    ExpenseOpponentComponent,
+    TaxingComponent,
+    PurchaseDraftComponent,
+    SalesInvoiceComponent,
+    DashboardTopComponent,
+    CalendarDateSelectorComponent,
+    DashboardBodyComponent,
+    TodayPaymentComponent,
+    CashPositionComponent,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,

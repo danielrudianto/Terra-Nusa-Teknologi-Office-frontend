@@ -1,9 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
-$surface: #ffffff;
 
 :host {
   display: block;
@@ -24,16 +18,16 @@ $surface: #ffffff;
 .ssc-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .ssc-sub {
   font-size: 0.85rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 0.25rem 0 0;
   a {
-    color: $brand;
+    color: var(--brand, #154dec);
     text-decoration: none;
     &:hover {
       text-decoration: underline;
@@ -43,7 +37,7 @@ $surface: #ffffff;
 
 /* card */
 .ssc-card {
-  background: $surface;
+  background: var(--surface, #ffffff);
   border: 0.5px solid #e3e6eb;
   border-radius: 18px;
   box-shadow:
@@ -64,7 +58,7 @@ $surface: #ffffff;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.9rem;
   &--flush {
     margin-bottom: 0;
@@ -85,12 +79,12 @@ $surface: #ffffff;
 }
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
   --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: #{$brand};
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 /* highlighted net total */
@@ -100,7 +94,7 @@ $surface: #ffffff;
 :host ::ng-deep .ssc-total input {
   font-weight: 800 !important;
   font-size: 1.05rem !important;
-  color: $brand !important;
+  color: var(--brand, #154dec) !important;
 }
 
 /* add / calc buttons */
@@ -113,7 +107,7 @@ $surface: #ffffff;
   font-size: 0.82rem;
   border: 0.5px solid #d7deea;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   border-radius: 10px;
   padding: 0.45rem 0.9rem;
   cursor: pointer;
@@ -153,7 +147,7 @@ $surface: #ffffff;
   min-height: 40px;
 }
 :host ::ng-deep .ssc-table .mat-mdc-header-cell {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -163,13 +157,13 @@ $surface: #ffffff;
 }
 :host ::ng-deep .ssc-table .mat-mdc-row {
   min-height: 46px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 :host ::ng-deep .ssc-table .mat-mdc-cell {
   border: none;
   padding: 0.4rem 14px;
   font-size: 0.84rem;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .ssc-num {
   text-align: right;
@@ -185,12 +179,12 @@ $surface: #ffffff;
   font-weight: 600;
 }
 .ssc-desc {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.8rem;
 }
 .ssc-norow {
   text-align: center;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.82rem;
   padding: 1rem !important;
 }
@@ -236,7 +230,7 @@ $surface: #ffffff;
   gap: 10px;
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .ssc-spacer {
   flex: 1;
@@ -249,7 +243,7 @@ $surface: #ffffff;
   padding: 0.65rem 1.5rem;
   cursor: pointer;
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   transition: background 0.15s ease;

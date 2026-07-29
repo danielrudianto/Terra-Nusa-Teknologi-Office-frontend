@@ -1,16 +1,31 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-reimbursement-create-item-dialog',
   templateUrl: './reimbursement-create-item-dialog.component.html',
   styleUrls: ['./reimbursement-create-item-dialog.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+  ],
 })
 export class ReimbursementCreateItemDialogComponent {
   constructor(
-    private dialog: MatDialogRef<ReimbursementCreateItemDialogComponent>
+    private dialog: MatDialogRef<ReimbursementCreateItemDialogComponent>,
   ) {}
 
   formGroup: FormGroup = new FormGroup({

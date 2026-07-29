@@ -1,13 +1,4 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -25,13 +16,13 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .poc-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .poc-sub {
   font-size: 0.85rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 0.25rem 0 0;
 }
 
@@ -49,13 +40,13 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .poc-section__count {
   font-size: 0.7rem;
   font-weight: 700;
-  color: $brand;
-  background: $brandSoft;
+  color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb);
   border-radius: 999px;
   padding: 1px 9px;
 }
@@ -75,8 +66,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   padding: 1.1rem 1.15rem;
   border-radius: 16px;
   cursor: pointer;
-  background: $surface;
-  border: 0.5px solid $border;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   box-shadow: var(--card-shadow, 0 1px 2px rgba(16, 24, 40, 0.04));
   font-family: "Montserrat", sans-serif;
   text-decoration: none;
@@ -90,11 +81,11 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     border-color: #cdd7f7;
     box-shadow: 0 8px 22px rgba(21, 77, 236, 0.12);
     .poc-tile__arrow {
-      color: $brand;
+      color: var(--brand, #154dec);
       transform: translateX(3px);
     }
     .poc-tile__badge {
-      background: $brand;
+      background: var(--brand, #154dec);
       color: #fff;
     }
   }
@@ -109,8 +100,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     place-items: center;
     font-weight: 800;
     font-size: 1rem;
-    background: $brandSoft;
-    color: $brand;
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
     transition: all 0.14s ease;
     &--num {
       font-size: 0.8rem;
@@ -127,17 +118,17 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   &__title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: $ink;
+    color: var(--ink, #16181d);
     line-height: 1.25;
   }
   &__desc {
     font-size: 0.78rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
     line-height: 1.45;
   }
   &__arrow {
     flex: 0 0 auto;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     margin-top: 2px;
     transition:
       transform 0.14s ease,

@@ -1,15 +1,10 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .iv {
   font-family: "Montserrat", sans-serif;
   width: min(540px, 94vw);
   box-sizing: border-box;
   overflow-x: hidden;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .iv *,
 .iv *::before,
@@ -50,20 +45,20 @@ $line: #eef0f3;
   display: grid;
   place-items: center;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 
 .iv-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .iv-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 .iv-chip {
@@ -99,7 +94,7 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
 }
 
@@ -119,13 +114,13 @@ $line: #eef0f3;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
 
   &__value {
     font-size: 1.7rem;
     font-weight: 800;
-    color: $brand;
+    color: var(--brand, #154dec);
     line-height: 1.15;
     font-variant-numeric: tabular-nums;
   }
@@ -151,7 +146,7 @@ $line: #eef0f3;
       right: 0;
       top: 50%;
       height: 1px;
-      background: $line;
+      background: var(--line, #eef0f3);
     }
 
     mat-icon {
@@ -201,18 +196,18 @@ $line: #eef0f3;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
 
   &__bank {
     font-size: 0.92rem;
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 
   &__acct {
     font-size: 0.78rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
     font-variant-numeric: tabular-nums;
   }
 }
@@ -237,12 +232,12 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .iv-value {
   font-size: 0.9rem;
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
   word-break: break-word;
 }
 
@@ -258,7 +253,7 @@ $line: #eef0f3;
     align-items: flex-start;
     gap: 11px;
     padding: 0.85rem 0;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
 
     &:last-child {
       border-bottom: none;
@@ -298,11 +293,11 @@ $line: #eef0f3;
   &__action {
     font-size: 0.86rem;
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
   &__meta {
     font-size: 0.75rem;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     em {
       font-style: normal;
     }
@@ -337,7 +332,7 @@ $line: #eef0f3;
   display: flex !important;
   align-items: center;
   padding: 1rem 1.5rem 1.25rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   gap: 8px;
 }
 .iv-spacer {
@@ -345,7 +340,7 @@ $line: #eef0f3;
 }
 
 .iv-copy {
-  background: $brand !important;
+  background: var(--brand, #154dec) !important;
   color: #fff !important;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;

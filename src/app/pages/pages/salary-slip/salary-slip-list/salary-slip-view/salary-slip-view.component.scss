@@ -1,0 +1,335 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+
+.sv {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  color: $ink;
+}
+.sv *,
+.sv *::before,
+.sv *::after {
+  box-sizing: border-box;
+}
+
+/* header */
+.sv-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(135deg, var(--brand-soft, #eef2fe) 0%, var(--hover, #f6f8ff) 100%);
+  border-bottom: 1px solid #e4e9fb;
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    min-width: 0;
+    margin-right: auto;
+  }
+}
+.sv-avatar {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+  color: $brand;
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+.sv-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sv-meta {
+  font-size: 0.8rem;
+  color: $muted;
+  margin-top: 2px;
+}
+.sv-chip {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  &--deleted {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+  }
+}
+
+/* content */
+.sv-content {
+  padding: 1.5rem !important;
+  overflow-x: hidden;
+  max-height: 74vh;
+}
+.sv-section {
+  margin-bottom: 1.6rem;
+}
+.sv-section:last-child {
+  margin-bottom: 0.25rem;
+}
+.sv-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $faint;
+  margin-bottom: 0.8rem;
+}
+.sv-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $muted;
+  margin: 1rem 0 0.5rem;
+}
+
+.sv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+}
+.sv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.sv-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: $faint;
+}
+.sv-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $ink;
+  word-break: break-word;
+}
+.sv-value--sm {
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: $muted;
+}
+
+/* money list */
+.sv-money {
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 14px;
+  padding: 0.3rem 1.15rem;
+  &--mt {
+    margin-top: 0.75rem;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.6rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid $line;
+    &:last-child {
+      border-bottom: none;
+    }
+
+    span:first-child {
+      color: $muted;
+    }
+    span:last-child {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    em {
+      font-style: normal;
+      color: $faint;
+      font-size: 0.76rem;
+      margin-left: 4px;
+    }
+
+    &--neg span:last-child {
+      color: var(--bad-fg, #b3322f);
+    }
+  }
+}
+
+/* tables */
+.sv-table {
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 12px;
+  overflow: hidden;
+}
+:host ::ng-deep .sv-table table {
+  width: 100%;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+}
+:host ::ng-deep .sv-table .mat-mdc-header-row {
+  background: var(--surface-2, #fafbfc);
+  min-height: 40px;
+}
+:host ::ng-deep .sv-table .mat-mdc-header-cell {
+  color: $muted;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: none;
+  padding: 0 14px;
+}
+:host ::ng-deep .sv-table .mat-mdc-row {
+  min-height: 44px;
+  border-top: 1px solid $line;
+}
+:host ::ng-deep .sv-table .mat-mdc-cell {
+  border: none;
+  padding: 0.4rem 14px;
+  font-size: 0.83rem;
+  color: $ink;
+}
+.sv-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sv-pos {
+  color: var(--ok-fg, #1a7f45);
+  font-weight: 600;
+}
+.sv-neg {
+  color: var(--bad-fg, #b3322f);
+  font-weight: 600;
+}
+.sv-desc {
+  color: $muted;
+  font-size: 0.8rem;
+}
+.sv-norow {
+  text-align: center;
+  color: $faint;
+  font-size: 0.82rem;
+  padding: 1rem !important;
+}
+
+/* totals */
+.sv-totals {
+  background: var(--brand-soft, #f3f6ff);
+  border: 0.5px solid #e0e7fb;
+  border-radius: 14px;
+  padding: 0.5rem 1.25rem 1rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.7rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #e0e7fb;
+    span:first-child {
+      color: $muted;
+    }
+    span:last-child {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  &__net {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.9rem 0 0.35rem;
+    span:first-child {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: $ink;
+    }
+    span:last-child {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: $brand;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+/* bank */
+.sv-bank {
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 12px;
+  padding: 0.9rem 1.15rem;
+}
+
+/* actions */
+.sv-actions {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 1rem 1.5rem 1.25rem !important;
+  border-top: 1px solid $line;
+}
+.sv-spacer {
+  flex: 1;
+}
+.sv-btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border-radius: 11px;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+  &--ghost {
+    background: var(--surface-2, #f1f3f7);
+    color: var(--muted, #3f4653);
+    &:hover:not(:disabled) {
+      background: #e7eaef;
+    }
+  }
+  &--danger {
+    background: transparent;
+    color: var(--bad-fg, #b3322f);
+    &:hover:not(:disabled) {
+      background: var(--bad-bg, #fdecec);
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .sv-grid {
+    grid-template-columns: 1fr;
+  }
+}

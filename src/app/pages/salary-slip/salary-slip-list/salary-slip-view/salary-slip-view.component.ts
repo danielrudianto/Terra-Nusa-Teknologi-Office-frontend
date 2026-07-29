@@ -2,19 +2,36 @@ import { Component, Inject, ViewChild } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
+  MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
 import { ApiService } from '../../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatTable } from '@angular/material/table';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-salary-slip-view',
-  standalone: false,
+  standalone: true,
   templateUrl: './salary-slip-view.component.html',
   styleUrl: './salary-slip-view.component.scss',
+  imports: [
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    MatTableModule,
+  ],
 })
 export class SalarySlipViewComponent {
   constructor(
@@ -23,7 +40,7 @@ export class SalarySlipViewComponent {
     private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<SalarySlipViewComponent>,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {}
 
   @ViewChild('allowanceTable') allowanceTable!: MatTable<any>;
@@ -114,7 +131,7 @@ export class SalarySlipViewComponent {
               description: new FormControl(x.description, {
                 nonNullable: true,
               }),
-            })
+            }),
           );
         });
 
@@ -127,7 +144,7 @@ export class SalarySlipViewComponent {
               description: new FormControl(x.description, {
                 nonNullable: true,
               }),
-            })
+            }),
           );
         });
 
@@ -173,6 +190,40 @@ export class SalarySlipViewComponent {
     });
   }
 
+  /**
+   * Cetak ulang slip gaji menggunakan helper PDF YANG SAMA dengan halaman
+   * create, supaya format reprint identik dengan format saat dibuat.
+   */
+  reprintSlip() {
+    const v = this.formGroup.getRawValue();
+    const data = {
+      name: v.name,
+      nik: v.nik ?? v.userID ?? '',
+      department: v.department,
+      position: v.position,
+      address: v.address,
+      taxCategory: v.taxCategory,
+      taxAmount: v.taxAmount ?? 0,
+      basicSalary: v.basicSalary ?? 0,
+      transportationAllowanceQuantity: v.transportationAllowanceQuantity ?? 0,
+      transportationAllowanceRate: v.transportationAllowanceRate ?? 0,
+      mealAllowanceQuantity: v.mealAllowanceQuantity ?? 0,
+      mealAllowanceRate: v.mealAllowanceRate ?? 0,
+      overtimeQuantity: v.overtimeQuantity ?? 0,
+      overtimeRate: v.overtimeRate ?? 0,
+      paymentMethod: v.paymentMethod ?? '',
+      year: v.year,
+      month: v.month,
+      monthName: v.monthName || this.months[v.month - 1]?.label || '',
+      otherAllowances: this.allowancesFormArray.getRawValue(),
+      deductions: this.deductionsFormArray.getRawValue(),
+      bankAccountName: v.bankAccountName,
+      bankAccountNumber: v.bankAccountNumber,
+      bankName: v.bankName,
+    };
+    SalarySlipHelper.createProxyPaymentPDF(data as any);
+  }
+
   onDelete() {
     this.dialog
       .open(DeleteConfirmationComponent, {
@@ -194,7 +245,7 @@ export class SalarySlipViewComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
 
                 this.dialogRef.close('deleted');

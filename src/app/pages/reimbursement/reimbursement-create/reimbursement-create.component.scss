@@ -1,8 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 :host {
   display: block;
@@ -10,7 +5,7 @@ $line: #eef0f3;
   max-width: 880px;
   margin: 0 auto;
   padding: 0.5rem 0 3rem;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 
 /* header spacing (app-header-title brings its own styles) */
@@ -43,7 +38,7 @@ $line: #eef0f3;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.9rem;
 }
 .rc-section__head {
@@ -74,12 +69,12 @@ $line: #eef0f3;
 /* brand-themed outline fields (same language as create-purchase) */
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
   --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: #{$brand};
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 /* ---------- add-item button ---------- */
@@ -89,7 +84,7 @@ $line: #eef0f3;
   font-weight: 600;
   letter-spacing: 0;
   --mdc-outlined-button-outline-color: #c3d0f7;
-  color: $brand !important;
+  color: var(--brand, #154dec) !important;
 
   mat-icon {
     font-size: 18px;
@@ -116,17 +111,17 @@ $line: #eef0f3;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: $muted;
+    color: var(--muted, #6b7280);
     background: #fafbfc;
     padding: 0.7rem 1rem;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
   }
 
   tbody td {
     padding: 0.75rem 1rem;
     font-size: 0.88rem;
-    color: $ink;
-    border-bottom: 1px solid $line;
+    color: var(--ink, #16181d);
+    border-bottom: 1px solid var(--line, #eef0f3);
   }
   tbody tr:hover td {
     background: #f6f8ff;
@@ -144,7 +139,7 @@ $line: #eef0f3;
 
   .rc-empty {
     text-align: center;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     font-size: 0.85rem;
     padding: 1.75rem 1rem;
   }
@@ -160,12 +155,12 @@ $line: #eef0f3;
     text-transform: uppercase;
     font-size: 0.76rem;
     letter-spacing: 0.03em;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   .rc-total-value {
     font-weight: 800;
     font-size: 1rem;
-    color: $brand;
+    color: var(--brand, #154dec);
   }
 
   :host ::ng-deep .mat-mdc-icon-button {
@@ -182,10 +177,10 @@ $line: #eef0f3;
   justify-content: flex-end;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .rc-submit {
-  --mdc-filled-button-container-color: #{$brand};
+  --mdc-filled-button-container-color: var(--brand, #154dec);
   --mdc-filled-button-label-text-color: #fff;
   border-radius: 12px !important;
   font-family: "Montserrat", sans-serif;

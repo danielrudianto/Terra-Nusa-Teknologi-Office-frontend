@@ -1,9 +1,3 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
-$surface: #ffffff;
 
 :host {
   display: block;
@@ -32,10 +26,10 @@ $surface: #ffffff;
 
 :host ::ng-deep .pl-search .mat-mdc-text-field-wrapper {
   border-radius: 14px;
-  background: $surface;
+  background: var(--surface, #ffffff);
 }
 :host ::ng-deep .pl-search .mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin: 0 6px 0 4px;
 }
 
@@ -49,7 +43,7 @@ $surface: #ffffff;
   --mdc-chip-elevated-container-color: #ffffff;
   --mdc-chip-elevated-selected-container-color: #e7ecfb;
   --mdc-chip-label-text-color: #5f6672;
-  --mdc-chip-selected-label-text-color: #{$brand};
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
   --mdc-chip-outline-color: #d9dce2;
   --mdc-chip-outline-width: 0.5px;
   --mdc-chip-selected-outline-width: 0px;
@@ -74,7 +68,7 @@ $surface: #ffffff;
 /* ---------- card ---------- */
 .pl-card {
   position: relative;
-  background: $surface;
+  background: var(--surface, #ffffff);
   border: 0.5px solid #e3e6eb;
   border-radius: 18px;
   box-shadow:
@@ -98,7 +92,7 @@ $surface: #ffffff;
     position: absolute;
     height: 100%;
     width: 40%;
-    background: $brand;
+    background: var(--brand, #154dec);
     border-radius: 3px;
     animation: pl-indeterminate 1.1s ease-in-out infinite;
   }
@@ -133,11 +127,11 @@ $surface: #ffffff;
 :host ::ng-deep .mat-mdc-header-row {
   background: #fafbfc;
   min-height: 46px;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 }
 
 :host ::ng-deep .mat-mdc-header-cell {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -152,7 +146,7 @@ $surface: #ffffff;
   min-height: 66px;
   cursor: pointer;
   transition: background 0.14s ease;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 }
 :host ::ng-deep .mat-mdc-row:last-child {
   border-bottom: none;
@@ -164,7 +158,7 @@ $surface: #ffffff;
 :host ::ng-deep .mat-mdc-cell {
   border-bottom: none;
   padding: 0.6rem 16px;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-size: 0.9rem;
   vertical-align: middle;
 }
@@ -180,7 +174,7 @@ $surface: #ffffff;
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: $brand;
+    color: var(--brand, #154dec);
   }
   &__idle {
     color: #cfd4dc !important;
@@ -192,7 +186,7 @@ $surface: #ffffff;
 
 /* ---------- cell content ---------- */
 .pl-date {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -200,14 +194,14 @@ $surface: #ffffff;
 .pl-primary {
   display: block;
   font-weight: 600;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-size: 0.9rem;
   line-height: 1.25;
 }
 .pl-secondary {
   display: block;
   font-size: 0.74rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   line-height: 1.2;
   margin-top: 1px;
 }
@@ -224,7 +218,7 @@ $surface: #ffffff;
   height: 36px;
   border-radius: 50%;
   background: #e7ecfb;
-  color: $brand;
+  color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 0.95rem;
   display: grid;
@@ -257,7 +251,7 @@ $surface: #ffffff;
 .pl-total {
   display: block;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -327,7 +321,7 @@ $surface: #ffffff;
   align-items: center;
   gap: 8px;
   padding: 3rem 1rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.9rem;
 
   mat-icon {
@@ -341,8 +335,8 @@ $surface: #ffffff;
 /* ---------- paginator ---------- */
 :host ::ng-deep .mat-mdc-paginator {
   background: transparent;
-  border-top: 1px solid $line;
-  color: $muted;
+  border-top: 1px solid var(--line, #eef0f3);
+  color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
 

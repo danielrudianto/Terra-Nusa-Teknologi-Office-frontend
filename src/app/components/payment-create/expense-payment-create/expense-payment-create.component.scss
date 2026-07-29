@@ -1,19 +1,10 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
 
 .epc {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .epc *,
 .epc *::before,
@@ -64,7 +55,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .epc-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
   overflow: hidden;
@@ -73,7 +64,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 }
 .epc-sub {
   font-size: 0.78rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* content */
@@ -96,9 +87,9 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   gap: 6px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: $ink;
-  background: $surface2;
-  border: 0.5px solid $border;
+  color: var(--ink, #16181d);
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 999px;
   padding: 4px 12px;
   &__k {
@@ -106,7 +97,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
 }
 
@@ -116,7 +107,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin-bottom: 0.8rem;
   &--mt {
     margin-top: 1.4rem;
@@ -125,7 +116,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* money breakdown */
 .epc-money {
-  background: $surface2;
+  background: var(--surface-2, #fafbfc);
   border: 0.5px solid #e6e9ee;
   border-radius: 14px;
   padding: 0.3rem 1.15rem;
@@ -137,12 +128,12 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   gap: 12px;
   padding: 0.7rem 0;
   font-size: 0.88rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   &:last-child {
     border-bottom: none;
   }
   span:first-child {
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   span:last-child {
     font-weight: 600;
@@ -155,12 +146,12 @@ $brandSoft: var(--brand-soft, #e7ecfb);
       text-transform: uppercase;
       font-size: 0.78rem;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.15rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
     }
   }
 }
@@ -180,9 +171,9 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   border-radius: 12px;
   background: var(--brand-soft, #eef2fe);
   font-size: 0.82rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   strong {
-    color: $ink;
+    color: var(--ink, #16181d);
     font-variant-numeric: tabular-nums;
   }
 }
@@ -233,7 +224,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   display: flex !important;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .epc-cancel,
 .epc-submit {
@@ -248,14 +239,14 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 }
 .epc-cancel {
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   &:hover {
     background: var(--hover, #f3f5f9);
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 .epc-submit {
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   &:hover:not(:disabled) {

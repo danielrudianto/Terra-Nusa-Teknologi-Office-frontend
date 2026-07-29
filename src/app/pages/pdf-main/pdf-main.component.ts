@@ -1,7 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjslib from 'pdfjs-dist';
+import { FileDropComponent } from './file-drop/file-drop.component';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 pdfjslib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -19,7 +28,15 @@ interface PageData {
   selector: 'app-pdf-main',
   templateUrl: './pdf-main.component.html',
   styleUrls: ['./pdf-main.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FileDropComponent,
+    CdkDrag,
+    CdkDropList,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class PdfMainComponent implements OnInit {
   processedDocuments: PageData[] = [];

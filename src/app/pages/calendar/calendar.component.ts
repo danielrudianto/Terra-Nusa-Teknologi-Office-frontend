@@ -6,6 +6,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarMonthSelectorComponent } from './calendar-month-selector/calendar-month-selector.component';
 import { CalendarAccountSelectorComponent } from './calendar-account-selector/calendar-account-selector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CalendarTableComponent } from './calendar-table/calendar-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
     CalendarMonthSelectorComponent,
     CalendarAccountSelectorComponent,
     MatSlideToggleModule,
+    MatButtonToggleModule,
     CalendarTableComponent,
     MatButtonModule,
     MatIconModule,
@@ -34,7 +36,8 @@ export class CalendarComponent {
   bankAccounts: any[] = [];
   isLoadingData: boolean = false;
 
-  isBalance: FormControl = new FormControl(false);
+  // mode tampilan calendar: 'expense' | 'income' | 'balance'
+  viewMode: FormControl = new FormControl('expense');
 
   onCalendarBoxClicked(event: number | null) {
     if (event == null) return;

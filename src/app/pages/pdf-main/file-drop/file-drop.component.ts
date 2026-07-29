@@ -11,7 +11,8 @@ import {
   selector: 'app-file-drop',
   templateUrl: './file-drop.component.html',
   styleUrl: './file-drop.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [],
 })
 export class FileDropComponent {
   @Input('allowedExtensions') allowedExtensions: string[] = [];
@@ -148,7 +149,7 @@ export class FileDropComponent {
     });
 
     const forbidden = extensions.filter(
-      (x) => !this.allowedExtensions.includes(x)
+      (x) => !this.allowedExtensions.includes(x),
     );
     const valid = forbidden.length == 0;
 

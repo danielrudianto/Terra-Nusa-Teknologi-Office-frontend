@@ -14,6 +14,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
@@ -31,6 +32,7 @@ import { banks, IBank } from 'src/app/utils/bank';
     MatSnackBarModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatDatepickerModule,
     MatAutocompleteModule,
     MatIconModule,
@@ -52,6 +54,8 @@ export class LoansCreateComponent {
   options: IBank[] = banks;
   isSubmitting: boolean = false;
 
+  bankAccounts: any[] = [];
+
   formGroup: FormGroup = new FormGroup({
     creditorName: new FormControl('', Validators.required),
     creditorAddress: new FormControl('', Validators.required),
@@ -66,7 +70,17 @@ export class LoansCreateComponent {
       Validators.pattern(/^[0-9]*$/),
     ]),
     bankName: new FormControl('', Validators.required),
+    // rekening PERUSAHAAN tujuan penerimaan dana pinjaman
+    bankAccountID: new FormControl('', Validators.required),
   });
+
+  ngOnInit(): void {
+    this.apiService.get('banks/all', {}).subscribe({
+      next: (data: any) => {
+        this.bankAccounts = data;
+      },
+    });
+  }
 
   onCancel() {
     this.dialog.close();
@@ -86,6 +100,7 @@ export class LoansCreateComponent {
         bankAccountName: this.formGroup.value.bankAccountName,
         bankAccountNumber: this.formGroup.value.bankAccountNumber,
         bankName: this.formGroup.value.bankName,
+        bankAccountID: this.formGroup.value.bankAccountID,
       })
       .subscribe({
         next: (_) => {

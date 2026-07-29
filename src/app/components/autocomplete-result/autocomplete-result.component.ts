@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -5,7 +6,8 @@ import { Router } from '@angular/router';
   selector: 'app-autocomplete-result',
   templateUrl: './autocomplete-result.component.html',
   styleUrls: ['./autocomplete-result.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
 })
 export class AutocompleteResultComponent {
   constructor(private router: Router) {}

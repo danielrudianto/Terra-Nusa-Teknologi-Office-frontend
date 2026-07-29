@@ -1,18 +1,8 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
-$hover: var(--hover, #f6f8ff);
 
 .ds {
   font-family: "Montserrat", sans-serif;
-  color: $ink;
+  color: var(--ink, #16181d);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -52,20 +42,20 @@ $hover: var(--hover, #f6f8ff);
 .ds-title {
   font-size: 1.15rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .ds-sub {
   font-size: 0.78rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 .ds-daychip {
   font-size: 0.78rem;
   font-weight: 700;
-  color: $brand;
-  background: $surface;
-  border: 1px solid $border;
+  color: var(--brand, #154dec);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 999px;
   padding: 5px 12px;
   font-variant-numeric: tabular-nums;
@@ -88,7 +78,7 @@ $hover: var(--hover, #f6f8ff);
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.9rem;
 }
 
@@ -101,8 +91,8 @@ $hover: var(--hover, #f6f8ff);
 /* ===== sidebar ===== */
 .ds-side {
   flex: 0 0 250px;
-  border-right: 1px solid $line;
-  background: $surface2;
+  border-right: 1px solid var(--line, #eef0f3);
+  background: var(--surface-2, #fafbfc);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -118,14 +108,14 @@ $hover: var(--hover, #f6f8ff);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .ds-side__count {
   font-size: 0.7rem;
   font-weight: 700;
-  color: $muted;
-  background: $surface;
-  border: 1px solid $border;
+  color: var(--muted, #6b7280);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 999px;
   padding: 1px 9px;
 }
@@ -153,11 +143,11 @@ $hover: var(--hover, #f6f8ff);
   font-family: inherit;
 
   &:hover {
-    background: $hover;
+    background: var(--hover, #f6f8ff);
   }
   &.is-selected {
-    background: $brandSoft;
-    border-color: color-mix(in srgb, $brand 40%, transparent);
+    background: var(--brand-soft, #e7ecfb);
+    border-color: color-mix(in srgb, var(--brand, #154dec) 40%, transparent);
   }
   &.is-idle {
     opacity: 0.45;
@@ -174,14 +164,14 @@ $hover: var(--hover, #f6f8ff);
     border-radius: 10px;
     display: grid;
     place-items: center;
-    background: $brandSoft;
-    color: $brand;
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
     font-weight: 800;
     font-size: 0.64rem;
     letter-spacing: 0.02em;
   }
   &.is-selected &__avatar {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
   }
 
@@ -195,14 +185,14 @@ $hover: var(--hover, #f6f8ff);
   &__name {
     font-size: 0.84rem;
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   &__num {
     font-size: 0.74rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
     font-variant-numeric: tabular-nums;
   }
   &__dot {
@@ -221,7 +211,7 @@ $hover: var(--hover, #f6f8ff);
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: $surface;
+  background: var(--surface, #ffffff);
 }
 
 .ds-detail__head {
@@ -230,12 +220,12 @@ $hover: var(--hover, #f6f8ff);
   gap: 8px;
   flex-wrap: wrap;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   h3 {
     font-size: 1rem;
     font-weight: 700;
     margin: 0;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 .ds-detail__title {
@@ -243,7 +233,7 @@ $hover: var(--hover, #f6f8ff);
 }
 .ds-detail__meta {
   font-size: 0.78rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 .ds-flex {
   flex: 1 1 auto;
@@ -267,7 +257,7 @@ $hover: var(--hover, #f6f8ff);
     }
   }
   &--confirm {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
     box-shadow: 0 3px 10px rgba(21, 77, 236, 0.24);
     &:hover:not(:disabled) {
@@ -298,7 +288,7 @@ $hover: var(--hover, #f6f8ff);
   transition: background 0.12s ease;
 
   &:hover {
-    background: $hover;
+    background: var(--hover, #f6f8ff);
   }
   &.is-checked {
     background: var(--brand-soft, #e7ecfb);
@@ -327,13 +317,13 @@ $hover: var(--hover, #f6f8ff);
     border-radius: 12px;
 
     &:hover .ds-opt__title {
-      color: $brand;
+      color: var(--brand, #154dec);
       text-decoration: underline;
     }
     &--static {
       cursor: default;
       &:hover .ds-opt__title {
-        color: $ink;
+        color: var(--ink, #16181d);
         text-decoration: none;
       }
     }
@@ -348,14 +338,14 @@ $hover: var(--hover, #f6f8ff);
   }
   &__title {
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
     font-size: 0.86rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   &__sub {
-    color: $muted;
+    color: var(--muted, #6b7280);
     font-size: 0.78rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -365,7 +355,7 @@ $hover: var(--hover, #f6f8ff);
 
 .ds-optamt {
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-variant-numeric: tabular-nums;
   font-size: 0.86rem;
   white-space: nowrap;
@@ -379,7 +369,7 @@ $hover: var(--hover, #f6f8ff);
     color: var(--warn-fg, #a2651a);
   }
   &--ip {
-    color: $brand;
+    color: var(--brand, #154dec);
   }
 }
 
@@ -391,18 +381,18 @@ $hover: var(--hover, #f6f8ff);
   justify-content: center;
   gap: 8px;
   padding: 3rem 1rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   text-align: center;
   mat-icon {
     font-size: 40px;
     width: 40px;
     height: 40px;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
   h3 {
     margin: 0.5rem 0 0;
     font-size: 1rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   p {
     margin: 0;
@@ -416,9 +406,9 @@ $hover: var(--hover, #f6f8ff);
 
 /* footer */
 .ds-foot {
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   padding: 0.75rem 1.25rem 0.9rem;
-  background: $surface2;
+  background: var(--surface-2, #fafbfc);
 }
 .ds-foot__row {
   display: flex;
@@ -428,11 +418,11 @@ $hover: var(--hover, #f6f8ff);
   padding: 0.25rem 0;
   span:first-child {
     font-size: 0.82rem;
-    color: $muted;
+    color: var(--muted, #6b7280);
   }
   .ds-foot__sel {
     font-weight: 700;
-    color: $ink;
+    color: var(--ink, #16181d);
     font-variant-numeric: tabular-nums;
   }
   &--total {
@@ -441,12 +431,12 @@ $hover: var(--hover, #f6f8ff);
       text-transform: uppercase;
       font-size: 0.74rem;
       letter-spacing: 0.03em;
-      color: $ink;
+      color: var(--ink, #16181d);
     }
     span:last-child {
       font-size: 1.15rem;
       font-weight: 800;
-      color: $brand;
+      color: var(--brand, #154dec);
       font-variant-numeric: tabular-nums;
     }
   }
@@ -455,7 +445,7 @@ $hover: var(--hover, #f6f8ff);
 /* actions */
 .ds-actions {
   padding: 0.85rem 1.5rem !important;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
   display: flex;
   justify-content: flex-end;
 }
@@ -470,7 +460,7 @@ $hover: var(--hover, #f6f8ff);
   background: var(--surface-2, #f1f3f7);
   color: #3f4653;
   &:hover {
-    background: $hover;
+    background: var(--hover, #f6f8ff);
   }
 }
 
@@ -482,7 +472,7 @@ $hover: var(--hover, #f6f8ff);
     flex: 0 0 auto;
     max-height: 200px;
     border-right: none;
-    border-bottom: 1px solid $line;
+    border-bottom: 1px solid var(--line, #eef0f3);
   }
   .ds-accounts {
     flex-direction: row;

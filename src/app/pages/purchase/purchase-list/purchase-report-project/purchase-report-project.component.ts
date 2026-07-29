@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -11,7 +17,10 @@ import {
   PageOrientation,
 } from 'pdfmake/interfaces';
 import moment from 'moment';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -19,10 +28,22 @@ pdfMake.vfs = pdfFonts.vfs;
   selector: 'app-purchase-report-project',
   templateUrl: './purchase-report-project.component.html',
   styleUrl: './purchase-report-project.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
 })
 export class PurchaseReportProjectComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar, private dialog: MatDialogRef<PurchaseReportProjectComponent>) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialogRef<PurchaseReportProjectComponent>,
+  ) {}
 
   isLoading: boolean = false;
 
@@ -253,7 +274,7 @@ export class PurchaseReportProjectComponent {
                       (acc: number, reimbursement: any) => {
                         return acc + reimbursement.amount;
                       },
-                      0
+                      0,
                     )
                   ).toLocaleString('id-ID', {
                     style: 'currency',
@@ -317,7 +338,7 @@ export class PurchaseReportProjectComponent {
                       (acc: number, reimbursement: any) => {
                         return acc + reimbursement.amount;
                       },
-                      0
+                      0,
                     )
                   ).toLocaleString('id-ID', {
                     style: 'currency',

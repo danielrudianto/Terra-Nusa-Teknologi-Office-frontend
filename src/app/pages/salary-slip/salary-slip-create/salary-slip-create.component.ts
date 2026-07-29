@@ -74,7 +74,7 @@ export class SalarySlipCreateComponent {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {}
 
   @ViewChild('allowanceTable') allowanceTable!: MatTable<any>;
@@ -198,7 +198,7 @@ export class SalarySlipCreateComponent {
     },
     {
       validators: lastDateRequiredIfLastDay,
-    }
+    },
   );
 
   onAddOtherAllowance() {
@@ -217,7 +217,7 @@ export class SalarySlipCreateComponent {
               isIncluded: new FormControl(result.isIncluded, {
                 nonNullable: true,
               }),
-            })
+            }),
           );
           this.allowanceTable.renderRows();
         }
@@ -240,7 +240,7 @@ export class SalarySlipCreateComponent {
               isIncluded: new FormControl(result.isIncluded, {
                 nonNullable: true,
               }),
-            })
+            }),
           );
           this.deductionTable.renderRows();
         }
@@ -373,7 +373,7 @@ export class SalarySlipCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 
@@ -385,7 +385,7 @@ export class SalarySlipCreateComponent {
       ? // Convert the date to YYYY-MM-DD
         this.datePipe.transform(
           this.formGroup.get('lastDate')?.value,
-          'yyyy-MM-dd'
+          'yyyy-MM-dd',
         )
       : null;
 
@@ -398,10 +398,10 @@ export class SalarySlipCreateComponent {
       mealAllowanceQuantity: this.formGroup.get('mealAllowanceQuantity')?.value,
       mealAllowanceRate: this.formGroup.get('mealAllowanceRate')?.value,
       transportationAllowanceQuantity: this.formGroup.get(
-        'transportationAllowanceQuantity'
+        'transportationAllowanceQuantity',
       )?.value,
       transportationAllowanceRate: this.formGroup.get(
-        'transportationAllowanceRate'
+        'transportationAllowanceRate',
       )?.value,
       overtimeQuantity: this.formGroup.get('overtimeQuantity')?.value,
       overtimeRate: this.formGroup.get('overtimeRate')?.value,
@@ -431,7 +431,6 @@ export class SalarySlipCreateComponent {
             duration: 3000,
           });
           this.router.navigate(['/Salary-slip']);
-          this.generateSalarySlip(this.formGroup.value);
         },
         error: (error) => {
           console.error('Error creating salary slip:', error);
@@ -440,7 +439,7 @@ export class SalarySlipCreateComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       })

@@ -19,6 +19,7 @@ import { MasterItemCreateComponent } from '../master-item-create/master-item-cre
 import { MasterItemUpdateComponent } from '../master-item-update/master-item-update.component';
 import { ApiService } from 'src/app/services/api.service';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-master-item-list',
@@ -30,6 +31,7 @@ import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatIconModule,
     MatPaginatorModule,
     MatButtonModule,
@@ -53,6 +55,20 @@ export class MasterItemListComponent {
   isImporting: boolean = false;
 
   searchControl: FormControl = new FormControl('');
+  brandControl: FormControl = new FormControl('');
+  typeControl: FormControl = new FormControl('');
+  purchaseTypeControl: FormControl = new FormControl('');
+
+  brands: string[] = [];
+  types: string[] = [];
+  // opsi purchaseType yang relevan untuk master item
+  purchaseTypeOptions: { code: string; label: string }[] = [
+    { code: 'G', label: 'G — General' },
+    { code: 'C', label: 'C — Consumable/Fuel' },
+    { code: 'F', label: 'F — Besi' },
+    { code: '5.1.1', label: '5.1.1 — Asset purchase' },
+    { code: '5.1.2', label: '5.1.2 — Asset maintenance' },
+  ];
   items: any[] = [];
   page: number = 1;
   pageSize: number = 10;
@@ -69,6 +85,13 @@ export class MasterItemListComponent {
 
   ngOnInit(): void {
     this.fetchItems();
+    this.fetchFacets();
+
+    // filter dropdown -> reload halaman 1
+    this.brandControl.valueChanges.subscribe(() => this.fetchItems(1));
+    this.typeControl.valueChanges.subscribe(() => this.fetchItems(1));
+    this.purchaseTypeControl.valueChanges.subscribe(() => this.fetchItems(1));
+
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetchItems(1);
     });
@@ -82,6 +105,9 @@ export class MasterItemListComponent {
         keyword: this.searchControl.value || '',
         page: this.page,
         page_size: this.pageSize,
+        purchase_type: this.purchaseTypeControl.value || '',
+        brand: this.brandControl.value || '',
+        item_type: this.typeControl.value || '',
       })
       .subscribe({
         next: (res: any) => {
@@ -99,6 +125,30 @@ export class MasterItemListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  fetchFacets() {
+    this.apiService.get('master-items/facets', {}).subscribe({
+      next: (res: any) => {
+        this.brands = res.brands || [];
+        this.types = res.types || [];
+      },
+    });
+  }
+
+  hasActiveFilter(): boolean {
+    return !!(
+      this.brandControl.value ||
+      this.typeControl.value ||
+      this.purchaseTypeControl.value
+    );
+  }
+
+  resetFilters() {
+    this.brandControl.setValue('', { emitEvent: false });
+    this.typeControl.setValue('', { emitEvent: false });
+    this.purchaseTypeControl.setValue('', { emitEvent: false });
+    this.fetchItems(1);
   }
 
   changePage(event: PageEvent) {

@@ -6,18 +6,24 @@ import {
   Output,
   SimpleChange,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentHistoryComponent } from '../../payment/payment-history/payment-history.component';
-import { MatSelectionListChange } from '@angular/material/list';
-import { DecimalPipe } from '@angular/common';
+import { MatListModule, MatSelectionListChange } from '@angular/material/list';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-calendar-day-view',
-  standalone: false,
+  standalone: true,
   templateUrl: './calendar-day-view.component.html',
   styleUrl: './calendar-day-view.component.scss',
+  imports: [MatDialogModule, MatListModule, MatTooltipModule, CommonModule],
 })
 export class CalendarDayViewComponent {
   constructor(
@@ -35,7 +41,7 @@ export class CalendarDayViewComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
   ) {}
 
   isLoadingData: boolean = false;
@@ -160,7 +166,7 @@ export class CalendarDayViewComponent {
     const text = this.data.payments.map((x) => {
       return `${this.getProjectName(x)}${this.decimalPipe.transform(
         x.amount,
-        '0.2-2'
+        '0.2-2',
       )} ${this.getDocumentName(x)} ${this.getOpponentName(x)}`;
     });
 

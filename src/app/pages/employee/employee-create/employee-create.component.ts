@@ -1,5 +1,16 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -7,10 +18,22 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-employee-create',
   templateUrl: './employee-create.component.html',
   styleUrl: './employee-create.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+  ],
 })
 export class EmployeeCreateComponent {
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar) {}
+  constructor(
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+  ) {}
 
   isSubmitting: boolean = false;
   formGroup: FormGroup = new FormGroup({
@@ -40,12 +63,12 @@ export class EmployeeCreateComponent {
     this.isSubmitting = true;
     const date = new Date(this.formGroup.value.birthday);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const startDate = new Date(this.formGroup.value.startDate);
     const formattedStartDate = `${startDate.getFullYear()}-${String(
-      startDate.getMonth() + 1
+      startDate.getMonth() + 1,
     ).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
 
     this.apiService
@@ -75,7 +98,7 @@ export class EmployeeCreateComponent {
             'Close',
             {
               duration: 3000,
-            }
+            },
           );
         },
       })

@@ -1,14 +1,9 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .sa {
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .sa *,
 .sa *::before,
@@ -44,7 +39,7 @@ $line: #eef0f3;
   display: grid;
   place-items: center;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
   &--pos {
     color: #1a7f45;
@@ -56,13 +51,13 @@ $line: #eef0f3;
 .sa-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .sa-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 .sa-content {
@@ -77,10 +72,10 @@ $line: #eef0f3;
 }
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
-  --mat-select-focused-arrow-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 /* toggle row */
@@ -94,11 +89,11 @@ $line: #eef0f3;
   background: #fafbfc;
   border: 0.5px solid #e6e9ee;
   border-radius: 12px;
-  --mdc-switch-selected-track-color: #{$brand};
-  --mdc-switch-selected-handle-color: #{$brand};
-  --mdc-switch-selected-focus-track-color: #{$brand};
-  --mdc-switch-selected-hover-track-color: #{$brand};
-  --mdc-switch-selected-pressed-track-color: #{$brand};
+  --mdc-switch-selected-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-handle-color: var(--brand, #154dec);
+  --mdc-switch-selected-focus-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-hover-track-color: var(--brand, #154dec);
+  --mdc-switch-selected-pressed-track-color: var(--brand, #154dec);
 
   &__text {
     display: flex;
@@ -109,11 +104,11 @@ $line: #eef0f3;
   &__label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
   &__hint {
     font-size: 0.74rem;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
     line-height: 1.35;
   }
 }
@@ -123,7 +118,7 @@ $line: #eef0f3;
   display: flex !important;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .sa-cancel,
 .sa-submit {
@@ -138,15 +133,15 @@ $line: #eef0f3;
 .sa-cancel {
   border: none;
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   &:hover {
     background: #f3f5f9;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 .sa-submit {
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
   &:hover:not(:disabled) {

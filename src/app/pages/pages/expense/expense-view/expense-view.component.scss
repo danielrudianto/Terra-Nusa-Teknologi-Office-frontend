@@ -1,0 +1,346 @@
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+
+.ev {
+  font-family: "Montserrat", sans-serif;
+  width: min(540px, 94vw);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  color: $ink;
+}
+.ev *,
+.ev *::before,
+.ev *::after {
+  box-sizing: border-box;
+}
+
+/* header */
+.ev-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: linear-gradient(135deg, var(--brand-soft, #eef2fe) 0%, var(--hover, #f6f8ff) 100%);
+  border-bottom: 1px solid #e4e9fb;
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    min-width: 0;
+    margin-right: auto;
+  }
+}
+.ev-avatar {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+  color: $brand;
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+}
+.ev-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev-meta {
+  font-size: 0.82rem;
+  color: $muted;
+  margin-top: 2px;
+}
+.ev-chip {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: $brand;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* content */
+.ev-content {
+  padding: 1.5rem !important;
+  overflow-x: hidden;
+}
+.ev-section {
+  margin-bottom: 1.6rem;
+}
+.ev-section:last-child {
+  margin-bottom: 0.25rem;
+}
+.ev-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $faint;
+  margin-bottom: 0.8rem;
+}
+
+.ev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+}
+.ev-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ev-field--wide {
+  grid-column: 1 / -1;
+}
+.ev-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: $faint;
+}
+.ev-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $ink;
+  word-break: break-word;
+}
+.ev-value--sm {
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: $muted;
+  line-height: 1.5;
+}
+
+/* money */
+.ev-money {
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 14px;
+  padding: 0.4rem 1.15rem 0.9rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.6rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid $line;
+
+    span:first-child {
+      color: $muted;
+    }
+    span:last-child {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    &--muted span:last-child {
+      color: $muted;
+      font-weight: 500;
+    }
+  }
+
+  &__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.9rem 0 0.35rem;
+
+    span:first-child {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: $ink;
+    }
+    span:last-child {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: $brand;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+  }
+}
+
+.ev-pph {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0.7rem 0 0.2rem;
+  padding: 0.8rem 0.6rem 0.8rem 1rem;
+  background: var(--brand-soft, #f3f6ff);
+  border: 0.5px solid #e0e7fb;
+  border-radius: 10px;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    flex: 1;
+  }
+  &__code {
+    align-self: flex-start;
+    font-family: "Roboto Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $brand;
+    background: #e2e9fd;
+    border-radius: 6px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  &__name {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: $muted;
+    word-break: break-word;
+  }
+  &__copy {
+    flex: 0 0 auto;
+    color: $brand !important;
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+/* payments */
+.ev-nopay {
+  padding: 1.25rem;
+  text-align: center;
+  color: $faint;
+  font-size: 0.85rem;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 12px;
+}
+.ev-pay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid $line;
+
+  &:last-child {
+    border-bottom: none;
+  }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  &__bank {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: $ink;
+  }
+  &__date {
+    font-size: 0.74rem;
+    color: $faint;
+  }
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  &__amount {
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+.ev-badge {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  &--ok {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+  }
+  &--wait {
+    background: var(--warn-bg, #fff4d6);
+    color: #9a6a00;
+  }
+}
+
+/* bank */
+.ev-bank {
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+  border-radius: 12px;
+  padding: 0.9rem 1.15rem;
+}
+
+/* actions */
+.ev-actions {
+  display: flex !important;
+  align-items: center;
+  padding: 1rem 1.5rem 1.25rem !important;
+  border-top: 1px solid $line;
+  gap: 8px;
+}
+.ev-spacer {
+  flex: 1;
+}
+.ev-copy {
+  background: $brand !important;
+  color: #fff !important;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  border-radius: 12px !important;
+  height: 42px;
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    vertical-align: middle;
+  }
+}
+
+@media (max-width: 520px) {
+  .ev-grid {
+    grid-template-columns: 1fr;
+  }
+  .ev-actions {
+    flex-wrap: wrap;
+  }
+  .ev-copy {
+    width: 100%;
+  }
+  .ev-spacer {
+    display: none;
+  }
+}

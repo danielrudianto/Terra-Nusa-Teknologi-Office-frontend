@@ -1,6 +1,21 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
 import { ApiService } from 'src/app/services/api.service';
@@ -9,7 +24,17 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-expense-payment-create',
   templateUrl: './expense-payment-create.component.html',
   styleUrl: './expense-payment-create.component.scss',
-  standalone: false,
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+  ],
 })
 export class ExpensePaymentCreateComponent {
   constructor(

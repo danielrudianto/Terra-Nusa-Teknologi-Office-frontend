@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-loans',
-  standalone: false,
+  standalone: true,
+  imports: [RouterModule],
   templateUrl: './loans.component.html',
   styleUrl: './loans.component.scss'
 })

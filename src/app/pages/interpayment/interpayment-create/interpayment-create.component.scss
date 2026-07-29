@@ -1,14 +1,9 @@
-$brand: #154dec;
-$ink: #16181d;
-$muted: #6b7280;
-$faint: #9aa0ab;
-$line: #eef0f3;
 
 .ic {
   font-family: "Montserrat", sans-serif;
   width: min(500px, 94vw);
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .ic *,
 .ic *::before,
@@ -48,20 +43,20 @@ $line: #eef0f3;
   display: grid;
   place-items: center;
   background: #fff;
-  color: $brand;
+  color: var(--brand, #154dec);
   box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
 }
 
 .ic-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .ic-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* ---------- content ---------- */
@@ -76,12 +71,12 @@ $line: #eef0f3;
 
 :host ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: #b9c2d0;
   --mdc-outlined-text-field-outline-color: #dfe3ea;
-  --mat-select-focused-arrow-color: #{$brand};
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 /* ---------- transfer arrow (between the two selects) ---------- */
@@ -101,7 +96,7 @@ $line: #eef0f3;
     right: 0;
     top: 50%;
     height: 1px;
-    background: $line;
+    background: var(--line, #eef0f3);
   }
 
   &__pill {
@@ -113,7 +108,7 @@ $line: #eef0f3;
     display: grid;
     place-items: center;
     background: #e7ecfb;
-    color: $brand;
+    color: var(--brand, #154dec);
     border: 3px solid #fff;
 
     mat-icon {
@@ -151,7 +146,7 @@ $line: #eef0f3;
   display: flex !important;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 
 .ic-cancel,
@@ -168,16 +163,16 @@ $line: #eef0f3;
 .ic-cancel {
   border: none;
   background: transparent;
-  color: $muted;
+  color: var(--muted, #6b7280);
   &:hover {
     background: #f3f5f9;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
 .ic-submit {
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
   box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
 

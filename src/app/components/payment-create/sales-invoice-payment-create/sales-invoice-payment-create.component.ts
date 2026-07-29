@@ -3,6 +3,7 @@ import { ApiService } from '../../../services/api.service';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
+  MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,15 +12,30 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import moment from 'moment';
+import { CommonModule } from '@angular/common';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
-  standalone: false,
+  standalone: true,
   templateUrl: './sales-invoice-payment-create.component.html',
   styleUrl: './sales-invoice-payment-create.component.scss',
+  imports: [
+    MatDialogModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDatepickerModule,
+  ],
 })
 export class SalesInvoicePaymentCreateComponent {
   constructor(

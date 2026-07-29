@@ -1,14 +1,4 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
-$hover: var(--hover, #f6f8ff);
 
 :host {
   display: block;
@@ -40,10 +30,10 @@ $hover: var(--hover, #f6f8ff);
 }
 :host ::ng-deep .me-search .mat-mdc-text-field-wrapper {
   border-radius: 14px;
-  background: $surface;
+  background: var(--surface, #ffffff);
 }
 :host ::ng-deep .me-search .mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   margin: 0 6px 0 4px;
 }
 
@@ -65,15 +55,15 @@ $hover: var(--hover, #f6f8ff);
     height: 18px;
   }
   &--ghost {
-    border: 0.5px solid $border;
-    background: $surface;
-    color: $brand;
+    border: 0.5px solid var(--border, #e3e6eb);
+    background: var(--surface, #ffffff);
+    color: var(--brand, #154dec);
     &:hover:not(:disabled) {
       background: var(--hover, #f3f6ff);
       border-color: #cdd7f7;
     }
     &:disabled {
-      color: $faint;
+      color: var(--faint, #9aa0ab);
       cursor: default;
     }
   }
@@ -82,8 +72,8 @@ $hover: var(--hover, #f6f8ff);
 /* card */
 .me-card {
   position: relative;
-  background: $surface;
-  border: 0.5px solid $border;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow: var(
     --card-shadow,
@@ -114,12 +104,12 @@ $hover: var(--hover, #f6f8ff);
   --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
 }
 :host ::ng-deep .mat-mdc-header-row {
-  background: $surface2;
+  background: var(--surface-2, #fafbfc);
   min-height: 46px;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
 }
 :host ::ng-deep .mat-mdc-header-cell {
-  color: $muted;
+  color: var(--muted, #6b7280);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -130,19 +120,19 @@ $hover: var(--hover, #f6f8ff);
 }
 :host ::ng-deep .mat-mdc-row {
   min-height: 60px;
-  border-bottom: 1px solid $line;
+  border-bottom: 1px solid var(--line, #eef0f3);
   transition: background 0.14s ease;
 }
 :host ::ng-deep .mat-mdc-row:last-child {
   border-bottom: none;
 }
 :host ::ng-deep .mat-mdc-row:hover {
-  background: $hover;
+  background: var(--hover, #f6f8ff);
 }
 :host ::ng-deep .mat-mdc-cell {
   border-bottom: none;
   padding: 0.5rem 16px;
-  color: $ink;
+  color: var(--ink, #16181d);
   font-size: 0.88rem;
   vertical-align: middle;
 }
@@ -160,8 +150,8 @@ $hover: var(--hover, #f6f8ff);
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: $brandSoft;
-  color: $brand;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
   font-weight: 800;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -170,24 +160,24 @@ $hover: var(--hover, #f6f8ff);
   font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-weight: 600;
   font-size: 0.83rem;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .me-primary {
   font-weight: 500;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .me-muted {
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 .me-faint {
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .me-tag {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 7px;
-  background: $surface2;
+  background: var(--surface-2, #fafbfc);
   color: #5f6672;
   white-space: nowrap;
 }
@@ -199,8 +189,8 @@ $hover: var(--hover, #f6f8ff);
   padding: 2px 8px;
   border-radius: 6px;
   margin-right: 4px;
-  background: $brandSoft;
-  color: $brand;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
 }
 
 /* empty */
@@ -210,22 +200,22 @@ $hover: var(--hover, #f6f8ff);
   align-items: center;
   gap: 8px;
   padding: 3rem 1rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   font-size: 0.9rem;
   text-align: center;
   mat-icon {
     font-size: 34px;
     width: 34px;
     height: 34px;
-    color: $faint;
+    color: var(--faint, #9aa0ab);
   }
 }
 
 /* paginator */
 :host ::ng-deep .mat-mdc-paginator {
   background: transparent;
-  border-top: 1px solid $line;
-  color: $muted;
+  border-top: 1px solid var(--line, #eef0f3);
+  color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
 

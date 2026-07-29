@@ -1,5 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientSelectorComponent } from 'src/app/components/client-selector/client-selector.component';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
@@ -9,22 +15,39 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageBreak, PageSize } from 'pdfmake/interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { catchError, finalize, map, of, tap } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 pdfMake.vfs = pdfFonts.vfs;
 
 @Component({
   selector: 'app-sales-invoice-create',
-  standalone: false,
+  standalone: true,
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
+  imports: [
+    ClientSelectorComponent,
+    PphSelectorComponent,
+    MatStepperModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+  ],
 })
 export class SalesInvoiceCreateComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   bankAccounts: any[] = [];
@@ -36,7 +59,7 @@ export class SalesInvoiceCreateComponent {
     name: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^[0-9]{3}-INV-[A-Z0-9]{4,5}-(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-20[0-9]{2}$/
+        /^[0-9]{3}-INV-[A-Z0-9]{4,5}-(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-20[0-9]{2}$/,
       ),
     ]),
     projectName: new FormControl('', Validators.required),
@@ -78,7 +101,7 @@ export class SalesInvoiceCreateComponent {
       // if it matches the pattern, set the value in the valueFormGroup
       if (
         /^[0-9]{3}-INV-[A-Z0-9]{4,5}-(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-20[0-9]{2}$/.test(
-          value
+          value,
         )
       ) {
         this.metaFormGroup.patchValue({
@@ -126,7 +149,7 @@ export class SalesInvoiceCreateComponent {
             paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
           });
         }
-      }
+      },
     );
 
     this.valueFormGroup.controls['pphPercentage'].valueChanges.subscribe(
@@ -148,7 +171,7 @@ export class SalesInvoiceCreateComponent {
             paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
           });
         }
-      }
+      },
     );
   }
 
@@ -238,7 +261,7 @@ export class SalesInvoiceCreateComponent {
               'Close',
               {
                 duration: 5000, // Longer duration for important messages
-              }
+              },
             );
           }
         }),
@@ -252,13 +275,13 @@ export class SalesInvoiceCreateComponent {
             'Close',
             {
               duration: 5000,
-            }
+            },
           );
           return of(false); // On error, assume it exists or check failed, so return false
         }),
         finalize(() => {
           this.isSubmitting = false;
-        })
+        }),
       );
   }
 
@@ -307,7 +330,7 @@ export class SalesInvoiceCreateComponent {
                 'Close',
                 {
                   duration: 3000,
-                }
+                },
               );
             },
             error: (error) => {
@@ -461,7 +484,7 @@ export class SalesInvoiceCreateComponent {
                 },
                 {
                   text: this.capitalizeWords(
-                    this.toWords(invoiceData.value.total)
+                    this.toWords(invoiceData.value.total),
                   ),
                 },
               ],
@@ -624,7 +647,7 @@ export class SalesInvoiceCreateComponent {
         },
         {
           text: `(${this.capitalizeWords(
-            this.toWords(invoiceData.value.total)
+            this.toWords(invoiceData.value.total),
           )})`,
           margin: [0, 0, 0, 20] as Margins,
           alignment: 'center' as Alignment,
