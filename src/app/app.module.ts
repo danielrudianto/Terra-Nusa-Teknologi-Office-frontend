@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideRouter, withViewTransitions } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -10,20 +9,6 @@ import {
 } from '@angular/common/http';
 
 // Pages
-import { SupplierComponent } from './pages/supplier/supplier.component';
-import { PurchaseComponent } from './pages/purchase/purchase.component';
-import { DashboardTopComponent } from './pages/dashboard/dashboard-top/dashboard-top.component';
-import { DashboardBodyComponent } from './pages/dashboard/dashboard-body/dashboard-body.component';
-import { BankComponent } from './pages/bank/bank.component';
-import { ExpenseComponent } from './pages/expense/expense.component';
-import { EmployeeComponent } from './pages/employee/employee.component';
-import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
-import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
-import { ClientComponent } from './pages/client/client.component';
-import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
-import { CalendarDateSelectorComponent } from './pages/calendar/calendar-date-selector/calendar-date-selector.component';
-import { CashPositionComponent } from './pages/dashboard/cash-position/cash-position.component';
-import { TodayPaymentComponent } from './pages/dashboard/today-payment/today-payment/today-payment.component';
 
 // Material
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -54,7 +39,6 @@ import { MatCardModule } from '@angular/material/card';
 
 // Components
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
-import { AutocompleteResultComponent } from './components/autocomplete-result/autocomplete-result.component';
 import { BankSelectorComponent } from './components/bank-selector/bank-selector.component';
 
 // Interceptors
@@ -66,22 +50,14 @@ import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
 
 // App
-import { AppRoutingModule, routes } from './app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { TaxingComponent } from './pages/taxing/taxing.component';
-import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { PaymentCreateComponent } from './components/payment-create/payment-create.component';
-import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
-import { IncomeComponent } from './pages/income/income.component';
-import { AssetComponent } from './pages/asset/asset.component';
-import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { LoansComponent } from './pages/loans/loans.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NumberFormatInputPipe } from './pipes/number-format-input.pipe';
@@ -103,27 +79,6 @@ export const MY_FORMATS = {
   declarations: [AppComponent, DashboardCardComponent, BankSelectorComponent],
   bootstrap: [AppComponent],
   imports: [
-    PaymentCreateComponent,
-    LoansComponent,
-    AssetComponent,
-    SalarySlipComponent,
-    SupplierComponent,
-    InterpaymentComponent,
-    BankComponent,
-    EmployeeComponent,
-    PurchaseComponent,
-    IncomeComponent,
-    ClientComponent,
-    ExpenseComponent,
-    ExpenseOpponentComponent,
-    TaxingComponent,
-    PurchaseDraftComponent,
-    SalesInvoiceComponent,
-    DashboardTopComponent,
-    CalendarDateSelectorComponent,
-    DashboardBodyComponent,
-    TodayPaymentComponent,
-    CashPositionComponent,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
@@ -155,7 +110,6 @@ export const MY_FORMATS = {
     MatRadioModule,
     MatCheckboxModule,
     MatTooltipModule,
-    ClipboardModule,
     MatGridListModule,
     MatTabsModule,
     MatSidenavModule,
@@ -174,7 +128,6 @@ export const MY_FORMATS = {
     },
     provideMomentDateAdapter(MY_FORMATS),
     provideHttpClient(withInterceptorsFromDi()),
-    provideRouter(routes, withViewTransitions()),
     DatePipe,
     DecimalPipe,
   ],

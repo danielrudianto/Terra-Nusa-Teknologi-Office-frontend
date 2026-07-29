@@ -1,0 +1,30 @@
+<div class="master">
+  <!-- secondary side nav -->
+  <aside class="master-nav">
+    <div class="master-nav__head">
+      <span class="master-nav__title">Master Data</span>
+      <span class="master-nav__sub">Kelola data master</span>
+    </div>
+    <nav class="master-nav__list">
+      <a
+        *ngFor="let item of navItems"
+        class="master-nav__item"
+        [routerLink]="item.route"
+        routerLinkActive="master-nav__item--active"
+      >
+        <span class="master-nav__icon">
+          <mat-icon>{{ item.icon }}</mat-icon>
+        </span>
+        <span class="master-nav__text">
+          <span class="master-nav__name">{{ item.name }}</span>
+          <span class="master-nav__desc">{{ item.description }}</span>
+        </span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- content -->
+  <section class="master-content">
+    <router-outlet></router-outlet>
+  </section>
+</div>

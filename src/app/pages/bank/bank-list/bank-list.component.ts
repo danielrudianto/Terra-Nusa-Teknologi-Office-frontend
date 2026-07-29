@@ -200,9 +200,8 @@ export class BankListComponent {
   }
 
   onOpenMutation(id: number) {
-    this.router.navigate(['Mutation', id], {
-      relativeTo: this.route,
-    });
+    // Absolut agar konsisten baik dibuka dari /Bank maupun /Master/Bank
+    this.router.navigate(['/Bank', 'Mutation', id]);
   }
 
   createNewBank() {

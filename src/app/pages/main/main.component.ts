@@ -94,14 +94,14 @@ export class MainComponent {
       name: 'Master',
       children: [
         {
+          name: 'Master Data',
+          icon: 'package.svg',
+          route: '/Master',
+        },
+        {
           name: 'Supplier',
           icon: 'supplier.svg',
           route: '/Supplier',
-        },
-        {
-          name: 'Bank',
-          icon: 'company.svg',
-          route: '/Bank',
         },
         {
           name: 'Employee',
@@ -117,11 +117,6 @@ export class MainComponent {
           name: 'Asset',
           icon: 'asset.svg',
           route: '/Asset',
-        },
-        {
-          name: 'Master Item',
-          icon: 'package.svg',
-          route: '/Item',
         },
       ],
     },

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
 
 export const routes: Routes = [
   {
@@ -19,9 +18,7 @@ export const routes: Routes = [
           import('./pages/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent,
           ),
-        data: {
-          title: 'Dashboard',
-        },
+        data: { title: 'Dashboard' },
       },
       {
         path: 'Engineering',
@@ -29,9 +26,7 @@ export const routes: Routes = [
           import('./pages/engineering/engineering.component').then(
             (m) => m.EngineeringComponent,
           ),
-        data: {
-          title: 'Engineering',
-        },
+        data: { title: 'Engineering' },
         children: [
           {
             path: '',
@@ -55,9 +50,7 @@ export const routes: Routes = [
           import('./pages/pdf-main/pdf-main.component').then(
             (m) => m.PdfMainComponent,
           ),
-        data: {
-          title: 'PDF',
-        },
+        data: { title: 'PDF' },
       },
       {
         path: 'Invoice',
@@ -65,9 +58,7 @@ export const routes: Routes = [
           import('./pages/invoice/invoice.component').then(
             (m) => m.InvoiceComponent,
           ),
-        data: {
-          title: 'Invoice Generator',
-        },
+        data: { title: 'Invoice Generator' },
       },
       {
         path: 'Purchase',
@@ -75,9 +66,7 @@ export const routes: Routes = [
           import('./pages/purchase/purchase.component').then(
             (m) => m.PurchaseComponent,
           ),
-        data: {
-          title: 'Purchase',
-        },
+        data: { title: 'Purchase' },
         children: [
           {
             path: '',
@@ -86,9 +75,7 @@ export const routes: Routes = [
                 (m) => m.PurchaseListComponent,
               ),
             pathMatch: 'full',
-            data: {
-              title: 'Purchase',
-            },
+            data: { title: 'Purchase' },
           },
           {
             path: 'Create',
@@ -96,9 +83,7 @@ export const routes: Routes = [
               import('./pages/purchase/purchase-create/purchase-create.component').then(
                 (m) => m.PurchaseCreateComponent,
               ),
-            data: {
-              title: 'Purchase',
-            },
+            data: { title: 'Purchase' },
           },
           {
             path: 'Status/:id',
@@ -106,9 +91,7 @@ export const routes: Routes = [
               import('./pages/purchase/purchase-update-status/purchase-update-status.component').then(
                 (m) => m.PurchaseUpdateStatusComponent,
               ),
-            data: {
-              title: 'Purchase',
-            },
+            data: { title: 'Purchase' },
           },
           {
             path: 'Project/:projectName',
@@ -116,9 +99,7 @@ export const routes: Routes = [
               import('./pages/purchase/purchase-report-project-report/purchase-report-project-report.component').then(
                 (m) => m.PurchaseReportProjectReportComponent,
               ),
-            data: {
-              title: 'Purchase',
-            },
+            data: { title: 'Purchase' },
           },
         ],
       },
@@ -128,9 +109,7 @@ export const routes: Routes = [
           import('./pages/purchase-draft/purchase-draft.component').then(
             (m) => m.PurchaseDraftComponent,
           ),
-        data: {
-          title: 'Purchase draft',
-        },
+        data: { title: 'Purchase draft' },
         children: [
           {
             path: '',
@@ -139,9 +118,7 @@ export const routes: Routes = [
                 (m) => m.PurchaseDraftListComponent,
               ),
             pathMatch: 'full',
-            data: {
-              title: 'Purchase draft',
-            },
+            data: { title: 'Purchase draft' },
           },
           {
             path: 'Create',
@@ -149,9 +126,7 @@ export const routes: Routes = [
               import('./pages/purchase-draft/purchase-draft-create/purchase-draft-create.component').then(
                 (m) => m.PurchaseDraftCreateComponent,
               ),
-            data: {
-              title: 'Purchase draft',
-            },
+            data: { title: 'Purchase draft' },
           },
           {
             path: 'Update/:id',
@@ -159,9 +134,7 @@ export const routes: Routes = [
               import('./pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component').then(
                 (m) => m.PurchaseDraftConvertComponent,
               ),
-            data: {
-              title: 'Purchase draft',
-            },
+            data: { title: 'Purchase draft' },
           },
         ],
       },
@@ -171,9 +144,7 @@ export const routes: Routes = [
           import('./pages/purchase-order/purchase-order.component').then(
             (m) => m.PurchaseOrderComponent,
           ),
-        data: {
-          title: 'Purchase order',
-        },
+        data: { title: 'Purchase order' },
         children: [
           {
             path: '',
@@ -181,9 +152,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-list/purchase-order-list.component').then(
                 (m) => m.PurchaseOrderListComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create',
@@ -191,9 +160,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create.component').then(
                 (m) => m.PurchaseOrderCreateComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/G',
@@ -201,9 +168,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component').then(
                 (m) => m.PurchaseOrderCreateGComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/511',
@@ -211,9 +176,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-511/purchase-order-create-511.component').then(
                 (m) => m.PurchaseOrderCreate511Component,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/512',
@@ -221,9 +184,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component').then(
                 (m) => m.PurchaseOrderCreate512Component,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/516',
@@ -231,20 +192,15 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component').then(
                 (m) => m.PurchaseOrderCreate516Component,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
-
           {
             path: 'Create/5112',
             loadComponent: () =>
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-5112/purchase-order-create-5112.component').then(
                 (m) => m.PurchaseOrderCreate5112Component,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/631',
@@ -252,10 +208,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
                 (m) => m.PurchaseOrderCreate63Component,
               ),
-            data: {
-              title: 'Purchase order',
-              purchaseType: '6.3.1',
-            },
+            data: { title: 'Purchase order', purchaseType: '6.3.1' },
           },
           {
             path: 'Create/632',
@@ -263,10 +216,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
                 (m) => m.PurchaseOrderCreate63Component,
               ),
-            data: {
-              title: 'Purchase order',
-              purchaseType: '6.3.2',
-            },
+            data: { title: 'Purchase order', purchaseType: '6.3.2' },
           },
           {
             path: 'Create/641',
@@ -274,10 +224,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
                 (m) => m.PurchaseOrderCreate63Component,
               ),
-            data: {
-              title: 'Purchase order',
-              purchaseType: '6.4.1',
-            },
+            data: { title: 'Purchase order', purchaseType: '6.4.1' },
           },
           {
             path: 'Create/A',
@@ -285,9 +232,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component').then(
                 (m) => m.PurchaseOrderCreateAComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/B',
@@ -295,9 +240,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component').then(
                 (m) => m.PurchaseOrderCreateBComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/C',
@@ -305,9 +248,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component').then(
                 (m) => m.PurchaseOrderCreateCComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/D',
@@ -315,9 +256,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component').then(
                 (m) => m.PurchaseOrderCreateDComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
           {
             path: 'Create/F',
@@ -325,9 +264,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component').then(
                 (m) => m.PurchaseOrderCreateFComponent,
               ),
-            data: {
-              title: 'Purchase order',
-            },
+            data: { title: 'Purchase order' },
           },
         ],
       },
@@ -337,9 +274,7 @@ export const routes: Routes = [
           import('./pages/reimbursement/reimbursement.component').then(
             (m) => m.ReimbursementComponent,
           ),
-        data: {
-          title: 'Reimbursement',
-        },
+        data: { title: 'Reimbursement' },
         children: [
           {
             path: '',
@@ -347,9 +282,7 @@ export const routes: Routes = [
               import('./pages/reimbursement/reimbursement-list/reimbursement-list.component').then(
                 (m) => m.ReimbursementListComponent,
               ),
-            data: {
-              title: 'Reimbursement',
-            },
+            data: { title: 'Reimbursement' },
           },
           {
             path: 'Create',
@@ -357,9 +290,7 @@ export const routes: Routes = [
               import('./pages/reimbursement/reimbursement-create/reimbursement-create.component').then(
                 (m) => m.ReimbursementCreateComponent,
               ),
-            data: {
-              title: 'Reimbursement',
-            },
+            data: { title: 'Reimbursement' },
           },
         ],
       },
@@ -369,9 +300,7 @@ export const routes: Routes = [
           import('./pages/supplier/supplier.component').then(
             (m) => m.SupplierComponent,
           ),
-        data: {
-          title: 'Supplier',
-        },
+        data: { title: 'Supplier' },
         children: [
           {
             path: '',
@@ -379,9 +308,7 @@ export const routes: Routes = [
               import('./pages/supplier/supplier-list/supplier-list.component').then(
                 (m) => m.SupplierListComponent,
               ),
-            data: {
-              title: 'Supplier',
-            },
+            data: { title: 'Supplier' },
           },
           {
             path: 'Create',
@@ -389,9 +316,7 @@ export const routes: Routes = [
               import('./pages/supplier/supplier-create/supplier-create.component').then(
                 (m) => m.SupplierCreateComponent,
               ),
-            data: {
-              title: 'Supplier',
-            },
+            data: { title: 'Supplier' },
           },
           {
             path: 'Update/:id',
@@ -399,9 +324,7 @@ export const routes: Routes = [
               import('./pages/supplier/supplier-update/supplier-update.component').then(
                 (m) => m.SupplierUpdateComponent,
               ),
-            data: {
-              title: 'Supplier',
-            },
+            data: { title: 'Supplier' },
           },
         ],
       },
@@ -409,9 +332,7 @@ export const routes: Routes = [
         path: 'Bank',
         loadComponent: () =>
           import('./pages/bank/bank.component').then((m) => m.BankComponent),
-        data: {
-          title: 'Bank',
-        },
+        data: { title: 'Bank' },
         children: [
           {
             path: '',
@@ -419,9 +340,7 @@ export const routes: Routes = [
               import('./pages/bank/bank-list/bank-list.component').then(
                 (m) => m.BankListComponent,
               ),
-            data: {
-              title: 'Bank',
-            },
+            data: { title: 'Bank' },
           },
           {
             path: 'Create',
@@ -429,9 +348,7 @@ export const routes: Routes = [
               import('./pages/bank/bank-create/bank-create.component').then(
                 (m) => m.BankCreateComponent,
               ),
-            data: {
-              title: 'Bank',
-            },
+            data: { title: 'Bank' },
           },
           {
             path: 'Mutation/:id',
@@ -439,9 +356,7 @@ export const routes: Routes = [
               import('./pages/bank/bank-mutation/bank-mutation.component').then(
                 (m) => m.BankMutationComponent,
               ),
-            data: {
-              title: 'Bank',
-            },
+            data: { title: 'Bank' },
           },
         ],
       },
@@ -449,9 +364,7 @@ export const routes: Routes = [
         path: 'Asset',
         loadComponent: () =>
           import('./pages/asset/asset.component').then((m) => m.AssetComponent),
-        data: {
-          title: 'Asset',
-        },
+        data: { title: 'Asset' },
         children: [
           {
             path: '',
@@ -459,9 +372,7 @@ export const routes: Routes = [
               import('./pages/asset/asset-list/asset-list.component').then(
                 (m) => m.AssetListComponent,
               ),
-            data: {
-              title: 'Asset',
-            },
+            data: { title: 'Asset' },
           },
           {
             path: 'Create',
@@ -469,9 +380,7 @@ export const routes: Routes = [
               import('./pages/asset/asset-create/asset-create.component').then(
                 (m) => m.AssetCreateComponent,
               ),
-            data: {
-              title: 'Asset',
-            },
+            data: { title: 'Asset' },
           },
         ],
       },
@@ -481,9 +390,7 @@ export const routes: Routes = [
           import('./pages/expense/expense.component').then(
             (m) => m.ExpenseComponent,
           ),
-        data: {
-          title: 'Expense',
-        },
+        data: { title: 'Expense' },
         children: [
           {
             path: '',
@@ -491,9 +398,7 @@ export const routes: Routes = [
               import('./pages/expense/expense-list/expense-list.component').then(
                 (m) => m.ExpenseListComponent,
               ),
-            data: {
-              title: 'Expense',
-            },
+            data: { title: 'Expense' },
           },
           {
             path: 'Create',
@@ -501,9 +406,7 @@ export const routes: Routes = [
               import('./pages/expense/expense-create/expense-create.component').then(
                 (m) => m.ExpenseCreateComponent,
               ),
-            data: {
-              title: 'Expense',
-            },
+            data: { title: 'Expense' },
           },
           {
             path: 'Opponent',
@@ -511,9 +414,7 @@ export const routes: Routes = [
               import('./pages/expense/expense-opponent/expense-opponent.component').then(
                 (m) => m.ExpenseOpponentComponent,
               ),
-            data: {
-              title: 'Expense',
-            },
+            data: { title: 'Expense' },
             children: [
               {
                 path: '',
@@ -521,9 +422,7 @@ export const routes: Routes = [
                   import('./pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component').then(
                     (m) => m.ExpenseOpponentListComponent,
                   ),
-                data: {
-                  title: 'Expense',
-                },
+                data: { title: 'Expense' },
               },
               {
                 path: 'Create',
@@ -531,9 +430,7 @@ export const routes: Routes = [
                   import('./pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component').then(
                     (m) => m.ExpenseOpponentCreateComponent,
                   ),
-                data: {
-                  title: 'Expense',
-                },
+                data: { title: 'Expense' },
               },
             ],
           },
@@ -545,9 +442,7 @@ export const routes: Routes = [
           import('./pages/income/income.component').then(
             (m) => m.IncomeComponent,
           ),
-        data: {
-          title: 'Income',
-        },
+        data: { title: 'Income' },
         children: [
           {
             path: '',
@@ -569,9 +464,7 @@ export const routes: Routes = [
         path: 'Loans',
         loadComponent: () =>
           import('./pages/loans/loans.component').then((m) => m.LoansComponent),
-        data: {
-          title: 'Loans',
-        },
+        data: { title: 'Loans' },
         children: [
           {
             path: '',
@@ -595,9 +488,7 @@ export const routes: Routes = [
           import('./pages/sales-invoice/sales-invoice.component').then(
             (m) => m.SalesInvoiceComponent,
           ),
-        data: {
-          title: 'Sales invoice',
-        },
+        data: { title: 'Sales invoice' },
         children: [
           {
             path: '',
@@ -621,9 +512,7 @@ export const routes: Routes = [
           import('./pages/employee/employee.component').then(
             (m) => m.EmployeeComponent,
           ),
-        data: {
-          title: 'Employee',
-        },
+        data: { title: 'Employee' },
         children: [
           {
             path: '',
@@ -647,9 +536,7 @@ export const routes: Routes = [
           import('./pages/salary-slip/salary-slip.component').then(
             (m) => m.SalarySlipComponent,
           ),
-        data: {
-          title: 'Salary slip',
-        },
+        data: { title: 'Salary slip' },
         children: [
           {
             path: '',
@@ -677,9 +564,7 @@ export const routes: Routes = [
           import('./pages/client/client.component').then(
             (m) => m.ClientComponent,
           ),
-        data: {
-          title: 'Client',
-        },
+        data: { title: 'Client' },
         children: [
           {
             path: '',
@@ -703,9 +588,7 @@ export const routes: Routes = [
           import('./pages/calendar/calendar.component').then(
             (m) => m.CalendarComponent,
           ),
-        data: {
-          title: 'Calendar',
-        },
+        data: { title: 'Calendar' },
       },
       {
         path: 'Interpayment',
@@ -713,9 +596,7 @@ export const routes: Routes = [
           import('./pages/interpayment/interpayment.component').then(
             (m) => m.InterpaymentComponent,
           ),
-        data: {
-          title: 'Interpayment',
-        },
+        data: { title: 'Interpayment' },
         children: [
           {
             path: '',
@@ -739,9 +620,7 @@ export const routes: Routes = [
           import('./pages/payment/payment.component').then(
             (m) => m.PaymentComponent,
           ),
-        data: {
-          title: 'Payment',
-        },
+        data: { title: 'Payment' },
         children: [
           {
             path: '',
@@ -749,9 +628,7 @@ export const routes: Routes = [
               import('./pages/payment/payment-list/payment-list.component').then(
                 (m) => m.PaymentListComponent,
               ),
-            data: {
-              title: 'Payment',
-            },
+            data: { title: 'Payment' },
           },
           {
             path: 'History',
@@ -759,9 +636,7 @@ export const routes: Routes = [
               import('./pages/payment/payment-history/payment-history.component').then(
                 (m) => m.PaymentHistoryComponent,
               ),
-            data: {
-              title: 'Payment',
-            },
+            data: { title: 'Payment' },
           },
           {
             path: 'Approval',
@@ -775,13 +650,14 @@ export const routes: Routes = [
           import('./pages/taxing/taxing.component').then(
             (m) => m.TaxingComponent,
           ),
-        data: {
-          title: 'Taxing',
-        },
+        data: { title: 'Taxing' },
         children: [
           {
             path: '',
-            component: TaxListComponent,
+            loadComponent: () =>
+              import('./pages/taxing/tax-list/tax-list.component').then(
+                (m) => m.TaxListComponent,
+              ),
           },
           {
             path: 'PPN',
@@ -800,24 +676,55 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'Item',
+        path: 'Master',
         loadComponent: () =>
-          import('./pages/master/master-item/master-item-list/master-item-list.component').then(
-            (m) => m.MasterItemListComponent,
+          import('./pages/master/master.component').then(
+            (m) => m.MasterComponent,
           ),
-        data: {
-          title: 'Item list',
-        },
-      },
-      {
-        path: 'Equipment',
-        loadComponent: () =>
-          import('./pages/master/master-equipment/master-equipment-list/master-equipment-list.component').then(
-            (m) => m.MasterEquipmentListComponent,
-          ),
-        data: {
-          title: 'Item list',
-        },
+        data: { title: 'Master Data' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/master/master-welcome/master-welcome.component').then(
+                (m) => m.MasterWelcomeComponent,
+              ),
+            pathMatch: 'full',
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Equipment',
+            loadComponent: () =>
+              import('./pages/master/master-equipment/master-equipment-list/master-equipment-list.component').then(
+                (m) => m.MasterEquipmentListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Item',
+            loadComponent: () =>
+              import('./pages/master/master-item/master-item-list/master-item-list.component').then(
+                (m) => m.MasterItemListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Expense-opponent',
+            loadComponent: () =>
+              import('./pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component').then(
+                (m) => m.ExpenseOpponentListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Bank',
+            loadComponent: () =>
+              import('./pages/bank/bank-list/bank-list.component').then(
+                (m) => m.BankListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+        ],
       },
       {
         path: 'Settings',
@@ -825,9 +732,7 @@ export const routes: Routes = [
           import('./pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
           ),
-        data: {
-          title: 'Settings',
-        },
+        data: { title: 'Settings' },
       },
     ],
   },
