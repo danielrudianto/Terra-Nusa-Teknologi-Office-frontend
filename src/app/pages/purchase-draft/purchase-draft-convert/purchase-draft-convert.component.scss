@@ -1,146 +1,218 @@
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0.5rem 0 3rem;
   color: var(--ink, #16181d);
 }
 
-/* title */
+/* ============ HEADER ============ */
 .title__wrapper {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 .title {
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--ink, #16181d);
   margin: 0;
+  color: var(--ink, #16181d);
+  letter-spacing: -0.01em;
+
   a {
     color: var(--brand, #154dec);
     text-decoration: none;
+    transition: color 0.15s ease;
+
     &:hover {
+      color: var(--brand-strong, #0f3fd0);
       text-decoration: underline;
     }
   }
 }
 
-/* stepper wrapped in an elevated card */
-:host ::ng-deep .mat-stepper-vertical,
+/* ============ STEPPER SHELL ============ */
 :host ::ng-deep .mat-stepper-horizontal {
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+}
+
+:host ::ng-deep .mat-horizontal-stepper-header-container {
   background: var(--surface, #ffffff);
   border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 18px;
-  padding: 0.5rem 0.5rem 1.25rem;
+  border-radius: 16px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 1.25rem;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
     0 4px 16px rgba(16, 24, 40, 0.05);
-  font-family: "Montserrat", sans-serif;
-}
-:host ::ng-deep .mat-horizontal-content-container {
-  padding: 0 1.25rem 0.5rem;
-}
-:host ::ng-deep .mat-vertical-content {
-  padding: 0 1.25rem 1rem;
 }
 
-/* step header */
 :host ::ng-deep .mat-step-header {
-  border-radius: 10px;
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+
   &:hover {
-    background: var(--hover, #f6f8ff) !important;
+    background: var(--hover, #f6f8ff);
+  }
+  .mat-step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--muted, #6b7280);
+  }
+  .mat-step-label-selected {
+    color: var(--brand, #154dec);
+    font-weight: 600;
   }
 }
-:host ::ng-deep .mat-step-header .mat-step-label {
+
+:host ::ng-deep .mat-step-icon {
+  background-color: var(--surface-2, #eef1f6);
   color: var(--muted, #6b7280);
   font-weight: 600;
-  &.mat-step-label-active {
-    color: var(--ink, #16181d);
-  }
-  &.mat-step-label-selected {
-    color: var(--brand, #154dec);
-  }
 }
-:host ::ng-deep .mat-step-header .mat-step-icon {
-  background: var(--border, #e3e6eb);
-  color: var(--muted, #6b7280);
-  &.mat-step-icon-selected,
-  &.mat-step-icon-state-done,
-  &.mat-step-icon-state-edit {
-    background: var(--brand, #154dec);
-    color: #fff;
-  }
-}
-:host ::ng-deep .mat-stepper-horizontal-line,
-:host ::ng-deep .mat-stepper-vertical-line::before {
-  border-color: var(--line, #eef0f3);
+:host ::ng-deep .mat-step-icon-selected,
+:host ::ng-deep .mat-step-icon-state-edit,
+:host ::ng-deep .mat-step-icon-state-done {
+  background-color: var(--brand, #154dec) !important;
+  color: #fff !important;
 }
 
-/* dividers */
-:host ::ng-deep .mat-divider {
-  border-top-color: var(--line, #eef0f3);
+:host ::ng-deep .mat-stepper-horizontal-line {
+  border-top-color: var(--border, #e3e6eb);
 }
 
-/* slide toggle labels */
-:host ::ng-deep .mat-mdc-slide-toggle label {
-  color: var(--ink, #16181d);
-  font-size: 0.88rem;
+:host ::ng-deep .mat-horizontal-content-container {
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  padding: 1.75rem 1.75rem 1.25rem;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
 }
 
-/* buttons */
-:host ::ng-deep .mat-mdc-outlined-button,
-:host ::ng-deep .mat-mdc-raised-button {
-  border-radius: 11px !important;
-  font-weight: 600 !important;
-  height: 42px;
-  letter-spacing: 0 !important;
-}
-:host ::ng-deep .mat-mdc-outlined-button {
-  border-color: var(--border, #e3e6eb) !important;
-}
-:host ::ng-deep button[color="primary"] {
-  &.mat-mdc-outlined-button {
-    border-color: var(--brand, #154dec) !important;
-    color: var(--brand, #154dec) !important;
-  }
-}
-
-/* utility classes (Bootstrap-like, used in template) */
-.w-100 {
-  width: 100%;
-}
-.mt-3 {
-  margin-top: 1rem;
-}
-.mb-3 {
-  margin-bottom: 1rem;
-}
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-.my-2 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.my-3 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-.me-2 {
-  margin-right: 0.5rem;
-}
-.col-6 {
-  flex: 0 0 50%;
-  max-width: 50%;
-}
-.d-flex {
-  display: flex;
-}
-.align-items-center {
-  align-items: center;
-}
-.justify-content-between {
-  justify-content: space-between;
-}
-
-/* form field full width */
+/* ============ FORM FIELDS ============ */
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-hover-outline-color: var(--border, #b9c2d0);
+  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
+  --mdc-outlined-text-field-label-text-font: "Montserrat", sans-serif;
+  --mdc-outlined-text-field-input-text-font: "Montserrat", sans-serif;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
+  min-height: 1rem;
+}
+
+:host ::ng-deep input[readonly] {
+  cursor: default;
+}
+
+:host ::ng-deep .row {
+  margin-bottom: 0.15rem;
+}
+
+:host ::ng-deep .mat-divider {
+  border-top-color: var(--line, #eef0f3);
+  margin: 1.1rem 0;
+}
+
+/* ============ BUTTONS ============ */
+.btn {
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding: 0.62rem 1.3rem;
+  height: 42px;
+  border: 0.5px solid var(--border, #dfe3ea);
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--hover, #f6f8ff);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+:host ::ng-deep .mat-mdc-raised-button.mat-primary,
+:host ::ng-deep .mat-mdc-raised-button:not([disabled]):not(.mat-warn) {
+  --mdc-protected-button-container-color: var(--brand, #154dec);
+  --mdc-protected-button-label-text-color: #fff;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  box-shadow: none !important;
+  height: 42px;
+}
+
+:host ::ng-deep .mat-mdc-button:not(.mat-primary) {
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  height: 42px;
+}
+
+:host ::ng-deep .mat-mdc-outlined-button {
+  border-radius: 12px;
+  --mdc-outlined-button-outline-color: var(--border, #dfe3ea);
+  font-weight: 600;
+  height: 42px;
+}
+
+:host ::ng-deep .mat-mdc-raised-button.mat-warn {
+  border-radius: 12px;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .mat-horizontal-content-container form > button,
+:host ::ng-deep .mat-horizontal-content-container > button {
+  margin-top: 0.25rem;
+}
+
+/* ============ CHECKBOXES ============ */
+:host ::ng-deep .mat-mdc-checkbox {
+  --mdc-checkbox-selected-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-focus-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-hover-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-pressed-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-container-color: var(--brand, #154dec);
+
+  display: block;
+  padding: 0.15rem 0;
+  .mdc-form-field label {
+    font-size: 0.9rem;
+    color: var(--ink, #16181d);
+    font-family: "Montserrat", sans-serif;
+  }
+}
+
+:host ::ng-deep .mat-mdc-select-value {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 600px) {
+  :host ::ng-deep .mat-horizontal-content-container {
+    padding: 1.25rem 1rem 1rem;
+  }
+  :host {
+    padding-bottom: 2rem;
+  }
+  .title {
+    font-size: 1.15rem;
+  }
 }

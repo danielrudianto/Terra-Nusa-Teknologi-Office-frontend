@@ -1,5 +1,7 @@
 <div class="title__wrapper mb-4">
-  <h1 class="title"><a routerLink="/Purchase">Purchase</a> / Create</h1>
+  <h1 class="title">
+    <a routerLink="/Purchase-draft">Purchase draft</a> / Convert to purchase
+  </h1>
 </div>
 <mat-stepper #stepper>
   <mat-step [stepControl]="metaFormGroup">
@@ -19,7 +21,6 @@
           [for]="picker"
         ></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -35,7 +36,6 @@
           [for]="duePicker"
         ></mat-datepicker-toggle>
         <mat-datepicker #duePicker></mat-datepicker>
-
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -115,7 +115,6 @@
           readonly
         />
       </mat-form-field>
-
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Document type</mat-label>

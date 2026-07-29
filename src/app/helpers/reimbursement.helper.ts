@@ -24,9 +24,16 @@ export class ReimbursementHelper {
     const projectName = data.projectName;
     const reimbursementItems = data.reimbursementItems.map((item: any) => {
       const itemDate = new Date(item.date);
+      // Pastikan amount berupa number. ngx-mask bisa mengirim string
+      // ("1000000") yang akan membuat penjumlahan menjadi string concatenation.
+      const numericAmount =
+        typeof item.amount === 'string'
+          ? Number(item.amount.replace(/[^0-9.]/g, ''))
+          : Number(item.amount);
       return {
         ...item,
         date: itemDate,
+        amount: isNaN(numericAmount) ? 0 : numericAmount,
       };
     });
 

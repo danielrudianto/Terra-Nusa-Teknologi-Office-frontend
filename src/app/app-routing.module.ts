@@ -1,148 +1,90 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { PurchaseComponent } from './pages/purchase/purchase.component';
-import { SupplierComponent } from './pages/supplier/supplier.component';
-import { MainComponent } from './pages/main/main.component';
-import { PurchaseListComponent } from './pages/purchase/purchase-list/purchase-list.component';
-import { PurchaseCreateComponent } from './pages/purchase/purchase-create/purchase-create.component';
-import { SupplierListComponent } from './pages/supplier/supplier-list/supplier-list.component';
-import { SupplierCreateComponent } from './pages/supplier/supplier-create/supplier-create.component';
-import { ReimbursementComponent } from './pages/reimbursement/reimbursement.component';
-import { ReimbursementListComponent } from './pages/reimbursement/reimbursement-list/reimbursement-list.component';
-import { ReimbursementCreateComponent } from './pages/reimbursement/reimbursement-create/reimbursement-create.component';
-import { BankComponent } from './pages/bank/bank.component';
-import { BankListComponent } from './pages/bank/bank-list/bank-list.component';
-import { BankCreateComponent } from './pages/bank/bank-create/bank-create.component';
-import { PurchaseUpdateStatusComponent } from './pages/purchase/purchase-update-status/purchase-update-status.component';
-import { ExpenseComponent } from './pages/expense/expense.component';
-import { ExpenseListComponent } from './pages/expense/expense-list/expense-list.component';
-import { ExpenseCreateComponent } from './pages/expense/expense-create/expense-create.component';
-import { LoansComponent } from './pages/loans/loans.component';
-import { LoansListComponent } from './pages/loans/loans-list/loans-list.component';
-import { LoansCreateComponent } from './pages/loans/loans-create/loans-create.component';
-import { EmployeeComponent } from './pages/employee/employee.component';
-import { EmployeeListComponent } from './pages/employee/employee-list/employee-list.component';
-import { EmployeeCreateComponent } from './pages/employee/employee-create/employee-create.component';
-import { ExpenseOpponentComponent } from './pages/expense/expense-opponent/expense-opponent.component';
-import { ExpenseOpponentListComponent } from './pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component';
-import { ExpenseOpponentCreateComponent } from './pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component';
-import { authGuard } from './guards/auth.guard';
-import { SalesInvoiceComponent } from './pages/sales-invoice/sales-invoice.component';
-import { SalesInvoiceListComponent } from './pages/sales-invoice/sales-invoice-list/sales-invoice-list.component';
-import { SalesInvoiceCreateComponent } from './pages/sales-invoice/sales-invoice-create/sales-invoice-create.component';
-import { ClientComponent } from './pages/client/client.component';
-import { ClientListComponent } from './pages/client/client-list/client-list.component';
-import { ClientCreateComponent } from './pages/client/client-create/client-create.component';
-import { SupplierUpdateComponent } from './pages/supplier/supplier-update/supplier-update.component';
-import { SalarySlipComponent } from './pages/salary-slip/salary-slip.component';
-import { SalarySlipListComponent } from './pages/salary-slip/salary-slip-list/salary-slip-list.component';
-import { SalarySlipCreateComponent } from './pages/salary-slip/salary-slip-create/salary-slip-create.component';
-import { CalendarComponent } from './pages/calendar/calendar.component';
-import { PaymentComponent } from './pages/payment/payment.component';
-import { PaymentListComponent } from './pages/payment/payment-list/payment-list.component';
-import { PaymentHistoryComponent } from './pages/payment/payment-history/payment-history.component';
-import { TaxingComponent } from './pages/taxing/taxing.component';
 import { TaxListComponent } from './pages/taxing/tax-list/tax-list.component';
-import { PpnRecapComponent } from './pages/taxing/ppn-recap/ppn-recap.component';
-import { PphRecapComponent } from './pages/taxing/pph-recap/pph-recap.component';
-import { SettingsComponent } from './pages/settings/settings.component';
-import { InterpaymentComponent } from './pages/interpayment/interpayment.component';
-import { IncomeComponent } from './pages/income/income.component';
-import { IncomeListComponent } from './pages/income/income-list/income-list.component';
-import { IncomeCreateComponent } from './pages/income/income-create/income-create.component';
-import { InterpaymentListComponent } from './pages/interpayment/interpayment-list/interpayment-list.component';
-import { InterpaymentCreateComponent } from './pages/interpayment/interpayment-create/interpayment-create.component';
-import { BankMutationComponent } from './pages/bank/bank-mutation/bank-mutation.component';
-import { AssetCreateComponent } from './pages/asset/asset-create/asset-create.component';
-import { AssetComponent } from './pages/asset/asset.component';
-import { AssetListComponent } from './pages/asset/asset-list/asset-list.component';
-import { PurchaseDraftComponent } from './pages/purchase-draft/purchase-draft.component';
-import { PurchaseDraftListComponent } from './pages/purchase-draft/purchase-draft-list/purchase-draft-list.component';
-import { PurchaseDraftCreateComponent } from './pages/purchase-draft/purchase-draft-create/purchase-draft-create.component';
-import { PdfMainComponent } from './pages/pdf-main/pdf-main.component';
-import { PurchaseDraftConvertComponent } from './pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component';
-import { PurchaseOrderComponent } from './pages/purchase-order/purchase-order.component';
-import { PurchaseOrderListComponent } from './pages/purchase-order/purchase-order-list/purchase-order-list.component';
-import { PurchaseOrderCreateComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create.component';
-import { PurchaseOrderCreateGComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component';
-import { PurchaseReportProjectComponent } from './pages/purchase/purchase-list/purchase-report-project/purchase-report-project.component';
-import { PurchaseReportProjectReportComponent } from './pages/purchase/purchase-report-project-report/purchase-report-project-report.component';
-import { InvoiceComponent } from './pages/invoice/invoice.component';
-import { EngineeringComponent } from './pages/engineering/engineering.component';
-import { EngineeringDashboardComponent } from './pages/engineering/engineering-dashboard/engineering-dashboard.component';
-import { EngineeringProjectViewComponent } from './pages/engineering/engineering-project-view/engineering-project-view.component';
-import { MasterItemListComponent } from './pages/master/master-item/master-item-list/master-item-list.component';
-import { PurchaseOrderCreateFComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component';
-import { PurchaseOrderCreate516Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component';
-import { PurchaseOrderCreate511Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-511/purchase-order-create-511.component';
-import { PurchaseOrderCreateAComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component';
-import { PurchaseOrderCreateBComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component';
-import { PurchaseOrderCreateCComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component';
-import { PurchaseOrderCreateDComponent } from './pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component';
-import { MasterEquipmentListComponent } from './pages/master/master-equipment/master-equipment-list/master-equipment-list.component';
-import { PurchaseOrderCreate63Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component';
-import { PurchaseOrderCreate512Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component';
-import { PurchaseOrderCreate5112Component } from './pages/purchase-order/purchase-order-create/purchase-order-create-5112/purchase-order-create-5112.component';
 
 export const routes: Routes = [
   {
     path: 'Login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: '',
-    component: MainComponent,
+    loadComponent: () =>
+      import('./pages/main/main.component').then((m) => m.MainComponent),
     children: [
       {
         path: '',
-        component: DashboardComponent,
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent,
+          ),
         data: {
           title: 'Dashboard',
         },
       },
       {
         path: 'Engineering',
-        component: EngineeringComponent,
+        loadComponent: () =>
+          import('./pages/engineering/engineering.component').then(
+            (m) => m.EngineeringComponent,
+          ),
         data: {
           title: 'Engineering',
         },
         children: [
           {
             path: '',
-            component: EngineeringDashboardComponent,
+            loadComponent: () =>
+              import('./pages/engineering/engineering-dashboard/engineering-dashboard.component').then(
+                (m) => m.EngineeringDashboardComponent,
+              ),
           },
           {
             path: ':projectName',
-            component: EngineeringProjectViewComponent,
+            loadComponent: () =>
+              import('./pages/engineering/engineering-project-view/engineering-project-view.component').then(
+                (m) => m.EngineeringProjectViewComponent,
+              ),
           },
         ],
       },
       {
         path: 'PDF',
-        component: PdfMainComponent,
+        loadComponent: () =>
+          import('./pages/pdf-main/pdf-main.component').then(
+            (m) => m.PdfMainComponent,
+          ),
         data: {
           title: 'PDF',
         },
       },
       {
         path: 'Invoice',
-        component: InvoiceComponent,
+        loadComponent: () =>
+          import('./pages/invoice/invoice.component').then(
+            (m) => m.InvoiceComponent,
+          ),
         data: {
           title: 'Invoice Generator',
         },
       },
       {
         path: 'Purchase',
-        component: PurchaseComponent,
+        loadComponent: () =>
+          import('./pages/purchase/purchase.component').then(
+            (m) => m.PurchaseComponent,
+          ),
         data: {
           title: 'Purchase',
         },
         children: [
           {
             path: '',
-            component: PurchaseListComponent,
+            loadComponent: () =>
+              import('./pages/purchase/purchase-list/purchase-list.component').then(
+                (m) => m.PurchaseListComponent,
+              ),
             pathMatch: 'full',
             data: {
               title: 'Purchase',
@@ -150,21 +92,30 @@ export const routes: Routes = [
           },
           {
             path: 'Create',
-            component: PurchaseCreateComponent,
+            loadComponent: () =>
+              import('./pages/purchase/purchase-create/purchase-create.component').then(
+                (m) => m.PurchaseCreateComponent,
+              ),
             data: {
               title: 'Purchase',
             },
           },
           {
             path: 'Status/:id',
-            component: PurchaseUpdateStatusComponent,
+            loadComponent: () =>
+              import('./pages/purchase/purchase-update-status/purchase-update-status.component').then(
+                (m) => m.PurchaseUpdateStatusComponent,
+              ),
             data: {
               title: 'Purchase',
             },
           },
           {
             path: 'Project/:projectName',
-            component: PurchaseReportProjectReportComponent,
+            loadComponent: () =>
+              import('./pages/purchase/purchase-report-project-report/purchase-report-project-report.component').then(
+                (m) => m.PurchaseReportProjectReportComponent,
+              ),
             data: {
               title: 'Purchase',
             },
@@ -173,14 +124,20 @@ export const routes: Routes = [
       },
       {
         path: 'Purchase-draft',
-        component: PurchaseDraftComponent,
+        loadComponent: () =>
+          import('./pages/purchase-draft/purchase-draft.component').then(
+            (m) => m.PurchaseDraftComponent,
+          ),
         data: {
           title: 'Purchase draft',
         },
         children: [
           {
             path: '',
-            component: PurchaseDraftListComponent,
+            loadComponent: () =>
+              import('./pages/purchase-draft/purchase-draft-list/purchase-draft-list.component').then(
+                (m) => m.PurchaseDraftListComponent,
+              ),
             pathMatch: 'full',
             data: {
               title: 'Purchase draft',
@@ -188,14 +145,20 @@ export const routes: Routes = [
           },
           {
             path: 'Create',
-            component: PurchaseDraftCreateComponent,
+            loadComponent: () =>
+              import('./pages/purchase-draft/purchase-draft-create/purchase-draft-create.component').then(
+                (m) => m.PurchaseDraftCreateComponent,
+              ),
             data: {
               title: 'Purchase draft',
             },
           },
           {
             path: 'Update/:id',
-            component: PurchaseDraftConvertComponent,
+            loadComponent: () =>
+              import('./pages/purchase-draft/purchase-draft-convert/purchase-draft-convert.component').then(
+                (m) => m.PurchaseDraftConvertComponent,
+              ),
             data: {
               title: 'Purchase draft',
             },
@@ -204,64 +167,91 @@ export const routes: Routes = [
       },
       {
         path: 'Purchase-order',
-        component: PurchaseOrderComponent,
+        loadComponent: () =>
+          import('./pages/purchase-order/purchase-order.component').then(
+            (m) => m.PurchaseOrderComponent,
+          ),
         data: {
           title: 'Purchase order',
         },
         children: [
           {
             path: '',
-            component: PurchaseOrderListComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-list/purchase-order-list.component').then(
+                (m) => m.PurchaseOrderListComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create',
-            component: PurchaseOrderCreateComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create.component').then(
+                (m) => m.PurchaseOrderCreateComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/G',
-            component: PurchaseOrderCreateGComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component').then(
+                (m) => m.PurchaseOrderCreateGComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/511',
-            component: PurchaseOrderCreate511Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-511/purchase-order-create-511.component').then(
+                (m) => m.PurchaseOrderCreate511Component,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/512',
-            component: PurchaseOrderCreate512Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component').then(
+                (m) => m.PurchaseOrderCreate512Component,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/516',
-            component: PurchaseOrderCreate516Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component').then(
+                (m) => m.PurchaseOrderCreate516Component,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
-          
+
           {
             path: 'Create/5112',
-            component: PurchaseOrderCreate5112Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-5112/purchase-order-create-5112.component').then(
+                (m) => m.PurchaseOrderCreate5112Component,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/631',
-            component: PurchaseOrderCreate63Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
+                (m) => m.PurchaseOrderCreate63Component,
+              ),
             data: {
               title: 'Purchase order',
               purchaseType: '6.3.1',
@@ -269,7 +259,10 @@ export const routes: Routes = [
           },
           {
             path: 'Create/632',
-            component: PurchaseOrderCreate63Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
+                (m) => m.PurchaseOrderCreate63Component,
+              ),
             data: {
               title: 'Purchase order',
               purchaseType: '6.3.2',
@@ -277,7 +270,10 @@ export const routes: Routes = [
           },
           {
             path: 'Create/641',
-            component: PurchaseOrderCreate63Component,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
+                (m) => m.PurchaseOrderCreate63Component,
+              ),
             data: {
               title: 'Purchase order',
               purchaseType: '6.4.1',
@@ -285,35 +281,50 @@ export const routes: Routes = [
           },
           {
             path: 'Create/A',
-            component: PurchaseOrderCreateAComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component').then(
+                (m) => m.PurchaseOrderCreateAComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/B',
-            component: PurchaseOrderCreateBComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component').then(
+                (m) => m.PurchaseOrderCreateBComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/C',
-            component: PurchaseOrderCreateCComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component').then(
+                (m) => m.PurchaseOrderCreateCComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/D',
-            component: PurchaseOrderCreateDComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component').then(
+                (m) => m.PurchaseOrderCreateDComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
           },
           {
             path: 'Create/F',
-            component: PurchaseOrderCreateFComponent,
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component').then(
+                (m) => m.PurchaseOrderCreateFComponent,
+              ),
             data: {
               title: 'Purchase order',
             },
@@ -322,21 +333,30 @@ export const routes: Routes = [
       },
       {
         path: 'Reimbursement',
-        component: ReimbursementComponent,
+        loadComponent: () =>
+          import('./pages/reimbursement/reimbursement.component').then(
+            (m) => m.ReimbursementComponent,
+          ),
         data: {
           title: 'Reimbursement',
         },
         children: [
           {
             path: '',
-            component: ReimbursementListComponent,
+            loadComponent: () =>
+              import('./pages/reimbursement/reimbursement-list/reimbursement-list.component').then(
+                (m) => m.ReimbursementListComponent,
+              ),
             data: {
               title: 'Reimbursement',
             },
           },
           {
             path: 'Create',
-            component: ReimbursementCreateComponent,
+            loadComponent: () =>
+              import('./pages/reimbursement/reimbursement-create/reimbursement-create.component').then(
+                (m) => m.ReimbursementCreateComponent,
+              ),
             data: {
               title: 'Reimbursement',
             },
@@ -345,28 +365,40 @@ export const routes: Routes = [
       },
       {
         path: 'Supplier',
-        component: SupplierComponent,
+        loadComponent: () =>
+          import('./pages/supplier/supplier.component').then(
+            (m) => m.SupplierComponent,
+          ),
         data: {
           title: 'Supplier',
         },
         children: [
           {
             path: '',
-            component: SupplierListComponent,
+            loadComponent: () =>
+              import('./pages/supplier/supplier-list/supplier-list.component').then(
+                (m) => m.SupplierListComponent,
+              ),
             data: {
               title: 'Supplier',
             },
           },
           {
             path: 'Create',
-            component: SupplierCreateComponent,
+            loadComponent: () =>
+              import('./pages/supplier/supplier-create/supplier-create.component').then(
+                (m) => m.SupplierCreateComponent,
+              ),
             data: {
               title: 'Supplier',
             },
           },
           {
             path: 'Update/:id',
-            component: SupplierUpdateComponent,
+            loadComponent: () =>
+              import('./pages/supplier/supplier-update/supplier-update.component').then(
+                (m) => m.SupplierUpdateComponent,
+              ),
             data: {
               title: 'Supplier',
             },
@@ -375,28 +407,38 @@ export const routes: Routes = [
       },
       {
         path: 'Bank',
-        component: BankComponent,
+        loadComponent: () =>
+          import('./pages/bank/bank.component').then((m) => m.BankComponent),
         data: {
           title: 'Bank',
         },
         children: [
           {
             path: '',
-            component: BankListComponent,
+            loadComponent: () =>
+              import('./pages/bank/bank-list/bank-list.component').then(
+                (m) => m.BankListComponent,
+              ),
             data: {
               title: 'Bank',
             },
           },
           {
             path: 'Create',
-            component: BankCreateComponent,
+            loadComponent: () =>
+              import('./pages/bank/bank-create/bank-create.component').then(
+                (m) => m.BankCreateComponent,
+              ),
             data: {
               title: 'Bank',
             },
           },
           {
             path: 'Mutation/:id',
-            component: BankMutationComponent,
+            loadComponent: () =>
+              import('./pages/bank/bank-mutation/bank-mutation.component').then(
+                (m) => m.BankMutationComponent,
+              ),
             data: {
               title: 'Bank',
             },
@@ -405,21 +447,28 @@ export const routes: Routes = [
       },
       {
         path: 'Asset',
-        component: AssetComponent,
+        loadComponent: () =>
+          import('./pages/asset/asset.component').then((m) => m.AssetComponent),
         data: {
           title: 'Asset',
         },
         children: [
           {
             path: '',
-            component: AssetListComponent,
+            loadComponent: () =>
+              import('./pages/asset/asset-list/asset-list.component').then(
+                (m) => m.AssetListComponent,
+              ),
             data: {
               title: 'Asset',
             },
           },
           {
             path: 'Create',
-            component: AssetCreateComponent,
+            loadComponent: () =>
+              import('./pages/asset/asset-create/asset-create.component').then(
+                (m) => m.AssetCreateComponent,
+              ),
             data: {
               title: 'Asset',
             },
@@ -428,42 +477,60 @@ export const routes: Routes = [
       },
       {
         path: 'Expense',
-        component: ExpenseComponent,
+        loadComponent: () =>
+          import('./pages/expense/expense.component').then(
+            (m) => m.ExpenseComponent,
+          ),
         data: {
           title: 'Expense',
         },
         children: [
           {
             path: '',
-            component: ExpenseListComponent,
+            loadComponent: () =>
+              import('./pages/expense/expense-list/expense-list.component').then(
+                (m) => m.ExpenseListComponent,
+              ),
             data: {
               title: 'Expense',
             },
           },
           {
             path: 'Create',
-            component: ExpenseCreateComponent,
+            loadComponent: () =>
+              import('./pages/expense/expense-create/expense-create.component').then(
+                (m) => m.ExpenseCreateComponent,
+              ),
             data: {
               title: 'Expense',
             },
           },
           {
             path: 'Opponent',
-            component: ExpenseOpponentComponent,
+            loadComponent: () =>
+              import('./pages/expense/expense-opponent/expense-opponent.component').then(
+                (m) => m.ExpenseOpponentComponent,
+              ),
             data: {
               title: 'Expense',
             },
             children: [
               {
                 path: '',
-                component: ExpenseOpponentListComponent,
+                loadComponent: () =>
+                  import('./pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component').then(
+                    (m) => m.ExpenseOpponentListComponent,
+                  ),
                 data: {
                   title: 'Expense',
                 },
               },
               {
                 path: 'Create',
-                component: ExpenseOpponentCreateComponent,
+                loadComponent: () =>
+                  import('./pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component').then(
+                    (m) => m.ExpenseOpponentCreateComponent,
+                  ),
                 data: {
                   title: 'Expense',
                 },
@@ -474,86 +541,129 @@ export const routes: Routes = [
       },
       {
         path: 'Income',
-        component: IncomeComponent,
+        loadComponent: () =>
+          import('./pages/income/income.component').then(
+            (m) => m.IncomeComponent,
+          ),
         data: {
           title: 'Income',
         },
         children: [
           {
             path: '',
-            component: IncomeListComponent,
+            loadComponent: () =>
+              import('./pages/income/income-list/income-list.component').then(
+                (m) => m.IncomeListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: IncomeCreateComponent,
+            loadComponent: () =>
+              import('./pages/income/income-create/income-create.component').then(
+                (m) => m.IncomeCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Loans',
-        component: LoansComponent,
+        loadComponent: () =>
+          import('./pages/loans/loans.component').then((m) => m.LoansComponent),
         data: {
           title: 'Loans',
         },
         children: [
           {
             path: '',
-            component: LoansListComponent,
+            loadComponent: () =>
+              import('./pages/loans/loans-list/loans-list.component').then(
+                (m) => m.LoansListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: LoansCreateComponent,
+            loadComponent: () =>
+              import('./pages/loans/loans-create/loans-create.component').then(
+                (m) => m.LoansCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Sales-invoice',
-        component: SalesInvoiceComponent,
+        loadComponent: () =>
+          import('./pages/sales-invoice/sales-invoice.component').then(
+            (m) => m.SalesInvoiceComponent,
+          ),
         data: {
           title: 'Sales invoice',
         },
         children: [
           {
             path: '',
-            component: SalesInvoiceListComponent,
+            loadComponent: () =>
+              import('./pages/sales-invoice/sales-invoice-list/sales-invoice-list.component').then(
+                (m) => m.SalesInvoiceListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: SalesInvoiceCreateComponent,
+            loadComponent: () =>
+              import('./pages/sales-invoice/sales-invoice-create/sales-invoice-create.component').then(
+                (m) => m.SalesInvoiceCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Employee',
-        component: EmployeeComponent,
+        loadComponent: () =>
+          import('./pages/employee/employee.component').then(
+            (m) => m.EmployeeComponent,
+          ),
         data: {
           title: 'Employee',
         },
         children: [
           {
             path: '',
-            component: EmployeeListComponent,
+            loadComponent: () =>
+              import('./pages/employee/employee-list/employee-list.component').then(
+                (m) => m.EmployeeListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: EmployeeCreateComponent,
+            loadComponent: () =>
+              import('./pages/employee/employee-create/employee-create.component').then(
+                (m) => m.EmployeeCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Salary-slip',
-        component: SalarySlipComponent,
+        loadComponent: () =>
+          import('./pages/salary-slip/salary-slip.component').then(
+            (m) => m.SalarySlipComponent,
+          ),
         data: {
           title: 'Salary slip',
         },
         children: [
           {
             path: '',
-            component: SalarySlipListComponent,
+            loadComponent: () =>
+              import('./pages/salary-slip/salary-slip-list/salary-slip-list.component').then(
+                (m) => m.SalarySlipListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: SalarySlipCreateComponent,
+            loadComponent: () =>
+              import('./pages/salary-slip/salary-slip-create/salary-slip-create.component').then(
+                (m) => m.SalarySlipCreateComponent,
+              ),
           },
           {
             path: 'Create',
@@ -563,62 +673,92 @@ export const routes: Routes = [
       },
       {
         path: 'Client',
-        component: ClientComponent,
+        loadComponent: () =>
+          import('./pages/client/client.component').then(
+            (m) => m.ClientComponent,
+          ),
         data: {
           title: 'Client',
         },
         children: [
           {
             path: '',
-            component: ClientListComponent,
+            loadComponent: () =>
+              import('./pages/client/client-list/client-list.component').then(
+                (m) => m.ClientListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: ClientCreateComponent,
+            loadComponent: () =>
+              import('./pages/client/client-create/client-create.component').then(
+                (m) => m.ClientCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Calendar',
-        component: CalendarComponent,
+        loadComponent: () =>
+          import('./pages/calendar/calendar.component').then(
+            (m) => m.CalendarComponent,
+          ),
         data: {
           title: 'Calendar',
         },
       },
       {
         path: 'Interpayment',
-        component: InterpaymentComponent,
+        loadComponent: () =>
+          import('./pages/interpayment/interpayment.component').then(
+            (m) => m.InterpaymentComponent,
+          ),
         data: {
           title: 'Interpayment',
         },
         children: [
           {
             path: '',
-            component: InterpaymentListComponent,
+            loadComponent: () =>
+              import('./pages/interpayment/interpayment-list/interpayment-list.component').then(
+                (m) => m.InterpaymentListComponent,
+              ),
           },
           {
             path: 'Create',
-            component: InterpaymentCreateComponent,
+            loadComponent: () =>
+              import('./pages/interpayment/interpayment-create/interpayment-create.component').then(
+                (m) => m.InterpaymentCreateComponent,
+              ),
           },
         ],
       },
       {
         path: 'Payment',
-        component: PaymentComponent,
+        loadComponent: () =>
+          import('./pages/payment/payment.component').then(
+            (m) => m.PaymentComponent,
+          ),
         data: {
           title: 'Payment',
         },
         children: [
           {
             path: '',
-            component: PaymentListComponent,
+            loadComponent: () =>
+              import('./pages/payment/payment-list/payment-list.component').then(
+                (m) => m.PaymentListComponent,
+              ),
             data: {
               title: 'Payment',
             },
           },
           {
             path: 'History',
-            component: PaymentHistoryComponent,
+            loadComponent: () =>
+              import('./pages/payment/payment-history/payment-history.component').then(
+                (m) => m.PaymentHistoryComponent,
+              ),
             data: {
               title: 'Payment',
             },
@@ -631,7 +771,10 @@ export const routes: Routes = [
       },
       {
         path: 'Taxing',
-        component: TaxingComponent,
+        loadComponent: () =>
+          import('./pages/taxing/taxing.component').then(
+            (m) => m.TaxingComponent,
+          ),
         data: {
           title: 'Taxing',
         },
@@ -642,31 +785,46 @@ export const routes: Routes = [
           },
           {
             path: 'PPN',
-            component: PpnRecapComponent,
+            loadComponent: () =>
+              import('./pages/taxing/ppn-recap/ppn-recap.component').then(
+                (m) => m.PpnRecapComponent,
+              ),
           },
           {
             path: 'PPH',
-            component: PphRecapComponent,
+            loadComponent: () =>
+              import('./pages/taxing/pph-recap/pph-recap.component').then(
+                (m) => m.PphRecapComponent,
+              ),
           },
         ],
       },
       {
         path: 'Item',
-        component: MasterItemListComponent,
+        loadComponent: () =>
+          import('./pages/master/master-item/master-item-list/master-item-list.component').then(
+            (m) => m.MasterItemListComponent,
+          ),
         data: {
           title: 'Item list',
         },
       },
       {
         path: 'Equipment',
-        component: MasterEquipmentListComponent,
+        loadComponent: () =>
+          import('./pages/master/master-equipment/master-equipment-list/master-equipment-list.component').then(
+            (m) => m.MasterEquipmentListComponent,
+          ),
         data: {
           title: 'Item list',
         },
       },
       {
         path: 'Settings',
-        component: SettingsComponent,
+        loadComponent: () =>
+          import('./pages/settings/settings.component').then(
+            (m) => m.SettingsComponent,
+          ),
         data: {
           title: 'Settings',
         },

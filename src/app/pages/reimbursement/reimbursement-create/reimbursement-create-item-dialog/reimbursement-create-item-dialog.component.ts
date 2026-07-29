@@ -17,11 +17,11 @@ import { MatInputModule } from '@angular/material/input';
   styleUrls: ['./reimbursement-create-item-dialog.component.scss'],
   standalone: true,
   imports: [
-    MatInputModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatInputModule,
     MatDatepickerModule,
   ],
 })
@@ -44,7 +44,18 @@ export class ReimbursementCreateItemDialogComponent {
     const date = this.formGroup.get('date')?.value;
     // i think the date here is moment object, so we need to format it
     this.formGroup.get('date')?.setValue(date.format('YYYY-MM-DD'));
-    this.dialog.close(this.formGroup.value);
+    // ngx-mask "separator" menyimpan nilai sebagai string ("1000000").
+    // Konversi ke number agar penjumlahan (PDF) & submit backend tidak
+    // memperlakukannya sebagai teks (string concatenation).
+    const rawAmount = this.formGroup.get('amount')?.value;
+    const numericAmount =
+      typeof rawAmount === 'string'
+        ? Number(rawAmount.replace(/[^0-9.]/g, ''))
+        : Number(rawAmount);
+    this.dialog.close({
+      ...this.formGroup.value,
+      amount: isNaN(numericAmount) ? 0 : numericAmount,
+    });
   }
 
   onCancel() {
