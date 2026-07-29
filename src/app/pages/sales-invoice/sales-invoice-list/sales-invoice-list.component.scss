@@ -12,8 +12,69 @@
 /* ---------- toolbar ---------- */
 .sil-toolbar {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0.5rem 0 1rem;
+}
+@media (min-width: 768px) {
+  .sil-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.sil-chips {
+  margin: 0;
+}
+
+/* warna per filter chip (saat selected) */
+:host
+  ::ng-deep
+  .sil-fchip.mdc-evolution-chip--selected
+  .mdc-evolution-chip__checkmark {
+  display: none;
+}
+:host ::ng-deep .sil-fchip--paid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+:host ::ng-deep .sil-fchip--unpaid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+:host ::ng-deep .sil-fchip--complete.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+:host ::ng-deep .sil-fchip--notax.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+:host ::ng-deep .sil-fchip--nowh.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+
+/* dot indikator warna di depan tiap chip */
+:host ::ng-deep .sil-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+:host ::ng-deep .sil-fchip--paid .mdc-evolution-chip__text-label::before,
+:host ::ng-deep .sil-fchip--complete .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+}
+:host ::ng-deep .sil-fchip--unpaid .mdc-evolution-chip__text-label::before,
+:host ::ng-deep .sil-fchip--notax .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
+}
+:host ::ng-deep .sil-fchip--nowh .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
 }
 .sil-search {
   width: 100%;

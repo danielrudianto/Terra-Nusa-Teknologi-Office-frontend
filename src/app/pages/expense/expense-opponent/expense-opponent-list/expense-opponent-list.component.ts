@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -9,7 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -18,7 +21,10 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [
     RouterModule,
+    HeaderTitleComponent,
     MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -32,6 +38,7 @@ export class ExpenseOpponentListComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private router: Router,
   ) {}
 
   isLoading: boolean = false;
@@ -98,6 +105,10 @@ export class ExpenseOpponentListComponent {
   }
 
   onEdit(id: number) {}
+
+  createOpponent() {
+    this.router.navigate(['/Expense', 'Opponent', 'Create']);
+  }
 
   onViewDetail(id: number) {}
 

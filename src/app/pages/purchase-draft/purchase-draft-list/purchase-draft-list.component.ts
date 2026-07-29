@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -38,6 +39,7 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
     MatChipsModule,
     MatPaginatorModule,
     HeaderTitleComponent,
+    TranslatePipe,
     MatMenuModule,
   ],
   templateUrl: './purchase-draft-list.component.html',

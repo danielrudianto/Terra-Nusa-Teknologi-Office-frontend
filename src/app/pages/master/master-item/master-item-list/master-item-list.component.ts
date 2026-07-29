@@ -17,6 +17,7 @@ import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmat
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { MasterItemCreateComponent } from '../master-item-create/master-item-create.component';
 import { MasterItemUpdateComponent } from '../master-item-update/master-item-update.component';
+import { MasterItemFilterComponent } from './master-item-filter/master-item-filter.component';
 import { ApiService } from 'src/app/services/api.service';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
 import { MatSelectModule } from '@angular/material/select';
@@ -89,11 +90,6 @@ export class MasterItemListComponent {
     this.fetchItems();
     this.fetchFacets();
 
-    // filter dropdown -> reload halaman 1
-    this.brandControl.valueChanges.subscribe(() => this.fetchItems(1));
-    this.typeControl.valueChanges.subscribe(() => this.fetchItems(1));
-    this.purchaseTypeControl.valueChanges.subscribe(() => this.fetchItems(1));
-
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetchItems(1);
     });
@@ -151,6 +147,42 @@ export class MasterItemListComponent {
     this.typeControl.setValue('', { emitEvent: false });
     this.purchaseTypeControl.setValue('', { emitEvent: false });
     this.fetchItems(1);
+  }
+
+  activeFilterCount(): number {
+    let n = 0;
+    if (this.brandControl.value) n++;
+    if (this.typeControl.value) n++;
+    if (this.purchaseTypeControl.value) n++;
+    return n;
+  }
+
+  openFilter() {
+    this.dialog
+      .open(MasterItemFilterComponent, {
+        width: '440px',
+        maxWidth: '92vw',
+        autoFocus: false,
+        data: {
+          brands: this.brands,
+          types: this.types,
+          purchaseTypeOptions: this.purchaseTypeOptions,
+          brand: this.brandControl.value || '',
+          type: this.typeControl.value || '',
+          purchaseType: this.purchaseTypeControl.value || '',
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.brandControl.setValue(result.brand, { emitEvent: false });
+          this.typeControl.setValue(result.type, { emitEvent: false });
+          this.purchaseTypeControl.setValue(result.purchaseType, {
+            emitEvent: false,
+          });
+          this.fetchItems(1);
+        }
+      });
   }
 
   changePage(event: PageEvent) {

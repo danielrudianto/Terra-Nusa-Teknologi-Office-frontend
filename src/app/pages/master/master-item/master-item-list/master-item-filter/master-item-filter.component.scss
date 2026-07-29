@@ -1,16 +1,16 @@
-.itc {
+.mif {
   font-family: "Montserrat", sans-serif;
   color: var(--ink, #16181d);
   width: 100%;
   box-sizing: border-box;
 }
-.itc *,
-.itc *::before,
-.itc *::after {
+.mif *,
+.mif *::before,
+.mif *::after {
   box-sizing: border-box;
 }
 
-.itc-head {
+.mif-head {
   display: flex !important;
   align-items: center;
   gap: 12px;
@@ -34,7 +34,7 @@
     gap: 1px;
   }
 }
-.itc-badge {
+.mif-badge {
   flex: 0 0 auto;
   display: grid;
   place-items: center;
@@ -49,96 +49,60 @@
     height: 20px;
   }
 }
-.itc-title {
+.mif-title {
   font-size: 1.02rem;
   font-weight: 700;
   margin: 0;
   color: var(--ink, #16181d);
 }
-.itc-sub {
-  font-size: 0.8rem;
+.mif-sub {
+  font-size: 0.78rem;
   color: var(--muted, #6b7280);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.itc-content {
+.mif-content {
   padding: 1.35rem 1.4rem 0.5rem !important;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
-.w-100 {
+.mif-field {
   width: 100%;
 }
 
-/* info box invoice & pajak */
-.itc-info {
-  background: var(--surface-2, #f7f9fc);
-  border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 14px;
-  padding: 0.9rem 1rem;
-  margin-bottom: 1.1rem;
-
-  &__row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.32rem 0;
-
-    &--total {
-      margin-top: 0.35rem;
-      padding-top: 0.6rem;
-      border-top: 1px solid var(--border, #e3e6eb);
-    }
-  }
-  &__label {
-    font-size: 0.78rem;
-    color: var(--muted, #6b7280);
-    flex: 0 0 auto;
-  }
-  &__value {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--ink, #16181d);
-    text-align: right;
-
-    &--wrap {
-      font-weight: 500;
-      max-width: 60%;
-    }
-    &--accent {
-      color: var(--brand, #154dec);
-      font-size: 0.92rem;
-    }
-  }
-}
-
-.itc-actions {
+.mif-actions {
   padding: 0.75rem 1.4rem 1.15rem !important;
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.itc-btn {
+.mif-spacer {
+  flex: 1;
+}
+.mif-btn {
   letter-spacing: 0 !important;
   border-radius: 11px !important;
   font-weight: 600 !important;
   height: 42px;
-  padding: 0 1.1rem !important;
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
     margin-right: 4px;
   }
+  &--reset {
+    color: var(--muted, #6b7280) !important;
+    &:disabled {
+      opacity: 0.45;
+    }
+  }
   &--ghost {
     color: var(--muted, #6b7280) !important;
-    border: 1px solid var(--border, #e3e6eb) !important;
   }
   &--primary {
     background: var(--brand, #154dec) !important;
     color: #fff !important;
-    &:disabled {
-      opacity: 0.55;
-    }
+    padding: 0 1.3rem !important;
   }
 }

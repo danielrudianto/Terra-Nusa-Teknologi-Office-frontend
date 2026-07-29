@@ -113,10 +113,6 @@
           <span>PPN ({{ f["ppn"].value }}%)</span
           ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
-        <div class="sv-money__row" *ngIf="vBpjs">
-          <span>BPJS</span
-          ><span>{{ vBpjs | currency: "Rp " : "symbol" : "1.0-0" }}</span>
-        </div>
         <div class="sv-money__row sv-money__row--sub">
           <span>Total Invoice</span
           ><span>{{
@@ -126,6 +122,10 @@
         <div class="sv-money__row sv-money__row--neg">
           <span>PPh dipotong ({{ f["pphPercentage"].value }}%)</span
           ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="sv-money__row sv-money__row--neg" *ngIf="vBpjs">
+          <span>BPJS (potongan)</span
+          ><span>− {{ vBpjs | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
 
         <!-- PPh tax object -->

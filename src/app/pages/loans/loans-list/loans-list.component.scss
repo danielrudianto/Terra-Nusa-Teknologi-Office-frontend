@@ -21,7 +21,7 @@ $hover: var(--hover, #f6f8ff);
 
 /* chips */
 .ll-chips {
-  margin: 0.25rem 0 1rem;
+  margin: 0;
 }
 :host ::ng-deep .ll-chips .mat-mdc-chip-option {
   --mdc-chip-elevated-container-color: var(--surface-2, #f1f3f7);
@@ -29,28 +29,57 @@ $hover: var(--hover, #f6f8ff);
   border-radius: 999px;
   font-weight: 600;
 }
-:host ::ng-deep .ll-chips .mat-mdc-chip-option.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-container-color: var(--brand, #154dec);
-  --mdc-chip-label-text-color: #fff;
-  --mdc-chip-selected-label-text-color: #fff;
-}
 :host
   ::ng-deep
-  .ll-chips
-  .mat-mdc-chip-option.mdc-evolution-chip--selected
+  .ll-fchip.mdc-evolution-chip--selected
   .mdc-evolution-chip__checkmark {
-  color: #fff;
+  display: none;
+}
+
+/* warna per filter chip (saat selected) */
+:host ::ng-deep .ll-fchip--paid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+:host ::ng-deep .ll-fchip--unpaid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+
+/* dot indikator warna di depan tiap chip */
+:host ::ng-deep .ll-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+:host ::ng-deep .ll-fchip--paid .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+}
+:host ::ng-deep .ll-fchip--unpaid .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
 }
 
 /* toolbar */
 .ll-toolbar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+@media (min-width: 768px) {
+  .ll-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 .ll-search {
-  flex: 1 1 360px;
-  min-width: 260px;
+  width: 100%;
+  max-width: 400px;
 }
 .ll-search .mat-mdc-form-field {
   margin-bottom: -1.25em;

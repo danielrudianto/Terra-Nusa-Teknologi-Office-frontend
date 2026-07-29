@@ -15,9 +15,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
 import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -31,8 +33,10 @@ import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
+    MatChipsModule,
     MatMenuModule,
     HeaderTitleComponent,
+    TranslatePipe,
   ],
   templateUrl: './sales-invoice-list.component.html',
   styleUrl: './sales-invoice-list.component.scss',
@@ -55,6 +59,51 @@ export class SalesInvoiceListComponent {
   sortByDirection: string = 'desc';
 
   searchFormControl: FormControl = new FormControl('');
+
+  // filter chip (multi-select) — konsisten English
+  filterChips: { key: string; label: string; variant: string }[] = [
+    { key: 'paid', label: 'status.paid', variant: 'paid' },
+    { key: 'unpaid', label: 'status.unpaid', variant: 'unpaid' },
+    { key: 'complete', label: 'status.complete', variant: 'complete' },
+    { key: 'no_tax_invoice', label: 'status.noTaxInvoice', variant: 'notax' },
+    { key: 'no_withholding', label: 'status.noWithholding', variant: 'nowh' },
+  ];
+  activeFilters: string[] = [];
+
+  isFilterActive(key: string): boolean {
+    return this.activeFilters.includes(key);
+  }
+
+  toggleFilter(key: string): void {
+    const i = this.activeFilters.indexOf(key);
+    if (i >= 0) {
+      this.activeFilters.splice(i, 1);
+    } else {
+      this.activeFilters.push(key);
+    }
+    this.fetchData(1);
+  }
+
+  /** i18n key untuk status approval. */
+  statusKey(invoice: any): string {
+    if (invoice.isDelete) return 'status.deleted';
+    return invoice.isApprove ? 'status.approved' : 'status.pending';
+  }
+
+  /** i18n key untuk status pajak. */
+  taxStatusKey(taxingStatus: string): string {
+    switch (taxingStatus) {
+      case 'tax_invoice_not_published':
+        return 'taxStatus.noTaxInvoice';
+      case 'waiting_for_payment':
+        return 'taxStatus.waitingPayment';
+      case 'income_tax_not_published':
+        return 'taxStatus.noWithholding';
+      case 'fully_published':
+      default:
+        return 'taxStatus.done';
+    }
+  }
 
   displayedColumns: string[] = [
     'date',
@@ -82,14 +131,19 @@ export class SalesInvoiceListComponent {
     this.isLoading = true;
     this.page = targetPage;
 
+    const params: any = {
+      page: this.page,
+      pageSize: this.pageSize,
+      keyword: this.searchFormControl.value,
+      sortBy: this.sortBy,
+      sortByDirection: this.sortByDirection,
+    };
+    if (this.activeFilters.length) {
+      params.filters = this.activeFilters;
+    }
+
     this.apiService
-      .get('sales-invoices', {
-        page: this.page,
-        pageSize: this.pageSize,
-        keyword: this.searchFormControl.value,
-        sortBy: this.sortBy,
-        sortByDirection: this.sortByDirection,
-      })
+      .get('sales-invoices', params)
       .subscribe({
         next: (data: any) => {
           this.salesInvoices = data.data;
@@ -179,8 +233,12 @@ export class SalesInvoiceListComponent {
           id: invoice.id,
           name: invoice.name,
           incomeTaxInvoiceName: invoice.incomeTaxInvoiceName,
+          dpp: invoice.dpp,
+          pphPercentage: invoice.pphPercentage,
+          pphCode: invoice.pphCode,
+          pphTaxObject: invoice.pphTaxObject,
         },
-        width: '440px',
+        width: '460px',
         maxWidth: '92vw',
         autoFocus: false,
       })

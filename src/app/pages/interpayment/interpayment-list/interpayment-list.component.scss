@@ -103,9 +103,22 @@
   }
 }
 
-/* ---------- toolbar ---------- */
+/* ---------- toolbar: date range (kiri) + add (kanan) ---------- */
 .ip-toolbar {
-  margin: 0.5rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+@media (min-width: 768px) {
+  .ip-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.ip-toolbar__filter {
+  display: flex;
 }
 .ip-range {
   width: 100%;
@@ -121,6 +134,33 @@
 }
 :host ::ng-deep .ip-range .mat-mdc-text-field-wrapper {
   background: var(--surface, #ffffff);
+}
+
+.ip-add {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 46px;
+  padding: 0 1.3rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--brand, #154dec);
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
 }
 
 /* ---------- card ---------- */

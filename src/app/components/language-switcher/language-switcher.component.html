@@ -1,0 +1,29 @@
+<button
+  type="button"
+  class="lang-trigger"
+  [matMenuTriggerFor]="langMenu"
+  #trigger="matMenuTrigger"
+  [class.is-open]="trigger.menuOpen"
+  aria-label="Change language"
+>
+  <mat-icon class="lang-trigger__globe">language</mat-icon>
+  <span class="lang-trigger__code">{{ current.short }}</span>
+  <mat-icon class="lang-trigger__caret">expand_more</mat-icon>
+</button>
+
+<mat-menu #langMenu="matMenu" class="lang-menu" xPosition="before">
+  <div class="lang-menu__head">{{ "language.label" | translate }}</div>
+  <button
+    *ngFor="let l of languages"
+    mat-menu-item
+    class="lang-item"
+    [class.lang-item--active]="isActive(l.code)"
+    (click)="select(l.code)"
+  >
+    <span class="lang-item__code">{{ l.short }}</span>
+    <span class="lang-item__meta">
+      <span class="lang-item__label">{{ l.label }}</span>
+      <span class="lang-item__native">{{ l.native }}</span>
+    </span>
+  </button>
+</mat-menu>

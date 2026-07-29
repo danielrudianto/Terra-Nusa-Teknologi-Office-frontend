@@ -1,4 +1,3 @@
-
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
@@ -22,6 +21,7 @@
 
 .pl-search {
   width: 100%;
+  max-width: 400px;
 }
 
 :host ::ng-deep .pl-search .mat-mdc-text-field-wrapper {
@@ -351,4 +351,80 @@
     max-width: 380px;
     margin-bottom: -1.25em;
   }
+}
+
+/* ===== warna per filter chip (saat selected) ===== */
+:host ::ng-deep .pl-fchip.mdc-evolution-chip--selected {
+  /* base: reset biar tiap chip bisa warna sendiri */
+  .mdc-evolution-chip__checkmark {
+    display: none;
+  }
+}
+
+/* Due -> orange */
+:host ::ng-deep .pl-fchip--due.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+/* Not yet due -> netral abu */
+:host ::ng-deep .pl-fchip--notdue.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--surface-2, #eef1f6);
+  --mdc-chip-selected-label-text-color: var(--muted, #5f6672);
+}
+/* Paid -> hijau */
+:host ::ng-deep .pl-fchip--paid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+/* Unpaid -> merah */
+:host ::ng-deep .pl-fchip--unpaid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+/* Draft -> orange lembut */
+:host ::ng-deep .pl-fchip--draft.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+/* Ready -> biru brand */
+:host ::ng-deep .pl-fchip--ready.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
+}
+
+/* dot indikator warna di depan tiap chip (selalu tampil, biar keliatan makna warnanya) */
+:host ::ng-deep .pl-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.55;
+}
+:host ::ng-deep .pl-fchip--due .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+  opacity: 1;
+}
+:host ::ng-deep .pl-fchip--notdue .mdc-evolution-chip__text-label::before {
+  background: var(--muted, #9aa0ab);
+  opacity: 1;
+}
+:host ::ng-deep .pl-fchip--paid .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+  opacity: 1;
+}
+:host ::ng-deep .pl-fchip--unpaid .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
+  opacity: 1;
+}
+:host ::ng-deep .pl-fchip--draft .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+  opacity: 1;
+}
+:host ::ng-deep .pl-fchip--ready .mdc-evolution-chip__text-label::before {
+  background: var(--brand, #154dec);
+  opacity: 1;
 }

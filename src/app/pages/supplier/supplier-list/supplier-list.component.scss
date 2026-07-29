@@ -1,7 +1,6 @@
-
 :host {
   display: block;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* full width — no max-width cap */
@@ -12,13 +11,15 @@
 
 /* ---------- toolbar ---------- */
 .sl-toolbar {
+  align-items: center;
   display: flex;
-  justify-content: flex-end;
   margin: 0.5rem 0 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 .sl-search {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   margin-bottom: -1.25em;
 }
 :host ::ng-deep .sl-search .mat-mdc-text-field-wrapper {
@@ -36,13 +37,17 @@
   background: var(--surface, #ffffff);
   border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.05);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
   overflow: hidden;
 }
 
 .sl-loadingbar {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3px;
   background: var(--brand-soft, #e7ecfb);
   overflow: hidden;
@@ -58,19 +63,30 @@
   }
 }
 @keyframes sl-indeterminate {
-  0% { left: -40%; }
-  60% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -40%;
+  }
+  60% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
-.sl-card.is-loading .table-responsive { opacity: 0.55; transition: opacity 0.2s; }
+.sl-card.is-loading .table-responsive {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
 
-.table-responsive { overflow-x: auto; }
+.table-responsive {
+  overflow-x: auto;
+}
 
 /* ---------- mat-table ---------- */
 :host ::ng-deep table.mat-mdc-table {
   width: 100%;
   background: transparent;
-  --mat-table-row-item-label-text-font: 'Montserrat', sans-serif;
+  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
 }
 
 :host ::ng-deep .mat-mdc-header-row {
@@ -94,8 +110,12 @@
   transition: background 0.14s ease;
   border-bottom: 1px solid var(--line, #eef0f3);
 }
-:host ::ng-deep .mat-mdc-row:last-child { border-bottom: none; }
-:host ::ng-deep .mat-mdc-row:hover { background: var(--hover, #f6f8ff); }
+:host ::ng-deep .mat-mdc-row:last-child {
+  border-bottom: none;
+}
+:host ::ng-deep .mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
+}
 
 :host ::ng-deep .mat-mdc-cell {
   border-bottom: none;
@@ -106,7 +126,11 @@
 }
 
 /* ---------- cell content ---------- */
-.sl-primary { font-weight: 600; color: var(--ink, #16181d); font-size: 0.9rem; }
+.sl-primary {
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  font-size: 0.9rem;
+}
 .sl-muted {
   font-size: 0.84rem;
   color: var(--muted, #6b7280);
@@ -117,9 +141,18 @@
   white-space: nowrap;
   vertical-align: middle;
 }
-.sl-mono { font-variant-numeric: tabular-nums; color: var(--ink, #16181d); white-space: nowrap; }
+.sl-mono {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #16181d);
+  white-space: nowrap;
+}
 
-.sl-supplier { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sl-supplier {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
 .sl-avatar {
   flex: 0 0 auto;
   width: 34px;
@@ -144,7 +177,12 @@
   color: var(--faint, #9aa0ab);
   font-size: 0.9rem;
 
-  mat-icon { font-size: 34px; width: 34px; height: 34px; color: var(--faint, #cfd4dc); }
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--faint, #cfd4dc);
+  }
 }
 
 /* ---------- paginator ---------- */
@@ -152,18 +190,33 @@
   background: transparent;
   border-top: 1px solid var(--line, #eef0f3);
   color: var(--muted, #6b7280);
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 /* blacklist badge + avatar tint */
 .sl-avatar.is-blacklist {
   background: var(--bad-bg, #fdecec) !important;
   color: var(--bad-fg, #b3322f) !important;
 }
-.sl-primary { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sl-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .sl-blacklist {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.03em;
-  padding: 2px 8px 2px 5px; border-radius: 999px;
-  background: var(--bad-bg, #fdecec); color: var(--bad-fg, #b3322f);
-  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 8px 2px 5px;
+  border-radius: 999px;
+  background: var(--bad-bg, #fdecec);
+  color: var(--bad-fg, #b3322f);
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
 }

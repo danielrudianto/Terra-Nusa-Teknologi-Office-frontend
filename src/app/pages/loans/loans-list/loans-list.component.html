@@ -6,27 +6,29 @@
     (onActionButtonClicked)="createNewLoan()"
   ></app-header-title>
 
-  <form [formGroup]="filterFormGroup">
-    <mat-chip-listbox
-      class="ll-chips"
-      multiple
-      aria-label="Filter Selection"
-      [disabled]="isLoading"
-    >
-      <mat-chip-option
-        [selected]="isChipSelected('isPaid')"
-        (selectionChange)="changeSelection('isPaid', $event)"
-        >Paid</mat-chip-option
-      >
-      <mat-chip-option
-        [selected]="isChipSelected('isUnpaid')"
-        (selectionChange)="changeSelection('isUnpaid', $event)"
-        >Unpaid</mat-chip-option
-      >
-    </mat-chip-listbox>
-  </form>
-
   <div class="ll-toolbar">
+    <form [formGroup]="filterFormGroup">
+      <mat-chip-listbox
+        class="ll-chips"
+        multiple
+        aria-label="Filter Selection"
+        [disabled]="isLoading"
+      >
+        <mat-chip-option
+          class="ll-fchip ll-fchip--paid"
+          [selected]="isChipSelected('isPaid')"
+          (selectionChange)="changeSelection('isPaid', $event)"
+          >Paid</mat-chip-option
+        >
+        <mat-chip-option
+          class="ll-fchip ll-fchip--unpaid"
+          [selected]="isChipSelected('isUnpaid')"
+          (selectionChange)="changeSelection('isUnpaid', $event)"
+          >Unpaid</mat-chip-option
+        >
+      </mat-chip-listbox>
+    </form>
+
     <mat-form-field appearance="outline" class="ll-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>Search</mat-label>

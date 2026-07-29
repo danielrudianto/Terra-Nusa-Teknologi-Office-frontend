@@ -54,8 +54,8 @@ $hover: var(--hover, #f6f8ff);
   margin-bottom: 1rem;
 }
 .cl-search {
-  flex: 1 1 360px;
-  min-width: 260px;
+  width: 100%;
+  max-width: 400px;
 }
 .cl-search .mat-mdc-form-field {
   margin-bottom: -1.25em;
@@ -168,7 +168,6 @@ $hover: var(--hover, #f6f8ff);
   font-weight: 400;
 }
 .cl-npwp {
-  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-size: 0.82rem;
   color: var(--muted, #3f4653);
 }

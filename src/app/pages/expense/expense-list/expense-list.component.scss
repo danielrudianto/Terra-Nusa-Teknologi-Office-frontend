@@ -1,4 +1,3 @@
-
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
@@ -11,7 +10,7 @@
 
 /* ---------- filter chips ---------- */
 .ex-chips {
-  margin: 0.5rem 0 0.85rem;
+  margin: 0.25rem 0 1rem;
 }
 
 :host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
@@ -54,8 +53,8 @@
   width: 260px;
 }
 .ex-search {
-  flex: 1 1 320px;
-  min-width: 260px;
+  width: 100%;
+  max-width: 400px;
 }
 .ex-toggle {
   flex: 0 0 auto;
@@ -290,4 +289,45 @@
   border-top: 1px solid var(--line, #eef0f3);
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
+}
+
+/* ===== warna per filter chip (saat selected) — konsisten dengan purchase/reimbursement ===== */
+:host ::ng-deep .ex-fchip--due.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+:host ::ng-deep .ex-fchip--notdue.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--surface-2, #eef1f6);
+  --mdc-chip-selected-label-text-color: var(--muted, #5f6672);
+}
+:host ::ng-deep .ex-fchip--paid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+:host ::ng-deep .ex-fchip--unpaid.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+
+/* dot indikator warna di depan tiap chip */
+:host ::ng-deep .ex-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+:host ::ng-deep .ex-fchip--due .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+}
+:host ::ng-deep .ex-fchip--notdue .mdc-evolution-chip__text-label::before {
+  background: var(--muted, #9aa0ab);
+}
+:host ::ng-deep .ex-fchip--paid .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+}
+:host ::ng-deep .ex-fchip--unpaid .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
 }

@@ -121,6 +121,10 @@
   flex: 1 1 auto;
   min-width: 0;
 }
+.master-anim {
+  display: block;
+  will-change: opacity, transform;
+}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 820px) {

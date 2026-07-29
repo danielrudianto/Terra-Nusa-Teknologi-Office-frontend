@@ -53,7 +53,16 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient } from '@angular/common/http';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import {
+  AppPaginatorIntl,
+  appPaginatorIntlFactory,
+} from './services/app-paginator-intl';
+import { TranslateService } from '@ngx-translate/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -128,8 +137,22 @@ export const MY_FORMATS = {
     },
     provideMomentDateAdapter(MY_FORMATS),
     provideHttpClient(withInterceptorsFromDi()),
+    provideTranslateService({
+      defaultLanguage: 'id',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (http: HttpClient) =>
+          new TranslateHttpLoader(http, './assets/i18n/', '.json'),
+        deps: [HttpClient],
+      },
+    }),
     DatePipe,
     DecimalPipe,
+    {
+      provide: MatPaginatorIntl,
+      useFactory: appPaginatorIntlFactory,
+      deps: [TranslateService],
+    },
   ],
 })
 export class AppModule {}

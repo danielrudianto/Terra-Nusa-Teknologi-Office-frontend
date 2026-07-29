@@ -15,7 +15,7 @@ mat-toolbar {
   flex-direction: row;
   align-items: center;
   gap: 0.35rem;
-  font-family: 'Poppins';
+  font-family: "Poppins";
 
   background: var(--surface-color, #ffffff);
   border-bottom: 1px solid rgba(16, 24, 40, 0.06);
@@ -23,66 +23,129 @@ mat-toolbar {
 
   /* lively brand accent strip along the very top */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--brand, #154dec) 0%, #5b86ff 50%, var(--brand, #154dec) 100%);
+    background: linear-gradient(
+      90deg,
+      var(--brand, #154dec) 0%,
+      #5b86ff 50%,
+      var(--brand, #154dec) 100%
+    );
   }
 
-  .spacer { flex: 1 1 auto; }
+  .spacer {
+    flex: 1 1 auto;
+  }
 
-  /* nav link buttons (they contain an <img> + <span>) */
-  button.h-100:has(img) {
-    height: auto !important;
-    background: none;
+  /* icon button (dark mode toggle) */
+  .tn-icon-btn {
+    height: 42px;
+    width: 42px;
+    padding: 0;
     border: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 8px 14px;
-    border-radius: 11px;
+    background: none;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
     color: var(--muted, #3f4653);
-    font-family: 'Poppins';
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
 
-    img {
-      width: 18px;
-      height: 18px;
-      transition: filter 0.15s ease;
-      /* neutral grey */
-      filter: brightness(0) saturate(100%) invert(30%) sepia(6%) saturate(500%)
-        hue-rotate(185deg) brightness(92%) contrast(88%);
-    }
-
-    &:hover:not(.active) {
+    &:hover {
       background: rgba(21, 77, 236, 0.06);
       color: var(--brand, #154dec);
-      img {
-        filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
-          saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
-      }
+    }
+    mat-icon {
+      font-size: 21px;
+      width: 21px;
+      height: 21px;
+    }
+  }
+
+  .tn-lang {
+    margin: 0 2px;
+  }
+
+  /* account button */
+  .tn-account {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    height: 44px;
+    padding: 0 0.55rem 0 0.5rem;
+    border: 0.5px solid var(--border, #e3e6eb);
+    border-radius: 12px;
+    background: var(--surface, #ffffff);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      background: var(--hover, #f6f8ff);
+      border-color: var(--brand, #154dec);
     }
 
-    &.active {
-      background: var(--active-button-color);
-      font-weight: 600;
-      span { color: var(--on-active-button-color) !important; }
-      img {
-        filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
-          saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
+    &__avatar {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--brand, #154dec);
+      color: #fff;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+
+      &--lg {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
       }
+    }
+    &__meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.15;
+      max-width: 170px;
+    }
+    &__name {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--ink, #16181d);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 170px;
+    }
+    &__role {
+      font-size: 0.72rem;
+      color: var(--faint, #9aa0ab);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 170px;
+    }
+    &__caret {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--faint, #9aa0ab);
     }
   }
 
   /* hamburger / menu icon button (contains a <mat-icon>) */
-  button:has(mat-icon) {
+  button:has(mat-icon):not(.tn-icon-btn):not(.tn-account) {
     height: 42px !important;
     width: 42px;
     padding: 0;
@@ -90,11 +153,41 @@ mat-toolbar {
     display: grid;
     place-items: center;
     color: var(--muted, #3f4653);
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
 
     &:hover {
       background: rgba(21, 77, 236, 0.06);
       color: var(--brand, #154dec);
     }
+  }
+}
+
+/* account dropdown menu (di luar :host toolbar karena mat-menu overlay) */
+::ng-deep .tn-account-menu {
+  .tn-account-menu__head {
+    display: flex !important;
+    align-items: center;
+    gap: 11px;
+    opacity: 1 !important;
+    pointer-events: none;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .tn-account-menu__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .tn-account-menu__name {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--ink, #16181d);
+  }
+  .tn-account-menu__email {
+    font-size: 0.75rem;
+    color: var(--faint, #9aa0ab);
   }
 }

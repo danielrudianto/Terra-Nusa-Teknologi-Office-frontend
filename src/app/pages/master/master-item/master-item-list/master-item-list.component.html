@@ -17,6 +17,19 @@
 
     <span class="mi-spacer"></span>
 
+    <button
+      type="button"
+      class="mi-btn mi-btn--ghost mi-filter-btn"
+      [class.mi-filter-btn--active]="activeFilterCount() > 0"
+      (click)="openFilter()"
+    >
+      <mat-icon>filter_list</mat-icon>
+      Filter
+      <span class="mi-filter-badge" *ngIf="activeFilterCount() > 0">{{
+        activeFilterCount()
+      }}</span>
+    </button>
+
     <button type="button" class="mi-btn mi-btn--brand" (click)="createItem()">
       <mat-icon>add</mat-icon> Tambah item
     </button>
@@ -40,43 +53,6 @@
   </div>
 
   <!-- ===== Filter row ===== -->
-  <div class="mi-filters">
-    <mat-form-field appearance="outline" class="mi-filter">
-      <mat-label>Brand</mat-label>
-      <mat-select [formControl]="brandControl">
-        <mat-option value="">Semua brand</mat-option>
-        <mat-option *ngFor="let b of brands" [value]="b">{{ b }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="mi-filter">
-      <mat-label>Tipe</mat-label>
-      <mat-select [formControl]="typeControl">
-        <mat-option value="">Semua tipe</mat-option>
-        <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="mi-filter">
-      <mat-label>Tipe PO</mat-label>
-      <mat-select [formControl]="purchaseTypeControl">
-        <mat-option value="">Semua tipe PO</mat-option>
-        <mat-option *ngFor="let p of purchaseTypeOptions" [value]="p.code">{{
-          p.label
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button
-      *ngIf="hasActiveFilter()"
-      type="button"
-      class="mi-btn mi-btn--ghost mi-filter-reset"
-      (click)="resetFilters()"
-    >
-      <mat-icon>close</mat-icon> Reset
-    </button>
-  </div>
-
   <div class="mi-card">
     <mat-progress-bar
       *ngIf="isLoading || isImporting"

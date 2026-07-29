@@ -26,6 +26,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-list',
@@ -44,6 +45,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatIconModule,
     HeaderTitleComponent,
     MatSnackBarModule,
+    TranslatePipe,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],

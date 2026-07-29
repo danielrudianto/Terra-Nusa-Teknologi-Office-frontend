@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.eol {
+  padding: 0.25rem 0 2rem;
+}
+
+/* ============ TOOLBAR ============ */
+.eol-toolbar {
+  margin-bottom: 1rem;
+}
+.eol-search {
+  width: 100%;
+  max-width: 400px;
+
+  .mat-mdc-form-field {
+    margin-bottom: -1.25em;
+  }
+}
+:host ::ng-deep .eol-search .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: var(--surface, #ffffff);
+}
+:host ::ng-deep .eol-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: var(--faint, #9aa0ab);
+  margin: 0 6px 0 4px;
+}
+
+/* ============ CARD ============ */
+.eol-card {
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+}
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  background: transparent;
+}
+
+:host ::ng-deep .mat-mdc-header-row {
+  background: var(--surface-2, #fafbfc);
+}
+:host ::ng-deep .mat-mdc-header-cell {
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--border, #e3e6eb);
+}
+:host ::ng-deep .mat-mdc-cell {
+  color: var(--ink, #16181d);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.86rem;
+  border-bottom: 1px solid var(--line, #eef0f3);
+}
+:host ::ng-deep .mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
+}
+
+.eol-name {
+  font-weight: 600;
+}
+.eol-muted {
+  color: var(--faint, #9aa0ab);
+}
+
+/* type chip */
+.eol-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+/* payment number + copy */
+.eol-pay {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.eol-copy {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  color: var(--faint, #9aa0ab);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  &:hover {
+    color: var(--brand, #154dec);
+  }
+}
+
+/* empty */
+.eol-norow td {
+  padding: 0 !important;
+}
+.eol-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: var(--faint, #9aa0ab);
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--faint, #cfd4dc);
+  }
+}
+
+/* paginator */
+:host ::ng-deep .mat-mdc-paginator {
+  background: transparent;
+  border-top: 1px solid var(--line, #eef0f3);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+}

@@ -38,13 +38,27 @@ import { ApiService } from '../../../../services/api.service';
 export class IncomeTaxCreateComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public data: { id: number; name?: string; incomeTaxInvoiceName?: string },
+    public data: {
+      id: number;
+      name?: string;
+      incomeTaxInvoiceName?: string;
+      dpp?: number;
+      pphPercentage?: number;
+      pphCode?: string;
+      pphTaxObject?: string;
+    },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<IncomeTaxCreateComponent>,
   ) {}
 
   isSubmitting = false;
+
+  get pphAmount(): number {
+    const dpp = this.data.dpp || 0;
+    const pct = this.data.pphPercentage || 0;
+    return (dpp * pct) / 100;
+  }
 
   formGroup: FormGroup = new FormGroup({
     incomeTaxInvoiceName: new FormControl('', [

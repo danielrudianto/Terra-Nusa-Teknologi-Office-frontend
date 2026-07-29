@@ -25,6 +25,8 @@
 
   <!-- content -->
   <section class="master-content">
-    <router-outlet></router-outlet>
+    <div class="master-anim" [@routeFade]="getRouteState(outlet)">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
   </section>
 </div>

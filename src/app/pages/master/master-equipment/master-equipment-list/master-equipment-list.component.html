@@ -32,8 +32,8 @@
           <th mat-header-cell *matHeaderCellDef>Nama</th>
           <td mat-cell *matCellDef="let it">
             <div class="me-name">
-              <span class="me-badge">{{ (it.name || "?").charAt(0) }}</span
-              ><span class="me-primary">{{ it.name }}</span>
+              <span class="me-badge">{{ (it.name || "?").charAt(0) }}</span>
+              <span class="me-primary">{{ it.name }}</span>
             </div>
           </td>
         </ng-container>
@@ -46,7 +46,7 @@
         <ng-container matColumnDef="capacity">
           <th mat-header-cell *matHeaderCellDef>Kapasitas</th>
           <td mat-cell *matCellDef="let it">
-            <span class="me-primary">{{ it.capacity || "—" }}</span>
+            <span class="me-muted">{{ it.capacity || "—" }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="brand">

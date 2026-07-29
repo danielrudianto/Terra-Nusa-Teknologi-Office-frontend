@@ -28,14 +28,6 @@
         placeholder="Cari deskripsi, opponent, atau invoice"
         [formControl]="searchControl"
       />
-      <button
-        mat-icon-button
-        matSuffix
-        [matMenuTriggerFor]="menu"
-        aria-label="More"
-      >
-        <mat-icon>more_vert</mat-icon>
-      </button>
     </mat-form-field>
 
     <mat-slide-toggle
@@ -45,15 +37,6 @@
     >
       Ignore date
     </mat-slide-toggle>
-
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="openCreateOpponentDialog()">
-        <mat-icon>add</mat-icon><span>Create new opponent</span>
-      </button>
-      <button mat-menu-item routerLink="/Expense/Opponent">
-        <mat-icon>list</mat-icon><span>Opponent list</span>
-      </button>
-    </mat-menu>
   </div>
 
   <div class="il-card" [class.is-loading]="isLoading">

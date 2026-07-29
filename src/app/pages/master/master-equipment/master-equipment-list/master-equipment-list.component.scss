@@ -29,8 +29,8 @@ $hover: var(--hover, #f6f8ff);
   margin: 0.25rem 0 1rem;
 }
 .me-search {
-  flex: 1 1 340px;
-  min-width: 240px;
+  width: 100%;
+  max-width: 400px;
 }
 .me-search .mat-mdc-form-field {
   margin-bottom: -1.25em;
@@ -167,13 +167,17 @@ $hover: var(--hover, #f6f8ff);
   text-transform: uppercase;
 }
 .me-mono {
-  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-weight: 600;
   font-size: 0.83rem;
   color: $ink;
 }
+.me-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .me-primary {
-  font-weight: 500;
+  font-weight: 600;
   color: $ink;
 }
 .me-muted {

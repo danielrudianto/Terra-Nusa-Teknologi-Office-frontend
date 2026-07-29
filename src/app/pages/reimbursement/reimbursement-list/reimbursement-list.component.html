@@ -15,26 +15,31 @@
         [disabled]="isLoading"
       >
         <mat-chip-option
+          class="rl-fchip rl-fchip--approved"
           [selected]="isChipSelected('isApprove')"
           (selectionChange)="changeSelection('isApprove', $event)"
           >Approved</mat-chip-option
         >
         <mat-chip-option
+          class="rl-fchip rl-fchip--rejected"
           [selected]="isChipSelected('isDelete')"
           (selectionChange)="changeSelection('isDelete', $event)"
           >Rejected</mat-chip-option
         >
         <mat-chip-option
+          class="rl-fchip rl-fchip--pending"
           [selected]="isChipSelected('isPending')"
           (selectionChange)="changeSelection('isPending', $event)"
           >Pending</mat-chip-option
         >
         <mat-chip-option
+          class="rl-fchip rl-fchip--paid"
           [selected]="isChipSelected('isPaid')"
           (selectionChange)="changeSelection('isPaid', $event)"
           >Paid</mat-chip-option
         >
         <mat-chip-option
+          class="rl-fchip rl-fchip--unpaid"
           [selected]="isChipSelected('isUnpaid')"
           (selectionChange)="changeSelection('isUnpaid', $event)"
           >Unpaid</mat-chip-option

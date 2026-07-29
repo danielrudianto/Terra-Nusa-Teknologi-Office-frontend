@@ -6,10 +6,6 @@
       <p class="ip-hero__desc">
         Catat dan pantau perpindahan dana antar rekening perusahaan.
       </p>
-      <button class="ip-hero__cta" (click)="createNewInterpayment()">
-        <mat-icon>add</mat-icon>
-        Create new interpayment
-      </button>
     </div>
 
     <!-- isometric transfer illustration -->
@@ -132,9 +128,9 @@
     </svg>
   </div>
 
-  <!-- ===== toolbar: date range ===== -->
+  <!-- ===== toolbar: date range (kiri) + add (kanan) ===== -->
   <div class="ip-toolbar">
-    <form [formGroup]="formGroup">
+    <form [formGroup]="formGroup" class="ip-toolbar__filter">
       <mat-form-field appearance="outline" class="ip-range">
         <mat-label>Enter a date range</mat-label>
         <mat-date-range-input [rangePicker]="picker">
@@ -152,6 +148,11 @@
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
     </form>
+
+    <button class="ip-add" (click)="createNewInterpayment()">
+      <mat-icon>add</mat-icon>
+      Create new interpayment
+    </button>
   </div>
 
   <!-- ===== table card ===== -->

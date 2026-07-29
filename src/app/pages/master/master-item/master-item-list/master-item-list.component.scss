@@ -29,8 +29,8 @@ $hover: var(--hover, #f6f8ff);
   margin: 0.25rem 0 1rem;
 }
 .mi-search {
-  flex: 1 1 340px;
-  min-width: 240px;
+  width: 100%;
+  max-width: 400px;
 }
 .mi-search .mat-mdc-form-field {
   margin-bottom: -1.25em;
@@ -167,7 +167,6 @@ $hover: var(--hover, #f6f8ff);
   text-transform: uppercase;
 }
 .mi-mono {
-  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-weight: 600;
   font-size: 0.83rem;
   color: $ink;

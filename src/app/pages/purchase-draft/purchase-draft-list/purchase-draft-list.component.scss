@@ -1,4 +1,3 @@
-
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
@@ -11,7 +10,7 @@
 
 /* chips */
 .pdl-chips {
-  margin: 0.25rem 0 1rem;
+  margin: 0;
 }
 :host ::ng-deep .pdl-chips .mat-mdc-chip-option {
   --mdc-chip-elevated-container-color: var(--surface-2, #f1f3f7);
@@ -19,28 +18,66 @@
   border-radius: 999px;
   font-weight: 600;
 }
-:host ::ng-deep .pdl-chips .mat-mdc-chip-option.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-container-color: var(--brand, #154dec);
-  --mdc-chip-label-text-color: #fff;
-  --mdc-chip-selected-label-text-color: #fff;
-}
 :host
   ::ng-deep
-  .pdl-chips
-  .mat-mdc-chip-option.mdc-evolution-chip--selected
+  .pdl-fchip.mdc-evolution-chip--selected
   .mdc-evolution-chip__checkmark {
-  color: #fff;
+  display: none;
+}
+/* collapse ruang checkmark/graphic biar chip ga geser & radius tetap normal */
+:host ::ng-deep .pdl-fchip .mdc-evolution-chip__graphic {
+  width: 0;
+  padding: 0;
+}
+:host ::ng-deep .pdl-fchip .mdc-evolution-chip__action--primary {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* warna per filter chip (saat selected) */
+:host ::ng-deep .pdl-fchip--pending.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+:host ::ng-deep .pdl-fchip--approved.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+
+/* dot indikator warna di depan tiap chip */
+:host ::ng-deep .pdl-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+:host ::ng-deep .pdl-fchip--pending .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+}
+:host ::ng-deep .pdl-fchip--approved .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
 }
 
 /* toolbar */
 .pdl-toolbar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+@media (min-width: 768px) {
+  .pdl-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 .pdl-search {
-  flex: 1 1 340px;
-  min-width: 260px;
+  width: 100%;
+  max-width: 400px;
 }
 .pdl-search .mat-mdc-form-field {
   margin-bottom: -1.25em;

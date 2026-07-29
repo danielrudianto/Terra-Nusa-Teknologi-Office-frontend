@@ -218,7 +218,8 @@ export class SalesInvoiceViewComponent {
           totalPayment:
             data.dpp +
             (data.ppn * data.dpp) / 100 -
-            (data.pphPercentage * data.dpp) / 100,
+            (data.pphPercentage * data.dpp) / 100 -
+            (data.bpjs || 0),
           projectName: data.projectName,
         });
 
