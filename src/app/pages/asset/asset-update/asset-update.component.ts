@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -27,6 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './asset-update.component.html',
   styleUrl: './asset-update.component.scss',
   imports: [
+    TranslatePipe,
     CommonModule,
     MatButtonModule,
     MatSnackBarModule,

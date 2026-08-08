@@ -7,6 +7,23 @@
   ></app-header-title>
 
   <div class="el-toolbar">
+    <mat-chip-listbox
+      class="el-filters"
+      [value]="activeFilter"
+      (change)="setFilter($event.value)"
+      aria-label="Filter employees"
+    >
+      <mat-chip-option value="all" class="el-fchip el-fchip--all">{{
+        "employee.filterAll" | translate
+      }}</mat-chip-option>
+      <mat-chip-option value="active" class="el-fchip el-fchip--active">{{
+        "employee.filterActive" | translate
+      }}</mat-chip-option>
+      <mat-chip-option value="inactive" class="el-fchip el-fchip--inactive">{{
+        "employee.filterInactive" | translate
+      }}</mat-chip-option>
+    </mat-chip-listbox>
+
     <mat-form-field appearance="outline" class="el-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>Search</mat-label>
@@ -81,10 +98,12 @@
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="openUpdateEmployee(element.id)">
-                <mat-icon>edit</mat-icon><span>Update employee data</span>
+                <mat-icon>edit</mat-icon
+                ><span>{{ "menu.updateEmployee" | translate }}</span>
               </button>
               <button mat-menu-item (click)="openSalaryCreate(element.id)">
-                <mat-icon>receipt</mat-icon><span>Create salary slip</span>
+                <mat-icon>receipt</mat-icon
+                ><span>{{ "menu.createSalarySlip" | translate }}</span>
               </button>
             </mat-menu>
           </td>

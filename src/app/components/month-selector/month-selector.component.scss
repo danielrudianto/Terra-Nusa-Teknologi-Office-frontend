@@ -1,78 +1,137 @@
-.month-year-selector__wrapper {
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+
+.ms {
+  font-family: "Montserrat", sans-serif;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.year-selector__wrapper {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-  background-color: black;
-  color: white;
-  justify-content: space-between;
-  align-items: center;
-
-  span {
-    font-size: 1.5rem;
-    font-weight: bold;
-    flex-grow: 1;
-    text-align: center;
-  }
-}
-
-.month-selector__wrapper {
-  width: 100%;
-  padding: 1rem;
-}
-
-.month-selector__table {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-
-  .month-selector__cell {
-    padding: 1rem;
-    cursor: pointer;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid transparent;
-
-    &.active {
-      border: 1px solid var(--color-border);
-    }
-
-    &:hover {
-      background-color: var(--base-color-hover);
-    }
-  }
-}
-
-.month-selector__viewport {
+  box-sizing: border-box;
   overflow: hidden;
-  height: 100%; // or set a fixed height if needed
-  position: relative;
-
-  .month-selector__table {
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &.animate-up {
-      transform: translateY(-100%);
-    }
-
-    &.animate-down {
-      transform: translateY(100%);
-    }
-  }
+  background: var(--surface, #ffffff);
+  color: $ink;
+}
+.ms *,
+.ms *::before,
+.ms *::after {
+  box-sizing: border-box;
 }
 
-.year-selector__year {
+/* ---------- year header ---------- */
+.ms-year {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: var(--brand, #154dec);
+  color: #fff;
+}
+.ms-year__nav {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.28);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.ms-year__value {
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   display: inline-block;
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 
   &.animate {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-14px);
+  }
+}
+
+/* ---------- month grid ---------- */
+.ms-body {
+  padding: 1rem;
+}
+.ms-viewport {
+  overflow: hidden;
+  position: relative;
+}
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.animate-up {
+    transform: translateY(-100%);
+  }
+  &.animate-down {
+    transform: translateY(100%);
+  }
+}
+
+.ms-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $ink;
+  background: var(--surface-2, #f6f8ff);
+  border: 1px solid var(--line, #eef0f3);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: var(--hover, #eef2fe);
+    border-color: var(--border, #dfe3ea);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.active {
+    background: var(--brand, #154dec);
+    border-color: var(--brand, #154dec);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(21, 77, 236, 0.28);
+  }
+  &.active:hover {
+    background: var(--brand, #154dec);
+    transform: translateY(-1px);
+  }
+}
+.ms-cell__label {
+  line-height: 1.2;
+}
+
+@media (max-width: 360px) {
+  .ms-cell {
+    padding: 0.7rem 0.35rem;
+    font-size: 0.82rem;
   }
 }

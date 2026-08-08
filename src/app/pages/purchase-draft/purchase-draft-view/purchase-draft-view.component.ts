@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgxMaskDirective } from 'ngx-mask';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -23,6 +24,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './purchase-draft-view.component.scss',
   imports: [
     CommonModule,
+    TranslatePipe,
     MatInputModule,
     MatSelectModule,
     MatListModule,

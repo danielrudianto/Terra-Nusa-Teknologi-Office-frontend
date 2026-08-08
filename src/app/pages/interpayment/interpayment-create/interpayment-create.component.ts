@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
   AbstractControl,
@@ -49,6 +50,7 @@ function validateBankAccount(): ValidatorFn {
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,55 +1,67 @@
-<h2 mat-dialog-title>View payment data</h2>
-<mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" />
-    </mat-form-field>
+<div class="pv">
+  <h2 mat-dialog-title class="pv-head">
+    <span class="pv-head__icon"><mat-icon>payments</mat-icon></span>
+    <span class="pv-head__text">
+      <span class="pv-title">{{ "paymentView.title" | translate }}</span>
+      <span class="pv-type" *ngIf="formGroup.get('type')?.value">
+        {{ formGroup.get("type")?.value }}
+      </span>
+    </span>
+  </h2>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
-      <input
-        matInput
-        formControlName="amount"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-    </mat-form-field>
+  <mat-dialog-content class="pv-content">
+    <!-- amount highlight -->
+    <div class="pv-amount">
+      <span class="pv-amount__label">{{
+        "paymentView.amount" | translate
+      }}</span>
+      <span class="pv-amount__value">
+        Rp {{ formGroup.get("amount")?.value | number: "1.0-0" }}
+      </span>
+    </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input matInput formControlName="bank_account_name" readonly />
-    </mat-form-field>
+    <div class="pv-grid">
+      <div class="pv-field pv-field--wide">
+        <span class="pv-field__label">{{
+          "paymentView.date" | translate
+        }}</span>
+        <span class="pv-field__value">{{
+          formGroup.get("date")?.value || "—"
+        }}</span>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <input matInput formControlName="bank_account_number" readonly />
-    </mat-form-field>
+      <div class="pv-field pv-field--wide">
+        <span class="pv-field__label">{{
+          "paymentView.bankName" | translate
+        }}</span>
+        <span class="pv-field__value">{{
+          formGroup.get("bank_name")?.value || "—"
+        }}</span>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank name</mat-label>
-      <input matInput formControlName="bank_name" readonly />
-    </mat-form-field>
+      <div class="pv-field">
+        <span class="pv-field__label">{{
+          "paymentView.bankAccountName" | translate
+        }}</span>
+        <span class="pv-field__value">{{
+          formGroup.get("bank_account_name")?.value || "—"
+        }}</span>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Document type</mat-label>
-      <input matInput formControlName="type" readonly />
-      <button mat-icon-button matPrefix (click)="onSelectClicked()">
-        <mat-icon>view_comfy</mat-icon>
-      </button>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+      <div class="pv-field">
+        <span class="pv-field__label">{{
+          "paymentView.bankAccountNumber" | translate
+        }}</span>
+        <span class="pv-field__value">{{
+          formGroup.get("bank_account_number")?.value || "—"
+        }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    mat-dialog-close
-  >
-    Close
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions align="end" class="pv-foot">
+    <button type="button" class="pv-close" mat-dialog-close>
+      {{ "paymentView.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

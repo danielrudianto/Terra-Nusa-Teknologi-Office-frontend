@@ -23,18 +23,28 @@
   <mat-dialog-content class="iv-content">
     <!-- amount highlight -->
     <div class="iv-amount">
-      <span class="iv-amount__k">Jumlah</span>
+      <span class="iv-amount__k">{{ "income.viewAmount" | translate }}</span>
       <span class="iv-amount__v">+ Rp {{ formGroup.value.amount }}</span>
     </div>
 
     <!-- income type -->
     <div class="iv-typerow" *ngIf="formGroup.value.incomeType">
       <span class="iv-type" [ngSwitch]="formGroup.value.incomeType">
-        <span *ngSwitchCase="'7.1'">Income from interest</span>
-        <span *ngSwitchCase="'7.2'">Income from royalty</span>
-        <span *ngSwitchCase="'7.3'">Income from dividend</span>
-        <span *ngSwitchCase="'7.4'">Income from rounding up</span>
-        <span *ngSwitchCase="'7.5'">Other income</span>
+        <span *ngSwitchCase="'7.1'">{{
+          "income.typeInterestFull" | translate
+        }}</span>
+        <span *ngSwitchCase="'7.2'">{{
+          "income.typeRoyaltyFull" | translate
+        }}</span>
+        <span *ngSwitchCase="'7.3'">{{
+          "income.typeDividendFull" | translate
+        }}</span>
+        <span *ngSwitchCase="'7.4'">{{
+          "income.typeRoundingUpFull" | translate
+        }}</span>
+        <span *ngSwitchCase="'7.5'">{{
+          "income.typeOtherFull" | translate
+        }}</span>
         <span *ngSwitchDefault>{{ formGroup.value.incomeType }}</span>
       </span>
     </div>
@@ -42,21 +52,25 @@
     <!-- detail rows -->
     <div class="iv-rows">
       <div class="iv-row">
-        <span class="iv-row__k">Tanggal</span>
+        <span class="iv-row__k">{{ "income.viewDate" | translate }}</span>
         <span class="iv-row__v">{{ formGroup.value.date || "—" }}</span>
       </div>
       <div class="iv-row" *ngIf="formGroup.value.description">
-        <span class="iv-row__k">Deskripsi</span>
+        <span class="iv-row__k">{{
+          "income.viewDescription" | translate
+        }}</span>
         <span class="iv-row__v">{{ formGroup.value.description }}</span>
       </div>
       <div class="iv-row">
-        <span class="iv-row__k">Opponent</span>
+        <span class="iv-row__k">{{ "income.viewOpponent" | translate }}</span>
         <span class="iv-row__v">{{
           formGroup.value.opponent_name || "—"
         }}</span>
       </div>
       <div class="iv-row" *ngIf="formGroup.value.opponent_description">
-        <span class="iv-row__k">Ket. opponent</span>
+        <span class="iv-row__k">{{
+          "income.viewOpponentDesc" | translate
+        }}</span>
         <span class="iv-row__v">{{
           formGroup.value.opponent_description
         }}</span>
@@ -64,11 +78,13 @@
     </div>
 
     <p class="iv-created" *ngIf="formGroup.value.createdAt">
-      Dokumen dibuat pada {{ formGroup.value.createdAt }}
+      {{ "income.viewCreatedAt" | translate }} {{ formGroup.value.createdAt }}
     </p>
   </mat-dialog-content>
 
   <mat-dialog-actions class="iv-actions">
-    <button type="button" class="iv-close" mat-dialog-close>Tutup</button>
+    <button type="button" class="iv-close" mat-dialog-close>
+      {{ "income.viewClose" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

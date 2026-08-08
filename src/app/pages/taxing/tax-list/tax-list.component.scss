@@ -74,8 +74,8 @@
   gap: 0.9rem;
   text-align: left;
   padding: 1.35rem 1.35rem 1.15rem;
-  background: #fff;
-  border: 0.5px solid #e3e6eb;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -90,7 +90,7 @@
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
-    border-color: #d7deea;
+    border-color: var(--brand, #d7deea);
   }
 
   &__icon {
@@ -134,7 +134,7 @@
     line-height: 1.45;
     color: var(--muted, #6b7280);
     b {
-      color: #3f4653;
+      color: var(--ink, #3f4653);
       font-weight: 600;
     }
   }
@@ -241,7 +241,7 @@
   color: var(--muted, #6b7280);
   transition: all 0.13s ease;
   &:hover {
-    border-color: #c2ccde;
+    border-color: var(--border, #c2ccde);
     color: var(--ink, #16181d);
     background: var(--hover, #f6f8ff);
   }

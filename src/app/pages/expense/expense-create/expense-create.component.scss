@@ -49,21 +49,53 @@ $surface: var(--surface, #ffffff);
   padding: 0;
 }
 :host ::ng-deep .exc-stepper .mat-horizontal-stepper-header-container {
-  margin-bottom: 0.75rem;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 1.25rem;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
 }
 :host ::ng-deep .exc-stepper .mat-step-header {
   border-radius: 12px;
+  padding: 0.6rem 0.9rem;
   &:hover {
     background: var(--hover, #f6f8ff);
+  }
+  .mat-step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $muted;
   }
   .mat-step-icon-selected,
   .mat-step-icon-state-edit {
     background-color: $brand;
   }
-  .mat-step-label.mat-step-label-active {
-    color: $ink;
+  .mat-step-label.mat-step-label-active,
+  .mat-step-label-selected {
+    color: $brand;
     font-weight: 600;
   }
+}
+
+/* step number bubbles */
+:host ::ng-deep .exc-stepper .mat-step-icon {
+  background-color: var(--surface-2, #eef1f6);
+  color: $muted;
+  font-weight: 600;
+}
+:host ::ng-deep .exc-stepper .mat-step-icon-selected,
+:host ::ng-deep .exc-stepper .mat-step-icon-state-edit,
+:host ::ng-deep .exc-stepper .mat-step-icon-state-done {
+  background-color: $brand !important;
+  color: #fff !important;
+}
+
+/* connector line between steps */
+:host ::ng-deep .exc-stepper .mat-stepper-horizontal-line {
+  border-top-color: var(--border, #e3e6eb);
 }
 
 /* card */

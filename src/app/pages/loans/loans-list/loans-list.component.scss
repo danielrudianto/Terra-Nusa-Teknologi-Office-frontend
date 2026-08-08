@@ -29,6 +29,9 @@ $hover: var(--hover, #f6f8ff);
   border-radius: 999px;
   font-weight: 600;
 }
+:host ::ng-deep .ll-chips .mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
 :host
   ::ng-deep
   .ll-fchip.mdc-evolution-chip--selected
@@ -260,7 +263,7 @@ $hover: var(--hover, #f6f8ff);
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 600;
   padding: 4px 10px 4px 8px;
   border-radius: 999px;

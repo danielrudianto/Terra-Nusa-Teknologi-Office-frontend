@@ -253,13 +253,13 @@ $hover: var(--hover, #f6f8ff);
 }
 
 .pol-chip {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: capitalize;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
   border-radius: 999px;
-  letter-spacing: 0.01em;
   &.is-draft {
     background: var(--warn-bg, #fdf0e3);
     color: var(--warn-fg, #a2651a);

@@ -4,18 +4,20 @@
       <mat-icon>assessment</mat-icon>
     </span>
     <div class="prp-head__text">
-      <h2 class="prp-title">Laporan pembelian per proyek</h2>
-      <span class="prp-sub">Masukkan kode proyek untuk membuat laporan</span>
+      <h2 class="prp-title">{{ "purchaseReport.projectTitle" | translate }}</h2>
+      <span class="prp-sub">{{
+        "purchaseReport.projectSubtitle" | translate
+      }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup">
     <mat-dialog-content class="prp-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Kode proyek</mat-label>
+        <mat-label>{{ "purchaseReport.projectCode" | translate }}</mat-label>
         <input
           matInput
-          placeholder="Contoh: PUSAT, R501"
+          [placeholder]="'purchaseReport.projectCodePlaceholder' | translate"
           formControlName="projectName"
           (keyup)="toUpperCase()"
           maxlength="5"

@@ -94,6 +94,7 @@
 /* body rows */
 :host ::ng-deep .mat-mdc-row {
   min-height: 52px;
+  cursor: pointer;
   transition: background 0.13s ease;
   &:hover {
     background: var(--hover, #f6f8ff);

@@ -20,33 +20,33 @@
     <section class="ev-section">
       <div class="ev-grid">
         <div class="ev-field">
-          <span class="ev-label">Tanggal</span>
+          <span class="ev-label">{{ "table.date" | translate }}</span>
           <span class="ev-value">{{ f["date"].value || "—" }}</span>
         </div>
         <div class="ev-field">
-          <span class="ev-label">Jatuh tempo</span>
+          <span class="ev-label">{{ "table.dueDate" | translate }}</span>
           <span class="ev-value">{{ f["dueDate"].value || "—" }}</span>
         </div>
         <div class="ev-field">
-          <span class="ev-label">Invoice</span>
+          <span class="ev-label">{{ "table.invoice" | translate }}</span>
           <span class="ev-value">{{ f["invoiceName"].value || "—" }}</span>
         </div>
         <div class="ev-field">
-          <span class="ev-label">Receipt</span>
+          <span class="ev-label">{{ "table.receipt" | translate }}</span>
           <span class="ev-value">{{ f["receiptName"].value || "—" }}</span>
         </div>
         <div
           class="ev-field ev-field--wide"
           *ngIf="f['opponentDescription'].value"
         >
-          <span class="ev-label">Opponent</span>
+          <span class="ev-label">{{ "table.opponent" | translate }}</span>
           <span class="ev-value">{{ f["opponentName"].value }}</span>
           <span class="ev-value ev-value--sm">{{
             f["opponentDescription"].value
           }}</span>
         </div>
         <div class="ev-field ev-field--wide">
-          <span class="ev-label">Deskripsi</span>
+          <span class="ev-label">{{ "table.description" | translate }}</span>
           <span class="ev-value ev-value--sm">{{
             f["description"].value || "—"
           }}</span>
@@ -56,7 +56,9 @@
 
     <!-- money -->
     <section class="ev-section">
-      <div class="ev-section__title">Rincian Nilai</div>
+      <div class="ev-section__title">
+        {{ "expense.viewValueBreakdown" | translate }}
+      </div>
       <div class="ev-money">
         <div class="ev-money__row">
           <span>DPP</span
@@ -82,14 +84,14 @@
             type="button"
             class="ev-pph__copy"
             (click)="copyPphObject()"
-            aria-label="Salin objek PPh"
+            [attr.aria-label]="'common.copyPphObject' | translate"
           >
             <mat-icon>content_copy</mat-icon>
           </button>
         </div>
 
         <div class="ev-money__total">
-          <span>Total</span>
+          <span>{{ "expense.viewTotal" | translate }}</span>
           <span>{{ vTotal | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
       </div>
@@ -97,9 +99,13 @@
 
     <!-- payments -->
     <section class="ev-section">
-      <div class="ev-section__title">Riwayat Pembayaran ({{ t.length }})</div>
+      <div class="ev-section__title">
+        {{ "expense.viewPaymentHistory" | translate }} ({{ t.length }})
+      </div>
 
-      <div class="ev-nopay" *ngIf="t.length === 0">Belum ada pembayaran.</div>
+      <div class="ev-nopay" *ngIf="t.length === 0">
+        {{ "expense.viewNoPayments" | translate }}
+      </div>
 
       <div class="ev-pay" *ngFor="let pay of t.controls">
         <div class="ev-pay__info">
@@ -120,7 +126,12 @@
             [class.ev-badge--ok]="pay.get('isApprove')?.value"
             [class.ev-badge--wait]="!pay.get('isApprove')?.value"
           >
-            {{ pay.get("isApprove")?.value ? "Approved" : "Pending" }}
+            {{
+              (pay.get("isApprove")?.value
+                ? "status.approved"
+                : "status.pending"
+              ) | translate
+            }}
           </span>
         </div>
       </div>
@@ -128,7 +139,9 @@
 
     <!-- bank destination -->
     <section class="ev-section" *ngIf="f['bankAccountNumber'].value">
-      <div class="ev-section__title">Rekening Tujuan</div>
+      <div class="ev-section__title">
+        {{ "expense.viewDestinationAccount" | translate }}
+      </div>
       <div class="ev-bank">
         <div class="ev-value">
           {{ f["bankName"].value }} · {{ f["bankAccountName"].value }}
@@ -147,9 +160,13 @@
   <!-- actions -->
   <mat-dialog-actions class="ev-actions">
     <button mat-flat-button class="ev-copy" (click)="copyDocument()">
-      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon>&nbsp;{{
+        "common.copyWhatsapp" | translate
+      }}
     </button>
     <span class="ev-spacer"></span>
-    <button mat-button (click)="close()">Tutup</button>
+    <button mat-button (click)="close()">
+      {{ "expense.viewClose" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

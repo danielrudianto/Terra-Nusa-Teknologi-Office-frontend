@@ -36,7 +36,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
@@ -66,23 +66,23 @@
   flex-shrink: 0;
 }
 .pv-chip {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 4px 10px 4px 8px;
   border-radius: 999px;
   white-space: nowrap;
 
   &--ready {
-    background: #e6f6ec;
-    color: #1a7f45;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
   &--draft {
-    background: #fdf0e3;
-    color: #a2651a;
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn-fg, #a2651a);
   }
   &--muted {
-    background: #eef1f6;
-    color: #5f6672;
+    background: var(--surface-2, #eef1f6);
+    color: var(--muted, #5f6672);
   }
 }
 
@@ -140,8 +140,8 @@
 
 /* money breakdown */
 .pv-money {
-  background: #fafbfc;
-  border: 0.5px solid #e6e9ee;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 14px;
   padding: 0.4rem 1rem;
 
@@ -183,7 +183,7 @@
       }
     }
     &--neg span:last-child {
-      color: #b3322f;
+      color: var(--bad-fg, #b3322f);
     }
   }
 
@@ -221,8 +221,8 @@
   gap: 10px;
   margin: 0.65rem 0 0.25rem;
   padding: 0.85rem 0.6rem 0.85rem 1rem;
-  background: #f3f6ff;
-  border: 0.5px solid #e0e7fb;
+  background: var(--brand-soft, #f3f6ff);
+  border: 0.5px solid var(--border, #e0e7fb);
   border-radius: 12px;
 
   &__text {
@@ -239,7 +239,7 @@
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--brand, #154dec);
-    background: #e2e9fd;
+    background: var(--brand-soft, #e2e9fd);
     border-radius: 6px;
     padding: 2px 7px;
     white-space: nowrap;
@@ -312,12 +312,12 @@
   border-radius: 6px;
 
   &--ok {
-    background: #e6f6ec;
-    color: #1a7f45;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
   &--wait {
-    background: #fff4d6;
-    color: #9a6a00;
+    background: var(--warn-bg, #fff4d6);
+    color: var(--warn-fg, #9a6a00);
   }
 }
 
@@ -326,8 +326,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fafbfc;
-  border: 0.5px solid #e6e9ee;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
   padding: 0.7rem 0.5rem 0.7rem 1rem;
 }
@@ -359,7 +359,7 @@
   }
 }
 .pv-delete {
-  color: #b3322f !important;
+  color: var(--bad-fg, #b3322f) !important;
   mat-icon {
     font-size: 18px;
     height: 18px;

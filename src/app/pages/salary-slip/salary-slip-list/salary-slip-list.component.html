@@ -1,23 +1,23 @@
 <div class="salary-slip-list">
   <app-header-title
-    [title]="'Salary slip'"
-    [description]="'Manage your salary slip data here'"
+    [title]="'salarySlip.title' | translate"
+    [description]="'salarySlip.description' | translate"
   />
 
   <div class="ssl-toolbar">
     <mat-form-field appearance="outline" class="ssl-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
         type="text"
-        placeholder="Cari karyawan"
+        [placeholder]="'salarySlip.searchPlaceholder' | translate"
         [formControl]="formControl"
       />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="ssl-month">
-      <mat-label>Month and Year</mat-label>
+      <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
       <input matInput [matDatepicker]="dp" [formControl]="date" />
       <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
       <mat-datepicker
@@ -34,7 +34,9 @@
       <table mat-table [dataSource]="dataSource">
         <!-- Name -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.name" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <div class="ssl-person">
               <span class="ssl-avatar">{{
@@ -47,7 +49,9 @@
 
         <!-- Month -->
         <ng-container matColumnDef="month">
-          <th mat-header-cell *matHeaderCellDef>Month</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.month" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="ssl-muted">{{ element.month }}</span>
           </td>
@@ -55,7 +59,9 @@
 
         <!-- Year -->
         <ng-container matColumnDef="year">
-          <th mat-header-cell *matHeaderCellDef>Year</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.year" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="ssl-muted">{{ element.year }}</span>
           </td>
@@ -64,7 +70,7 @@
         <!-- Basic -->
         <ng-container matColumnDef="basic">
           <th mat-header-cell *matHeaderCellDef class="ssl-num">
-            Basic salary
+            {{ "table.basicSalary" | translate }}
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-amount">{{
@@ -76,7 +82,7 @@
         <!-- Transportation -->
         <ng-container matColumnDef="transportation">
           <th mat-header-cell *matHeaderCellDef class="ssl-num">
-            Transportation
+            {{ "table.transportation" | translate }}
           </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money">{{
@@ -87,7 +93,9 @@
 
         <!-- Overtime -->
         <ng-container matColumnDef="overtime">
-          <th mat-header-cell *matHeaderCellDef class="ssl-num">Overtime</th>
+          <th mat-header-cell *matHeaderCellDef class="ssl-num">
+            {{ "table.overtime" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money">{{
               element.overtime | number: "1.0-0"
@@ -97,7 +105,9 @@
 
         <!-- Meal -->
         <ng-container matColumnDef="meal">
-          <th mat-header-cell *matHeaderCellDef class="ssl-num">Meal</th>
+          <th mat-header-cell *matHeaderCellDef class="ssl-num">
+            {{ "table.meal" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money">{{ element.meal | number: "1.0-0" }}</span>
           </td>
@@ -105,7 +115,9 @@
 
         <!-- Allowances -->
         <ng-container matColumnDef="allowances">
-          <th mat-header-cell *matHeaderCellDef class="ssl-num">Allowances</th>
+          <th mat-header-cell *matHeaderCellDef class="ssl-num">
+            {{ "table.allowances" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money ssl-money--pos"
               >+ {{ element.allowance ?? 0 | number: "1.0-0" }}</span
@@ -115,7 +127,9 @@
 
         <!-- Deductions -->
         <ng-container matColumnDef="deductions">
-          <th mat-header-cell *matHeaderCellDef class="ssl-num">Deductions</th>
+          <th mat-header-cell *matHeaderCellDef class="ssl-num">
+            {{ "table.deductions" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element" class="ssl-num">
             <span class="ssl-money ssl-money--neg"
               >− {{ element.deduction ?? 0 | number: "1.0-0" }}</span
@@ -135,17 +149,19 @@
 
         <!-- Status -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.status" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
-            <span class="ssl-chip ssl-chip--deleted" *ngIf="element.isDelete"
-              >Deleted</span
-            >
+            <span class="ssl-chip ssl-chip--deleted" *ngIf="element.isDelete">{{
+              "status.deleted" | translate
+            }}</span>
             <ng-container *ngIf="!element.isDelete">
               <span class="ssl-chip ssl-chip--paid" *ngIf="element.isPaid">
-                <mat-icon>check_circle</mat-icon>Paid
+                <mat-icon>check_circle</mat-icon>{{ "status.paid" | translate }}
               </span>
               <span class="ssl-chip ssl-chip--unpaid" *ngIf="!element.isPaid">
-                <mat-icon>schedule</mat-icon>Not paid
+                <mat-icon>schedule</mat-icon>{{ "status.notPaid" | translate }}
               </span>
             </ng-container>
           </td>
@@ -168,28 +184,32 @@
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="viewSalarySlip(element.id)">
-                <mat-icon>view_comfy_alt</mat-icon><span>View salary slip</span>
+                <mat-icon>view_comfy_alt</mat-icon
+                ><span>{{ "salarySlip.menuView" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 (click)="createPayment(element.id)"
                 [disabled]="element.isPaid || element.isDelete"
               >
-                <mat-icon>payments</mat-icon><span>Create payment</span>
+                <mat-icon>payments</mat-icon
+                ><span>{{ "salarySlip.menuCreatePayment" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 (click)="printSalarySlip(element.id)"
                 [disabled]="element.isDelete"
               >
-                <mat-icon>print</mat-icon><span>Reprint salary slip</span>
+                <mat-icon>print</mat-icon
+                ><span>{{ "salarySlip.menuReprint" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 (click)="sendSalarySlip(element.id)"
                 [disabled]="element.isDelete"
               >
-                <mat-icon>send</mat-icon><span>Send salary slip</span>
+                <mat-icon>send</mat-icon
+                ><span>{{ "salarySlip.menuSend" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -208,7 +228,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="ssl-empty">
               <mat-icon>receipt_long</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

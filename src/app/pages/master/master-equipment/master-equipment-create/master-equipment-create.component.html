@@ -18,8 +18,8 @@
       </svg>
     </span>
     <div class="mec-head__text">
-      <h2 class="mec-title">Tambah Equipment</h2>
-      <span class="mec-sub">Daftarkan alat berat ke katalog sewa</span>
+      <h2 class="mec-title">{{ "equipmentForm.title" | translate }}</h2>
+      <span class="mec-sub">{{ "equipmentForm.subtitle" | translate }}</span>
     </div>
   </div>
 
@@ -27,17 +27,17 @@
     <mat-dialog-content class="mec-content">
       <div class="mec-grid">
         <mat-form-field appearance="outline" class="mec-span2">
-          <mat-label>Nama equipment</mat-label>
+          <mat-label>{{ "equipmentForm.name" | translate }}</mat-label>
           <input
             matInput
             formControlName="name"
             maxlength="100"
-            placeholder="Ex. Excavator PC200"
+            [placeholder]="'equipmentForm.namePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kategori</mat-label>
+          <mat-label>{{ "equipmentForm.category" | translate }}</mat-label>
           <mat-select formControlName="category">
             <mat-option *ngFor="let c of categories" [value]="c">{{
               c
@@ -46,33 +46,37 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kapasitas</mat-label>
+          <mat-label>{{ "equipmentForm.capacity" | translate }}</mat-label>
           <input
             matInput
             formControlName="capacity"
-            placeholder="Ex. 20 ton / 250 kVA"
+            [placeholder]="'equipmentForm.capacityPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Brand</mat-label>
-          <input matInput formControlName="brand" placeholder="Ex. Komatsu" />
+          <mat-label>{{ "equipmentForm.brand" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="brand"
+            [placeholder]="'equipmentForm.brandPlaceholder' | translate"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Satuan sewa</mat-label>
+          <mat-label>{{ "equipmentForm.unit" | translate }}</mat-label>
           <mat-select formControlName="unit">
             <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="mec-span2">
-          <mat-label>Deskripsi</mat-label>
+          <mat-label>{{ "equipmentForm.description" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="description"
             rows="2"
-            placeholder="Spesifikasi / catatan"
+            [placeholder]="'equipmentForm.descriptionPlaceholder' | translate"
             style="resize: none"
           ></textarea>
         </mat-form-field>
@@ -81,14 +85,18 @@
 
     <mat-dialog-actions class="mec-actions">
       <button type="button" class="mec-cancel" (click)="onCancel()">
-        Batal
+        {{ "equipmentForm.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="mec-submit"
         [disabled]="isSubmitting || formGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan equipment" }}
+        {{
+          isSubmitting
+            ? ("equipmentForm.saving" | translate)
+            : ("equipmentForm.save" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

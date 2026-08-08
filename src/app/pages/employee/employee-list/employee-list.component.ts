@@ -14,11 +14,15 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { EmployeeCreateComponent } from '../employee-create/employee-create.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from "@angular/material/menu";
+import { MatMenuModule } from '@angular/material/menu';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-employee-list',
   imports: [
+    MatChipsModule,
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -29,19 +33,24 @@ import { MatMenuModule } from "@angular/material/menu";
     HeaderTitleComponent,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule
-],
+    MatMenuModule,
+  ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
   standalone: true,
 })
 export class EmployeeListComponent {
-  constructor(private apiService: ApiService, private dialog: MatDialog) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: MatDialog,
+  ) {}
 
   formControl: FormControl = new FormControl('');
   page: number = 1;
   isLoading: boolean = false;
   employees: any[] = [];
+  /** Filter status: 'all' | 'active' | 'inactive' (inactive = punya endDate) */
+  activeFilter: 'all' | 'active' | 'inactive' = 'all';
   count: number = 0;
 
   displayedColumns: string[] = [
@@ -58,6 +67,12 @@ export class EmployeeListComponent {
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.fetchEmployees(1);
     });
+  }
+
+  setFilter(filter: 'all' | 'active' | 'inactive') {
+    if (this.activeFilter === filter) return;
+    this.activeFilter = filter;
+    this.fetchEmployees(1);
   }
 
   changePage(event: any) {
@@ -92,6 +107,7 @@ export class EmployeeListComponent {
       .get('employees', {
         page: this.page,
         keyword: this.formControl.value,
+        ...(this.activeFilter !== 'all' ? { status: this.activeFilter } : {}),
       })
       .subscribe({
         next: (res: any) => {

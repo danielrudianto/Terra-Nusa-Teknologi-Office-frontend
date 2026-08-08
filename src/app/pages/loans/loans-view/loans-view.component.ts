@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
@@ -15,6 +16,7 @@ import { ApiService } from '../../../services/api.service';
   selector: 'app-loans-view',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     MatDialogModule,
     MatIconModule,
@@ -63,11 +65,11 @@ export class LoansViewComponent {
   }
 
   get activePayments(): any[] {
-    return this.payments.filter((p) => !p.isDelete && p.isApprove);
+    return this.payments.filter((p) => !p.isDelete);
   }
 
   get totalPaid(): number {
-    return this.activePayments.reduce((a, b) => a + Number(b.amount), 0);
+    return this.activePayments.reduce((a, b) => a + b.amount, 0);
   }
 
   get remaining(): number {

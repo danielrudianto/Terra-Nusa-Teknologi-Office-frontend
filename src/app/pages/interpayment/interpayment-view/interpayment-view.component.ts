@@ -1,4 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-interpayment-view',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     MatDialogModule,
     MatSnackBarModule,

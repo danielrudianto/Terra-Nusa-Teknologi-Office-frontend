@@ -9,6 +9,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,6 +38,8 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
     MatMenuModule,
     MatTooltipModule,
     RouterModule,
+    TranslatePipe,
+    MatChipsModule,
   ],
   templateUrl: './supplier-list.component.html',
   styleUrls: ['./supplier-list.component.scss'],
@@ -59,12 +63,21 @@ export class SupplierListComponent {
   count: number = 0;
   displayedColumns: string[] = ['name', 'address', 'phone', 'email', 'action'];
 
+  /** Filter blacklist: 'all' | 'active' | 'blacklist' */
+  activeFilter: 'all' | 'active' | 'blacklist' = 'all';
+
   ngOnInit(): void {
     this.fetchSuppliers();
 
     this.formControl.valueChanges.pipe(debounceTime(500)).subscribe((_) => {
       this.fetchSuppliers(0);
     });
+  }
+
+  setFilter(filter: 'all' | 'active' | 'blacklist') {
+    if (this.activeFilter === filter) return;
+    this.activeFilter = filter;
+    this.fetchSuppliers(0);
   }
 
   fetchSuppliers(targetPage: number = 1) {
@@ -76,6 +89,9 @@ export class SupplierListComponent {
         page: this.page,
         pageSize: this.pageSize,
         keyword: this.formControl.value,
+        ...(this.activeFilter !== 'all'
+          ? { isBlacklist: this.activeFilter === 'blacklist' }
+          : {}),
       })
       .subscribe({
         next: (res: any) => {

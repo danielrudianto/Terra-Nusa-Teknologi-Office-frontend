@@ -19,8 +19,8 @@
   padding: 1.25rem 1.5rem !important;
   margin: 0 !important;
   text-align: left;
-  background: linear-gradient(135deg, #eef2fe 0%, #f6f8ff 100%);
-  border-bottom: 1px solid #e4e9fb;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
 
   &::before {
     display: none !important;
@@ -36,7 +36,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface, #fff);
   color: var(--brand, #154dec);
   font-weight: 700;
   font-size: 1.25rem;
@@ -59,11 +59,11 @@
 }
 .ev-chip {
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 5px 11px;
+  padding: 4px 10px 4px 8px;
   border-radius: 999px;
-  background: #e7ecfb;
+  background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);
   max-width: 160px;
   overflow: hidden;
@@ -127,8 +127,8 @@
 
 /* money */
 .ev-money {
-  background: #fafbfc;
-  border: 0.5px solid #e6e9ee;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 14px;
   padding: 0.4rem 1.15rem 0.9rem;
 
@@ -186,8 +186,8 @@
   gap: 10px;
   margin: 0.7rem 0 0.2rem;
   padding: 0.8rem 0.6rem 0.8rem 1rem;
-  background: #f3f6ff;
-  border: 0.5px solid #e0e7fb;
+  background: var(--brand-soft, #f3f6ff);
+  border: 0.5px solid var(--border, #e0e7fb);
   border-radius: 10px;
 
   &__text {
@@ -203,7 +203,7 @@
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--brand, #154dec);
-    background: #e2e9fd;
+    background: var(--brand-soft, #e2e9fd);
     border-radius: 6px;
     padding: 2px 7px;
     white-space: nowrap;
@@ -231,8 +231,8 @@
   text-align: center;
   color: var(--faint, #9aa0ab);
   font-size: 0.85rem;
-  background: #fafbfc;
-  border: 0.5px solid #e6e9ee;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
 }
 .ev-pay {
@@ -281,19 +281,19 @@
   padding: 3px 8px;
   border-radius: 6px;
   &--ok {
-    background: #e6f6ec;
-    color: #1a7f45;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
   &--wait {
-    background: #fff4d6;
-    color: #9a6a00;
+    background: var(--warn-bg, #fff4d6);
+    color: var(--warn-fg, #9a6a00);
   }
 }
 
 /* bank */
 .ev-bank {
-  background: #fafbfc;
-  border: 0.5px solid #e6e9ee;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
   padding: 0.9rem 1.15rem;
 }

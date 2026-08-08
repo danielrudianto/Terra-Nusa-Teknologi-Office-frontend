@@ -4,12 +4,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { CalendarAccountSelectorDialogComponent } from './calendar-account-selector-dialog/calendar-account-selector-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-calendar-account-selector',
-  imports: [
-    MatButtonModule,
-  ],
+  imports: [MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './calendar-account-selector.component.html',
   styleUrl: './calendar-account-selector.component.scss',
   standalone: true,
@@ -18,7 +18,7 @@ export class CalendarAccountSelectorComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   bankAccounts: any[] = [];

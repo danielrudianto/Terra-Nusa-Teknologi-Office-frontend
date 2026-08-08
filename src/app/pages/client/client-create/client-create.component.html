@@ -15,8 +15,8 @@
       </svg>
     </span>
     <div class="cc-head__text">
-      <h2 class="cc-title">Tambah Client</h2>
-      <span class="cc-sub">Daftarkan klien baru</span>
+      <h2 class="cc-title">{{ "clientForm.createTitle" | translate }}</h2>
+      <span class="cc-sub">{{ "clientForm.createSubtitle" | translate }}</span>
     </div>
   </div>
 
@@ -24,7 +24,7 @@
     <mat-dialog-content class="cc-content">
       <div class="cc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Prefix</mat-label>
+          <mat-label>{{ "clientForm.prefix" | translate }}</mat-label>
           <mat-select formControlName="prefix">
             <mat-option value="PT.">PT.</mat-option>
             <mat-option value="CV.">CV.</mat-option>
@@ -36,22 +36,22 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
+          <mat-label>{{ "clientForm.name" | translate }}</mat-label>
           <input
             matInput
             formControlName="name"
             type="text"
-            placeholder="Nama klien"
+            [placeholder]="'clientForm.namePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
+          <mat-label>{{ "clientForm.email" | translate }}</mat-label>
           <input
             matInput
             formControlName="email"
             type="email"
-            placeholder="nama@email.com"
+            [placeholder]="'clientForm.emailPlaceholder' | translate"
           />
           <mat-error *ngIf="formGroup.get('email')?.hasError('email')"
             >Email tidak valid.</mat-error
@@ -59,12 +59,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
+          <mat-label>{{ "clientForm.phone" | translate }}</mat-label>
           <input
             matInput
             formControlName="phoneNumber"
             type="tel"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'clientForm.phonePlaceholder' | translate"
           />
           <mat-error *ngIf="formGroup.get('phoneNumber')?.hasError('pattern')"
             >Nomor telepon tidak valid.</mat-error
@@ -72,43 +72,43 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="cc-span2">
-          <mat-label>Address</mat-label>
+          <mat-label>{{ "clientForm.address" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="address"
-            placeholder="Alamat klien"
+            [placeholder]="'clientForm.addressPlaceholder' | translate"
             rows="2"
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>City</mat-label>
+          <mat-label>{{ "clientForm.city" | translate }}</mat-label>
           <input
             matInput
             formControlName="city"
             type="text"
-            placeholder="Kota"
+            [placeholder]="'clientForm.cityPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Province</mat-label>
+          <mat-label>{{ "clientForm.province" | translate }}</mat-label>
           <input
             matInput
             formControlName="province"
             type="text"
-            placeholder="Provinsi"
+            [placeholder]="'clientForm.provincePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="cc-span2">
-          <mat-label>NPWP</mat-label>
+          <mat-label>{{ "clientForm.npwp" | translate }}</mat-label>
           <input
             matInput
             formControlName="npwp"
             type="text"
-            placeholder="Nomor NPWP (opsional)"
+            [placeholder]="'clientForm.npwpPlaceholder' | translate"
           />
         </mat-form-field>
       </div>
@@ -116,14 +116,18 @@
 
     <mat-dialog-actions class="cc-actions">
       <button type="button" class="cc-cancel" (click)="onCancel()">
-        Batal
+        {{ "clientForm.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="cc-submit"
         [disabled]="isSubmitting || formGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan client" }}
+        {{
+          isSubmitting
+            ? ("clientForm.saving" | translate)
+            : ("clientForm.saveClient" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

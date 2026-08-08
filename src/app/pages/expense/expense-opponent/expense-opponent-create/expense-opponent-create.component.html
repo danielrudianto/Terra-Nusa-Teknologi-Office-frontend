@@ -4,38 +4,49 @@
       <mat-icon>person_add</mat-icon>
     </span>
     <div class="eoc-head__text">
-      <h2 class="eoc-title">Tambah lawan transaksi</h2>
-      <span class="eoc-sub">Data penerima/pembayar untuk pencatatan beban</span>
+      <h2 class="eoc-title">{{ "opponentForm.title" | translate }}</h2>
+      <span class="eoc-sub">{{ "opponentForm.subtitle" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="eoc-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Nama</mat-label>
+        <mat-label>{{ "opponentForm.name" | translate }}</mat-label>
         <input
           matInput
           formControlName="name"
-          placeholder="Masukkan nama lawan transaksi"
+          [placeholder]="'opponentForm.namePlaceholder' | translate"
         />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tipe</mat-label>
-        <mat-select formControlName="type" placeholder="Pilih tipe">
-          <mat-option [value]="'individual'">Individu</mat-option>
-          <mat-option [value]="'company'">Perusahaan</mat-option>
-          <mat-option [value]="'government'">Pemerintah</mat-option>
-          <mat-option [value]="'other'">Lainnya</mat-option>
+        <mat-label>{{ "opponentForm.type" | translate }}</mat-label>
+        <mat-select
+          formControlName="type"
+          [placeholder]="'opponentForm.typePlaceholder' | translate"
+        >
+          <mat-option [value]="'individual'">{{
+            "opponentForm.individual" | translate
+          }}</mat-option>
+          <mat-option [value]="'company'">{{
+            "opponentForm.company" | translate
+          }}</mat-option>
+          <mat-option [value]="'government'">{{
+            "opponentForm.government" | translate
+          }}</mat-option>
+          <mat-option [value]="'other'">{{
+            "opponentForm.other" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Deskripsi</mat-label>
+        <mat-label>{{ "opponentForm.description" | translate }}</mat-label>
         <textarea
           matInput
           formControlName="description"
-          placeholder="Masukkan deskripsi"
+          [placeholder]="'opponentForm.descriptionPlaceholder' | translate"
           rows="3"
           style="resize: none"
         ></textarea>
@@ -43,22 +54,22 @@
 
       <div class="eoc-row">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Nomor pembayaran</mat-label>
+          <mat-label>{{ "opponentForm.paymentNumber" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="paymentNumber"
-            placeholder="No. rekening / pembayaran"
+            [placeholder]="'opponentForm.paymentNumberPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>NPWP</mat-label>
+          <mat-label>{{ "opponentForm.npwp" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="npwp"
-            placeholder="Opsional"
+            [placeholder]="'opponentForm.npwpPlaceholder' | translate"
           />
         </mat-form-field>
       </div>
@@ -71,7 +82,7 @@
         mat-dialog-close
         class="eoc-btn eoc-btn--ghost"
       >
-        Batal
+        {{ "opponentForm.cancel" | translate }}
       </button>
       <button
         type="submit"
@@ -80,7 +91,11 @@
         class="eoc-btn eoc-btn--primary"
       >
         <mat-icon *ngIf="!isSubmitting">check</mat-icon>
-        {{ isSubmitting ? "Menyimpan..." : "Simpan" }}
+        {{
+          isSubmitting
+            ? ("opponentForm.saving" | translate)
+            : ("opponentForm.save" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

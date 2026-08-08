@@ -1,0 +1,139 @@
+<div class="user-list">
+  <app-header-title
+    [title]="'user.title' | translate"
+    [description]="'user.description' | translate"
+    [actionButtonLabel]="'user.createNew' | translate"
+    (onActionButtonClicked)="createNewUser()"
+  />
+
+  <div class="ul-toolbar">
+    <mat-form-field appearance="outline" class="ul-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        type="text"
+        [placeholder]="'user.searchPlaceholder' | translate"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+  </div>
+
+  <div class="ul-card" [class.is-loading]="isLoading">
+    <div class="ul-loadingbar" *ngIf="isLoading"><span></span></div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="users">
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "user.name" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="ul-user">
+              <span class="ul-avatar">{{
+                (element.name || "?").charAt(0)
+              }}</span>
+              <span class="ul-primary">{{ element.name || "—" }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "user.email" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="ul-muted">{{ element.email || "—" }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Access level -->
+        <ng-container matColumnDef="authLevel">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "user.authLevel" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="ul-level">{{
+              authLevelLabel(element.authenticationLevel)
+            }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "user.status" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              class="ul-chip"
+              [class.ul-chip--active]="element.isActive"
+              [class.ul-chip--inactive]="!element.isActive"
+            >
+              {{
+                (element.isActive ? "user.active" : "user.inactive") | translate
+              }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            (click)="$event.stopPropagation()"
+          >
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onViewUser(element.id)">
+                <mat-icon>visibility</mat-icon
+                ><span>{{ "user.menuView" | translate }}</span>
+              </button>
+              <button mat-menu-item (click)="onEditUser(element.id)">
+                <mat-icon>edit</mat-icon
+                ><span>{{ "user.menuEdit" | translate }}</span>
+              </button>
+              <button mat-menu-item (click)="onDeleteUser(element)">
+                <mat-icon>delete</mat-icon
+                ><span>{{ "user.menuDelete" | translate }}</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
+          (click)="onViewUser(row.id)"
+        ></tr>
+        <tr class="mat-row ul-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="ul-empty">
+              <mat-icon>inbox</mat-icon>
+              <span>{{ "common.noData" | translate }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageIndex]="page - 1"
+      [length]="count"
+      [pageSize]="pageSize"
+      (page)="changePage($event)"
+      [pageSizeOptions]="[10, 25, 50]"
+    ></mat-paginator>
+  </div>
+</div>

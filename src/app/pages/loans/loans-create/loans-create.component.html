@@ -15,51 +15,53 @@
       </svg>
     </span>
     <div class="lc-head__text">
-      <h2 class="lc-title">Buat Loan</h2>
+      <h2 class="lc-title">{{ "loansCreate.title" | translate }}</h2>
       <span class="lc-sub">Catat pinjaman / utang baru</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="lc-content">
-      <div class="lc-section__title">Kreditur</div>
+      <div class="lc-section__title">
+        {{ "loansCreate.sectionCreditor" | translate }}
+      </div>
       <div class="lc-grid">
         <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>Creditor name</mat-label>
+          <mat-label>{{ "loansCreate.creditorName" | translate }}</mat-label>
           <input
             matInput
             formControlName="creditorName"
-            placeholder="Nama kreditur"
+            [placeholder]="'loansCreate.creditorNamePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>Creditor address</mat-label>
+          <mat-label>{{ "loansCreate.creditorAddress" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="creditorAddress"
             rows="2"
-            placeholder="Alamat kreditur"
+            [placeholder]="'loansCreate.creditorAddressPlaceholder' | translate"
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Creditor NPWP</mat-label>
+          <mat-label>{{ "loansCreate.creditorNpwp" | translate }}</mat-label>
           <input
             matInput
             formControlName="creditorNPWP"
-            placeholder="NPWP (opsional)"
+            [placeholder]="'loansCreate.creditorNpwpPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "loansCreate.date" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal"
+            [placeholder]="'loansCreate.datePlaceholder' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -69,24 +71,26 @@
         </mat-form-field>
       </div>
 
-      <div class="lc-section__title lc-section__title--mt">Detail Pinjaman</div>
+      <div class="lc-section__title lc-section__title--mt">
+        {{ "loansCreate.sectionLoanDetail" | translate }}
+      </div>
       <div class="lc-grid">
         <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>Description</mat-label>
+          <mat-label>{{ "loansCreate.description" | translate }}</mat-label>
           <input
             matInput
             formControlName="description"
-            placeholder="Keterangan pinjaman"
+            [placeholder]="'loansCreate.descriptionPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Debt</mat-label>
+          <mat-label>{{ "loansCreate.debt" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="debt"
-            placeholder="Total utang"
+            [placeholder]="'loansCreate.debtPlaceholder' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -95,12 +99,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Received</mat-label>
+          <mat-label>{{ "loansCreate.received" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="received"
-            placeholder="Dana diterima"
+            [placeholder]="'loansCreate.receivedPlaceholder' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -109,7 +113,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>Rekening Penerima (perusahaan)</mat-label>
+          <mat-label>{{ "loansCreate.receiverAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let acc of bankAccounts" [value]="acc.id">
               {{ acc.bankName }} - {{ acc.bankAccountNumber }}
@@ -123,16 +127,16 @@
       </div>
 
       <div class="lc-section__title lc-section__title--mt">
-        Rekening Kreditur
+        {{ "loansCreate.sectionCreditorAccount" | translate }}
       </div>
       <div class="lc-grid">
         <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>Bank name</mat-label>
+          <mat-label>{{ "loansCreate.bankName" | translate }}</mat-label>
           <input
             #input
             matInput
             formControlName="bankName"
-            placeholder="Pilih bank"
+            [placeholder]="'loansCreate.bankNamePlaceholder' | translate"
             [matAutocomplete]="auto"
             (input)="filter()"
             (focus)="filter()"
@@ -147,16 +151,18 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Bank account name</mat-label>
+          <mat-label>{{ "loansCreate.bankAccountName" | translate }}</mat-label>
           <input
             matInput
             formControlName="bankAccountName"
-            placeholder="Nama rekening"
+            [placeholder]="'loansCreate.bankAccountNamePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Bank account number</mat-label>
+          <mat-label>{{
+            "loansCreate.bankAccountNumber" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="bankAccountNumber"
@@ -173,14 +179,18 @@
 
     <mat-dialog-actions class="lc-actions">
       <button type="button" class="lc-cancel" (click)="onCancel()">
-        Batal
+        {{ "loansCreate.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="lc-submit"
         [disabled]="isSubmitting || formGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan loan" }}
+        {{
+          isSubmitting
+            ? ("loansCreate.saving" | translate)
+            : ("loansCreate.saveLoan" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

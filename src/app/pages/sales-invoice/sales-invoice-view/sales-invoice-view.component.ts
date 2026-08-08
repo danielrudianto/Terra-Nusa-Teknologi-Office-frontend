@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject } from '@angular/core';
 import {
   FormArray,
@@ -27,6 +28,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-sales-invoice-view',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

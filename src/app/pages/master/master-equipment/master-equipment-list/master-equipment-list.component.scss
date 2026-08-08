@@ -235,20 +235,31 @@ $hover: var(--hover, #f6f8ff);
 
 .me-btn--brand {
   border: none;
-  background: var(--brand, #154dec);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
   &:hover:not(:disabled) {
-    background: var(--brand-strong, #0f3fd0);
+    background: var(--active-button-color, #0f3fd0);
+    color: var(--on-active-button-color, #fff);
   }
 }
 
 .me-chip {
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 4px 10px 4px 8px;
   border-radius: 7px;
   background: var(--brand-soft, #e7ecfb);
   color: var(--brand, #154dec);
   white-space: nowrap;
+}
+
+/* clickable row -> open view */
+:host ::ng-deep .mat-mdc-row.clickable-row,
+:host ::ng-deep tr.mat-mdc-row {
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+:host ::ng-deep .mat-mdc-row.clickable-row:hover,
+:host ::ng-deep tr.mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
 }

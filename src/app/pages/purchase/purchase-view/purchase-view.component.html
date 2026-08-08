@@ -16,10 +16,18 @@
         [class.pv-chip--ready]="f['lastStatus'].value === 'ready'"
         [class.pv-chip--draft]="f['lastStatus'].value !== 'ready'"
       >
-        {{ f["lastStatus"].value === "ready" ? "Ready" : "Draft" }}
+        {{
+          (f["lastStatus"].value === "ready" ? "status.ready" : "status.draft")
+            | translate
+        }}
       </span>
       <span class="pv-chip pv-chip--muted" *ngIf="f['isInternal'].value">
-        {{ f["isInternal"].value === "Yes" ? "Internal" : "Eksternal" }}
+        {{
+          (f["isInternal"].value === "Yes"
+            ? "status.internal"
+            : "status.external"
+          ) | translate
+        }}
       </span>
     </div>
   </div>
@@ -29,41 +37,41 @@
     <div class="pv-section">
       <div class="pv-grid">
         <div class="pv-field">
-          <span class="pv-label">Tanggal</span
+          <span class="pv-label">{{ "table.date" | translate }}</span
           ><span class="pv-value">{{ f["date"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Jatuh tempo</span
+          <span class="pv-label">{{ "table.dueDate" | translate }}</span
           ><span class="pv-value">{{ f["dueDate"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Faktur pajak</span
+          <span class="pv-label">{{ "table.taxInvoice" | translate }}</span
           ><span class="pv-value">{{ f["taxInvoiceName"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Nomor PO</span
+          <span class="pv-label">{{ "table.poNumber" | translate }}</span
           ><span class="pv-value">{{
             f["purchaseOrderName"].value || "—"
           }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Invoice</span
+          <span class="pv-label">{{ "table.invoice" | translate }}</span
           ><span class="pv-value">{{ f["invoiceName"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Receipt</span
+          <span class="pv-label">{{ "table.receipt" | translate }}</span
           ><span class="pv-value">{{ f["receiptName"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Project</span
+          <span class="pv-label">{{ "table.project" | translate }}</span
           ><span class="pv-value">{{ f["projectName"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">Tipe</span
+          <span class="pv-label">{{ "table.type" | translate }}</span
           ><span class="pv-value">{{ f["purchaseType"].value || "—" }}</span>
         </div>
         <div class="pv-field pv-field--wide">
-          <span class="pv-label">Alamat supplier</span
+          <span class="pv-label">{{ "table.supplierAddress" | translate }}</span
           ><span class="pv-value pv-value--sm">{{
             f["supplierAddress"].value || "—"
           }}</span>
@@ -73,7 +81,9 @@
 
     <!-- financial breakdown -->
     <div class="pv-section">
-      <div class="pv-section__title">Rincian Nilai</div>
+      <div class="pv-section__title">
+        {{ "purchase.viewValueBreakdown" | translate }}
+      </div>
       <div class="pv-money">
         <div class="pv-money__row">
           <span>DPP</span
@@ -96,13 +106,13 @@
           ><span>+ {{ vOther | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="pv-money__row pv-money__row--sub">
-          <span>Total Invoice</span
+          <span>{{ "purchase.viewTotalInvoice" | translate }}</span
           ><span>{{
             vTotalInvoice | currency: "Rp " : "symbol" : "1.0-0"
           }}</span>
         </div>
         <div class="pv-money__row pv-money__row--neg">
-          <span>PPh dipotong</span
+          <span>{{ "purchase.viewPphDeducted" | translate }}</span
           ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="pv-pph" *ngIf="vPph && pphLabel">
@@ -115,14 +125,14 @@
             type="button"
             class="pv-pph__copy"
             (click)="copyPphObject()"
-            aria-label="Salin objek PPh"
+            [attr.aria-label]="'purchase.viewCopyPphObject' | translate"
           >
             <mat-icon>content_copy</mat-icon>
           </button>
         </div>
 
         <div class="pv-money__total">
-          <span>Total Harus Dibayar</span>
+          <span>{{ "purchase.viewTotalDue" | translate }}</span>
           <span>{{ vTotalPay | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
       </div>
@@ -130,7 +140,9 @@
 
     <!-- payments -->
     <div class="pv-section" *ngIf="t.length > 0">
-      <div class="pv-section__title">Pembayaran ({{ t.length }})</div>
+      <div class="pv-section__title">
+        {{ "purchase.viewPayments" | translate }} ({{ t.length }})
+      </div>
       <div class="pv-pay" *ngFor="let p of t.controls">
         <div class="pv-pay__info">
           <span class="pv-pay__bank"
@@ -159,7 +171,9 @@
 
     <!-- bank destination -->
     <div class="pv-section" *ngIf="f['bankAccountNumber'].value">
-      <div class="pv-section__title">Rekening Tujuan</div>
+      <div class="pv-section__title">
+        {{ "purchase.viewDestinationAccount" | translate }}
+      </div>
       <div class="pv-bank">
         <div>
           <div class="pv-value">
@@ -172,7 +186,7 @@
         <button
           mat-icon-button
           (click)="copyBankAccountNumber()"
-          aria-label="Salin nomor rekening"
+          [attr.aria-label]="'purchase.viewCopyAccount' | translate"
         >
           <mat-icon>content_copy</mat-icon>
         </button>
@@ -187,12 +201,18 @@
   <!-- actions -->
   <mat-dialog-actions class="pv-actions">
     <button mat-flat-button class="pv-copy" (click)="copyDocument()">
-      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon>&nbsp;{{
+        "purchase.viewCopyWhatsapp" | translate
+      }}
     </button>
     <span class="pv-spacer"></span>
     <button mat-button class="pv-delete" (click)="deletePurchaseData()">
-      <mat-icon>delete_outline</mat-icon>&nbsp;Hapus
+      <mat-icon>delete_outline</mat-icon>&nbsp;{{
+        "purchase.viewDelete" | translate
+      }}
     </button>
-    <button mat-button mat-dialog-close>Tutup</button>
+    <button mat-button mat-dialog-close>
+      {{ "purchase.viewClose" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -22,6 +23,7 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-employee-update',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

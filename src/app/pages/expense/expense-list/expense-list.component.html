@@ -1,8 +1,8 @@
 <div class="expense-list">
   <app-header-title
-    [title]="'Expense'"
-    [description]="'Manage your expense data here'"
-    [actionButtonLabel]="'Create new expense'"
+    [title]="'expense.title' | translate"
+    [description]="'expense.description' | translate"
+    [actionButtonLabel]="'expense.createNew' | translate"
     (onActionButtonClicked)="createNewExpense()"
   />
 
@@ -18,25 +18,25 @@
         class="ex-fchip ex-fchip--due"
         [selected]="isChipSelected('isDue')"
         (selectionChange)="changeSelection('isDue', $event)"
-        >Due</mat-chip-option
+        >{{ "status.due" | translate }}</mat-chip-option
       >
       <mat-chip-option
         class="ex-fchip ex-fchip--notdue"
         [selected]="isChipSelected('isNotDue')"
         (selectionChange)="changeSelection('isNotDue', $event)"
-        >Not yet due</mat-chip-option
+        >{{ "status.notYetDue" | translate }}</mat-chip-option
       >
       <mat-chip-option
         class="ex-fchip ex-fchip--paid"
         [selected]="isChipSelected('isPaid')"
         (selectionChange)="changeSelection('isPaid', $event)"
-        >Paid</mat-chip-option
+        >{{ "status.paid" | translate }}</mat-chip-option
       >
       <mat-chip-option
         class="ex-fchip ex-fchip--unpaid"
         [selected]="isChipSelected('isUnpaid')"
         (selectionChange)="changeSelection('isUnpaid', $event)"
-        >Unpaid</mat-chip-option
+        >{{ "status.unpaid" | translate }}</mat-chip-option
       >
     </mat-chip-listbox>
   </form>
@@ -44,10 +44,18 @@
   <!-- date range + search + toggle -->
   <div class="ex-toolbar">
     <mat-form-field appearance="outline" class="ex-range">
-      <mat-label>Date range</mat-label>
+      <mat-label>{{ "expense.dateRange" | translate }}</mat-label>
       <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Start" />
-        <input matEndDate formControlName="end" placeholder="End" />
+        <input
+          matStartDate
+          formControlName="start"
+          [placeholder]="'interpayment.startDate' | translate"
+        />
+        <input
+          matEndDate
+          formControlName="end"
+          [placeholder]="'interpayment.endDate' | translate"
+        />
       </mat-date-range-input>
       <mat-datepicker-toggle
         matIconPrefix
@@ -58,10 +66,10 @@
 
     <mat-form-field appearance="outline" class="ex-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Invoice, receipt, PO, opponent, atau faktur pajak"
+        [placeholder]="'expense.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
@@ -85,7 +93,7 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
             <span class="ex-th"
-              >Date
+              >{{ "table.date" | translate }}
               <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -112,7 +120,7 @@
             (click)="changeSortBy('invoiceName')"
           >
             <span class="ex-th"
-              >Invoice
+              >{{ "table.invoice" | translate }}
               <mat-icon
                 *ngIf="sortBy == 'invoiceName' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -139,7 +147,7 @@
             (click)="changeSortBy('supplier')"
           >
             <span class="ex-th"
-              >Opponent
+              >{{ "table.opponent" | translate }}
               <mat-icon *ngIf="sortBy == 'supplier' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -173,7 +181,7 @@
             (click)="changeSortBy('total')"
           >
             <span class="ex-th ex-th--right"
-              >Total
+              >{{ "table.total" | translate }}
               <mat-icon *ngIf="sortBy == 'total' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -195,62 +203,21 @@
 
         <!-- Expense type -->
         <ng-container matColumnDef="expenseType">
-          <th mat-header-cell *matHeaderCellDef>Expense type</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "expense.colType" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
-            <span class="ex-muted" [ngSwitch]="purchase.purchaseType">
-              <span *ngSwitchCase="'5.1.1'">Asset purchase</span>
-              <span *ngSwitchCase="'5.1.2'">Asset maintenance</span>
-              <span *ngSwitchCase="'5.1.3'">Prepaid rent expense</span>
-              <span *ngSwitchCase="'5.1.4'">Employee expense</span>
-              <span *ngSwitchCase="'5.1.5'">Logistic expense</span>
-              <span *ngSwitchCase="'5.1.6'"
-                >Document handling &amp; Stationaries</span
-              >
-              <span *ngSwitchCase="'5.1.7'">Utilities</span>
-              <span *ngSwitchCase="'5.1.8'">Tax</span>
-              <span *ngSwitchCase="'5.1.8.1'">PPN</span>
-              <span *ngSwitchCase="'5.1.8.2'">PPh pasal 23 dan 4 ayat 2</span>
-              <span *ngSwitchCase="'5.1.8.3'">PPh pasal 21</span>
-              <span *ngSwitchCase="'5.1.8.4'">PPh tahunan</span>
-              <span *ngSwitchCase="'5.1.8.5'">Annual tax report service</span>
-              <span *ngSwitchCase="'5.1.8.6'">Penalty</span>
-              <span *ngSwitchCase="'5.1.8.7'">Tax on interest</span>
-              <span *ngSwitchCase="'5.1.9'">Administration fees</span>
-              <span *ngSwitchCase="'5.1.10'">Interests</span>
-              <span *ngSwitchCase="'5.1.11'">Rounding up</span>
-              <span *ngSwitchCase="'5.1.12'">Software</span>
-              <span *ngSwitchCase="'5.1.13'">Penalty fees</span>
-              <span *ngSwitchCase="'5.1.14'">Social and Community Expense</span>
-              <span *ngSwitchCase="'A'">Transportation</span>
-              <span *ngSwitchCase="'B'">Equipment rental</span>
-              <span *ngSwitchCase="'C'">Fuel</span>
-              <span *ngSwitchCase="'D'">Manpower</span>
-              <span *ngSwitchCase="'E'"
-                >Coordination; Consumption; and Accomodation</span
-              >
-              <span *ngSwitchCase="'F'">Material</span>
-              <span *ngSwitchCase="'G'"
-                >Project supporting equipment and supplies</span
-              >
-              <span *ngSwitchCase="'H1'">Corporate Subcontractor</span>
-              <span *ngSwitchCase="'H2'">Unincorporated Subcontractor</span>
-              <span *ngSwitchCase="'6.3.1'">Advertising Expense</span>
-              <span *ngSwitchCase="'6.3.2'">Promotional Merchandise</span>
-              <span *ngSwitchCase="'6.4.1'">Legal Document (Akta, SBU)</span>
-              <span *ngSwitchCase="'6.4.2'"
-                >Insurances (Marine, CAR TPL, Surety Bond, etc.)</span
-              >
-              <span *ngSwitchCase="'6.5.1'">Recruitment Expense</span>
-              <span *ngSwitchCase="'6.5.2'">Training Expense</span>
-              <span *ngSwitchCase="'6.5.3'">Healthcare Expense</span>
-              <span *ngSwitchDefault>Unknown</span>
-            </span>
+            <span class="ex-muted">{{
+              expenseTypeKey(purchase.purchaseType) | translate
+            }}</span>
           </td>
         </ng-container>
 
         <!-- Paid status -->
         <ng-container matColumnDef="paidStatus">
-          <th mat-header-cell *matHeaderCellDef>Payment</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.payment" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
             <span
               class="ex-chip"
@@ -260,7 +227,9 @@
               <mat-icon>{{
                 purchase.isPaid ? "check_circle" : "schedule"
               }}</mat-icon>
-              {{ purchase.isPaid ? "Paid" : "Not paid" }}
+              {{
+                (purchase.isPaid ? "status.paid" : "status.notPaid") | translate
+              }}
             </span>
           </td>
         </ng-container>
@@ -282,14 +251,16 @@
             </button>
             <mat-menu #rowMenu="matMenu">
               <button mat-menu-item (click)="viewExpense(purchase.id)">
-                <mat-icon>view_comfy_alt</mat-icon><span>View expense</span>
+                <mat-icon>view_comfy_alt</mat-icon
+                ><span>{{ "expense.menuView" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 [disabled]="purchase.isPaid"
                 (click)="openPaymentDetail(purchase.id)"
               >
-                <mat-icon>payments</mat-icon><span>Create payment</span>
+                <mat-icon>payments</mat-icon
+                ><span>{{ "expense.menuCreatePayment" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -308,7 +279,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="ex-empty">
               <mat-icon>inbox</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

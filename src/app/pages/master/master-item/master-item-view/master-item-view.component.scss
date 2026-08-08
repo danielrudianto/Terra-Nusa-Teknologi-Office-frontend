@@ -1,0 +1,220 @@
+.miv {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  max-width: 92vw;
+  box-sizing: border-box;
+  color: var(--ink, #16181d);
+}
+.miv *,
+.miv *::before,
+.miv *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- header ---------- */
+.miv-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.miv-head__icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.miv-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.miv-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #6b7280);
+}
+.miv-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- content ---------- */
+.miv-content {
+  padding: 1.5rem !important;
+  background: var(--surface, #ffffff);
+  min-width: 340px;
+}
+
+.miv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.miv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7280);
+  }
+  &__value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    word-break: break-word;
+  }
+}
+
+/* ---------- po type chips ---------- */
+.miv-potype {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7280);
+  }
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  &__empty {
+    font-size: 0.9rem;
+    color: var(--faint, #9aa0ab);
+    font-style: italic;
+  }
+}
+
+.miv-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+/* ---------- description ---------- */
+.miv-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7280);
+  }
+  &__text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink, #16181d);
+
+    &--empty {
+      color: var(--faint, #9aa0ab);
+      font-style: italic;
+    }
+  }
+}
+
+/* ---------- footer ---------- */
+.miv-foot {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  gap: 0.5rem;
+}
+
+.miv-close {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+.miv-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .miv-grid {
+    grid-template-columns: 1fr;
+  }
+}

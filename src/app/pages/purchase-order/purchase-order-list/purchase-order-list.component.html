@@ -1,18 +1,18 @@
 <div class="pol">
   <app-header-title
-    [title]="'Purchase order'"
-    [description]="'Kelola purchase order di sini'"
-    [actionButtonLabel]="'Buat purchase order'"
+    [title]="'purchaseOrder.title' | translate"
+    [description]="'purchaseOrder.description' | translate"
+    [actionButtonLabel]="'purchaseOrder.createNew' | translate"
     (onActionButtonClicked)="createNewPurchaseOrder()"
   ></app-header-title>
 
   <div class="pol-toolbar">
     <mat-form-field appearance="outline" class="pol-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Cari nomor PO, project, atau supplier"
+        [placeholder]="'purchaseOrder.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
@@ -28,21 +28,27 @@
     <div class="table-responsive">
       <table mat-table [dataSource]="orders">
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>No. PO</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.poNumber" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <span class="pol-mono">{{ po.name }}</span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef>Tanggal</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.date" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <span class="pol-date">{{ po.date | date: "dd MMM yyyy" }}</span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="supplier">
-          <th mat-header-cell *matHeaderCellDef>Supplier</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.supplier" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <div class="pol-sup">
               <span class="pol-avatar">{{
@@ -54,14 +60,18 @@
         </ng-container>
 
         <ng-container matColumnDef="project">
-          <th mat-header-cell *matHeaderCellDef>Project</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.project" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <span class="pol-tag">{{ po.projectName || "—" }}</span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Tipe</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.type" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <span class="pol-po" [matTooltip]="typeLabel(po.purchaseType)">{{
               po.purchaseType
@@ -70,17 +80,21 @@
         </ng-container>
 
         <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef class="pol-r">Nilai</th>
+          <th mat-header-cell *matHeaderCellDef class="pol-r">
+            {{ "table.value" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po" class="pol-r">
             <span class="pol-amount">Rp {{ total(po) | number: "1.0-0" }}</span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.status" | translate }}
+          </th>
           <td mat-cell *matCellDef="let po">
             <span class="pol-chip" [ngClass]="'is-' + (po.status || 'draft')">{{
-              po.status || "draft"
+              statusKey(po.status || "draft") | translate
             }}</span>
           </td>
         </ng-container>
@@ -101,10 +115,12 @@
                 (click)="approve(po)"
                 [disabled]="po.isApproved || po.status === 'cancelled'"
               >
-                <mat-icon>check_circle</mat-icon><span>Setujui</span>
+                <mat-icon>check_circle</mat-icon
+                ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
               </button>
               <button mat-menu-item (click)="deleteOrder(po)">
-                <mat-icon>delete</mat-icon><span>Hapus</span>
+                <mat-icon>delete</mat-icon
+                ><span>{{ "purchaseOrder.menuDelete" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -119,7 +135,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="pol-empty">
               <mat-icon>receipt_long</mat-icon>
-              <span>Belum ada purchase order.</span>
+              <span>{{ "purchaseOrder.noData" | translate }}</span>
             </div>
           </td>
         </tr>

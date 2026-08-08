@@ -8,6 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   FormControl,
   FormsModule,
@@ -18,6 +19,7 @@ import {
 @Component({
   selector: 'app-calendar-payment-confirm',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
@@ -33,7 +35,7 @@ import {
 export class CalendarPaymentConfirmComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialog: MatDialogRef<CalendarPaymentConfirmComponent>
+    private dialog: MatDialogRef<CalendarPaymentConfirmComponent>,
   ) {}
 
   agreeControl: FormControl = new FormControl(false, [

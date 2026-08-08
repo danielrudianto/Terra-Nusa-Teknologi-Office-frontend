@@ -18,6 +18,22 @@
        ========================================================= -->
   <ng-container *ngIf="data.readOnly">
     <mat-dialog-content class="su-content">
+      <!-- blacklist warning banner -->
+      <div class="su-blacklist" *ngIf="isBlacklist">
+        <mat-icon class="su-blacklist__icon">block</mat-icon>
+        <div class="su-blacklist__text">
+          <span class="su-blacklist__title">{{
+            "supplierView.blacklistTitle" | translate
+          }}</span>
+          <span class="su-blacklist__reason">
+            {{ "supplierView.blacklistReason" | translate }}:
+            {{
+              blacklistReason || ("supplierView.blacklistNoReason" | translate)
+            }}
+          </span>
+        </div>
+      </div>
+
       <section class="su-section">
         <div class="su-grid">
           <div class="su-field su-field--wide">

@@ -1,5 +1,5 @@
 $brand: var(--brand, #154dec);
-$brand-soft: #e7ecfb;
+$brand-soft: var(--brand-soft, #e7ecfb);
 $ink: var(--ink, #16181d);
 $muted: var(--muted, #6b7280);
 $faint: var(--faint, #9aa0ab);

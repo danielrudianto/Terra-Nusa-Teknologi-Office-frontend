@@ -16,6 +16,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageBreak, PageSize } from 'pdfmake/interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, finalize, map, of, tap } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -35,6 +36,7 @@ pdfMake.vfs = pdfFonts.vfs;
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
   imports: [
+    TranslatePipe,
     RouterModule,
     MatSelectModule,
     MatButtonModule,

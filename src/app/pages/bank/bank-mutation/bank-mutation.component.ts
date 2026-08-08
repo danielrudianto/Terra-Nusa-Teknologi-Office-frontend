@@ -21,6 +21,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BankMutationDownloadComponent } from './bank-mutation-download/bank-mutation-download.component';
 import { MatDialog } from '@angular/material/dialog';
+import { CalendarMonthSelectorComponent } from '../../calendar/calendar-month-selector/calendar-month-selector.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-bank-mutation',
@@ -36,6 +38,8 @@ import { MatDialog } from '@angular/material/dialog';
     HeaderTitleComponent,
     MatIconModule,
     MatButtonModule,
+    CalendarMonthSelectorComponent,
+    TranslatePipe,
   ],
   templateUrl: './bank-mutation.component.html',
   styleUrl: './bank-mutation.component.scss',
@@ -45,14 +49,13 @@ export class BankMutationComponent {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   bankAccount: any = null;
 
-  date: Date = new Date();
-  endOfMonth = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0);
-  startOfMonth = new Date(this.date.getFullYear(), this.date.getMonth(), 1);
+  month: number = new Date().getMonth(); // 0-indexed
+  year: number = new Date().getFullYear();
 
   page: number = 1;
   pageSize: number = 20;
@@ -68,29 +71,26 @@ export class BankMutationComponent {
     'balance',
   ];
 
-  readonly range = new FormGroup({
-    start: new FormControl<Date | null>(
-      moment(this.startOfMonth, 'DD-MM-YYYY').toDate(),
-      Validators.required
-    ),
-    end: new FormControl<Date | null>(
-      moment(this.endOfMonth, 'DD-MM-YYYY').toDate(),
-      Validators.required
-    ),
-  });
-
   ngOnInit(): void {
     this.fetchMetaData();
     this.fetchData();
   }
 
-  dateRangeChange(
-    dateRangeStart: HTMLInputElement,
-    dateRangeEnd: HTMLInputElement
-  ) {
-    if (dateRangeStart.value && dateRangeEnd.value) {
-      this.fetchData(1);
-    }
+  onMonthChanged(event: { month: number; year: number }) {
+    this.month = event.month;
+    this.year = event.year;
+    this.fetchData(1);
+  }
+
+  private get startOfMonth(): string {
+    return moment({ year: this.year, month: this.month, day: 1 }).format(
+      'YYYY-MM-DD',
+    );
+  }
+  private get endOfMonth(): string {
+    return moment({ year: this.year, month: this.month })
+      .endOf('month')
+      .format('YYYY-MM-DD');
   }
 
   fetchMetaData() {
@@ -115,8 +115,8 @@ export class BankMutationComponent {
         bankAccountID: Number(bankAccountID),
         page: this.page,
         pageSize: this.pageSize,
-        startDate: moment(this.range.value.start).format('YYYY-MM-DD'),
-        endDate: moment(this.range.value.end).format('YYYY-MM-DD'),
+        startDate: this.startOfMonth,
+        endDate: this.endOfMonth,
       })
       .subscribe({
         next: (data: any) => {

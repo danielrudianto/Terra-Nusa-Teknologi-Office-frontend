@@ -14,10 +14,12 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-calendar-payment-reject',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
@@ -33,7 +35,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class CalendarPaymentRejectComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialog: MatDialogRef<CalendarPaymentRejectComponent>
+    private dialog: MatDialogRef<CalendarPaymentRejectComponent>,
   ) {}
 
   agreeControl: FormControl = new FormControl(false, [

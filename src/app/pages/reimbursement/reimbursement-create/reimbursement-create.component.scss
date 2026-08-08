@@ -152,7 +152,7 @@ $line: var(--line, #eef0f3);
   tfoot td {
     padding: 0.85rem 1rem;
     background: var(--surface-2, #fafbfc);
-    border-top: 1px solid #e6e9ee;
+    border-top: 1px solid var(--line, #e6e9ee);
   }
   .rc-total-label {
     text-align: right;

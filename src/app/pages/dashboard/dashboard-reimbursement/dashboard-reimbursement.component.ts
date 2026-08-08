@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -18,7 +19,7 @@ interface ReimbursementItem {
   templateUrl: './dashboard-reimbursement.component.html',
   styleUrls: ['./dashboard-reimbursement.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [TranslatePipe, CommonModule],
 })
 export class DashboardReimbursementComponent implements OnInit {
   items: ReimbursementItem[] = [];

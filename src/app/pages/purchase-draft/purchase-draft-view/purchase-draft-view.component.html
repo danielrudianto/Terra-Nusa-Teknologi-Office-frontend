@@ -14,22 +14,24 @@
         >
       </div>
     </div>
-    <span class="pdv-chip">Draft</span>
+    <span class="pdv-chip">{{ "status.draft" | translate }}</span>
   </div>
 
   <mat-dialog-content class="pdv-content">
     <form [formGroup]="formGroup">
       <!-- supplier -->
       <section class="pdv-section">
-        <div class="pdv-section__title">Supplier</div>
+        <div class="pdv-section__title">
+          {{ "purchaseDraft.viewSupplier" | translate }}
+        </div>
         <div class="pdv-field">
-          <span class="pdv-label">Name</span>
+          <span class="pdv-label">{{ "table.name" | translate }}</span>
           <span class="pdv-value">{{
             formGroup.get("supplierName")?.value || "—"
           }}</span>
         </div>
         <div class="pdv-field" *ngIf="formGroup.get('supplierAddress')?.value">
-          <span class="pdv-label">Address</span>
+          <span class="pdv-label">{{ "table.address" | translate }}</span>
           <span class="pdv-value pdv-value--multi">{{
             formGroup.get("supplierAddress")?.value
           }}</span>
@@ -38,16 +40,20 @@
 
       <!-- purchase info -->
       <section class="pdv-section">
-        <div class="pdv-section__title">Informasi Purchase</div>
+        <div class="pdv-section__title">
+          {{ "purchaseDraft.viewPurchaseInfo" | translate }}
+        </div>
         <div class="pdv-grid">
           <div class="pdv-field">
-            <span class="pdv-label">Project</span>
+            <span class="pdv-label">{{ "table.project" | translate }}</span>
             <span class="pdv-value">{{
               formGroup.get("projectName")?.value || "—"
             }}</span>
           </div>
           <div class="pdv-field">
-            <span class="pdv-label">Purchase type</span>
+            <span class="pdv-label">{{
+              "purchaseDraft.viewPurchaseType" | translate
+            }}</span>
             <span class="pdv-value"
               ><span class="pdv-code">{{
                 formGroup.get("purchaseType")?.value || "—"
@@ -56,7 +62,7 @@
           </div>
         </div>
         <div class="pdv-field" *ngIf="formGroup.get('description')?.value">
-          <span class="pdv-label">Description</span>
+          <span class="pdv-label">{{ "table.description" | translate }}</span>
           <span class="pdv-value pdv-value--multi">{{
             formGroup.get("description")?.value
           }}</span>
@@ -65,7 +71,9 @@
 
       <!-- money -->
       <section class="pdv-section">
-        <div class="pdv-section__title">Rincian Nilai</div>
+        <div class="pdv-section__title">
+          {{ "purchaseDraft.viewValueBreakdown" | translate }}
+        </div>
         <div class="pdv-money">
           <div class="pdv-money__row">
             <span>DPP</span>
@@ -82,7 +90,7 @@
             >
           </div>
           <div class="pdv-money__row pdv-money__row--total">
-            <span>Total</span>
+            <span>{{ "purchaseDraft.viewTotal" | translate }}</span>
             <span
               >Rp {{ formGroup.get("total")?.value | number: "1.0-0" }}</span
             >
@@ -102,11 +110,11 @@
       class="pdv-btn pdv-btn--danger"
       (click)="deletePurchaseDraft()"
     >
-      Delete purchase draft
+      {{ "purchaseDraft.viewDelete" | translate }}
     </button>
     <span class="pdv-spacer"></span>
     <button type="button" class="pdv-btn pdv-btn--ghost" mat-dialog-close>
-      Tutup
+      {{ "purchaseDraft.viewClose" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

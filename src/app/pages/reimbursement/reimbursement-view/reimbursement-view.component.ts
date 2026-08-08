@@ -17,6 +17,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
@@ -33,6 +34,7 @@ import { ApiService } from 'src/app/services/api.service';
     NgxMaskDirective,
     CommonModule,
     MatListModule,
+    TranslatePipe,
   ],
   providers: [DatePipe],
   templateUrl: './reimbursement-view.component.html',

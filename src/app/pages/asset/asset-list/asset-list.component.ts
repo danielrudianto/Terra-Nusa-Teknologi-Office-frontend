@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseViewComponent } from '../../purchase/purchase-view/purchase-view.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,10 +19,12 @@ import { debounceTime } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
 import { AssetCreateComponent } from '../asset-create/asset-create.component';
 import { AssetUpdateComponent } from '../asset-update/asset-update.component';
+import { AssetViewComponent } from '../asset-view/asset-view.component';
 
 @Component({
   selector: 'app-asset-list',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -129,6 +132,24 @@ export class AssetListComponent {
       .afterClosed()
       .subscribe((result) => {
         if (result) this.fetchAssets(0);
+      });
+  }
+
+  onViewAsset(asset: any) {
+    this.dialog
+      .open(AssetViewComponent, {
+        data: { asset },
+        width: '600px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.action === 'edit') {
+          this.onEditAsset(result.asset);
+        } else if (result?.action === 'purchase') {
+          this.openPurchase(result.asset.purchaseOrderName);
+        }
       });
   }
 

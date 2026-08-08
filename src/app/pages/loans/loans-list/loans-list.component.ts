@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -26,6 +27,7 @@ import { LoansViewComponent } from '../loans-view/loans-view.component';
 @Component({
   selector: 'app-loans-list',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

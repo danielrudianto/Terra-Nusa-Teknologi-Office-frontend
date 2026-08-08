@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
@@ -12,6 +13,7 @@ import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dash
   styleUrls: ['./dashboard-body.component.scss'],
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     RouterModule,
     TodayPaymentComponent,

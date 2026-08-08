@@ -2,18 +2,20 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MonthSelectorComponent } from 'src/app/components/month-selector/month-selector.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-calendar-month-selector',
-  imports: [
-    MatIconModule
-  ],
+  imports: [MatIconModule],
   templateUrl: './calendar-month-selector.component.html',
   styleUrl: './calendar-month-selector.component.scss',
   standalone: true,
 })
 export class CalendarMonthSelectorComponent {
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private translate: TranslateService,
+  ) {}
 
   @Input('month') month!: number;
   @Input('year') year!: number;
@@ -27,21 +29,21 @@ export class CalendarMonthSelectorComponent {
   }> = new EventEmitter<{ month: number; year: number }>();
 
   get monthName(): string {
-    const monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+    const monthKeys = [
+      'common.january',
+      'common.february',
+      'common.march',
+      'common.april',
+      'common.may',
+      'common.june',
+      'common.july',
+      'common.august',
+      'common.september',
+      'common.october',
+      'common.november',
+      'common.december',
     ];
-    return monthNames[this.month];
+    return this.translate.instant(monthKeys[this.month]);
   }
 
   onButtonClicked() {

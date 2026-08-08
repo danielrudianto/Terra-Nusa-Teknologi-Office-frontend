@@ -7,17 +7,28 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-calendar-account-selector-dialog',
-  imports: [MatDialogModule, MatListModule, MatButtonModule, CommonModule],
+  imports: [
+    MatDialogModule,
+    MatListModule,
+    MatButtonModule,
+    CommonModule,
+    MatIconModule,
+    TranslatePipe,
+    MatCheckboxModule,
+  ],
   templateUrl: './calendar-account-selector-dialog.component.html',
   styleUrl: './calendar-account-selector-dialog.component.scss',
 })
 export class CalendarAccountSelectorDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { bankAccounts: any[] },
-    private dialog: MatDialogRef<CalendarAccountSelectorDialogComponent>
+    private dialog: MatDialogRef<CalendarAccountSelectorDialogComponent>,
   ) {}
 
   // bankAccounts: any[] = this.data.bankAccounts;

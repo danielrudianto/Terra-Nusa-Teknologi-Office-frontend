@@ -6,12 +6,14 @@
 <mat-stepper #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-      <ng-template matStepLabel>Meta Data</ng-template>
+      <ng-template matStepLabel>{{
+        "purchaseCreate.stepMeta" | translate
+      }}</ng-template>
 
       <div class="row">
         <div class="col-12">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Date</mat-label>
+            <mat-label>{{ "purchaseCreate.date" | translate }}</mat-label>
             <input
               matInput
               formControlName="date"
@@ -26,7 +28,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Due date</mat-label>
+            <mat-label>{{ "purchaseCreate.dueDate" | translate }}</mat-label>
             <input
               matInput
               formControlName="dueDate"
@@ -41,12 +43,12 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Supplier</mat-label>
+            <mat-label>{{ "purchaseCreate.supplier" | translate }}</mat-label>
             <input
               matInput
               formControlName="supplierName"
               type="text"
-              placeholder="Supplier name"
+              [placeholder]="'purchaseCreate.supplierPlaceholder' | translate"
               readonly
             />
             <button
@@ -61,80 +63,92 @@
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Invoice name</mat-label>
+            <mat-label>{{
+              "purchaseCreate.invoiceName" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="invoiceName"
               type="text"
-              placeholder="Invoice name"
+              [placeholder]="'purchaseCreate.invoiceName' | translate"
             />
           </mat-form-field>
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Receipt Name</mat-label>
+            <mat-label>{{
+              "purchaseCreate.receiptName" | translate
+            }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="receiptName"
-              placeholder="Receipt Name"
+              [placeholder]="'purchaseCreate.receiptName' | translate"
             />
           </mat-form-field>
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Purchase Order Name</mat-label>
+            <mat-label>{{ "purchaseCreate.poName" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="purchaseOrderName"
-              placeholder="Purchase Order Name"
+              [placeholder]="'purchaseCreate.poName' | translate"
               oninput="this.value = this.value.toUpperCase()"
             />
           </mat-form-field>
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Project</mat-label>
+            <mat-label>{{ "purchaseCreate.project" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="projectName"
-              placeholder="Project name"
+              [placeholder]="'purchaseCreate.projectPlaceholder' | translate"
             />
           </mat-form-field>
         </div>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Invoice Name</mat-label>
+        <mat-label>{{ "purchaseCreate.taxInvoiceName" | translate }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="taxInvoiceName"
-          placeholder="Tax Invoice Name"
+          [placeholder]="'purchaseCreate.taxInvoiceName' | translate"
           maxlength="17"
         />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document type</mat-label>
+        <mat-label>{{ "purchaseCreate.documentType" | translate }}</mat-label>
         <mat-select formControlName="documentType">
-          <mat-option [value]="'goods'">Goods purchase</mat-option>
-          <mat-option [value]="'other'">Other purchase</mat-option>
+          <mat-option [value]="'goods'">{{
+            "purchaseCreate.goodsPurchase" | translate
+          }}</mat-option>
+          <mat-option [value]="'other'">{{
+            "purchaseCreate.otherPurchase" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>Document Status</mat-label>
+        <mat-label>{{ "purchaseCreate.documentStatus" | translate }}</mat-label>
         <mat-select formControlName="lastStatus">
-          <mat-option value="draft">Waiting</mat-option>
-          <mat-option value="ready">Ready</mat-option>
+          <mat-option value="draft">{{
+            "purchaseCreate.statusWaiting" | translate
+          }}</mat-option>
+          <mat-option value="ready">{{
+            "purchaseCreate.statusReady" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document Type</mat-label>
+        <mat-label>{{ "purchaseCreate.documentType" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -163,20 +177,22 @@
       matStepperNext
       [disabled]="metaFormGroup.invalid"
     >
-      Next
+      {{ "purchaseCreate.next" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="valueFormGroup">
     <form [formGroup]="valueFormGroup">
-      <ng-template matStepLabel>Value Data</ng-template>
+      <ng-template matStepLabel>{{
+        "purchaseCreate.stepValue" | translate
+      }}</ng-template>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>DPP</mat-label>
+        <mat-label>{{ "purchaseCreate.dpp" | translate }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="dpp"
-          placeholder="DPP"
+          [placeholder]="'purchaseCreate.dpp' | translate"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
@@ -187,7 +203,7 @@
       <div class="row">
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>PPN (%)</mat-label>
+            <mat-label>{{ "purchaseCreate.ppnPercent" | translate }}</mat-label>
             <mat-select formControlName="ppn">
               <mat-option [value]="0">0%</mat-option>
               <mat-option [value]="1.1">1.1%</mat-option>
@@ -197,12 +213,12 @@
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>PPN (Rp.)</mat-label>
+            <mat-label>{{ "purchaseCreate.ppnRp" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="ppnValue"
-              placeholder="PPN (Rp.)"
+              [placeholder]="'purchaseCreate.ppnRp' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               decimalScale="2"
@@ -214,12 +230,12 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PBBKB</mat-label>
+        <mat-label>{{ "purchaseCreate.pbbkb" | translate }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="pbbkb"
-          placeholder="PBBKB"
+          [placeholder]="'purchaseCreate.pbbkb' | translate"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
@@ -230,12 +246,12 @@
       <div class="row">
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>PPh</mat-label>
+            <mat-label>{{ "purchaseCreate.pph" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="pphCode"
-              placeholder="PPh Code"
+              [placeholder]="'purchaseCreate.pphCode' | translate"
             />
             <button
               mat-icon-button
@@ -247,24 +263,28 @@
             </button>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>PPh Percentage</mat-label>
+            <mat-label>{{
+              "purchaseCreate.pphPercentage" | translate
+            }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="pphPercentage"
-              placeholder="PPh Percentage"
+              [placeholder]="'purchaseCreate.pphPercentage' | translate"
               readonly
             />
           </mat-form-field>
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>PPh Object Name</mat-label>
+            <mat-label>{{
+              "purchaseCreate.pphObjectName" | translate
+            }}</mat-label>
             <textarea
               matInput
               type="text"
               formControlName="pphTaxObject"
-              placeholder="PPh Object Name"
+              [placeholder]="'purchaseCreate.pphObjectName' | translate"
               readonly
               rows="4"
             ></textarea>
@@ -273,7 +293,7 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh (Rp.)</mat-label>
+        <mat-label>{{ "purchaseCreate.pphRp" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -290,7 +310,7 @@
       <div class="row">
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Other value</mat-label>
+            <mat-label>{{ "purchaseCreate.otherValue" | translate }}</mat-label>
             <input
               matInput
               type="text"
@@ -305,20 +325,30 @@
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Other value note</mat-label>
+            <mat-label>{{
+              "purchaseCreate.otherValueNote" | translate
+            }}</mat-label>
             <mat-select formControlName="otherValueNote">
-              <mat-option value="">Select</mat-option>
-              <mat-option value="delivery">Delivery fee</mat-option>
-              <mat-option value="packing">Packing fee</mat-option>
+              <mat-option value="">{{
+                "purchaseCreate.select" | translate
+              }}</mat-option>
+              <mat-option value="delivery">{{
+                "purchaseCreate.deliveryFee" | translate
+              }}</mat-option>
+              <mat-option value="packing">{{
+                "purchaseCreate.packingFee" | translate
+              }}</mat-option>
               <mat-option value="packing">PPh 22</mat-option>
-              <mat-option value="administrative">Administration fee</mat-option>
+              <mat-option value="administrative">{{
+                "purchaseCreate.administrationFee" | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Total</mat-label>
+        <mat-label>{{ "purchaseCreate.total" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -348,7 +378,7 @@
       mat-button
       matStepperPrevious
     >
-      Previous
+      {{ "purchaseCreate.previous" | translate }}
     </button>
     <button
       matStepperNext
@@ -356,18 +386,20 @@
       mat-stroked-button
       [disabled]="valueFormGroup.invalid || !isFinal"
     >
-      Next
+      {{ "purchaseCreate.next" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="attachmentFormGroup">
     <form [formGroup]="attachmentFormGroup">
-      <ng-template matStepLabel>Attachments Data</ng-template>
+      <ng-template matStepLabel>{{
+        "purchaseCreate.stepAttachments" | translate
+      }}</ng-template>
 
       <mat-slide-toggle
         color="primary"
         class="my-2"
         formControlName="isInvoiceAttached"
-        >Invoice</mat-slide-toggle
+        >{{ "purchaseCreate.attInvoice" | translate }}</mat-slide-toggle
       >
       <br />
 
@@ -375,7 +407,7 @@
         color="primary"
         class="my-2"
         formControlName="isReceiptAttached"
-        >Receipt</mat-slide-toggle
+        >{{ "purchaseCreate.attReceipt" | translate }}</mat-slide-toggle
       >
       <br />
 
@@ -383,7 +415,7 @@
         color="primary"
         class="my-2"
         formControlName="isTaxInvoiceAttached"
-        >Tax invoice</mat-slide-toggle
+        >{{ "purchaseCreate.attTaxInvoice" | translate }}</mat-slide-toggle
       >
       <br />
 
@@ -391,7 +423,7 @@
         color="primary"
         class="my-2"
         formControlName="isCopAttached"
-        >Certificate of Payment</mat-slide-toggle
+        >{{ "purchaseCreate.attCoP" | translate }}</mat-slide-toggle
       >
       <br />
 
@@ -399,7 +431,7 @@
         color="primary"
         class="my-2"
         formControlName="isCopyPurchaseOrderAttached"
-        >Copy of Purchase Order / Contract</mat-slide-toggle
+        >{{ "purchaseCreate.attCopyPO" | translate }}</mat-slide-toggle
       >
       <br />
     </form>
@@ -411,7 +443,7 @@
       mat-button
       matStepperPrevious
     >
-      Previous
+      {{ "purchaseCreate.previous" | translate }}
     </button>
     <button
       style="letter-spacing: 0"
@@ -419,21 +451,23 @@
       matStepperNext
       [disabled]="attachmentFormGroup.invalid"
     >
-      Next
+      {{ "purchaseCreate.next" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="paymentFormGroup">
     <form [formGroup]="paymentFormGroup">
-      <ng-template matStepLabel>Payment Data</ng-template>
+      <ng-template matStepLabel>{{
+        "purchaseCreate.stepPayment" | translate
+      }}</ng-template>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank name</mat-label>
+        <mat-label>{{ "purchaseCreate.bankName" | translate }}</mat-label>
         <input
           #input
           matInput
           type="text"
           formControlName="bankName"
-          placeholder="Bank Name"
+          [placeholder]="'purchaseCreate.bankName' | translate"
           [matAutocomplete]="auto"
           (input)="filter()"
           (focus)="filter()"
@@ -448,26 +482,36 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account name</mat-label>
+        <mat-label>{{
+          "purchaseCreate.bankAccountName" | translate
+        }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="bankAccountName"
-          placeholder="Bank Account Name"
+          [placeholder]="'purchaseCreate.bankAccountName' | translate"
         />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Payment Method</mat-label>
+        <mat-label>{{ "purchaseCreate.paymentMethod" | translate }}</mat-label>
         <mat-select formControlName="paymentMethod">
-          <mat-option value="bank">Bank Transfer</mat-option>
-          <mat-option value="va">Virtual Account</mat-option>
-          <mat-option value="cash">Cheque</mat-option>
+          <mat-option value="bank">{{
+            "purchaseCreate.bankTransfer" | translate
+          }}</mat-option>
+          <mat-option value="va">{{
+            "purchaseCreate.virtualAccount" | translate
+          }}</mat-option>
+          <mat-option value="cash">{{
+            "purchaseCreate.cheque" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account number</mat-label>
+        <mat-label>{{
+          "purchaseCreate.bankAccountNumber" | translate
+        }}</mat-label>
         <!-- Input for bank account name -->
         <button
           mat-icon-button
@@ -487,7 +531,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Total</mat-label>
+        <mat-label>{{ "purchaseCreate.total" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -507,7 +551,7 @@
         formControlName="proxyPayment"
       >
         <div class="d-flex align-items-center justify-content-between">
-          <span>Proxy Payment</span>
+          <span>{{ "purchaseCreate.proxyPayment" | translate }}</span>
           <button
             type="button"
             mat-icon-button
@@ -519,10 +563,13 @@
       </mat-slide-toggle>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account origin</mat-label>
+        <mat-label>{{
+          "purchaseCreate.bankAccountOrigin" | translate
+        }}</mat-label>
         <mat-select formControlName="bankAccountID">
           <mat-option *ngFor="let option of bankAccounts" [value]="option.id">
-            {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
+            {{ option.bankName }} · {{ option.bankAccountName }} ·
+            {{ option.bankAccountNumber }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -533,7 +580,7 @@
         formControlName="createPayment"
       >
         <div class="d-flex align-items-center justify-content-between">
-          <span>Create payment slip</span>
+          <span>{{ "purchaseCreate.createPaymentSlip" | translate }}</span>
           <button
             type="button"
             mat-icon-button
@@ -552,14 +599,14 @@
       class="me-2"
       matStepperPrevious
     >
-      Previous
+      {{ "purchaseCreate.previous" | translate }}
     </button>
     <button
       class="btn"
       (click)="onSubmit()"
       [disabled]="!isValid || isSubmitting"
     >
-      Submit
+      {{ "purchaseCreate.submit" | translate }}
     </button>
   </mat-step>
 </mat-stepper>

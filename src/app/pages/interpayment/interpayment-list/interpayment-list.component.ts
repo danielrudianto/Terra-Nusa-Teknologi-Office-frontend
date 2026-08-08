@@ -20,6 +20,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { ApiService } from 'src/app/services/api.service';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import moment from 'moment';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -45,6 +46,7 @@ import { InterpaymentViewComponent } from '../interpayment-view/interpayment-vie
     MatPaginatorModule,
     MatButtonModule,
     InterpaymentCreateComponent,
+    TranslatePipe,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',

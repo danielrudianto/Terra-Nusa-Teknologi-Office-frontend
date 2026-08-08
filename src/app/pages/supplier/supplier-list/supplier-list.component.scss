@@ -196,6 +196,16 @@
 .sl-avatar.is-blacklist {
   background: var(--bad-bg, #fdecec) !important;
   color: var(--bad-fg, #b3322f) !important;
+  animation: sl-pulse 1.8s ease-in-out infinite;
+}
+@keyframes sl-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(179, 50, 47, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(179, 50, 47, 0);
+  }
 }
 .sl-primary {
   display: inline-flex;
@@ -206,17 +216,103 @@
 .sl-blacklist {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  padding: 2px 8px 2px 5px;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
   border-radius: 999px;
+  white-space: nowrap;
   background: var(--bad-bg, #fdecec);
   color: var(--bad-fg, #b3322f);
-  mat-icon {
-    font-size: 13px;
-    width: 13px;
-    height: 13px;
+  &::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bad-fg, #b3322f);
+    flex: 0 0 auto;
   }
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ===== filter chips (Semua / Aktif / Diblacklist) — samain pl-fchip ===== */
+/* base: clean toggle pills (persis purchase) */
+:host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
+  gap: 8px;
+}
+:host ::ng-deep .mat-mdc-chip-option {
+  --mdc-chip-container-height: 34px;
+  --mdc-chip-elevated-container-color: #ffffff;
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
+  --mdc-chip-outline-color: var(--border, #d9dce2);
+  --mdc-chip-outline-width: 0.5px;
+  --mdc-chip-selected-outline-width: 0px;
+  --mdc-chip-focus-state-layer-opacity: 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+/* remove leading checkmark slot so selection reads by color only */
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__text-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+:host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
+  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
+}
+
+:host ::ng-deep .sl-fchip.mdc-evolution-chip--selected {
+  .mdc-evolution-chip__checkmark {
+    display: none;
+  }
+}
+
+/* Semua -> orange */
+:host ::ng-deep .sl-fchip--all.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+/* Aktif -> hijau */
+:host ::ng-deep .sl-fchip--active.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+/* Diblacklist -> merah */
+:host ::ng-deep .sl-fchip--blacklist.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+
+/* dot indikator warna di depan tiap chip (selalu tampil, biar keliatan makna warnanya) */
+:host ::ng-deep .sl-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.55;
+}
+:host ::ng-deep .sl-fchip--all .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+  opacity: 1;
+}
+:host ::ng-deep .sl-fchip--active .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+  opacity: 1;
+}
+:host ::ng-deep .sl-fchip--blacklist .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
+  opacity: 1;
 }

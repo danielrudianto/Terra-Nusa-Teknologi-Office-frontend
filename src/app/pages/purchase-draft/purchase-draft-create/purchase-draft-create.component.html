@@ -16,8 +16,10 @@
       </svg>
     </span>
     <div class="pdc-head__text">
-      <h2 class="pdc-title">Buat Purchase Draft</h2>
-      <span class="pdc-sub">Draft pembelian ke supplier</span>
+      <h2 class="pdc-title">{{ "purchaseDraftCreate.title" | translate }}</h2>
+      <span class="pdc-sub">{{
+        "purchaseDraftCreate.subtitle" | translate
+      }}</span>
     </div>
   </div>
 
@@ -25,11 +27,11 @@
     <mat-dialog-content class="pdc-content">
       <div class="pdc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.date" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
-            placeholder="Tanggal"
+            [placeholder]="'purchaseDraftCreate.datePlaceholder' | translate"
             [matDatepicker]="picker"
           />
           <mat-datepicker-toggle
@@ -40,12 +42,16 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Supplier</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.supplier" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="supplierName"
             type="text"
-            placeholder="Pilih supplier"
+            [placeholder]="
+              'purchaseDraftCreate.supplierPlaceholder' | translate
+            "
             readonly
           />
           <button
@@ -64,19 +70,23 @@
           class="pdc-span2"
           *ngIf="metaFormGroup.get('supplierAddress')?.value"
         >
-          <mat-label>Supplier address</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.supplierAddress" | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="supplierAddress"
             rows="2"
-            placeholder="Alamat supplier"
+            [placeholder]="
+              'purchaseDraftCreate.supplierAddressPlaceholder' | translate
+            "
             readonly
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pdc-span2">
-          <mat-label>Purchase Order Name</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.poName" | translate }}</mat-label>
           <input
             #input
             matInput
@@ -95,56 +105,68 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Project</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.project" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="projectName"
-            placeholder="Otomatis dari PO"
+            [placeholder]="'purchaseDraftCreate.projectPlaceholder' | translate"
             readonly
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Purchase type</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.purchaseType" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="purchaseType"
-            placeholder="Otomatis dari PO"
+            [placeholder]="
+              'purchaseDraftCreate.purchaseTypePlaceholder' | translate
+            "
             readonly
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pdc-span2">
-          <mat-label>Tax invoice name</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.taxInvoiceName" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="taxInvoiceName"
-            placeholder="Nomor faktur pajak (opsional)"
+            [placeholder]="
+              'purchaseDraftCreate.taxInvoicePlaceholder' | translate
+            "
             maxlength="17"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pdc-span2">
-          <mat-label>Description</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.description" | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="description"
             rows="2"
-            placeholder="Deskripsi pembelian"
+            [placeholder]="
+              'purchaseDraftCreate.descriptionPlaceholder' | translate
+            "
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>DPP</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.dpp" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="dpp"
-            placeholder="DPP"
+            [placeholder]="'purchaseDraftCreate.dpp' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -152,23 +174,27 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>PPN (%)</mat-label>
+          <mat-label>{{
+            "purchaseDraftCreate.ppnPercent" | translate
+          }}</mat-label>
           <input
             matInput
             type="number"
             formControlName="ppn"
-            placeholder="PPN %"
+            [placeholder]="
+              'purchaseDraftCreate.ppnPercentPlaceholder' | translate
+            "
             suffix=" %"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>PPN (Rp.)</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.ppnRp" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="ppnValue"
-            placeholder="PPN otomatis"
+            [placeholder]="'purchaseDraftCreate.ppnRpPlaceholder' | translate"
             readonly
             prefix="Rp. "
             thousandSeparator=" "
@@ -178,12 +204,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>PBBKB</mat-label>
+          <mat-label>{{ "purchaseDraftCreate.pbbkb" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="pbbkb"
-            placeholder="PBBKB"
+            [placeholder]="'purchaseDraftCreate.pbbkb' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -193,21 +219,27 @@
       </div>
 
       <div class="pdc-total">
-        <span class="pdc-total__label">Total</span>
+        <span class="pdc-total__label">{{
+          "purchaseDraftCreate.total" | translate
+        }}</span>
         <span class="pdc-total__value">Rp {{ total | number: "1.0-0" }}</span>
       </div>
     </mat-dialog-content>
 
     <mat-dialog-actions class="pdc-actions">
       <button type="button" class="pdc-cancel" (click)="onCancel()">
-        Batal
+        {{ "purchaseDraftCreate.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="pdc-submit"
         [disabled]="metaFormGroup.invalid || isSubmitting"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan draft" }}
+        {{
+          isSubmitting
+            ? ("purchaseDraftCreate.saving" | translate)
+            : ("purchaseDraftCreate.saveDraft" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

@@ -2,8 +2,8 @@
   <!-- secondary side nav -->
   <aside class="master-nav">
     <div class="master-nav__head">
-      <span class="master-nav__title">Master Data</span>
-      <span class="master-nav__sub">Kelola data master</span>
+      <span class="master-nav__title">{{ "master.title" | translate }}</span>
+      <span class="master-nav__sub">{{ "master.subtitle" | translate }}</span>
     </div>
     <nav class="master-nav__list">
       <a
@@ -16,8 +16,10 @@
           <mat-icon>{{ item.icon }}</mat-icon>
         </span>
         <span class="master-nav__text">
-          <span class="master-nav__name">{{ item.name }}</span>
-          <span class="master-nav__desc">{{ item.description }}</span>
+          <span class="master-nav__name">{{ item.name | translate }}</span>
+          <span class="master-nav__desc">{{
+            item.description | translate
+          }}</span>
         </span>
       </a>
     </nav>

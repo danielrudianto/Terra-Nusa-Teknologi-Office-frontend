@@ -1,0 +1,63 @@
+<div class="eov">
+  <h2 mat-dialog-title class="eov-head">
+    <span class="eov-head__icon"><mat-icon>storefront</mat-icon></span>
+    <span class="eov-head__text">
+      <span class="eov-title">{{
+        "expenseOpponentView.title" | translate
+      }}</span>
+      <span class="eov-name">{{ opponent.name || "—" }}</span>
+    </span>
+  </h2>
+
+  <mat-dialog-content class="eov-content">
+    <div class="eov-grid">
+      <div class="eov-field">
+        <span class="eov-field__label">{{
+          "expenseOpponentView.type" | translate
+        }}</span>
+        <span class="eov-field__value">{{ opponent.type || "—" }}</span>
+      </div>
+
+      <div class="eov-field">
+        <span class="eov-field__label">{{
+          "expenseOpponentView.paymentNumber" | translate
+        }}</span>
+        <span class="eov-field__value">{{
+          opponent.paymentNumber || "—"
+        }}</span>
+      </div>
+
+      <div class="eov-field eov-field--wide">
+        <span class="eov-field__label">{{
+          "expenseOpponentView.npwp" | translate
+        }}</span>
+        <span class="eov-field__value">{{ opponent.npwp || "—" }}</span>
+      </div>
+    </div>
+
+    <div class="eov-desc">
+      <span class="eov-desc__label">{{
+        "expenseOpponentView.description" | translate
+      }}</span>
+      <p class="eov-desc__text" *ngIf="opponent.description">
+        {{ opponent.description }}
+      </p>
+      <p
+        class="eov-desc__text eov-desc__text--empty"
+        *ngIf="!opponent.description"
+      >
+        {{ "expenseOpponentView.noDescription" | translate }}
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="eov-foot">
+    <button type="button" class="eov-close" (click)="onClose()">
+      {{ "expenseOpponentView.close" | translate }}
+    </button>
+    <button type="button" class="eov-edit" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      {{ "expenseOpponentView.edit" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -21,15 +21,20 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-g',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -138,6 +143,35 @@ export class PurchaseOrderCreateGComponent {
 
   private get additionalClauseValues(): string[] {
     return (this.additionalClauses.value as string[]) || [];
+  }
+
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange() {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
   }
 
   private clauseContext() {
@@ -284,8 +318,8 @@ export class PurchaseOrderCreateGComponent {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
-        creditTerm: this.formGroup.get('creditTerm')?.value,
-        prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        creditTerm: this.formGroup.getRawValue().creditTerm,
+        prepaidTerm: this.formGroup.getRawValue().prepaidTerm,
         supplierPICName: this.formGroup.get('supplierPICName')?.value,
         supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
           ?.value,

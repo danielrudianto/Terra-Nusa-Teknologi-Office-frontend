@@ -1,7 +1,7 @@
 <div class="rc">
   <app-header-title
-    title="Reimbursement"
-    description="Create new reimbursement"
+    [title]="'reimbursement.title' | translate"
+    [description]="'reimbursement.createNew' | translate"
   ></app-header-title>
 
   <form
@@ -11,10 +11,12 @@
   >
     <!-- ===== Detail ===== -->
     <section class="rc-section">
-      <div class="rc-section__title">Detail</div>
+      <div class="rc-section__title">
+        {{ "reimbursementCreate.sectionDetail" | translate }}
+      </div>
       <div class="rc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "reimbursementCreate.date" | translate }}</mat-label>
           <input
             matInput
             placeholder="Date"
@@ -29,7 +31,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Due Date</mat-label>
+          <mat-label>{{ "reimbursementCreate.dueDate" | translate }}</mat-label>
           <input
             matInput
             placeholder="Due date"
@@ -44,22 +46,26 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Expense type</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.expenseType" | translate
+          }}</mat-label>
           <mat-select formControlName="purchaseType">
             <mat-option *ngFor="let type of expenseTypes" [value]="type.code">{{
-              type.name
+              type.nameKey | translate
             }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Project Name</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.projectName" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
             id="projectName"
             formControlName="projectName"
-            placeholder="Enter project name"
+            [placeholder]="'reimbursementCreate.projectPlaceholder' | translate"
             (keyup)="toUpperCase()"
           />
         </mat-form-field>
@@ -68,14 +74,20 @@
 
     <!-- ===== Bank & payment ===== -->
     <section class="rc-section">
-      <div class="rc-section__title">Rekening &amp; Pembayaran</div>
+      <div class="rc-section__title">
+        {{ "reimbursementCreate.sectionBankPayment" | translate }}
+      </div>
       <div class="rc-grid">
         <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>Bank Name</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.bankName" | translate
+          }}</mat-label>
           <input
             #input
             type="text"
-            placeholder="Bank name"
+            [placeholder]="
+              'reimbursementCreate.bankNamePlaceholder' | translate
+            "
             matInput
             formControlName="bankName"
             [matAutocomplete]="auto"
@@ -92,7 +104,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Bank account number</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.bankAccountNumber" | translate
+          }}</mat-label>
           <button
             mat-icon-button
             type="button"
@@ -106,28 +120,42 @@
             type="text"
             id="bankAccountNumber"
             formControlName="bankAccountNumber"
-            placeholder="Enter account number"
+            [placeholder]="
+              'reimbursementCreate.accountNumberPlaceholder' | translate
+            "
             mask="9999 9999 9999 9999"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Bank account name</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.bankAccountName" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
             id="bankAccountName"
             formControlName="bankAccountName"
-            placeholder="Enter account name"
+            [placeholder]="
+              'reimbursementCreate.accountNamePlaceholder' | translate
+            "
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>Payment Method</mat-label>
+          <mat-label>{{
+            "reimbursementCreate.paymentMethod" | translate
+          }}</mat-label>
           <mat-select formControlName="paymentMethod">
-            <mat-option value="bank">Bank Transfer</mat-option>
-            <mat-option value="va">Virtual Account</mat-option>
-            <mat-option value="cash">Cheque</mat-option>
+            <mat-option value="bank">{{
+              "reimbursementCreate.bankTransfer" | translate
+            }}</mat-option>
+            <mat-option value="va">{{
+              "reimbursementCreate.virtualAccount" | translate
+            }}</mat-option>
+            <mat-option value="cash">{{
+              "reimbursementCreate.cheque" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -136,14 +164,18 @@
     <!-- ===== Items ===== -->
     <section class="rc-section">
       <div class="rc-section__head">
-        <div class="rc-section__title">Item Reimbursement</div>
+        <div class="rc-section__title">
+          {{ "reimbursementCreate.sectionItems" | translate }}
+        </div>
         <button
           mat-stroked-button
           type="button"
           (click)="addItem()"
           class="rc-additem"
         >
-          <mat-icon>add</mat-icon>&nbsp;Tambah item
+          <mat-icon>add</mat-icon>&nbsp;{{
+            "reimbursementCreate.addItem" | translate
+          }}
         </button>
       </div>
 
@@ -151,9 +183,11 @@
         <table>
           <thead>
             <tr>
-              <th>Tanggal</th>
-              <th>Deskripsi</th>
-              <th class="rc-num">Jumlah</th>
+              <th>{{ "reimbursementCreate.colDate" | translate }}</th>
+              <th>{{ "reimbursementCreate.colDescription" | translate }}</th>
+              <th class="rc-num">
+                {{ "reimbursementCreate.colAmount" | translate }}
+              </th>
               <th class="rc-action-col"></th>
             </tr>
           </thead>
@@ -195,7 +229,9 @@
             <tfoot>
               <tr>
                 <td></td>
-                <td class="rc-total-label">Total</td>
+                <td class="rc-total-label">
+                  {{ "reimbursementCreate.total" | translate }}
+                </td>
                 <td class="rc-num rc-total-value">
                   {{ total | number: "0.2-2" }}
                 </td>
@@ -215,7 +251,7 @@
         [disabled]="formGroup.invalid"
         class="rc-submit"
       >
-        Submit
+        {{ "reimbursementCreate.submit" | translate }}
       </button>
     </div>
   </form>

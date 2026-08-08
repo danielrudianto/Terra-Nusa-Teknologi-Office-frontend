@@ -2,9 +2,12 @@
   <!-- header -->
   <div class="sic-head">
     <div class="sic-head__text">
-      <h1 class="sic-title">Buat Sales Invoice</h1>
+      <h1 class="sic-title">{{ "salesInvoiceCreate.title" | translate }}</h1>
       <p class="sic-sub">
-        <a routerLink="/Sales-invoice">Sales invoice</a> / Create
+        <a routerLink="/Sales-invoice">{{
+          "salesInvoiceCreate.breadcrumbList" | translate
+        }}</a>
+        / {{ "salesInvoiceCreate.breadcrumbCreate" | translate }}
       </p>
     </div>
   </div>
@@ -13,13 +16,19 @@
     <!-- ===== STEP 1: GENERAL ===== -->
     <mat-step [stepControl]="metaFormGroup">
       <form [formGroup]="metaFormGroup">
-        <ng-template matStepLabel>General</ng-template>
+        <ng-template matStepLabel>{{
+          "salesInvoiceCreate.stepGeneral" | translate
+        }}</ng-template>
 
         <div class="sic-card">
-          <div class="sic-section__title">Klien</div>
+          <div class="sic-section__title">
+            {{ "salesInvoiceCreate.sectionClient" | translate }}
+          </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Client name</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.clientName" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="clientName"
@@ -39,7 +48,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Client address</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.clientAddress" | translate
+              }}</mat-label>
               <textarea
                 matInput
                 formControlName="clientAddress"
@@ -51,7 +62,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Client NPWP</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.clientNpwp" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="clientNPWP"
@@ -63,11 +76,13 @@
           </div>
 
           <div class="sic-section__title sic-section__title--mt">
-            Detail Invoice
+            {{ "salesInvoiceCreate.sectionInvoiceDetail" | translate }}
           </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Invoice Number</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.invoiceNumber" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="name"
@@ -77,7 +92,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Date</mat-label>
+              <mat-label>{{ "salesInvoiceCreate.date" | translate }}</mat-label>
               <input
                 matInput
                 [matDatepicker]="picker"
@@ -92,7 +107,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Project name</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.projectName" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -103,7 +120,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Description</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.description" | translate
+              }}</mat-label>
               <input
                 type="text"
                 placeholder="Pilih salah satu"
@@ -156,13 +175,15 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>SPK Number</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.spkNumber" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 id="spkNumber"
                 formControlName="spkNumber"
-                placeholder="Nomor SPK"
+                [placeholder]="'salesInvoiceCreate.spkPlaceholder' | translate"
               />
             </mat-form-field>
           </div>
@@ -174,7 +195,7 @@
               class="sic-btn sic-btn--primary"
               [disabled]="metaFormGroup.invalid"
             >
-              Lanjut
+              {{ "salesInvoiceCreate.next" | translate }}
             </button>
           </div>
         </div>
@@ -184,18 +205,22 @@
     <!-- ===== STEP 2: VALUE ===== -->
     <mat-step [stepControl]="valueFormGroup">
       <form [formGroup]="valueFormGroup">
-        <ng-template matStepLabel>Value</ng-template>
+        <ng-template matStepLabel>{{
+          "salesInvoiceCreate.stepValue" | translate
+        }}</ng-template>
 
         <div class="sic-card">
-          <div class="sic-section__title">Nilai &amp; Pajak</div>
+          <div class="sic-section__title">
+            {{ "salesInvoiceCreate.sectionValueTax" | translate }}
+          </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>DPP</mat-label>
+              <mat-label>{{ "salesInvoiceCreate.dpp" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="dpp"
-                placeholder="DPP"
+                [placeholder]="'salesInvoiceCreate.dpp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 decimalScale="2"
@@ -204,7 +229,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PPN</mat-label>
+              <mat-label>{{ "salesInvoiceCreate.ppn" | translate }}</mat-label>
               <mat-select formControlName="ppnPercentage">
                 <mat-option value="0">0%</mat-option>
                 <mat-option value="11">11%</mat-option>
@@ -212,12 +237,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PPN (Rp.)</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.ppnRp" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="ppnValue"
-                placeholder="PPN (Rp.)"
+                [placeholder]="'salesInvoiceCreate.ppnRp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 decimalScale="2"
@@ -227,12 +254,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>PPH Code</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.pphCode" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="pphCode"
-                placeholder="PPH Code"
+                [placeholder]="'salesInvoiceCreate.pphCode' | translate"
                 readonly
               />
               <button
@@ -247,12 +276,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>PPH Tax Object Name</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.pphObjectName" | translate
+              }}</mat-label>
               <textarea
                 matInput
                 type="text"
                 formControlName="pphTaxObjectName"
-                placeholder="PPH Tax Object Name"
+                [placeholder]="'salesInvoiceCreate.pphObjectName' | translate"
                 readonly
                 rows="2"
                 style="resize: none"
@@ -260,24 +291,30 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PPh (%)</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.pphPercent" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="pphPercentage"
-                placeholder="PPh %"
+                [placeholder]="
+                  'salesInvoiceCreate.pphPercentPlaceholder' | translate
+                "
                 readonly
                 suffix="%"
               />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>BPJS (Rp.)</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.bpjsRp" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="bpjs"
-                placeholder="BPJS"
+                [placeholder]="'salesInvoiceCreate.bpjsRp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 mask="separator.2"
@@ -285,12 +322,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2 sic-total">
-              <mat-label>Total (Rp.)</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.totalRp" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="total"
-                placeholder="Total (Rp.)"
+                [placeholder]="'salesInvoiceCreate.totalRp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 decimalScale="2"
@@ -300,10 +339,16 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Should be printed separately?</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.printSeparately" | translate
+              }}</mat-label>
               <mat-select formControlName="separate">
-                <mat-option [value]="false">No</mat-option>
-                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">{{
+                  "salesInvoiceCreate.optionNo" | translate
+                }}</mat-option>
+                <mat-option [value]="true">{{
+                  "salesInvoiceCreate.optionYes" | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -314,7 +359,7 @@
               matStepperPrevious
               class="sic-btn sic-btn--ghost"
             >
-              Kembali
+              {{ "salesInvoiceCreate.previous" | translate }}
             </button>
             <span class="sic-spacer"></span>
             <button
@@ -322,7 +367,7 @@
               class="sic-btn sic-btn--primary"
               [disabled]="metaFormGroup.invalid"
             >
-              Lanjut
+              {{ "salesInvoiceCreate.next" | translate }}
             </button>
           </div>
         </div>
@@ -332,17 +377,25 @@
     <!-- ===== STEP 3: PAYMENT ===== -->
     <mat-step [stepControl]="paymentFormGroup">
       <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>Payment</ng-template>
+        <ng-template matStepLabel>{{
+          "salesInvoiceCreate.stepPayment" | translate
+        }}</ng-template>
 
         <div class="sic-card">
-          <div class="sic-section__title">Pembayaran</div>
+          <div class="sic-section__title">
+            {{ "salesInvoiceCreate.sectionPayment" | translate }}
+          </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Bank Account</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.bankAccount" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
-                placeholder="Cari rekening"
+                [placeholder]="
+                  'salesInvoiceCreate.bankAccountPlaceholder' | translate
+                "
                 [matAutocomplete]="bankAccountAutoComplete"
               />
               <mat-autocomplete
@@ -361,12 +414,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>Payment total (Rp.)</mat-label>
+              <mat-label>{{
+                "salesInvoiceCreate.paymentTotalRp" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
                 formControlName="paymentTotal"
-                placeholder="Payment total (Rp.)"
+                [placeholder]="'salesInvoiceCreate.paymentTotalRp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 decimalScale="2"
@@ -381,7 +436,7 @@
               matStepperPrevious
               class="sic-btn sic-btn--ghost"
             >
-              Kembali
+              {{ "salesInvoiceCreate.previous" | translate }}
             </button>
             <span class="sic-spacer"></span>
             <button
@@ -389,7 +444,11 @@
               [disabled]="paymentFormGroup.invalid || isSubmitting"
               (click)="onSubmit()"
             >
-              {{ isSubmitting ? "Memproses..." : "Submit & preview" }}
+              {{
+                isSubmitting
+                  ? ("salesInvoiceCreate.processing" | translate)
+                  : ("salesInvoiceCreate.submitPreview" | translate)
+              }}
             </button>
           </div>
         </div>

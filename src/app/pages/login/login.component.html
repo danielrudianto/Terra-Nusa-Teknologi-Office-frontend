@@ -16,19 +16,19 @@
                   class="w-100"
                 />
               </div>
-              <h2>Welcome Back</h2>
-              <p>Masukkan kredensial Anda untuk mengakses Sistem</p>
+              <h2>{{ "login.welcome" | translate }}</h2>
+              <p>{{ "login.subtitle" | translate }}</p>
               <mat-form-field
                 appearance="outline"
                 class="w-100"
                 required
                 subscriptSizing="dynamic"
               >
-                <mat-label>Email</mat-label>
+                <mat-label>{{ "login.email" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="email"
-                  placeholder="Ex. JohnDoe"
+                  [placeholder]="'login.emailPlaceholder' | translate"
                   [readonly]="isSubmitting"
                 />
                 <mat-icon matPrefix>email</mat-icon>
@@ -39,21 +39,21 @@
                 required
                 subscriptSizing="dynamic"
               >
-                <mat-label>Password</mat-label>
+                <mat-label>{{ "login.password" | translate }}</mat-label>
                 <input
                   type="password"
                   matInput
                   formControlName="password"
-                  placeholder="Ex. Password"
+                  [placeholder]="'login.passwordPlaceholder' | translate"
                   [readonly]="isSubmitting"
                 />
                 <mat-icon matPrefix>password</mat-icon>
               </mat-form-field>
 
               <div class="login__form__action mt-5">
-                <mat-checkbox formControlName="remember" color="primary"
-                  >Remember me</mat-checkbox
-                >
+                <mat-checkbox formControlName="remember" color="primary">{{
+                  "login.rememberMe" | translate
+                }}</mat-checkbox>
               </div>
 
               <button
@@ -61,7 +61,7 @@
                 type="submit"
                 [disabled]="!loginFormGroup.valid || isSubmitting"
               >
-                Login
+                {{ "login.loginButton" | translate }}
               </button>
             </form>
           </div>
@@ -82,5 +82,38 @@
         />
       </div>
     </div>
+  </div>
+
+  <!-- Floating controls: language + theme (bottom-right) -->
+  <div class="login-controls">
+    <button
+      type="button"
+      class="login-controls__btn"
+      [matMenuTriggerFor]="langMenu"
+      [matTooltip]="'login.language' | translate"
+    >
+      <span class="login-controls__flag">{{ currentLang.flag }}</span>
+      <span class="login-controls__code">{{ currentLang.short }}</span>
+    </button>
+    <mat-menu #langMenu="matMenu">
+      <button
+        mat-menu-item
+        *ngFor="let lang of languages"
+        (click)="setLang(lang.code)"
+        [class.is-active]="lang.code === currentLang.code"
+      >
+        <span class="login-controls__flag">{{ lang.flag }}</span>
+        <span>{{ lang.native }}</span>
+      </button>
+    </mat-menu>
+
+    <button
+      type="button"
+      class="login-controls__btn login-controls__btn--icon"
+      (click)="toggleTheme()"
+      [matTooltip]="(isDark ? 'login.lightMode' : 'login.darkMode') | translate"
+    >
+      <mat-icon>{{ isDark ? "light_mode" : "dark_mode" }}</mat-icon>
+    </button>
   </div>
 </div>

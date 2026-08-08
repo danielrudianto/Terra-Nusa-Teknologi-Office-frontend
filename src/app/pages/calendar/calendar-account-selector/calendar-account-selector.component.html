@@ -1,8 +1,8 @@
-<button
-  mat-stroked-button
-  color="primary"
-  style="letter-spacing: 0"
-  (click)="onOpenBankAccountSelector()"
->
-  {{ selectedBankAccounts }} Bank Account(s) Selected
+<button type="button" class="cas-btn" (click)="onOpenBankAccountSelector()">
+  <mat-icon class="cas-btn__icon">account_balance</mat-icon>
+  <span class="cas-btn__label">
+    {{ selectedBankAccounts }}
+    {{ "calendarAccount.accountsSelected" | translate }}
+  </span>
+  <mat-icon class="cas-btn__chevron">expand_more</mat-icon>
 </button>

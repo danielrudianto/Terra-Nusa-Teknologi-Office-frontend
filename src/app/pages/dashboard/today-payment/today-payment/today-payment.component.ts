@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
@@ -13,7 +14,7 @@ import {
   templateUrl: './today-payment.component.html',
   styleUrls: ['./today-payment.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [TranslatePipe, CommonModule],
 })
 export class TodayPaymentComponent implements OnInit {
   items: TodayPaymentItem[] = [];

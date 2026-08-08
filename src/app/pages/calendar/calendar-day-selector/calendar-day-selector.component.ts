@@ -1,4 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -40,6 +41,7 @@ interface BankAccountSummary {
 @Component({
   selector: 'app-calendar-day-selector',
   imports: [
+    TranslatePipe,
     CommonModule,
     MatDialogModule,
     MatIconModule,

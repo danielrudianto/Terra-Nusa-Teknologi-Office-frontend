@@ -15,8 +15,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MasterItemCreateComponent } from '../master-item-create/master-item-create.component';
 import { MasterItemUpdateComponent } from '../master-item-update/master-item-update.component';
+import { MasterItemViewComponent } from '../master-item-view/master-item-view.component';
 import { MasterItemFilterComponent } from './master-item-filter/master-item-filter.component';
 import { ApiService } from 'src/app/services/api.service';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
@@ -27,6 +29,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-master-item-list',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule,
     FormsModule,
@@ -247,6 +250,22 @@ export class MasterItemListComponent {
       .afterClosed()
       .subscribe((created) => {
         if (created) this.fetchItems(1);
+      });
+  }
+
+  viewItem(item: any) {
+    this.dialog
+      .open(MasterItemViewComponent, {
+        data: { item },
+        width: '560px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.action === 'edit') {
+          this.editItem(result.item);
+        }
       });
   }
 

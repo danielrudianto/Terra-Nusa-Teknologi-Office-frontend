@@ -14,6 +14,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective } from 'ngx-mask';
@@ -30,6 +31,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatButtonModule,
     NgxMaskDirective,
     CommonModule,
+    TranslatePipe,
   ],
   providers: [DatePipe],
   templateUrl: './reimbursement-confirm.component.html',
@@ -42,7 +44,7 @@ export class ReimbursementConfirmComponent {
     private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     private formBuilder: FormBuilder,
-    private dialog: MatDialogRef<ReimbursementConfirmComponent>
+    private dialog: MatDialogRef<ReimbursementConfirmComponent>,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -78,7 +80,7 @@ export class ReimbursementConfirmComponent {
               'Close',
               {
                 duration: 3000,
-              }
+              },
             );
             this.dialog.close();
             return;
@@ -90,7 +92,7 @@ export class ReimbursementConfirmComponent {
               'Close',
               {
                 duration: 3000,
-              }
+              },
             );
             this.dialog.close();
             return;
@@ -101,24 +103,24 @@ export class ReimbursementConfirmComponent {
             paymentMethod == 'bank'
               ? 'Bank Transfer'
               : paymentMethod == 'cash'
-              ? 'Cash'
-              : 'Virtual Account';
+                ? 'Cash'
+                : 'Virtual Account';
 
           const purchaseType = data.reimbursement.purchaseType;
           const purchaseTypeText =
             purchaseType == 'A'
               ? 'Transportation'
               : purchaseType == 'E'
-              ? 'Coordination; Consumption; and Accomodation'
-              : 'Document handling & Stationery';
+                ? 'Coordination; Consumption; and Accomodation'
+                : 'Document handling & Stationery';
           this.formGroup.patchValue({
             date: this.datePipe.transform(
               data.reimbursement.date,
-              'dd MMMM yyyy'
+              'dd MMMM yyyy',
             ),
             dueDate: this.datePipe.transform(
               data.reimbursement.date,
-              'dd MMMM yyyy'
+              'dd MMMM yyyy',
             ),
             name: data.reimbursement.name,
             projectName: data.reimbursement.projectName,
@@ -129,7 +131,7 @@ export class ReimbursementConfirmComponent {
             paymentMethod: paymentMethodText,
             total: data.reimbursement_items.reduce(
               (a: any, b: any) => a + b.amount,
-              0
+              0,
             ),
           });
 
@@ -139,9 +141,9 @@ export class ReimbursementConfirmComponent {
                 amount: new FormControl(item.amount),
                 description: new FormControl(item.description),
                 date: new FormControl(
-                  this.datePipe.transform(item.date, 'dd MMMM yyyy')
+                  this.datePipe.transform(item.date, 'dd MMMM yyyy'),
                 ),
-              })
+              }),
             );
           });
         },
@@ -166,7 +168,7 @@ export class ReimbursementConfirmComponent {
           this.snackBar.open('Reimbursement approved successfully', 'Close', {
             duration: 3000,
           });
-          this.dialog.close("approve");
+          this.dialog.close('approve');
         },
       })
       .add(() => {
@@ -182,7 +184,7 @@ export class ReimbursementConfirmComponent {
           this.snackBar.open('Reimbursement rejected successfully', 'Close', {
             duration: 3000,
           });
-          this.dialog.close("reject");
+          this.dialog.close('reject');
         },
       })
       .add(() => {

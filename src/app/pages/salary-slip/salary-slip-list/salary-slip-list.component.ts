@@ -13,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment, Moment } from 'moment';
@@ -57,6 +58,7 @@ export const MY_FORMATS = {
     HeaderTitleComponent,
     MatDatepickerModule,
     MatMenuModule,
+    TranslatePipe,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',

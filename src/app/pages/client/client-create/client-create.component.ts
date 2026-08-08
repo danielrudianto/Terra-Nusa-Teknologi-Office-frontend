@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -19,6 +20,7 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-client-create',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

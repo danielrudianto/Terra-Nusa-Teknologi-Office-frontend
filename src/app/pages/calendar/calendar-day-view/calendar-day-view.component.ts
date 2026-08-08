@@ -16,6 +16,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { PaymentHistoryComponent } from '../../payment/payment-history/payment-history.component';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -25,7 +26,13 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './calendar-day-view.component.html',
   styleUrl: './calendar-day-view.component.scss',
   imports: [
-    MatIconModule,MatDialogModule, MatListModule, MatTooltipModule, CommonModule],
+    MatIconModule,
+    MatDialogModule,
+    MatListModule,
+    MatTooltipModule,
+    CommonModule,
+    TranslatePipe,
+  ],
 })
 export class CalendarDayViewComponent {
   constructor(

@@ -1,0 +1,51 @@
+<div class="rtd">
+  <div class="rtd__head">
+    <div>
+      <h2 class="rtd__title">
+        {{ "dashboardReimbursement.dialogTitle" | translate }}
+      </h2>
+      <span class="rtd__sub"
+        >{{ items.length }}
+        {{ "dashboardReimbursement.pendingCount" | translate }}</span
+      >
+    </div>
+    <button class="rtd__close" (click)="close()" aria-label="Close">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="rtd__total">
+    <span>{{ "dashboardReimbursement.total" | translate }}</span>
+    <strong>{{ formatIDR(total) }}</strong>
+  </div>
+
+  <div class="rtd__body">
+    <div class="rtd__empty" *ngIf="items.length === 0">
+      {{ "dashboardReimbursement.empty" | translate }}
+    </div>
+
+    <button
+      class="rtd__row"
+      *ngFor="let it of items"
+      (click)="view(it.id)"
+      type="button"
+    >
+      <span class="rtd__avatar">{{ initial(it.name) }}</span>
+      <div class="rtd__info">
+        <span class="rtd__row-title">{{ it.name }}</span>
+        <span class="rtd__row-sub">{{ it.projectName }}</span>
+      </div>
+      <span class="rtd__amount">{{ formatIDR(it.amount) }}</span>
+    </button>
+  </div>
+</div>

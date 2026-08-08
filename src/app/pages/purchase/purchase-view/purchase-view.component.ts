@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject } from '@angular/core';
 import {
   FormArray,
@@ -38,6 +39,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     MatSelectModule,
     MatListModule,
     MatIconModule,
+    TranslatePipe,
   ],
   providers: [provideNgxMask()],
   templateUrl: './purchase-view.component.html',

@@ -1,9 +1,10 @@
 <div class="tp">
   <div class="tp__head">
     <div>
-      <h2 class="tp__title">Pembayaran Hari Ini</h2>
+      <h2 class="tp__title">{{ "dashboard.todayPayment" | translate }}</h2>
       <span class="tp__sub" *ngIf="!isLoading && !errorMsg">
-        {{ formatIDR(total) }} · {{ items.length }} transaksi
+        {{ formatIDR(total) }} · {{ items.length }}
+        {{ "dashboard.paymentTransactions" | translate }}
       </span>
     </div>
     <button
@@ -34,7 +35,7 @@
   <!-- error -->
   <div class="tp__error" *ngIf="errorMsg">
     <span>{{ errorMsg }}</span>
-    <button (click)="fetch()">Coba lagi</button>
+    <button (click)="fetch()">{{ "dashboard.retry" | translate }}</button>
   </div>
 
   <!-- loading -->
@@ -64,7 +65,7 @@
     </div>
 
     <div class="tp__empty" *ngIf="items.length === 0">
-      Tidak ada pembayaran hari ini.
+      {{ "dashboard.noPaymentToday" | translate }}
     </div>
 
     <!-- faded peek of the next hidden row + show more -->
@@ -78,7 +79,8 @@
         <span class="tp__amount">{{ formatIDR(it.amount) }}</span>
       </div>
       <button class="tp__showmore" (click)="openAll()">
-        Lihat semua ({{ hiddenCount }} lagi)
+        {{ "dashboard.seeAll" | translate }} ({{ hiddenCount }}
+        {{ "dashboard.more" | translate }})
       </button>
     </div>
   </div>

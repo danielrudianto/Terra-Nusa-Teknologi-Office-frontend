@@ -1,8 +1,8 @@
 <div class="loans-list">
   <app-header-title
-    [title]="'Loans'"
-    [description]="'Manage your loans data here'"
-    [actionButtonLabel]="'Create new loan'"
+    [title]="'loans.title' | translate"
+    [description]="'loans.description' | translate"
+    [actionButtonLabel]="'loans.createNew' | translate"
     (onActionButtonClicked)="createNewLoan()"
   ></app-header-title>
 
@@ -18,23 +18,23 @@
           class="ll-fchip ll-fchip--paid"
           [selected]="isChipSelected('isPaid')"
           (selectionChange)="changeSelection('isPaid', $event)"
-          >Paid</mat-chip-option
+          >{{ "status.paid" | translate }}</mat-chip-option
         >
         <mat-chip-option
           class="ll-fchip ll-fchip--unpaid"
           [selected]="isChipSelected('isUnpaid')"
           (selectionChange)="changeSelection('isUnpaid', $event)"
-          >Unpaid</mat-chip-option
+          >{{ "status.unpaid" | translate }}</mat-chip-option
         >
       </mat-chip-listbox>
     </form>
 
     <mat-form-field appearance="outline" class="ll-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Cari kreditur atau deskripsi"
+        [placeholder]="'loans.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
@@ -49,7 +49,7 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
             <span class="ll-th"
-              >Date
+              >{{ "table.date" | translate }}
               <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -76,7 +76,7 @@
             (click)="changeSortBy('creditorName')"
           >
             <span class="ll-th"
-              >Creditor
+              >{{ "table.creditor" | translate }}
               <mat-icon
                 *ngIf="sortBy == 'creditorName' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -113,7 +113,7 @@
             (click)="changeSortBy('description')"
           >
             <span class="ll-th"
-              >Description
+              >{{ "table.description" | translate }}
               <mat-icon
                 *ngIf="sortBy == 'description' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -141,7 +141,7 @@
             (click)="changeSortBy('debt')"
           >
             <span class="ll-th ll-th--right"
-              >Debt
+              >{{ "table.debt" | translate }}
               <mat-icon *ngIf="sortBy == 'debt' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -169,7 +169,7 @@
             (click)="changeSortBy('received')"
           >
             <span class="ll-th ll-th--right"
-              >Received
+              >{{ "table.received" | translate }}
               <mat-icon *ngIf="sortBy == 'received' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -191,13 +191,17 @@
 
         <!-- Status -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Paid status</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.paidStatus" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
             <span class="ll-chip ll-chip--paid" *ngIf="purchase.isPaid"
-              ><mat-icon>check_circle</mat-icon>Paid</span
+              ><mat-icon>check_circle</mat-icon
+              >{{ "status.paid" | translate }}</span
             >
             <span class="ll-chip ll-chip--unpaid" *ngIf="!purchase.isPaid"
-              ><mat-icon>schedule</mat-icon>Not paid</span
+              ><mat-icon>schedule</mat-icon
+              >{{ "status.notPaid" | translate }}</span
             >
           </td>
         </ng-container>
@@ -223,10 +227,12 @@
                 [disabled]="purchase.isPaid"
                 (click)="openPaymentDetail(purchase.id)"
               >
-                <mat-icon>payments</mat-icon><span>Create payment</span>
+                <mat-icon>payments</mat-icon
+                ><span>{{ "loans.menuCreatePayment" | translate }}</span>
               </button>
               <button mat-menu-item (click)="viewLoan(purchase.id)">
-                <mat-icon>view_array</mat-icon><span>View loan</span>
+                <mat-icon>view_array</mat-icon
+                ><span>{{ "loans.menuView" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -245,7 +251,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="ll-empty">
               <mat-icon>account_balance_wallet</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

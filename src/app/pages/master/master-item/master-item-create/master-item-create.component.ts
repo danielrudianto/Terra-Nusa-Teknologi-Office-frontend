@@ -13,6 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   PURCHASE_TYPE_LABELS,
   MASTER_ITEM_PURCHASE_TYPES,
@@ -22,6 +24,7 @@ import {
   selector: 'app-master-item-create',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
   FormControl,
@@ -36,6 +37,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatDatepickerModule,
     NgxMaskDirective,
+    TranslatePipe,
   ],
   templateUrl: './purchase-draft-create.component.html',
   styleUrl: './purchase-draft-create.component.scss',

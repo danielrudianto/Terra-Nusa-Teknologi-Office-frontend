@@ -1,0 +1,80 @@
+<div class="miv">
+  <h2 mat-dialog-title class="miv-head">
+    <span class="miv-head__icon"><mat-icon>inventory</mat-icon></span>
+    <span class="miv-head__text">
+      <span class="miv-title">{{ "masterItemView.title" | translate }}</span>
+      <span class="miv-name">{{ item.sku || "—" }}</span>
+    </span>
+  </h2>
+
+  <mat-dialog-content class="miv-content">
+    <div class="miv-grid">
+      <div class="miv-field">
+        <span class="miv-field__label">{{
+          "masterItemView.sku" | translate
+        }}</span>
+        <span class="miv-field__value">{{ item.sku || "—" }}</span>
+      </div>
+
+      <div class="miv-field">
+        <span class="miv-field__label">{{
+          "masterItemView.brand" | translate
+        }}</span>
+        <span class="miv-field__value">{{ item.brand || "—" }}</span>
+      </div>
+
+      <div class="miv-field">
+        <span class="miv-field__label">{{
+          "masterItemView.type" | translate
+        }}</span>
+        <span class="miv-field__value">{{ item.type || "—" }}</span>
+      </div>
+
+      <div class="miv-field">
+        <span class="miv-field__label">{{
+          "masterItemView.unit" | translate
+        }}</span>
+        <span class="miv-field__value">{{ item.unit || "—" }}</span>
+      </div>
+    </div>
+
+    <div class="miv-potype">
+      <span class="miv-potype__label">{{
+        "masterItemView.poType" | translate
+      }}</span>
+      <div class="miv-potype__chips" *ngIf="typeChips().length > 0">
+        <span
+          class="miv-chip"
+          *ngFor="let t of typeChips()"
+          [matTooltip]="typeLabel(t)"
+          >{{ t }}</span
+        >
+      </div>
+      <span class="miv-potype__empty" *ngIf="typeChips().length === 0">
+        {{ "masterItemView.noPoType" | translate }}
+      </span>
+    </div>
+
+    <div class="miv-desc">
+      <span class="miv-desc__label">{{
+        "masterItemView.description" | translate
+      }}</span>
+      <p class="miv-desc__text" *ngIf="item.description">
+        {{ item.description }}
+      </p>
+      <p class="miv-desc__text miv-desc__text--empty" *ngIf="!item.description">
+        {{ "masterItemView.noDescription" | translate }}
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="miv-foot">
+    <button type="button" class="miv-close" (click)="onClose()">
+      {{ "masterItemView.close" | translate }}
+    </button>
+    <button type="button" class="miv-edit" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      {{ "masterItemView.edit" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

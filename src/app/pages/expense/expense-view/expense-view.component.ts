@@ -18,6 +18,7 @@ import {
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -36,6 +37,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
     MatIconModule,
     MatSnackBarModule,
     CommonModule,
+    TranslatePipe,
   ],
   templateUrl: './expense-view.component.html',
   styleUrl: './expense-view.component.scss',

@@ -14,6 +14,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ClientCreateComponent } from '../client-create/client-create.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-client-list',
@@ -30,6 +31,7 @@ import { ClientCreateComponent } from '../client-create/client-create.component'
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
+    TranslatePipe,
   ],
 })
 export class ClientListComponent {

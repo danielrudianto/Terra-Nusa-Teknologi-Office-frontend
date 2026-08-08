@@ -15,20 +15,22 @@
       </svg>
     </span>
     <div class="ic-head__text">
-      <h2 class="ic-title">Transfer Antar Rekening</h2>
-      <span class="ic-sub">Catat perpindahan dana internal</span>
+      <h2 class="ic-title">{{ "interpaymentCreate.title" | translate }}</h2>
+      <span class="ic-sub">{{
+        "interpaymentCreate.subtitle" | translate
+      }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup">
     <mat-dialog-content class="ic-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tanggal</mat-label>
+        <mat-label>{{ "interpaymentCreate.date" | translate }}</mat-label>
         <input
           matInput
           [matDatepicker]="picker"
           formControlName="date"
-          placeholder="Date"
+          [placeholder]="'interpaymentCreate.datePlaceholder' | translate"
         />
         <mat-datepicker-toggle
           matIconPrefix
@@ -39,7 +41,9 @@
 
       <!-- transfer flow -->
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Dari rekening</mat-label>
+        <mat-label>{{
+          "interpaymentCreate.fromAccount" | translate
+        }}</mat-label>
         <mat-select formControlName="bankAccountIDOrigin">
           <mat-option
             *ngFor="let bank of bankAccounts"
@@ -58,7 +62,7 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Ke rekening</mat-label>
+        <mat-label>{{ "interpaymentCreate.toAccount" | translate }}</mat-label>
         <mat-select formControlName="bankAccountIDDestination">
           <mat-option
             *ngFor="let bank of bankAccounts"
@@ -76,12 +80,12 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Jumlah</mat-label>
+        <mat-label>{{ "interpaymentCreate.amount" | translate }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="amount"
-          placeholder="Enter amount"
+          [placeholder]="'interpaymentCreate.amountPlaceholder' | translate"
           prefix="Rp. "
           thousandSeparator=" "
           mask="separator"
@@ -89,19 +93,23 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Deskripsi</mat-label>
+        <mat-label>{{
+          "interpaymentCreate.description" | translate
+        }}</mat-label>
         <input
           matInput
           type="text"
           formControlName="description"
-          placeholder="Keterangan transfer"
+          [placeholder]="
+            'interpaymentCreate.descriptionPlaceholder' | translate
+          "
         />
       </mat-form-field>
     </mat-dialog-content>
 
     <mat-dialog-actions class="ic-actions">
       <button type="button" class="ic-cancel" (click)="onCancel()">
-        Batal
+        {{ "interpaymentCreate.cancel" | translate }}
       </button>
       <button
         type="button"
@@ -109,7 +117,11 @@
         (click)="onSubmit()"
         [disabled]="formGroup.invalid || isSubmitting"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan transfer" }}
+        {{
+          isSubmitting
+            ? ("interpaymentCreate.saving" | translate)
+            : ("interpaymentCreate.saveTransfer" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

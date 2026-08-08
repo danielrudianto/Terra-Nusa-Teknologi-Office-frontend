@@ -7,17 +7,24 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-month-selector',
-  imports: [MatDialogModule, MatIconModule, MatButtonModule, CommonModule],
+  imports: [
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    CommonModule,
+    TranslatePipe,
+  ],
   templateUrl: './month-selector.component.html',
   styleUrl: './month-selector.component.scss',
 })
 export class MonthSelectorComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { month: number; year: number },
-    private dialog: MatDialogRef<MonthSelectorComponent>
+    private dialog: MatDialogRef<MonthSelectorComponent>,
   ) {}
 
   year: number = this.data.year;
@@ -25,6 +32,21 @@ export class MonthSelectorComponent {
   animateUp = false;
   animateDown = false;
   yearAnimating = false;
+
+  readonly months: string[] = [
+    'common.january',
+    'common.february',
+    'common.march',
+    'common.april',
+    'common.may',
+    'common.june',
+    'common.july',
+    'common.august',
+    'common.september',
+    'common.october',
+    'common.november',
+    'common.december',
+  ];
 
   isSelected(selectedMonth: number): boolean {
     if (this.month === selectedMonth && this.data.year === this.year) {

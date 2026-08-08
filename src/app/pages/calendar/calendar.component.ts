@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CalendarDaySelectorComponent } from './calendar-day-selector/calendar-day-selector.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-calendar',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     CalendarMonthSelectorComponent,

@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -38,11 +39,27 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatSnackBarModule,
     MatTooltipModule,
     HeaderTitleComponent,
+    TranslatePipe,
   ],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.scss',
 })
 export class PurchaseOrderListComponent {
+  /** i18n key untuk status PO. */
+  statusKey(status: string): string {
+    switch (status) {
+      case 'approved':
+        return 'status.approved';
+      case 'cancelled':
+        return 'status.cancelled';
+      case 'pending':
+        return 'status.pending';
+      case 'draft':
+      default:
+        return 'status.draft';
+    }
+  }
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,

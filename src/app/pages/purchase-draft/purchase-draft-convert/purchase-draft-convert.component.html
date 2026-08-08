@@ -501,7 +501,8 @@
         <mat-label>Bank account origin</mat-label>
         <mat-select formControlName="bankAccountID">
           <mat-option *ngFor="let option of bankAccounts" [value]="option.id">
-            {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
+            {{ option.bankName }} · {{ option.bankAccountName }} ·
+            {{ option.bankAccountNumber }}
           </mat-option>
         </mat-select>
       </mat-form-field>

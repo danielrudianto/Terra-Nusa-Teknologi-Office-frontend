@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -45,6 +46,7 @@ import { RouterModule } from '@angular/router';
     MatPaginatorModule,
     MatFormFieldModule,
     HeaderTitleComponent,
+    TranslatePipe,
     MatDatepickerModule,
     MatSlideToggleModule,
     DeleteConfirmationComponent,

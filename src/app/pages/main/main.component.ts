@@ -99,21 +99,6 @@ export class MainComponent {
           route: '/Master',
         },
         {
-          name: 'Supplier',
-          icon: 'supplier.svg',
-          route: '/Supplier',
-        },
-        {
-          name: 'Employee',
-          icon: 'user.svg',
-          route: '/Employee',
-        },
-        {
-          name: 'Client',
-          icon: 'customer.svg',
-          route: '/Client',
-        },
-        {
           name: 'Asset',
           icon: 'asset.svg',
           route: '/Asset',
@@ -133,12 +118,22 @@ export class MainComponent {
           icon: 'tax.svg',
           route: '/Taxing',
         },
+        {
+          name: 'User',
+          icon: 'user.svg',
+          route: '/User',
+        },
       ],
     },
 
     {
       name: 'Implementations',
       children: [
+        {
+          name: 'Bank',
+          icon: 'payment-method.svg',
+          route: '/Bank',
+        },
         {
           name: 'Calendar',
           icon: 'calendar.svg',

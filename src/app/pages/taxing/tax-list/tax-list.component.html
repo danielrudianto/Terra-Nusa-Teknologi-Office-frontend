@@ -2,10 +2,9 @@
   <!-- ===== hero ===== -->
   <div class="tx-hero">
     <div class="tx-hero__content">
-      <h1 class="tx-hero__title">Pusat Pajak</h1>
+      <h1 class="tx-hero__title">{{ "taxing.title" | translate }}</h1>
       <p class="tx-hero__desc">
-        Tarik rekap &amp; laporan pajak perusahaan — PPN, PPh, sampai rekap
-        bulanan.
+        {{ "taxing.description" | translate }}
       </p>
     </div>
     <svg
@@ -87,7 +86,7 @@
         <rect x="3" y="4" width="18" height="18" rx="3" />
         <path d="M16 2v4M8 2v4M3 10h18" />
       </svg>
-      <span>Periode</span>
+      <span>{{ "taxing.period" | translate }}</span>
     </div>
 
     <div class="tx-year">
@@ -165,11 +164,14 @@
         </svg>
       </span>
       <span class="tx-card__body">
-        <span class="tx-card__title">PPN</span>
-        <span class="tx-card__desc">Rekap PPN dari data <b>purchase</b>.</span>
+        <span class="tx-card__title">{{ "taxing.ppnTitle" | translate }}</span>
+        <span
+          class="tx-card__desc"
+          [innerHTML]="'taxing.ppnDesc' | translate"
+        ></span>
       </span>
       <span class="tx-card__cta"
-        >Buka laporan
+        >{{ "taxing.openReport" | translate }}
         <svg
           width="15"
           height="15"
@@ -204,11 +206,16 @@
         </svg>
       </span>
       <span class="tx-card__body">
-        <span class="tx-card__title">PPh (Purchase)</span>
-        <span class="tx-card__desc">Rekap PPh dari data <b>purchase</b>.</span>
+        <span class="tx-card__title">{{
+          "taxing.pphPurchaseTitle" | translate
+        }}</span>
+        <span
+          class="tx-card__desc"
+          [innerHTML]="'taxing.pphPurchaseDesc' | translate"
+        ></span>
       </span>
       <span class="tx-card__cta"
-        >Buka laporan
+        >{{ "taxing.openReport" | translate }}
         <svg
           width="15"
           height="15"
@@ -242,11 +249,16 @@
         </svg>
       </span>
       <span class="tx-card__body">
-        <span class="tx-card__title">PPh (Salary)</span>
-        <span class="tx-card__desc">Rekap PPh dari <b>gaji karyawan</b>.</span>
+        <span class="tx-card__title">{{
+          "taxing.pphSalaryTitle" | translate
+        }}</span>
+        <span
+          class="tx-card__desc"
+          [innerHTML]="'taxing.pphSalaryDesc' | translate"
+        ></span>
       </span>
       <span class="tx-card__cta"
-        >Buka laporan
+        >{{ "taxing.openReport" | translate }}
         <svg
           width="15"
           height="15"
@@ -279,13 +291,16 @@
         </svg>
       </span>
       <span class="tx-card__body">
-        <span class="tx-card__title">Monthly Report</span>
-        <span class="tx-card__desc"
-          >Rekap pajak <b>bulanan</b> menyeluruh.</span
-        >
+        <span class="tx-card__title">{{
+          "taxing.monthlyTitle" | translate
+        }}</span>
+        <span
+          class="tx-card__desc"
+          [innerHTML]="'taxing.monthlyDesc' | translate"
+        ></span>
       </span>
       <span class="tx-card__cta"
-        >Buka laporan
+        >{{ "taxing.openReport" | translate }}
         <svg
           width="15"
           height="15"

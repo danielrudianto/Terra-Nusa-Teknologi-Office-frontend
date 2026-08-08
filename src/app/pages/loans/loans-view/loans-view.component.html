@@ -11,7 +11,7 @@
       [class.lv-chip--paid]="loan.isPaid"
       [class.lv-chip--unpaid]="!loan.isPaid"
     >
-      {{ loan.isPaid ? "Lunas" : "Belum lunas" }}
+      {{ (loan.isPaid ? "loansView.paid" : "loansView.unpaid") | translate }}
     </span>
   </div>
 
@@ -25,7 +25,9 @@
       <!-- progress -->
       <section class="lv-progress">
         <div class="lv-progress__top">
-          <span class="lv-progress__label">Pelunasan</span>
+          <span class="lv-progress__label">{{
+            "loansView.repayment" | translate
+          }}</span>
           <span class="lv-progress__pct">{{ progress }}%</span>
         </div>
         <div class="lv-bar"><span [style.width.%]="progress"></span></div>
@@ -42,7 +44,9 @@
 
       <!-- money breakdown -->
       <section class="lv-section">
-        <div class="lv-section__title">Nilai Pinjaman</div>
+        <div class="lv-section__title">
+          {{ "loansView.loanValue" | translate }}
+        </div>
         <div class="lv-money">
           <div class="lv-money__row">
             <span>Total utang (debt)</span>
@@ -53,7 +57,7 @@
             <span>Rp {{ loan.received | number: "1.0-0" }}</span>
           </div>
           <div class="lv-money__row lv-money__row--total">
-            <span>Sisa utang</span>
+            <span>{{ "loansView.remainingDebt" | translate }}</span>
             <span>Rp {{ remaining | number: "1.0-0" }}</span>
           </div>
         </div>
@@ -61,10 +65,12 @@
 
       <!-- creditor -->
       <section class="lv-section">
-        <div class="lv-section__title">Kreditur</div>
+        <div class="lv-section__title">
+          {{ "loansView.creditor" | translate }}
+        </div>
         <div class="lv-grid">
           <div class="lv-field">
-            <span class="lv-label">Tanggal</span>
+            <span class="lv-label">{{ "loansView.date" | translate }}</span>
             <span class="lv-value">{{ loan.date | date: "dd MMM yyyy" }}</span>
           </div>
           <div class="lv-field" *ngIf="loan.creditorNPWP">
@@ -72,7 +78,7 @@
             <span class="lv-value lv-mono">{{ loan.creditorNPWP }}</span>
           </div>
           <div class="lv-field lv-field--full" *ngIf="loan.creditorAddress">
-            <span class="lv-label">Alamat</span>
+            <span class="lv-label">{{ "loansView.address" | translate }}</span>
             <span class="lv-value lv-value--multi">{{
               loan.creditorAddress
             }}</span>
@@ -85,7 +91,9 @@
         class="lv-section"
         *ngIf="loan.bankName || loan.bankAccountNumber"
       >
-        <div class="lv-section__title">Rekening</div>
+        <div class="lv-section__title">
+          {{ "loansView.account" | translate }}
+        </div>
         <div class="lv-bank">
           <div class="lv-value">
             {{ loan.bankName
@@ -105,7 +113,7 @@
       <!-- payment history -->
       <section class="lv-section">
         <div class="lv-section__title">
-          Riwayat Pembayaran
+          {{ "loansView.paymentHistory" | translate }}
           <span class="lv-count">{{ activePayments.length }}</span>
         </div>
         <div class="lv-payments" *ngIf="activePayments.length > 0">
@@ -119,7 +127,7 @@
         </div>
         <div class="lv-empty" *ngIf="activePayments.length === 0">
           <mat-icon>receipt_long</mat-icon>
-          <span>Belum ada pembayaran.</span>
+          <span>{{ "loansView.noPayment" | translate }}</span>
         </div>
       </section>
     </div>
@@ -131,11 +139,11 @@
       class="lv-btn lv-btn--brand"
       (click)="copyForWhatsApp()"
     >
-      <mat-icon>content_copy</mat-icon> Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon> {{ "common.copyWhatsapp" | translate }}
     </button>
     <span class="lv-spacer"></span>
     <button type="button" class="lv-btn lv-btn--ghost" (click)="close()">
-      Tutup
+      {{ "common.close" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

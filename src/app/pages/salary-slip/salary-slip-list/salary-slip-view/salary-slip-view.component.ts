@@ -19,6 +19,7 @@ import { MatTable, MatTableModule } from '@angular/material/table';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-salary-slip-view',
@@ -26,6 +27,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './salary-slip-view.component.html',
   styleUrl: './salary-slip-view.component.scss',
   imports: [
+    TranslatePipe,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,

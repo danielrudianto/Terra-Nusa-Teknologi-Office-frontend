@@ -1,8 +1,8 @@
 <div class="reimbursement-list">
   <app-header-title
-    [title]="'Reimbursements'"
-    [description]="'Manage your reimbursement data here'"
-    [actionButtonLabel]="'Create new reimbursement'"
+    [title]="'reimbursement.title' | translate"
+    [description]="'reimbursement.description' | translate"
+    [actionButtonLabel]="'reimbursement.createNew' | translate"
     (onActionButtonClicked)="createNewReimbursement()"
   />
 
@@ -18,41 +18,41 @@
           class="rl-fchip rl-fchip--approved"
           [selected]="isChipSelected('isApprove')"
           (selectionChange)="changeSelection('isApprove', $event)"
-          >Approved</mat-chip-option
+          >{{ "status.approved" | translate }}</mat-chip-option
         >
         <mat-chip-option
           class="rl-fchip rl-fchip--rejected"
           [selected]="isChipSelected('isDelete')"
           (selectionChange)="changeSelection('isDelete', $event)"
-          >Rejected</mat-chip-option
+          >{{ "status.rejected" | translate }}</mat-chip-option
         >
         <mat-chip-option
           class="rl-fchip rl-fchip--pending"
           [selected]="isChipSelected('isPending')"
           (selectionChange)="changeSelection('isPending', $event)"
-          >Pending</mat-chip-option
+          >{{ "status.pending" | translate }}</mat-chip-option
         >
         <mat-chip-option
           class="rl-fchip rl-fchip--paid"
           [selected]="isChipSelected('isPaid')"
           (selectionChange)="changeSelection('isPaid', $event)"
-          >Paid</mat-chip-option
+          >{{ "status.paid" | translate }}</mat-chip-option
         >
         <mat-chip-option
           class="rl-fchip rl-fchip--unpaid"
           [selected]="isChipSelected('isUnpaid')"
           (selectionChange)="changeSelection('isUnpaid', $event)"
-          >Unpaid</mat-chip-option
+          >{{ "status.unpaid" | translate }}</mat-chip-option
         >
       </mat-chip-listbox>
     </form>
 
     <mat-form-field appearance="outline" class="rl-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Nama, project, atau tipe"
+        [placeholder]="'reimbursement.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
@@ -68,7 +68,7 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
             <span class="rl-th"
-              >Date
+              >{{ "table.date" | translate }}
               <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -89,7 +89,7 @@
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
             <span class="rl-th"
-              >Name
+              >{{ "table.name" | translate }}
               <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -117,7 +117,7 @@
             (click)="changeSortBy('projectName')"
           >
             <span class="rl-th"
-              >Project
+              >{{ "table.project" | translate }}
               <mat-icon
                 *ngIf="sortBy == 'projectName' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -141,16 +141,20 @@
 
         <!-- Expense type -->
         <ng-container matColumnDef="expenseType">
-          <th mat-header-cell *matHeaderCellDef>Tipe</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.type" | translate }}
+          </th>
           <td mat-cell *matCellDef="let r">
             <span class="rl-muted" [ngSwitch]="r.purchaseType">
-              <span *ngSwitchCase="'A'">Transportation</span>
-              <span *ngSwitchCase="'E'"
-                >Coordination, Consumption &amp; Accomodation</span
-              >
-              <span *ngSwitchCase="'5.1.6'"
-                >Document handling &amp; Stationery</span
-              >
+              <span *ngSwitchCase="'A'">{{
+                "reimbursementType.transport" | translate
+              }}</span>
+              <span *ngSwitchCase="'E'">{{
+                "reimbursementType.consumption" | translate
+              }}</span>
+              <span *ngSwitchCase="'5.1.6'">{{
+                "reimbursementType.document" | translate
+              }}</span>
               <span *ngSwitchDefault>Unknown</span>
             </span>
           </td>
@@ -165,7 +169,7 @@
             (click)="changeSortBy('amount')"
           >
             <span class="rl-th rl-th--right"
-              >Amount
+              >{{ "table.amount" | translate }}
               <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -186,7 +190,9 @@
 
         <!-- Status -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.status" | translate }}
+          </th>
           <td mat-cell *matCellDef="let r">
             <span
               class="rl-chip"
@@ -196,7 +202,12 @@
             >
               <span class="rl-chip__dot"></span>
               {{
-                r.isDelete ? "Rejected" : r.isApprove ? "Approved" : "Pending"
+                (r.isDelete
+                  ? "status.rejected"
+                  : r.isApprove
+                    ? "status.approved"
+                    : "status.pending"
+                ) | translate
               }}
             </span>
           </td>
@@ -204,7 +215,9 @@
 
         <!-- Paid -->
         <ng-container matColumnDef="isPaid">
-          <th mat-header-cell *matHeaderCellDef>Payment</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.payment" | translate }}
+          </th>
           <td mat-cell *matCellDef="let r">
             <span
               class="rl-chip"
@@ -212,7 +225,7 @@
               [class.rl-chip--unpaid]="!r.isPaid"
             >
               <mat-icon>{{ r.isPaid ? "check_circle" : "schedule" }}</mat-icon>
-              {{ r.isPaid ? "Paid" : "Not paid" }}
+              {{ (r.isPaid ? "status.paid" : "status.notPaid") | translate }}
             </span>
           </td>
         </ng-container>
@@ -234,7 +247,10 @@
                 [disabled]="!r.isApprove || r.isPaid || r.isDelete"
                 (click)="openPaymentDetail(r.id)"
               >
-                <mat-icon>payments</mat-icon><span>Create payment</span>
+                <mat-icon>payments</mat-icon
+                ><span>{{
+                  "reimbursement.menuCreatePayment" | translate
+                }}</span>
               </button>
               <button
                 mat-menu-item
@@ -242,18 +258,19 @@
                 (click)="openConfirmationDialog(r.id)"
               >
                 <mat-icon>check_circle</mat-icon
-                ><span>Approve reimbursement</span>
+                ><span>{{ "reimbursement.menuApprove" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 [disabled]="r.isDelete"
                 (click)="print(r.id)"
               >
-                <mat-icon>print</mat-icon><span>Re-print reimbursement</span>
+                <mat-icon>print</mat-icon
+                ><span>{{ "reimbursement.menuReprint" | translate }}</span>
               </button>
               <button mat-menu-item (click)="viewReimbursementData(r.id)">
                 <mat-icon>view_array</mat-icon
-                ><span>View reimbursement data</span>
+                ><span>{{ "reimbursement.menuView" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -272,7 +289,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="rl-empty">
               <mat-icon>inbox</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

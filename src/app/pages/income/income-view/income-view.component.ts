@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject } from '@angular/core';
 import {
   FormControl,
@@ -17,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-income-view',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

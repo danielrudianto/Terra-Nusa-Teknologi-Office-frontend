@@ -15,15 +15,21 @@
     <section class="sv-section">
       <div class="sv-grid">
         <div class="sv-field">
-          <span class="sv-label">Tanggal</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.date" | translate
+          }}</span>
           <span class="sv-value">{{ f["date"].value || "—" }}</span>
         </div>
         <div class="sv-field">
-          <span class="sv-label">Nomor SPK</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.spkNumber" | translate
+          }}</span>
           <span class="sv-value">{{ f["spkNumber"].value || "—" }}</span>
         </div>
         <div class="sv-field sv-field--wide">
-          <span class="sv-label">Deskripsi</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.description" | translate
+          }}</span>
           <span class="sv-value sv-value--sm">{{
             f["description"].value || "—"
           }}</span>
@@ -33,11 +39,15 @@
           <span class="sv-value">{{ f["clientNPWP"].value || "—" }}</span>
         </div>
         <div class="sv-field">
-          <span class="sv-label">Project</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.project" | translate
+          }}</span>
           <span class="sv-value">{{ f["projectName"].value || "—" }}</span>
         </div>
         <div class="sv-field sv-field--wide">
-          <span class="sv-label">Alamat Klien</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.clientAddress" | translate
+          }}</span>
           <span class="sv-value sv-value--sm">{{
             f["clientAddress"].value || "—"
           }}</span>
@@ -47,20 +57,28 @@
 
     <!-- Informasi pajak -->
     <section class="sv-section">
-      <div class="sv-section__title">Informasi Pajak</div>
+      <div class="sv-section__title">
+        {{ "salesInvoiceView.taxInfo" | translate }}
+      </div>
       <div class="sv-grid">
         <div class="sv-field">
-          <span class="sv-label">Faktur pajak</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.taxInvoice" | translate
+          }}</span>
           <span class="sv-value">{{ f["taxInvoiceName"].value || "N/A" }}</span>
         </div>
         <div class="sv-field">
-          <span class="sv-label">Nomor bukti potong</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.withholdingNumber" | translate
+          }}</span>
           <span class="sv-value">{{
             f["incomeTaxInvoiceName"].value || "N/A"
           }}</span>
         </div>
         <div class="sv-field sv-field--wide">
-          <span class="sv-label">Status pajak</span>
+          <span class="sv-label">{{
+            "salesInvoiceView.taxStatus" | translate
+          }}</span>
           <span class="sv-value">
             <span
               class="sv-tax"
@@ -103,7 +121,9 @@
 
     <!-- money breakdown -->
     <section class="sv-section">
-      <div class="sv-section__title">Rincian Nilai</div>
+      <div class="sv-section__title">
+        {{ "salesInvoiceView.valueBreakdown" | translate }}
+      </div>
       <div class="sv-money">
         <div class="sv-money__row">
           <span>DPP</span
@@ -114,7 +134,7 @@
           ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="sv-money__row sv-money__row--sub">
-          <span>Total Invoice</span
+          <span>{{ "salesInvoiceView.totalInvoice" | translate }}</span
           ><span>{{
             vTotalInvoice | currency: "Rp " : "symbol" : "1.0-0"
           }}</span>
@@ -139,14 +159,14 @@
             type="button"
             class="sv-pph__copy"
             (click)="copyPphObject()"
-            aria-label="Salin objek PPh"
+            [attr.aria-label]="'common.copyPphObject' | translate"
           >
             <mat-icon>content_copy</mat-icon>
           </button>
         </div>
 
         <div class="sv-money__total">
-          <span>Total Diterima</span>
+          <span>{{ "salesInvoiceView.totalReceived" | translate }}</span>
           <span>{{
             vTotalPayment | currency: "Rp " : "symbol" : "1.0-0"
           }}</span>
@@ -183,7 +203,7 @@
 
         <div class="sv-summary">
           <div class="sv-summary__row">
-            <span>Sudah dibayar</span>
+            <span>{{ "salesInvoiceView.paid" | translate }}</span>
             <span>{{ vPaid | currency: "Rp " : "symbol" : "1.0-0" }}</span>
           </div>
           <div
@@ -207,9 +227,13 @@
   <!-- actions -->
   <mat-dialog-actions class="sv-actions">
     <button mat-flat-button class="sv-copy" (click)="copyDocument()">
-      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon>&nbsp;{{
+        "common.copyWhatsapp" | translate
+      }}
     </button>
     <span class="sv-spacer"></span>
-    <button mat-button (click)="close()">Tutup</button>
+    <button mat-button (click)="close()">
+      {{ "common.close" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -32,6 +33,7 @@ pdfMake.vfs = pdfFonts.vfs;
   styleUrl: './purchase-report-project.component.scss',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     MatFormFieldModule,
     MatInputModule,

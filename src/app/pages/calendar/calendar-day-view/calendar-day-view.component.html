@@ -1,26 +1,47 @@
-<h2 mat-dialog-title>Daily calendar</h2>
-<mat-dialog-content>
-  <h2>{{ selected | number : "0.2-2" }}</h2>
-  <mat-selection-list (selectionChange)="onSelectionChange($event)">
-    <mat-list-option [value]="item.amount" *ngFor="let item of data.payments">
-      <mat-icon
-        [matTooltip]="getTooltip(item)"
-        matListItemIcon
-        (click)="openPaymentData(item.id, $event)"
-        >{{ getIcon(item) }}</mat-icon
+<div class="cdv">
+  <h2 mat-dialog-title class="cdv-head">
+    <span class="cdv-head__icon"><mat-icon>event</mat-icon></span>
+    <span class="cdv-title">{{ "calendar.dailyTitle" | translate }}</span>
+  </h2>
+
+  <mat-dialog-content class="cdv-content">
+    <div class="cdv-total">
+      <span class="cdv-total__label">{{ "calendar.balance" | translate }}</span>
+      <span class="cdv-total__value">Rp {{ selected | number: "0.2-2" }}</span>
+    </div>
+
+    <mat-selection-list
+      class="cdv-list"
+      (selectionChange)="onSelectionChange($event)"
+    >
+      <mat-list-option
+        [value]="item.amount"
+        *ngFor="let item of data.payments"
+        class="cdv-item"
       >
-      <div matListItemTitle [innerHTML]="getDescription(item)"></div>
-      <div matListItemLine>{{ item.amount | number : "0.2-2" }}</div>
-    </mat-list-option>
-  </mat-selection-list>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    (click)="copyText()"
-  >
-    Copy
-  </button>
-</mat-dialog-actions>
+        <mat-icon
+          [matTooltip]="getTooltip(item)"
+          matListItemIcon
+          class="cdv-item__icon"
+          (click)="openPaymentData(item.id, $event)"
+          >{{ getIcon(item) }}</mat-icon
+        >
+        <div
+          matListItemTitle
+          class="cdv-item__title"
+          [innerHTML]="getDescription(item)"
+        ></div>
+        <div matListItemLine class="cdv-item__amount">
+          Rp {{ item.amount | number: "0.2-2" }}
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="cdv-foot">
+    <button type="button" class="cdv-copy" (click)="copyText()">
+      <mat-icon>content_copy</mat-icon>
+      {{ "calendar.copy" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

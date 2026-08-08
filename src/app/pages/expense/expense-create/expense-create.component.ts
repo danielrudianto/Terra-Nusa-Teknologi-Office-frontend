@@ -60,7 +60,7 @@ export class ExpenseCreateComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
   ) {}
 
   @ViewChild('stepper') stepper: MatStepper | undefined;
@@ -163,7 +163,7 @@ export class ExpenseCreateComponent {
           const dpp = this.valueFormGroup.controls['dpp'].value;
           const pphValue = (dpp * pphPercentage) / 100;
           this.valueFormGroup.controls['pphValue'].setValue(
-            pphValue.toFixed(2)
+            pphValue.toFixed(2),
           );
         } else {
           this.valueFormGroup.patchValue({
@@ -197,7 +197,7 @@ export class ExpenseCreateComponent {
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
-        option.alias.toLowerCase().includes(filterValue)
+        option.alias.toLowerCase().includes(filterValue),
     );
   }
 
@@ -224,11 +224,11 @@ export class ExpenseCreateComponent {
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
 
     const dateFormatted = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const dueDateFormatted = `${dueDate.getFullYear()}-${String(
-      dueDate.getMonth() + 1
+      dueDate.getMonth() + 1,
     ).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}`;
 
     this.isSubmitting = true;
@@ -360,9 +360,9 @@ export class ExpenseCreateComponent {
   }
 
   fetchBankAccounts() {
-    this.apiService.get('banks', {}).subscribe({
+    this.apiService.get('banks/all', {}).subscribe({
       next: (data: any) => {
-        this.bankAccounts = data.data;
+        this.bankAccounts = data;
       },
       error: (error) => {
         this.snackBar.open('Error fetching bank accounts', 'Close', {

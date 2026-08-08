@@ -1,22 +1,22 @@
 <div class="me">
   <app-header-title
-    [title]="'Master Equipment'"
-    [description]="'Katalog alat berat untuk sewa'"
+    [title]="'masterEquipment.title' | translate"
+    [description]="'masterEquipment.description' | translate"
   ></app-header-title>
 
   <div class="me-toolbar">
     <mat-form-field appearance="outline" class="me-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Cari nama, kategori, kapasitas, atau brand"
+        [placeholder]="'masterEquipment.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
     <span class="me-spacer"></span>
     <button type="button" class="me-btn me-btn--brand" (click)="createItem()">
-      <mat-icon>add</mat-icon> Tambah equipment
+      <mat-icon>add</mat-icon> {{ "masterEquipment.addEquipment" | translate }}
     </button>
   </div>
 
@@ -29,7 +29,9 @@
     <div class="table-responsive">
       <table mat-table [dataSource]="items">
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nama</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.name" | translate }}
+          </th>
           <td mat-cell *matCellDef="let it">
             <div class="me-name">
               <span class="me-badge">{{ (it.name || "?").charAt(0) }}</span>
@@ -38,25 +40,33 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="category">
-          <th mat-header-cell *matHeaderCellDef>Kategori</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.category" | translate }}
+          </th>
           <td mat-cell *matCellDef="let it">
             <span class="me-chip">{{ it.category || "—" }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="capacity">
-          <th mat-header-cell *matHeaderCellDef>Kapasitas</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.capacity" | translate }}
+          </th>
           <td mat-cell *matCellDef="let it">
             <span class="me-muted">{{ it.capacity || "—" }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="brand">
-          <th mat-header-cell *matHeaderCellDef>Brand</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.brand" | translate }}
+          </th>
           <td mat-cell *matCellDef="let it">
             <span class="me-muted">{{ it.brand || "—" }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="unit">
-          <th mat-header-cell *matHeaderCellDef>Satuan</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.unit" | translate }}
+          </th>
           <td mat-cell *matCellDef="let it">
             <span class="me-muted">/ {{ it.unit || "hari" }}</span>
           </td>
@@ -68,8 +78,13 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewItem(it)">
+                <mat-icon>visibility</mat-icon
+                ><span>{{ "masterEquipment.menuView" | translate }}</span>
+              </button>
               <button mat-menu-item (click)="deleteItem(it)">
-                <mat-icon>delete</mat-icon><span>Hapus</span>
+                <mat-icon>delete</mat-icon
+                ><span>{{ "masterEquipment.menuDelete" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -78,12 +93,17 @@
           mat-header-row
           *matHeaderRowDef="displayedColumns; sticky: true"
         ></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
+          (click)="viewItem(row)"
+        ></tr>
         <tr class="mat-row me-norow" *matNoDataRow>
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="me-empty">
               <mat-icon>precision_manufacturing</mat-icon
-              ><span>Belum ada equipment. Klik "Tambah equipment".</span>
+              ><span>{{ "masterEquipment.noData" | translate }}</span>
             </div>
           </td>
         </tr>

@@ -1,0 +1,104 @@
+<div class="av">
+  <h2 mat-dialog-title class="av-head">
+    <span class="av-head__icon"><mat-icon>inventory_2</mat-icon></span>
+    <span class="av-head__text">
+      <span class="av-title">{{ "assetView.title" | translate }}</span>
+      <span class="av-name">{{ asset.name || "—" }}</span>
+    </span>
+  </h2>
+
+  <mat-dialog-content class="av-content">
+    <!-- value highlight -->
+    <div class="av-value">
+      <span class="av-value__label">{{ "assetView.value" | translate }}</span>
+      <span class="av-value__amount" *ngIf="asset.value != null">
+        Rp {{ asset.value | number: "1.0-0" }}
+      </span>
+      <span
+        class="av-value__amount av-value__amount--empty"
+        *ngIf="asset.value == null"
+      >
+        {{ "assetView.noValue" | translate }}
+      </span>
+    </div>
+
+    <div class="av-grid">
+      <div class="av-field">
+        <span class="av-field__label">{{ "assetView.brand" | translate }}</span>
+        <span class="av-field__value">{{ asset.brand || "—" }}</span>
+      </div>
+
+      <div class="av-field">
+        <span class="av-field__label">{{ "assetView.type" | translate }}</span>
+        <span class="av-field__value">{{ asset.type || "—" }}</span>
+      </div>
+
+      <div class="av-field">
+        <span class="av-field__label">{{
+          "assetView.location" | translate
+        }}</span>
+        <span class="av-field__value">{{ asset.location || "—" }}</span>
+      </div>
+
+      <div class="av-field">
+        <span class="av-field__label">{{
+          "assetView.depreciation" | translate
+        }}</span>
+        <span class="av-field__value">{{ asset.depreciation || "—" }}</span>
+      </div>
+
+      <div class="av-field">
+        <span class="av-field__label">{{
+          "assetView.purchaseDate" | translate
+        }}</span>
+        <span class="av-field__value">
+          {{
+            asset.purchaseDate
+              ? (asset.purchaseDate | date: "dd MMM yyyy")
+              : "—"
+          }}
+        </span>
+      </div>
+
+      <div class="av-field">
+        <span class="av-field__label">{{
+          "assetView.purchaseOrder" | translate
+        }}</span>
+        <span class="av-field__value">{{
+          asset.purchaseOrderName || "—"
+        }}</span>
+      </div>
+    </div>
+
+    <div class="av-desc">
+      <span class="av-desc__label">{{
+        "assetView.description" | translate
+      }}</span>
+      <p class="av-desc__text" *ngIf="asset.description">
+        {{ asset.description }}
+      </p>
+      <p class="av-desc__text av-desc__text--empty" *ngIf="!asset.description">
+        {{ "assetView.noDescription" | translate }}
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="av-foot">
+    <button type="button" class="av-close" (click)="onClose()">
+      {{ "assetView.close" | translate }}
+    </button>
+    <button
+      type="button"
+      class="av-purchase"
+      [disabled]="!asset.purchaseOrderName"
+      (click)="onViewPurchase()"
+    >
+      <mat-icon>receipt_long</mat-icon>
+      {{ "assetView.viewPurchaseOrder" | translate }}
+    </button>
+    <button type="button" class="av-edit" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      {{ "assetView.edit" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

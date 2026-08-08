@@ -14,14 +14,17 @@ import { MatTableModule } from '@angular/material/table';
 import { debounceTime } from 'rxjs';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
 import { MasterEquipmentCreateComponent } from '../master-equipment-create/master-equipment-create.component';
+import { MasterEquipmentViewComponent } from '../master-equipment-view/master-equipment-view.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-master-equipment-list',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
@@ -108,6 +111,15 @@ export class MasterEquipmentListComponent {
       .subscribe((created) => {
         if (created) this.fetch(1);
       });
+  }
+
+  viewItem(item: any) {
+    this.dialog.open(MasterEquipmentViewComponent, {
+      width: '560px',
+      maxWidth: '94vw',
+      autoFocus: false,
+      data: { equipment: item },
+    });
   }
 
   deleteItem(item: any) {

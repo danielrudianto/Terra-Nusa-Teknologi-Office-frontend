@@ -242,3 +242,14 @@
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
+
+/* clickable row -> open view */
+:host ::ng-deep .mat-mdc-row.clickable-row,
+:host ::ng-deep tr.mat-mdc-row {
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+:host ::ng-deep .mat-mdc-row.clickable-row:hover,
+:host ::ng-deep tr.mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
+}

@@ -18,8 +18,8 @@
       </svg>
     </span>
     <div class="mic-head__text">
-      <h2 class="mic-title">Tambah Master Item</h2>
-      <span class="mic-sub">Daftarkan barang baru ke katalog</span>
+      <h2 class="mic-title">{{ "itemForm.title" | translate }}</h2>
+      <span class="mic-sub">{{ "itemForm.subtitle" | translate }}</span>
     </div>
   </div>
 
@@ -27,13 +27,13 @@
     <mat-dialog-content class="mic-content">
       <div class="mic-grid">
         <mat-form-field appearance="outline">
-          <mat-label>SKU</mat-label>
+          <mat-label>{{ "itemForm.sku" | translate }}</mat-label>
           <input
             matInput
             formControlName="sku"
             maxlength="45"
             (input)="uppercaseSku()"
-            placeholder="Ex. LB32_K"
+            [placeholder]="'itemForm.skuPlaceholder' | translate"
           />
           <mat-hint>Kapital, tanpa spasi (pakai _)</mat-hint>
           <mat-error *ngIf="formGroup.get('sku')?.hasError('maxlength')"
@@ -42,40 +42,40 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Satuan</mat-label>
+          <mat-label>{{ "itemForm.unit" | translate }}</mat-label>
           <mat-select formControlName="unit">
             <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="mic-span2">
-          <mat-label>Deskripsi</mat-label>
+          <mat-label>{{ "itemForm.description" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="description"
             rows="2"
-            placeholder="Nama & spesifikasi barang"
+            [placeholder]="'itemForm.descriptionPlaceholder' | translate"
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Brand</mat-label>
+          <mat-label>{{ "itemForm.brand" | translate }}</mat-label>
           <input
             matInput
             formControlName="brand"
             maxlength="45"
-            placeholder="Ex. Kobelco"
+            [placeholder]="'itemForm.brandPlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Tipe</mat-label>
+          <mat-label>{{ "itemForm.type" | translate }}</mat-label>
           <input
             matInput
             formControlName="type"
             maxlength="45"
-            placeholder="Ex. Kawat Las"
+            [placeholder]="'itemForm.typePlaceholder' | translate"
           />
         </mat-form-field>
 
@@ -115,14 +115,18 @@
 
     <mat-dialog-actions class="mic-actions">
       <button type="button" class="mic-cancel" (click)="onCancel()">
-        Batal
+        {{ "itemForm.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="mic-submit"
         [disabled]="isSubmitting || !canSubmit"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan item" }}
+        {{
+          isSubmitting
+            ? ("itemForm.saving" | translate)
+            : ("itemForm.save" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

@@ -15,8 +15,8 @@
       </svg>
     </span>
     <div class="ic-head__text">
-      <h2 class="ic-title">Tambah Income</h2>
-      <span class="ic-sub">Catat pemasukan lain-lain</span>
+      <h2 class="ic-title">{{ "income.createTitle" | translate }}</h2>
+      <span class="ic-sub">{{ "income.createSubtitle" | translate }}</span>
     </div>
   </div>
 
@@ -24,12 +24,12 @@
     <mat-dialog-content class="ic-content">
       <div class="ic-grid">
         <mat-form-field appearance="outline" class="ic-span2">
-          <mat-label>Opponent</mat-label>
+          <mat-label>{{ "income.opponent" | translate }}</mat-label>
           <input
             matInput
             formControlName="opponentName"
             type="text"
-            placeholder="Pilih opponent"
+            [placeholder]="'income.opponentPlaceholder' | translate"
             readonly
           />
           <button
@@ -48,49 +48,59 @@
           class="ic-span2"
           *ngIf="formGroup.get('opponentDescription')?.value"
         >
-          <mat-label>Opponent description</mat-label>
+          <mat-label>{{ "income.opponentDescription" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="opponentDescription"
             rows="2"
-            placeholder="Deskripsi opponent"
+            [placeholder]="'income.opponentDescPlaceholder' | translate"
             readonly
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="ic-span2">
-          <mat-label>Income type</mat-label>
+          <mat-label>{{ "income.incomeType" | translate }}</mat-label>
           <mat-select formControlName="incomeType">
             <mat-optgroup label="Other income">
-              <mat-option value="7.1">Income from interest</mat-option>
-              <mat-option value="7.2">Income from royalty</mat-option>
-              <mat-option value="7.3">Income from dividend</mat-option>
-              <mat-option value="7.5">Other income</mat-option>
+              <mat-option value="7.1">{{
+                "income.typeInterestFull" | translate
+              }}</mat-option>
+              <mat-option value="7.2">{{
+                "income.typeRoyaltyFull" | translate
+              }}</mat-option>
+              <mat-option value="7.3">{{
+                "income.typeDividendFull" | translate
+              }}</mat-option>
+              <mat-option value="7.5">{{
+                "income.typeOtherFull" | translate
+              }}</mat-option>
             </mat-optgroup>
             <mat-optgroup label="Miscelanous income">
-              <mat-option value="7.4">Income from rounding up</mat-option>
+              <mat-option value="7.4">{{
+                "income.typeRoundingUpFull" | translate
+              }}</mat-option>
             </mat-optgroup>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="ic-span2">
-          <mat-label>Income description</mat-label>
+          <mat-label>{{ "income.incomeDescription" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="description"
             rows="2"
-            placeholder="Deskripsi pemasukan"
+            [placeholder]="'income.incomeDescPlaceholder' | translate"
             style="resize: none"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "income.date" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
-            placeholder="Tanggal"
+            [placeholder]="'income.datePlaceholder' | translate"
             [matDatepicker]="picker"
           />
           <mat-datepicker-toggle
@@ -101,11 +111,11 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Payment date</mat-label>
+          <mat-label>{{ "income.paymentDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="paymentDate"
-            placeholder="Tanggal bayar"
+            [placeholder]="'income.paymentDatePlaceholder' | translate"
             [matDatepicker]="paymentPicker"
           />
           <mat-datepicker-toggle
@@ -116,12 +126,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Amount</mat-label>
+          <mat-label>{{ "income.amount" | translate }}</mat-label>
           <input
             matInput
             type="text"
             formControlName="amount"
-            placeholder="Nominal"
+            [placeholder]="'income.amountPlaceholder' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -129,7 +139,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Bank Account</mat-label>
+          <mat-label>{{ "income.bankAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
               {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
@@ -141,14 +151,18 @@
 
     <mat-dialog-actions class="ic-actions">
       <button type="button" class="ic-cancel" (click)="onCancel()">
-        Batal
+        {{ "income.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="ic-submit"
         [disabled]="isSubmitting || formGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan income" }}
+        {{
+          isSubmitting
+            ? ("income.saving" | translate)
+            : ("income.saveIncome" | translate)
+        }}
       </button>
     </mat-dialog-actions>
   </form>

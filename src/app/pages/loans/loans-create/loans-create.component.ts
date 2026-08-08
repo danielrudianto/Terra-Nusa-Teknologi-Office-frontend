@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
   FormControl,
@@ -26,6 +27,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

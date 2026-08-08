@@ -2,9 +2,10 @@
   <!-- Header -->
   <div class="cp-header">
     <div>
-      <h2 class="cp-title">Posisi Kas</h2>
+      <h2 class="cp-title">{{ "dashboard.cashPosition" | translate }}</h2>
       <span class="cp-subtitle" *ngIf="!isLoading && !errorMsg">
-        Per {{ asOfLabel() }} · {{ accounts.length }} rekening
+        {{ "dashboard.asOf" | translate }} {{ asOfLabel() }} ·
+        {{ accounts.length }} {{ "dashboard.accounts" | translate }}
       </span>
     </div>
     <button
@@ -34,7 +35,9 @@
 
   <!-- Total (hero) -->
   <div class="cp-total" *ngIf="!errorMsg">
-    <span class="cp-total__label">Total Saldo</span>
+    <span class="cp-total__label">{{
+      "dashboard.totalBalance" | translate
+    }}</span>
     <span
       class="cp-total__value"
       *ngIf="!isLoading"
@@ -50,7 +53,7 @@
   <!-- Error state -->
   <div class="cp-error" *ngIf="errorMsg">
     <span>{{ errorMsg }}</span>
-    <button (click)="fetch()">Coba lagi</button>
+    <button (click)="fetch()">{{ "dashboard.retry" | translate }}</button>
   </div>
 
   <!-- Loading skeleton -->
@@ -90,7 +93,7 @@
     </div>
 
     <div class="cp-empty" *ngIf="accounts.length === 0">
-      Belum ada rekening aktif.
+      {{ "dashboard.noActiveAccount" | translate }}
     </div>
   </div>
 </div>

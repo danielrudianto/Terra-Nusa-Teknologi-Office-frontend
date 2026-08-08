@@ -19,7 +19,7 @@
     <span
       class="sv-chip sv-chip--deleted"
       *ngIf="formGroup.get('isDelete')?.value"
-      >Deleted</span
+      >{{ "salarySlipView.deleted" | translate }}</span
     >
   </div>
 
@@ -27,16 +27,22 @@
     <form [formGroup]="formGroup">
       <!-- employee -->
       <section class="sv-section">
-        <div class="sv-section__title">Karyawan</div>
+        <div class="sv-section__title">
+          {{ "salarySlipView.employee" | translate }}
+        </div>
         <div class="sv-grid">
           <div class="sv-field">
-            <span class="sv-label">Department</span>
+            <span class="sv-label">{{
+              "salarySlipView.department" | translate
+            }}</span>
             <span class="sv-value">{{
               formGroup.get("department")?.value || "—"
             }}</span>
           </div>
           <div class="sv-field">
-            <span class="sv-label">Tax Category</span>
+            <span class="sv-label">{{
+              "salarySlipView.taxCategory" | translate
+            }}</span>
             <span class="sv-value">{{
               formGroup.get("taxCategory")?.value || "—"
             }}</span>
@@ -46,10 +52,12 @@
 
       <!-- earnings -->
       <section class="sv-section">
-        <div class="sv-section__title">Pendapatan</div>
+        <div class="sv-section__title">
+          {{ "salarySlipView.income" | translate }}
+        </div>
         <div class="sv-money">
           <div class="sv-money__row">
-            <span>Basic salary</span>
+            <span>{{ "salarySlipView.basicSalary" | translate }}</span>
             <span
               >Rp
               {{ formGroup.get("basicSalary")?.value | number: "1.0-0" }}</span
@@ -114,23 +122,31 @@
         </div>
 
         <!-- other allowances table (kept for renderRows) -->
-        <div class="sv-subtitle">Other allowances</div>
+        <div class="sv-subtitle">
+          {{ "salarySlipView.otherAllowances" | translate }}
+        </div>
         <div class="sv-table">
           <table mat-table [dataSource]="allowancesControls" #allowanceTable>
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.name" | translate }}
+              </th>
               <td mat-cell *matCellDef="let allowance">
                 {{ allowance.get("name").value }}
               </td>
             </ng-container>
             <ng-container matColumnDef="amount">
-              <th mat-header-cell *matHeaderCellDef class="sv-num">Amount</th>
+              <th mat-header-cell *matHeaderCellDef class="sv-num">
+                {{ "salarySlipView.amount" | translate }}
+              </th>
               <td mat-cell *matCellDef="let allowance" class="sv-num sv-pos">
                 Rp {{ allowance.get("amount").value | number: "1.0-0" }}
               </td>
             </ng-container>
             <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.description" | translate }}
+              </th>
               <td mat-cell *matCellDef="let allowance">
                 <span class="sv-desc">{{
                   allowance.get("description").value
@@ -159,23 +175,31 @@
 
       <!-- deductions -->
       <section class="sv-section">
-        <div class="sv-section__title">Potongan</div>
+        <div class="sv-section__title">
+          {{ "salarySlipView.deductions" | translate }}
+        </div>
         <div class="sv-table">
           <table mat-table [dataSource]="deductionsControls" #deductionTable>
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.name" | translate }}
+              </th>
               <td mat-cell *matCellDef="let deduction">
                 {{ deduction.get("name").value }}
               </td>
             </ng-container>
             <ng-container matColumnDef="amount">
-              <th mat-header-cell *matHeaderCellDef class="sv-num">Amount</th>
+              <th mat-header-cell *matHeaderCellDef class="sv-num">
+                {{ "salarySlipView.amount" | translate }}
+              </th>
               <td mat-cell *matCellDef="let deduction" class="sv-num sv-neg">
                 − Rp {{ deduction.get("amount").value | number: "1.0-0" }}
               </td>
             </ng-container>
             <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.description" | translate }}
+              </th>
               <td mat-cell *matCellDef="let deduction">
                 <span class="sv-desc">{{
                   deduction.get("description").value
@@ -216,14 +240,14 @@
       <section class="sv-section">
         <div class="sv-totals">
           <div class="sv-totals__row">
-            <span>Total salary (gross)</span>
+            <span>{{ "salarySlipView.totalGross" | translate }}</span>
             <span
               >Rp
               {{ formGroup.get("grossSalary")?.value | number: "1.0-0" }}</span
             >
           </div>
           <div class="sv-totals__net">
-            <span>Net salary</span>
+            <span>{{ "salarySlipView.netSalary" | translate }}</span>
             <span
               >Rp
               {{ formGroup.get("netSalary")?.value | number: "1.0-0" }}</span
@@ -237,7 +261,9 @@
         class="sv-section"
         *ngIf="formGroup.get('bankAccountNumber')?.value"
       >
-        <div class="sv-section__title">Rekening Pembayaran</div>
+        <div class="sv-section__title">
+          {{ "salarySlipView.paymentAccount" | translate }}
+        </div>
         <div class="sv-bank">
           <div class="sv-value">
             {{ formGroup.get("bankName")?.value }} ·
@@ -258,7 +284,7 @@
       (click)="onDelete()"
       [disabled]="isSubmitting || formGroup.get('isDelete')?.value"
     >
-      Delete
+      {{ "salarySlipView.delete" | translate }}
     </button>
     <span class="sv-spacer"></span>
     <button
@@ -266,10 +292,10 @@
       class="sv-btn sv-btn--primary"
       (click)="reprintSlip()"
     >
-      Cetak Ulang
+      {{ "salarySlipView.reprint" | translate }}
     </button>
     <button type="button" class="sv-btn sv-btn--ghost" mat-dialog-close>
-      Tutup
+      {{ "salarySlipView.close" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

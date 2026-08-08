@@ -1,158 +1,205 @@
-<h2 mat-dialog-title>Confirm reimbursement data</h2>
-<mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Date</mat-label>
-      <input matInput formControlName="date" placeholder="Date" readonly />
-    </mat-form-field>
+<div class="rcf">
+  <h2 mat-dialog-title class="rcf-head">
+    <span class="rcf-head__icon"><mat-icon>fact_check</mat-icon></span>
+    <span class="rcf-title">{{
+      "reimbursementConfirm.title" | translate
+    }}</span>
+  </h2>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Due Date</mat-label>
-      <input
-        matInput
-        formControlName="dueDate"
-        placeholder="Due date"
-        readonly
-      />
-    </mat-form-field>
+  <mat-dialog-content class="rcf-content">
+    <form [formGroup]="formGroup">
+      <!-- ===== Detail ===== -->
+      <div class="rcf-section__title">
+        {{ "reimbursementConfirm.sectionDetail" | translate }}
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        placeholder="Document name"
-        readonly
-      />
-    </mat-form-field>
+      <div class="rcf-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "reimbursementCreate.date" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [placeholder]="'reimbursementCreate.date' | translate"
+            readonly
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Expense type</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="purchaseType"
-        placeholder="Expense type"
-        readonly
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "reimbursementCreate.dueDate" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="dueDate"
+            [placeholder]="'reimbursementCreate.dueDate' | translate"
+            readonly
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Project Name</mat-label>
-      <input
-        matInput
-        type="text"
-        id="projectName"
-        formControlName="projectName"
-        placeholder="Enter project name"
-        readonly
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "reimbursementConfirm.name" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            [placeholder]="'reimbursementConfirm.namePlaceholder' | translate"
+            readonly
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Name</mat-label>
-      <input
-        type="text"
-        placeholder="Bank name"
-        matInput
-        formControlName="bankName"
-        readonly
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "reimbursementCreate.expenseType" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="purchaseType"
+            [placeholder]="'reimbursementCreate.expenseType' | translate"
+            readonly
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account number</mat-label>
-      <input
-        matInput
-        type="text"
-        id="bankAccountNumber"
-        formControlName="bankAccountNumber"
-        placeholder="Enter account number"
-        readonly
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="rcf-span2">
+          <mat-label>{{
+            "reimbursementCreate.projectName" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            id="projectName"
+            formControlName="projectName"
+            [placeholder]="'reimbursementCreate.projectPlaceholder' | translate"
+            readonly
+          />
+        </mat-form-field>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank account name</mat-label>
-      <input
-        matInput
-        type="text"
-        id="bankAccountName"
-        formControlName="bankAccountName"
-        placeholder="Enter account name"
-        readonly
-      />
-    </mat-form-field>
+      <!-- ===== Bank & payment ===== -->
+      <div class="rcf-section__title rcf-section__title--mt">
+        {{ "reimbursementConfirm.sectionBank" | translate }}
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Method</mat-label>
-      <input
-        matInput
-        type="text"
-        id="paymentMethod"
-        formControlName="paymentMethod"
-        placeholder="Payment method"
-        readonly
-      />
-    </mat-form-field>
+      <div class="rcf-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "reimbursementCreate.bankName" | translate
+          }}</mat-label>
+          <input
+            type="text"
+            [placeholder]="
+              'reimbursementCreate.bankNamePlaceholder' | translate
+            "
+            matInput
+            formControlName="bankName"
+            readonly
+          />
+        </mat-form-field>
 
-    <div class="table-responsive">
-      <table class="table table-bordered hover mt-3">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of t.controls; index as i">
-            <td>
-              {{ item.get("date")?.value }}
-            </td>
-            <td>{{ item.get("description")?.value }}</td>
-            <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "reimbursementCreate.paymentMethod" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            id="paymentMethod"
+            formControlName="paymentMethod"
+            [placeholder]="'reimbursementCreate.paymentMethod' | translate"
+            readonly
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Total Amount</mat-label>
-      <input
-        matInput
-        type="text"
-        id="total"
-        formControlName="total"
-        class="form-control"
-        placeholder="Total amount"
-        readonly
-        prefix="Rp. "
-        thousandSeparator=" "
-        decimalScale="2"
-        mask="separator"
-      />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    style="letter-spacing: 0"
-    class="me-2"
-    [disabled]="isSubmitting"
-    (click)="approve()"
-  >
-    Approve
-  </button>
-  <button
-    mat-stroked-button
-    color="accent"
-    style="letter-spacing: 0"
-    [disabled]="isSubmitting"
-    (click)="reject()"
-  >
-    Reject
-  </button>
-</mat-dialog-actions>
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "reimbursementCreate.bankAccountNumber" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            id="bankAccountNumber"
+            formControlName="bankAccountNumber"
+            [placeholder]="
+              'reimbursementCreate.accountNumberPlaceholder' | translate
+            "
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "reimbursementCreate.bankAccountName" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            id="bankAccountName"
+            formControlName="bankAccountName"
+            [placeholder]="
+              'reimbursementCreate.accountNamePlaceholder' | translate
+            "
+            readonly
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- ===== Items ===== -->
+      <div class="rcf-section__title rcf-section__title--mt">
+        {{ "reimbursementConfirm.sectionItems" | translate }}
+      </div>
+
+      <div class="rcf-table">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ "reimbursementCreate.colDate" | translate }}</th>
+              <th>{{ "reimbursementCreate.colDescription" | translate }}</th>
+              <th>{{ "reimbursementCreate.colAmount" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of t.controls; index as i">
+              <td>{{ item.get("date")?.value }}</td>
+              <td>{{ item.get("description")?.value }}</td>
+              <td>{{ item.get("amount")?.value | number: "0.2-2" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-100 rcf-total">
+        <mat-label>{{
+          "reimbursementConfirm.totalAmount" | translate
+        }}</mat-label>
+        <input
+          matInput
+          type="text"
+          id="total"
+          formControlName="total"
+          [placeholder]="'reimbursementConfirm.totalAmount' | translate"
+          readonly
+          prefix="Rp. "
+          thousandSeparator=" "
+          decimalScale="2"
+          mask="separator"
+        />
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="rcf-foot">
+    <button
+      mat-button
+      class="rcf-reject"
+      [disabled]="isSubmitting"
+      (click)="reject()"
+    >
+      {{ "reimbursementConfirm.reject" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      class="rcf-approve"
+      [disabled]="isSubmitting"
+      (click)="approve()"
+    >
+      {{ "reimbursementConfirm.approve" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

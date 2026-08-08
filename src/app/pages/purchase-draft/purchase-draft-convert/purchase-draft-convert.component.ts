@@ -627,9 +627,9 @@ export class PurchaseDraftConvertComponent {
   }
 
   fetchBankAccounts() {
-    this.apiService.get('banks', {}).subscribe({
+    this.apiService.get('banks/all', {}).subscribe({
       next: (data: any) => {
-        this.bankAccounts = data.data;
+        this.bankAccounts = data;
       },
       error: (error) => {
         this.snackBar.open('Error fetching bank accounts', 'Close', {

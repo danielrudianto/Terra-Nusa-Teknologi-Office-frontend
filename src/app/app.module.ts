@@ -53,7 +53,7 @@ import { default as _rollupMoment } from 'moment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -127,6 +127,15 @@ export const MY_FORMATS = {
     MatExpansionModule,
     MatToolbarModule,
     ClipboardModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'id',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (http: HttpClient) =>
+          new TranslateHttpLoader(http, './assets/i18n/', '.json'),
+        deps: [HttpClient],
+      },
+    }),
   ],
   providers: [
     provideNgxMask(),
@@ -137,15 +146,6 @@ export const MY_FORMATS = {
     },
     provideMomentDateAdapter(MY_FORMATS),
     provideHttpClient(withInterceptorsFromDi()),
-    provideTranslateService({
-      defaultLanguage: 'id',
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (http: HttpClient) =>
-          new TranslateHttpLoader(http, './assets/i18n/', '.json'),
-        deps: [HttpClient],
-      },
-    }),
     DatePipe,
     DecimalPipe,
     {

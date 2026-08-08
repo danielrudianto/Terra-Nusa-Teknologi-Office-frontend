@@ -1,9 +1,9 @@
 <div class="dr">
   <div class="dr__head">
     <div>
-      <h2 class="dr__title">Reimbursements</h2>
+      <h2 class="dr__title">{{ "dashboard.reimbursements" | translate }}</h2>
       <span class="dr__sub" *ngIf="!isLoading && !errorMsg">
-        {{ items.length }} menunggu persetujuan
+        {{ items.length }} {{ "dashboard.awaitingApproval" | translate }}
       </span>
     </div>
     <button
@@ -34,7 +34,7 @@
   <!-- error -->
   <div class="dr__error" *ngIf="errorMsg">
     <span>{{ errorMsg }}</span>
-    <button (click)="fetch()">Coba lagi</button>
+    <button (click)="fetch()">{{ "dashboard.retry" | translate }}</button>
   </div>
 
   <!-- loading -->

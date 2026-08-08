@@ -1,3 +1,4 @@
-<div class="top-navigation__bookmark__wrapper">
-  {{ label | uppercase }}
+<div class="tnb" *ngIf="label">
+  <mat-icon class="tnb__icon">bookmark</mat-icon>
+  <span class="tnb__label">{{ label }}</span>
 </div>

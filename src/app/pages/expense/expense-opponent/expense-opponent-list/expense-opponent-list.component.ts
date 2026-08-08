@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { ExpenseOpponentViewComponent } from '../expense-opponent-view/expense-opponent-view.component';
+import { ExpenseOpponentUpdateComponent } from '../expense-opponent-update/expense-opponent-update.component';
+import { ExpenseOpponentCreateComponent } from '../expense-opponent-create/expense-opponent-create.component';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
+import { TranslateService } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,6 +18,7 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -20,6 +26,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
   styleUrl: './expense-opponent-list.component.scss',
   standalone: true,
   imports: [
+    TranslatePipe,
     RouterModule,
     HeaderTitleComponent,
     MatIconModule,
@@ -39,6 +46,7 @@ export class ExpenseOpponentListComponent {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
+    private translate: TranslateService,
   ) {}
 
   isLoading: boolean = false;
@@ -104,13 +112,75 @@ export class ExpenseOpponentListComponent {
     }
   }
 
-  onEdit(id: number) {}
-
-  createOpponent() {
-    this.router.navigate(['/Expense', 'Opponent', 'Create']);
+  onEdit(id: number) {
+    this.dialog
+      .open(ExpenseOpponentUpdateComponent, {
+        data: { id },
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((updated) => {
+        if (updated) this.fetchOpponents(this.page);
+      });
   }
 
-  onViewDetail(id: number) {}
+  createOpponent() {
+    this.dialog
+      .open(ExpenseOpponentCreateComponent, {})
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) this.fetchOpponents(this.page);
+      });
+  }
+
+  onViewOpponent(opponent: any) {
+    this.dialog
+      .open(ExpenseOpponentViewComponent, {
+        data: { opponent },
+        width: '560px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.action === 'edit') {
+          this.onEdit(result.opponent.id);
+        }
+      });
+  }
+
+  onDeleteOpponent(opponent: any) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('expenseOpponent.deleteTitle'),
+          prompt: this.translate.instant('expenseOpponent.deletePrompt'),
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.apiService.delete('expense-opponents/' + opponent.id).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('expenseOpponent.deleted'),
+              'Close',
+              { duration: 2000 },
+            );
+            this.fetchOpponents(this.page);
+          },
+          error: (err) =>
+            this.snackBar.open(
+              err?.error?.detail ||
+                this.translate.instant('expenseOpponent.deleteFailed'),
+              'Close',
+              { duration: 3000 },
+            ),
+        });
+      });
+  }
 
   copyPaymentNumber(paymentNumber: string) {
     navigator.clipboard

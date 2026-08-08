@@ -1,17 +1,32 @@
-<h2 mat-dialog-title>Select bank account</h2>
-<mat-dialog-content>
-  <mat-selection-list>
-    <mat-list-option
-      *ngFor="let account of this.bankAccounts"
-      [checkboxPosition]="'before'"
-      [selected]="account.selected"
-      (selectedChange)="onSelectionChanged(account.id, $event)"
-    >
-      {{ account.bankAccountNumber }} -- {{ account.bankAccountName }}
-    </mat-list-option>
-  </mat-selection-list>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button color="primary" (click)="onDialogClosed()">Select</button>
-  <button mat-button (click)="onClose()">Cancel</button>
-</mat-dialog-actions>
+<div class="casd">
+  <h2 mat-dialog-title class="casd-head">
+    <span class="casd-head__icon"><mat-icon>account_balance</mat-icon></span>
+    <span class="casd-title">{{
+      "calendarAccount.selectTitle" | translate
+    }}</span>
+  </h2>
+
+  <mat-dialog-content class="casd-content">
+    <mat-selection-list class="casd-list">
+      <mat-list-option
+        *ngFor="let account of this.bankAccounts"
+        class="casd-item"
+        [checkboxPosition]="'before'"
+        [selected]="account.selected"
+        (selectedChange)="onSelectionChanged(account.id, $event)"
+      >
+        <span class="casd-item__name">{{ account.bankAccountName }}</span>
+        <span class="casd-item__number">{{ account.bankAccountNumber }}</span>
+      </mat-list-option>
+    </mat-selection-list>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="casd-foot">
+    <button type="button" class="casd-cancel" (click)="onClose()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button type="button" class="casd-select" (click)="onDialogClosed()">
+      {{ "common.select" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

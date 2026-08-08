@@ -79,7 +79,7 @@
       </button>
       <button mat-menu-item>
         <mat-icon>calendar_month</mat-icon>
-        <span>Monthly report</span>
+        <span>{{ "purchase.menuMonthlyReport" | translate }}</span>
       </button>
     </mat-menu>
   </div>
@@ -217,7 +217,7 @@
             (click)="changeSortBy('purchaseOrderName')"
           >
             <span class="pl-th"
-              >Purchase Order
+              >{{ "table.purchaseOrder" | translate }}
               <mat-icon
                 *ngIf="
                   sortBy == 'purchaseOrderName' && sortByDirection == 'asc'
@@ -291,7 +291,12 @@
               [class.pl-chip--draft]="purchase.lastStatus !== 'ready'"
             >
               <span class="pl-chip__dot"></span>
-              {{ purchase.lastStatus === "ready" ? "Ready" : "Draft" }}
+              {{
+                (purchase.lastStatus === "ready"
+                  ? "status.ready"
+                  : "status.draft"
+                ) | translate
+              }}
             </span>
           </td>
         </ng-container>
@@ -310,7 +315,9 @@
               <mat-icon>{{
                 purchase.isPaid ? "check_circle" : "schedule"
               }}</mat-icon>
-              {{ purchase.isPaid ? "Paid" : "Not paid" }}
+              {{
+                (purchase.isPaid ? "status.paid" : "status.notPaid") | translate
+              }}
             </span>
           </td>
         </ng-container>
@@ -329,7 +336,10 @@
               <mat-icon>{{
                 purchase.isInternal ? "home_work" : "public"
               }}</mat-icon>
-              {{ purchase.isInternal ? "Internal" : "External" }}
+              {{
+                (purchase.isInternal ? "status.internal" : "status.external")
+                  | translate
+              }}
             </span>
           </td>
         </ng-container>
@@ -355,17 +365,20 @@
                 [disabled]="purchase.lastStatus !== 'draft'"
                 routerLink="/Purchase/Status/{{ purchase.id }}"
               >
-                <mat-icon>update</mat-icon><span>Update status</span>
+                <mat-icon>update</mat-icon
+                ><span>{{ "purchase.menuUpdateStatus" | translate }}</span>
               </button>
               <button mat-menu-item (click)="openPaymentDetail(purchase.id)">
-                <mat-icon>payments</mat-icon><span>Create payment</span>
+                <mat-icon>payments</mat-icon
+                ><span>{{ "salesInvoice.menuCreatePayment" | translate }}</span>
               </button>
               <button
                 mat-menu-item
                 [disabled]="purchase.isInternal == false"
                 (click)="openUpdateInternal(purchase.id)"
               >
-                <mat-icon>edit</mat-icon><span>Update internal</span>
+                <mat-icon>edit</mat-icon
+                ><span>{{ "purchase.menuUpdateInternal" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -384,7 +397,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="pl-empty">
               <mat-icon>inbox</mat-icon>
-              <span>No purchases match your filters.</span>
+              <span>{{ "purchase.noData" | translate }}</span>
             </div>
           </td>
         </tr>

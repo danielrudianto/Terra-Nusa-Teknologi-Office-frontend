@@ -230,10 +230,21 @@ $hover: var(--hover, #f6f8ff);
 
 .mi-btn--brand {
   border: none;
-  background: var(--brand, #154dec);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
   &:hover:not(:disabled) {
-    background: var(--brand-strong, #0f3fd0);
+    background: var(--active-button-color, #0f3fd0);
+    color: var(--on-active-button-color, #fff);
   }
+}
+
+/* clickable row -> open view */
+:host ::ng-deep .mat-mdc-row.clickable-row,
+:host ::ng-deep tr.mat-mdc-row {
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+:host ::ng-deep .mat-mdc-row.clickable-row:hover,
+:host ::ng-deep tr.mat-mdc-row:hover {
+  background: var(--hover, #f6f8ff);
 }

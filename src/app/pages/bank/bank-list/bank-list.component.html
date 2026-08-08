@@ -1,22 +1,27 @@
 <div class="bank-list">
   <app-header-title
-    [title]="'Bank Accounts'"
-    [description]="'Manage your bank accounts here'"
-    [actionButtonLabel]="'Create new bank account'"
-    (onActionButtonClicked)="createNewBank()"
+    [title]="'bank.title' | translate"
+    [description]="'bank.description' | translate"
   ></app-header-title>
 
   <div class="bl-toolbar">
     <mat-form-field appearance="outline" class="bl-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
         type="text"
-        placeholder="Bank, nomor, atau nama rekening"
+        [placeholder]="'bank.searchPlaceholder' | translate"
         [formControl]="formControl"
       />
     </mat-form-field>
+
+    <span class="bl-spacer"></span>
+
+    <button type="button" class="bl-add" (click)="createNewBank()">
+      <mat-icon>add</mat-icon>
+      {{ "bank.createAccount" | translate }}
+    </button>
   </div>
 
   <div class="bl-card" [class.is-loading]="isLoading">
@@ -26,7 +31,9 @@
       <table mat-table [dataSource]="banks">
         <!-- Bank -->
         <ng-container matColumnDef="bankName">
-          <th mat-header-cell *matHeaderCellDef>Bank</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.bank" | translate }}
+          </th>
           <td mat-cell *matCellDef="let bank">
             <div class="bl-bank">
               <span
@@ -41,7 +48,9 @@
 
         <!-- Account number -->
         <ng-container matColumnDef="bankAccountNumber">
-          <th mat-header-cell *matHeaderCellDef>Account number</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.accountNumber" | translate }}
+          </th>
           <td mat-cell *matCellDef="let bank">
             <span class="bl-mono">{{ bank.bankAccountNumber || "—" }}</span>
           </td>
@@ -49,7 +58,9 @@
 
         <!-- Account name -->
         <ng-container matColumnDef="bankAccountName">
-          <th mat-header-cell *matHeaderCellDef>Account name</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.accountName" | translate }}
+          </th>
           <td mat-cell *matCellDef="let bank">
             <span class="bl-muted">{{ bank.bankAccountName || "—" }}</span>
           </td>
@@ -83,13 +94,15 @@
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="onOpenMutation(bank.id)">
                 <mat-icon>format_list_bulleted</mat-icon
-                ><span>Lihat mutasi</span>
+                ><span>{{ "bank.menuViewMutation" | translate }}</span>
               </button>
               <button mat-menu-item (click)="onEdit(bank.id)">
-                <mat-icon>edit</mat-icon><span>Ubah rekening</span>
+                <mat-icon>edit</mat-icon
+                ><span>{{ "bank.menuEdit" | translate }}</span>
               </button>
               <button mat-menu-item (click)="onDelete(bank.id)">
-                <mat-icon>delete</mat-icon><span>Hapus rekening</span>
+                <mat-icon>delete</mat-icon
+                ><span>{{ "bank.menuDelete" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -108,7 +121,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="bl-empty">
               <mat-icon>account_balance</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

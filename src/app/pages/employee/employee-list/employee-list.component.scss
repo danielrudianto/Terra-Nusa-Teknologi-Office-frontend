@@ -197,3 +197,81 @@
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
+
+/* ===== filter chips (All / Active / Inactive) — samain pl-fchip ===== */
+/* base: clean toggle pills (persis purchase) */
+:host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
+  gap: 8px;
+}
+:host ::ng-deep .mat-mdc-chip-option {
+  --mdc-chip-container-height: 34px;
+  --mdc-chip-elevated-container-color: #ffffff;
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
+  --mdc-chip-outline-color: var(--border, #d9dce2);
+  --mdc-chip-outline-width: 0.5px;
+  --mdc-chip-selected-outline-width: 0px;
+  --mdc-chip-focus-state-layer-opacity: 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+/* remove leading checkmark slot so selection reads by color only */
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__text-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+:host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
+  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
+}
+
+:host ::ng-deep .el-fchip.mdc-evolution-chip--selected {
+  .mdc-evolution-chip__checkmark {
+    display: none;
+  }
+}
+
+/* All -> orange */
+:host ::ng-deep .el-fchip--all.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
+  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
+}
+/* Active -> hijau */
+:host ::ng-deep .el-fchip--active.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
+  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
+}
+/* Inactive -> merah */
+:host ::ng-deep .el-fchip--inactive.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
+  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
+}
+
+/* dot indikator warna di depan tiap chip (selalu tampil, biar keliatan makna warnanya) */
+:host ::ng-deep .el-fchip .mdc-evolution-chip__text-label::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.55;
+}
+:host ::ng-deep .el-fchip--all .mdc-evolution-chip__text-label::before {
+  background: var(--warn-fg, #e0942e);
+  opacity: 1;
+}
+:host ::ng-deep .el-fchip--active .mdc-evolution-chip__text-label::before {
+  background: var(--ok-fg, #22a75a);
+  opacity: 1;
+}
+:host ::ng-deep .el-fchip--inactive .mdc-evolution-chip__text-label::before {
+  background: var(--bad-fg, #d64541);
+  opacity: 1;
+}

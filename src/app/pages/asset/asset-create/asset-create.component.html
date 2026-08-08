@@ -16,8 +16,8 @@
       </svg>
     </span>
     <div class="ac-head__text">
-      <h2 class="ac-title">Tambah Asset</h2>
-      <span class="ac-sub">Lengkapi data asset baru</span>
+      <h2 class="ac-title">{{ "asset.createTitle" | translate }}</h2>
+      <span class="ac-sub">{{ "asset.createSubtitle" | translate }}</span>
     </div>
   </div>
 
@@ -25,54 +25,72 @@
     <mat-dialog-content class="ac-content">
       <div class="ac-grid">
         <mat-form-field appearance="outline" class="w-100 ac-span2">
-          <mat-label>Asset Name</mat-label>
+          <mat-label>{{ "asset.assetName" | translate }}</mat-label>
           <input
             matInput
             formControlName="name"
-            placeholder="Ex. Alat bor KR"
+            [placeholder]="'asset.assetNamePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100 ac-span2">
-          <mat-label>Asset Description</mat-label>
+          <mat-label>{{ "asset.assetDescription" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="deacription"
-            placeholder="Ex. Alat bor KR"
+            [placeholder]="'asset.assetDescPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Asset Brand</mat-label>
-          <input matInput formControlName="brand" placeholder="Ex. XCMG" />
+          <mat-label>{{ "asset.assetBrand" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="brand"
+            [placeholder]="'asset.assetBrandPlaceholder' | translate"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Asset Type</mat-label>
+          <mat-label>{{ "asset.assetType" | translate }}</mat-label>
           <mat-select formControlName="type">
-            <mat-option [value]="'Fixed'">Fixed asset</mat-option>
-            <mat-option [value]="'Equipment'">Equipment</mat-option>
-            <mat-option [value]="'Tools'">Tools</mat-option>
+            <mat-option [value]="'Fixed'">{{
+              "asset.typeFixed" | translate
+            }}</mat-option>
+            <mat-option [value]="'Equipment'">{{
+              "asset.typeEquipment" | translate
+            }}</mat-option>
+            <mat-option [value]="'Tools'">{{
+              "asset.typeTools" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100 ac-span2">
-          <mat-label>Asset Location</mat-label>
+          <mat-label>{{ "asset.assetLocation" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="location"
-            placeholder="Ex. Gudang Pusat"
+            [placeholder]="'asset.assetLocationPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Depreciation</mat-label>
+          <mat-label>{{ "asset.depreciation" | translate }}</mat-label>
           <mat-select formControlName="depreciation">
             <mat-optgroup label="General">
-              <mat-option [value]="4">4 years (Group 1)</mat-option>
-              <mat-option [value]="8">8 years (Group 2)</mat-option>
-              <mat-option [value]="16">16 years (Group 3)</mat-option>
-              <mat-option [value]="20">20 years (Group 4)</mat-option>
+              <mat-option [value]="4">{{
+                "asset.dep4" | translate
+              }}</mat-option>
+              <mat-option [value]="8">{{
+                "asset.dep8" | translate
+              }}</mat-option>
+              <mat-option [value]="16">{{
+                "asset.dep16" | translate
+              }}</mat-option>
+              <mat-option [value]="20">{{
+                "asset.dep20" | translate
+              }}</mat-option>
             </mat-optgroup>
             <mat-optgroup label="Buildings">
               <mat-option [value]="20"
@@ -86,16 +104,16 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase Order Name</mat-label>
+          <mat-label>{{ "asset.poName" | translate }}</mat-label>
           <input
             matInput
             formControlName="purchaseOrderName"
-            placeholder="Ex. 001-PO-PUSAT-5.1.1"
+            [placeholder]="'asset.poNamePlaceholder' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100 ac-span2">
-          <mat-label>Purchase date</mat-label>
+          <mat-label>{{ "table.purchaseDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="purchaseDate"
@@ -109,11 +127,11 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100 ac-span2">
-          <mat-label>Value</mat-label>
+          <mat-label>{{ "asset.value" | translate }}</mat-label>
           <input
             matInput
             formControlName="value"
-            placeholder="Ex. 1.200.000"
+            [placeholder]="'asset.valuePlaceholder' | translate"
             prefix="Rp. "
             type="text"
             thousandSeparator=" "
@@ -126,14 +144,14 @@
 
     <mat-dialog-actions class="ac-actions">
       <button type="button" class="ac-cancel" (click)="onCancel()">
-        Batal
+        {{ "asset.cancel" | translate }}
       </button>
       <button
         type="submit"
         class="ac-submit"
         [disabled]="isSubmitting || assetFormGroup.invalid"
       >
-        Simpan asset
+        {{ "asset.saveCreate" | translate }}
       </button>
     </mat-dialog-actions>
   </form>

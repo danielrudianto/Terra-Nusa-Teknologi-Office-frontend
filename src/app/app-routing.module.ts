@@ -531,6 +531,21 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'User',
+        loadComponent: () =>
+          import('./pages/user/user.component').then((m) => m.UserComponent),
+        data: { title: 'User' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/user/user-list/user-list.component').then(
+                (m) => m.UserListComponent,
+              ),
+          },
+        ],
+      },
+      {
         path: 'Salary-slip',
         loadComponent: () =>
           import('./pages/salary-slip/salary-slip.component').then(
@@ -717,10 +732,26 @@ export const routes: Routes = [
             data: { title: 'Master Data' },
           },
           {
-            path: 'Bank',
+            path: 'Supplier',
             loadComponent: () =>
-              import('./pages/bank/bank-list/bank-list.component').then(
-                (m) => m.BankListComponent,
+              import('./pages/supplier/supplier-list/supplier-list.component').then(
+                (m) => m.SupplierListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Client',
+            loadComponent: () =>
+              import('./pages/client/client-list/client-list.component').then(
+                (m) => m.ClientListComponent,
+              ),
+            data: { title: 'Master Data' },
+          },
+          {
+            path: 'Employee',
+            loadComponent: () =>
+              import('./pages/employee/employee-list/employee-list.component').then(
+                (m) => m.EmployeeListComponent,
               ),
             data: { title: 'Master Data' },
           },

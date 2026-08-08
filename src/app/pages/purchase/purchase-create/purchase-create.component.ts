@@ -12,6 +12,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { TranslatePipe } from '@ngx-translate/core';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { ApiService } from 'src/app/services/api.service';
@@ -101,6 +102,7 @@ function bankAccountIDRequired(): ValidatorFn {
     MatAutocompleteModule,
     MatSlideToggleModule,
     NgxMaskDirective,
+    TranslatePipe,
   ],
   templateUrl: './purchase-create.component.html',
   styleUrls: ['./purchase-create.component.scss'],
@@ -218,6 +220,7 @@ export class PurchaseCreateComponent {
   );
 
   ngOnInit() {
+    this.filteredOptions = this.options.slice();
     this.fetchBankAccounts();
 
     this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
@@ -371,6 +374,17 @@ export class PurchaseCreateComponent {
 
   filter(): void {
     const filterValue = this.input.nativeElement.value.toLowerCase();
+
+    // Kalau input kosong atau persis sama dengan bank yang sudah dipilih,
+    // tampilkan semua bank supaya user bisa mengganti pilihan.
+    const isExactSelected = this.options.some(
+      (o) => o.name.toLowerCase() === filterValue,
+    );
+    if (!filterValue || isExactSelected) {
+      this.filteredOptions = this.options.slice();
+      return;
+    }
+
     this.filteredOptions = this.options.filter(
       (option) =>
         option.name.toLowerCase().includes(filterValue) ||
@@ -662,9 +676,9 @@ export class PurchaseCreateComponent {
   }
 
   fetchBankAccounts() {
-    this.apiService.get('banks', {}).subscribe({
+    this.apiService.get('banks/all', {}).subscribe({
       next: (data: any) => {
-        this.bankAccounts = data.data;
+        this.bankAccounts = data;
       },
       error: (error) => {
         this.snackBar.open('Error fetching bank accounts', 'Close', {

@@ -6,7 +6,7 @@
       <div class="rv-meta">{{ f["projectName"].value || "—" }}</div>
     </div>
     <span class="rv-chip rv-chip--external">
-      <mat-icon>public</mat-icon>External
+      <mat-icon>public</mat-icon>{{ "status.external" | translate }}
     </span>
   </div>
 
@@ -15,19 +15,19 @@
     <section class="rv-section">
       <div class="rv-grid">
         <div class="rv-field">
-          <span class="rv-label">Tanggal</span>
+          <span class="rv-label">{{ "table.date" | translate }}</span>
           <span class="rv-value">{{ f["date"].value || "—" }}</span>
         </div>
         <div class="rv-field">
-          <span class="rv-label">Jatuh tempo</span>
+          <span class="rv-label">{{ "table.dueDate" | translate }}</span>
           <span class="rv-value">{{ f["dueDate"].value || "—" }}</span>
         </div>
         <div class="rv-field">
-          <span class="rv-label">Project</span>
+          <span class="rv-label">{{ "table.project" | translate }}</span>
           <span class="rv-value">{{ f["projectName"].value || "—" }}</span>
         </div>
         <div class="rv-field">
-          <span class="rv-label">Metode bayar</span>
+          <span class="rv-label">{{ "table.paymentMethod" | translate }}</span>
           <span class="rv-value">{{ f["paymentMethod"].value || "—" }}</span>
         </div>
       </div>
@@ -35,14 +35,16 @@
 
     <!-- items -->
     <section class="rv-section">
-      <div class="rv-section__title">Rincian Item ({{ t.length }})</div>
+      <div class="rv-section__title">
+        {{ "reimbursement.viewItemDetails" | translate }} ({{ t.length }})
+      </div>
       <div class="rv-table">
         <table>
           <thead>
             <tr>
-              <th>Tanggal</th>
-              <th>Deskripsi</th>
-              <th class="rv-num">Jumlah</th>
+              <th>{{ "table.date" | translate }}</th>
+              <th>{{ "table.description" | translate }}</th>
+              <th class="rv-num">{{ "table.amount" | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -57,13 +59,17 @@
               </td>
             </tr>
             <tr *ngIf="t.length === 0">
-              <td colspan="3" class="rv-empty">Belum ada item.</td>
+              <td colspan="3" class="rv-empty">
+                {{ "reimbursement.viewNoItems" | translate }}
+              </td>
             </tr>
           </tbody>
           <tfoot *ngIf="t.length > 0">
             <tr>
               <td></td>
-              <td class="rv-total-label">Total</td>
+              <td class="rv-total-label">
+                {{ "reimbursement.viewTotal" | translate }}
+              </td>
               <td class="rv-num rv-total-value">
                 {{ f["total"].value | currency: "Rp " : "symbol" : "1.0-0" }}
               </td>
@@ -75,9 +81,13 @@
 
     <!-- payments -->
     <section class="rv-section">
-      <div class="rv-section__title">Riwayat Pembayaran ({{ p.length }})</div>
+      <div class="rv-section__title">
+        {{ "reimbursement.viewPaymentHistory" | translate }} ({{ p.length }})
+      </div>
 
-      <div class="rv-nopay" *ngIf="p.length === 0">Belum ada pembayaran.</div>
+      <div class="rv-nopay" *ngIf="p.length === 0">
+        {{ "reimbursement.viewNoPayments" | translate }}
+      </div>
 
       <div class="rv-pay" *ngFor="let pay of p.controls">
         <div class="rv-pay__info">
@@ -98,7 +108,12 @@
             [class.rv-badge--ok]="pay.get('isApprove')?.value"
             [class.rv-badge--wait]="!pay.get('isApprove')?.value"
           >
-            {{ pay.get("isApprove")?.value ? "Approved" : "Pending" }}
+            {{
+              (pay.get("isApprove")?.value
+                ? "status.approved"
+                : "status.pending"
+              ) | translate
+            }}
           </span>
         </div>
       </div>
@@ -106,7 +121,9 @@
 
     <!-- bank destination -->
     <section class="rv-section" *ngIf="f['bankAccountNumber'].value">
-      <div class="rv-section__title">Rekening Tujuan</div>
+      <div class="rv-section__title">
+        {{ "reimbursement.viewDestinationAccount" | translate }}
+      </div>
       <div class="rv-bank">
         <div class="rv-bank__text">
           <div class="rv-value">
@@ -119,7 +136,7 @@
         <button
           mat-icon-button
           (click)="copyBankAccountNumber()"
-          aria-label="Salin nomor rekening"
+          [attr.aria-label]="'common.copyAccount' | translate"
         >
           <mat-icon>content_copy</mat-icon>
         </button>
@@ -134,9 +151,13 @@
   <!-- actions -->
   <mat-dialog-actions class="rv-actions">
     <button mat-flat-button class="rv-copy" (click)="copyDocument()">
-      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon>&nbsp;{{
+        "common.copyWhatsapp" | translate
+      }}
     </button>
     <span class="rv-spacer"></span>
-    <button mat-button (click)="close()">Tutup</button>
+    <button mat-button (click)="close()">
+      {{ "reimbursement.viewClose" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

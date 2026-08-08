@@ -16,12 +16,14 @@
       </svg>
     </span>
     <div class="iv-head__text">
-      <h2 class="iv-title">Detail Interpayment</h2>
+      <h2 class="iv-title">{{ "interpaymentView.title" | translate }}</h2>
       <span class="iv-sub" *ngIf="ip"
         >#{{ ip.id }} · {{ formatDate(ip.date) }}</span
       >
     </div>
-    <span class="iv-chip iv-chip--deleted" *ngIf="ip?.isDelete">Deleted</span>
+    <span class="iv-chip iv-chip--deleted" *ngIf="ip?.isDelete">{{
+      "interpaymentView.deleted" | translate
+    }}</span>
   </div>
 
   <mat-dialog-content class="iv-content">
@@ -35,7 +37,9 @@
     <ng-container *ngIf="!isLoading && ip">
       <!-- amount hero -->
       <div class="iv-amount">
-        <span class="iv-amount__label">Jumlah Transfer</span>
+        <span class="iv-amount__label">{{
+          "interpaymentView.transferAmount" | translate
+        }}</span>
         <span class="iv-amount__value">{{
           ip.amount | currency: "Rp " : "symbol" : "1.0-0"
         }}</span>
@@ -43,13 +47,17 @@
 
       <!-- transfer flow -->
       <section class="iv-section">
-        <div class="iv-section__title">Alur Transfer</div>
+        <div class="iv-section__title">
+          {{ "interpaymentView.transferFlow" | translate }}
+        </div>
 
         <div class="iv-flow">
           <div class="iv-node">
             <span class="iv-node__dot iv-node__dot--out"></span>
             <div class="iv-node__text">
-              <span class="iv-node__label">Dari</span>
+              <span class="iv-node__label">{{
+                "interpaymentView.from" | translate
+              }}</span>
               <span class="iv-node__bank">{{ ip.originBankName || "—" }}</span>
               <span class="iv-node__acct">
                 {{ ip.originBankAccountName || "—" }} ·
@@ -65,7 +73,9 @@
           <div class="iv-node">
             <span class="iv-node__dot iv-node__dot--in"></span>
             <div class="iv-node__text">
-              <span class="iv-node__label">Ke</span>
+              <span class="iv-node__label">{{
+                "interpaymentView.to" | translate
+              }}</span>
               <span class="iv-node__bank">{{
                 ip.destinationBankName || "—"
               }}</span>
@@ -80,10 +90,14 @@
 
       <!-- detail -->
       <section class="iv-section">
-        <div class="iv-section__title">Detail</div>
+        <div class="iv-section__title">
+          {{ "interpaymentView.detail" | translate }}
+        </div>
         <div class="iv-grid">
           <div class="iv-field">
-            <span class="iv-label">Tanggal transaksi</span>
+            <span class="iv-label">{{
+              "interpaymentView.transactionDate" | translate
+            }}</span>
             <span class="iv-value">{{ formatDate(ip.date) }}</span>
           </div>
           <div class="iv-field">
@@ -91,7 +105,9 @@
             <span class="iv-value">#{{ ip.id }}</span>
           </div>
           <div class="iv-field iv-field--wide">
-            <span class="iv-label">Deskripsi</span>
+            <span class="iv-label">{{
+              "interpaymentView.description" | translate
+            }}</span>
             <span class="iv-value">{{ ip.description || "—" }}</span>
           </div>
         </div>
@@ -99,7 +115,9 @@
 
       <!-- audit trail -->
       <section class="iv-section">
-        <div class="iv-section__title">Audit Trail</div>
+        <div class="iv-section__title">
+          {{ "interpaymentView.auditTrail" | translate }}
+        </div>
 
         <div class="iv-audit">
           <div class="iv-audit__row">
@@ -108,7 +126,8 @@
             </span>
             <div class="iv-audit__text">
               <span class="iv-audit__action"
-                >Dibuat oleh {{ ip.createdByName || "—" }}</span
+                >{{ "interpaymentView.createdBy" | translate }}
+                {{ ip.createdByName || "—" }}</span
               >
               <span class="iv-audit__meta">
                 {{ formatDateTime(ip.createdAt) }}
@@ -144,9 +163,13 @@
       (click)="copyDocument()"
       [disabled]="isLoading || !ip"
     >
-      <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
+      <mat-icon>content_copy</mat-icon>&nbsp;{{
+        "common.copyWhatsapp" | translate
+      }}
     </button>
     <span class="iv-spacer"></span>
-    <button mat-button (click)="close()">Tutup</button>
+    <button mat-button (click)="close()">
+      {{ "common.close" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

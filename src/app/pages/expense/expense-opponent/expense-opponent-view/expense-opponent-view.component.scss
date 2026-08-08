@@ -1,0 +1,187 @@
+.eov {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  max-width: 92vw;
+  box-sizing: border-box;
+  color: var(--ink, #16181d);
+}
+.eov *,
+.eov *::before,
+.eov *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- header ---------- */
+.eov-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.eov-head__icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.eov-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.eov-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #6b7280);
+}
+.eov-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- content ---------- */
+.eov-content {
+  padding: 1.5rem !important;
+  background: var(--surface, #ffffff);
+  min-width: 340px;
+}
+
+.eov-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.eov-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--line, #e6e9ee);
+
+  &--wide {
+    grid-column: 1 / -1;
+  }
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7280);
+  }
+  &__value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    word-break: break-word;
+  }
+}
+
+/* ---------- description ---------- */
+.eov-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7280);
+  }
+  &__text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink, #16181d);
+
+    &--empty {
+      color: var(--faint, #9aa0ab);
+      font-style: italic;
+    }
+  }
+}
+
+/* ---------- footer ---------- */
+.eov-foot {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  gap: 0.5rem;
+}
+
+.eov-close {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+.eov-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eov-grid {
+    grid-template-columns: 1fr;
+  }
+}

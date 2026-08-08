@@ -3,6 +3,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 interface MasterNavItem {
   name: string;
@@ -14,7 +15,7 @@ interface MasterNavItem {
 @Component({
   selector: 'app-master',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
   animations: [
@@ -30,6 +31,8 @@ interface MasterNavItem {
   ],
 })
 export class MasterComponent {
+  constructor(private translate: TranslateService) {}
+
   navItems: MasterNavItem[] = [
     {
       name: 'Equipment',
@@ -50,10 +53,22 @@ export class MasterComponent {
       description: 'Lawan transaksi biaya',
     },
     {
-      name: 'Bank',
-      route: 'Bank',
-      icon: 'account_balance',
-      description: 'Rekening bank',
+      name: 'Supplier',
+      route: 'Supplier',
+      icon: 'local_shipping',
+      description: 'Data pemasok',
+    },
+    {
+      name: 'Client',
+      route: 'Client',
+      icon: 'handshake',
+      description: 'Data klien',
+    },
+    {
+      name: 'Employee',
+      route: 'Employee',
+      icon: 'badge',
+      description: 'Data karyawan',
     },
   ];
 

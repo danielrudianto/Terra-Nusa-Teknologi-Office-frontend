@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
@@ -54,6 +55,7 @@ Chart.register(...registerables);
   selector: 'app-purchase-report-project-report',
   standalone: true,
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,

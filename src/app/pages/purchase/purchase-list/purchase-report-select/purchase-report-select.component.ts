@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -14,7 +15,13 @@ import { MatSelectModule } from '@angular/material/select';
   templateUrl: './purchase-report-select.component.html',
   styleUrls: ['./purchase-report-select.component.scss'],
   standalone: true,
-  imports: [MatDialogModule, MatSelectModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    TranslatePipe,
+    MatDialogModule,
+    MatSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
 })
 export class PurchaseReportSelectComponent {
   formGroup: FormGroup = new FormGroup({

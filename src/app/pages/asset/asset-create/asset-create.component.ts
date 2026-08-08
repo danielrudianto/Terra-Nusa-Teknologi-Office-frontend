@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-asset-create',
@@ -23,6 +24,7 @@ import { MatDialogModule } from '@angular/material/dialog';
   templateUrl: './asset-create.component.html',
   styleUrl: './asset-create.component.scss',
   imports: [
+    TranslatePipe,
     CommonModule,
     MatButtonModule,
     MatSnackBarModule,

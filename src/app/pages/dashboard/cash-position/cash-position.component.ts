@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -24,7 +25,7 @@ interface CashPositionResponse {
   templateUrl: './cash-position.component.html',
   styleUrls: ['./cash-position.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [TranslatePipe, CommonModule],
 })
 export class CashPositionComponent implements OnInit {
   accounts: CashAccount[] = [];

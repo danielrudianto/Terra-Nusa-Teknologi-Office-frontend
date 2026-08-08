@@ -1,0 +1,114 @@
+<div class="eoc">
+  <div class="eoc-head" mat-dialog-title>
+    <span class="eoc-badge">
+      <mat-icon>edit</mat-icon>
+    </span>
+    <div class="eoc-head__text">
+      <h2 class="eoc-title">
+        {{ "expenseOpponentForm.editTitle" | translate }}
+      </h2>
+      <span class="eoc-sub">{{
+        "expenseOpponentForm.editSubtitle" | translate
+      }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="eoc-content">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{ "expenseOpponentForm.name" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          [placeholder]="'expenseOpponentForm.namePlaceholder' | translate"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{ "expenseOpponentForm.type" | translate }}</mat-label>
+        <mat-select
+          formControlName="type"
+          [placeholder]="'expenseOpponentForm.typePlaceholder' | translate"
+        >
+          <mat-option [value]="'individual'">{{
+            "expenseOpponentForm.typeIndividual" | translate
+          }}</mat-option>
+          <mat-option [value]="'company'">{{
+            "expenseOpponentForm.typeCompany" | translate
+          }}</mat-option>
+          <mat-option [value]="'government'">{{
+            "expenseOpponentForm.typeGovernment" | translate
+          }}</mat-option>
+          <mat-option [value]="'other'">{{
+            "expenseOpponentForm.typeOther" | translate
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{
+          "expenseOpponentForm.description" | translate
+        }}</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          [placeholder]="
+            'expenseOpponentForm.descriptionPlaceholder' | translate
+          "
+          rows="3"
+          style="resize: none"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="eoc-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{
+            "expenseOpponentForm.paymentNumber" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="paymentNumber"
+            [placeholder]="
+              'expenseOpponentForm.paymentNumberPlaceholder' | translate
+            "
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "expenseOpponentForm.npwp" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="npwp"
+            [placeholder]="'expenseOpponentForm.npwpPlaceholder' | translate"
+          />
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="eoc-actions">
+      <button
+        type="button"
+        mat-stroked-button
+        mat-dialog-close
+        class="eoc-btn eoc-btn--ghost"
+      >
+        {{ "expenseOpponentForm.cancel" | translate }}
+      </button>
+      <button
+        type="submit"
+        mat-flat-button
+        [disabled]="isSubmitting || !formGroup.valid"
+        class="eoc-btn eoc-btn--primary"
+      >
+        <mat-icon *ngIf="!isSubmitting">check</mat-icon>
+        {{
+          isSubmitting
+            ? ("expenseOpponentForm.saving" | translate)
+            : ("expenseOpponentForm.save" | translate)
+        }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

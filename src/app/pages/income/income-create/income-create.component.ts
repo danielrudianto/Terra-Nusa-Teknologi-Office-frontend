@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -29,6 +30,7 @@ import { ApiService } from '../../../services/api.service';
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

@@ -18,11 +18,13 @@ import {
 } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-client-update',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     MatDialogModule,
     MatSnackBarModule,

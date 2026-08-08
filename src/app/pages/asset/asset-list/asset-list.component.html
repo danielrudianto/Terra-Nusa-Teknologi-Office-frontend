@@ -1,19 +1,19 @@
 <div class="asset-list">
   <app-header-title
-    [title]="'Assets'"
-    [description]="'Manage your company assets here'"
-    [actionButtonLabel]="'Create new asset'"
+    [title]="'asset.title' | translate"
+    [description]="'asset.description' | translate"
+    [actionButtonLabel]="'asset.createNew' | translate"
     (onActionButtonClicked)="onAddAsset()"
   ></app-header-title>
 
   <div class="al-toolbar">
     <mat-form-field appearance="outline" class="al-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
         type="text"
-        placeholder="Nama, brand, tipe, atau PO"
+        [placeholder]="'asset.searchPlaceholder' | translate"
         [formControl]="formControl"
       />
     </mat-form-field>
@@ -32,7 +32,7 @@
             (click)="changeSortBy('purchaseDate')"
           >
             <span class="al-th"
-              >Purchase date
+              >{{ "table.purchaseDate" | translate }}
               <mat-icon
                 *ngIf="sortBy == 'purchaseDate' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
@@ -57,7 +57,7 @@
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
             <span class="al-th"
-              >Name
+              >{{ "asset.colName" | translate }}
               <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -79,7 +79,9 @@
 
         <!-- Description -->
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "asset.colDescription" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="al-muted">{{ element.description || "—" }}</span>
           </td>
@@ -87,7 +89,9 @@
 
         <!-- Brand -->
         <ng-container matColumnDef="brand">
-          <th mat-header-cell *matHeaderCellDef>Brand</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "asset.colBrand" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="al-muted">{{ element.brand || "—" }}</span>
           </td>
@@ -95,7 +99,9 @@
 
         <!-- Type -->
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "asset.colType" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="al-tag" *ngIf="element.type">{{ element.type }}</span>
             <span class="al-muted" *ngIf="!element.type">—</span>
@@ -110,7 +116,7 @@
             (click)="changeSortBy('purchaseOrderName')"
           >
             <span class="al-th"
-              >Purchase order
+              >{{ "asset.colPurchaseOrder" | translate }}
               <mat-icon
                 *ngIf="
                   sortBy == 'purchaseOrderName' && sortByDirection == 'asc'
@@ -155,7 +161,7 @@
             (click)="changeSortBy('value')"
           >
             <span class="al-th al-th--right"
-              >Value
+              >{{ "asset.colValue" | translate }}
               <mat-icon *ngIf="sortBy == 'value' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -190,8 +196,13 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onViewAsset(element)">
+                <mat-icon>visibility</mat-icon
+                ><span>{{ "assetView.title" | translate }}</span>
+              </button>
               <button mat-menu-item (click)="onEditAsset(element)">
-                <mat-icon>edit</mat-icon><span>Edit asset</span>
+                <mat-icon>edit</mat-icon
+                ><span>{{ "asset.menuEdit" | translate }}</span>
               </button>
               <button
                 mat-menu-item
@@ -199,7 +210,7 @@
                 (click)="openPurchase(element.purchaseOrderName)"
               >
                 <mat-icon>receipt_long</mat-icon
-                ><span>Lihat purchase order</span>
+                ><span>{{ "asset.menuViewPO" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -209,12 +220,17 @@
           mat-header-row
           *matHeaderRowDef="displayedColumns; sticky: true"
         ></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="clickable-row"
+          (click)="onViewAsset(row)"
+        ></tr>
         <tr class="mat-row al-norow" *matNoDataRow>
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="al-empty">
               <mat-icon>inventory_2</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

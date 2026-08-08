@@ -1,0 +1,66 @@
+<div class="mev">
+  <h2 mat-dialog-title class="mev-head">
+    <span class="mev-head__icon"
+      ><mat-icon>precision_manufacturing</mat-icon></span
+    >
+    <span class="mev-head__text">
+      <span class="mev-title">{{
+        "masterEquipmentView.title" | translate
+      }}</span>
+      <span class="mev-name">{{ equipment.name || "—" }}</span>
+    </span>
+  </h2>
+
+  <mat-dialog-content class="mev-content">
+    <div class="mev-grid">
+      <div class="mev-field">
+        <span class="mev-field__label">{{
+          "masterEquipmentView.category" | translate
+        }}</span>
+        <span class="mev-field__value">{{ equipment.category || "—" }}</span>
+      </div>
+
+      <div class="mev-field">
+        <span class="mev-field__label">{{
+          "masterEquipmentView.capacity" | translate
+        }}</span>
+        <span class="mev-field__value">{{ equipment.capacity || "—" }}</span>
+      </div>
+
+      <div class="mev-field">
+        <span class="mev-field__label">{{
+          "masterEquipmentView.brand" | translate
+        }}</span>
+        <span class="mev-field__value">{{ equipment.brand || "—" }}</span>
+      </div>
+
+      <div class="mev-field">
+        <span class="mev-field__label">{{
+          "masterEquipmentView.unit" | translate
+        }}</span>
+        <span class="mev-field__value">/ {{ equipment.unit || "hari" }}</span>
+      </div>
+    </div>
+
+    <div class="mev-desc">
+      <span class="mev-desc__label">{{
+        "masterEquipmentView.description" | translate
+      }}</span>
+      <p class="mev-desc__text" *ngIf="equipment.description">
+        {{ equipment.description }}
+      </p>
+      <p
+        class="mev-desc__text mev-desc__text--empty"
+        *ngIf="!equipment.description"
+      >
+        {{ "masterEquipmentView.noDescription" | translate }}
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="mev-foot">
+    <button type="button" class="mev-close" (click)="onClose()">
+      {{ "masterEquipmentView.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

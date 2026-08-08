@@ -1,4 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   Component,
   EventEmitter,
@@ -21,7 +22,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   selector: 'app-calendar-table',
   providers: [DecimalPipe],
   imports: [
-    MatTooltipModule,CommonModule, MatIconModule, ShortCurrencyPipe, MatButtonModule],
+    TranslatePipe,
+    MatTooltipModule,
+    CommonModule,
+    MatIconModule,
+    ShortCurrencyPipe,
+    MatButtonModule,
+  ],
   templateUrl: './calendar-table.component.html',
   styleUrl: './calendar-table.component.scss',
   standalone: true,

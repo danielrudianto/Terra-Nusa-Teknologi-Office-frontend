@@ -1,17 +1,25 @@
 <div class="income-list">
   <app-header-title
-    [title]="'Other income'"
-    [description]="'Manage your other income data here'"
-    [actionButtonLabel]="'Create new income data'"
+    [title]="'income.title' | translate"
+    [description]="'income.description' | translate"
+    [actionButtonLabel]="'income.createNew' | translate"
     (onActionButtonClicked)="createNewIncome()"
   />
 
   <div class="il-toolbar">
     <mat-form-field appearance="outline" class="il-range">
-      <mat-label>Rentang tanggal</mat-label>
+      <mat-label>{{ "income.dateRange" | translate }}</mat-label>
       <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Start date" />
-        <input matEndDate formControlName="end" placeholder="End date" />
+        <input
+          matStartDate
+          formControlName="start"
+          [placeholder]="'interpayment.startDate' | translate"
+        />
+        <input
+          matEndDate
+          formControlName="end"
+          [placeholder]="'interpayment.endDate' | translate"
+        />
       </mat-date-range-input>
       <mat-datepicker-toggle
         matIconPrefix
@@ -22,10 +30,10 @@
 
     <mat-form-field appearance="outline" class="il-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
-        placeholder="Cari deskripsi, opponent, atau invoice"
+        [placeholder]="'income.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
     </mat-form-field>
@@ -48,7 +56,7 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">
             <span class="il-th"
-              >Date
+              >{{ "table.date" | translate }}
               <mat-icon *ngIf="sortBy == 'date' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -69,7 +77,9 @@
 
         <!-- Description -->
         <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "salesInvoice.colDescription" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
             <span class="il-secondary">{{ purchase.description || "—" }}</span>
           </td>
@@ -83,7 +93,7 @@
             (click)="changeSortBy('opponent')"
           >
             <span class="il-th"
-              >Opponent
+              >{{ "table.opponent" | translate }}
               <mat-icon *ngIf="sortBy == 'opponent' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -117,7 +127,7 @@
             (click)="changeSortBy('amount')"
           >
             <span class="il-th il-th--right"
-              >Amount
+              >{{ "table.amount" | translate }}
               <mat-icon *ngIf="sortBy == 'amount' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -139,14 +149,26 @@
 
         <!-- Expense type -->
         <ng-container matColumnDef="expenseType">
-          <th mat-header-cell *matHeaderCellDef>Income type</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.incomeType" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
             <span class="il-tag" [ngSwitch]="purchase.incomeType">
-              <span *ngSwitchCase="'7.1'">Interest</span>
-              <span *ngSwitchCase="'7.2'">Royalty</span>
-              <span *ngSwitchCase="'7.3'">Dividend</span>
-              <span *ngSwitchCase="'7.4'">Rounding up</span>
-              <span *ngSwitchCase="'7.5'">Other</span>
+              <span *ngSwitchCase="'7.1'">{{
+                "income.typeInterest" | translate
+              }}</span>
+              <span *ngSwitchCase="'7.2'">{{
+                "income.typeRoyalty" | translate
+              }}</span>
+              <span *ngSwitchCase="'7.3'">{{
+                "income.typeDividend" | translate
+              }}</span>
+              <span *ngSwitchCase="'7.4'">{{
+                "income.typeRoundingUp" | translate
+              }}</span>
+              <span *ngSwitchCase="'7.5'">{{
+                "income.typeOther" | translate
+              }}</span>
               <span *ngSwitchDefault>—</span>
             </span>
           </td>
@@ -154,10 +176,13 @@
 
         <!-- Status -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.status" | translate }}
+          </th>
           <td mat-cell *matCellDef="let purchase">
             <span class="il-chip il-chip--paid"
-              ><mat-icon>check_circle</mat-icon>Paid</span
+              ><mat-icon>check_circle</mat-icon
+              >{{ "status.paid" | translate }}</span
             >
           </td>
         </ng-container>
@@ -180,10 +205,12 @@
             </button>
             <mat-menu #rowMenu="matMenu">
               <button mat-menu-item (click)="viewIncome(purchase.id)">
-                <mat-icon>view_comfy_alt</mat-icon><span>View income data</span>
+                <mat-icon>view_comfy_alt</mat-icon
+                ><span>{{ "income.menuView" | translate }}</span>
               </button>
               <button mat-menu-item (click)="deleteIncome(purchase.id)">
-                <mat-icon>delete</mat-icon><span>Delete income data</span>
+                <mat-icon>delete</mat-icon
+                ><span>{{ "income.menuDelete" | translate }}</span>
               </button>
             </mat-menu>
           </td>
@@ -202,7 +229,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="il-empty">
               <mat-icon>payments</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noData" | translate }}</span>
             </div>
           </td>
         </tr>

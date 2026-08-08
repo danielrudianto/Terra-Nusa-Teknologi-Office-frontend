@@ -1,21 +1,21 @@
 <div class="poc">
   <app-header-title
-    title="Purchase Order — Kode C"
-    description="Pembelian Bahan Bakar"
+    [title]="'poForm.headerTitleC' | translate"
+    [description]="'poForm.headerDescC' | translate"
   />
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Informasi PO</div>
+      <div class="poc-section__title">{{ "poForm.infoTitle" | translate }}</div>
       <div class="poc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal</mat-label>
+          <mat-label>{{ "poForm.date" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poForm.datePlaceholder' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -25,13 +25,13 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
+          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
           <input
             matInput
             formControlName="projectName"
             maxlength="5"
             (keyup)="toUpperCase()"
-            placeholder="Ex. MICZ"
+            [placeholder]="'poForm.projectCodePlaceholder' | translate"
           />
           <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
@@ -40,26 +40,26 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="poc-span2">
-          <mat-label>Supplier</mat-label>
+          <mat-label>{{ "poForm.supplier" | translate }}</mat-label>
           <input
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih supplier"
+            [placeholder]="'poForm.supplierPlaceholder' | translate"
           />
           <button
             mat-icon-button
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih supplier"
+            [attr.aria-label]="'poForm.selectSupplier' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="poc-span2">
-          <mat-label>Alamat Supplier</mat-label>
+          <mat-label>{{ "poForm.supplierAddress" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="supplierAddress"
@@ -78,17 +78,14 @@
           Daftar Barang
         </div>
         <button type="button" class="poc-add" (click)="openItemSelector()">
-          <mat-icon>add</mat-icon> Tambah barang
+          <mat-icon>add</mat-icon> {{ "poForm.addItemBtn" | translate }}
         </button>
       </div>
 
       @if (t.controls.length === 0) {
         <div class="poc-empty">
           <mat-icon>inventory_2</mat-icon>
-          <span
-            >Belum ada barang. Klik "Tambah barang" untuk memilih dari
-            katalog.</span
-          >
+          <span>{{ "poForm.noItems" | translate }}</span>
         </div>
       } @else {
         <div class="poc-itemlist">
@@ -113,7 +110,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeAt(i)"
-                  aria-label="Hapus barang"
+                  [attr.aria-label]="'poForm.removeItem' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -121,7 +118,7 @@
 
               <div class="poc-itemcard__inputs">
                 <mat-form-field appearance="outline">
-                  <mat-label>Qty</mat-label>
+                  <mat-label>{{ "poForm.qty" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="quantity"
@@ -131,7 +128,7 @@
                   />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Satuan</mat-label>
+                  <mat-label>{{ "poForm.unit" | translate }}</mat-label>
                   <mat-select formControlName="unit">
                     <mat-option *ngFor="let u of units" [value]="u">{{
                       u
@@ -139,7 +136,7 @@
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Harga satuan</mat-label>
+                  <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="price"
@@ -150,11 +147,11 @@
                   />
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="poc-itemremarks">
-                  <mat-label>Remarks</mat-label>
+                  <mat-label>{{ "poForm.remarks" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="remarks"
-                    placeholder="Catatan (opsional)"
+                    [placeholder]="'poForm.remarksPlaceholder' | translate"
                   />
                 </mat-form-field>
               </div>
@@ -164,68 +161,88 @@
       }
 
       <div class="poc-items__foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary"
-          >Termasuk PPN 11%</mat-slide-toggle
-        >
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
         <div class="poc-summary">
           <div class="poc-summary__row">
-            <span>Subtotal (DPP)</span
+            <span>{{ "poForm.subtotal" | translate }}</span
             ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
           </div>
           <div class="poc-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>{{ "poForm.ppn" | translate }}</span
+            ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
 
           <!-- fuel-specific tax inputs -->
           <div class="poc-taxcol">
             <mat-form-field appearance="outline" class="poc-taxfield">
-              <mat-label>PPh 22</mat-label>
-              <input matInput formControlName="pph22" thousandSeparator=" " mask="separator.0" prefix="Rp. " placeholder="0" />
+              <mat-label>{{ "poForm.pph22" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="pph22"
+                thousandSeparator=" "
+                mask="separator.0"
+                prefix="Rp. "
+                placeholder="0"
+              />
               <mat-hint>Nominal, ditambahkan ke total (khusus BBM)</mat-hint>
             </mat-form-field>
             <mat-form-field appearance="outline" class="poc-taxfield">
-              <mat-label>PBBKB</mat-label>
-              <input matInput formControlName="pbbkbPercent" mask="separator.2" suffix=" %" placeholder="0" />
-              <mat-hint>% dari DPP = Rp {{ pbbkbAmount | number: "1.0-0" }}</mat-hint>
+              <mat-label>{{ "poForm.pbbkb" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="pbbkbPercent"
+                mask="separator.2"
+                suffix=" %"
+                placeholder="0"
+              />
+              <mat-hint
+                >% dari DPP = Rp {{ pbbkbAmount | number: "1.0-0" }}</mat-hint
+              >
             </mat-form-field>
           </div>
 
           <div class="poc-summary__row" *ngIf="pbbkbAmount > 0">
-            <span>PBBKB</span><span>+ Rp {{ pbbkbAmount | number: "1.0-0" }}</span>
+            <span>PBBKB</span
+            ><span>+ Rp {{ pbbkbAmount | number: "1.0-0" }}</span>
           </div>
           <div class="poc-summary__row" *ngIf="pph22Amount > 0">
-            <span>PPh 22</span><span>+ Rp {{ pph22Amount | number: "1.0-0" }}</span>
+            <span>PPh 22</span
+            ><span>+ Rp {{ pph22Amount | number: "1.0-0" }}</span>
           </div>
 
           <div class="poc-summary__row poc-summary__row--total">
-            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <span>{{ "poForm.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
           </div>
         </div>
       </div>
 
       <div class="poc-note">
         <mat-icon>info</mat-icon>
-        <span
-          >Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib
-          melampirkan faktur pajak saat penagihan.</span
-        >
+        <span>{{ "poForm.ppnHint" | translate }}</span>
       </div>
     </div>
 
     <!-- ===== 3. Pengiriman ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Pengiriman</div>
+      <div class="poc-section__title">
+        {{ "poForm.deliveryTitle" | translate }}
+      </div>
       <div class="poc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Metode Pengiriman</mat-label>
+          <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
           <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
-            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+            <mat-option [value]="0">{{
+              "poForm.franco" | translate
+            }}</mat-option>
+            <mat-option [value]="1">{{ "poForm.loco" | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="poc-span2">
-          <mat-label>Alamat Pengiriman / Pengambilan</mat-label>
+          <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="deliveryAddress"
@@ -236,40 +253,54 @@
       </div>
       <div class="poc-note">
         <mat-icon>info</mat-icon>
-        <span
-          >Bila <b>Franco</b> dipilih, alamat di atas adalah alamat
-          pengiriman.</span
-        >
+        <span [innerHTML]="'poForm.francoHint' | translate"></span>
       </div>
     </div>
 
     <!-- ===== 4. Pembayaran ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Pembayaran</div>
+      <div class="poc-section__title">
+        {{ "poForm.paymentTitle" | translate }}
+      </div>
       <div class="poc-grid">
         <mat-form-field appearance="outline" class="poc-span2">
-          <mat-label>Termin Pembayaran</mat-label>
-          <mat-select formControlName="paymentTerm" (selectionChange)="onPaymentTermChange()">
-            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
-            <mat-option value="COD">Cash on delivery</mat-option>
-            <mat-option value="CBD">Cash before delivery</mat-option>
-            <mat-option value="PPD">Prepaid</mat-option>
-            <mat-option value="CR">Credit</mat-option>
-            <mat-option value="CRD">Credit with prepaid</mat-option>
+          <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+          <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Jangka Kredit</mat-label>
+          <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <mat-hint *ngIf="!creditEnabled">Tidak berlaku untuk termin ini</mat-hint>
+          <mat-hint *ngIf="!creditEnabled">{{
+            "poForm.termNotApplicable" | translate
+          }}</mat-hint>
           <span matSuffix>&nbsp;hari</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Prepaid</mat-label>
+          <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <mat-hint *ngIf="!prepaidEnabled">Tidak berlaku untuk termin ini</mat-hint>
+          <mat-hint *ngIf="!prepaidEnabled">{{
+            "poForm.termNotApplicable" | translate
+          }}</mat-hint>
           <span matSuffix>&nbsp;%</span>
         </mat-form-field>
       </div>
@@ -277,54 +308,56 @@
 
     <!-- ===== 5. Kontak PIC ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Kontak Penanggung Jawab</div>
+      <div class="poc-section__title">{{ "poForm.picTitle" | translate }}</div>
       <div class="poc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>PIC Supplier</mat-label>
+          <mat-label>{{ "poForm.supplierPIC" | translate }}</mat-label>
           <input
             matInput
             formControlName="supplierPICName"
-            placeholder="Nama PIC supplier"
+            [placeholder]="'poForm.supplierPICPlaceholder' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>No. HP PIC Supplier</mat-label>
+          <mat-label>{{ "poForm.supplierPICPhone" | translate }}</mat-label>
           <input
             matInput
             formControlName="supplierPICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'poForm.phonePlaceholder' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>PIC Kantor</mat-label>
+          <mat-label>{{ "poForm.officePIC" | translate }}</mat-label>
           <input
             matInput
             formControlName="officePICName"
-            placeholder="Nama PIC kantor"
+            [placeholder]="'poForm.officePICPlaceholder' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>No. HP PIC Kantor</mat-label>
+          <mat-label>{{ "poForm.officePICPhone" | translate }}</mat-label>
           <input
             matInput
             formControlName="officePICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'poForm.phonePlaceholder' | translate"
           />
         </mat-form-field>
       </div>
-
     </div>
 
     <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
     <div class="poc-card">
       <div class="poc-cardhead">
-        <div class="poc-section__title">Poin Tambahan (opsional)</div>
+        <div class="poc-section__title">
+          {{ "poForm.extraClauseTitle" | translate }}
+        </div>
         <button type="button" class="poc-addclause" (click)="addClause()">
-          <mat-icon>add</mat-icon> Tambah poin
+          <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
         </button>
       </div>
       <p class="poc-clausenote">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan menggantikannya.
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+        menggantikannya.
       </p>
       <div formArrayName="additionalClauses">
         @for (c of additionalClauses.controls; track c; let i = $index) {
@@ -334,36 +367,46 @@
               <input
                 matInput
                 [formControlName]="i"
-                placeholder="Contoh: Pengiriman bertahap sesuai jadwal terlampir"
+                [placeholder]="'poForm.clauseExample' | translate"
               />
             </mat-form-field>
-            <button type="button" class="poc-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+            <button
+              type="button"
+              class="poc-clauseremove"
+              (click)="removeClause(i)"
+              [attr.aria-label]="'poForm.removeClause' | translate"
+            >
               <mat-icon>close</mat-icon>
             </button>
           </div>
         }
         @if (additionalClauses.length === 0) {
-          <div class="poc-clauseempty">Belum ada poin tambahan.</div>
+          <div class="poc-clauseempty">
+            {{ "poForm.noExtraClause" | translate }}
+          </div>
         }
       </div>
     </div>
 
     <!-- ===== Poin Perjanjian (otomatis) ===== -->
     <div class="poc-card">
-      <div class="poc-section__title">Poin Perjanjian</div>
+      <div class="poc-section__title">
+        {{ "poForm.clauseTitle" | translate }}
+      </div>
 
       <div class="poc-fuel">
         <mat-checkbox formControlName="fuelReportRequired" color="primary">
           Wajibkan Fuel Analysis Report &amp; Sertifikat Kalibrasi (poin 6-7)
         </mat-checkbox>
         <span class="poc-fuel__hint">
-          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak berlaku).
+          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak
+          berlaku).
         </span>
       </div>
 
       <div class="poc-clausehint">
         <mat-icon>lock</mat-icon>
-        <span>Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks ini yang akan tersimpan.</span>
+        <span>{{ "poForm.clausePreviewFull" | translate }}</span>
       </div>
       <div class="poc-clausebox" [innerHTML]="clausePreview"></div>
 
@@ -374,7 +417,11 @@
           class="poc-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          {{
+            isSubmitting
+              ? ("poForm.saving" | translate)
+              : ("poForm.submitBtn" | translate)
+          }}
         </button>
       </div>
     </div>

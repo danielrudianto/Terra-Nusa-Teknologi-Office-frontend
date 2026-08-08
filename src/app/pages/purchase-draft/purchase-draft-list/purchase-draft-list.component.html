@@ -225,11 +225,12 @@
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="viewPurchase(purchase.id)">
-                <mat-icon>view_array</mat-icon><span>View purchase draft</span>
+                <mat-icon>view_array</mat-icon
+                ><span>{{ "menu.viewDraft" | translate }}</span>
               </button>
               <button mat-menu-item (click)="convertPurchase(purchase.id)">
                 <mat-icon>swap_horiz</mat-icon
-                ><span>Convert purchase draft</span>
+                ><span>{{ "menu.convertDraft" | translate }}</span>
               </button>
             </mat-menu>
           </td>

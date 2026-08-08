@@ -16,6 +16,7 @@ import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -49,6 +50,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
     MatSelectModule,
     MatAutocompleteModule,
     NgxMaskDirective,
+    TranslatePipe,
   ],
 })
 export class ReimbursementCreateComponent {
@@ -81,15 +83,15 @@ export class ReimbursementCreateComponent {
 
   expenseTypes: any[] = [
     {
-      name: 'Transportation',
+      nameKey: 'reimbursementType.transport',
       code: 'A',
     },
     {
-      name: 'Coordination; Consumption; and Accomodation',
+      nameKey: 'reimbursementType.consumption',
       code: 'E',
     },
     {
-      name: 'Document handling & Stationery',
+      nameKey: 'reimbursementType.document',
       code: '5.1.6',
     },
   ];

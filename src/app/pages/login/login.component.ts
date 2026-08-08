@@ -14,6 +14,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslatePipe } from '@ngx-translate/core';
+import { SettingsService } from '../../services/setting.service';
+import {
+  LanguageService,
+  AppLang,
+  LangOption,
+} from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +34,9 @@ import { ApiService } from 'src/app/services/api.service';
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
+    MatMenuModule,
+    MatTooltipModule,
+    TranslatePipe,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -35,7 +47,29 @@ export class LoginComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private router: Router,
+    private settings: SettingsService,
+    private language: LanguageService,
   ) {}
+
+  get isDark(): boolean {
+    return this.settings.theme === 'dark';
+  }
+
+  toggleTheme(): void {
+    this.settings.setTheme(this.isDark ? 'light' : 'dark');
+  }
+
+  get languages(): LangOption[] {
+    return this.language.languages;
+  }
+
+  get currentLang(): LangOption {
+    return this.language.currentOption;
+  }
+
+  setLang(code: AppLang): void {
+    this.language.use(code);
+  }
 
   isSubmitting: boolean = false;
 

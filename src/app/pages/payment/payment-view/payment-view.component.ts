@@ -16,6 +16,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payment-view',
@@ -30,6 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     NgxMaskDirective,
     MatIconModule,
     MatButtonModule,
+    TranslatePipe,
   ],
   templateUrl: './payment-view.component.html',
   styleUrl: './payment-view.component.scss',
@@ -39,7 +41,8 @@ export class PaymentViewComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private translate: TranslateService,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -58,7 +61,6 @@ export class PaymentViewComponent {
   fetchData() {
     this.apiService.get(`outgoing-payments/${this.data.id}`, {}).subscribe({
       next: (data: any) => {
-        console.log(data);
         this.formGroup.patchValue({
           date: this.datePipe.transform(data.payment.date, 'dd MMMM yyyy'),
           amount: data.payment.amount,
@@ -67,14 +69,14 @@ export class PaymentViewComponent {
           bank_name: data.bankAccount.bankName,
           type:
             data.expense != null
-              ? 'Expense'
+              ? this.translate.instant('paymentView.typeExpense')
               : data.reimbursement != null
-              ? 'Reimbursement'
-              : data.purchase != null
-              ? 'Purchase'
-              : data.salarySlip != null
-              ? 'Salary'
-              : 'Loan',
+                ? this.translate.instant('paymentView.typeReimbursement')
+                : data.purchase != null
+                  ? this.translate.instant('paymentView.typePurchase')
+                  : data.salarySlip != null
+                    ? this.translate.instant('paymentView.typeSalary')
+                    : this.translate.instant('paymentView.typeLoan'),
         });
       },
       error: (error) => {
@@ -83,9 +85,5 @@ export class PaymentViewComponent {
         });
       },
     });
-  }
-
-  onSelectClicked() {
-    alert('daniel');
   }
 }

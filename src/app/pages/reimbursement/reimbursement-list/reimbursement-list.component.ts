@@ -1,4 +1,5 @@
 import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { ReimbursementPaymentCreateComponent } from 'src/app/components/payment-create/reimbursement-payment-create/reimbursement-payment-create.component';
@@ -27,6 +28,7 @@ import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 @Component({
   selector: 'app-reimbursement-list',
   imports: [
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -210,6 +212,9 @@ export class ReimbursementListComponent implements OnDestroy {
   openConfirmationDialog(id: number) {
     this.dialog
       .open(ReimbursementConfirmComponent, {
+        width: '640px',
+        maxWidth: '92vw',
+        autoFocus: false,
         data: {
           id: id,
         },

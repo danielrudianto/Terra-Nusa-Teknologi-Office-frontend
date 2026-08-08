@@ -1,0 +1,40 @@
+<div class="uv">
+  <h2 mat-dialog-title class="uv-head">
+    <span class="uv-head__icon"><mat-icon>account_circle</mat-icon></span>
+    <span class="uv-head__text">
+      <span class="uv-title">{{ "user.viewTitle" | translate }}</span>
+      <span class="uv-name">{{ user?.name || "—" }}</span>
+    </span>
+  </h2>
+
+  <mat-dialog-content class="uv-content">
+    <div class="uv-grid">
+      <div class="uv-field uv-field--wide">
+        <span class="uv-field__label">{{ "user.email" | translate }}</span>
+        <span class="uv-field__value">{{ user?.email || "—" }}</span>
+      </div>
+
+      <div class="uv-field">
+        <span class="uv-field__label">{{ "user.authLevel" | translate }}</span>
+        <span class="uv-field__value">{{ authLabel }}</span>
+      </div>
+
+      <div class="uv-field">
+        <span class="uv-field__label">{{ "user.status" | translate }}</span>
+        <span
+          class="uv-chip"
+          [class.uv-chip--active]="user?.isActive"
+          [class.uv-chip--inactive]="!user?.isActive"
+        >
+          {{ (user?.isActive ? "user.active" : "user.inactive") | translate }}
+        </span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="uv-foot">
+    <button type="button" class="uv-close" mat-dialog-close>
+      {{ "user.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

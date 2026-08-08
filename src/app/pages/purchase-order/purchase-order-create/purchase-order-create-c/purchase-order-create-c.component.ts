@@ -22,15 +22,20 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-g',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -111,8 +116,8 @@ export class PurchaseOrderCreateCComponent {
     purchase_order: new FormArray([]),
     additionalClauses: new FormArray([]),
     fuelReportRequired: new FormControl(true),
-    pph22: new FormControl(0),          // PPh 22 — nominal, diisi manual
-    pbbkbPercent: new FormControl(0),   // PBBKB — persen, dikali DPP
+    pph22: new FormControl(0), // PPh 22 — nominal, diisi manual
+    pbbkbPercent: new FormControl(0), // PBBKB — persen, dikali DPP
     includePPN: new FormControl(true),
   });
 
@@ -256,7 +261,9 @@ export class PurchaseOrderCreateCComponent {
     return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
   }
   get prepaidEnabled(): boolean {
-    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
   }
 
   onPaymentTermChange() {

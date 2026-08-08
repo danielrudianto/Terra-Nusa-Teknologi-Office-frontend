@@ -15,12 +15,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-bank-list',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,

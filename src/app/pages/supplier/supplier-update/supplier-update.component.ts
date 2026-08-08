@@ -23,10 +23,12 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-supplier-update',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -164,6 +166,9 @@ export class SupplierUpdateComponent {
       });
   }
 
+  isBlacklist: boolean = false;
+  blacklistReason: string = '';
+
   fetchData() {
     this.apiService.get('suppliers/' + this.data.id, {}).subscribe({
       next: (data: any) => {
@@ -177,6 +182,9 @@ export class SupplierUpdateComponent {
           phoneNumber: data.phoneNumber,
           email: data.email || '',
         });
+
+        this.isBlacklist = !!data.isBlacklist;
+        this.blacklistReason = data.blacklistReason || '';
 
         // Guard against null / empty so .split() can't blow up on older rows
         this.items = (data.itemsSold || '')

@@ -1,0 +1,68 @@
+<div class="uc">
+  <div class="uc-head" mat-dialog-title>
+    <span class="uc-head__icon"><mat-icon>person_add</mat-icon></span>
+    <div class="uc-head__text">
+      <h2 class="uc-title">{{ "user.createTitle" | translate }}</h2>
+      <span class="uc-sub">{{ "user.createSubtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="uc-content">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="uc-form">
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.name" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          [placeholder]="'user.namePlaceholder' | translate"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.email" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          [placeholder]="'user.emailPlaceholder' | translate"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.password" | translate }}</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+          [placeholder]="'user.passwordPlaceholder' | translate"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.authLevel" | translate }}</mat-label>
+        <mat-select formControlName="authenticationLevel">
+          <mat-option *ngFor="let lvl of levels" [value]="lvl">
+            {{ "user.level" + lvl | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="uc-foot">
+    <button type="button" class="uc-cancel" mat-dialog-close>
+      {{ "user.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="uc-submit"
+      (click)="onSubmit()"
+      [disabled]="formGroup.invalid || isSubmitting"
+    >
+      {{
+        isSubmitting
+          ? ("user.creating" | translate)
+          : ("user.create" | translate)
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

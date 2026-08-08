@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,12 +49,60 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     HeaderTitleComponent,
     MatDatepickerModule,
     MatSlideToggleModule,
+    TranslatePipe,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.scss',
 })
 export class ExpenseListComponent {
+  /** map kode expense type -> i18n key. */
+  private static readonly EXPENSE_TYPE_MAP: { [k: string]: string } = {
+    '5.1.1': '5_1_1',
+    '5.1.2': '5_1_2',
+    '5.1.3': '5_1_3',
+    '5.1.4': '5_1_4',
+    '5.1.5': '5_1_5',
+    '5.1.6': '5_1_6',
+    '5.1.7': '5_1_7',
+    '5.1.8': '5_1_8',
+    '5.1.8.1': '5_1_8_1',
+    '5.1.8.2': '5_1_8_2',
+    '5.1.8.3': '5_1_8_3',
+    '5.1.8.4': '5_1_8_4',
+    '5.1.8.5': '5_1_8_5',
+    '5.1.8.6': '5_1_8_6',
+    '5.1.8.7': '5_1_8_7',
+    '5.1.9': '5_1_9',
+    '5.1.10': '5_1_10',
+    '5.1.11': '5_1_11',
+    '5.1.12': '5_1_12',
+    '5.1.13': '5_1_13',
+    '5.1.14': '5_1_14',
+    A: 'A',
+    B: 'B',
+    C: 'C',
+    D: 'D',
+    E: 'E',
+    F: 'F',
+    G: 'G',
+    H1: 'H1',
+    H2: 'H2',
+    '6.3.1': '6_3_1',
+    '6.3.2': '6_3_2',
+    '6.4.1': '6_4_1',
+    '6.4.2': '6_4_2',
+    '6.5.1': '6_5_1',
+    '6.5.2': '6_5_2',
+    '6.5.3': '6_5_3',
+  };
+
+  /** kembalikan i18n key untuk expense type; fallback 'unknown'. */
+  expenseTypeKey(code: string): string {
+    const k = ExpenseListComponent.EXPENSE_TYPE_MAP[code] || 'unknown';
+    return 'expenseType.' + k;
+  }
+
   private destroy$ = new Subject<void>();
 
   constructor(

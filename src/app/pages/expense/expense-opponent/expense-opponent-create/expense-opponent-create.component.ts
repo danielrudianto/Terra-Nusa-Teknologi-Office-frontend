@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-expense-opponent-create',
@@ -23,6 +24,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   styleUrl: './expense-opponent-create.component.scss',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -38,6 +40,8 @@ export class ExpenseOpponentCreateComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
+    private dialogRef: MatDialogRef<ExpenseOpponentCreateComponent>,
+    private translate: TranslateService,
   ) {}
 
   isSubmitting: boolean = false;
@@ -60,10 +64,12 @@ export class ExpenseOpponentCreateComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Data successfully saved', 'Close', {
-            duration: 3000,
-          });
-          this.formGroup.reset();
+          this.snackBar.open(
+            this.translate.instant('opponentForm.saved'),
+            this.translate.instant('opponentForm.close'),
+            { duration: 3000 },
+          );
+          this.dialogRef.close(true);
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {

@@ -1,8 +1,8 @@
 <div class="calendar__container">
   <div class="cal-head">
     <div class="cal-head__title">
-      <h1 class="cal-title">Payment Calendar</h1>
-      <p class="cal-sub">Jadwal & saldo pembayaran per hari</p>
+      <h1 class="cal-title">{{ "calendar.title" | translate }}</h1>
+      <p class="cal-sub">{{ "calendar.subtitle" | translate }}</p>
     </div>
 
     <div class="cal-head__controls">
@@ -21,9 +21,15 @@
         class="cal-viewmode"
         hideSingleSelectionIndicator
       >
-        <mat-button-toggle value="expense">Pengeluaran</mat-button-toggle>
-        <mat-button-toggle value="income">Pemasukan</mat-button-toggle>
-        <mat-button-toggle value="balance">Saldo</mat-button-toggle>
+        <mat-button-toggle value="expense">{{
+          "calendar.expense" | translate
+        }}</mat-button-toggle>
+        <mat-button-toggle value="income">{{
+          "calendar.income" | translate
+        }}</mat-button-toggle>
+        <mat-button-toggle value="balance">{{
+          "calendar.balance" | translate
+        }}</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
   </div>

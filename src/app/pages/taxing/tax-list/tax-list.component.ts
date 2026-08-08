@@ -4,10 +4,12 @@ import { PpnRecapComponent } from '../ppn-recap/ppn-recap.component';
 import { PphRecapComponent } from '../pph-recap/pph-recap.component';
 import { PphSalaryRecapComponent } from '../pph-salary-recap/pph-salary-recap.component';
 import { MonthlyRecapComponent } from 'src/app/pages/taxing/monthly-recap/monthly-recap.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tax-list',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './tax-list.component.html',
   styleUrl: './tax-list.component.scss',
 })
