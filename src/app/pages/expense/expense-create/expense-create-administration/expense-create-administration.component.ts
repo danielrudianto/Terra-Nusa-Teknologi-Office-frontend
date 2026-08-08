@@ -20,11 +20,15 @@ import { ApiService } from '../../../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-expense-create-administration',
   providers: [provideNgxMask()],
   imports: [
+    MatIconModule,
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -47,7 +51,7 @@ export class ExpenseCreateAdministrationComponent {
     @Inject(MAT_DIALOG_DATA) public data: any[],
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialogRef<ExpenseCreateAdministrationComponent>
+    private dialog: MatDialogRef<ExpenseCreateAdministrationComponent>,
   ) {
     this.bankAccounts = data;
   }
@@ -61,12 +65,12 @@ export class ExpenseCreateAdministrationComponent {
     bankAccountID: new FormControl('', Validators.required),
     bankAccountName: new FormControl(
       'PT. Alpha Konstruksi Nusantara',
-      Validators.required
+      Validators.required,
     ),
     bankAccountNumber: new FormControl('00000000', Validators.required),
     bankName: new FormControl(
       'PT. Bank Rakyat Indonesia, Tbk.',
-      Validators.required
+      Validators.required,
     ),
     purchaseType: new FormControl('5.1.9', Validators.required),
     paymentMethod: new FormControl('bank', Validators.required),
@@ -94,7 +98,7 @@ export class ExpenseCreateAdministrationComponent {
     if (this.formGroup.invalid) return;
 
     const bankIndex = this.bankAccounts.findIndex(
-      (x) => x.id == this.formGroup.value.bankAccountID
+      (x) => x.id == this.formGroup.value.bankAccountID,
     );
 
     if (bankIndex != -1) {
@@ -111,7 +115,7 @@ export class ExpenseCreateAdministrationComponent {
         .padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
 
       const dateFormatted = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
+        date.getMonth() + 1,
       ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
       return {
@@ -122,7 +126,7 @@ export class ExpenseCreateAdministrationComponent {
         dueDate: dateFormatted,
         purchaseType: this.formGroup.value.purchaseType,
         description: `Biaya administrasi tanggal ${day} ${this.getMonthName(
-          month
+          month,
         )} ${year}`,
         dpp: this.formGroup.value.dpp,
         pbbkb: 0,

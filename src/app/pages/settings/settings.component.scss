@@ -1,14 +1,6 @@
 /* Palette now references global tokens (var --x) → auto dark-aware.
    Fallbacks keep light mode identical. This is the migration pattern
    for every custom component: swap literal hex for var(--token). */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$border: var(--border, #e3e6eb);
-$brand-soft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -29,20 +21,20 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-title {
   font-size: 1.6rem;
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   letter-spacing: -0.01em;
 }
 .st-sub {
   font-size: 0.9rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
   margin: 0.3rem 0 0;
 }
 
 /* card */
 .st-card {
-  background: $surface;
-  border: 0.5px solid $border;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
   box-shadow: var(--card-shadow);
   padding: 1.5rem;
@@ -61,8 +53,8 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $brand-soft;
-  color: $brand;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
   mat-icon {
     font-size: 22px;
     width: 22px;
@@ -77,12 +69,12 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-card__title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
 }
 .st-card__desc {
   font-size: 0.8rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* profile head */
@@ -93,18 +85,44 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   padding: 0.5rem 0 1.25rem;
 }
 .st-avatar {
-  flex: 0 0 auto;
-  width: 56px;
-  height: 56px;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  background: transparent;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1d5bff, #0b2fa8);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.5rem;
+  cursor: pointer;
+  flex: 0 0 auto;
   display: grid;
   place-items: center;
-  text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.28);
+  transition: 0.18s opacity ease;
+  &:hover {
+    opacity: 0.92;
+  }
+  &:hover .st-avatar__edit {
+    opacity: 1;
+  }
+}
+.st-avatar__edit {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--brand, #154dec);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--surface, #fff);
+  opacity: 0.9;
+  transition: 0.18s opacity ease;
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
 }
 .st-profile__hint {
   display: flex;
@@ -114,11 +132,11 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-profile__name {
   font-size: 1rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .st-profile__role {
   font-size: 0.82rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* form grid */
@@ -156,15 +174,15 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   border: none;
   transition: background 0.15s ease;
   &--primary {
-    background: $brand;
+    background: var(--brand, #154dec);
     color: #fff;
     box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
     &:hover:not(:disabled) {
       background: var(--brand-strong, #0f3fd0);
     }
     &:disabled {
-      background: var(--line, #e6e9ee);
-      color: var(--faint, #9aa0ab);
+      background: #e6e9ee;
+      color: #9aa0ab;
       box-shadow: none;
       cursor: default;
     }
@@ -190,20 +208,20 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 .st-row__label {
   font-size: 0.92rem;
   font-weight: 600;
-  color: $ink;
+  color: var(--ink, #16181d);
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 .st-row__hint {
   font-size: 0.78rem;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
   line-height: 1.4;
   max-width: 42ch;
 }
 .st-divider {
   height: 1px;
-  background: $line;
+  background: var(--line, #eef0f3);
   margin: 1.25rem 0;
 }
 
@@ -231,12 +249,12 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   width: 76px;
   padding: 0.7rem 0.5rem;
   cursor: pointer;
-  background: $surface;
-  border: 1px solid $border;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 12px;
   transition: all 0.14s ease;
   &:hover {
-    border-color: var(--faint, #b9c2d0);
+    border-color: #b9c2d0;
     background: var(--hover, #f9fbff);
   }
   &.is-active {
@@ -247,7 +265,7 @@ $brand-soft: var(--brand-soft, #e7ecfb);
 }
 .st-scale__sample {
   font-weight: 800;
-  color: $ink;
+  color: var(--ink, #16181d);
   line-height: 1;
   &--sm {
     font-size: 0.95rem;
@@ -260,15 +278,15 @@ $brand-soft: var(--brand-soft, #e7ecfb);
   }
 }
 .st-scale__opt.is-active .st-scale__sample {
-  color: $brand;
+  color: var(--brand, #154dec);
 }
 .st-scale__label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 .st-scale__opt.is-active .st-scale__label {
-  color: $brand;
+  color: var(--brand, #154dec);
 }
 
 @media (max-width: 560px) {
@@ -280,4 +298,42 @@ $brand-soft: var(--brand-soft, #e7ecfb);
     align-items: stretch;
     gap: 0.75rem;
   }
+}
+
+/* ===== brand / accent colour picker ===== */
+.st-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.st-brand__opt {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition: 0.18s all ease;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #fff;
+  }
+  &:hover {
+    box-shadow: 0 0 0 3px var(--brand-soft, #cdd7f7);
+  }
+  &.is-active {
+    border-color: var(--ink, #16181d);
+    box-shadow: 0 0 0 2px var(--surface, #fff) inset;
+  }
+}
+
+/* profile fields are read only here — managed from the User page */
+.st-profile-fields {
+  display: block;
 }

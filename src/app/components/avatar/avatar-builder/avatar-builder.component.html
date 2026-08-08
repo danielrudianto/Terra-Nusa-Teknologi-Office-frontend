@@ -1,0 +1,271 @@
+<div class="ab">
+  <div class="ab-head" mat-dialog-title>
+    <span class="ab-head__icon"
+      ><mat-icon>face_retouching_natural</mat-icon></span
+    >
+    <div class="ab-head__text">
+      <h2 class="ab-title">{{ "avatarBuilder.title" | translate }}</h2>
+      <span class="ab-sub">{{ "avatarBuilder.subtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="ab-content">
+    <!-- live preview -->
+    <div class="ab-preview">
+      <app-avatar [config]="draft" [size]="132"></app-avatar>
+      <div class="ab-preview__actions">
+        <button type="button" class="ab-chip" (click)="randomise()">
+          <mat-icon>casino</mat-icon>
+          {{ "avatarBuilder.randomise" | translate }}
+        </button>
+        <button type="button" class="ab-chip" (click)="reset()">
+          <mat-icon>restart_alt</mat-icon>
+          {{ "avatarBuilder.reset" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- tabs -->
+    <div class="ab-tabs">
+      <button
+        type="button"
+        *ngFor="let tab of tabs"
+        class="ab-tab"
+        [class.is-active]="activeTab === tab.key"
+        [matTooltip]="tab.labelKey | translate"
+        (click)="activeTab = tab.key"
+      >
+        <mat-icon>{{ tab.icon }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- options -->
+    <div class="ab-panel">
+      <!-- FACE -->
+      <ng-container *ngIf="activeTab === 'face'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.shape" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.faces"
+            class="ab-opt"
+            [class.is-active]="isActive('faceID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ faceID: o.id })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ faceID: o.id })"
+            ></span>
+          </button>
+        </div>
+
+        <span class="ab-panel__label">{{
+          "avatarBuilder.skinTone" | translate
+        }}</span>
+        <div class="ab-swatches">
+          <button
+            type="button"
+            *ngFor="let c of options.skinTones"
+            class="ab-swatch"
+            [class.is-active]="isActive('skinTone', c.id)"
+            [style.background]="c.color"
+            [matTooltip]="c.label"
+            (click)="set({ skinTone: c.id })"
+          >
+            <mat-icon *ngIf="isActive('skinTone', c.id)">check</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- HAIR -->
+      <ng-container *ngIf="activeTab === 'hair'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.style" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.hairs"
+            class="ab-opt"
+            [class.is-active]="isActive('hairID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ hairID: o.id })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ hairID: o.id })"
+            ></span>
+          </button>
+        </div>
+
+        <span class="ab-panel__label">{{
+          "avatarBuilder.colour" | translate
+        }}</span>
+        <div class="ab-swatches">
+          <button
+            type="button"
+            *ngFor="let c of options.hairColors"
+            class="ab-swatch"
+            [class.is-active]="isActive('hairColor', c.id)"
+            [style.background]="c.color"
+            [matTooltip]="c.label"
+            (click)="set({ hairColor: c.id })"
+          >
+            <mat-icon *ngIf="isActive('hairColor', c.id)">check</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- EYES -->
+      <ng-container *ngIf="activeTab === 'eyes'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.style" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.eyes"
+            class="ab-opt"
+            [class.is-active]="isActive('eyesID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ eyesID: o.id })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ eyesID: o.id })"
+            ></span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- MOUTH -->
+      <ng-container *ngIf="activeTab === 'mouth'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.style" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.mouths"
+            class="ab-opt"
+            [class.is-active]="isActive('mouthID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ mouthID: o.id })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ mouthID: o.id })"
+            ></span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- TOP -->
+      <ng-container *ngIf="activeTab === 'top'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.style" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.tops"
+            class="ab-opt"
+            [class.is-active]="isActive('topID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ topID: o.id })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ topID: o.id })"
+            ></span>
+          </button>
+        </div>
+
+        <span class="ab-panel__label">{{
+          "avatarBuilder.colour" | translate
+        }}</span>
+        <div class="ab-swatches">
+          <button
+            type="button"
+            *ngFor="let c of options.topColors"
+            class="ab-swatch"
+            [class.is-active]="isActive('topColor', c.id)"
+            [style.background]="c.color"
+            [matTooltip]="c.label"
+            (click)="set({ topColor: c.id })"
+          >
+            <mat-icon *ngIf="isActive('topColor', c.id)">check</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- ACCESSORY -->
+      <ng-container *ngIf="activeTab === 'accessory'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.style" | translate
+        }}</span>
+        <div class="ab-grid">
+          <button
+            type="button"
+            *ngFor="let o of options.accessories"
+            class="ab-opt"
+            [class.is-active]="isActive('accessoryID', o.id)"
+            [matTooltip]="o.label"
+            (click)="set({ accessoryID: o.id || null })"
+          >
+            <span
+              class="ab-opt__svg"
+              [innerHTML]="optionPreview({ accessoryID: o.id || null })"
+            ></span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- BACKGROUND -->
+      <ng-container *ngIf="activeTab === 'background'">
+        <span class="ab-panel__label">{{
+          "avatarBuilder.colour" | translate
+        }}</span>
+        <div class="ab-swatches">
+          <button
+            type="button"
+            *ngFor="let c of options.backgroundColors"
+            class="ab-swatch"
+            [class.is-active]="isActive('backgroundColor', c.id)"
+            [style.background]="c.color"
+            [matTooltip]="c.label"
+            (click)="set({ backgroundColor: c.id })"
+          >
+            <mat-icon *ngIf="isActive('backgroundColor', c.id)">check</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="ab-foot">
+    <button
+      type="button"
+      class="ab-cancel"
+      mat-dialog-close
+      [disabled]="isSaving"
+    >
+      {{ "avatarBuilder.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="ab-save"
+      (click)="save()"
+      [disabled]="isSaving"
+    >
+      {{
+        isSaving
+          ? ("avatarBuilder.saving" | translate)
+          : ("avatarBuilder.save" | translate)
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

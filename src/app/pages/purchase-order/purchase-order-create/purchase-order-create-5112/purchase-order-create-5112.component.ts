@@ -28,11 +28,13 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-5112',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -204,7 +206,9 @@ export class PurchaseOrderCreate5112Component {
     return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
   }
   get prepaidEnabled(): boolean {
-    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
   }
 
   onPaymentTermChange() {
@@ -320,7 +324,10 @@ export class PurchaseOrderCreate5112Component {
           (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
           0,
         )
-      : this.t.value.reduce((acc: any, x: any) => acc + x.price * x.quantity, 0);
+      : this.t.value.reduce(
+          (acc: any, x: any) => acc + x.price * x.quantity,
+          0,
+        );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -351,7 +358,8 @@ export class PurchaseOrderCreate5112Component {
         supplierPICPhoneNumber: v.supplierPICPhoneNumber,
         officePICName: v.officePICName,
         officePICPhoneNumber: v.officePICPhoneNumber,
-        notes: this.clausePreview,
+        // Poin perjanjian dirakit ulang dari templateVersion + data,
+        // tidak disimpan sebagai teks.
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),

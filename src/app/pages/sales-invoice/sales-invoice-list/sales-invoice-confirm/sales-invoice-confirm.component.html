@@ -138,6 +138,56 @@
           </div>
         </section>
 
+        <!-- data siap salin untuk faktur pajak -->
+        <section class="cf-section">
+          <div class="cf-section__title">Data untuk Faktur Pajak</div>
+          <div class="cf-copylist">
+            <button
+              type="button"
+              class="cf-copy"
+              (click)="copy(formGroup.get('clientNPWP')?.value, 'NPWP')"
+              [disabled]="!formGroup.get('clientNPWP')?.value"
+            >
+              <span class="cf-copy__text">
+                <span class="cf-copy__label">NPWP Klien</span>
+                <span class="cf-copy__value">{{
+                  formGroup.get("clientNPWP")?.value || "—"
+                }}</span>
+              </span>
+              <mat-icon>content_copy</mat-icon>
+            </button>
+
+            <button
+              type="button"
+              class="cf-copy"
+              (click)="copy(dppPlain, 'DPP')"
+            >
+              <span class="cf-copy__text">
+                <span class="cf-copy__label">DPP</span>
+                <span class="cf-copy__value">{{ dppPlain }}</span>
+              </span>
+              <mat-icon>content_copy</mat-icon>
+            </button>
+
+            <button
+              type="button"
+              class="cf-copy"
+              (click)="
+                copy(formGroup.get('invoiceName')?.value, 'Nomor invoice')
+              "
+              [disabled]="!formGroup.get('invoiceName')?.value"
+            >
+              <span class="cf-copy__text">
+                <span class="cf-copy__label">Nomor Invoice</span>
+                <span class="cf-copy__value">{{
+                  formGroup.get("invoiceName")?.value || "—"
+                }}</span>
+              </span>
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </section>
+
         <!-- the one thing you actually input -->
         <section class="cf-highlight">
           <div class="cf-highlight__head">

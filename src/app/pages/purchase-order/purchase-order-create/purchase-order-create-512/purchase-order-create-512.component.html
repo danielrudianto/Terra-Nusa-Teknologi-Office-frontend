@@ -1,7 +1,7 @@
 <div class="po512">
   <app-header-title
-    title="Purchase Order — Kode 5.1.2"
-    description="Asset maintenance"
+    [title]="'poForm.title512' | translate"
+    [description]="'poForm.desc512' | translate"
   />
 
   @if (mode) {
@@ -26,7 +26,7 @@
 
         <div class="po512-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Tanggal PO</mat-label>
+            <mat-label>{{ "poForm.date" | translate }}</mat-label>
             <input
               matInput
               formControlName="date"
@@ -41,7 +41,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Kode Project</mat-label>
+            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
             <input
               matInput
               formControlName="projectName"
@@ -144,7 +144,9 @@
                 <div class="po512-line__grid">
                   @if (!isGoods) {
                     <mat-form-field appearance="outline" class="po512-span3">
-                      <mat-label>Uraian pekerjaan</mat-label>
+                      <mat-label>{{
+                        "poForm.workDescription" | translate
+                      }}</mat-label>
                       <input
                         matInput
                         formControlName="task"
@@ -155,7 +157,9 @@
                   }
 
                   <mat-form-field appearance="outline" class="po512-span3">
-                    <mat-label>Aset yang dirawat</mat-label>
+                    <mat-label>{{
+                      "poForm.maintainedAsset" | translate
+                    }}</mat-label>
                     <input
                       matInput
                       formControlName="asset"
@@ -164,7 +168,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Volume</mat-label>
+                    <mat-label>{{ "poForm.volume" | translate }}</mat-label>
                     <input
                       matInput
                       formControlName="quantity"
@@ -175,7 +179,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Satuan</mat-label>
+                    <mat-label>{{ "poForm.unit" | translate }}</mat-label>
                     @if (isGoods) {
                       <input
                         matInput
@@ -200,7 +204,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Harga satuan</mat-label>
+                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
                     <input
                       matInput
                       formControlName="price"
@@ -215,7 +219,7 @@
                     appearance="outline"
                     class="po512-span3 po512-note"
                   >
-                    <mat-label>Catatan</mat-label>
+                    <mat-label>{{ "poForm.note" | translate }}</mat-label>
                     <textarea
                       matInput
                       formControlName="note"
@@ -260,7 +264,7 @@
         <div class="po512-section__title">Pembayaran</div>
         <div class="po512-grid">
           <mat-form-field appearance="outline" class="po512-span2">
-            <mat-label>Termin Pembayaran</mat-label>
+            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
             <input
               matInput
               formControlName="paymentTerm"
@@ -268,13 +272,13 @@
             />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Jangka Kredit</mat-label>
+            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
             <input matInput formControlName="creditTerm" /><span matSuffix
               >&nbsp;hari</span
             >
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Prepaid</mat-label>
+            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
             <input
               matInput
               formControlName="prepaidTerm"
@@ -293,14 +297,14 @@
           </div>
           <div class="po512-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Termin pengiriman</mat-label>
+              <mat-label>{{ "poForm.deliveryTerm" | translate }}</mat-label>
               <mat-select formControlName="deliveryMethod">
                 <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
                 <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Alamat pengiriman / pengambilan</mat-label>
+              <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="deliveryAddress"
@@ -308,11 +312,13 @@
               />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Nama PIC Supplier (pengirim)</mat-label>
+              <mat-label>{{
+                "poForm.supplierPICSender" | translate
+              }}</mat-label>
               <input matInput formControlName="supplierPICName" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>No. HP PIC Supplier</mat-label>
+              <mat-label>{{ "poForm.supplierPICPhone" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="supplierPICPhoneNumber"
@@ -320,11 +326,13 @@
               />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Nama PIC Kantor (penerima)</mat-label>
+              <mat-label>{{
+                "poForm.officePICReceiver" | translate
+              }}</mat-label>
               <input matInput formControlName="officePICName" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>No. HP PIC Kantor</mat-label>
+              <mat-label>{{ "poForm.officePICPhone" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="officePICPhoneNumber"

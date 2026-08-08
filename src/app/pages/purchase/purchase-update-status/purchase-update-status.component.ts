@@ -17,24 +17,24 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepperModule } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { ApiService } from 'src/app/services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-update-status',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatStepperModule,
     MatIconModule,
     HeaderTitleComponent,
     MatDatepickerModule,

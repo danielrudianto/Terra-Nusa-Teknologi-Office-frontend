@@ -1,7 +1,7 @@
 <div class="poa">
   <app-header-title
-    title="Purchase Order — Kode A"
-    description="Transportation"
+    [title]="'poForm.titleA' | translate"
+    [description]="'poForm.descA' | translate"
   />
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
@@ -10,7 +10,7 @@
       <div class="poa-section__title">Informasi PO</div>
       <div class="poa-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal PO</mat-label>
+          <mat-label>{{ "poForm.date" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -25,7 +25,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
+          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
           <input
             matInput
             formControlName="projectName"
@@ -39,7 +39,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="poa-span2">
-          <mat-label>Vendor Transportasi</mat-label>
+          <mat-label>{{ "poForm.transportVendor" | translate }}</mat-label>
           <input
             matInput
             formControlName="supplierName"
@@ -58,7 +58,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>PIC asal</mat-label>
+          <mat-label>{{ "poForm.picOrigin" | translate }}</mat-label>
           <input
             matInput
             formControlName="picFromName"
@@ -67,7 +67,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>PIC tujuan</mat-label>
+          <mat-label>{{ "poForm.picDestination" | translate }}</mat-label>
           <input
             matInput
             formControlName="picToName"
@@ -190,7 +190,7 @@
 
               <div class="poa-leg__grid">
                 <mat-form-field appearance="outline">
-                  <mat-label>Tanggal pengiriman</mat-label>
+                  <mat-label>{{ "poForm.deliveryDate" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="deliveryDate"
@@ -205,7 +205,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Nominal</mat-label>
+                  <mat-label>{{ "poForm.amount" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="amount"
@@ -217,7 +217,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="poa-addr">
-                  <mat-label>Dari (asal)</mat-label>
+                  <mat-label>{{ "poForm.fromPlace" | translate }}</mat-label>
                   <textarea
                     matInput
                     formControlName="from"
@@ -229,7 +229,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="poa-addr">
-                  <mat-label>Ke (tujuan)</mat-label>
+                  <mat-label>{{ "poForm.toPlace" | translate }}</mat-label>
                   <textarea
                     matInput
                     formControlName="to"
@@ -295,7 +295,9 @@
                 </div>
                 <div class="poa-leg__grid poa-leg__grid--tail">
                   <mat-form-field appearance="outline">
-                    <mat-label>Nomor polisi</mat-label>
+                    <mat-label>{{
+                      "poForm.plateNumber" | translate
+                    }}</mat-label>
                     <input
                       matInput
                       formControlName="nopol"
@@ -307,7 +309,9 @@
                     appearance="outline"
                     class="poa-span2 poa-addr"
                   >
-                    <mat-label>Nama & NIK supir</mat-label>
+                    <mat-label>{{
+                      "poForm.driverNameNik" | translate
+                    }}</mat-label>
                     <textarea
                       matInput
                       formControlName="driver"
@@ -371,7 +375,7 @@
       <div class="poa-section__title">Pembayaran</div>
       <div class="poa-grid">
         <mat-form-field appearance="outline" class="poa-span2">
-          <mat-label>Termin Pembayaran</mat-label>
+          <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
           <input
             matInput
             formControlName="paymentTerm"
@@ -379,16 +383,26 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Jangka Kredit</mat-label>
+          <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
           <span matSuffix>&nbsp;hari</span>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Prepaid</mat-label>
+          <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
           <span matSuffix>&nbsp;%</span>
         </mat-form-field>
       </div>
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="poa-card">
+      <div class="poa-section__title">Catatan / Poin Perjanjian</div>
+      <app-wysiwyg
+        formControlName="notes"
+        [minHeight]="200"
+        placeholder="Contoh: tanggung jawab kerusakan muatan, biaya tunggu/inap, BBM & tol ditanggung siapa, denda keterlambatan, dll"
+      ></app-wysiwyg>
 
       <div class="poa-actions">
         <span class="poa-spacer"></span>

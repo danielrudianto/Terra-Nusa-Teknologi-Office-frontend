@@ -19,10 +19,13 @@ import { MatInputModule } from '@angular/material/input';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 import { DeleteConfirmationComponent } from '../../../../components/delete-confirmation/delete-confirmation.component';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sales-invoice-confirm',
   imports: [
+    MatIconModule,
     MatDialogModule,
     CommonModule,
     ReactiveFormsModule,
@@ -36,12 +39,13 @@ import { DeleteConfirmationComponent } from '../../../../components/delete-confi
 })
 export class SalesInvoiceConfirmComponent {
   constructor(
+    private clipboard: Clipboard,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     private dialogRef: MatDialogRef<SalesInvoiceConfirmComponent>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   isLoading: boolean = false;
@@ -85,6 +89,7 @@ export class SalesInvoiceConfirmComponent {
             clientID: data.clientID,
             clientName: `${data.client_name}, ${data.client_prefix}`,
             clientAddress: `${data.client_address}, ${data.client_city}, ${data.client_province}`,
+            clientNPWP: data.client_npwp,
             dpp: data.dpp,
             ppn: (data.dpp * data.ppn) / 100,
             pphCode: data.pphCode,
@@ -109,6 +114,19 @@ export class SalesInvoiceConfirmComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  /** Salin nilai ke clipboard — dipakai saat menyiapkan faktur pajak. */
+  copy(value: any, label: string) {
+    const text = value === null || value === undefined ? '' : String(value);
+    if (!text.trim()) return;
+    this.clipboard.copy(text);
+    this.snackBar.open(`${label} disalin`, 'Close', { duration: 2000 });
+  }
+
+  /** DPP tanpa pemisah ribuan, supaya siap ditempel ke aplikasi pajak. */
+  get dppPlain(): string {
+    return String(Math.round(Number(this.formGroup.get('dpp')?.value) || 0));
   }
 
   confirm() {
@@ -139,7 +157,7 @@ export class SalesInvoiceConfirmComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
               error: (error) => {
@@ -177,7 +195,7 @@ export class SalesInvoiceConfirmComponent {
                   'Close',
                   {
                     duration: 3000,
-                  }
+                  },
                 );
               },
               error: (error) => {

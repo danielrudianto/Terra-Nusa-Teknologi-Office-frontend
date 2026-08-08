@@ -21,6 +21,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-loan-payment-create',
@@ -36,7 +38,10 @@ import { MatButtonModule } from '@angular/material/button';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatButtonModule,
+    NgxMaskDirective,
+    TranslatePipe,
   ],
+  providers: [provideNgxMask()],
   templateUrl: './loan-payment-create.component.html',
   styleUrl: './loan-payment-create.component.scss',
 })
@@ -45,7 +50,7 @@ export class LoanPaymentCreateComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private dialog: MatDialogRef<LoanPaymentCreateComponent>,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;
@@ -132,10 +137,9 @@ export class LoanPaymentCreateComponent {
 
     const date = new Date(this.formGroup.value.date);
     const formattedDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    this.isSubmitting = false;
     this.apiService
       .post('outgoing-payments', {
         purchaseID: null,

@@ -30,6 +30,7 @@ import {
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-dialog/purchase-order-512-mode-dialog.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * 5.1.2 Asset maintenance.
@@ -42,6 +43,7 @@ import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-d
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -376,8 +378,9 @@ export class PurchaseOrderCreate512Component {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // locked auto-clause (baku, mode-aware) + poin tambahan user
-        notes: this.clausePreview,
+        // Poin perjanjian TIDAK disimpan sebagai teks. Renderer merakit
+        // ulang dari templateVersion + data di bawah, supaya mengedit PO
+        // tidak menyisakan kalimat lama yang tidak sinkron.
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),

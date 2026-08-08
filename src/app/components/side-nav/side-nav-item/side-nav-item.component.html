@@ -9,7 +9,12 @@
     "
     (click)="onActivate()"
   >
-    <img [src]="iconSource" width="18" height="18" />
+    <!-- Ikon dirender sebagai mask, bukan <img>, supaya warnanya mengikuti
+         currentColor (warna aksen) alih-alih dikunci lewat filter hue. -->
+    <span
+      class="snav-ico"
+      [ngStyle]="{ '--snav-ico': 'url(' + iconSource + ')' }"
+    ></span>
     <span>{{ label }}</span>
   </button>
 

@@ -27,15 +27,18 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 pdfMake.vfs = pdfFonts.vfs;
 
 @Component({
   selector: 'app-sales-invoice-create',
   standalone: true,
+  providers: [provideNgxMask()],
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
   imports: [
+    NgxMaskDirective,
     TranslatePipe,
     RouterModule,
     MatSelectModule,
@@ -102,6 +105,33 @@ export class SalesInvoiceCreateComponent {
     bankAccountName: new FormControl('', Validators.required),
   });
 
+  /**
+   * Nilai form dari <input> selalu string. Tanpa konversi, `dpp + ppnValue`
+   * jadi penggabungan teks ("1000000" + 110000 = "1000000110000") sehingga
+   * total dan payment total ngawur.
+   */
+  private num(group: FormGroup, control: string): number {
+    return Number(group.get(control)?.value) || 0;
+  }
+
+  /** Hitung ulang total & payment total dari nilai form saat ini. */
+  private recalculate(): void {
+    const dpp = this.num(this.valueFormGroup, 'dpp');
+    const ppnValue =
+      (dpp * this.num(this.valueFormGroup, 'ppnPercentage')) / 100;
+    const pphValue =
+      (dpp * this.num(this.valueFormGroup, 'pphPercentage')) / 100;
+    const bpjsValue = this.num(this.valueFormGroup, 'bpjs');
+
+    this.valueFormGroup.patchValue(
+      { ppnValue, pphValue, total: dpp + ppnValue },
+      { emitEvent: false },
+    );
+    this.paymentFormGroup.patchValue({
+      paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
+    });
+  }
+
   ngOnInit(): void {
     this.fetchBankAccounts();
   }
@@ -122,22 +152,21 @@ export class SalesInvoiceCreateComponent {
 
     this.valueFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
-        const ppnPercentage =
-          this.valueFormGroup.controls['ppnPercentage'].value;
-        const pphPercentage =
-          this.valueFormGroup.controls['pphPercentage'].value;
-        const ppnValue = (value * ppnPercentage) / 100;
-        const pphValue = (value * pphPercentage) / 100;
-        const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
+        const dpp = Number(value) || 0;
+        const ppnPercentage = this.num(this.valueFormGroup, 'ppnPercentage');
+        const pphPercentage = this.num(this.valueFormGroup, 'pphPercentage');
+        const ppnValue = (dpp * ppnPercentage) / 100;
+        const pphValue = (dpp * pphPercentage) / 100;
+        const bpjsValue = this.num(this.valueFormGroup, 'bpjs');
 
         this.valueFormGroup.patchValue({
           pphValue: pphValue,
           ppnValue: ppnValue,
-          total: value + ppnValue,
+          total: dpp + ppnValue,
         });
 
         this.paymentFormGroup.patchValue({
-          paymentTotal: value + ppnValue - pphValue - bpjsValue,
+          paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
         });
       }
     });
@@ -145,15 +174,15 @@ export class SalesInvoiceCreateComponent {
     this.valueFormGroup.controls['ppnPercentage'].valueChanges.subscribe(
       (value) => {
         if (value) {
-          const dpp = this.valueFormGroup.controls['dpp'].value;
-          const ppnValue = (dpp * value) / 100;
+          const dpp = this.num(this.valueFormGroup, 'dpp');
+          const ppnValue = (dpp * (Number(value) || 0)) / 100;
           this.valueFormGroup.patchValue({
             ppnValue: ppnValue,
             total: dpp + ppnValue,
           });
 
-          const pphValue = this.valueFormGroup.controls['pphValue'].value;
-          const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
+          const pphValue = this.num(this.valueFormGroup, 'pphValue');
+          const bpjsValue = this.num(this.valueFormGroup, 'bpjs');
 
           this.paymentFormGroup.patchValue({
             paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
@@ -162,20 +191,24 @@ export class SalesInvoiceCreateComponent {
       },
     );
 
+    // BPJS ikut mengurangi payment total, jadi harus memicu hitung ulang juga.
+    this.valueFormGroup.controls['bpjs'].valueChanges.subscribe(() => {
+      this.recalculate();
+    });
+
     this.valueFormGroup.controls['pphPercentage'].valueChanges.subscribe(
       (value) => {
         if (value) {
-          const dpp = this.valueFormGroup.controls['dpp'].value;
-          const ppnPercentage =
-            this.valueFormGroup.controls['ppnPercentage'].value;
+          const dpp = this.num(this.valueFormGroup, 'dpp');
+          const ppnPercentage = this.num(this.valueFormGroup, 'ppnPercentage');
           const ppnValue = (dpp * ppnPercentage) / 100;
-          const pphValue = (dpp * value) / 100;
+          const pphValue = (dpp * (Number(value) || 0)) / 100;
           this.valueFormGroup.patchValue({
             pphValue: pphValue,
             total: dpp + ppnValue,
           });
 
-          const bpjsValue = this.valueFormGroup.controls['bpjs'].value;
+          const bpjsValue = this.num(this.valueFormGroup, 'bpjs');
 
           this.paymentFormGroup.patchValue({
             paymentTotal: dpp + ppnValue - pphValue - bpjsValue,
@@ -210,7 +243,7 @@ export class SalesInvoiceCreateComponent {
             pphTaxObjectName: result.taxObjectName,
             pphPercentage: result.tariff,
             pphValue:
-              (this.valueFormGroup.controls['dpp'].value * result.tariff) / 100,
+              (this.num(this.valueFormGroup, 'dpp') * result.tariff) / 100,
           });
         } else {
           this.valueFormGroup.patchValue({

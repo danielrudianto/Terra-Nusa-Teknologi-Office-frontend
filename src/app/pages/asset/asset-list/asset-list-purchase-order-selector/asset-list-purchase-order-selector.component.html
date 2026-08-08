@@ -1,15 +1,44 @@
-<h1 mat-dialog-title>Purchase by Purchase Order Name</h1>
-<mat-dialog-content>
-  <mat-list>
-    @for (d of data; track data) {
-      <mat-list-item (click)="openData(d.id)">
-        <mat-icon matListItemIcon>folder</mat-icon>
-        <div matListItemTitle>
-          {{ d.supplier_name }}, {{ d.supplier_prefix }}
+<div class="pos">
+  <div class="pos-head" mat-dialog-title>
+    <span class="pos-head__icon"><mat-icon>receipt_long</mat-icon></span>
+    <div class="pos-head__text">
+      <h2 class="pos-title">{{ "poSelector.title" | translate }}</h2>
+      <span class="pos-sub">{{ "poSelector.subtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="pos-content">
+    <div class="pos-list">
+      @for (d of data; track d.id) {
+        <button type="button" class="pos-item" (click)="openData(d.id)">
+          <span class="pos-item__icon"><mat-icon>description</mat-icon></span>
+          <span class="pos-item__text">
+            <span class="pos-item__name"
+              >{{ d.supplier_name
+              }}{{ d.supplier_prefix ? ", " + d.supplier_prefix : "" }}</span
+            >
+            <span class="pos-item__meta">
+              <span class="pos-item__po">{{ d.purchaseOrderName }}</span>
+              <span class="pos-item__dot">•</span>
+              <span class="pos-item__date">{{
+                d.date | date: "dd MMM yyyy"
+              }}</span>
+            </span>
+          </span>
+          <mat-icon class="pos-item__chevron">chevron_right</mat-icon>
+        </button>
+      } @empty {
+        <div class="pos-empty">
+          <mat-icon>inbox</mat-icon>
+          <span>{{ "poSelector.noData" | translate }}</span>
         </div>
-        <div matListItemLine>{{ d.purchaseOrderName }}</div>
-        {{ d.date | date }}
-      </mat-list-item>
-    }
-  </mat-list>
-</mat-dialog-content>
+      }
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="pos-foot">
+    <button type="button" class="pos-close" mat-dialog-close>
+      {{ "poSelector.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

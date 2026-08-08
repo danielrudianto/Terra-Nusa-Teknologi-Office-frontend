@@ -1,6 +1,6 @@
 <div class="po63">
   <app-header-title
-    [title]="'Purchase Order — Kode ' + purchaseType"
+    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
     [description]="typeLabel"
   />
 
@@ -25,7 +25,7 @@
         </div>
         <div class="po63-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Tanggal PO</mat-label>
+            <mat-label>{{ "poForm.date" | translate }}</mat-label>
             <input
               matInput
               formControlName="date"
@@ -40,7 +40,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Kode Project</mat-label>
+            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
             <input
               matInput
               formControlName="projectName"
@@ -54,7 +54,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po63-span2">
-            <mat-label>Vendor</mat-label>
+            <mat-label>{{ "poForm.vendor" | translate }}</mat-label>
             <input
               matInput
               formControlName="supplierName"
@@ -135,7 +135,9 @@
                 <div class="po63-line__grid">
                   @if (!isGoods) {
                     <mat-form-field appearance="outline" class="po63-span3">
-                      <mat-label>Uraian jasa</mat-label>
+                      <mat-label>{{
+                        "poForm.serviceDescription" | translate
+                      }}</mat-label>
                       <input
                         matInput
                         formControlName="task"
@@ -146,7 +148,7 @@
                   }
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Volume</mat-label>
+                    <mat-label>{{ "poForm.volume" | translate }}</mat-label>
                     <input
                       matInput
                       formControlName="quantity"
@@ -157,7 +159,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Satuan</mat-label>
+                    <mat-label>{{ "poForm.unit" | translate }}</mat-label>
                     @if (isGoods) {
                       <input
                         matInput
@@ -182,7 +184,7 @@
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
-                    <mat-label>Harga satuan</mat-label>
+                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
                     <input
                       matInput
                       formControlName="price"
@@ -242,7 +244,7 @@
         <div class="po63-section__title">Pembayaran</div>
         <div class="po63-grid">
           <mat-form-field appearance="outline" class="po63-span2">
-            <mat-label>Termin Pembayaran</mat-label>
+            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
             <input
               matInput
               formControlName="paymentTerm"
@@ -250,13 +252,13 @@
             />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Jangka Kredit</mat-label>
+            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
             <input matInput formControlName="creditTerm" /><span matSuffix
               >&nbsp;hari</span
             >
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Prepaid</mat-label>
+            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
             <input
               matInput
               formControlName="prepaidTerm"

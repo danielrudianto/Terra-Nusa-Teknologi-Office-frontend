@@ -23,11 +23,14 @@
     color 0.15s ease;
   cursor: pointer;
 
-  img {
+  .snav-ico {
     width: 18px;
     height: 18px;
     flex: 0 0 auto;
     opacity: 0.82;
+    background-color: currentColor;
+    -webkit-mask: var(--snav-ico) center / contain no-repeat;
+    mask: var(--snav-ico) center / contain no-repeat;
     transition:
       opacity 0.15s ease,
       filter 0.15s ease;
@@ -41,9 +44,9 @@
 
   /* hover = subtle, clearly different from the active item */
   &:hover:not(.active) {
-    background-color: rgba(21, 77, 236, 0.06);
+    background-color: color-mix(in srgb, var(--brand, #154dec) 6%, transparent);
     color: var(--on-active-button-color);
-    img {
+    .snav-ico {
       opacity: 1;
     }
   }
@@ -57,39 +60,28 @@
       color: var(--on-active-button-color) !important;
     }
 
-    img {
+    .snav-ico {
       opacity: 1;
-      filter: brightness(0) saturate(100%) invert(32%) sepia(100%)
-        saturate(7445%) hue-rotate(230deg) brightness(98%) contrast(89%);
+      /* ikut warna teks aktif; tidak ada lagi filter hue biru tetap */
+      background-color: var(--on-active-button-color);
     }
   }
 }
 
 /* ===== DARK MODE =====
-   Icons are dark <img> glyphs, so recolor them to light for contrast.
-   brightness(0) normalizes any source to black, then invert() lightens it. */
+   Ikon kini memakai mask + currentColor, jadi tidak perlu filter apa pun:
+   warnanya otomatis mengikuti warna teks (dan warna aksen saat aktif). */
 :host-context([data-theme="dark"]) .side-navigation-button__wrapper {
-  img {
-    /* idle → soft light grey */
-    filter: brightness(0) invert(0.78);
+  .snav-ico {
     opacity: 0.9;
   }
 
-  &:hover:not(.active) img {
-    /* hover → pure white */
-    filter: brightness(0) invert(1);
+  &:hover:not(.active) .snav-ico {
     opacity: 1;
   }
 
-  &.active img {
-    /* active → light brand blue to match the pill text */
-    filter: brightness(0) saturate(100%) invert(72%) sepia(38%) saturate(900%)
-      hue-rotate(190deg) brightness(102%) contrast(101%);
+  &.active .snav-ico {
     opacity: 1;
-  }
-
-  &:hover:not(.active) {
-    background-color: rgba(123, 160, 255, 0.12);
   }
 }
 
@@ -121,14 +113,16 @@
 
   &:hover {
     opacity: 1 !important;
-    background: rgba(21, 77, 236, 0.1);
-    color: var(--active-button-color);
+    background: color-mix(in srgb, var(--brand, #154dec) 10%, transparent);
+    /* --active-button-color adalah warna LATAR (tint terang); dipakai
+       sebagai warna teks hasilnya nyaris tak terlihat. */
+    color: var(--on-active-button-color);
   }
 
   /* pinned = always visible + brand */
   &.on {
     opacity: 1;
-    color: var(--active-button-color);
+    color: var(--on-active-button-color);
   }
 }
 
@@ -146,10 +140,10 @@
 /* dark mode */
 :host-context([data-theme="dark"]) .snav-pin {
   &:hover {
-    background: rgba(123, 160, 255, 0.16);
-    color: #9db8ff;
+    background: color-mix(in srgb, var(--brand, #7ba0ff) 16%, transparent);
+    color: var(--brand-strong, #9db8ff);
   }
   &.on {
-    color: #9db8ff;
+    color: var(--brand-strong, #9db8ff);
   }
 }

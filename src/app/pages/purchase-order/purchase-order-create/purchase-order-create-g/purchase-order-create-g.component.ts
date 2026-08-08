@@ -29,6 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 
 @Component({
   selector: 'app-purchase-order-create-g',
@@ -91,6 +92,9 @@ export class PurchaseOrderCreateGComponent {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    // Kota + provinsi supplier: hanya untuk dicetak, tidak dikirim sebagai
+    // kolom PO (backend mengambilnya lagi dari supplierID saat cetak ulang).
+    supplierCity: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -208,7 +212,7 @@ export class PurchaseOrderCreateGComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
+      item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -230,9 +234,7 @@ export class PurchaseOrderCreateGComponent {
       .subscribe((item) => {
         if (!item) return;
         // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
-        );
+        const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
             duration: 2500,
@@ -285,6 +287,9 @@ export class PurchaseOrderCreateGComponent {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            supplierCity: [data.city, data.province]
+              .filter((x: string) => !!x)
+              .join(', '),
           });
         }
       });
@@ -325,15 +330,16 @@ export class PurchaseOrderCreateGComponent {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // locked auto-clause (poin 1-9) + poin tambahan user, sudah jadi HTML
-        notes: this.clausePreview,
+        // Poin perjanjian TIDAK disimpan sebagai teks. Renderer merakit
+        // ulang dari templateVersion + data di bawah, supaya mengedit PO
+        // tidak menyisakan kalimat lama yang tidak sinkron.
         // simpan poin tambahan mentah biar bisa di-render ulang persis
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
+          item_id: x.item_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,
@@ -345,17 +351,56 @@ export class PurchaseOrderCreateGComponent {
     };
   }
 
+  /**
+   * Susun data cetak dari isian form. Klausul TIDAK diambil dari sini —
+   * helper merakitnya sendiri dari templateVersion + clauseContext.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      supplierCity: v.supplierCity,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: x.description || x.sku || '',
+          quantity: Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
       .post('purchase-orders', this.formatData())
       .subscribe({
         next: (res: any) => {
+          const poName = res?.purchase_order_name ?? '';
           this.snackBar.open(
-            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            `Purchase order ${poName} berhasil dibuat`,
             'Close',
             { duration: 3000 },
           );
+
+          // Langsung buka PDF-nya di tab baru supaya bisa dicek/dicetak.
+          // Gagal cetak tidak boleh membatalkan PO yang sudah tersimpan.
+          try {
+            printPurchaseOrderG(this.buildPrintData(poName));
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

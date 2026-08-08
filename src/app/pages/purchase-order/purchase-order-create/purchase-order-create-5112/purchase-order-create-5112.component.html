@@ -1,7 +1,7 @@
 <div class="po5112-wrap">
   <app-header-title
-    title="Buat Purchase Order — Software"
-    subtitle="Langganan, beli putus, maintenance, atau domain"
+    [title]="'poForm.title5112' | translate"
+    [description]="'poForm.desc5112' | translate"
   ></app-header-title>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
@@ -10,29 +10,49 @@
       <div class="po5112-section__title">Informasi Umum</div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal</mat-label>
+          <mat-label>{{ "poForm.dateGeneric" | translate }}</mat-label>
           <input matInput [matDatepicker]="dp" formControlName="date" />
           <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
           <mat-datepicker #dp></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
-          <input matInput formControlName="projectName" placeholder="Cth: PUSAT" />
+          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            placeholder="Cth: PUSAT"
+          />
           <mat-hint>4-5 huruf/angka kapital</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="po5112-span2">
-          <mat-label>Supplier / Vendor</mat-label>
-          <input matInput formControlName="supplierName" readonly (click)="openSupplierSelector()" placeholder="Pilih supplier" />
-          <button matSuffix mat-icon-button type="button" (click)="openSupplierSelector()">
+          <mat-label>{{ "poForm.supplierVendor" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            (click)="openSupplierSelector()"
+            placeholder="Pilih supplier"
+          />
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            (click)="openSupplierSelector()"
+          >
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="po5112-span2">
-          <mat-label>Alamat Supplier</mat-label>
-          <input matInput formControlName="supplierAddress" readonly placeholder="Otomatis dari supplier" />
+          <mat-label>{{ "poForm.supplierAddress" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierAddress"
+            readonly
+            placeholder="Otomatis dari supplier"
+          />
         </mat-form-field>
       </div>
     </div>
@@ -41,32 +61,51 @@
     <div class="po5112-card">
       <div class="po5112-section__title">Tipe Pembelian</div>
       <div class="po5112-typetoggle">
-        <mat-slide-toggle formControlName="isSubscription" (change)="onSubscriptionChange()" color="primary">
-          {{ isSubscription ? "Langganan (subscription)" : "Beli putus (perpetual)" }}
+        <mat-slide-toggle
+          formControlName="isSubscription"
+          (change)="onSubscriptionChange()"
+          color="primary"
+        >
+          {{
+            isSubscription
+              ? "Langganan (subscription)"
+              : "Beli putus (perpetual)"
+          }}
         </mat-slide-toggle>
         <span class="po5112-typehint">
-          {{ isSubscription
-            ? "Berulang per-periode — cocok untuk Google Workspace, M365, domain, maintenance."
-            : "Sekali bayar, lisensi berlaku tanpa batas waktu." }}
+          {{
+            isSubscription
+              ? "Berulang per-periode — cocok untuk Google Workspace, M365, domain, maintenance."
+              : "Sekali bayar, lisensi berlaku tanpa batas waktu."
+          }}
         </span>
       </div>
 
       @if (isSubscription) {
         <div class="po5112-grid po5112-subfields">
           <mat-form-field appearance="outline">
-            <mat-label>Tanggal mulai</mat-label>
-            <input matInput [matDatepicker]="sd" formControlName="subscriptionStartDate" />
+            <mat-label>{{ "poForm.startDate" | translate }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="sd"
+              formControlName="subscriptionStartDate"
+            />
             <mat-datepicker-toggle matSuffix [for]="sd"></mat-datepicker-toggle>
             <mat-datepicker #sd></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Durasi</mat-label>
-            <input matInput type="number" formControlName="subscriptionDuration" min="1" />
+            <mat-label>{{ "poForm.duration" | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="subscriptionDuration"
+              min="1"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Satuan durasi</mat-label>
+            <mat-label>{{ "poForm.durationUnit" | translate }}</mat-label>
             <mat-select formControlName="subscriptionDurationUnit">
               @for (u of durationUnits; track u) {
                 <mat-option [value]="u">{{ u }}</mat-option>
@@ -96,15 +135,24 @@
         @for (row of t.controls; track row; let i = $index) {
           <div class="po5112-itemrow" [formGroupName]="i">
             <mat-form-field appearance="outline" class="po5112-itemdesc">
-              <mat-label>Nama software / item</mat-label>
-              <input matInput formControlName="description" placeholder="Cth: Google Workspace Business Standard" />
+              <mat-label>{{ "poForm.softwareName" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="description"
+                placeholder="Cth: Google Workspace Business Standard"
+              />
             </mat-form-field>
             <mat-form-field appearance="outline" class="po5112-itemqty">
-              <mat-label>Qty</mat-label>
-              <input matInput type="number" formControlName="quantity" min="0.01" />
+              <mat-label>{{ "poForm.qty" | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="quantity"
+                min="0.01"
+              />
             </mat-form-field>
             <mat-form-field appearance="outline" class="po5112-itemunit">
-              <mat-label>Satuan</mat-label>
+              <mat-label>{{ "poForm.unit" | translate }}</mat-label>
               <mat-select formControlName="unit">
                 @for (u of units; track u) {
                   <mat-option [value]="u">{{ u }}</mat-option>
@@ -112,34 +160,62 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="po5112-itemprice">
-              <mat-label>Harga satuan</mat-label>
-              <input matInput formControlName="price" thousandSeparator=" " mask="separator.0" prefix="Rp. " placeholder="0" />
+              <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="price"
+                thousandSeparator=" "
+                mask="separator.0"
+                prefix="Rp. "
+                placeholder="0"
+              />
             </mat-form-field>
-            <button type="button" class="po5112-itemremove" (click)="removeAt(i)" aria-label="Hapus">
+            <button
+              type="button"
+              class="po5112-itemremove"
+              (click)="removeAt(i)"
+              aria-label="Hapus"
+            >
               <mat-icon>close</mat-icon>
             </button>
           </div>
         }
       </div>
 
-      <mat-checkbox formControlName="includePPN" color="primary" class="po5112-ppn">
+      <mat-checkbox
+        formControlName="includePPN"
+        color="primary"
+        class="po5112-ppn"
+      >
         Harga sudah termasuk PPN 11%
       </mat-checkbox>
 
       <div class="po5112-summary">
-        <div class="po5112-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
-        <div class="po5112-summary__row" *ngIf="ppnAmount > 0"><span>PPN 11%</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
-        <div class="po5112-summary__row po5112-summary__total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+        <div class="po5112-summary__row">
+          <span>Subtotal (DPP)</span
+          ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+        </div>
+        <div class="po5112-summary__row" *ngIf="ppnAmount > 0">
+          <span>PPN 11%</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+        </div>
+        <div class="po5112-summary__row po5112-summary__total">
+          <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+        </div>
       </div>
     </div>
 
     <!-- ===== Pembayaran & Penyerahan ===== -->
     <div class="po5112-card">
-      <div class="po5112-section__title">Pembayaran &amp; Penyerahan Lisensi</div>
+      <div class="po5112-section__title">
+        Pembayaran &amp; Penyerahan Lisensi
+      </div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Termin pembayaran</mat-label>
-          <mat-select formControlName="paymentTerm" (selectionChange)="onPaymentTermChange()">
+          <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+          <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
             <mat-option value="CASH">Cash (bayar tunai)</mat-option>
             <mat-option value="COD">Cash on delivery</mat-option>
             <mat-option value="CBD">Cash before delivery</mat-option>
@@ -150,7 +226,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Cara penyerahan lisensi</mat-label>
+          <mat-label>{{ "poForm.licenseDelivery" | translate }}</mat-label>
           <mat-select formControlName="licenseDelivery">
             <mat-option value="account">Aktivasi akun</mat-option>
             <mat-option value="email">Email license key</mat-option>
@@ -160,15 +236,19 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Termin kredit (hari)</mat-label>
+          <mat-label>{{ "poForm.creditTermDays" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <mat-hint *ngIf="!creditEnabled">Tidak berlaku untuk termin ini</mat-hint>
+          <mat-hint *ngIf="!creditEnabled"
+            >Tidak berlaku untuk termin ini</mat-hint
+          >
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Prepaid (%)</mat-label>
+          <mat-label>{{ "poForm.prepaidPercent" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <mat-hint *ngIf="!prepaidEnabled">Tidak berlaku untuk termin ini</mat-hint>
+          <mat-hint *ngIf="!prepaidEnabled"
+            >Tidak berlaku untuk termin ini</mat-hint
+          >
         </mat-form-field>
       </div>
     </div>
@@ -178,20 +258,28 @@
       <div class="po5112-section__title">Kontak Penanggung Jawab</div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Nama PIC Supplier</mat-label>
+          <mat-label>{{ "poForm.supplierPICName" | translate }}</mat-label>
           <input matInput formControlName="supplierPICName" />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>No. HP PIC Supplier</mat-label>
-          <input matInput formControlName="supplierPICPhoneNumber" placeholder="08xxxxxxxxxx" />
+          <mat-label>{{ "poForm.supplierPICPhone" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierPICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Nama PIC Kantor</mat-label>
+          <mat-label>{{ "poForm.officePICName" | translate }}</mat-label>
           <input matInput formControlName="officePICName" />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>No. HP PIC Kantor</mat-label>
-          <input matInput formControlName="officePICPhoneNumber" placeholder="08xxxxxxxxxx" />
+          <mat-label>{{ "poForm.officePICPhone" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="officePICPhoneNumber"
+            placeholder="08xxxxxxxxxx"
+          />
         </mat-form-field>
       </div>
     </div>
@@ -205,16 +293,26 @@
         </button>
       </div>
       <p class="po5112-clausenote">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan menggantikannya.
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+        menggantikannya.
       </p>
       <div formArrayName="additionalClauses">
         @for (c of additionalClauses.controls; track c; let i = $index) {
           <div class="po5112-clauserow">
             <span class="po5112-clausenum">{{ i + 1 }}.</span>
             <mat-form-field appearance="outline" class="po5112-clausefield">
-              <input matInput [formControlName]="i" placeholder="Cth: Termasuk pelatihan admin 1 sesi" />
+              <input
+                matInput
+                [formControlName]="i"
+                placeholder="Cth: Termasuk pelatihan admin 1 sesi"
+              />
             </mat-form-field>
-            <button type="button" class="po5112-clauseremove" (click)="removeClause(i)" aria-label="Hapus">
+            <button
+              type="button"
+              class="po5112-clauseremove"
+              (click)="removeClause(i)"
+              aria-label="Hapus"
+            >
               <mat-icon>close</mat-icon>
             </button>
           </div>
@@ -230,13 +328,21 @@
       <div class="po5112-section__title">Poin Perjanjian</div>
       <div class="po5112-clausehint">
         <mat-icon>lock</mat-icon>
-        <span>Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang tersimpan.</span>
+        <span
+          >Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa
+          langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang
+          tersimpan.</span
+        >
       </div>
       <div class="po5112-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="po5112-actions">
         <span class="po5112-spacer"></span>
-        <button type="submit" class="po5112-submit" [disabled]="formGroup.invalid || isSubmitting">
+        <button
+          type="submit"
+          class="po5112-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
           {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
         </button>
       </div>

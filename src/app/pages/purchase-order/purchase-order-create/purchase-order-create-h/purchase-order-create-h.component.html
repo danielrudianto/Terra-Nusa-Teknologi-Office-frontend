@@ -1,16 +1,31 @@
 <div class="poh">
-  <app-header-title title="Purchase Order — Kode H" description="Subkontraktor" />
+  <app-header-title
+    [title]="'poForm.titleH' | translate"
+    [description]="'poForm.descH' | translate"
+  />
 
   <!-- ===== STEP 0: pilih jenis subkontraktor ===== -->
   @if (!subType) {
     <div class="poh-card poh-choose">
       <div class="poh-choose__title">Jenis subkontraktor</div>
-      <div class="poh-choose__sub">Pilih dulu supaya form-nya menyesuaikan.</div>
+      <div class="poh-choose__sub">
+        Pilih dulu supaya form-nya menyesuaikan.
+      </div>
 
       <div class="poh-choose__grid">
         <button type="button" class="poh-pick" (click)="chooseSubType('H1')">
           <span class="poh-pick__ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h2M9 13h2M9 17h2M13 9h2M13 13h2M13 17h2"/></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+              <path d="M9 9h2M9 13h2M9 17h2M13 9h2M13 13h2M13 17h2" />
+            </svg>
           </span>
           <span class="poh-pick__code">H1</span>
           <span class="poh-pick__name">Badan usaha</span>
@@ -19,188 +34,320 @@
 
         <button type="button" class="poh-pick" (click)="chooseSubType('H2')">
           <span class="poh-pick__ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
           </span>
           <span class="poh-pick__code">H2</span>
           <span class="poh-pick__name">Non-badan usaha</span>
-          <span class="poh-pick__desc">Mandor / perorangan. Wajib data pekerja.</span>
+          <span class="poh-pick__desc"
+            >Mandor / perorangan. Wajib data pekerja.</span
+          >
         </button>
       </div>
     </div>
   } @else {
-
-  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-    <!-- ===== Informasi PO ===== -->
-    <div class="poh-card">
-      <div class="poh-cardhead">
-        <div class="poh-section__title poh-section__title--flush">Informasi PO</div>
-        <span class="poh-typechip">
-          <strong>{{ subType }}</strong> · {{ subTypeLabel }}
-          <button type="button" class="poh-typechip__btn" (click)="resetSubType()">Ganti</button>
-        </span>
-      </div>
-
-      <div class="poh-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Tanggal PO</mat-label>
-          <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Tanggal PO" />
-          <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
-          <input matInput formControlName="projectName" maxlength="5" (keyup)="toUpperCase()" placeholder="Ex. MICZ" />
-          <mat-error *ngIf="f['projectName'].hasError('pattern')">Harus 4–5 karakter kapital.</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="poh-span2">
-          <mat-label>{{ isEntity ? "Subkontraktor (badan usaha)" : "Mandor / perorangan" }}</mat-label>
-          <input matInput formControlName="supplierName" readonly placeholder="Pilih vendor" />
-          <button mat-icon-button matPrefix type="button" (click)="openSupplierSelector()" aria-label="Pilih vendor">
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- ===== Lingkup Pekerjaan ===== -->
-    <div class="poh-card">
-      <div class="poh-cardhead">
-        <div class="poh-section__title poh-section__title--flush">Lingkup Pekerjaan</div>
-        <button type="button" class="poh-add" (click)="addScope()">
-          <mat-icon>add</mat-icon> Tambah pekerjaan
-        </button>
-      </div>
-
-      @if (t.controls.length === 0) {
-        <div class="poh-empty">
-          <mat-icon>construction</mat-icon>
-          <span>Belum ada pekerjaan. Klik "Tambah pekerjaan".</span>
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <!-- ===== Informasi PO ===== -->
+      <div class="poh-card">
+        <div class="poh-cardhead">
+          <div class="poh-section__title poh-section__title--flush">
+            Informasi PO
+          </div>
+          <span class="poh-typechip">
+            <strong>{{ subType }}</strong> · {{ subTypeLabel }}
+            <button
+              type="button"
+              class="poh-typechip__btn"
+              (click)="resetSubType()"
+            >
+              Ganti
+            </button>
+          </span>
         </div>
-      } @else {
-        <div class="poh-list">
-          @for (item of t.controls; track item; let i = $index) {
-            <div class="poh-scope" [formGroup]="getFormGroupAt(i)">
-              <div class="poh-scope__head">
-                <span class="poh-scope__no">#{{ i + 1 }}</span>
-                <span class="poh-scope__label">{{ getFormGroupAt(i).value.task || "Pekerjaan belum diisi" }}</span>
-                <span class="poh-scope__amt">Rp {{ lineTotal(i) | number: "1.0-0" }}</span>
-                <button mat-icon-button type="button" (click)="removeScopeAt(i)" aria-label="Hapus"><mat-icon>close</mat-icon></button>
+
+        <div class="poh-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.date" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="date"
+              [matDatepicker]="picker"
+              placeholder="Tanggal PO"
+            />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="projectName"
+              maxlength="5"
+              (keyup)="toUpperCase()"
+              placeholder="Ex. MICZ"
+            />
+            <mat-error *ngIf="f['projectName'].hasError('pattern')"
+              >Harus 4–5 karakter kapital.</mat-error
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>{{
+              isEntity ? "Subkontraktor (badan usaha)" : "Mandor / perorangan"
+            }}</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              readonly
+              placeholder="Pilih vendor"
+            />
+            <button
+              mat-icon-button
+              matPrefix
+              type="button"
+              (click)="openSupplierSelector()"
+              aria-label="Pilih vendor"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ===== Lingkup Pekerjaan ===== -->
+      <div class="poh-card">
+        <div class="poh-cardhead">
+          <div class="poh-section__title poh-section__title--flush">
+            Lingkup Pekerjaan
+          </div>
+          <button type="button" class="poh-add" (click)="addScope()">
+            <mat-icon>add</mat-icon> Tambah pekerjaan
+          </button>
+        </div>
+
+        @if (t.controls.length === 0) {
+          <div class="poh-empty">
+            <mat-icon>construction</mat-icon>
+            <span>Belum ada pekerjaan. Klik "Tambah pekerjaan".</span>
+          </div>
+        } @else {
+          <div class="poh-list">
+            @for (item of t.controls; track item; let i = $index) {
+              <div class="poh-scope" [formGroup]="getFormGroupAt(i)">
+                <div class="poh-scope__head">
+                  <span class="poh-scope__no">#{{ i + 1 }}</span>
+                  <span class="poh-scope__label">{{
+                    getFormGroupAt(i).value.task || "Pekerjaan belum diisi"
+                  }}</span>
+                  <span class="poh-scope__amt"
+                    >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                  >
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeScopeAt(i)"
+                    aria-label="Hapus"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="poh-scope__grid">
+                  <mat-form-field appearance="outline" class="poh-span3">
+                    <mat-label>{{
+                      "poForm.workDescription" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="task"
+                      maxlength="100"
+                      placeholder="Ex. Pekerjaan bore pile D-400, Pemasangan bekisting"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.volume" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="quantity"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.unit" | translate }}</mat-label>
+                    <mat-select
+                      formControlName="unit"
+                      (selectionChange)="onUnitChange(i)"
+                    >
+                      <mat-option *ngFor="let u of units" [value]="u">{{
+                        u
+                      }}</mat-option>
+                    </mat-select>
+                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
+                      >Lump sum — volume dikunci 1</mat-hint
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="price"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      prefix="Rp. "
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+                </div>
               </div>
+            }
+          </div>
+        }
 
-              <div class="poh-scope__grid">
-                <mat-form-field appearance="outline" class="poh-span3">
-                  <mat-label>Uraian pekerjaan</mat-label>
-                  <input matInput formControlName="task" maxlength="100" placeholder="Ex. Pekerjaan bore pile D-400, Pemasangan bekisting" />
-                </mat-form-field>
+        <div class="poh-foot">
+          <mat-slide-toggle formControlName="includePPN" color="primary"
+            >Termasuk PPN 11%</mat-slide-toggle
+          >
+          <div class="poh-summary">
+            <div class="poh-summary__row">
+              <span>Subtotal (DPP)</span
+              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            </div>
+            <div class="poh-summary__row">
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            </div>
+            <div class="poh-summary__row poh-summary__row--total">
+              <span>Total</span
+              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Volume</mat-label>
-                  <input matInput formControlName="quantity" thousandSeparator=" " mask="separator.2" placeholder="0" />
-                </mat-form-field>
+      <!-- ===== Data Pekerja (H2 saja) ===== -->
+      @if (!isEntity) {
+        <div class="poh-card">
+          <div class="poh-cardhead">
+            <div class="poh-section__title poh-section__title--flush">
+              Data Pekerja
+            </div>
+            <button type="button" class="poh-add" (click)="addWorker()">
+              <mat-icon>person_add</mat-icon> Tambah pekerja
+            </button>
+          </div>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Satuan</mat-label>
-                  <mat-select formControlName="unit" (selectionChange)="onUnitChange(i)">
-                    <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
-                  </mat-select>
-                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">Lump sum — volume dikunci 1</mat-hint>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Harga satuan</mat-label>
-                  <input matInput formControlName="price" thousandSeparator=" " mask="separator.2" prefix="Rp. " placeholder="0" />
-                </mat-form-field>
-              </div>
+          @if (w.controls.length === 0) {
+            <div class="poh-empty">
+              <mat-icon>groups</mat-icon>
+              <span>Belum ada pekerja. Klik "Tambah pekerja".</span>
+            </div>
+          } @else {
+            <div class="poh-workers">
+              @for (worker of w.controls; track worker; let i = $index) {
+                <div class="poh-worker" [formGroup]="getWorkerAt(i)">
+                  <span class="poh-worker__no">{{ i + 1 }}</span>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.workerName" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="name"
+                      placeholder="Nama lengkap"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.nikKtp" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="idCard"
+                      placeholder="16 digit NIK"
+                      maxlength="16"
+                    />
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeWorkerAt(i)"
+                    aria-label="Hapus pekerja"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
             </div>
           }
         </div>
       }
 
-      <div class="poh-foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary">Termasuk PPN 11%</mat-slide-toggle>
-        <div class="poh-summary">
-          <div class="poh-summary__row"><span>Subtotal (DPP)</span><span>Rp {{ subTotal | number: "1.0-0" }}</span></div>
-          <div class="poh-summary__row"><span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span></div>
-          <div class="poh-summary__row poh-summary__row--total"><span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span></div>
+      <!-- ===== Pembayaran ===== -->
+      <div class="poh-card">
+        <div class="poh-section__title">Pembayaran</div>
+        <div class="poh-grid">
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="paymentTerm"
+              placeholder="Ex. Progres 30-60-100 / Tempo 30 hari"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
+            <input matInput formControlName="creditTerm" /><span matSuffix
+              >&nbsp;hari</span
+            >
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="prepaidTerm"
+              [min]="0"
+              [max]="100"
+            /><span matSuffix>&nbsp;%</span>
+          </mat-form-field>
         </div>
       </div>
-    </div>
 
-    <!-- ===== Data Pekerja (H2 saja) ===== -->
-    @if (!isEntity) {
+      <!-- ===== Catatan / Poin Perjanjian ===== -->
       <div class="poh-card">
-        <div class="poh-cardhead">
-          <div class="poh-section__title poh-section__title--flush">Data Pekerja</div>
-          <button type="button" class="poh-add" (click)="addWorker()">
-            <mat-icon>person_add</mat-icon> Tambah pekerja
+        <div class="poh-section__title">Catatan / Poin Perjanjian</div>
+        <app-wysiwyg
+          formControlName="notes"
+          [minHeight]="200"
+          placeholder="Contoh: lingkup detail, mutu pekerjaan, retensi, APD & K3, denda keterlambatan, termin progres, dll"
+        ></app-wysiwyg>
+
+        <div class="poh-actions">
+          <span class="poh-spacer"></span>
+          <button
+            type="submit"
+            class="poh-submit"
+            [disabled]="
+              formGroup.invalid || t.controls.length === 0 || isSubmitting
+            "
+          >
+            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
           </button>
         </div>
-
-        @if (w.controls.length === 0) {
-          <div class="poh-empty">
-            <mat-icon>groups</mat-icon>
-            <span>Belum ada pekerja. Klik "Tambah pekerja".</span>
-          </div>
-        } @else {
-          <div class="poh-workers">
-            @for (worker of w.controls; track worker; let i = $index) {
-              <div class="poh-worker" [formGroup]="getWorkerAt(i)">
-                <span class="poh-worker__no">{{ i + 1 }}</span>
-                <mat-form-field appearance="outline">
-                  <mat-label>Nama pekerja</mat-label>
-                  <input matInput formControlName="name" placeholder="Nama lengkap" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>NIK / No. KTP</mat-label>
-                  <input matInput formControlName="idCard" placeholder="16 digit NIK" maxlength="16" />
-                </mat-form-field>
-                <button mat-icon-button type="button" (click)="removeWorkerAt(i)" aria-label="Hapus pekerja">
-                  <mat-icon>close</mat-icon>
-                </button>
-              </div>
-            }
-          </div>
-        }
       </div>
-    }
-
-    <!-- ===== Pembayaran ===== -->
-    <div class="poh-card">
-      <div class="poh-section__title">Pembayaran</div>
-      <div class="poh-grid">
-        <mat-form-field appearance="outline" class="poh-span2">
-          <mat-label>Termin Pembayaran</mat-label>
-          <input matInput formControlName="paymentTerm" placeholder="Ex. Progres 30-60-100 / Tempo 30 hari" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Jangka Kredit</mat-label>
-          <input matInput formControlName="creditTerm" /><span matSuffix>&nbsp;hari</span>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Prepaid</mat-label>
-          <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" /><span matSuffix>&nbsp;%</span>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- ===== Catatan / Poin Perjanjian ===== -->
-    <div class="poh-card">
-      <div class="poh-section__title">Catatan / Poin Perjanjian</div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: lingkup detail, mutu pekerjaan, retensi, APD & K3, denda keterlambatan, termin progres, dll"
-      ></app-wysiwyg>
-
-      <div class="poh-actions">
-        <span class="poh-spacer"></span>
-        <button type="submit" class="poh-submit" [disabled]="formGroup.invalid || t.controls.length === 0 || isSubmitting">
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
-      </div>
-    </div>
-  </form>
+    </form>
   }
 </div>

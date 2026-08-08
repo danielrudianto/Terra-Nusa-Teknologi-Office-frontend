@@ -1,7 +1,7 @@
 <div class="settings">
   <div class="st-head">
-    <h1 class="st-title">Settings</h1>
-    <p class="st-sub">Atur profil dan tampilan aplikasi</p>
+    <h1 class="st-title">{{ "settings.title" | translate }}</h1>
+    <p class="st-sub">{{ "settings.subtitle" | translate }}</p>
   </div>
 
   <!-- ===== PROFILE ===== -->
@@ -11,63 +11,61 @@
         <mat-icon>person</mat-icon>
       </span>
       <div class="st-card__titles">
-        <h2 class="st-card__title">Profil</h2>
-        <span class="st-card__desc">Informasi akun kamu</span>
+        <h2 class="st-card__title">{{ "settings.profile" | translate }}</h2>
+        <span class="st-card__desc">{{
+          "settings.profileSub" | translate
+        }}</span>
       </div>
     </div>
 
     <div class="st-profile">
-      <div class="st-avatar">{{ initials }}</div>
+      <button
+        type="button"
+        class="st-avatar"
+        (click)="editAvatar()"
+        [matTooltip]="'avatarBuilder.edit' | translate"
+      >
+        <app-avatar
+          [userId]="userId"
+          [name]="profileFormGroup.get('name')?.value"
+          [size]="64"
+        ></app-avatar>
+        <span class="st-avatar__edit"><mat-icon>edit</mat-icon></span>
+      </button>
       <div class="st-profile__hint">
         <span class="st-profile__name">{{
           profileFormGroup.get("name")?.value || "—"
         }}</span>
-        <span class="st-profile__role">{{
-          profileFormGroup.get("position")?.value || "Owner"
-        }}</span>
       </div>
     </div>
 
-    <form [formGroup]="profileFormGroup" (ngSubmit)="onSaveProfile()">
+    <div class="st-profile-fields" [formGroup]="profileFormGroup">
       <div class="st-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Nama</mat-label>
-          <input matInput formControlName="name" placeholder="Nama lengkap" />
+          <mat-label>{{ "settings.name" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            readonly
+            [placeholder]="'settings.namePlaceholder' | translate"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
+          <mat-label>{{ "settings.email" | translate }}</mat-label>
           <input
             matInput
             formControlName="email"
+            readonly
             type="email"
-            placeholder="nama@email.com"
+            [placeholder]="'settings.emailPlaceholder' | translate"
           />
           <mat-error *ngIf="profileFormGroup.get('email')?.hasError('email')"
             >Email tidak valid.</mat-error
           >
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="st-span2">
-          <mat-label>Jabatan</mat-label>
-          <input
-            matInput
-            formControlName="position"
-            placeholder="Ex. Owner / Finance"
-          />
-        </mat-form-field>
       </div>
-
-      <div class="st-actions">
-        <button
-          type="submit"
-          class="st-btn st-btn--primary"
-          [disabled]="profileFormGroup.invalid || isSaving"
-        >
-          {{ isSaving ? "Menyimpan..." : "Simpan profil" }}
-        </button>
-      </div>
-    </form>
+    </div>
   </section>
 
   <!-- ===== APPEARANCE ===== -->
@@ -77,17 +75,17 @@
         <mat-icon>palette</mat-icon>
       </span>
       <div class="st-card__titles">
-        <h2 class="st-card__title">Tampilan</h2>
-        <span class="st-card__desc"
-          >Sesuaikan tampilan sesuai kenyamanan kamu</span
-        >
+        <h2 class="st-card__title">{{ "settings.appearance" | translate }}</h2>
+        <span class="st-card__desc">{{
+          "settings.appearanceSub" | translate
+        }}</span>
       </div>
     </div>
 
     <!-- text size -->
     <div class="st-row st-row--stack">
       <div class="st-row__text">
-        <span class="st-row__label">Ukuran teks</span>
+        <span class="st-row__label">{{ "settings.textSize" | translate }}</span>
         <span class="st-row__hint"
           >Perbesar atau perkecil teks di seluruh aplikasi.</span
         >
@@ -112,10 +110,38 @@
 
     <div class="st-divider"></div>
 
+    <!-- brand / accent colour -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">{{
+          "settings.brandColor" | translate
+        }}</span>
+        <span class="st-row__hint">{{
+          "settings.brandColorHint" | translate
+        }}</span>
+      </div>
+      <div class="st-brand">
+        <button
+          type="button"
+          *ngFor="let c of brandColorKeys"
+          class="st-brand__opt"
+          [class.is-active]="settings.brandColor === c"
+          [style.background]="settings.brandColors[c].base"
+          [attr.aria-label]="settings.brandColors[c].label"
+          [matTooltip]="settings.brandColors[c].label"
+          (click)="selectBrandColor(c)"
+        >
+          <mat-icon *ngIf="settings.brandColor === c">check</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
     <!-- dark mode -->
     <div class="st-row">
       <div class="st-row__text">
-        <span class="st-row__label">Dark mode</span>
+        <span class="st-row__label">{{ "settings.darkMode" | translate }}</span>
         <span class="st-row__hint"
           >Gelapin tampilan. Shell &amp; komponen Material udah ikut; kartu
           custom nyusul bertahap.</span

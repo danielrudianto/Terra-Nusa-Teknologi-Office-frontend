@@ -26,11 +26,13 @@ import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-f',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -143,7 +145,7 @@ export class PurchaseOrderCreateFComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
+      item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -165,9 +167,7 @@ export class PurchaseOrderCreateFComponent {
       .subscribe((item) => {
         if (!item) return;
         // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
-        );
+        const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
             duration: 2500,
@@ -269,7 +269,7 @@ export class PurchaseOrderCreateFComponent {
         steelTestClause: this.hasSteelItem ? this.steelTestClause : null,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
+          item_id: x.item_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,

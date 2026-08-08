@@ -31,6 +31,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   const group = control as FormGroup;
@@ -48,6 +49,7 @@ const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   selector: 'app-salary-slip-create',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     RouterModule,
     CommonModule,
     FormsModule,
@@ -121,7 +123,7 @@ export class SalarySlipCreateComponent {
       this.snackBar.open('No data provided', 'Close', {
         duration: 3000,
       });
-      this.router.navigate(['/Employee']);
+      this.router.navigate(['/Master/Employee']);
     }
 
     // if there is any changes on basic salary, transportation allowance, meal allowance, overtime,

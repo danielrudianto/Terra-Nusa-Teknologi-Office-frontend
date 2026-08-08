@@ -36,7 +36,12 @@
         <path d="m21 21-4.3-4.3" />
       </svg>
       <mat-label>Cari supplier</mat-label>
-      <input matInput [formControl]="searchBar" placeholder="Nama supplier" />
+      <input
+        matInput
+        cdkFocusInitial
+        [formControl]="searchBar"
+        placeholder="Nama supplier"
+      />
     </mat-form-field>
 
     <div class="ss-loading" *ngIf="isLoading">

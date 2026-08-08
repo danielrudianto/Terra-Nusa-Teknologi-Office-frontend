@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import {
-  FormArray, FormBuilder, FormControl, FormGroup, FormsModule,
-  ReactiveFormsModule, Validators,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -21,6 +26,7 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * 6.4.1 Legal Document (Akta, SBU, ...).
@@ -33,10 +39,21 @@ import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label'
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule,
-    MatInputModule, MatDatepickerModule, MatSelectModule, MatIconModule,
-    MatButtonModule, MatSlideToggleModule, TextFieldModule, NgxMaskDirective,
-    HeaderTitleComponent, WysiwygComponent,
+    TranslatePipe,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    TextFieldModule,
+    NgxMaskDirective,
+    HeaderTitleComponent,
+    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-641.component.html',
   styleUrl: './purchase-order-create-641.component.scss',
@@ -80,7 +97,9 @@ export class PurchaseOrderCreate641Component {
   /** what actually gets written to the `task` column */
   resolvedType(i: number): string {
     const v = this.getFormGroupAt(i).value;
-    return v.documentType === 'Lainnya' ? v.customType || 'Lainnya' : v.documentType || '';
+    return v.documentType === 'Lainnya'
+      ? v.customType || 'Lainnya'
+      : v.documentType || '';
   }
 
   formGroup: FormGroup = new FormGroup({
@@ -95,7 +114,11 @@ export class PurchaseOrderCreate641Component {
     ]),
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
-    prepaidTerm: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(100)]),
+    prepaidTerm: new FormControl(0, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(100),
+    ]),
     notes: new FormControl(''),
     lines: new FormArray([]),
     includePPN: new FormControl(true),
@@ -105,10 +128,18 @@ export class PurchaseOrderCreate641Component {
     if (this.t.length === 0) this.addLine();
   }
 
-  get f() { return this.formGroup.controls; }
-  get t() { return this.formGroup.get('lines') as FormArray; }
-  getFormGroupAt(i: number) { return this.t.at(i) as FormGroup; }
-  removeAt(i: number) { this.t.removeAt(i); }
+  get f() {
+    return this.formGroup.controls;
+  }
+  get t() {
+    return this.formGroup.get('lines') as FormArray;
+  }
+  getFormGroupAt(i: number) {
+    return this.t.at(i) as FormGroup;
+  }
+  removeAt(i: number) {
+    this.t.removeAt(i);
+  }
 
   private buildLine(): FormGroup {
     return this.formBuilder.group({
@@ -134,7 +165,9 @@ export class PurchaseOrderCreate641Component {
     }
     custom?.updateValueAndValidity();
   }
-  addLine() { this.t.push(this.buildLine()); }
+  addLine() {
+    this.t.push(this.buildLine());
+  }
 
   /** LS (lump sum) locks the volume to 1 */
   onUnitChange(i: number) {
@@ -156,26 +189,38 @@ export class PurchaseOrderCreate641Component {
     return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
   }
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value ? this.rawTotal / 1.11 : this.rawTotal;
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal / 1.11
+      : this.rawTotal;
   }
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value ? this.rawTotal - this.rawTotal / 1.11 : 0;
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal - this.rawTotal / 1.11
+      : 0;
   }
-  get grandTotal(): number { return this.rawTotal; }
+  get grandTotal(): number {
+    return this.rawTotal;
+  }
 
   openSupplierSelector() {
-    this.dialog.open(SupplierSelectorComponent, {}).afterClosed().subscribe((data) => {
-      if (data) {
-        this.formGroup.patchValue({
-          supplierID: data.id, supplierName: data.name, supplierAddress: data.address,
-        });
-      }
-    });
+    this.dialog
+      .open(SupplierSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.formGroup.patchValue({
+            supplierID: data.id,
+            supplierName: data.name,
+            supplierAddress: data.address,
+          });
+        }
+      });
   }
 
   toUpperCase() {
     const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) this.formGroup.patchValue({ projectName: v.toUpperCase() });
+    if (v && v.toUpperCase() !== v)
+      this.formGroup.patchValue({ projectName: v.toUpperCase() });
   }
 
   private toISO(d: any): string | null {
@@ -222,12 +267,24 @@ export class PurchaseOrderCreate641Component {
 
   onSubmit() {
     this.isSubmitting = true;
-    this.apiService.post('purchase-orders', this.formatData()).subscribe({
-      next: (res: any) => {
-        this.snackBar.open(`Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`, 'Close', { duration: 3000 });
-        this.router.navigate(['/Purchase-order']);
-      },
-      error: (error) => this.snackBar.open(error?.error?.detail ?? 'Gagal membuat purchase order', 'Close', { duration: 3000 }),
-    }).add(() => (this.isSubmitting = false));
+    this.apiService
+      .post('purchase-orders', this.formatData())
+      .subscribe({
+        next: (res: any) => {
+          this.snackBar.open(
+            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            'Close',
+            { duration: 3000 },
+          );
+          this.router.navigate(['/Purchase-order']);
+        },
+        error: (error) =>
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal membuat purchase order',
+            'Close',
+            { duration: 3000 },
+          ),
+      })
+      .add(() => (this.isSubmitting = false));
   }
 }

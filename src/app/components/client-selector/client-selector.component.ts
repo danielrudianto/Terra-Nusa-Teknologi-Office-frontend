@@ -9,10 +9,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   templateUrl: './client-selector.component.html',
   imports: [
+    TranslatePipe,
+    MatIconModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -29,7 +33,7 @@ export class ClientSelectorComponent {
   constructor(
     private dialog: MatDialogRef<ClientSelectorComponent>,
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   isLoading: boolean = false;
@@ -73,7 +77,7 @@ export class ClientSelectorComponent {
           this.snackBar.open(
             'Error fetching clients: ' + error.detail,
             'Close',
-            {}
+            {},
           );
         },
       })

@@ -12,16 +12,19 @@
       [disabled]="isLoading"
     >
       <mat-chip-option
+        class="pl-fchip pl-fchip--pending"
         [selected]="isPending"
         (selectionChange)="changeSelection('pending', $event)"
         >{{ "status.pending" | translate }}</mat-chip-option
       >
       <mat-chip-option
+        class="pl-fchip pl-fchip--approved"
         [selected]="isApproved"
         (selectionChange)="changeSelection('approved', $event)"
         >{{ "status.approved" | translate }}</mat-chip-option
       >
       <mat-chip-option
+        class="pl-fchip pl-fchip--rejected"
         [selected]="isRejected"
         (selectionChange)="changeSelection('rejected', $event)"
         >{{ "status.rejected" | translate }}</mat-chip-option
@@ -182,13 +185,7 @@
               [class.pl-chip--unpaid]="payment.isDelete"
               [class.pl-chip--draft]="!payment.isApprove && !payment.isDelete"
             >
-              <mat-icon>{{
-                payment.isApprove
-                  ? "check_circle"
-                  : payment.isDelete
-                    ? "cancel"
-                    : "schedule"
-              }}</mat-icon>
+              <span class="pl-chip__dot"></span>
               {{
                 (payment.isApprove
                   ? "status.approved"

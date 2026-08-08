@@ -24,6 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from 'src/app/services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -48,6 +49,7 @@ function bankAccountIDRequired(): ValidatorFn {
   templateUrl: './purchase-update.component.html',
   styleUrl: './purchase-update.component.scss',
   imports: [
+    TranslatePipe,
     MatIconModule,
     MatDialogModule,
     MatFormFieldModule,

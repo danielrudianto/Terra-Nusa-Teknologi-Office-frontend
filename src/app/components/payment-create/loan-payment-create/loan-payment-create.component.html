@@ -1,17 +1,15 @@
-<h2 mat-dialog-title>Payment data</h2>
-<mat-dialog-content class="mat-typography">
-  <p>
-    Please fill in the payment information below. The payment date is required.
-  </p>
-  <form [formGroup]="formGroup">
+<h2 mat-dialog-title>{{ "loanPayment.title" | translate }}</h2>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="mat-typography">
+    <p class="lpc-desc">{{ "loanPayment.subtitle" | translate }}</p>
+
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Payment Date</mat-label>
+      <mat-label>{{ "loanPayment.date" | translate }}</mat-label>
       <input
         matInput
-        formControlName="paymentDate"
-        placeholder="Payment date"
-        [matDatepicker]="paymentDatePicker"
         formControlName="date"
+        [matDatepicker]="paymentDatePicker"
+        [placeholder]="'loanPayment.datePlaceholder' | translate"
       />
       <mat-datepicker-toggle
         matIconPrefix
@@ -21,7 +19,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Bank Account Number</mat-label>
+      <mat-label>{{ "loanPayment.bankAccount" | translate }}</mat-label>
       <mat-select formControlName="bankAccountID">
         <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
           >{{ bank.bankAccountNumber }} --
@@ -31,13 +29,12 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Amount</mat-label>
+      <mat-label>{{ "loanPayment.amount" | translate }}</mat-label>
       <input
         matInput
         formControlName="amount"
         type="text"
-        placeholder="Payment amount"
-        required
+        [placeholder]="'loanPayment.amountPlaceholder' | translate"
         prefix="Rp. "
         thousandSeparator=" "
         mask="separator.2"
@@ -45,19 +42,35 @@
       <button matSuffix mat-icon-button type="button" (click)="fullAmount()">
         <mat-icon>check_circle</mat-icon>
       </button>
-      <mat-hint
-        >Maximum amount paid {{ totalAmount | number : "0.2-2" }}</mat-hint
-      >
+      <mat-hint>
+        {{ "loanPayment.maxAmount" | translate }}
+        {{ totalAmount | number: "0.2-2" }}
+      </mat-hint>
     </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    color="primary"
-    type="submit"
-    style="letter-spacing: 0"
-  >
-    Submit
-  </button>
-</mat-dialog-actions>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="onClose()"
+      [disabled]="isSubmitting"
+      style="letter-spacing: 0"
+    >
+      {{ "loanPayment.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid || isSubmitting"
+      style="letter-spacing: 0"
+    >
+      {{
+        isSubmitting
+          ? ("loanPayment.submitting" | translate)
+          : ("loanPayment.submit" | translate)
+      }}
+    </button>
+  </mat-dialog-actions>
+</form>

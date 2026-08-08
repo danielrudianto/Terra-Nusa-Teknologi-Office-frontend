@@ -29,10 +29,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ExpenseCreateAdministrationComponent } from './expense-create-administration/expense-create-administration.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-expense-create',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

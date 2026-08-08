@@ -160,7 +160,7 @@ export class PurchaseOrderCreateCComponent {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
+      item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -182,9 +182,7 @@ export class PurchaseOrderCreateCComponent {
       .subscribe((item) => {
         if (!item) return;
         // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
-        );
+        const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
             duration: 2500,
@@ -353,7 +351,8 @@ export class PurchaseOrderCreateCComponent {
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // auto-generated, locked clause block
-        notes: this.clausePreview,
+        // Poin perjanjian dirakit ulang dari templateVersion + data,
+        // tidak disimpan sebagai teks.
         // poin tambahan user (mentah) biar bisa render ulang persis
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
@@ -362,7 +361,7 @@ export class PurchaseOrderCreateCComponent {
         fuelReportRequired: this.fuelReportRequired,
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
+          item_id: x.item_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,

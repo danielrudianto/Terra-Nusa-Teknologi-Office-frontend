@@ -16,7 +16,7 @@
           <div class="exc-section__title">Detail Expense</div>
           <div class="exc-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Date</mat-label>
+              <mat-label>{{ "expenseForm.date" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="date"
@@ -31,7 +31,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Due date</mat-label>
+              <mat-label>{{ "expenseForm.dueDate" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="dueDate"
@@ -46,7 +46,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>Opponent</mat-label>
+              <mat-label>{{ "expenseForm.opponent" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="opponentName"
@@ -70,7 +70,9 @@
               class="exc-span2"
               *ngIf="metaFormGroup.get('opponentDescription')?.value"
             >
-              <mat-label>Opponent description</mat-label>
+              <mat-label>{{
+                "expenseForm.opponentDescription" | translate
+              }}</mat-label>
               <textarea
                 matInput
                 formControlName="opponentDescription"
@@ -82,7 +84,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Invoice name</mat-label>
+              <mat-label>{{ "expenseForm.invoiceName" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="invoiceName"
@@ -92,7 +94,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Receipt Name</mat-label>
+              <mat-label>{{ "expenseForm.receiptName" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -102,7 +104,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>Purchase type</mat-label>
+              <mat-label>{{
+                "expenseForm.purchaseType" | translate
+              }}</mat-label>
               <mat-select formControlName="purchaseType">
                 <mat-optgroup label="Office Expenses">
                   <mat-option value="5.1.1">Asset purchase</mat-option>
@@ -174,7 +178,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>Expense description</mat-label>
+              <mat-label>{{
+                "expenseForm.expenseDescription" | translate
+              }}</mat-label>
               <textarea
                 matInput
                 formControlName="description"
@@ -221,7 +227,7 @@
 
           <div class="exc-grid">
             <mat-form-field appearance="outline">
-              <mat-label>DPP</mat-label>
+              <mat-label>{{ "expenseForm.dpp" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -234,7 +240,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PBBKB</mat-label>
+              <mat-label>{{ "expenseForm.pbbkb" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -248,7 +254,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>PPh</mat-label>
+              <mat-label>{{ "expenseForm.pph" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -268,7 +274,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>PPh Object Name</mat-label>
+              <mat-label>{{
+                "expenseForm.pphObjectName" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -279,7 +287,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PPh Percentage</mat-label>
+              <mat-label>{{
+                "expenseForm.pphPercentage" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -290,7 +300,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>PPh (Rp.)</mat-label>
+              <mat-label>{{ "expenseForm.pphValue" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -314,7 +324,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2 exc-total">
-              <mat-label>Total</mat-label>
+              <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -357,7 +367,7 @@
           <div class="exc-section__title">Pembayaran</div>
           <div class="exc-grid">
             <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>Bank name</mat-label>
+              <mat-label>{{ "expenseForm.bankName" | translate }}</mat-label>
               <input
                 #input
                 matInput
@@ -378,7 +388,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Bank account name</mat-label>
+              <mat-label>{{
+                "expenseForm.bankAccountName" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -388,7 +400,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Payment Method</mat-label>
+              <mat-label>{{
+                "expenseForm.paymentMethod" | translate
+              }}</mat-label>
               <mat-select formControlName="paymentMethod">
                 <mat-option value="bank">Bank Transfer</mat-option>
                 <mat-option value="va">Virtual Account</mat-option>
@@ -397,7 +411,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Bank account number</mat-label>
+              <mat-label>{{
+                "expenseForm.bankAccountNumber" | translate
+              }}</mat-label>
               <input
                 matInput
                 type="text"
@@ -407,7 +423,9 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Bank account origin</mat-label>
+              <mat-label>{{
+                "expenseForm.bankAccountOrigin" | translate
+              }}</mat-label>
               <mat-select formControlName="bankAccountID">
                 <mat-option
                   *ngFor="let option of bankAccounts"
@@ -420,7 +438,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="exc-span2 exc-total">
-              <mat-label>Total</mat-label>
+              <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
               <input
                 matInput
                 type="text"

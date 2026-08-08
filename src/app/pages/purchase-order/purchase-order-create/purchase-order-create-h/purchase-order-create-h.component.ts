@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import {
-  FormArray, FormBuilder, FormControl, FormGroup, FormsModule,
-  ReactiveFormsModule, Validators,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -19,12 +24,14 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-h',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -58,7 +65,16 @@ export class PurchaseOrderCreateHComponent {
   subType: 'H1' | 'H2' | null = null;
 
   units: string[] = [
-    'LS', 'titik', 'm', 'm2', 'm3', 'kg', 'ton', 'unit', 'hari', 'bulan',
+    'LS',
+    'titik',
+    'm',
+    'm2',
+    'm3',
+    'kg',
+    'ton',
+    'unit',
+    'hari',
+    'bulan',
   ];
 
   formGroup: FormGroup = new FormGroup({

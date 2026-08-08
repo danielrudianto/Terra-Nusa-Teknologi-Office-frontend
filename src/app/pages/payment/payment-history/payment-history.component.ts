@@ -21,6 +21,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payment-history',
@@ -28,6 +29,7 @@ import { MatStepperModule } from '@angular/material/stepper';
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss',
   imports: [
+    TranslatePipe,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,

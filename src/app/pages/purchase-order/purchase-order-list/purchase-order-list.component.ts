@@ -16,10 +16,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { printPurchaseOrderG } from '../../../helpers/purchase-order-g.helper';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -66,9 +67,11 @@ export class PurchaseOrderListComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private translate: TranslateService,
   ) {}
 
   isLoading: boolean = false;
+  isReprinting: number | null = null;
   searchControl: FormControl = new FormControl('');
   orders: any[] = [];
   page: number = 1;
@@ -142,6 +145,89 @@ export class PurchaseOrderListComponent {
 
   createNewPurchaseOrder() {
     this.router.navigate(['Create'], { relativeTo: this.route });
+  }
+
+  /** Tipe PO yang sudah punya template cetak. */
+  private readonly printableTypes = ['G'];
+
+  canReprint(po: any): boolean {
+    return this.printableTypes.includes(po?.purchaseType);
+  }
+
+  /**
+   * Cetak ulang dokumen PO. Data diambil ulang dari server, dan poin
+   * perjanjian dirakit dari template + templateVersion PO tersebut —
+   * bukan dari teks tersimpan — sehingga hasilnya konsisten dengan datanya.
+   */
+  reprint(po: any) {
+    if (!this.canReprint(po)) return;
+    this.isReprinting = po.id;
+
+    this.apiService
+      .get(`purchase-orders/${po.id}`, {})
+      .subscribe({
+        next: (data: any) => {
+          const custom = data.customData || {};
+          try {
+            printPurchaseOrderG({
+              purchaseOrderName: data.name,
+              date: data.date,
+              projectName: data.projectName,
+              supplierName: data.supplierName ?? '',
+              supplierAddress: data.supplierAddress ?? '',
+              supplierCity: data.supplierCity ?? '',
+              supplierNpwp: data.supplierNpwp ?? '',
+              items: (data.items || []).map((it: any) => ({
+                // Nama barang berasal dari join master_item
+                // (item_description); `task` dipakai PO jasa/tenaga kerja.
+                // item_description = barang katalog, equipment_name = alat
+                // sewa (PO B), task = PO jasa/tenaga kerja.
+                name:
+                  it.item_description ||
+                  it.equipment_name ||
+                  it.task ||
+                  it.sku ||
+                  '',
+                quantity: Number(it.quantity) || 0,
+                unit: it.unit,
+                price: Number(it.price) || 0,
+              })),
+              includePpn: Number(data.ppn) > 0,
+              templateVersion: data.templateVersion,
+              clauseContext: {
+                paymentTerm: custom.paymentTerm ?? data.payment_term,
+                creditTerm: custom.creditTerm,
+                prepaidTerm: custom.prepaidTerm,
+                deliveryMethod: custom.deliveryMethod,
+                deliveryAddress: custom.deliveryAddress,
+                supplierPICName: custom.supplierPICName,
+                supplierPICPhoneNumber: custom.supplierPICPhoneNumber,
+                officePICName: custom.officePICName,
+                officePICPhoneNumber: custom.officePICPhoneNumber,
+                fuelReportRequired: custom.fuelReportRequired,
+              },
+              additionalClauses: custom.additionalClauses || [],
+            });
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+            this.snackBar.open(
+              this.translate.instant('purchaseOrder.reprintFailed'),
+              'Close',
+              { duration: 3000 },
+            );
+          }
+        },
+        error: () => {
+          this.snackBar.open(
+            this.translate.instant('purchaseOrder.reprintFailed'),
+            'Close',
+            { duration: 3000 },
+          );
+        },
+      })
+      .add(() => {
+        this.isReprinting = null;
+      });
   }
 
   approve(po: any) {

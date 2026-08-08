@@ -17,12 +17,21 @@ import { AuthService } from '../../../app/services/auth.service';
 import {
   SettingsService,
   TextScale,
+  BrandColor,
 } from '../../../app/services/setting.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { AvatarComponent } from '../../components/avatar/avatar.component';
+import { AvatarBuilderComponent } from '../../components/avatar/avatar-builder/avatar-builder.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [
+    AvatarComponent,
+    MatTooltipModule,
+    TranslatePipe,
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -41,9 +50,12 @@ export class SettingsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private authService: AuthService,
     public settings: SettingsService,
+    private dialog: MatDialog,
   ) {}
 
   isSaving = false;
+  isLoading = false;
+  userId: number | null = null;
 
   textScales: { value: TextScale; label: string; sample: string }[] = [
     { value: 'sm', label: 'Kecil', sample: 'Aa' },
@@ -54,16 +66,58 @@ export class SettingsComponent implements OnInit {
   profileFormGroup: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email]),
-    position: new FormControl(''),
   });
 
   ngOnInit(): void {
-    const info: any = this.authService.userInfo;
-    this.profileFormGroup.patchValue({
-      name: info?.name ?? '',
-      email: info?.email ?? '',
-      position: info?.position ?? '',
+    this.userId = this.authService.userId;
+    // profile is read only here — it is managed from the User page
+    this.profileFormGroup.disable();
+    this.fetchProfile();
+  }
+
+  /** Load the signed-in user's profile from the API. */
+  fetchProfile(): void {
+    if (this.userId == null) return;
+    this.isLoading = true;
+    this.apiService
+      .get('users/' + this.userId, {})
+      .subscribe({
+        next: (data: any) => {
+          this.profileFormGroup.patchValue({
+            name: data?.name ?? '',
+            email: data?.email ?? '',
+          });
+        },
+        error: () => {
+          // fall back to whatever the token carries
+          const info: any = this.authService.userInfo;
+          this.profileFormGroup.patchValue({
+            name: info?.name ?? '',
+            email: info?.email ?? '',
+          });
+        },
+      })
+      .add(() => {
+        this.isLoading = false;
+      });
+  }
+
+  editAvatar(): void {
+    if (this.userId == null) return;
+    this.dialog.open(AvatarBuilderComponent, {
+      data: {
+        userId: this.userId,
+        name: this.profileFormGroup.get('name')?.value,
+      },
     });
+  }
+
+  selectBrandColor(color: BrandColor): void {
+    this.settings.setBrandColor(color);
+  }
+
+  get brandColorKeys(): BrandColor[] {
+    return Object.keys(this.settings.brandColors) as BrandColor[];
   }
 
   get initials(): string {
@@ -73,31 +127,5 @@ export class SettingsComponent implements OnInit {
 
   selectTextScale(scale: TextScale): void {
     this.settings.setTextScale(scale);
-  }
-
-  onSaveProfile(): void {
-    if (this.profileFormGroup.invalid) return;
-    this.isSaving = true;
-    // NOTE: requires a backend endpoint (PUT /profile). Wired optimistically —
-    // when the endpoint exists this just works; until then it surfaces the error.
-    this.apiService
-      .put('profile', this.profileFormGroup.value)
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Profil berhasil disimpan', 'Close', {
-            duration: 3000,
-          });
-        },
-        error: (error) => {
-          this.snackBar.open(
-            error?.error?.detail ?? 'Gagal menyimpan profil',
-            'Close',
-            { duration: 3000 },
-          );
-        },
-      })
-      .add(() => {
-        this.isSaving = false;
-      });
   }
 }

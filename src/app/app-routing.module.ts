@@ -294,40 +294,7 @@ export const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'Supplier',
-        loadComponent: () =>
-          import('./pages/supplier/supplier.component').then(
-            (m) => m.SupplierComponent,
-          ),
-        data: { title: 'Supplier' },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./pages/supplier/supplier-list/supplier-list.component').then(
-                (m) => m.SupplierListComponent,
-              ),
-            data: { title: 'Supplier' },
-          },
-          {
-            path: 'Create',
-            loadComponent: () =>
-              import('./pages/supplier/supplier-create/supplier-create.component').then(
-                (m) => m.SupplierCreateComponent,
-              ),
-            data: { title: 'Supplier' },
-          },
-          {
-            path: 'Update/:id',
-            loadComponent: () =>
-              import('./pages/supplier/supplier-update/supplier-update.component').then(
-                (m) => m.SupplierUpdateComponent,
-              ),
-            data: { title: 'Supplier' },
-          },
-        ],
-      },
+
       {
         path: 'Bank',
         loadComponent: () =>
@@ -424,14 +391,6 @@ export const routes: Routes = [
                   ),
                 data: { title: 'Expense' },
               },
-              {
-                path: 'Create',
-                loadComponent: () =>
-                  import('./pages/expense/expense-opponent/expense-opponent-create/expense-opponent-create.component').then(
-                    (m) => m.ExpenseOpponentCreateComponent,
-                  ),
-                data: { title: 'Expense' },
-              },
             ],
           },
         ],
@@ -506,30 +465,7 @@ export const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'Employee',
-        loadComponent: () =>
-          import('./pages/employee/employee.component').then(
-            (m) => m.EmployeeComponent,
-          ),
-        data: { title: 'Employee' },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./pages/employee/employee-list/employee-list.component').then(
-                (m) => m.EmployeeListComponent,
-              ),
-          },
-          {
-            path: 'Create',
-            loadComponent: () =>
-              import('./pages/employee/employee-create/employee-create.component').then(
-                (m) => m.EmployeeCreateComponent,
-              ),
-          },
-        ],
-      },
+
       {
         path: 'User',
         loadComponent: () =>
@@ -573,30 +509,7 @@ export const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'Client',
-        loadComponent: () =>
-          import('./pages/client/client.component').then(
-            (m) => m.ClientComponent,
-          ),
-        data: { title: 'Client' },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./pages/client/client-list/client-list.component').then(
-                (m) => m.ClientListComponent,
-              ),
-          },
-          {
-            path: 'Create',
-            loadComponent: () =>
-              import('./pages/client/client-create/client-create.component').then(
-                (m) => m.ClientCreateComponent,
-              ),
-          },
-        ],
-      },
+
       {
         path: 'Calendar',
         loadComponent: () =>

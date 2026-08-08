@@ -1,0 +1,263 @@
+.ab {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.ab * {
+  box-sizing: border-box;
+}
+
+/* ===== header ===== */
+.ab-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.ab-head__icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.ab-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ab-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+.ab-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+/* ===== content ===== */
+.ab-content {
+  padding: 1.25rem 1.5rem !important;
+  background: var(--surface, #fff);
+  width: 420px;
+  max-width: 100%;
+}
+
+/* live preview */
+.ab-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line, #eef0f4);
+}
+.ab-preview__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.ab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.18s all ease;
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+    border-color: var(--brand-soft, #cdd7f7);
+    color: var(--brand, #154dec);
+  }
+}
+
+/* tabs */
+.ab-tabs {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.9rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ab-tab {
+  width: 40px;
+  height: 36px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  color: var(--muted, #6b7280);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.18s all ease;
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
+  &.is-active {
+    background: var(--brand-soft, #e7ecfb);
+    border-color: var(--brand, #154dec);
+    color: var(--brand, #154dec);
+  }
+}
+
+/* options panel */
+.ab-panel {
+  min-height: 150px;
+  padding-top: 0.35rem;
+}
+.ab-panel__label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+  margin: 0.65rem 0 0.55rem;
+}
+.ab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 0.55rem;
+}
+.ab-opt {
+  aspect-ratio: 1;
+  padding: 3px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: var(--surface-2, #fafbfc);
+  cursor: pointer;
+  overflow: hidden;
+  /* Hover must not move or resize the button: a shifting target makes the
+     first click land on empty space, so it feels like a double click is
+     needed. Colour-only feedback keeps the hit area rock steady. */
+  transition:
+    0.18s background ease,
+    0.18s border-color ease,
+    0.18s box-shadow ease;
+  &:hover {
+    background: var(--hover, #f3f6ff);
+    box-shadow: 0 0 0 1px var(--brand-soft, #cdd7f7) inset;
+  }
+  &.is-active {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #e7ecfb);
+  }
+}
+.ab-opt__svg,
+.ab-opt__svg :is(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* colour swatches */
+.ab-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.ab-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07) inset;
+  transition:
+    0.18s border-color ease,
+    0.18s box-shadow ease;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    color: #fff;
+    mix-blend-mode: difference;
+  }
+  &:hover {
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.07) inset,
+      0 0 0 3px var(--brand-soft, #cdd7f7);
+  }
+  &.is-active {
+    border-color: var(--ink, #16181d);
+  }
+}
+
+/* ===== footer ===== */
+.ab-foot {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  gap: 0.6rem;
+}
+.ab-cancel {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  &:hover:not(:disabled) {
+    background: var(--hover, #f6f8ff);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+.ab-save {
+  border: none;
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+  &:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}

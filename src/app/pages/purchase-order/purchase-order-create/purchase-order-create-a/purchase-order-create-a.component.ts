@@ -30,12 +30,15 @@ import {
 } from '../../../../constants/fleet';
 import { FleetIconComponent } from '../../../../components/fleet-icon/fleet-icon.component';
 import { FleetInfoDialogComponent } from '../../../../components/fleet-info-dialog/fleet-info-dialog.component';
+import { TranslatePipe } from '@ngx-translate/core';
+import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 
 @Component({
   selector: 'app-purchase-order-create-a',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -49,6 +52,7 @@ import { FleetInfoDialogComponent } from '../../../../components/fleet-info-dial
     NgxMaskDirective,
     HeaderTitleComponent,
     FleetIconComponent,
+    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-a.component.html',
   styleUrl: './purchase-order-create-a.component.scss',

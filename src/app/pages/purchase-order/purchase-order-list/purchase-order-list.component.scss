@@ -232,7 +232,8 @@ $hover: var(--hover, #f6f8ff);
   border: none;
   background: var(--brand, #154dec);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  box-shadow: 0 4px 12px
+    color-mix(in srgb, var(--brand, #154dec) 22%, transparent);
   &:hover:not(:disabled) {
     background: var(--brand-strong, #0f3fd0);
   }
@@ -276,4 +277,36 @@ $hover: var(--hover, #f6f8ff);
     background: var(--bad-bg, #fdecec);
     color: var(--bad-fg, #b3322f);
   }
+}
+
+/* ===== kolom supplier =====
+   Tanpa gaya ini avatar inisial ikut mengalir sebagai teks biasa, sehingga
+   huruf pertama nama menempel di depan prefix ("AUD. Alfa Bangunan"). */
+.pol-sup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.pol-avatar {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.pol-supname {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

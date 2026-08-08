@@ -1,6 +1,6 @@
 <div class="ssc">
   <div class="ssc-head">
-    <h1 class="ssc-title">Buat Salary Slip</h1>
+    <h1 class="ssc-title">{{ "salarySlipForm.title" | translate }}</h1>
     <p class="ssc-sub"><a routerLink="/Salary-slip">Salary slip</a> / Create</p>
   </div>
 
@@ -10,7 +10,7 @@
       <div class="ssc-section__title">Karyawan</div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Month</mat-label>
+          <mat-label>{{ "salarySlipForm.month" | translate }}</mat-label>
           <input
             matInput
             formControlName="monthName"
@@ -19,7 +19,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Year</mat-label>
+          <mat-label>{{ "salarySlipForm.year" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -29,7 +29,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline" class="ssc-span2">
-          <mat-label>Name</mat-label>
+          <mat-label>{{ "salarySlipForm.name" | translate }}</mat-label>
           <input
             matInput
             formControlName="name"
@@ -38,7 +38,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline" class="ssc-span2">
-          <mat-label>Tax Category</mat-label>
+          <mat-label>{{ "salarySlipForm.taxCategory" | translate }}</mat-label>
           <mat-select
             formControlName="taxCategory"
             placeholder="Select tax category"
@@ -66,11 +66,11 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Position</mat-label>
+          <mat-label>{{ "salarySlipForm.position" | translate }}</mat-label>
           <input matInput formControlName="position" placeholder="Jabatan" />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Department</mat-label>
+          <mat-label>{{ "salarySlipForm.department" | translate }}</mat-label>
           <input
             matInput
             formControlName="department"
@@ -85,7 +85,7 @@
       <div class="ssc-section__title">Bank &amp; Pembayaran</div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Bank name</mat-label>
+          <mat-label>{{ "salarySlipForm.bankName" | translate }}</mat-label>
           <input
             #input
             matInput
@@ -105,15 +105,25 @@
           </mat-autocomplete>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Payment Method</mat-label>
+          <mat-label>{{
+            "salarySlipForm.paymentMethod" | translate
+          }}</mat-label>
           <mat-select formControlName="paymentMethod">
-            <mat-option value="bank">Bank Transfer</mat-option>
-            <mat-option value="va">Virtual Account</mat-option>
-            <mat-option value="cash">Cheque</mat-option>
+            <mat-option value="bank">{{
+              "salarySlipForm.bankTransfer" | translate
+            }}</mat-option>
+            <mat-option value="va">{{
+              "salarySlipForm.virtualAccount" | translate
+            }}</mat-option>
+            <mat-option value="cash">{{
+              "salarySlipForm.cheque" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Bank account name</mat-label>
+          <mat-label>{{
+            "salarySlipForm.bankAccountName" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
@@ -122,7 +132,9 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Bank account number</mat-label>
+          <mat-label>{{
+            "salarySlipForm.bankAccountNumber" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
@@ -138,7 +150,7 @@
       <div class="ssc-section__title">Pendapatan</div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline" class="ssc-span2">
-          <mat-label>Basic salary</mat-label>
+          <mat-label>{{ "salarySlipForm.basicSalary" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -152,7 +164,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Meal quantity</mat-label>
+          <mat-label>{{ "salarySlipForm.mealQty" | translate }}</mat-label>
           <input
             matInput
             type="number"
@@ -161,7 +173,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Meal rate</mat-label>
+          <mat-label>{{ "salarySlipForm.mealRate" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -174,7 +186,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Transportation quantity</mat-label>
+          <mat-label>{{ "salarySlipForm.transportQty" | translate }}</mat-label>
           <input
             matInput
             type="number"
@@ -183,7 +195,9 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Transportation rate</mat-label>
+          <mat-label>{{
+            "salarySlipForm.transportRate" | translate
+          }}</mat-label>
           <input
             matInput
             type="text"
@@ -196,7 +210,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Overtime hours</mat-label>
+          <mat-label>{{
+            "salarySlipForm.overtimeHours" | translate
+          }}</mat-label>
           <input
             matInput
             type="number"
@@ -205,7 +221,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Overtime rate</mat-label>
+          <mat-label>{{ "salarySlipForm.overtimeRate" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -232,19 +248,25 @@
       <div class="ssc-table">
         <table mat-table [dataSource]="allowancesControls" #allowanceTable>
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.name" | translate }}
+            </th>
             <td mat-cell *matCellDef="let allowance">
               {{ allowance.get("name").value }}
             </td>
           </ng-container>
           <ng-container matColumnDef="amount">
-            <th mat-header-cell *matHeaderCellDef class="ssc-num">Amount</th>
+            <th mat-header-cell *matHeaderCellDef class="ssc-num">
+              {{ "salarySlipForm.amount" | translate }}
+            </th>
             <td mat-cell *matCellDef="let allowance" class="ssc-num ssc-pos">
               Rp {{ allowance.get("amount").value | number: "1.0-0" }}
             </td>
           </ng-container>
           <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.description" | translate }}
+            </th>
             <td mat-cell *matCellDef="let allowance">
               <span class="ssc-desc">{{
                 allowance.get("description").value
@@ -252,7 +274,9 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="included">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.type" | translate }}
+            </th>
             <td mat-cell *matCellDef="let allowance">
               <span
                 class="ssc-tag"
@@ -309,19 +333,25 @@
       <div class="ssc-table">
         <table mat-table [dataSource]="deductionsControls" #deductionTable>
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.name" | translate }}
+            </th>
             <td mat-cell *matCellDef="let deduction">
               {{ deduction.get("name").value }}
             </td>
           </ng-container>
           <ng-container matColumnDef="amount">
-            <th mat-header-cell *matHeaderCellDef class="ssc-num">Amount</th>
+            <th mat-header-cell *matHeaderCellDef class="ssc-num">
+              {{ "salarySlipForm.amount" | translate }}
+            </th>
             <td mat-cell *matCellDef="let deduction" class="ssc-num ssc-neg">
               − Rp {{ deduction.get("amount").value | number: "1.0-0" }}
             </td>
           </ng-container>
           <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.description" | translate }}
+            </th>
             <td mat-cell *matCellDef="let deduction">
               <span class="ssc-desc">{{
                 deduction.get("description").value
@@ -329,7 +359,9 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="included">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "salarySlipForm.type" | translate }}
+            </th>
             <td mat-cell *matCellDef="let allowance">
               <span
                 class="ssc-tag"
@@ -390,7 +422,7 @@
       </div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Total salary (gross)</mat-label>
+          <mat-label>{{ "salarySlipForm.grossSalary" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -404,7 +436,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>PPh 21</mat-label>
+          <mat-label>{{ "salarySlipForm.pph21" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -417,7 +449,7 @@
           />
         </mat-form-field>
         <mat-form-field appearance="outline" class="ssc-span2 ssc-total">
-          <mat-label>Net salary</mat-label>
+          <mat-label>{{ "salarySlipForm.netSalary" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -432,14 +464,14 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Is last day?</mat-label>
+          <mat-label>{{ "salarySlipForm.isLastDay" | translate }}</mat-label>
           <mat-select formControlName="isLastDay">
             <mat-option [value]="true">Yes</mat-option>
             <mat-option [value]="false">No</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Last date</mat-label>
+          <mat-label>{{ "salarySlipForm.lastDate" | translate }}</mat-label>
           <input matInput formControlName="lastDate" [matDatepicker]="picker" />
           <mat-datepicker-toggle
             matIconPrefix
@@ -457,7 +489,7 @@
         "
       >
         <mat-icon>error_outline</mat-icon>
-        <span>Last date wajib diisi kalau ini hari terakhir.</span>
+        <span>{{ "salarySlipForm.lastDateHint" | translate }}</span>
       </div>
 
       <div class="ssc-actions">

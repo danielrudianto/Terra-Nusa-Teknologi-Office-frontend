@@ -21,15 +21,20 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
-import { buildClauseHtml, latestClauseVersion } from '../../../../constants/clause-templates';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-516',
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -154,7 +159,7 @@ export class PurchaseOrderCreate516Component {
 
   private buildItemGroup(item: any): FormGroup {
     return this.formBuilder.group({
-      equipment_id: [item.id, Validators.required],
+      item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
@@ -176,9 +181,7 @@ export class PurchaseOrderCreate516Component {
       .subscribe((item) => {
         if (!item) return;
         // prevent adding the exact same catalog item twice
-        const exists = this.t.value.some(
-          (x: any) => x.equipment_id === item.id,
-        );
+        const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
           this.snackBar.open('Barang sudah ada di daftar', 'Close', {
             duration: 2500,
@@ -243,7 +246,9 @@ export class PurchaseOrderCreate516Component {
     return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
   }
   get prepaidEnabled(): boolean {
-    return this.PREPAID_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
   }
 
   onPaymentTermChange() {
@@ -323,14 +328,15 @@ export class PurchaseOrderCreate516Component {
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // auto-generated, locked clause block (shares template with G)
-        notes: this.clausePreview,
+        // Poin perjanjian dirakit ulang dari templateVersion + data,
+        // tidak disimpan sebagai teks.
         // poin tambahan user (mentah) biar bisa render ulang persis
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
         // catalog-referenced items -> maps to purchase_order_items later
         purchase_order: this.t.value.map((x: any) => ({
-          equipment_id: x.equipment_id,
+          item_id: x.item_id,
           sku: x.sku,
           description: x.description,
           quantity: x.quantity,

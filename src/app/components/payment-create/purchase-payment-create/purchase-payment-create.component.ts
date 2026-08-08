@@ -135,8 +135,20 @@ export class PurchasePaymentCreateComponent {
             ),
             purchaseOrderName: data.purchase.purchaseOrderName,
             projectName: data.purchase.projectName,
-            supplierName: `${data.purchase.supplier_name}, ${data.purchase.supplier_prefix}`,
-            supplierAddress: `${data.purchase.supplier_address}, ${data.purchase.supplier_city}, ${data.purchase.supplier_province}`,
+            supplierName: data.purchase.supplier_name
+              ? `${data.purchase.supplier_name}, ${data.purchase.supplier_prefix ?? ''}`
+                  .trim()
+                  .replace(/,\s*$/, '')
+              : data.purchase.supplier?.name
+                ? `${data.purchase.supplier.name}, ${data.purchase.supplier.prefix ?? ''}`
+                    .trim()
+                    .replace(/,\s*$/, '')
+                : '',
+            supplierAddress: data.purchase.supplier_address
+              ? `${data.purchase.supplier_address}, ${data.purchase.supplier_city ?? ''}, ${data.purchase.supplier_province ?? ''}`
+              : data.purchase.supplier?.address
+                ? `${data.purchase.supplier.address}, ${data.purchase.supplier.city ?? ''}, ${data.purchase.supplier.province ?? ''}`
+                : '',
             invoiceName: data.purchase.invoiceName,
             taxInvoiceName:
               data.purchase.taxInvoiceName == null ||

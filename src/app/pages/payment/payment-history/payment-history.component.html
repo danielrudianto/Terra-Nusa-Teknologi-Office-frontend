@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Payment history</h2>
+<h2 mat-dialog-title>{{ "paymentHistory.title" | translate }}</h2>
 <mat-dialog-content>
   <mat-stepper [orientation]="(stepperOrientation | async)!" linear>
     <mat-step>
@@ -6,12 +6,12 @@
 
       <form [formGroup]="metaFormGroup" class="payment-form">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "paymentHistory.date" | translate }}</mat-label>
           <input matInput formControlName="date" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Amount</mat-label>
+          <mat-label>{{ "paymentHistory.amount" | translate }}</mat-label>
           <input
             matInput
             formControlName="amount"
@@ -24,12 +24,14 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank Name</mat-label>
+          <mat-label>{{ "paymentHistory.bankName" | translate }}</mat-label>
           <input matInput formControlName="bankName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank Account Number</mat-label>
+          <mat-label>{{
+            "paymentHistory.bankAccountNumber" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="bankAccountNumber"
@@ -39,7 +41,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank Account Name</mat-label>
+          <mat-label>{{
+            "paymentHistory.bankAccountName" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="bankAccountName"
@@ -63,44 +67,46 @@
       <ng-template matStepLabel>Document Data</ng-template>
       <form [formGroup]="reimbursementFormGroup" *ngIf="isReimbursement">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "paymentHistory.date" | translate }}</mat-label>
           <input matInput formControlName="date" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Name</mat-label>
+          <mat-label>{{ "paymentHistory.name" | translate }}</mat-label>
           <input matInput formControlName="name" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project name</mat-label>
+          <mat-label>{{ "paymentHistory.projectName" | translate }}</mat-label>
           <input matInput formControlName="projectName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase type</mat-label>
+          <mat-label>{{ "paymentHistory.purchaseType" | translate }}</mat-label>
           <input matInput formControlName="purchaseType" type="text" readonly />
         </mat-form-field>
       </form>
 
       <form [formGroup]="purchaseFormGroup" *ngIf="isPurchase">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "paymentHistory.date" | translate }}</mat-label>
           <input matInput formControlName="date" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project name</mat-label>
+          <mat-label>{{ "paymentHistory.projectName" | translate }}</mat-label>
           <input matInput formControlName="projectName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier name</mat-label>
+          <mat-label>{{ "paymentHistory.supplierName" | translate }}</mat-label>
           <input matInput formControlName="supplierName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Supplier address</mat-label>
+          <mat-label>{{
+            "paymentHistory.supplierAddress" | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="supplierAddress"
@@ -112,17 +118,17 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Invoice</mat-label>
+          <mat-label>{{ "paymentHistory.invoice" | translate }}</mat-label>
           <input matInput formControlName="name" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Receipt</mat-label>
+          <mat-label>{{ "paymentHistory.receipt" | translate }}</mat-label>
           <input matInput formControlName="receiptName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Tax invoice</mat-label>
+          <mat-label>{{ "paymentHistory.taxInvoice" | translate }}</mat-label>
           <input
             matInput
             formControlName="taxInvoiceName"
@@ -132,7 +138,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase order</mat-label>
+          <mat-label>{{
+            "paymentHistory.purchaseOrder" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="purchaseOrderName"
@@ -142,29 +150,31 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Project name</mat-label>
+          <mat-label>{{ "paymentHistory.projectName" | translate }}</mat-label>
           <input matInput formControlName="projectName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase type</mat-label>
+          <mat-label>{{ "paymentHistory.purchaseType" | translate }}</mat-label>
           <input matInput formControlName="purchaseType" type="text" readonly />
         </mat-form-field>
       </form>
 
       <form [formGroup]="expenseFormGroup" *ngIf="isExpense">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
+          <mat-label>{{ "paymentHistory.date" | translate }}</mat-label>
           <input matInput formControlName="date" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Opponent name</mat-label>
+          <mat-label>{{ "paymentHistory.opponentName" | translate }}</mat-label>
           <input matInput formControlName="opponentName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Opponent description</mat-label>
+          <mat-label>{{
+            "paymentHistory.opponentDescription" | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="opponentDescription"
@@ -176,17 +186,17 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Invoice</mat-label>
+          <mat-label>{{ "paymentHistory.invoice" | translate }}</mat-label>
           <input matInput formControlName="name" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Receipt</mat-label>
+          <mat-label>{{ "paymentHistory.receipt" | translate }}</mat-label>
           <input matInput formControlName="receiptName" type="text" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Tax invoice</mat-label>
+          <mat-label>{{ "paymentHistory.taxInvoice" | translate }}</mat-label>
           <input
             matInput
             formControlName="taxInvoiceName"
@@ -196,7 +206,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Purchase type</mat-label>
+          <mat-label>{{ "paymentHistory.purchaseType" | translate }}</mat-label>
           <input matInput formControlName="purchaseType" type="text" readonly />
         </mat-form-field>
       </form>
@@ -226,7 +236,7 @@
       <form [formGroup]="valueFormGroup" *ngIf="isPurchase">
         <!-- DPP -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>DPP</mat-label>
+          <mat-label>{{ "paymentHistory.dpp" | translate }}</mat-label>
           <input
             matInput
             formControlName="dpp"
@@ -239,7 +249,7 @@
         </mat-form-field>
         <!-- PPN -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPN</mat-label>
+          <mat-label>{{ "paymentHistory.ppn" | translate }}</mat-label>
           <input
             matInput
             formControlName="ppnValue"
@@ -252,7 +262,7 @@
         </mat-form-field>
         <!-- PBBKB -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PBBKB</mat-label>
+          <mat-label>{{ "paymentHistory.pbbkb" | translate }}</mat-label>
           <input
             matInput
             formControlName="pbbkb"
@@ -266,7 +276,7 @@
 
         <!-- Other value, with the hint of otherValueNote -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Other Value</mat-label>
+          <mat-label>{{ "paymentHistory.otherValue" | translate }}</mat-label>
           <input
             matInput
             formControlName="otherValue"
@@ -281,7 +291,7 @@
 
         <!-- PPh value -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh</mat-label>
+          <mat-label>{{ "paymentHistory.pph" | translate }}</mat-label>
           <input
             matInput
             formControlName="pphValue"
@@ -295,7 +305,7 @@
 
         <!-- PPh Tax Object name, wrapped in textarea resize none, rows 3 -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Tax Object Name</mat-label>
+          <mat-label>{{ "paymentHistory.pphTaxObject" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="pphTaxObjectName"
@@ -307,7 +317,7 @@
 
         <!-- Total -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Total</mat-label>
+          <mat-label>{{ "paymentHistory.total" | translate }}</mat-label>
           <input
             matInput
             formControlName="total"
@@ -320,7 +330,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Payment total</mat-label>
+          <mat-label>{{ "paymentHistory.paymentTotal" | translate }}</mat-label>
           <input
             matInput
             formControlName="totalPayment"
@@ -337,16 +347,16 @@
         <table class="table table-bordered hover mt-3">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
+              <th>{{ "paymentHistory.date" | translate }}</th>
+              <th>{{ "paymentHistory.description" | translate }}</th>
+              <th>{{ "paymentHistory.amount" | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of t.controls; index as i">
               <td>{{ item.get("date")?.value }}</td>
               <td>{{ item.get("description")?.value }}</td>
-              <td>{{ item.get("amount")?.value | number : "0.2-2" }}</td>
+              <td>{{ item.get("amount")?.value | number: "0.2-2" }}</td>
             </tr>
           </tbody>
         </table>
@@ -355,7 +365,7 @@
       <form [formGroup]="valueFormGroup" *ngIf="isExpense">
         <!-- DPP -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>DPP</mat-label>
+          <mat-label>{{ "paymentHistory.dpp" | translate }}</mat-label>
           <input
             matInput
             formControlName="dpp"
@@ -368,7 +378,7 @@
         </mat-form-field>
         <!-- PPN -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPN</mat-label>
+          <mat-label>{{ "paymentHistory.ppn" | translate }}</mat-label>
           <input
             matInput
             formControlName="ppnValue"
@@ -381,7 +391,7 @@
         </mat-form-field>
         <!-- PBBKB -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PBBKB</mat-label>
+          <mat-label>{{ "paymentHistory.pbbkb" | translate }}</mat-label>
           <input
             matInput
             formControlName="pbbkb"
@@ -395,7 +405,7 @@
 
         <!-- PPh value -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh</mat-label>
+          <mat-label>{{ "paymentHistory.pph" | translate }}</mat-label>
           <input
             matInput
             formControlName="pphValue"
@@ -409,7 +419,7 @@
 
         <!-- PPh Tax Object name, wrapped in textarea resize none, rows 3 -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>PPh Tax Object Name</mat-label>
+          <mat-label>{{ "paymentHistory.pphTaxObject" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="pphTaxObjectName"
@@ -421,7 +431,7 @@
 
         <!-- Total -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Total</mat-label>
+          <mat-label>{{ "paymentHistory.total" | translate }}</mat-label>
           <input
             matInput
             formControlName="total"
@@ -434,7 +444,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Payment total</mat-label>
+          <mat-label>{{ "paymentHistory.paymentTotal" | translate }}</mat-label>
           <input
             matInput
             formControlName="totalPayment"

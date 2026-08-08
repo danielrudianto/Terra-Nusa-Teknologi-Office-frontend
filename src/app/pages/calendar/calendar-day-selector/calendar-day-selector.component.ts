@@ -9,6 +9,7 @@ import {
 } from '@angular/material/dialog';
 import { CalendarDayViewComponent } from '../calendar-day-view/calendar-day-view.component';
 import { MatList, MatListModule } from '@angular/material/list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CalendarPaymentConfirmComponent } from '../calendar-payment-confirm/calendar-payment-confirm.component';
@@ -24,7 +25,6 @@ import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.co
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 
 interface BankAccountSummary {
   id: number;
@@ -36,6 +36,12 @@ interface BankAccountSummary {
   outgoingCount: number;
   totalAmount: number;
   hasActivities: boolean;
+  openingBalance: number;
+  closingBalance: number;
+  estimatedAdminFee: number;
+  interbankTransferCount: number;
+  sameBankTransferCount: number;
+  unknownDestinationCount: number;
 }
 
 @Component({
@@ -217,6 +223,10 @@ export class CalendarDaySelectorComponent {
         incomingInterpayments.length > 0 ||
         outgoingInterpayments.length > 0;
 
+      const openingBalance =
+        bankAccount.openingBalance ?? bankAccount.balance ?? 0;
+      const estimatedAdminFee = bankAccount.estimatedAdminFee ?? 0;
+
       return {
         id: bankAccount.id,
         bankName: bankAccount.bankName,
@@ -227,6 +237,14 @@ export class CalendarDaySelectorComponent {
         outgoingCount: outgoingInterpayments.length,
         totalAmount,
         hasActivities,
+        openingBalance,
+        estimatedAdminFee,
+        closingBalance:
+          bankAccount.closingBalance ??
+          openingBalance - totalAmount - estimatedAdminFee,
+        interbankTransferCount: bankAccount.interbankTransferCount ?? 0,
+        sameBankTransferCount: bankAccount.sameBankTransferCount ?? 0,
+        unknownDestinationCount: bankAccount.unknownDestinationCount ?? 0,
       };
     });
 
@@ -305,6 +323,28 @@ export class CalendarDaySelectorComponent {
   get totalAmount(): number {
     if (this.selectedAccount == null) return 0;
     return this.selectedAccount.totalAmount;
+  }
+
+  get openingBalance(): number {
+    return this.selectedAccount?.openingBalance ?? 0;
+  }
+
+  get adminFee(): number {
+    return this.selectedAccount?.estimatedAdminFee ?? 0;
+  }
+
+  get closingBalance(): number {
+    return this.selectedAccount?.closingBalance ?? 0;
+  }
+
+  /** fee charged per transfer to a different bank (from backend) */
+  get interbankFee(): number {
+    return this.rawData?.interbankTransferFee ?? 2500;
+  }
+
+  /** true when the day's payments exceed the available balance */
+  get isShortfall(): boolean {
+    return this.closingBalance < 0;
   }
 
   get canConfirm() {

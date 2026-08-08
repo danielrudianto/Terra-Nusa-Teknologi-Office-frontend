@@ -28,6 +28,7 @@ import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.compone
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label';
 import { PurchaseOrderCreate63ModeDialogComponent } from './purchase-order-create-63-mode-dialog/purchase-order-create-63-mode-dialog.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Marketing purchase orders:
@@ -41,6 +42,7 @@ import { PurchaseOrderCreate63ModeDialogComponent } from './purchase-order-creat
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

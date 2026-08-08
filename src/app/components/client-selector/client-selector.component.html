@@ -1,38 +1,60 @@
-<h2 mat-dialog-title>Select client</h2>
-<mat-dialog-content>
-  <mat-form-field appearance="outline" class="w-100">
-    <mat-label>Search</mat-label>
-    <input matInput [formControl]="searchBar" placeholder="Search client" />
-  </mat-form-field>
-  <mat-divider class="my-3"></mat-divider>
-  <table class="table bordered table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-      </tr>
-    </thead>
-    <tbody *ngIf="isLoading">
-      <tr>
-        <td colspan="2" class="text-center">
-          <mat-spinner diameter="50" class="loading-spinner"></mat-spinner>
-        </td>
-      </tr>
-    </tbody>
-    <tbody *ngIf="!isLoading && clients.length === 0">
-      <tr>
-        <td colspan="2" class="text-center">No clients found</td>
-      </tr>
-    </tbody>
-    <tbody *ngIf="!isLoading && clients.length > 0">
-      <tr
-        *ngFor="let client of clients"
-        (click)="selectClient(client)"
-        class="cursor-pointer"
-      >
-        <td>{{ client.name }}, {{ client.prefix }}</td>
-        <td>{{ client.address }}, {{ client.city }}, {{ client.province }}</td>
-      </tr>
-    </tbody>
-  </table>
-</mat-dialog-content>
+<div class="cls">
+  <div class="cls-head" mat-dialog-title>
+    <span class="cls-head__icon"><mat-icon>handshake</mat-icon></span>
+    <div class="cls-head__text">
+      <h2 class="cls-title">{{ "clientSelector.title" | translate }}</h2>
+      <span class="cls-sub">{{ "clientSelector.subtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="cls-content">
+    <mat-form-field appearance="outline" class="cls-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "clientSelector.search" | translate }}</mat-label>
+      <input
+        matInput
+        cdkFocusInitial
+        [formControl]="searchBar"
+        [placeholder]="'clientSelector.searchPlaceholder' | translate"
+      />
+    </mat-form-field>
+
+    @if (isLoading) {
+      <div class="cls-state">
+        <mat-spinner diameter="34"></mat-spinner>
+      </div>
+    } @else if (clients.length === 0) {
+      <div class="cls-state cls-state--empty">
+        <mat-icon>person_search</mat-icon>
+        <span>{{ "clientSelector.noData" | translate }}</span>
+      </div>
+    } @else {
+      <div class="cls-list">
+        @for (client of clients; track client.id) {
+          <button type="button" class="cls-item" (click)="selectClient(client)">
+            <span class="cls-item__avatar">{{
+              (client.name || "?").charAt(0)
+            }}</span>
+            <span class="cls-item__text">
+              <span class="cls-item__name"
+                >{{ client.name
+                }}{{ client.prefix ? ", " + client.prefix : "" }}</span
+              >
+              <span class="cls-item__addr">
+                {{ client.address }}{{ client.city ? ", " + client.city : ""
+                }}{{ client.province ? ", " + client.province : "" }}
+              </span>
+            </span>
+            <mat-icon class="cls-item__chevron">chevron_right</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="cls-foot">
+    <button type="button" class="cls-close" mat-dialog-close>
+      {{ "clientSelector.cancel" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

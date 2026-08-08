@@ -10,7 +10,9 @@
         data.readOnly ? "Detail supplier" : "Ubah data supplier"
       }}</span>
     </div>
-    <span class="su-chip" *ngIf="data.readOnly">View only</span>
+    <span class="su-chip" *ngIf="data.readOnly">{{
+      "supplierForm.viewOnly" | translate
+    }}</span>
   </div>
 
   <!-- =========================================================
@@ -110,18 +112,22 @@
       <mat-dialog-content class="su-content">
         <div class="su-formgrid">
           <mat-form-field appearance="outline">
-            <mat-label>Prefix</mat-label>
+            <mat-label>{{ "supplierForm.prefix" | translate }}</mat-label>
             <mat-select formControlName="prefix" required>
               <mat-option value="PT.">PT.</mat-option>
               <mat-option value="CV.">CV.</mat-option>
               <mat-option value="UD.">UD.</mat-option>
-              <mat-option value="Pribadi">Pribadi</mat-option>
-              <mat-option value="Lainnya">Lainnya</mat-option>
+              <mat-option value="Pribadi">{{
+                "supplierForm.personal" | translate
+              }}</mat-option>
+              <mat-option value="Lainnya">{{
+                "supplierForm.other" | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Name</mat-label>
+            <mat-label>{{ "supplierForm.name" | translate }}</mat-label>
             <input
               matInput
               formControlName="name"
@@ -132,7 +138,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="su-span2">
-            <mat-label>Address</mat-label>
+            <mat-label>{{ "supplierForm.address" | translate }}</mat-label>
             <textarea
               matInput
               formControlName="address"
@@ -144,7 +150,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>City</mat-label>
+            <mat-label>{{ "supplierForm.city" | translate }}</mat-label>
             <input
               matInput
               formControlName="city"
@@ -155,7 +161,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Province</mat-label>
+            <mat-label>{{ "supplierForm.province" | translate }}</mat-label>
             <input
               matInput
               formControlName="province"
@@ -166,7 +172,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>NPWP</mat-label>
+            <mat-label>{{ "supplierForm.npwp" | translate }}</mat-label>
             <input
               matInput
               formControlName="npwp"
@@ -177,7 +183,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Phone number</mat-label>
+            <mat-label>{{ "supplierForm.phoneNumber" | translate }}</mat-label>
             <input
               matInput
               formControlName="phoneNumber"
@@ -188,7 +194,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="su-span2">
-            <mat-label>Email</mat-label>
+            <mat-label>{{ "supplierForm.email" | translate }}</mat-label>
             <input
               matInput
               formControlName="email"
@@ -226,7 +232,7 @@
           </mat-chip-set>
         </div>
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Items sold</mat-label>
+          <mat-label>{{ "supplierForm.itemsSold" | translate }}</mat-label>
           <input
             matInput
             formControlName="soldItems"
@@ -262,7 +268,7 @@
           </mat-chip-set>
         </div>
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Service areas</mat-label>
+          <mat-label>{{ "supplierForm.serviceAreas" | translate }}</mat-label>
           <input
             matInput
             formControlName="serviceAreas"

@@ -9,7 +9,7 @@
       <ng-template matStepLabel>Meta Data</ng-template>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Date</mat-label>
+        <mat-label>{{ "draftConvert.date" | translate }}</mat-label>
         <input
           matInput
           formControlName="date"
@@ -24,7 +24,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Due date</mat-label>
+        <mat-label>{{ "draftConvert.dueDate" | translate }}</mat-label>
         <input
           matInput
           formControlName="dueDate"
@@ -39,7 +39,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Supplier</mat-label>
+        <mat-label>{{ "draftConvert.supplier" | translate }}</mat-label>
         <input
           matInput
           formControlName="supplierName"
@@ -52,7 +52,7 @@
       <div class="row">
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Invoice name</mat-label>
+            <mat-label>{{ "draftConvert.invoiceName" | translate }}</mat-label>
             <input
               matInput
               formControlName="invoiceName"
@@ -62,7 +62,9 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Purchase Order Name</mat-label>
+            <mat-label>{{
+              "draftConvert.purchaseOrderName" | translate
+            }}</mat-label>
             <input
               matInput
               type="text"
@@ -73,7 +75,7 @@
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Receipt Name</mat-label>
+            <mat-label>{{ "draftConvert.receiptName" | translate }}</mat-label>
             <input
               matInput
               type="text"
@@ -83,7 +85,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Project</mat-label>
+            <mat-label>{{ "draftConvert.project" | translate }}</mat-label>
             <input
               matInput
               type="text"
@@ -95,7 +97,7 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tax Invoice Name</mat-label>
+        <mat-label>{{ "draftConvert.taxInvoiceName" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -106,7 +108,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Purchase type</mat-label>
+        <mat-label>{{ "draftConvert.purchaseType" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -117,7 +119,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document type</mat-label>
+        <mat-label>{{ "draftConvert.documentType" | translate }}</mat-label>
         <mat-select formControlName="documentType">
           <mat-option [value]="'goods'">Goods purchase</mat-option>
           <mat-option [value]="'other'">Other purchase</mat-option>
@@ -125,7 +127,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>Document Status</mat-label>
+        <mat-label>{{ "draftConvert.documentStatus" | translate }}</mat-label>
         <mat-select formControlName="lastStatus">
           <mat-option value="draft">Waiting</mat-option>
           <mat-option value="ready">Ready</mat-option>
@@ -133,7 +135,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Document Type</mat-label>
+        <mat-label>{{ "draftConvert.documentType" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -170,7 +172,7 @@
       <ng-template matStepLabel>Value Data</ng-template>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>DPP</mat-label>
+        <mat-label>{{ "draftConvert.dpp" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -184,7 +186,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (%)</mat-label>
+        <mat-label>{{ "draftConvert.ppnPercent" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -198,7 +200,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPN (Rp.)</mat-label>
+        <mat-label>{{ "draftConvert.ppnValue" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -213,7 +215,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PBBKB</mat-label>
+        <mat-label>{{ "draftConvert.pbbkb" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -227,7 +229,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh</mat-label>
+        <mat-label>{{ "draftConvert.pph" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -245,7 +247,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh Object Name</mat-label>
+        <mat-label>{{ "draftConvert.pphObjectName" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -256,7 +258,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh Percentage</mat-label>
+        <mat-label>{{ "draftConvert.pphPercentage" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -267,7 +269,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>PPh (Rp.)</mat-label>
+        <mat-label>{{ "draftConvert.pphValue" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -282,7 +284,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Other value</mat-label>
+        <mat-label>{{ "draftConvert.otherValue" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -296,7 +298,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Other value note</mat-label>
+        <mat-label>{{ "draftConvert.otherValueNote" | translate }}</mat-label>
         <mat-select formControlName="otherValueNote">
           <mat-option value="">Select</mat-option>
           <mat-option value="delivery">Delivery fee</mat-option>
@@ -305,7 +307,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-label>Total</mat-label>
+      <mat-label>{{ "draftConvert.total" | translate }}</mat-label>
       <mat-form-field appearance="outline" class="w-100">
         <input
           matInput
@@ -415,7 +417,7 @@
       <ng-template matStepLabel>Payment Data</ng-template>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank name</mat-label>
+        <mat-label>{{ "draftConvert.bankName" | translate }}</mat-label>
         <input
           #input
           matInput
@@ -436,7 +438,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account name</mat-label>
+        <mat-label>{{ "draftConvert.bankAccountName" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -446,7 +448,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Payment Method</mat-label>
+        <mat-label>{{ "draftConvert.paymentMethod" | translate }}</mat-label>
         <mat-select formControlName="paymentMethod">
           <mat-option value="bank">Bank Transfer</mat-option>
           <mat-option value="va">Virtual Account</mat-option>
@@ -455,7 +457,9 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account number</mat-label>
+        <mat-label>{{
+          "draftConvert.bankAccountNumber" | translate
+        }}</mat-label>
         <!-- Input for bank account name -->
         <input
           matInput
@@ -466,7 +470,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Total</mat-label>
+        <mat-label>{{ "draftConvert.total" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -486,7 +490,7 @@
         formControlName="proxyPayment"
       >
         <div class="d-flex align-items-center justify-content-between">
-          <span>Proxy Payment</span>
+          <span>{{ "draftConvert.proxyPayment" | translate }}</span>
           <button
             type="button"
             mat-icon-button
@@ -498,7 +502,9 @@
       </mat-slide-toggle>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank account origin</mat-label>
+        <mat-label>{{
+          "draftConvert.bankAccountOrigin" | translate
+        }}</mat-label>
         <mat-select formControlName="bankAccountID">
           <mat-option *ngFor="let option of bankAccounts" [value]="option.id">
             {{ option.bankName }} · {{ option.bankAccountName }} ·
@@ -513,7 +519,7 @@
         formControlName="createPayment"
       >
         <div class="d-flex align-items-center justify-content-between">
-          <span>Create payment slip</span>
+          <span>{{ "draftConvert.createPaymentSlip" | translate }}</span>
           <button
             type="button"
             mat-icon-button

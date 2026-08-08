@@ -46,6 +46,13 @@ export interface ClauseContext {
   licenseDelivery?: string; // 'email' | 'account' | 'download' | 'other'
   // PO-5.1.2 (maintenance): 'barang' (sparepart) | 'jasa' (perbaikan)
   maintenanceMode?: string;
+  // PO-B: termin pembayaran ditulis bebas (bukan kode CR/CBD/dst)
+  paymentTermText?: string;
+  // PO-D (SPK tenaga kerja harian)
+  overtimeRate?: number; // upah lembur per jam
+  wageSchedules?: string[]; // kalimat jadwal bayar tiap komponen upah
+  shiftHours?: number; // jam kerja per shift
+  includeSundayPolicy?: boolean; // sertakan kebijakan Hari Minggu
 }
 
 export interface ClauseTemplate {
@@ -93,37 +100,26 @@ function strikeIf(off: boolean, text: string): string {
 
 const G_CLAUSES: ClauseTemplate[] = [
   {
+    // Mengikuti dokumen PO G yang berlaku: klausul Franco dan Loco keduanya
+    // ditampilkan, alamat kantor tidak ditempel di klausul Franco, dan label
+    // kontak memakai penamaan pada dokumen.
     version: '1.0',
     build: (ctx) => {
       const loco = isLoco(ctx);
-      const points: string[] = [
+      return [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
-        `Alamat pengiriman / pengambilan barang: ${ctx.deliveryAddress || '—'}.`,
-        `Kontak penanggung jawab pengambil / pengirim: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
-        `Kontak penanggung jawab pengambil / penerima: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        `Alamat pengiriman/pengambilan barang adalah: ${ctx.deliveryAddress || '—'}.`,
+        `Kontak penanggung jawab penerima/pemberi barang adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        `Kontak penanggung jawab pengirim/pengambil adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
         `PIHAK PENJUAL dan PEMBELI wajib mendokumentasikan (video) serah terima yang berisi pemeriksaan kondisi barang.`,
-      ];
-      if (!loco) {
-        points.push(
-          `Bila Franco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PENJUAL wajib memberikan detail Kontak Penanggung Jawab Pengiriman, nomor polisi kendaraan pengirim beserta bukti kelengkapan dokumen pengirim (STNK, KIR, SIM) dalam bentuk softcopy melalui e-mail ke ${OFFICE_CONTACT.email}; Office: ${OFFICE_CONTACT.address}.`,
-        );
-      } else {
-        points.push(
-          `Bila Loco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PEMBELI akan memberikan detail Kontak Penanggung Jawab Penerima, dalam bentuk softcopy melalui nomor telepon/fax atau alamat e-mail yang diberikan.`,
-        );
-      }
-      points.push(
+        `Bila Franco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PENJUAL wajib memberikan detail Kontak Penanggung Jawab Pengiriman, nomor polisi kendaraan pengirim beserta bukti kelengkapan dokumen pengirim (STNK, KIR, SIM) dalam bentuk softcopy melalui e-mail ke ${OFFICE_CONTACT.email};`,
+        `Bila Loco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PEMBELI akan memberikan detail Kontak Penanggung Jawab Penerima, dalam bentuk softcopy melalui nomor telepon/fax atau alamat e-mail yang diberikan;`,
         `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan kontrak jual/beli ini.`,
-      );
-      return points;
+      ];
     },
   },
-  // To add version 2.0: copy the block above, bump `version`, edit the text.
-  // New POs will use it automatically; old POs stay on 1.0.
 ];
-
-// ---- PO-C : Fuel ----------------------------------------------------------
 
 const C_CLAUSES: ClauseTemplate[] = [
   {
@@ -256,8 +252,117 @@ const MAINTENANCE_CLAUSES: ClauseTemplate[] = [
  * Map of purchase-order type -> its ordered list of template versions.
  * Add other PO types here as their clause templates are defined.
  */
+
+// ---- PO-D: SPK tenaga kerja harian --------------------------------------
+
+function rupiah(value?: number): string {
+  const n = Number(value) || 0;
+  return 'Rp. ' + n.toLocaleString('id-ID');
+}
+
+const D_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const overtime = rupiah(ctx.overtimeRate);
+      const shift = Number(ctx.shiftHours) || 8;
+
+      const schedules =
+        ctx.wageSchedules && ctx.wageSchedules.length
+          ? ctx.wageSchedules
+          : ['Upah dibayarkan sesuai kesepakatan.'];
+
+      const lines: string[] = [
+        // HAK PEKERJA
+        `Shift kerja adalah ${shift} jam per hari. Awal mula jam shift akan diinformasikan oleh penanggung jawab proyek.`,
+        'Selama perjanjian kerjasama, PIHAK KEDUA bersedia ditempatkan di seluruh Indonesia sesuai lokasi proyek.',
+        `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
+        'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+
+        // KEWAJIBAN PEKERJA
+        'Pekerja wajib melakukan absensi di mula dan akhir shift.',
+        'Pekerja wajib melaksanakan tugas yang dipercayakan oleh penanggung jawab proyek dengan sebaik-baiknya tanpa mengabaikan unsur keselamatan kerja dan kebersihan lingkungan.',
+        'Pekerja wajib menjaga peralatan kerja yang digunakan dalam proyek.',
+        'Apabila pekerja lalai dan dengan atau tanpa sengaja menghilangkan barang, pekerja wajib melakukan ganti rugi berdasarkan harga barang tersebut.',
+        'Apabila pekerja memiliki alat kerja yang rusak, pekerja wajib memberikan informasi tertulis kepada penanggung jawab dan memberikan bukti barang yang rusak. Apabila bukti barang rusak tersebut tidak ada, maka barang tersebut dianggap hilang dan menjadi tanggung jawab pekerja.',
+        'Setiap akhir shift dan/atau lembur, pekerja wajib menyimpan seluruh peralatan kerja yang dikumpulkan di satu tempat penyimpanan, dikunci dan ditutup dalam keadaan bersih.',
+        'Apabila pekerja tidak menyelesaikan perjanjian kerjasama ini, maka perusahaan berhak untuk tidak memberikan seluruh hak pekerja.',
+        'Apabila pekerja meninggalkan utang kepada Pihak Lain selain perusahaan, perusahaan berhak untuk tidak memberikan hak pekerja hingga permasalahan tersebut diselesaikan terlebih dahulu.',
+        'Selama perjanjian kontrak kerja ini berlangsung, apabila PIHAK KEDUA ingin mengundurkan diri, PIHAK KEDUA wajib memberikan Surat Pengunduran Diri secara tertulis minimal 30 hari kerja.',
+
+        // LAPORAN LAPANGAN
+        'PIHAK KEDUA berkewajiban untuk mengisi Form Data Pekerja (FDP) sebelum pekerjaan dimulai.',
+
+        // TATA CARA PEMBAYARAN
+        'Bilamana tidak ditemukan laporan absen pada sebagian/seluruh periode pekan tersebut, perusahaan tidak berkewajiban untuk membayarkan hasil kerja pekerja pada periode tersebut.',
+        'Perusahaan berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada utang pekerja kepada PIHAK KETIGA yang belum diselesaikan.',
+        'Apabila pekerja tidak menyelesaikan pekerjaannya, sisa perhitungan pekerjaan tidak dapat ditagihkan dan/atau dibayarkan.',
+      ];
+
+      // Kebijakan Hari Minggu — opsional, disimpan per PO
+      if (ctx.includeSundayPolicy) {
+        lines.push(
+          'Pada prinsipnya Hari Minggu merupakan hari libur lapangan (off).',
+          'Apabila karyawan hadir penuh dari hari Senin sampai Sabtu tanpa ada ketidakhadiran, dan tetap masuk pada Hari Minggu, maka gaji Hari Minggu dihitung 2 (dua) kali.',
+          'Apabila karyawan hadir penuh dari hari Senin sampai Sabtu, maka berhak mendapatkan gaji Hari Minggu dihitung 1 (satu) kali.',
+          'Apabila terdapat ketidakhadiran pada hari Senin sampai dengan Sabtu, maka kehadiran pada Hari Minggu tidak dihitung (0).',
+          'Apabila terdapat ketidakhadiran pada hari Senin sampai dengan Sabtu, namun karyawan tetap masuk pada Hari Minggu karena kebutuhan mendesak (urgent), maka kehadiran tersebut dihitung 1 (satu) kali.',
+        );
+      }
+
+      // Jadwal & periode perhitungan tiap komponen upah ditaruh paling
+      // bawah supaya poin baku tidak bergeser saat komponen ditambah.
+      lines.push(...schedules);
+
+      return lines;
+    },
+  },
+];
+
+// ---- PO-B: SPK penyewaan alat kerja ke vendor ---------------------------
+
+const B_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      // Termin PO-B ditulis bebas karena bervariasi ("Tempo 30 hari",
+      // "sewa bulan pertama cash, berikutnya tempo 14 hari", dst).
+      const term = (ctx.paymentTermText || '').trim();
+
+      const lines: string[] = [
+        'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+        term
+          ? `Termin pembayaran adalah ${term}`.replace(/\.?$/, '.')
+          : 'Termin pembayaran adalah sesuai kesepakatan.',
+        'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
+        'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
+        `PIHAK KEDUA wajib memberikan daftar alat kerja dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
+        'Hanya alat kerja dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.',
+        'PIHAK KEDUA wajib menyewakan alat kerja sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA.',
+        `PIHAK KEDUA wajib mengirimkan dokumen Surat Izin Laik Operasi (SILO) sesuai dengan peraturan dan perundang-undangan yang berlaku di Republik Indonesia untuk alat kerja yang akan disewakan sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA. Seluruh dokumen Surat Izin Laik Operasi (SILO) wajib dikirimkan melalui e-mail ke alamat ${OFFICE_CONTACT.email} 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi.`,
+        'Seluruh pengambilan dan pengisian Bahan Bakar Minyak (BBM) untuk operasional alat kerja wajib didokumentasikan oleh PIHAK KEDUA dan dilaporkan kepada perwakilan PIHAK PERTAMA.',
+        'PIHAK KEDUA wajib memastikan alat kerja laik untuk digunakan sebelum proses mobilisasi dilaksanakan.',
+        'PIHAK KEDUA wajib melakukan pemeriksaan kondisi alat kerja secara berkala selama perjanjian ini berlangsung.',
+        'Tim mekanik yang cakap dan handal wajib disediakan oleh PIHAK KEDUA bilamana adanya kerusakan/kendala pada alat kerja tersebut.',
+        'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah hari kerja maksimum pada periode tersebut, sejumlah hari perbaikan terhitung dari laporan kerusakan alat kerja.',
+        'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
+        'Seluruh peralatan, perlengkapan dan material yang dibutuhkan selama perbaikan merupakan tanggung jawab PIHAK KEDUA.',
+        'Keamanan dan keselamatan alat kerja menjadi tanggung jawab PIHAK PERTAMA.',
+        'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
+        'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
+        'Barang yang disewakan adalah milik PIHAK KEDUA. PIHAK PERTAMA tidak diizinkan untuk memperjualbelikan, menjadikan jaminan, memindahtangankan, dan/atau memindahkan barang ke lokasi lain tanpa persetujuan dari PIHAK KEDUA.',
+        'PIHAK KEDUA tidak bertanggung jawab atas permasalahan PIHAK PERTAMA dengan pihak-pihak lainnya diluar kontrak kerja ini.',
+      ];
+
+      return lines;
+    },
+  },
+];
+
 export const CLAUSE_TEMPLATES: { [poType: string]: ClauseTemplate[] } = {
   G: G_CLAUSES,
+  D: D_CLAUSES,
+  B: B_CLAUSES,
   C: C_CLAUSES,
   '5.1.12': SOFTWARE_CLAUSES,
   '5.1.2': MAINTENANCE_CLAUSES,
