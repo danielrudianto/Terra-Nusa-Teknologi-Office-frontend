@@ -23,6 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { MatInputModule } from '@angular/material/input';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export const amountValidator: ValidatorFn = (
   control: AbstractControl,
@@ -58,6 +59,7 @@ export const amountValidator: ValidatorFn = (
     MatFormFieldModule,
     MatDatepickerModule,
     MatSelectModule,
+    TranslatePipe,
   ],
 })
 export class SalaryPaymentCreateComponent {

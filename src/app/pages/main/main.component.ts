@@ -170,6 +170,11 @@ export class MainComponent {
           route: '/Settings',
         },
         {
+          name: 'nav.activity',
+          icon: 'activity.svg',
+          route: '/Activity',
+        },
+        {
           name: 'nav.logout',
           icon: 'logout.svg',
           click: () => {

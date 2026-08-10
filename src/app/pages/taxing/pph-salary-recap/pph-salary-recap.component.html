@@ -17,15 +17,15 @@
       </svg>
     </span>
     <div class="txr-head__text">
-      <h2 class="txr-title">Rekap PPh (Gaji)</h2>
-      <span class="txr-sub">Unduh laporan PPh gaji karyawan</span>
+      <h2 class="txr-title">{{ "taxing.pphSalaryRecap" | translate }}</h2>
+      <span class="txr-sub">{{ "taxing.pphSalarySub" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="txr-content">
       <div class="txr-yearrow">
-        <span class="txr-label">Periode</span>
+        <span class="txr-label">{{ "common.period" | translate }}</span>
         <div class="txr-year">
           <button
             type="button"

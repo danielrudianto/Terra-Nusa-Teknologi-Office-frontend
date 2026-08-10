@@ -2,7 +2,9 @@
 <mat-dialog-content>
   <mat-stepper [orientation]="(stepperOrientation | async)!" linear>
     <mat-step>
-      <ng-template matStepLabel>Payment Data</ng-template>
+      <ng-template matStepLabel>{{
+        "expense.paymentData" | translate
+      }}</ng-template>
 
       <form [formGroup]="metaFormGroup" class="payment-form">
         <mat-form-field appearance="outline" class="w-100">
@@ -58,7 +60,7 @@
           style="letter-spacing: 0"
           matStepperNext
         >
-          Next
+          {{ "common.stepNext" | translate }}
         </button>
       </form>
     </mat-step>
@@ -217,7 +219,7 @@
         color="accent"
         matStepperPrevious
       >
-        Previous
+        {{ "common.stepPrev" | translate }}
       </button>
 
       <button
@@ -227,12 +229,14 @@
         class="ms-2"
         matStepperNext
       >
-        Next
+        {{ "common.stepNext" | translate }}
       </button>
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Value data</ng-template>
+      <ng-template matStepLabel>{{
+        "expense.valueData" | translate
+      }}</ng-template>
       <form [formGroup]="valueFormGroup" *ngIf="isPurchase">
         <!-- DPP -->
         <mat-form-field appearance="outline" class="w-100">
@@ -462,7 +466,7 @@
           color="accent"
           matStepperPrevious
         >
-          Previous
+          {{ "common.stepPrev" | translate }}
         </button>
 
         <button
@@ -472,7 +476,7 @@
           class="ms-2"
           matStepperNext
         >
-          Next
+          {{ "common.stepNext" | translate }}
         </button>
       </form>
 
@@ -482,7 +486,7 @@
         color="accent"
         matStepperPrevious
       >
-        Previous
+        {{ "common.stepPrev" | translate }}
       </button>
     </mat-step>
   </mat-stepper>

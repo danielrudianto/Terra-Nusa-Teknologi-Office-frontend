@@ -1,5 +1,7 @@
 <div class="poh">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.titleH' | translate"
     [description]="'poForm.descH' | translate"
   />
@@ -7,10 +9,10 @@
   <!-- ===== STEP 0: pilih jenis subkontraktor ===== -->
   @if (!subType) {
     <div class="poh-card poh-choose">
-      <div class="poh-choose__title">Jenis subkontraktor</div>
-      <div class="poh-choose__sub">
-        Pilih dulu supaya form-nya menyesuaikan.
+      <div class="poh-choose__title">
+        {{ "poH.subcontractorType" | translate }}
       </div>
+      <div class="poh-choose__sub">{{ "poH.chooseFirst" | translate }}</div>
 
       <div class="poh-choose__grid">
         <button type="button" class="poh-pick" (click)="chooseSubType('H1')">
@@ -28,8 +30,8 @@
             </svg>
           </span>
           <span class="poh-pick__code">H1</span>
-          <span class="poh-pick__name">Badan usaha</span>
-          <span class="poh-pick__desc">PT / CV. Tanpa data pekerja.</span>
+          <span class="poh-pick__name">{{ "poH.entity" | translate }}</span>
+          <span class="poh-pick__desc">{{ "poH.entityHint" | translate }}</span>
         </button>
 
         <button type="button" class="poh-pick" (click)="chooseSubType('H2')">
@@ -48,7 +50,7 @@
             </svg>
           </span>
           <span class="poh-pick__code">H2</span>
-          <span class="poh-pick__name">Non-badan usaha</span>
+          <span class="poh-pick__name">{{ "poH.nonEntity" | translate }}</span>
           <span class="poh-pick__desc"
             >Mandor / perorangan. Wajib data pekerja.</span
           >
@@ -61,7 +63,7 @@
       <div class="poh-card">
         <div class="poh-cardhead">
           <div class="poh-section__title poh-section__title--flush">
-            Informasi PO
+            {{ "common.poInfo" | translate }}
           </div>
           <span class="poh-typechip">
             <strong>{{ subType }}</strong> · {{ subTypeLabel }}
@@ -70,7 +72,7 @@
               class="poh-typechip__btn"
               (click)="resetSubType()"
             >
-              Ganti
+              {{ "common.change" | translate }}
             </button>
           </span>
         </div>
@@ -130,25 +132,33 @@
 
       <!-- ===== Jenis Pekerjaan ===== -->
       <div class="poh-card">
-        <div class="poh-section__title">Jenis Pekerjaan</div>
+        <div class="poh-section__title">{{ "poH.workType" | translate }}</div>
 
         <div class="poh-grid">
           <mat-form-field appearance="outline" class="poh-span2">
-            <mat-label>Jenis pekerjaan</mat-label>
+            <mat-label>{{ "poH.workTypeLabel" | translate }}</mat-label>
             <mat-select
               formControlName="workScope"
               (selectionChange)="onWorkScopeChange()"
             >
-              <mat-option value="borongan"
-                >Borongan / jasa umum (lengkap)</mat-option
-              >
-              <mat-option value="mandor-bor">Mandor bor</mat-option>
-              <mat-option value="mandor-besi">Mandor besi</mat-option>
-              <mat-option value="mandor-cor">Mandor cor</mat-option>
-              <mat-option value="grouting">Subkontraktor grouting</mat-option>
-              <mat-option value="buang-lumpur"
-                >Pembuangan lumpur/tanah</mat-option
-              >
+              <mat-option value="borongan">{{
+                "poH.borongan" | translate
+              }}</mat-option>
+              <mat-option value="mandor-bor">{{
+                "poH.mandorBor" | translate
+              }}</mat-option>
+              <mat-option value="mandor-besi">{{
+                "poH.mandorBesi" | translate
+              }}</mat-option>
+              <mat-option value="mandor-cor">{{
+                "poH.mandorCor" | translate
+              }}</mat-option>
+              <mat-option value="grouting">{{
+                "poH.grouting" | translate
+              }}</mat-option>
+              <mat-option value="buang-lumpur">{{
+                "poH.buangLumpur" | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -164,7 +174,7 @@
         @if (isRingkas) {
           <div class="poh-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Kode PPh</mat-label>
+              <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="pphCode"
@@ -189,14 +199,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Pembayaran akhir</mat-label>
+              <mat-label>{{ "poH.finalPayment" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="finalPaymentDays"
                 type="number"
                 [min]="0"
               />
-              <span matSuffix>&nbsp;hari</span>
+              <span matSuffix>{{ "common.days" | translate }}</span>
             </mat-form-field>
           </div>
 
@@ -216,7 +226,7 @@
         @if (isMandor) {
           <div class="poh-grid">
             <mat-form-field appearance="outline" class="poh-span2">
-              <mat-label>Keterangan PPh (poin 2)</mat-label>
+              <mat-label>{{ "poH.pphNote" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="pphNote"
@@ -230,7 +240,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="poh-span2">
-              <mat-label>Keterangan alat kerja (poin 3)</mat-label>
+              <mat-label>{{ "poH.toolNote" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="toolingNote"
@@ -251,29 +261,29 @@
               formControlName="billingCycleMode"
               class="poh-rate"
             >
-              <mat-radio-button value="sejak-mulai" color="primary">
-                Penagihan sejak pekerjaan dimulai
-              </mat-radio-button>
-              <mat-radio-button value="periode-pekan" color="primary">
-                Batas pekan tetap
-              </mat-radio-button>
+              <mat-radio-button value="sejak-mulai" color="primary">{{
+                "poH.billingSinceStart" | translate
+              }}</mat-radio-button>
+              <mat-radio-button value="periode-pekan" color="primary">{{
+                "poH.fixedWeekBoundary" | translate
+              }}</mat-radio-button>
             </mat-radio-group>
 
             @if (formGroup.value.billingCycleMode === "periode-pekan") {
               <div class="poh-optrow__fields">
                 <mat-form-field appearance="outline">
-                  <mat-label>Mula pekan</mat-label>
+                  <mat-label>{{ "poH.weekStart" | translate }}</mat-label>
                   <input matInput formControlName="weekStartDay" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Akhir pekan</mat-label>
+                  <mat-label>{{ "poH.weekEnd" | translate }}</mat-label>
                   <input matInput formControlName="weekEndDay" />
                 </mat-form-field>
               </div>
             } @else {
               <div class="poh-optrow__fields">
                 <mat-form-field appearance="outline">
-                  <mat-label>Periode penagihan</mat-label>
+                  <mat-label>{{ "poH.billingPeriod" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="billingPeriod"
@@ -288,11 +298,11 @@
 
       <!-- ===== Keterangan Pekerjaan ===== -->
       <div class="poh-card">
-        <div class="poh-section__title">Keterangan Pekerjaan</div>
+        <div class="poh-section__title">{{ "poH.workInfo" | translate }}</div>
 
         <div class="poh-grid">
           <mat-form-field appearance="outline" class="poh-span2">
-            <mat-label>Lokasi pekerjaan</mat-label>
+            <mat-label>{{ "poH.workLocation" | translate }}</mat-label>
             <input
               matInput
               formControlName="workLocation"
@@ -301,7 +311,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="poh-span2">
-            <mat-label>Jenis pekerjaan</mat-label>
+            <mat-label>{{ "poH.workTypeLabel" | translate }}</mat-label>
             <input
               matInput
               formControlName="jobType"
@@ -310,7 +320,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Mulai pelaksanaan</mat-label>
+            <mat-label>{{ "poH.startDate" | translate }}</mat-label>
             <input
               matInput
               formControlName="startDate"
@@ -324,7 +334,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Selesai pelaksanaan</mat-label>
+            <mat-label>{{ "poH.endDate" | translate }}</mat-label>
             <input
               matInput
               formControlName="endDate"
@@ -335,24 +345,24 @@
               [for]="endPicker"
             ></mat-datepicker-toggle>
             <mat-datepicker #endPicker></mat-datepicker>
-            <mat-hint>Kosongkan bila sampai pekerjaan selesai</mat-hint>
+            <mat-hint>{{ "poH.endDateHint" | translate }}</mat-hint>
           </mat-form-field>
         </div>
 
         <div class="poh-section__title poh-section__title--sub">
-          Jenis Harga
+          {{ "poH.priceType" | translate }}
         </div>
         <mat-radio-group
           formControlName="rateType"
           class="poh-rate"
           (change)="onRateTypeChange()"
         >
-          <mat-radio-button value="unit" color="primary">
-            Unit rate (harga satuan)
-          </mat-radio-button>
-          <mat-radio-button value="lumpsum" color="primary">
-            Lump sum (borongan)
-          </mat-radio-button>
+          <mat-radio-button value="unit" color="primary">{{
+            "poH.unitRate" | translate
+          }}</mat-radio-button>
+          <mat-radio-button value="lumpsum" color="primary">{{
+            "poH.lumpSum" | translate
+          }}</mat-radio-button>
         </mat-radio-group>
         <p class="poh-rate__hint">
           @if (isLumpSum) {
@@ -365,7 +375,7 @@
 
         @if (isLumpSum) {
           <mat-form-field appearance="outline" class="poh-span2">
-            <mat-label>Nilai borongan</mat-label>
+            <mat-label>{{ "poH.contractValue" | translate }}</mat-label>
             <input
               matInput
               formControlName="lumpSumPrice"
@@ -381,7 +391,7 @@
       <div class="poh-card">
         <div class="poh-cardhead">
           <div class="poh-section__title poh-section__title--flush">
-            Lingkup Pekerjaan
+            {{ "poH.workScope" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addScope()">
             <mat-icon>add</mat-icon> Tambah pekerjaan
@@ -391,7 +401,7 @@
         @if (t.controls.length === 0) {
           <div class="poh-empty">
             <mat-icon>construction</mat-icon>
-            <span>Belum ada pekerjaan. Klik "Tambah pekerjaan".</span>
+            <span>{{ "poH.emptyScope" | translate }}</span>
           </div>
         } @else {
           <div class="poh-list">
@@ -502,7 +512,7 @@
         <div class="poh-card">
           <div class="poh-cardhead">
             <div class="poh-section__title poh-section__title--flush">
-              Data Pekerja
+              {{ "poH.workerData" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addWorker()">
               <mat-icon>person_add</mat-icon> Tambah pekerja
@@ -512,7 +522,7 @@
           @if (w.controls.length === 0) {
             <div class="poh-empty">
               <mat-icon>groups</mat-icon>
-              <span>Belum ada pekerja. Klik "Tambah pekerja".</span>
+              <span>{{ "poH.emptyWorkers" | translate }}</span>
             </div>
           } @else {
             <div class="poh-workers">
@@ -556,7 +566,7 @@
         <div class="poh-card">
           <div class="poh-cardhead">
             <div class="poh-section__title poh-section__title--flush">
-              Pasal 3 — Kewajiban
+              {{ "poH.article3" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addKewajiban()">
               <mat-icon>add</mat-icon> Tambah poin
@@ -573,7 +583,7 @@
           @if (kewajiban.controls.length === 0) {
             <div class="poh-empty">
               <mat-icon>rule</mat-icon>
-              <span>Belum ada poin kewajiban.</span>
+              <span>{{ "poH.emptyObligationPoints" | translate }}</span>
             </div>
           } @else {
             <div formArrayName="kewajiban" class="poh-list">
@@ -581,7 +591,9 @@
                 <div class="poh-krow">
                   <span class="poh-krow__no">3.{{ i + 1 }}</span>
                   <mat-form-field appearance="outline" class="poh-krow__field">
-                    <mat-label>Poin kewajiban</mat-label>
+                    <mat-label>{{
+                      "poH.obligationPoints" | translate
+                    }}</mat-label>
                     <textarea
                       matInput
                       [formControlName]="i"
@@ -608,7 +620,7 @@
         <div class="poh-card">
           <div class="poh-cardhead">
             <div class="poh-section__title poh-section__title--flush">
-              Pasal 4 — Keterangan
+              {{ "poH.article4" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addKeterangan()">
               <mat-icon>add</mat-icon> Tambah poin
@@ -625,7 +637,7 @@
           @if (keterangan.controls.length === 0) {
             <div class="poh-empty">
               <mat-icon>notes</mat-icon>
-              <span>Belum ada poin keterangan.</span>
+              <span>{{ "poH.emptyNotePoints" | translate }}</span>
             </div>
           } @else {
             <div formArrayName="keterangan" class="poh-list">
@@ -633,7 +645,7 @@
                 <div class="poh-krow">
                   <span class="poh-krow__no">4.{{ i + 1 }}</span>
                   <mat-form-field appearance="outline" class="poh-krow__field">
-                    <mat-label>Poin keterangan</mat-label>
+                    <mat-label>{{ "poH.notePoints" | translate }}</mat-label>
                     <textarea
                       matInput
                       [formControlName]="i"
@@ -658,13 +670,11 @@
       <!-- ===== Pasal 5 — Penagihan & Pembayaran ===== -->
       @if (!isRingkas) {
         <div class="poh-card">
-          <div class="poh-section__title">
-            Pasal 5 — Penagihan &amp; Pembayaran
-          </div>
+          <div class="poh-section__title">{{ "poH.article5" | translate }}</div>
 
           <div class="poh-grid">
             <mat-form-field appearance="outline" class="poh-span2">
-              <mat-label>Periode penagihan</mat-label>
+              <mat-label>{{ "poH.billingPeriod" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="billingPeriod"
@@ -673,38 +683,36 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Pembayaran (hari)</mat-label>
+              <mat-label>{{ "poH.paymentDays" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="paymentDays"
                 type="number"
                 [min]="0"
               />
-              <mat-hint>Sejak dokumen penagihan lengkap</mat-hint>
+              <mat-hint>{{ "poH.sinceDocsComplete" | translate }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Pembayaran akhir (hari kalender)</mat-label>
+              <mat-label>{{ "poH.finalPaymentDays" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="finalPaymentDays"
                 type="number"
                 [min]="0"
               />
-              <mat-hint
-                >Sejak demobilisasi &amp; serah terima disetujui</mat-hint
-              >
+              <mat-hint>{{ "poH.sinceHandover" | translate }}</mat-hint>
             </mat-form-field>
           </div>
 
           <div class="poh-optrow">
-            <mat-checkbox formControlName="hasDownPayment" color="primary">
-              Ada uang muka (DP)
-            </mat-checkbox>
+            <mat-checkbox formControlName="hasDownPayment" color="primary">{{
+              "poH.hasDownPayment" | translate
+            }}</mat-checkbox>
             @if (hasDownPayment) {
               <div class="poh-optrow__fields">
                 <mat-form-field appearance="outline">
-                  <mat-label>Besar DP</mat-label>
+                  <mat-label>{{ "poH.dpAmount" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="downPaymentPercent"
@@ -712,30 +720,30 @@
                     [min]="0"
                     [max]="100"
                   />
-                  <span matSuffix>&nbsp;%</span>
+                  <span matSuffix>{{ "common.percent" | translate }}</span>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Dibayar dalam</mat-label>
+                  <mat-label>{{ "poH.paidWithin" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="downPaymentDays"
                     type="number"
                     [min]="0"
                   />
-                  <span matSuffix>&nbsp;hari</span>
+                  <span matSuffix>{{ "common.days" | translate }}</span>
                 </mat-form-field>
               </div>
             }
           </div>
 
           <div class="poh-optrow">
-            <mat-checkbox formControlName="hasRetention" color="primary">
-              Ada retensi
-            </mat-checkbox>
+            <mat-checkbox formControlName="hasRetention" color="primary">{{
+              "poH.hasRetention" | translate
+            }}</mat-checkbox>
             @if (hasRetention) {
               <div class="poh-optrow__fields">
                 <mat-form-field appearance="outline">
-                  <mat-label>Besar retensi</mat-label>
+                  <mat-label>{{ "poH.retentionAmount" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="retentionPercent"
@@ -743,17 +751,17 @@
                     [min]="0"
                     [max]="100"
                   />
-                  <span matSuffix>&nbsp;%</span>
+                  <span matSuffix>{{ "common.percent" | translate }}</span>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Dilepas dalam</mat-label>
+                  <mat-label>{{ "poH.releasedWithin" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="retentionReleaseDays"
                     type="number"
                     [min]="0"
                   />
-                  <span matSuffix>&nbsp;hari</span>
+                  <span matSuffix>{{ "common.days" | translate }}</span>
                 </mat-form-field>
               </div>
             }
@@ -763,7 +771,7 @@
             <div
               class="poh-section__title poh-section__title--flush poh-section__title--sub"
             >
-              Dokumen penagihan
+              {{ "poH.billingDocs" | translate }}
             </div>
             <button
               type="button"
@@ -786,7 +794,7 @@
               <div class="poh-krow">
                 <span class="poh-krow__no">5.3.{{ i + 1 }}</span>
                 <mat-form-field appearance="outline" class="poh-krow__field">
-                  <mat-label>Dokumen</mat-label>
+                  <mat-label>{{ "poH.documents" | translate }}</mat-label>
                   <input matInput [formControlName]="i" />
                 </mat-form-field>
                 <button
@@ -803,7 +811,9 @@
 
           <!-- pratinjau: isian kosong tampil sebagai ______ -->
           <div class="poh-preview">
-            <div class="poh-preview__title">Pratinjau Pasal 5</div>
+            <div class="poh-preview__title">
+              {{ "poH.previewArticle5" | translate }}
+            </div>
             <ol class="poh-preview__list">
               @for (p of pasal5Preview; track $index) {
                 @if (isSubList(p)) {
@@ -824,38 +834,46 @@
       <!-- ===== Pembayaran ===== -->
       @if (isBuangLumpur || isGrouting) {
         <div class="poh-card">
-          <div class="poh-section__title">Pembayaran</div>
+          <div class="poh-section__title">
+            {{ "common.payment" | translate }}
+          </div>
           <div class="poh-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Termin pembayaran</mat-label>
+              <mat-label>{{ "poH.paymentTerm" | translate }}</mat-label>
               <mat-select formControlName="paymentTerm">
-                <mat-option value="CASH">Tunai (Cash)</mat-option>
-                <mat-option value="COD"
-                  >Bayar saat barang diterima (COD)</mat-option
-                >
-                <mat-option value="CBD">Bayar di muka (CBD)</mat-option>
-                <mat-option value="PPD">Uang muka (Prepaid)</mat-option>
-                <mat-option value="CR">Kredit / tempo</mat-option>
-                <mat-option value="CRD">Uang muka + tempo</mat-option>
+                <mat-option value="CASH">{{
+                  "poH.cash" | translate
+                }}</mat-option>
+                <mat-option value="COD">{{ "poH.cod" | translate }}</mat-option>
+                <mat-option value="CBD">{{ "poH.cbd" | translate }}</mat-option>
+                <mat-option value="PPD">{{
+                  "poH.prepaid" | translate
+                }}</mat-option>
+                <mat-option value="CR">{{
+                  "poH.credit" | translate
+                }}</mat-option>
+                <mat-option value="CRD">{{
+                  "poH.prepaidPlusTerm" | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             @if (needsCreditTerm) {
               <mat-form-field appearance="outline">
-                <mat-label>Lama tempo</mat-label>
+                <mat-label>{{ "poH.termLength" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="creditTerm"
                   type="number"
                   [min]="0"
                 />
-                <span matSuffix>&nbsp;hari</span>
+                <span matSuffix>{{ "common.days" | translate }}</span>
               </mat-form-field>
             }
 
             @if (needsPrepaidTerm) {
               <mat-form-field appearance="outline">
-                <mat-label>Uang muka</mat-label>
+                <mat-label>{{ "poH.downPayment" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="prepaidTerm"
@@ -863,27 +881,33 @@
                   [min]="0"
                   [max]="100"
                 />
-                <span matSuffix>&nbsp;%</span>
+                <span matSuffix>{{ "common.percent" | translate }}</span>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Pelunasan sisa</mat-label>
+                <mat-label>{{ "poH.settlement" | translate }}</mat-label>
                 <mat-select formControlName="settlementMode">
-                  <mat-option value="cash">Tunai saat serah terima</mat-option>
-                  <mat-option value="tempo">Tempo sekian hari</mat-option>
+                  <mat-option value="cash">{{
+                    "poH.cashOnHandover" | translate
+                  }}</mat-option>
+                  <mat-option value="tempo">{{
+                    "poH.termDays" | translate
+                  }}</mat-option>
                 </mat-select>
               </mat-form-field>
 
               @if (formGroup.value.settlementMode === "tempo") {
                 <mat-form-field appearance="outline">
-                  <mat-label>Lama tempo pelunasan</mat-label>
+                  <mat-label>{{
+                    "poH.settlementTermLength" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="settlementDays"
                     type="number"
                     [min]="0"
                   />
-                  <span matSuffix>&nbsp;hari</span>
+                  <span matSuffix>{{ "common.days" | translate }}</span>
                 </mat-form-field>
               }
             }
@@ -894,10 +918,12 @@
       <!-- ===== Pelaporan Lapangan ===== -->
       @if (isBuangLumpur) {
         <div class="poh-card">
-          <div class="poh-section__title">Pelaporan Lapangan</div>
+          <div class="poh-section__title">
+            {{ "poH.fieldReport" | translate }}
+          </div>
           <div class="poh-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Nama wakil PIHAK PERTAMA</mat-label>
+              <mat-label>{{ "poH.picName" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="officePICName"
@@ -906,7 +932,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Nomor telepon wakil</mat-label>
+              <mat-label>{{ "poH.picPhone" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="officePICPhoneNumber"
@@ -915,17 +941,17 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="poh-span2">
-              <mat-label>Dokumen dikirim sebelum mobilisasi</mat-label>
+              <mat-label>{{
+                "poH.docsBeforeMobilisation" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="mobilizationNoticeDays"
                 type="number"
                 [min]="0"
               />
-              <span matSuffix>&nbsp;hari</span>
-              <mat-hint
-                >Isi 0 bila boleh menyusul pada hari pelaksanaan</mat-hint
-              >
+              <span matSuffix>{{ "common.days" | translate }}</span>
+              <mat-hint>{{ "poH.zeroMeansSameDay" | translate }}</mat-hint>
             </mat-form-field>
           </div>
         </div>
@@ -935,20 +961,18 @@
       <div class="poh-card">
         <div class="poh-cardhead">
           <div class="poh-section__title poh-section__title--flush">
-            Poin Tambahan
+            {{ "poH.extraPoints" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addClause()">
             <mat-icon>add</mat-icon> Tambah poin
           </button>
         </div>
-        <p class="poh-rate__hint">
-          Ditulis sendiri; tercetak melanjutkan nomor poin terakhir.
-        </p>
+        <p class="poh-rate__hint">{{ "poA.extraPointHint" | translate }}</p>
 
         @if (additionalClauses.controls.length === 0) {
           <div class="poh-empty">
             <mat-icon>playlist_add</mat-icon>
-            <span>Belum ada poin tambahan.</span>
+            <span>{{ "common.noExtraPoints" | translate }}</span>
           </div>
         } @else {
           <div formArrayName="additionalClauses" class="poh-list">
@@ -956,7 +980,7 @@
               <div class="poh-krow">
                 <span class="poh-krow__no">+{{ i + 1 }}</span>
                 <mat-form-field appearance="outline" class="poh-krow__field">
-                  <mat-label>Poin tambahan</mat-label>
+                  <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
                   <textarea matInput [formControlName]="i" rows="2"></textarea>
                 </mat-form-field>
                 <button
@@ -992,7 +1016,9 @@
       <!-- ===== Pratinjau klausul ===== -->
       @if (isRingkas) {
         <div class="poh-card">
-          <div class="poh-section__title">Pratinjau Catatan Perjanjian</div>
+          <div class="poh-section__title">
+            {{ "poH.previewAgreement" | translate }}
+          </div>
           <p class="poh-rate__hint">
             Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
             isian di atas.

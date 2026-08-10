@@ -1,8 +1,8 @@
 <div class="pp">
   <div mat-dialog-title class="pp-head">
     <div class="pp-head__text">
-      <h2 class="pp-title">Pilih Kode PPh</h2>
-      <span class="pp-sub">Pilih objek pajak yang sesuai</span>
+      <h2 class="pp-title">{{ "pph.selectTitle" | translate }}</h2>
+      <span class="pp-sub">{{ "pph.selectSub" | translate }}</span>
     </div>
     <button type="button" class="pp-x" (click)="onClose()" aria-label="Tutup">
       <svg
@@ -36,7 +36,7 @@
           <circle cx="11" cy="11" r="7" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        <mat-label>Cari kode PPh</mat-label>
+        <mat-label>{{ "pph.searchCode" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -46,10 +46,10 @@
       </mat-form-field>
 
       <div class="pp-skb">
-        <mat-slide-toggle [formControl]="SKBFormControl" color="primary"
-          >SKB</mat-slide-toggle
-        >
-        <span class="pp-skb__hint">tarif 0%</span>
+        <mat-slide-toggle [formControl]="SKBFormControl" color="primary">{{
+          "pph.skb" | translate
+        }}</mat-slide-toggle>
+        <span class="pp-skb__hint">{{ "pph.rateZero" | translate }}</span>
       </div>
     </div>
 
@@ -68,14 +68,14 @@
       </button>
 
       <div class="pp-empty" *ngIf="pphList.length === 0">
-        Kode PPh tidak ditemukan.
+        {{ "pph.notFound" | translate }}
       </div>
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions class="pp-actions">
     <button mat-button class="pp-none" (click)="onClose()">
-      Tanpa PPh &amp; Tutup
+      {{ "pph.noPphClose" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

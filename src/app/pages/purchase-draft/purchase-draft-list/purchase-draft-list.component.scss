@@ -10,6 +10,38 @@
 
 /* chips */
 
+/* ===== gaya dasar filter chip, disamakan dengan halaman Purchase ===== */
+:host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
+  gap: 8px;
+}
+
+:host ::ng-deep .mat-mdc-chip-option {
+  --mdc-chip-container-height: 34px;
+  --mdc-chip-elevated-container-color: var(--surface, #ffffff);
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-label-text-color: var(--muted, #5f6672);
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
+  --mdc-chip-outline-color: var(--border, #d9dce2);
+  --mdc-chip-outline-width: 0.5px;
+  --mdc-chip-selected-outline-width: 0px;
+  --mdc-chip-focus-state-layer-opacity: 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+
+/* tanda centang disembunyikan: terpilih ditandai lewat warna saja */
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__graphic {
+  display: none;
+}
+:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__text-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+:host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
+  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
+}
+
 :host
   ::ng-deep
   .pdl-fchip.mdc-evolution-chip--selected
@@ -291,4 +323,45 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* ===== kolom pemasok: nama di atas, prefix di bawah =====
+   Disamakan dengan halaman Pembelian agar ketiga daftar seragam. */
+.pdl-primary {
+  display: block;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+.pdl-secondary {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--faint, #9aa0ab);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+.pdl-supplier__text,
+.pdl-sup__text {
+  min-width: 0;
+}
+
+/* ---------- responsive ---------- */
+@media (min-width: 900px) {
+  /* Berbaris pada layar lebar seperti halaman Pembelian: chip di kiri,
+     kolom pencarian di kanan. Tanpa aturan ini toolbar terkunci bertumpuk
+     dan pencarian turun ke bawah chip. */
+  .pdl-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  /* Chip boleh membungkus bila sempit; kolom pencarian yang mengalah. */
+  .pdl-toolbar > form,
+  .pdl-toolbar > mat-chip-listbox {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
 }

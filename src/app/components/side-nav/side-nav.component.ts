@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LogoComponent } from '../logo/logo.component';
 
 @Component({
   selector: 'app-side-nav',
   imports: [
+    LogoComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,

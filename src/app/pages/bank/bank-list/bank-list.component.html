@@ -31,8 +31,24 @@
       <table mat-table [dataSource]="banks">
         <!-- Bank -->
         <ng-container matColumnDef="bankName">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.bank" | translate }}
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            (click)="changeSortBy('bankName')"
+          >
+            <span class="bl-th"
+              >{{ "table.bank" | translate }}
+              <mat-icon *ngIf="sortBy == 'bankName' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'bankName' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'bankName'" class="bl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let bank">
             <div class="bl-bank">
@@ -48,8 +64,31 @@
 
         <!-- Account number -->
         <ng-container matColumnDef="bankAccountNumber">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.accountNumber" | translate }}
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            (click)="changeSortBy('bankAccountNumber')"
+          >
+            <span class="bl-th"
+              >{{ "table.accountNumber" | translate }}
+              <mat-icon
+                *ngIf="
+                  sortBy == 'bankAccountNumber' && sortByDirection == 'asc'
+                "
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="
+                  sortBy == 'bankAccountNumber' && sortByDirection == 'desc'
+                "
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy != 'bankAccountNumber'"
+                class="bl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let bank">
             <span class="bl-mono">{{ bank.bankAccountNumber || "—" }}</span>
@@ -58,8 +97,25 @@
 
         <!-- Account name -->
         <ng-container matColumnDef="bankAccountName">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.accountName" | translate }}
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            (click)="changeSortBy('bankAccountName')"
+          >
+            <span class="bl-th"
+              >{{ "table.accountName" | translate }}
+              <mat-icon
+                *ngIf="sortBy == 'bankAccountName' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'bankAccountName' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'bankAccountName'" class="bl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let bank">
             <span class="bl-muted">{{ bank.bankAccountName || "—" }}</span>

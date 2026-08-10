@@ -150,7 +150,7 @@ $negative: var(--bad-fg, #ca2929);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #9a6a00;
+  color: var(--warn-fg, #9a6a00);
   background: var(--warn-bg, #fff4d6);
   border-radius: 6px;
   padding: 2px 7px;

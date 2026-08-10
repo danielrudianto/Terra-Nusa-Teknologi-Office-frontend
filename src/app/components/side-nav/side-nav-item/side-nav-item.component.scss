@@ -131,9 +131,13 @@
   opacity: 0.5;
 }
 
-/* keep label from colliding with the pin when it's shown */
-.snav-row:hover .side-navigation-button__wrapper span,
-.snav-row .snav-pin.on ~ .side-navigation-button__wrapper span {
+/*
+ * Ruang untuk ikon pin disediakan TETAP, bukan hanya saat hover.
+ *
+ * Sebelumnya padding baru ditambahkan ketika baris disentuh, sehingga label
+ * bergeser 22px setiap kali kursor lewat.
+ */
+.side-navigation-button__wrapper span {
   padding-right: 22px;
 }
 

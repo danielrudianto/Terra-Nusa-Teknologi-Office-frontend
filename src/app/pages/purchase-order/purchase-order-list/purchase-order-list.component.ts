@@ -37,13 +37,12 @@ import {
   buildMandorClauses,
   buildPasal5,
 } from '../../../constants/clause-templates';
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { SettingsService } from '../../../services/setting.service';
 
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
-    MatSortModule,
     MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
@@ -94,6 +93,7 @@ export class PurchaseOrderListComponent {
   }
 
   constructor(
+    public settings: SettingsService,
     private router: Router,
     private route: ActivatedRoute,
     private apiService: ApiService,
@@ -106,11 +106,12 @@ export class PurchaseOrderListComponent {
   isReprinting: number | null = null;
   searchControl: FormControl = new FormControl('');
   orders: any[] = [];
-  /** Kolom & arah pengurutan; dikirim ke server agar seluruh data ikut. */
+  /** Kolom & arah pengurutan; penamaannya mengikuti halaman Pembelian. */
   sortBy: string = 'date';
-  sortDir: 'asc' | 'desc' = 'desc';
+  sortByDirection: 'asc' | 'desc' = 'desc';
   page: number = 1;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
   count: number = 0;
   displayedColumns: string[] = [
     'name',
@@ -124,13 +125,17 @@ export class PurchaseOrderListComponent {
   ];
 
   /**
-   * Ganti kolom pengurut. Mengklik kolom yang sama membalik arahnya.
-   * Pengurutan dilakukan di server supaya mencakup seluruh data,
-   * bukan hanya halaman yang sedang tampil.
+   * Ganti kolom pengurut; mengklik kolom yang sama membalik arahnya.
+   * Pengurutan dilakukan di server supaya mencakup seluruh data.
    */
-  onSortChange(sort: Sort) {
-    this.sortBy = sort.active;
-    this.sortDir = (sort.direction || 'desc') as 'asc' | 'desc';
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
     this.fetch(1);
   }
 
@@ -149,8 +154,8 @@ export class PurchaseOrderListComponent {
         keyword: this.searchControl.value || '',
         page: this.page,
         page_size: this.pageSize,
-        sort_by: this.sortBy,
-        sort_dir: this.sortDir,
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
       })
       .subscribe({
         next: (res: any) => {
@@ -441,8 +446,10 @@ export class PurchaseOrderListComponent {
     this.dialog
       .open(DeleteConfirmationComponent, {
         data: {
-          title: 'Hapus purchase order',
-          prompt: `Yakin mau menghapus "${po.name}"?`,
+          title: this.translate.instant('confirm.deleteTitle'),
+          prompt: this.translate.instant('confirm.deleteNamed', {
+            name: po.name,
+          }),
         },
       })
       .afterClosed()

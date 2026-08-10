@@ -1,15 +1,23 @@
 <div class="sc">
   <div class="sc-head" mat-dialog-title>
     <span class="sc-badge">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M3 21h18M6 21V7l6-4 6 4v14" />
         <path d="M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01" />
       </svg>
     </span>
     <div class="sc-head__text">
-      <h2 class="sc-title">Tambah Supplier</h2>
-      <span class="sc-sub">Lengkapi data supplier baru</span>
+      <h2 class="sc-title">{{ "supplier.addSupplier" | translate }}</h2>
+      <span class="sc-sub">{{ "supplier.completeData" | translate }}</span>
     </div>
   </div>
 
@@ -17,49 +25,95 @@
     <mat-dialog-content class="sc-content">
       <div class="sc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Prefix</mat-label>
+          <mat-label>{{ "supplier.prefix" | translate }}</mat-label>
           <mat-select formControlName="prefix" required>
             <mat-option value="PT.">PT.</mat-option>
             <mat-option value="CV.">CV.</mat-option>
             <mat-option value="UD.">UD.</mat-option>
-            <mat-option value="Pribadi">Pribadi</mat-option>
-            <mat-option value="Lainnya">Lainnya</mat-option>
+            <mat-option value="Pribadi">{{
+              "supplier.personal" | translate
+            }}</mat-option>
+            <mat-option value="Lainnya">{{
+              "supplier.other" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input matInput formControlName="name" type="text" placeholder="Supplier name" required />
+          <mat-label>{{ "common.name" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            placeholder="Supplier name"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="sc-span2">
-          <mat-label>Address</mat-label>
-          <textarea matInput formControlName="address" rows="2" placeholder="Supplier address" required style="resize: none"></textarea>
+          <mat-label>{{ "common.address" | translate }}</mat-label>
+          <textarea
+            matInput
+            formControlName="address"
+            rows="2"
+            placeholder="Supplier address"
+            required
+            style="resize: none"
+          ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>City</mat-label>
-          <input matInput formControlName="city" type="text" placeholder="Supplier city" required />
+          <mat-label>{{ "supplier.city" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="city"
+            type="text"
+            placeholder="Supplier city"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Province</mat-label>
-          <input matInput formControlName="province" type="text" placeholder="Supplier province" required />
+          <mat-label>{{ "supplier.province" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="province"
+            type="text"
+            placeholder="Supplier province"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>NPWP</mat-label>
-          <input matInput formControlName="npwp" type="text" placeholder="16 digit" maxlength="16" />
+          <input
+            matInput
+            formControlName="npwp"
+            type="text"
+            placeholder="16 digit"
+            maxlength="16"
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Phone number</mat-label>
-          <input matInput formControlName="phoneNumber" type="tel" placeholder="Phone number" required />
+          <mat-label>{{ "supplier.phoneNumber" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="phoneNumber"
+            type="tel"
+            placeholder="Phone number"
+            required
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="sc-span2">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" placeholder="Supplier email" />
+          <mat-label>{{ "common.email" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="Supplier email"
+          />
         </mat-form-field>
       </div>
 
@@ -68,42 +122,71 @@
       <!-- Items sold -->
       <div class="sc-tags" *ngIf="items.length > 0">
         <mat-chip-set aria-label="Items sold selection">
-          <mat-chip *ngFor="let item of items" [removable]="true" (removed)="remove(item)">
+          <mat-chip
+            *ngFor="let item of items"
+            [removable]="true"
+            (removed)="remove(item)"
+          >
             {{ item }}
-            <button matChipRemove aria-label="Remove item"><mat-icon>close</mat-icon></button>
+            <button matChipRemove aria-label="Remove item">
+              <mat-icon>close</mat-icon>
+            </button>
           </mat-chip>
         </mat-chip-set>
       </div>
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Items sold</mat-label>
-        <input matInput formControlName="soldItems" type="text" placeholder="Ketik lalu tekan koma (,) untuk menambah" />
-        <mat-hint>Pisahkan dengan koma. Membantu pencarian supplier.</mat-hint>
+        <mat-label>{{ "supplier.itemsSold" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="soldItems"
+          type="text"
+          placeholder="Ketik lalu tekan koma (,) untuk menambah"
+        />
+        <mat-hint>{{ "supplier.commaHint" | translate }}</mat-hint>
       </mat-form-field>
 
       <!-- Service areas -->
       <div class="sc-tags" *ngIf="areas.length > 0">
         <mat-chip-set aria-label="Areas selection">
-          <mat-chip *ngFor="let item of areas" [removable]="true" (removed)="removeArea(item)">
+          <mat-chip
+            *ngFor="let item of areas"
+            [removable]="true"
+            (removed)="removeArea(item)"
+          >
             {{ item }}
-            <button matChipRemove aria-label="Remove area"><mat-icon>close</mat-icon></button>
+            <button matChipRemove aria-label="Remove area">
+              <mat-icon>close</mat-icon>
+            </button>
           </mat-chip>
         </mat-chip-set>
       </div>
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Service areas</mat-label>
-        <input matInput formControlName="serviceAreas" type="text" placeholder="Ketik lalu tekan koma (,) untuk menambah" />
-        <mat-hint>Pisahkan dengan koma. Membantu pencarian supplier.</mat-hint>
+        <mat-label>{{ "supplier.serviceAreas" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="serviceAreas"
+          type="text"
+          placeholder="Ketik lalu tekan koma (,) untuk menambah"
+        />
+        <mat-hint>{{ "supplier.commaHint" | translate }}</mat-hint>
       </mat-form-field>
     </mat-dialog-content>
 
     <mat-dialog-actions class="sc-actions">
-      <button type="button" class="sc-cancel" (click)="onCancel()">Batal</button>
+      <button type="button" class="sc-cancel" (click)="onCancel()">
+        {{ "common.cancel" | translate }}
+      </button>
       <button
         type="submit"
         class="sc-submit"
-        [disabled]="isSubmitting || supplierFormGroup.invalid || items.length === 0 || areas.length === 0"
+        [disabled]="
+          isSubmitting ||
+          supplierFormGroup.invalid ||
+          items.length === 0 ||
+          areas.length === 0
+        "
       >
-        Simpan supplier
+        {{ "supplier.saveSupplier" | translate }}
       </button>
     </mat-dialog-actions>
   </form>

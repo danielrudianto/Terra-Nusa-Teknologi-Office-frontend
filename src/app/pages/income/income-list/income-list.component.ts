@@ -49,7 +49,6 @@ import { RouterModule } from '@angular/router';
     TranslatePipe,
     MatDatepickerModule,
     MatSlideToggleModule,
-    DeleteConfirmationComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './income-list.component.html',

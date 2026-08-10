@@ -222,6 +222,11 @@
     <p class="sv-created" *ngIf="f['createdAt'].value">
       Dokumen dibuat pada {{ f["createdAt"].value }}
     </p>
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="sales_invoices"
+      [entityId]="data.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <!-- actions -->

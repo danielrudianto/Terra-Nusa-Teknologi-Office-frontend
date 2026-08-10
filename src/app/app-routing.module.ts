@@ -139,6 +139,14 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'Activity',
+        loadComponent: () =>
+          import('./pages/activity/activity.component').then(
+            (m) => m.ActivityComponent,
+          ),
+        data: { title: 'Activity' },
+      },
+      {
         path: 'Purchase-order',
         loadComponent: () =>
           import('./pages/purchase-order/purchase-order.component').then(
@@ -167,6 +175,14 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component').then(
                 (m) => m.PurchaseOrderCreateGComponent,
+              ),
+            data: { title: 'Purchase order' },
+          },
+          {
+            path: 'Create/H',
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-h/purchase-order-create-h.component').then(
+                (m) => m.PurchaseOrderCreateHComponent,
               ),
             data: { title: 'Purchase order' },
           },
@@ -263,14 +279,6 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component').then(
                 (m) => m.PurchaseOrderCreateFComponent,
-              ),
-            data: { title: 'Purchase order' },
-          },
-          {
-            path: 'Create/H',
-            loadComponent: () =>
-              import('./pages/purchase-order/purchase-order-create/purchase-order-create-h/purchase-order-create-h.component').then(
-                (m) => m.PurchaseOrderCreateHComponent,
               ),
             data: { title: 'Purchase order' },
           },

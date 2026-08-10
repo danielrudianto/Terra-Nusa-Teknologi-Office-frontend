@@ -19,30 +19,36 @@
       <!-- identity chips -->
       <div class="spc-chips">
         <span class="spc-chip" *ngIf="formGroup.value.position"
-          ><span class="spc-chip__k">Posisi</span
+          ><span class="spc-chip__k">{{
+            "salaryPayment.position" | translate
+          }}</span
           >{{ formGroup.value.position }}</span
         >
         <span class="spc-chip" *ngIf="formGroup.value.department"
-          ><span class="spc-chip__k">Divisi</span
+          ><span class="spc-chip__k">{{
+            "salaryPayment.division" | translate
+          }}</span
           >{{ formGroup.value.department }}</span
         >
       </div>
 
       <!-- salary breakdown -->
-      <div class="spc-section__title">Rincian Gaji</div>
+      <div class="spc-section__title">
+        {{ "salaryPayment.salaryDetail" | translate }}
+      </div>
       <div class="spc-money">
         <div class="spc-money__row">
-          <span>Gaji kotor</span
+          <span>{{ "salaryPayment.grossSalary" | translate }}</span
           ><span>Rp {{ formGroup.value.grossSalary | number: "1.0-0" }}</span>
         </div>
         <div class="spc-money__row">
-          <span>PPh 21</span
+          <span>{{ "salaryPayment.pph21" | translate }}</span
           ><span class="spc-neg"
             >− Rp {{ formGroup.value.taxAmount | number: "1.0-0" }}</span
           >
         </div>
         <div class="spc-money__row spc-money__row--net">
-          <span>Gaji bersih</span
+          <span>{{ "salaryPayment.netSalary" | translate }}</span
           ><span>Rp {{ formGroup.value.netSalary | number: "1.0-0" }}</span>
         </div>
       </div>
@@ -62,10 +68,12 @@
       </div>
 
       <!-- payment inputs -->
-      <div class="spc-section__title spc-section__title--mt">Pembayaran</div>
+      <div class="spc-section__title spc-section__title--mt">
+        {{ "common.payment" | translate }}
+      </div>
       <div class="spc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal bayar</mat-label>
+          <mat-label>{{ "common.paymentDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -80,7 +88,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rekening pembayar</mat-label>
+          <mat-label>{{ "common.payerAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccount">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
               {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
@@ -89,7 +97,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="spc-span2">
-          <mat-label>Nominal pembayaran</mat-label>
+          <mat-label>{{ "common.paymentAmount" | translate }}</mat-label>
           <input
             matInput
             type="text"
@@ -125,7 +133,9 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="spc-actions">
-      <button type="button" class="spc-cancel" mat-dialog-close>Batal</button>
+      <button type="button" class="spc-cancel" mat-dialog-close>
+        {{ "common.cancel" | translate }}
+      </button>
       <button
         type="submit"
         class="spc-submit"

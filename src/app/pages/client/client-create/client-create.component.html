@@ -29,9 +29,15 @@
             <mat-option value="PT.">PT.</mat-option>
             <mat-option value="CV.">CV.</mat-option>
             <mat-option value="UD.">UD.</mat-option>
-            <mat-option value="Yayasan">Yayasan</mat-option>
-            <mat-option value="Perorangan">Perorangan</mat-option>
-            <mat-option value="Lainnya">Lainnya</mat-option>
+            <mat-option value="Yayasan">{{
+              "client.foundation" | translate
+            }}</mat-option>
+            <mat-option value="Perorangan">{{
+              "client.individual" | translate
+            }}</mat-option>
+            <mat-option value="Lainnya">{{
+              "client.other" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 

@@ -10,11 +10,12 @@
 
 /* ---------- toolbar ---------- */
 .el-toolbar {
-  align-items: center;
+  /* Disamakan dengan halaman Pembelian: chip di baris atas, kolom
+     pencarian di bawahnya — bukan berjajar mendatar. */
   display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0.5rem 0 1rem;
-  gap: 1rem;
-  flex-wrap: wrap;
 }
 .el-search {
   width: 100%;
@@ -274,4 +275,24 @@
 :host ::ng-deep .el-fchip--inactive .mdc-evolution-chip__text-label::before {
   background: var(--bad-fg, #d64541);
   opacity: 1;
+}
+
+/* ---------- responsive ---------- */
+@media (min-width: 900px) {
+  /* Berbaris pada layar lebar seperti halaman Pembelian: chip di kiri,
+     kolom pencarian di kanan. Tanpa aturan ini toolbar terkunci bertumpuk
+     dan pencarian turun ke bawah chip. */
+  .el-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  /* Chip boleh membungkus bila sempit; kolom pencarian yang mengalah. */
+  .el-toolbar > form,
+  .el-toolbar > mat-chip-listbox {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
 }

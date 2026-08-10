@@ -19,11 +19,9 @@
   padding: 1.25rem 1.5rem !important;
   margin: 0 !important;
   text-align: left;
-  background: linear-gradient(
-    135deg,
-    var(--brand-soft, #eef2fe) 0%,
-    var(--hover, #f6f8ff) 100%
-  );
+  /* Latar rata: gradien bernuansa merek ikut berubah saat pengguna
+     mengganti warna tema, sedangkan kepala dialog lain polos. */
+  background: var(--surface-2, #fafbfc);
   border-bottom: 1px solid var(--line, #e4e9fb);
 
   &::before {

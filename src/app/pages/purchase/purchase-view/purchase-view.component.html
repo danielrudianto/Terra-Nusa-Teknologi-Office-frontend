@@ -193,9 +193,22 @@
       </div>
     </div>
 
-    <p class="pv-created" *ngIf="f['createdAt'].value">
-      Dokumen dibuat pada {{ f["createdAt"].value }}
-    </p>
+    @if (f["createdAt"].value) {
+      <div class="pv-created">
+        @if (createdBy) {
+          <app-avatar [userId]="createdBy" [size]="28"></app-avatar>
+        }
+        <span class="pv-created__text">
+          {{ "purchaseView.createdOn" | translate }}
+          {{ f["createdAt"].value }}
+          @if (createdByName) {
+            · {{ createdByName }}
+          }
+        </span>
+      </div>
+    }
+    <div class="audit-divider"></div>
+    <app-audit-trail entity="purchases" [entityId]="data.id"></app-audit-trail>
   </mat-dialog-content>
 
   <!-- actions -->

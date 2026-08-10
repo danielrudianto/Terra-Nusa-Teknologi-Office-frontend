@@ -2,6 +2,9 @@ $ink: var(--ink, #0d0d0d);
 $muted: var(--muted, #8a8f98);
 $line: var(--line, #eef0f3);
 $brand: var(--brand, #154dec);
+$surface2: var(--surface-2, #f5f8ff);
+$hover: var(--hover, #e9edf3);
+$warn: var(--warn-fg, #9a6a00);
 
 .tpd {
   font-family: "Montserrat", sans-serif;
@@ -39,7 +42,7 @@ $brand: var(--brand, #154dec);
     cursor: pointer;
 
     &:hover {
-      background: #e9edf3;
+      background: $hover;
       color: $ink;
     }
   }
@@ -48,7 +51,7 @@ $brand: var(--brand, #154dec);
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    background: #f5f8ff;
+    background: $surface2;
     border-radius: 14px;
     padding: 0.85rem 1.1rem;
     margin-bottom: 1rem;
@@ -143,7 +146,7 @@ $brand: var(--brand, #154dec);
     font-size: 0.62rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: #9a6a00;
+    color: $warn;
     background: var(--warn-bg, #fff4d6);
     border-radius: 6px;
     padding: 2px 6px;

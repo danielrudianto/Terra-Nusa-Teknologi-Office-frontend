@@ -11,6 +11,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
@@ -24,13 +25,14 @@ import { NgxMaskDirective } from 'ngx-mask';
     MatButtonModule,
     CommonModule,
     MatSlideToggleModule,
+    TranslatePipe,
   ],
   templateUrl: './salary-slip-allowance-create.component.html',
   styleUrl: './salary-slip-allowance-create.component.scss',
 })
 export class SalarySlipAllowanceCreateComponent {
   constructor(
-    private dialog: MatDialogRef<SalarySlipAllowanceCreateComponent>
+    private dialog: MatDialogRef<SalarySlipAllowanceCreateComponent>,
   ) {}
 
   formGroup: FormGroup = new FormGroup({

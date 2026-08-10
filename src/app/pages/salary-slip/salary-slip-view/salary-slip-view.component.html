@@ -275,6 +275,11 @@
         </div>
       </section>
     </form>
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="salary_slips"
+      [entityId]="data.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions class="sv-actions">

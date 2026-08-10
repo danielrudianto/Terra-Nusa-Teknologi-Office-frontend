@@ -14,6 +14,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.constant';
 import { buildClauseLines } from '../../../constants/clause-templates';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -21,6 +22,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-purchase-order-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     CommonModule,
     MatDialogModule,
     MatIconModule,

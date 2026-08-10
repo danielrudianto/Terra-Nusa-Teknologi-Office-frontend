@@ -1,10 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ViewChild,
-} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -31,10 +26,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { InterpaymentCreateComponent } from '../interpayment-create/interpayment-create.component';
 import { InterpaymentViewComponent } from '../interpayment-view/interpayment-view.component';
+import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../../../services/setting.service';
 
 @Component({
   selector: 'app-interpayment-list',
   imports: [
+    HeaderTitleComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -45,7 +43,6 @@ import { InterpaymentViewComponent } from '../interpayment-view/interpayment-vie
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
-    InterpaymentCreateComponent,
     TranslatePipe,
   ],
   providers: [provideNativeDateAdapter()],
@@ -55,6 +52,8 @@ import { InterpaymentViewComponent } from '../interpayment-view/interpayment-vie
 })
 export class InterpaymentListComponent {
   constructor(
+    public settings: SettingsService,
+    private translate: TranslateService,
     private apiService: ApiService,
     private router: Router,
     private dialog: MatDialog,
@@ -79,7 +78,8 @@ export class InterpaymentListComponent {
   payments: any[] = []; // Change from dataSource to payments
   count: number = 0;
   isLoading: boolean = false;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
 
   displayedColumns: string[] = [
     'date',
@@ -185,8 +185,8 @@ export class InterpaymentListComponent {
     this.dialog
       .open(DeleteConfirmationComponent, {
         data: {
-          title: 'Delete interpayment',
-          prompt: 'Are you sure to delete this interpayment?',
+          title: this.translate.instant('confirm.deleteTitle'),
+          prompt: this.translate.instant('confirm.deletePrompt'),
         },
       })
       .afterClosed()

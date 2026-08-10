@@ -1,5 +1,7 @@
 <div class="poa">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.titleA' | translate"
     [description]="'poForm.descA' | translate"
   />
@@ -7,7 +9,7 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== Informasi PO ===== -->
     <div class="poa-card">
-      <div class="poa-section__title">Informasi PO</div>
+      <div class="poa-section__title">{{ "common.poInfo" | translate }}</div>
       <div class="poa-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.date" | translate }}</mat-label>
@@ -79,20 +81,22 @@
 
     <!-- ===== Jenis Pekerjaan ===== -->
     <div class="poa-card">
-      <div class="poa-section__title">Jenis Pekerjaan</div>
+      <div class="poa-section__title">{{ "poH.workType" | translate }}</div>
       <div class="poa-grid">
         <mat-form-field appearance="outline" class="poa-span2">
-          <mat-label>Jenis pekerjaan</mat-label>
+          <mat-label>{{ "poH.workTypeLabel" | translate }}</mat-label>
           <mat-select formControlName="workKind">
-            <mat-option value="pengiriman">Jasa pengiriman barang</mat-option>
-            <mat-option value="sewa-alat"
-              >Sewa alat angkut + operator</mat-option
-            >
+            <mat-option value="pengiriman">{{
+              "poA.shipmentService" | translate
+            }}</mat-option>
+            <mat-option value="sewa-alat">{{
+              "poA.equipmentRental" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kode PPh</mat-label>
+          <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
           <input
             matInput
             formControlName="pphCode"
@@ -118,18 +122,18 @@
 
         @if (isSewaAlat) {
           <mat-form-field appearance="outline">
-            <mat-label>Kuota jam per shift</mat-label>
+            <mat-label>{{ "poA.shiftQuota" | translate }}</mat-label>
             <input
               matInput
               formControlName="shiftHours"
               type="number"
               [min]="0"
             />
-            <span matSuffix>&nbsp;jam</span>
+            <span matSuffix>{{ "poA.hours" | translate }}</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Tarif lembur</mat-label>
+            <mat-label>{{ "poA.overtimeRate" | translate }}</mat-label>
             <input
               matInput
               formControlName="overtimeRate"
@@ -137,44 +141,52 @@
               thousandSeparator="."
               mask="separator.0"
             />
-            <span matSuffix>&nbsp;/jam</span>
+            <span matSuffix>{{ "poA.perHour" | translate }}</span>
           </mat-form-field>
         } @else {
           <mat-form-field appearance="outline">
-            <mat-label>Dokumen asuransi</mat-label>
+            <mat-label>{{ "poA.insuranceDoc" | translate }}</mat-label>
             <input
               matInput
               formControlName="insuranceDays"
               type="number"
               [min]="0"
             />
-            <span matSuffix>&nbsp;hari</span>
+            <span matSuffix>{{ "common.days" | translate }}</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Consignment note</mat-label>
+            <mat-label>{{ "poA.consignmentNote" | translate }}</mat-label>
             <input
               matInput
               formControlName="consignmentDays"
               type="number"
               [min]="0"
             />
-            <span matSuffix>&nbsp;hari</span>
+            <span matSuffix>{{ "common.days" | translate }}</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Risiko pengiriman</mat-label>
+            <mat-label>{{ "poA.deliveryRisk" | translate }}</mat-label>
             <mat-select formControlName="deliveryRisk">
-              <mat-option value="penyedia">Penyedia jasa</mat-option>
-              <mat-option value="penerima">Penerima jasa</mat-option>
+              <mat-option value="penyedia">{{
+                "poA.serviceProvider" | translate
+              }}</mat-option>
+              <mat-option value="penerima">{{
+                "poA.serviceReceiver" | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Risiko bongkar</mat-label>
+            <mat-label>{{ "poA.unloadingRisk" | translate }}</mat-label>
             <mat-select formControlName="unloadingRisk">
-              <mat-option value="penerima">Penerima jasa</mat-option>
-              <mat-option value="penyedia">Penyedia jasa</mat-option>
+              <mat-option value="penerima">{{
+                "poA.serviceReceiver" | translate
+              }}</mat-option>
+              <mat-option value="penyedia">{{
+                "poA.serviceProvider" | translate
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         }
@@ -203,7 +215,7 @@
       @if (t.controls.length === 0) {
         <div class="poa-empty">
           <mat-icon>local_shipping</mat-icon>
-          <span>Belum ada pengiriman. Klik "Tambah pengiriman".</span>
+          <span>{{ "poA.emptyShipments" | translate }}</span>
         </div>
       } @else {
         <div class="poa-list">
@@ -402,7 +414,9 @@
                     </button>
                   }
                   @if (fleets.length === 0) {
-                    <span class="poa-nofleet">Belum ada data fleet.</span>
+                    <span class="poa-nofleet">{{
+                      "poA.emptyFleet" | translate
+                    }}</span>
                   }
                 </div>
                 <div class="poa-leg__grid poa-leg__grid--tail">
@@ -476,7 +490,8 @@
             <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
           <div class="poa-summary__row poa-summary__row--total">
-            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
           </div>
         </div>
       </div>
@@ -484,7 +499,7 @@
 
     <!-- ===== Pembayaran ===== -->
     <div class="poa-card">
-      <div class="poa-section__title">Pembayaran</div>
+      <div class="poa-section__title">{{ "common.payment" | translate }}</div>
       <div class="poa-grid">
         <mat-form-field appearance="outline" class="poa-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
@@ -497,35 +512,35 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <span matSuffix>&nbsp;hari</span>
+          <span matSuffix>{{ "common.days" | translate }}</span>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <span matSuffix>&nbsp;%</span>
+          <span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
       </div>
     </div>
 
     <!-- ===== Catatan / Poin Perjanjian ===== -->
     <div class="poa-card">
-      <div class="poa-section__title">Catatan / Poin Perjanjian</div>
+      <div class="poa-section__title">
+        {{ "common.notesAndPoints" | translate }}
+      </div>
       <div class="poa-cardhead">
         <div class="poa-section__title poa-section__title--flush">
-          Poin Tambahan
+          {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addClause()">
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
-      <p class="poa-hint">
-        Ditulis sendiri; tercetak melanjutkan nomor poin terakhir.
-      </p>
+      <p class="poa-hint">{{ "poA.extraPointHint" | translate }}</p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="poa-empty">
           <mat-icon>playlist_add</mat-icon>
-          <span>Belum ada poin tambahan.</span>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
         </div>
       } @else {
         <div formArrayName="additionalClauses" class="poa-list">
@@ -533,7 +548,7 @@
             <div class="poa-krow">
               <span class="poa-krow__no">+{{ i + 1 }}</span>
               <mat-form-field appearance="outline" class="poa-krow__field">
-                <mat-label>Poin tambahan</mat-label>
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
                 <textarea matInput [formControlName]="i" rows="2"></textarea>
               </mat-form-field>
               <button
@@ -550,7 +565,9 @@
       }
 
       <div class="poa-divider"></div>
-      <div class="poa-section__title">Pratinjau Catatan Perjanjian</div>
+      <div class="poa-section__title">
+        {{ "poH.previewAgreement" | translate }}
+      </div>
       <p class="poa-hint">
         Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
         isian di atas.

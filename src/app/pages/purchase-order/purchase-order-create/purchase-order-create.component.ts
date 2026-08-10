@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create',
@@ -22,6 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
     MatCardModule,
     MatButtonModule,
     RouterModule,
+    TranslatePipe,
   ],
   templateUrl: './purchase-order-create.component.html',
   styleUrl: './purchase-order-create.component.scss',

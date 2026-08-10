@@ -56,6 +56,11 @@
         {{ "masterEquipmentView.noDescription" | translate }}
       </p>
     </div>
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="master_equipment"
+      [entityId]="data.equipment.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="mev-foot">

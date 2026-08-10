@@ -5,6 +5,7 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export type PaymentType =
   | 'purchase'
@@ -41,7 +42,7 @@ interface BankGroup {
 @Component({
   selector: 'app-today-payment-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule],
+  imports: [CommonModule, MatDialogModule, TranslatePipe],
   templateUrl: './today-payment-dialog.component.html',
   styleUrl: './today-payment-dialog.component.scss',
 })

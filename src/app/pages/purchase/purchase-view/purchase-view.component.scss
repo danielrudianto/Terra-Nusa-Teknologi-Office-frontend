@@ -15,6 +15,7 @@
 
 /* ---------- header ---------- */
 .pv-head {
+  background: var(--surface-2, #fafbfc);
   display: flex !important;
   align-items: center;
   justify-content: space-between;
@@ -392,4 +393,17 @@
   color: var(--faint, #9aa0ab);
   text-align: right;
   font-style: italic;
+}
+
+/* baris pembuat dokumen: avatar + keterangan */
+.pv-created {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+
+  &__text {
+    font-size: 0.8rem;
+    color: var(--muted, #6b7280);
+  }
 }

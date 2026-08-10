@@ -5,7 +5,7 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { ApiService } from '../../../../services/api.service';
+import { ApiService } from '../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   FormArray,
@@ -20,6 +20,8 @@ import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmat
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-salary-slip-view',
@@ -27,6 +29,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './salary-slip-view.component.html',
   styleUrl: './salary-slip-view.component.scss',
   imports: [
+    AuditTrailComponent,
     TranslatePipe,
     MatDialogModule,
     FormsModule,
@@ -37,6 +40,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class SalarySlipViewComponent {
   constructor(
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -230,8 +234,8 @@ export class SalarySlipViewComponent {
     this.dialog
       .open(DeleteConfirmationComponent, {
         data: {
-          title: 'Delete salary slip',
-          prompt: 'Are you sure to delete this salary slip?',
+          title: this.translate.instant('confirm.deleteTitle'),
+          prompt: this.translate.instant('confirm.deletePrompt'),
         },
       })
       .afterClosed()

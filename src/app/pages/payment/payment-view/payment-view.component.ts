@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,7 +28,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     CommonModule,
     MatFormFieldModule,
     MatInputModule,
-    NgxMaskDirective,
     MatIconModule,
     MatButtonModule,
     TranslatePipe,

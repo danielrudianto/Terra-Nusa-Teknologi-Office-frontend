@@ -113,7 +113,7 @@ $negative: var(--bad-fg, #ca2929);
     font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: #9a6a00;
+    color: var(--warn-fg, #9a6a00);
     background: var(--warn-bg, #fff4d6);
     border-radius: 6px;
     padding: 2px 6px;

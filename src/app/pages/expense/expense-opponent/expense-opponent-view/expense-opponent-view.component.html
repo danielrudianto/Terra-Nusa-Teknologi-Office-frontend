@@ -49,6 +49,11 @@
         {{ "expenseOpponentView.noDescription" | translate }}
       </p>
     </div>
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="expense_opponents"
+      [entityId]="data.opponent.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="eov-foot">

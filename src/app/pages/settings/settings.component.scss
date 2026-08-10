@@ -337,3 +337,37 @@
 .st-profile-fields {
   display: block;
 }
+
+/* pilihan bersegmen: baris per halaman & kerapatan */
+.st-seg {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.st-seg__opt {
+  min-width: 46px;
+  padding: 0.35rem 0.7rem;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  &:hover:not(.is-active) {
+    background: var(--hover, #f6f8ff);
+  }
+
+  &.is-active {
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+  }
+}

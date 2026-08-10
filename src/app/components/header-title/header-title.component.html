@@ -1,12 +1,22 @@
 <div class="title__wrapper mb-4">
+  @if (backLink || backLabel) {
+    <button
+      type="button"
+      class="title__back"
+      (click)="onBack()"
+      [attr.aria-label]="backLabel || 'Kembali'"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  }
   <div class="title__wrapper-text">
     <h1 class="mb-0">{{ title }}</h1>
     <p class="mt-0">{{ description }}</p>
   </div>
-  @if(actionButtonLabel != null){
-  <button class="header-button" (click)="actionButtonClicked()">
-    <mat-icon>add</mat-icon>
-    <span>{{ actionButtonLabel }}</span>
-  </button>
+  @if (actionButtonLabel != null) {
+    <button class="header-button" (click)="actionButtonClicked()">
+      <mat-icon>add</mat-icon>
+      <span>{{ actionButtonLabel }}</span>
+    </button>
   }
 </div>

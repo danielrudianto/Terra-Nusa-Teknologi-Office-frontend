@@ -197,3 +197,22 @@
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
+
+/* ===== kepala kolom bisa diurut — mengikuti halaman Pembelian ===== */
+.ssl-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.ssl-th mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.ssl-th__idle {
+  color: var(--faint, #cfd4dc);
+}
+:host ::ng-deep th.mat-mdc-header-cell {
+  cursor: pointer;
+  user-select: none;
+}

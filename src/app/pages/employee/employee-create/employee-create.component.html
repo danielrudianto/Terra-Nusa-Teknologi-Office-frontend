@@ -1,9 +1,9 @@
-<h1 mat-dialog-title>Create new employee</h1>
+<h1 mat-dialog-title>{{ "employee.createEmployee" | translate }}</h1>
 
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
   <mat-dialog-content>
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Name</mat-label>
+      <mat-label>{{ "common.name" | translate }}</mat-label>
       <input
         matInput
         formControlName="name"
@@ -12,7 +12,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Birth date</mat-label>
+      <mat-label>{{ "employee.birthDate" | translate }}</mat-label>
       <input
         matInput
         formControlName="birthday"
@@ -24,7 +24,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>NIK</mat-label>
+      <mat-label>{{ "employee.nik" | translate }}</mat-label>
       <input
         matInput
         formControlName="nik"
@@ -33,7 +33,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Address</mat-label>
+      <mat-label>{{ "common.address" | translate }}</mat-label>
       <textarea
         matInput
         formControlName="address"
@@ -44,7 +44,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Email</mat-label>
+      <mat-label>{{ "common.email" | translate }}</mat-label>
       <input
         matInput
         formControlName="email"
@@ -53,7 +53,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Phone number</mat-label>
+      <mat-label>{{ "employee.phoneNumber" | translate }}</mat-label>
       <input
         matInput
         formControlName="phoneNumber"
@@ -62,7 +62,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Position</mat-label>
+      <mat-label>{{ "employee.position" | translate }}</mat-label>
       <input
         matInput
         formControlName="position"
@@ -71,7 +71,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Department</mat-label>
+      <mat-label>{{ "employee.department" | translate }}</mat-label>
       <input
         matInput
         formControlName="department"
@@ -80,28 +80,36 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Tax Category</mat-label>
+      <mat-label>{{ "employee.taxCategory" | translate }}</mat-label>
       <mat-select
         formControlName="taxCategory"
         placeholder="Select tax category"
       >
         <mat-optgroup label="Tidak kawin">
-          <mat-option value="TK/0">Tidak kawin; 0 tanggungan (TK/0)</mat-option>
-          <mat-option value="TK/1">Tidak kawin; 1 tanggungan (TK/1)</mat-option>
-          <mat-option value="TK/2">Tidak kawin; 2 tanggungan (TK/2)</mat-option>
-          <mat-option value="TK/3">Tidak kawin; 3 tanggungan (TK/3)</mat-option>
+          <mat-option value="TK/0">{{
+            "salarySlip.tk0" | translate
+          }}</mat-option>
+          <mat-option value="TK/1">{{
+            "salarySlip.tk1" | translate
+          }}</mat-option>
+          <mat-option value="TK/2">{{
+            "salarySlip.tk2" | translate
+          }}</mat-option>
+          <mat-option value="TK/3">{{
+            "salarySlip.tk3" | translate
+          }}</mat-option>
         </mat-optgroup>
         <mat-optgroup label="Kawin">
-          <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
-          <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
-          <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
-          <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+          <mat-option value="K/0">{{ "salarySlip.k0" | translate }}</mat-option>
+          <mat-option value="K/1">{{ "salarySlip.k1" | translate }}</mat-option>
+          <mat-option value="K/2">{{ "salarySlip.k2" | translate }}</mat-option>
+          <mat-option value="K/3">{{ "salarySlip.k3" | translate }}</mat-option>
         </mat-optgroup>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Start date</mat-label>
+      <mat-label>{{ "employee.startDate" | translate }}</mat-label>
       <input
         matInput
         formControlName="startDate"

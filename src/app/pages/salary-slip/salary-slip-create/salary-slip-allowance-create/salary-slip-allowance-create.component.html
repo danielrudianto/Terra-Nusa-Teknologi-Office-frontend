@@ -15,58 +15,74 @@
       </svg>
     </span>
     <div class="sa-head__text">
-      <h2 class="sa-title">Tambah Allowance</h2>
-      <span class="sa-sub">Tunjangan / bonus untuk karyawan</span>
+      <h2 class="sa-title">{{ "allowanceForm.title" | translate }}</h2>
+      <span class="sa-sub">{{
+        "salaryAllowance.allowanceSub" | translate
+      }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="sa-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Allowance Name</mat-label>
+        <mat-label>{{ "allowanceForm.name" | translate }}</mat-label>
         <mat-select formControlName="name">
-          <mat-option value="Bantuan BPJS Ketenagakerjaan"
-            >Bantuan BPJS Ketenagakerjaan</mat-option
-          >
-          <mat-option value="Bonus proyek">Bonus proyek</mat-option>
-          <mat-option value="Bonus tahunan">Bonus tahunan</mat-option>
-          <mat-option value="Bonus kinerja">Bonus kinerja</mat-option>
-          <mat-option value="Tunjangan jabatan">Tunjangan jabatan</mat-option>
-          <mat-option value="Tunjangan kesehatan"
-            >Tunjangan kesehatan</mat-option
-          >
-          <mat-option value="Tunjangan transportasi"
-            >Tunjangan transportasi</mat-option
-          >
-          <mat-option value="Tunjangan makan">Tunjangan makan</mat-option>
-          <mat-option value="Tunjangan pendidikan"
-            >Tunjangan pendidikan</mat-option
-          >
-          <mat-option value="Tunjangan perumahan"
-            >Tunjangan perumahan</mat-option
-          >
-          <mat-option value="Tunjangan hari raya"
-            >Tunjangan hari raya</mat-option
-          >
-          <mat-option value="Tunjangan pensiun">Tunjangan pensiun</mat-option>
-          <mat-option value="Tunjangan lainnya">Tunjangan lainnya</mat-option>
-          <mat-option value="Tunjangan luar pulau"
-            >Tunjangan luar pulau</mat-option
-          >
-          <mat-option value="Tunjangan luar kota"
-            >Tunjangan luar kota</mat-option
-          >
-          <mat-option value="Tunjangan kehadiran"
-            >Tunjangan kehadiran</mat-option
-          >
-          <mat-option value="Tunjangan ketepatan waktu"
-            >Tunjangan ketepatan waktu</mat-option
-          >
+          <mat-option value="Bantuan BPJS Ketenagakerjaan">{{
+            "salaryAllowance.bpjsSupport" | translate
+          }}</mat-option>
+          <mat-option value="Bonus proyek">{{
+            "salaryAllowance.projectBonus" | translate
+          }}</mat-option>
+          <mat-option value="Bonus tahunan">{{
+            "salaryAllowance.annualBonus" | translate
+          }}</mat-option>
+          <mat-option value="Bonus kinerja">{{
+            "salaryAllowance.perfBonus" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan jabatan">{{
+            "salaryAllowance.positionAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan kesehatan">{{
+            "salaryAllowance.healthAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan transportasi">{{
+            "salaryAllowance.transportAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan makan">{{
+            "salaryAllowance.mealAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan pendidikan">{{
+            "salaryAllowance.educationAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan perumahan">{{
+            "salaryAllowance.housingAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan hari raya">{{
+            "salaryAllowance.holidayAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan pensiun">{{
+            "salaryAllowance.pensionAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan lainnya">{{
+            "salaryAllowance.otherAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan luar pulau">{{
+            "salaryAllowance.offIslandAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan luar kota">{{
+            "salaryAllowance.outOfTownAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan kehadiran">{{
+            "salaryAllowance.attendanceAllowance" | translate
+          }}</mat-option>
+          <mat-option value="Tunjangan ketepatan waktu">{{
+            "salaryAllowance.punctualityAllowance" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Amount</mat-label>
+        <mat-label>{{ "allowanceForm.amount" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -80,7 +96,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Description</mat-label>
+        <mat-label>{{ "allowanceForm.description" | translate }}</mat-label>
         <textarea
           matInput
           formControlName="description"
@@ -93,10 +109,12 @@
 
       <div class="sa-toggle">
         <div class="sa-toggle__text">
-          <span class="sa-toggle__label">Included for PPh Calculation</span>
-          <span class="sa-toggle__hint"
-            >Aktifkan kalau tunjangan ini dihitung untuk PPh 21.</span
-          >
+          <span class="sa-toggle__label">{{
+            "salaryAllowance.includedPph" | translate
+          }}</span>
+          <span class="sa-toggle__hint">{{
+            "salaryAllowance.includedPphHint" | translate
+          }}</span>
         </div>
         <mat-slide-toggle
           color="primary"
@@ -106,14 +124,16 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="sa-actions">
-      <button type="button" class="sa-cancel" mat-dialog-close>Batal</button>
+      <button type="button" class="sa-cancel" mat-dialog-close>
+        {{ "allowanceForm.cancel" | translate }}
+      </button>
       <button
         type="submit"
         class="sa-submit"
         [disabled]="formGroup.invalid"
         cdkFocusInitial
       >
-        Tambah allowance
+        {{ "salaryAllowance.addAllowance" | translate }}
       </button>
     </mat-dialog-actions>
   </form>

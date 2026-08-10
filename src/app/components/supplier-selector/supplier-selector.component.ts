@@ -17,10 +17,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-supplier-selector',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,

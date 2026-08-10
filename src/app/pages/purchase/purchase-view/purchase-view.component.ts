@@ -20,21 +20,24 @@ import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseType } from '../../../utils/purchase-type';
 import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AvatarComponent } from '../../../components/avatar/avatar.component';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-purchase-view',
   imports: [
+    AuditTrailComponent,
+    AvatarComponent,
     MatStepperModule,
     MatInputModule,
     MatDialogModule,
     MatButtonModule,
     CommonModule,
-    NgxMaskDirective,
     ReactiveFormsModule,
     MatSelectModule,
     MatListModule,
@@ -99,6 +102,10 @@ export class PurchaseViewComponent {
     bankAccountName: new FormControl(''),
   });
 
+  /** Pembuat dokumen; dipakai untuk menampilkan avatar. */
+  createdBy: number | null = null;
+  createdByName = '';
+
   ngOnInit(): void {
     this.fetchData();
   }
@@ -139,6 +146,8 @@ export class PurchaseViewComponent {
       next: (response: any) => {
         const data = response.purchase;
         this.raw = data;
+        this.createdBy = data.createdBy ?? null;
+        this.createdByName = data.createdByName ?? '';
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),

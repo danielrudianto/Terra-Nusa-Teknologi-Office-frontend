@@ -10,11 +10,17 @@ import {
 import { ApiService } from '../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import moment from 'moment';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-date-selector',
   providers: [provideNativeDateAdapter()],
-  imports: [MatDialogModule, MatDatepickerModule, MatButtonModule],
+  imports: [
+    TranslatePipe,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatButtonModule,
+  ],
   templateUrl: './date-selector.component.html',
   styleUrl: './date-selector.component.scss',
 })
@@ -30,7 +36,7 @@ export class DateSelectorComponent {
     },
     private dialog: MatDialogRef<DateSelectorComponent>,
     private apiService: ApiService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   selectedDate: Date = this.data.date;
@@ -39,11 +45,11 @@ export class DateSelectorComponent {
     this.apiService
       .post('outgoing-payments/move', {
         id: this.data.id,
-        date: moment(this.selectedDate).format("YYYY-MM-DD"),
+        date: moment(this.selectedDate).format('YYYY-MM-DD'),
       })
       .subscribe({
         next: (_) => {
-          this.dialog.close("moved");
+          this.dialog.close('moved');
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {
@@ -53,7 +59,7 @@ export class DateSelectorComponent {
       });
   }
 
-  onSelectedChanged(event: any){
+  onSelectedChanged(event: any) {
     this.selectedDate = new Date(event);
   }
 }

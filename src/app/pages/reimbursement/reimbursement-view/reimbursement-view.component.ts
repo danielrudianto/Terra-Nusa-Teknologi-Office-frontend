@@ -19,19 +19,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-reimbursement-view',
   imports: [
+    AuditTrailComponent,
     MatDialogModule,
     MatSnackBarModule,
     MatInputModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
-    NgxMaskDirective,
     CommonModule,
     MatListModule,
     TranslatePipe,

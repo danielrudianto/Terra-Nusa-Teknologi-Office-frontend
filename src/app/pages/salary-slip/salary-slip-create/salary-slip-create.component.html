@@ -1,13 +1,18 @@
 <div class="ssc">
   <div class="ssc-head">
     <h1 class="ssc-title">{{ "salarySlipForm.title" | translate }}</h1>
-    <p class="ssc-sub"><a routerLink="/Salary-slip">Salary slip</a> / Create</p>
+    <p class="ssc-sub">
+      <a routerLink="/Salary-slip">{{ "salarySlip.title" | translate }}</a> /
+      Create
+    </p>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== employee ===== -->
     <div class="ssc-card">
-      <div class="ssc-section__title">Karyawan</div>
+      <div class="ssc-section__title">
+        {{ "salarySlip.employee" | translate }}
+      </div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.month" | translate }}</mat-label>
@@ -44,24 +49,32 @@
             placeholder="Select tax category"
           >
             <mat-optgroup label="Tidak kawin">
-              <mat-option value="TK/0"
-                >Tidak kawin; 0 tanggungan (TK/0)</mat-option
-              >
-              <mat-option value="TK/1"
-                >Tidak kawin; 1 tanggungan (TK/1)</mat-option
-              >
-              <mat-option value="TK/2"
-                >Tidak kawin; 2 tanggungan (TK/2)</mat-option
-              >
-              <mat-option value="TK/3"
-                >Tidak kawin; 3 tanggungan (TK/3)</mat-option
-              >
+              <mat-option value="TK/0">{{
+                "salarySlip.tk0" | translate
+              }}</mat-option>
+              <mat-option value="TK/1">{{
+                "salarySlip.tk1" | translate
+              }}</mat-option>
+              <mat-option value="TK/2">{{
+                "salarySlip.tk2" | translate
+              }}</mat-option>
+              <mat-option value="TK/3">{{
+                "salarySlip.tk3" | translate
+              }}</mat-option>
             </mat-optgroup>
             <mat-optgroup label="Kawin">
-              <mat-option value="K/0">Kawin; 0 tanggungan (K/0)</mat-option>
-              <mat-option value="K/1">Kawin; 1 tanggungan (K/1)</mat-option>
-              <mat-option value="K/2">Kawin; 2 tanggungan (K/2)</mat-option>
-              <mat-option value="K/3">Kawin; 3 tanggungan (K/3)</mat-option>
+              <mat-option value="K/0">{{
+                "salarySlip.k0" | translate
+              }}</mat-option>
+              <mat-option value="K/1">{{
+                "salarySlip.k1" | translate
+              }}</mat-option>
+              <mat-option value="K/2">{{
+                "salarySlip.k2" | translate
+              }}</mat-option>
+              <mat-option value="K/3">{{
+                "salarySlip.k3" | translate
+              }}</mat-option>
             </mat-optgroup>
           </mat-select>
         </mat-form-field>
@@ -82,7 +95,9 @@
 
     <!-- ===== bank ===== -->
     <div class="ssc-card">
-      <div class="ssc-section__title">Bank &amp; Pembayaran</div>
+      <div class="ssc-section__title">
+        {{ "salarySlip.bankPayment" | translate }}
+      </div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.bankName" | translate }}</mat-label>
@@ -147,7 +162,9 @@
 
     <!-- ===== earnings ===== -->
     <div class="ssc-card">
-      <div class="ssc-section__title">Pendapatan</div>
+      <div class="ssc-section__title">
+        {{ "salarySlip.earnings" | translate }}
+      </div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline" class="ssc-span2">
           <mat-label>{{ "salarySlipForm.basicSalary" | translate }}</mat-label>
@@ -239,7 +256,7 @@
     <div class="ssc-card">
       <div class="ssc-cardhead">
         <div class="ssc-section__title ssc-section__title--flush">
-          Other Allowances
+          {{ "salarySlip.otherAllowances" | translate }}
         </div>
         <button type="button" class="ssc-add" (click)="onAddOtherAllowance()">
           <mat-icon>add</mat-icon> Add allowance
@@ -313,7 +330,7 @@
               class="mat-cell ssc-norow"
               [attr.colspan]="displayedAllowancesColumns.length"
             >
-              No allowances added yet.
+              {{ "salarySlip.noAllowances" | translate }}
             </td>
           </tr>
         </table>
@@ -324,7 +341,7 @@
     <div class="ssc-card">
       <div class="ssc-cardhead">
         <div class="ssc-section__title ssc-section__title--flush">
-          Deductions
+          {{ "salarySlip.deductions" | translate }}
         </div>
         <button type="button" class="ssc-add" (click)="onAddDeducation()">
           <mat-icon>add</mat-icon> Add deduction
@@ -398,7 +415,7 @@
               class="mat-cell ssc-norow"
               [attr.colspan]="displayedDeductionsColumns.length"
             >
-              No deductions added yet.
+              {{ "salarySlip.noDeductions" | translate }}
             </td>
           </tr>
         </table>
@@ -409,7 +426,7 @@
     <div class="ssc-card">
       <div class="ssc-cardhead">
         <div class="ssc-section__title ssc-section__title--flush">
-          Ringkasan &amp; Pajak
+          {{ "salarySlip.summaryTax" | translate }}
         </div>
         <button
           type="button"
@@ -466,7 +483,9 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.isLastDay" | translate }}</mat-label>
           <mat-select formControlName="isLastDay">
-            <mat-option [value]="true">Yes</mat-option>
+            <mat-option [value]="true">{{
+              "common.yes" | translate
+            }}</mat-option>
             <mat-option [value]="false">No</mat-option>
           </mat-select>
         </mat-form-field>

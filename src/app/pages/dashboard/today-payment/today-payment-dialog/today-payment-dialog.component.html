@@ -1,7 +1,7 @@
 <div class="tpd">
   <div class="tpd__head">
     <div>
-      <h2 class="tpd__title">Pembayaran Hari Ini</h2>
+      <h2 class="tpd__title">{{ "todayPayment.title" | translate }}</h2>
       <span class="tpd__sub"
         >{{ data.dateLabel }} · {{ data.items.length }} transaksi</span
       >
@@ -22,7 +22,7 @@
   </div>
 
   <div class="tpd__total">
-    <span>Total dibayar</span>
+    <span>{{ "todayPayment.totalPaid" | translate }}</span>
     <strong>{{ formatIDR(data.total) }}</strong>
   </div>
 
@@ -45,7 +45,9 @@
             >
               {{ it.typeLabel }}
             </span>
-            <span class="tpd__pending" *ngIf="!it.isApprove">pending</span>
+            <span class="tpd__pending" *ngIf="!it.isApprove">{{
+              "common.pending" | translate
+            }}</span>
           </span>
           <span class="tpd__row-sub" *ngIf="it.subtitle">{{
             it.subtitle
@@ -56,7 +58,7 @@
     </div>
 
     <div class="tpd__empty" *ngIf="groups.length === 0">
-      Tidak ada pembayaran hari ini.
+      {{ "todayPayment.noPayments" | translate }}
     </div>
   </div>
 </div>

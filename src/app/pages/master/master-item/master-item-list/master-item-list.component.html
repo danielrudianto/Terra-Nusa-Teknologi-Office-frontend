@@ -67,8 +67,19 @@
     <div class="table-responsive">
       <table mat-table [dataSource]="items">
         <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.sku" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('sku')">
+            <span class="mi-th"
+              >{{ "table.sku" | translate }}
+              <mat-icon *ngIf="sortBy == 'sku' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'sku' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'sku'" class="mi-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let item">
             <div class="mi-sku">
@@ -88,8 +99,19 @@
         </ng-container>
 
         <ng-container matColumnDef="brand">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.brand" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('brand')">
+            <span class="mi-th"
+              >{{ "table.brand" | translate }}
+              <mat-icon *ngIf="sortBy == 'brand' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'brand' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'brand'" class="mi-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let item">
             <span class="mi-muted">{{ item.brand || "—" }}</span>
@@ -97,8 +119,19 @@
         </ng-container>
 
         <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.type" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('type')">
+            <span class="mi-th"
+              >{{ "table.type" | translate }}
+              <mat-icon *ngIf="sortBy == 'type' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'type' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'type'" class="mi-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let item">
             <span class="mi-tag">{{ item.type || "—" }}</span>

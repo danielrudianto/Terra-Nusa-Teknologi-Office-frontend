@@ -81,6 +81,11 @@
         {{ "assetView.noDescription" | translate }}
       </p>
     </div>
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="assets"
+      [entityId]="data.asset.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="av-foot">

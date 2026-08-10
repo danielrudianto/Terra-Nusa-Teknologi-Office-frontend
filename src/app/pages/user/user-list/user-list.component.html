@@ -26,8 +26,19 @@
       <table mat-table [dataSource]="users">
         <!-- Name -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "user.name" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
+            <span class="ul-th"
+              >{{ "user.name" | translate }}
+              <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'name' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'name'" class="ul-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let element">
             <div class="ul-user">
@@ -41,8 +52,19 @@
 
         <!-- Email -->
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "user.email" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('email')">
+            <span class="ul-th"
+              >{{ "user.email" | translate }}
+              <mat-icon *ngIf="sortBy == 'email' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy == 'email' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'email'" class="ul-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let element">
             <span class="ul-muted">{{ element.email || "—" }}</span>

@@ -1,0 +1,152 @@
+.at {
+  font-family: "Montserrat", sans-serif;
+}
+
+.at-head {
+  margin-bottom: 0.6rem;
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #6b7280);
+  }
+}
+
+/* keadaan memuat / gagal / kosong */
+.at-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border, #e3e6eb);
+  font-size: 0.82rem;
+
+  &--muted {
+    color: var(--muted, #9aa1ad);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+  }
+}
+
+.at-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.at-item {
+  display: flex;
+  gap: 0.7rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line, #eef0f4);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__mark {
+    flex: 0 0 auto;
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--surface-2, #f6f8ff);
+    color: var(--muted, #6b7280);
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__action {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+  }
+
+  &__by {
+    font-size: 0.8rem;
+    color: var(--muted, #6b7280);
+  }
+
+  &__time {
+    font-size: 0.74rem;
+    color: var(--faint, #9aa0ab);
+    margin-top: 1px;
+  }
+
+  &__note {
+    margin-top: 4px;
+    font-size: 0.78rem;
+    color: var(--muted, #6b7280);
+  }
+}
+
+/* rincian kolom yang berubah */
+.at-changes {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 0.76rem;
+    line-height: 1.7;
+  }
+
+  &__field {
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    min-width: 96px;
+  }
+
+  &__from {
+    color: var(--muted, #6b7280);
+    text-decoration: line-through;
+  }
+
+  &__to {
+    color: var(--brand, #154dec);
+    font-weight: 600;
+  }
+
+  &__arrow {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: var(--faint, #9aa0ab);
+  }
+}

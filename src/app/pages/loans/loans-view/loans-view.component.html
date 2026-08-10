@@ -18,7 +18,7 @@
   <mat-dialog-content class="lv-content">
     <div class="lv-loading" *ngIf="isLoading">
       <mat-spinner diameter="34"></mat-spinner>
-      <span>Memuat data…</span>
+      <span>{{ "loans.loadingData" | translate }}</span>
     </div>
 
     <div *ngIf="!isLoading && loan">
@@ -49,11 +49,11 @@
         </div>
         <div class="lv-money">
           <div class="lv-money__row">
-            <span>Total utang (debt)</span>
+            <span>{{ "loans.debt" | translate }}</span>
             <span>Rp {{ loan.debt | number: "1.0-0" }}</span>
           </div>
           <div class="lv-money__row">
-            <span>Dana diterima (received)</span>
+            <span>{{ "loans.received" | translate }}</span>
             <span>Rp {{ loan.received | number: "1.0-0" }}</span>
           </div>
           <div class="lv-money__row lv-money__row--total">
@@ -131,6 +131,8 @@
         </div>
       </section>
     </div>
+    <div class="audit-divider"></div>
+    <app-audit-trail entity="loans" [entityId]="data.id"></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions class="lv-actions" *ngIf="!isLoading && loan">

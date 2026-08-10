@@ -1,5 +1,7 @@
 <div class="pob">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     title="Purchase Order — Kode B"
     description="Equipment rental"
   />
@@ -7,10 +9,10 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- Informasi PO -->
     <div class="pob-card">
-      <div class="pob-section__title">Informasi PO</div>
+      <div class="pob-section__title">{{ "common.poInfo" | translate }}</div>
       <div class="pob-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal PO</mat-label>
+          <mat-label>{{ "poB.poDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -24,7 +26,7 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Kode Project</mat-label>
+          <mat-label>{{ "poB.projectCode" | translate }}</mat-label>
           <input
             matInput
             formControlName="projectName"
@@ -32,12 +34,12 @@
             (keyup)="toUpperCase()"
             placeholder="Ex. MICZ"
           />
-          <mat-error *ngIf="f['projectName'].hasError('pattern')"
-            >Harus 4–5 karakter kapital.</mat-error
-          >
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "common.projectCodeError" | translate
+          }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="pob-span2">
-          <mat-label>Vendor Rental</mat-label>
+          <mat-label>{{ "poB.rentalVendor" | translate }}</mat-label>
           <input
             matInput
             formControlName="supplierName"
@@ -61,7 +63,7 @@
     <div class="pob-card">
       <div class="pob-cardhead">
         <div class="pob-section__title pob-section__title--flush">
-          Daftar Sewa Equipment
+          {{ "poB.rentalList" | translate }}
         </div>
         <button type="button" class="pob-add" (click)="openEquipmentSelector()">
           <mat-icon>add</mat-icon> Tambah equipment
@@ -112,7 +114,7 @@
 
               <div class="pob-rental__grid">
                 <mat-form-field appearance="outline">
-                  <mat-label>Volume</mat-label>
+                  <mat-label>{{ "poB.volume" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="quantity"
@@ -122,7 +124,7 @@
                   />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Satuan</mat-label>
+                  <mat-label>{{ "poB.unit" | translate }}</mat-label>
                   <mat-select
                     formControlName="unit"
                     (selectionChange)="onUnitChange(i)"
@@ -131,12 +133,12 @@
                       u
                     }}</mat-option>
                   </mat-select>
-                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
-                    >Lump sum — volume dikunci 1</mat-hint
-                  >
+                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">{{
+                    "common.lumpSumLocked" | translate
+                  }}</mat-hint>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Harga satuan</mat-label>
+                  <mat-label>{{ "poB.unitPrice" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="price"
@@ -148,7 +150,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Dari tanggal</mat-label>
+                  <mat-label>{{ "poB.dateFrom" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="fromDate"
@@ -162,7 +164,7 @@
                   <mat-datepicker #dp1></mat-datepicker>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Sampai tanggal</mat-label>
+                  <mat-label>{{ "poB.dateTo" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="toDate"
@@ -176,7 +178,7 @@
                   <mat-datepicker #dp2></mat-datepicker>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="pob-span2">
-                  <mat-label>Lokasi kerja</mat-label>
+                  <mat-label>{{ "poB.workLocation" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="location"
@@ -195,14 +197,15 @@
         }}</mat-slide-toggle>
         <div class="pob-summary">
           <div class="pob-summary__row">
-            <span>Subtotal (DPP)</span
+            <span>{{ "common.subtotalDpp" | translate }}</span
             ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
           </div>
           <div class="pob-summary__row">
             <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
           <div class="pob-summary__row pob-summary__row--total">
-            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
           </div>
         </div>
       </div>

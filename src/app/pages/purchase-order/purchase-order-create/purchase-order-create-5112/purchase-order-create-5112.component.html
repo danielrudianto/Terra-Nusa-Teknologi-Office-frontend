@@ -1,5 +1,7 @@
 <div class="po5112-wrap">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.title5112' | translate"
     [description]="'poForm.desc5112' | translate"
   ></app-header-title>
@@ -7,7 +9,9 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== Info Umum ===== -->
     <div class="po5112-card">
-      <div class="po5112-section__title">Informasi Umum</div>
+      <div class="po5112-section__title">
+        {{ "po5112.generalInfo" | translate }}
+      </div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.dateGeneric" | translate }}</mat-label>
@@ -23,7 +27,7 @@
             formControlName="projectName"
             placeholder="Cth: PUSAT"
           />
-          <mat-hint>4-5 huruf/angka kapital</mat-hint>
+          <mat-hint>{{ "po5112.codeHint" | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="po5112-span2">
@@ -59,7 +63,9 @@
 
     <!-- ===== Tipe Pembelian (toggle) ===== -->
     <div class="po5112-card">
-      <div class="po5112-section__title">Tipe Pembelian</div>
+      <div class="po5112-section__title">
+        {{ "po5112.purchaseType" | translate }}
+      </div>
       <div class="po5112-typetoggle">
         <mat-slide-toggle
           formControlName="isSubscription"
@@ -114,9 +120,9 @@
           </mat-form-field>
 
           <div class="po5112-renew">
-            <mat-checkbox formControlName="autoRenew" color="primary">
-              Perpanjang otomatis (auto-renew)
-            </mat-checkbox>
+            <mat-checkbox formControlName="autoRenew" color="primary">{{
+              "po5112.autoRenew" | translate
+            }}</mat-checkbox>
           </div>
         </div>
       }
@@ -125,7 +131,9 @@
     <!-- ===== Item Software (bebas) ===== -->
     <div class="po5112-card">
       <div class="po5112-cardhead">
-        <div class="po5112-section__title">Rincian Software / Lisensi</div>
+        <div class="po5112-section__title">
+          {{ "po5112.softwareDetail" | translate }}
+        </div>
         <button type="button" class="po5112-additem" (click)="addItem()">
           <mat-icon>add</mat-icon> Tambah baris
         </button>
@@ -186,20 +194,21 @@
         formControlName="includePPN"
         color="primary"
         class="po5112-ppn"
+        >{{ "po5112.priceIncludesVat" | translate }}</mat-checkbox
       >
-        Harga sudah termasuk PPN 11%
-      </mat-checkbox>
 
       <div class="po5112-summary">
         <div class="po5112-summary__row">
-          <span>Subtotal (DPP)</span
+          <span>{{ "common.subtotalDpp" | translate }}</span
           ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
         </div>
         <div class="po5112-summary__row" *ngIf="ppnAmount > 0">
-          <span>PPN 11%</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          <span>{{ "po5112.vat11" | translate }}</span
+          ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
         </div>
         <div class="po5112-summary__row po5112-summary__total">
-          <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          <span>{{ "common.total" | translate }}</span
+          ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
         </div>
       </div>
     </div>
@@ -207,7 +216,7 @@
     <!-- ===== Pembayaran & Penyerahan ===== -->
     <div class="po5112-card">
       <div class="po5112-section__title">
-        Pembayaran &amp; Penyerahan Lisensi
+        {{ "po5112.paymentDelivery" | translate }}
       </div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
@@ -216,46 +225,64 @@
             formControlName="paymentTerm"
             (selectionChange)="onPaymentTermChange()"
           >
-            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
-            <mat-option value="COD">Cash on delivery</mat-option>
-            <mat-option value="CBD">Cash before delivery</mat-option>
-            <mat-option value="PPD">Prepaid</mat-option>
-            <mat-option value="CR">Credit</mat-option>
-            <mat-option value="CRD">Credit with prepaid</mat-option>
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.licenseDelivery" | translate }}</mat-label>
           <mat-select formControlName="licenseDelivery">
-            <mat-option value="account">Aktivasi akun</mat-option>
-            <mat-option value="email">Email license key</mat-option>
-            <mat-option value="download">Download link</mat-option>
-            <mat-option value="other">Lainnya</mat-option>
+            <mat-option value="account">{{
+              "poForm.licenseAccount" | translate
+            }}</mat-option>
+            <mat-option value="email">{{
+              "poForm.licenseEmail" | translate
+            }}</mat-option>
+            <mat-option value="download">{{
+              "poForm.licenseDownload" | translate
+            }}</mat-option>
+            <mat-option value="other">{{
+              "poForm.licenseOther" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTermDays" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <mat-hint *ngIf="!creditEnabled"
-            >Tidak berlaku untuk termin ini</mat-hint
-          >
+          <mat-hint *ngIf="!creditEnabled">{{
+            "common.notApplicable" | translate
+          }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.prepaidPercent" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <mat-hint *ngIf="!prepaidEnabled"
-            >Tidak berlaku untuk termin ini</mat-hint
-          >
+          <mat-hint *ngIf="!prepaidEnabled">{{
+            "common.notApplicable" | translate
+          }}</mat-hint>
         </mat-form-field>
       </div>
     </div>
 
     <!-- ===== Kontak PJ ===== -->
     <div class="po5112-card">
-      <div class="po5112-section__title">Kontak Penanggung Jawab</div>
+      <div class="po5112-section__title">
+        {{ "common.picContact" | translate }}
+      </div>
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.supplierPICName" | translate }}</mat-label>
@@ -287,7 +314,9 @@
     <!-- ===== Poin Tambahan (custom) ===== -->
     <div class="po5112-card">
       <div class="po5112-cardhead">
-        <div class="po5112-section__title">Poin Tambahan (opsional)</div>
+        <div class="po5112-section__title">
+          {{ "common.extraPoints" | translate }}
+        </div>
         <button type="button" class="po5112-addclause" (click)="addClause()">
           <mat-icon>add</mat-icon> Tambah poin
         </button>
@@ -318,14 +347,18 @@
           </div>
         }
         @if (additionalClauses.length === 0) {
-          <div class="po5112-clauseempty">Belum ada poin tambahan.</div>
+          <div class="po5112-clauseempty">
+            {{ "common.noExtraPoints" | translate }}
+          </div>
         }
       </div>
     </div>
 
     <!-- ===== Poin Perjanjian (preview) ===== -->
     <div class="po5112-card">
-      <div class="po5112-section__title">Poin Perjanjian</div>
+      <div class="po5112-section__title">
+        {{ "common.agreementPoints" | translate }}
+      </div>
       <div class="po5112-clausehint">
         <mat-icon>lock</mat-icon>
         <span

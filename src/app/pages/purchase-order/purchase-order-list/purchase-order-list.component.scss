@@ -333,3 +333,56 @@ $hover: var(--hover, #f6f8ff);
     background: #ef4444;
   }
 }
+
+/* baris bisa diklik untuk membuka detail */
+.pol-row {
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+/* ===== kepala kolom bisa diurut — mengikuti halaman Pembelian ===== */
+.pol-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.pol-th--right {
+  justify-content: flex-end;
+}
+.pol-th mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.pol-th__idle {
+  color: var(--faint, #cfd4dc);
+}
+:host ::ng-deep th.mat-mdc-header-cell {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ===== kolom pemasok: nama di atas, prefix di bawah =====
+   Disamakan dengan halaman Pembelian agar ketiga daftar seragam. */
+.pol-primary {
+  display: block;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+.pol-secondary {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--faint, #9aa0ab);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+.pol-supplier__text,
+.pol-sup__text {
+  min-width: 0;
+}

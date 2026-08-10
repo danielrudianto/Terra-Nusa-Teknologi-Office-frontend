@@ -26,7 +26,7 @@
 
     <mat-form-field appearance="outline" class="el-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Search</mat-label>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
         matInput
         type="text"
@@ -43,7 +43,9 @@
       <table mat-table [dataSource]="employees">
         <!-- Name -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "common.name" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <div class="el-person">
               <span class="el-avatar">{{
@@ -56,7 +58,9 @@
 
         <!-- NIK -->
         <ng-container matColumnDef="nik">
-          <th mat-header-cell *matHeaderCellDef>NIK</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.nik" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="el-mono">{{ element.nik || "—" }}</span>
           </td>
@@ -64,7 +68,9 @@
 
         <!-- Tax category -->
         <ng-container matColumnDef="taxCategory">
-          <th mat-header-cell *matHeaderCellDef>Tax Category</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.taxCategory" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="el-tag" *ngIf="element.taxCategory">{{
               element.taxCategory
@@ -75,7 +81,9 @@
 
         <!-- Position -->
         <ng-container matColumnDef="position">
-          <th mat-header-cell *matHeaderCellDef>Position</th>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.position" | translate }}
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="el-muted">{{ element.position || "—" }}</span>
           </td>
@@ -122,7 +130,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="el-empty">
               <mat-icon>badge</mat-icon>
-              <span>No data matching the filter.</span>
+              <span>{{ "common.noDataFilter" | translate }}</span>
             </div>
           </td>
         </tr>

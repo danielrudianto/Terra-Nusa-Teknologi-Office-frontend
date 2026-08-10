@@ -96,15 +96,16 @@
       <span class="login-controls__code">{{ currentLang.short }}</span>
     </button>
     <mat-menu #langMenu="matMenu">
-      <button
-        mat-menu-item
-        *ngFor="let lang of languages"
-        (click)="setLang(lang.code)"
-        [class.is-active]="lang.code === currentLang.code"
-      >
-        <span class="login-controls__flag">{{ lang.flag }}</span>
-        <span>{{ lang.native }}</span>
-      </button>
+      @for (lang of languages; track lang.code) {
+        <button
+          mat-menu-item
+          (click)="setLang(lang.code)"
+          [class.is-active]="lang.code === currentLang.code"
+        >
+          <span class="login-controls__flag">{{ lang.flag }}</span>
+          <span>{{ lang.native }}</span>
+        </button>
+      }
     </mat-menu>
 
     <button

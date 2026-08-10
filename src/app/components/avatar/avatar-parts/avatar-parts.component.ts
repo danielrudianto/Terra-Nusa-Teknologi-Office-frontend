@@ -193,22 +193,22 @@ export const HAIRS: Record<
   'hijab-01': {
     label: 'Hijab',
     draw: (c) =>
-      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 6-1 11-3 15h-6c2-5 3-10 3-15 0-13-8-21-18-21s-18 8-18 21c0 5 1 10 3 15h-6c-2-4-3-9-3-15z" fill="${c.fill}"/><path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M35 40c0-9 7-15 15-15s15 6 15 15c0 3-1 5-2 7-2-8-7-13-13-13s-11 5-13 13c-1-2-2-4-2-7z" fill="#ffffff" opacity="0.12"/>`,
+      `<path fill-rule="evenodd" clip-rule="evenodd" d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z M50 22a17 19 0 0 0 0 38a17 19 0 0 0 0-38z" fill="${c.fill}"/>`,
   },
   'hijab-02': {
     label: 'Hijab with under-cap',
     draw: (c) =>
-      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M33 44c0-11 8-18 17-18s17 7 17 18c0 2 0 4-1 6-2-9-8-15-16-15s-14 6-16 15c-1-2-1-4-1-6z" fill="#ffffff" opacity="0.22"/>`,
+      `<path fill-rule="evenodd" clip-rule="evenodd" d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z M50 22a17 19 0 0 0 0 38a17 19 0 0 0 0-38z" fill="${c.fill}"/><path fill-rule="evenodd" clip-rule="evenodd" d="M33 44c0-11 8-18 17-18s17 7 17 18c0 3-1 6-2 8H35c-1-2-2-5-2-8z M50 24a15 17 0 0 0 0 34a15 17 0 0 0 0-34z" fill="#ffffff" opacity="0.22"/>`,
   },
   'hijab-03': {
     label: 'Hijab with draped side',
     draw: (c) =>
-      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M70 58c5 4 8 11 7 18-1 6-5 11-10 13 4-5 5-11 4-17-1-6-2-11-1-14z" fill="${c.fill}"/>`,
+      `<path fill-rule="evenodd" clip-rule="evenodd" d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z M50 22a17 19 0 0 0 0 38a17 19 0 0 0 0-38z" fill="${c.fill}"/><path d="M70 58c5 4 8 11 7 18-1 6-5 11-10 13 4-5 5-11 4-17-1-6-2-11-1-14z" fill="${c.fill}"/>`,
   },
   'hijab-04': {
     label: 'Turban style',
     draw: (c) =>
-      `<path d="M27 45c0-15 10-26 23-26s23 11 23 26c0 5-1 9-2 13H29c-1-4-2-8-2-13z" fill="${c.fill}"/><path d="M27 40c8-4 15-6 23-6s15 2 23 6c-1-4-3-8-5-11-6-3-12-4-18-4s-12 1-18 4c-2 3-4 7-5 11z" fill="#ffffff" opacity="0.18"/><path d="M29 58h42l-3 8H32z" fill="${c.fill}"/>`,
+      `<path fill-rule="evenodd" clip-rule="evenodd" d="M27 45c0-15 10-26 23-26s23 11 23 26c0 5-1 9-2 13H29c-1-4-2-8-2-13z M50 22a17 19 0 0 0 0 38a17 19 0 0 0 0-38z" fill="${c.fill}"/><path d="M27 40c8-4 15-6 23-6s15 2 23 6c-1-4-3-8-5-11-6-3-12-4-18-4s-12 1-18 4c-2 3-4 7-5 11z" fill="#ffffff" opacity="0.18"/><path d="M29 58h42l-3 8H32z" fill="${c.fill}"/>`,
   },
 };
 

@@ -8,6 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-expense-opponent-view',
@@ -18,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    AuditTrailComponent,
   ],
   templateUrl: './expense-opponent-view.component.html',
   styleUrl: './expense-opponent-view.component.scss',

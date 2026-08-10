@@ -6,6 +6,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslatePipe } from '@ngx-translate/core';
 import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
 
 @Component({
@@ -19,6 +20,7 @@ import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
     MatInputModule,
     MatButtonModule,
     MatSlideToggleModule,
+    TranslatePipe,
   ],
   templateUrl: './pph-selector.component.html',
   styleUrls: ['./pph-selector.component.scss'],

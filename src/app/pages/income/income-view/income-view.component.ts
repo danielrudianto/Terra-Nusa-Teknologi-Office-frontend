@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-income-view',
@@ -27,6 +28,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    AuditTrailComponent,
   ],
   templateUrl: './income-view.component.html',
   styleUrl: './income-view.component.scss',
@@ -38,7 +40,7 @@ export class IncomeViewComponent {
     private snackbar: MatSnackBar,
     private datePipe: DatePipe,
     private decimalPipe: DecimalPipe,
-    @Inject(MAT_DIALOG_DATA) private data: { id: number },
+    @Inject(MAT_DIALOG_DATA) public data: { id: number },
   ) {}
 
   isLoading: boolean = false;

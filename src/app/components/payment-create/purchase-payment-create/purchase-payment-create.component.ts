@@ -12,14 +12,15 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from 'src/app/services/api.service';
-import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
+import { ApiService } from '../../../services/api.service';
+import { PaymentSlipHelper } from '../../../helpers/payment-slip.helper';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-payment-create',
@@ -28,6 +29,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   styleUrls: ['./purchase-payment-create.component.scss'],
   standalone: true,
   imports: [
+    TranslatePipe,
     NgxMaskDirective,
     FormsModule,
     ReactiveFormsModule,

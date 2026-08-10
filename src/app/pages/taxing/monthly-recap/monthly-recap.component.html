@@ -16,15 +16,15 @@
       </svg>
     </span>
     <div class="txr-head__text">
-      <h2 class="txr-title">Monthly Report</h2>
-      <span class="txr-sub">Rekap pajak bulanan menyeluruh</span>
+      <h2 class="txr-title">{{ "taxing.monthlyReport" | translate }}</h2>
+      <span class="txr-sub">{{ "taxing.recapSub" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="txr-content">
       <div class="txr-yearrow">
-        <span class="txr-label">Periode</span>
+        <span class="txr-label">{{ "common.period" | translate }}</span>
         <div class="txr-year">
           <button
             type="button"
@@ -78,42 +78,42 @@
       </div>
 
       <div class="txr-sections">
-        <span class="txr-label">Bagian laporan</span>
+        <span class="txr-label">{{ "taxing.reportSection" | translate }}</span>
         <div class="txr-toggles">
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="mutation" color="primary"
-              >Mutasi Bank</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="mutation" color="primary">{{
+              "taxing.bankMutation" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="purchase" color="primary"
-              >Purchase</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="purchase" color="primary">{{
+              "taxing.purchase" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="sales" color="primary"
-              >Sales</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="sales" color="primary">{{
+              "taxing.sales" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="asset" color="primary"
-              >Asset</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="asset" color="primary">{{
+              "taxing.asset" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="ar" color="primary"
-              >Account Receivable</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="ar" color="primary">{{
+              "taxing.accountReceivable" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="ap" color="primary"
-              >Account Payable</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="ap" color="primary">{{
+              "taxing.accountPayable" | translate
+            }}</mat-slide-toggle>
           </div>
           <div class="txr-toggle">
-            <mat-slide-toggle formControlName="loans" color="primary"
-              >Loans</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="loans" color="primary">{{
+              "taxing.loans" | translate
+            }}</mat-slide-toggle>
           </div>
         </div>
       </div>

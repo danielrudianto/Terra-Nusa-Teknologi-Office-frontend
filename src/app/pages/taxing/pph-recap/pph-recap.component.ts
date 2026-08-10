@@ -15,8 +15,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from 'src/app/services/api.service';
+import { ApiService } from '../../../services/api.service';
 import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-pph-recap',
@@ -24,6 +25,7 @@ import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
   templateUrl: './pph-recap.component.html',
   styleUrl: './pph-recap.component.scss',
   imports: [
+    TranslatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

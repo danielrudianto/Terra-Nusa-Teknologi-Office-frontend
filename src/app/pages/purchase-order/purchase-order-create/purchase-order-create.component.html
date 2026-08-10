@@ -1,13 +1,15 @@
 <div class="poc">
   <div class="poc-head">
-    <h1 class="poc-title">Buat Purchase Order</h1>
-    <p class="poc-sub">Pilih jenis pembelian yang mau dibuat</p>
+    <h1 class="poc-title">{{ "poCreate.title" | translate }}</h1>
+    <p class="poc-sub">{{ "poCreate.subtitle" | translate }}</p>
   </div>
 
   <!-- Project expenses -->
   <div class="poc-section">
     <div class="poc-section__head">
-      <span class="poc-section__title">Project expenses</span>
+      <span class="poc-section__title">{{
+        "poCreate.projectExpenses" | translate
+      }}</span>
       <span class="poc-section__count">{{ projectTiles.length }}</span>
     </div>
     <div class="poc-grid">
@@ -44,7 +46,9 @@
   <!-- Office expenses -->
   <div class="poc-section">
     <div class="poc-section__head">
-      <span class="poc-section__title">Office expenses</span>
+      <span class="poc-section__title">{{
+        "poCreate.officeExpenses" | translate
+      }}</span>
       <span class="poc-section__count">{{ officeTiles.length }}</span>
     </div>
     <div class="poc-grid">

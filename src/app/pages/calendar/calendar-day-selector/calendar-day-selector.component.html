@@ -105,6 +105,41 @@
             </div>
 
             <div class="ds-list">
+              <!-- Transfer antar rekening ditaruh paling atas: nilainya paling
+                   memengaruhi saldo, jadi terbaca lebih dulu. -->
+
+              @for (i of interpayments; track i) {
+                <div class="ds-opt ds-ip">
+                  <span class="ds-opt__check"></span>
+                  <div class="ds-opt__body ds-opt__body--static">
+                    <mat-icon class="ds-ic ds-ic--ip">{{
+                      isIncomingInterpayment(i) ? "south_west" : "north_east"
+                    }}</mat-icon>
+                    <span class="ds-opt__text">
+                      <!-- Arah disebut eksplisit: satu transfer muncul di dua
+                           rekening, sebagai keluar di satu sisi dan masuk di
+                           sisi lain. -->
+                      @if (isIncomingInterpayment(i)) {
+                        <span class="ds-opt__title"
+                          >Transfer masuk dari ••••{{
+                            i.originBankAccountNumber.slice(-4)
+                          }}</span
+                        >
+                      } @else {
+                        <span class="ds-opt__title"
+                          >Transfer keluar ke ••••{{
+                            i.destinationBankAccountNumber.slice(-4)
+                          }}</span
+                        >
+                      }
+                    </span>
+                    <span class="ds-optamt"
+                      >Rp {{ i.amount | number: "0.2-2" }}</span
+                    >
+                  </div>
+                </div>
+              }
+
               @for (p of payments; track p) {
                 <div
                   class="ds-opt"
@@ -158,25 +193,6 @@
                 </ng-template>
               </mat-menu>
 
-              @for (i of interpayments; track i) {
-                <div class="ds-opt ds-ip">
-                  <span class="ds-opt__check"></span>
-                  <div class="ds-opt__body ds-opt__body--static">
-                    <mat-icon class="ds-ic ds-ic--ip">swap_horiz</mat-icon>
-                    <span class="ds-opt__text">
-                      <span class="ds-opt__title"
-                        >Interpayment to ••••{{
-                          i.destinationBankAccountNumber.slice(-4)
-                        }}</span
-                      >
-                    </span>
-                    <span class="ds-optamt"
-                      >Rp {{ i.amount | number: "0.2-2" }}</span
-                    >
-                  </div>
-                </div>
-              }
-
               <div
                 class="ds-empty"
                 *ngIf="payments.length === 0 && interpayments.length === 0"
@@ -187,6 +203,8 @@
             </div>
 
             <div class="ds-foot">
+              <!-- Spanduk hanya relevan bila ada transfer berbiaya yang
+                   masih akan dijalankan. -->
               @if (selectedAccount.interbankTransferCount > 0) {
                 <div class="ds-banner">
                   <mat-icon>info</mat-icon>
@@ -199,7 +217,7 @@
                         | translate
                           : {
                               interbank: selectedAccount.interbankTransferCount,
-                              total: selectedAccount.paymentCount,
+                              total: selectedAccount.pendingCount,
                               fee: "Rp " + (interbankFee | number: "0.0-0"),
                               bank: selectedAccount.bankName,
                             }
@@ -227,7 +245,7 @@
                       "calendarDay.feeBannerAllSame"
                         | translate
                           : {
-                              total: selectedAccount.paymentCount,
+                              total: selectedAccount.pendingCount,
                               bank: selectedAccount.bankName,
                             }
                     }}</span>

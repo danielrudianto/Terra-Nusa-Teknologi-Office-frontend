@@ -15,32 +15,36 @@
       </svg>
     </span>
     <div class="sa-head__text">
-      <h2 class="sa-title">Tambah Deduction</h2>
-      <span class="sa-sub">Potongan gaji karyawan</span>
+      <h2 class="sa-title">{{ "deductionForm.title" | translate }}</h2>
+      <span class="sa-sub">{{ "deductionForm.subtitle" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="sa-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Deduction Name</mat-label>
+        <mat-label>{{ "deductionForm.name" | translate }}</mat-label>
         <mat-select formControlName="name">
-          <mat-option value="BPJS Ketenagakerjaan"
-            >BPJS Ketenagakerjaan</mat-option
-          >
-          <mat-option value="Potongan Surat Peringatan / Teguran"
-            >Potongan Surat Peringatan / Teguran</mat-option
-          >
-          <mat-option value="Potongan Keterlambatan"
-            >Potongan Keterlambatan</mat-option
-          >
-          <mat-option value="Potongan Cuti">Potongan Cuti</mat-option>
-          <mat-option value="Potongan Lembur">Potongan Lembur</mat-option>
+          <mat-option value="BPJS Ketenagakerjaan">{{
+            "salaryDeduction.bpjs" | translate
+          }}</mat-option>
+          <mat-option value="Potongan Surat Peringatan / Teguran">{{
+            "salaryDeduction.warningLetter" | translate
+          }}</mat-option>
+          <mat-option value="Potongan Keterlambatan">{{
+            "salaryDeduction.lateness" | translate
+          }}</mat-option>
+          <mat-option value="Potongan Cuti">{{
+            "salaryDeduction.leave" | translate
+          }}</mat-option>
+          <mat-option value="Potongan Lembur">{{
+            "salaryDeduction.overtime" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Amount</mat-label>
+        <mat-label>{{ "deductionForm.amount" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -54,7 +58,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Description</mat-label>
+        <mat-label>{{ "deductionForm.description" | translate }}</mat-label>
         <textarea
           matInput
           formControlName="description"
@@ -67,10 +71,12 @@
 
       <div class="sa-toggle">
         <div class="sa-toggle__text">
-          <span class="sa-toggle__label">Included for PPh Calculation</span>
-          <span class="sa-toggle__hint"
-            >Aktifkan kalau potongan ini dihitung untuk PPh 21.</span
-          >
+          <span class="sa-toggle__label">{{
+            "salaryDeduction.includedPph" | translate
+          }}</span>
+          <span class="sa-toggle__hint">{{
+            "salaryDeduction.includedPphHint" | translate
+          }}</span>
         </div>
         <mat-slide-toggle
           color="primary"
@@ -80,14 +86,16 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="sa-actions">
-      <button type="button" class="sa-cancel" mat-dialog-close>Batal</button>
+      <button type="button" class="sa-cancel" mat-dialog-close>
+        {{ "deductionForm.cancel" | translate }}
+      </button>
       <button
         type="submit"
         class="sa-submit"
         [disabled]="formGroup.invalid"
         cdkFocusInitial
       >
-        Tambah deduction
+        {{ "salaryDeduction.addDeduction" | translate }}
       </button>
     </mat-dialog-actions>
   </form>

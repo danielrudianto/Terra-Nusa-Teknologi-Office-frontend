@@ -16,22 +16,22 @@ import {
 } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
-import { NgxMaskDirective } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 import { DeleteConfirmationComponent } from '../../../../components/delete-confirmation/delete-confirmation.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sales-invoice-confirm',
   imports: [
+    TranslatePipe,
     MatIconModule,
     MatDialogModule,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
     MatInputModule,
-    NgxMaskDirective,
     MatButtonModule,
   ],
   templateUrl: './sales-invoice-confirm.component.html',

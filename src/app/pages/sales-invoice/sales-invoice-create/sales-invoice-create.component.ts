@@ -44,8 +44,6 @@ pdfMake.vfs = pdfFonts.vfs;
     MatSelectModule,
     MatButtonModule,
     CommonModule,
-    ClientSelectorComponent,
-    PphSelectorComponent,
     MatStepperModule,
     FormsModule,
     ReactiveFormsModule,

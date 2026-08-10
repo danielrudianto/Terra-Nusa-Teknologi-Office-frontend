@@ -74,15 +74,16 @@
           <td mat-cell *matCellDef="let element">
             <div class="eol-pay">
               <span>{{ element.paymentNumber || "—" }}</span>
-              <button
-                *ngIf="element.paymentNumber"
-                mat-icon-button
-                class="eol-copy"
-                (click)="copyPaymentNumber(element.paymentNumber)"
-                aria-label="Salin payment number"
-              >
-                <mat-icon>content_copy</mat-icon>
-              </button>
+              @if (element.paymentNumber) {
+                <button
+                  mat-icon-button
+                  class="eol-copy"
+                  (click)="copyPaymentNumber(element.paymentNumber)"
+                  aria-label="Salin payment number"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              }
             </div>
           </td>
         </ng-container>

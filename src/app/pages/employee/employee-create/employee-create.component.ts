@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-employee-create',
@@ -20,6 +21,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './employee-create.component.scss',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,

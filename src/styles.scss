@@ -1,5 +1,5 @@
 @use "@angular/material" as mat;
-@import 'quill/dist/quill.snow.css';
+@import "quill/dist/quill.snow.css";
 
 @include mat.core();
 
@@ -298,5 +298,54 @@ html[data-theme="dark"] ::-webkit-scrollbar-track {
 .table {
   td {
     vertical-align: middle;
+  }
+}
+
+/* ===== Kerapatan tabel =====
+ * Mode rapat memuat lebih banyak baris per layar; berguna pada daftar
+ * panjang seperti gaji dan purchase order. Diterapkan lewat atribut di
+ * <html> agar berlaku ke seluruh tabel tanpa mengubah tiap komponen.
+ */
+html[data-density="compact"] {
+  /*
+   * Komponen daftar menetapkan `min-height: 60px` lewat ::ng-deep, dan
+   * `min-height` selalu menang atas `height`. Jadi mode rapat harus
+   * menimpanya dengan properti yang sama, bukan sekadar mengatur tinggi.
+   */
+  .mat-mdc-row,
+  .mat-mdc-footer-row {
+    min-height: 40px !important;
+    height: 40px !important;
+  }
+
+  .mat-mdc-header-row {
+    min-height: 38px !important;
+    height: 38px !important;
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  /*
+   * Baris kedua di dalam sel disembunyikan agar tinggi baris benar-benar
+   * turun — pada daftar seperti Pembelian, tinggi ditentukan isi dua baris,
+   * bukan min-height.
+   *
+   * Hanya disembunyikan bila sel itu punya baris utama; sebagian kolom
+   * memakai kelas -secondary sebagai satu-satunya isi, dan menyembunyikannya
+   * akan meninggalkan sel kosong.
+   */
+  .mat-mdc-cell:has([class$="-primary"]) [class$="-secondary"],
+  .mat-mdc-cell:has([class$="-primary"]) [class$="-faint"],
+  .mat-mdc-cell:has([class$="-primary"]) [class$="-muted"],
+  .mat-mdc-cell:has([class$="-primary"]) [class$="-sub"] {
+    display: none !important;
+  }
+
+  .mat-mdc-paginator {
+    --mat-paginator-container-size: 44px;
   }
 }

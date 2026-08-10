@@ -1,27 +1,19 @@
 <div class="client-list">
-  <div class="cl-head">
-    <div>
-      <h1 class="cl-title">{{ "client.title" | translate }}</h1>
-      <p class="cl-sub">{{ "client.subtitle" | translate }}</p>
-    </div>
-    <button
-      mat-flat-button
-      color="primary"
-      class="cl-add"
-      (click)="onAddClient()"
-    >
-      <mat-icon>add</mat-icon> {{ "client.createNew" | translate }}
-    </button>
-  </div>
+  <app-header-title
+    [title]="'client.title' | translate"
+    [description]="'client.subtitle' | translate"
+    [actionButtonLabel]="'client.createNew' | translate"
+    (onActionButtonClicked)="onAddClient()"
+  />
 
   <div class="cl-toolbar">
     <mat-form-field appearance="outline" class="cl-search">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <mat-label>Search</mat-label>
       <input
         matInput
         type="text"
-        [placeholder]="'client.searchPlaceholder' | translate"
+        placeholder="Cari nama, kota, atau NPWP"
         [formControl]="formControl"
       />
     </mat-form-field>
@@ -34,9 +26,7 @@
       <table mat-table [dataSource]="clients" #table>
         <!-- Name -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.name" | translate }}
-          </th>
+          <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let element">
             <div class="cl-person">
               <span class="cl-avatar">{{
@@ -54,9 +44,7 @@
 
         <!-- Address -->
         <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.address" | translate }}
-          </th>
+          <th mat-header-cell *matHeaderCellDef>Address</th>
           <td mat-cell *matCellDef="let element">
             <span class="cl-muted">{{ element.address || "—" }}</span>
           </td>
@@ -64,9 +52,7 @@
 
         <!-- City -->
         <ng-container matColumnDef="city">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.city" | translate }}
-          </th>
+          <th mat-header-cell *matHeaderCellDef>City</th>
           <td mat-cell *matCellDef="let element">
             <span class="cl-muted">{{ element.city || "—" }}</span>
           </td>
@@ -74,9 +60,7 @@
 
         <!-- NPWP -->
         <ng-container matColumnDef="npwp">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.npwp" | translate }}
-          </th>
+          <th mat-header-cell *matHeaderCellDef>NPWP</th>
           <td mat-cell *matCellDef="let element">
             <span class="cl-npwp" *ngIf="element.npwp">{{ element.npwp }}</span>
             <span class="cl-faint" *ngIf="!element.npwp">N/A</span>
@@ -114,7 +98,7 @@
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">
             <div class="cl-empty">
               <mat-icon>apartment</mat-icon>
-              <span>{{ "common.noData" | translate }}</span>
+              <span>No data matching the filter.</span>
             </div>
           </td>
         </tr>

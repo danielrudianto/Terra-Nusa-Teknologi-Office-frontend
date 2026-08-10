@@ -1,8 +1,10 @@
 <div class="ss">
   <div mat-dialog-title class="ss-head">
     <div class="ss-head__text">
-      <h2 class="ss-title">Pilih Supplier</h2>
-      <span class="ss-sub">Cari berdasarkan nama atau alamat</span>
+      <h2 class="ss-title">{{ "selector.chooseSupplier" | translate }}</h2>
+      <span class="ss-sub">{{
+        "selector.searchByNameAddress" | translate
+      }}</span>
     </div>
     <button type="button" class="ss-x" mat-dialog-close aria-label="Tutup">
       <svg
@@ -35,7 +37,7 @@
         <circle cx="11" cy="11" r="7" />
         <path d="m21 21-4.3-4.3" />
       </svg>
-      <mat-label>Cari supplier</mat-label>
+      <mat-label>{{ "selector.searchSupplier" | translate }}</mat-label>
       <input
         matInput
         cdkFocusInitial
@@ -64,7 +66,7 @@
           d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
         />
       </svg>
-      <span>Supplier tidak ditemukan</span>
+      <span>{{ "selector.supplierNotFound" | translate }}</span>
     </div>
 
     <div class="ss-list" *ngIf="!isLoading && suppliers.length > 0">
@@ -101,7 +103,9 @@
             }}<span class="ss-prefix" *ngIf="supplier.prefix"
               >, {{ supplier.prefix }}</span
             >
-            <span class="ss-badge" *ngIf="supplier.isBlacklist">Blacklist</span>
+            <span class="ss-badge" *ngIf="supplier.isBlacklist">{{
+              "selector.blacklist" | translate
+            }}</span>
           </span>
           <span class="ss-addr">{{ supplier.address || "—" }}</span>
           <span
@@ -129,6 +133,8 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="ss-actions">
-    <button mat-button mat-dialog-close class="ss-close">Tutup</button>
+    <button mat-button mat-dialog-close class="ss-close">
+      {{ "common.close" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

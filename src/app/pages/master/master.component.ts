@@ -33,42 +33,48 @@ interface MasterNavItem {
 export class MasterComponent {
   constructor(private translate: TranslateService) {}
 
+  /**
+   * Menu samping halaman master.
+   *
+   * `name` dan `description` berisi kunci terjemahan, bukan teks jadi —
+   * templatenya sudah memakai pipe translate.
+   */
   navItems: MasterNavItem[] = [
     {
-      name: 'Equipment',
+      name: 'masterNav.equipment',
       route: 'Equipment',
       icon: 'construction',
-      description: 'Alat & mesin',
+      description: 'masterNav.equipmentDesc',
     },
     {
-      name: 'Item',
+      name: 'masterNav.item',
       route: 'Item',
       icon: 'inventory_2',
-      description: 'Katalog barang',
+      description: 'masterNav.itemDesc',
     },
     {
-      name: 'Expense Opponent',
+      name: 'masterNav.expenseOpponent',
       route: 'Expense-opponent',
       icon: 'groups',
-      description: 'Lawan transaksi biaya',
+      description: 'masterNav.expenseOpponentDesc',
     },
     {
-      name: 'Supplier',
+      name: 'masterNav.supplier',
       route: 'Supplier',
       icon: 'local_shipping',
-      description: 'Data pemasok',
+      description: 'masterNav.supplierDesc',
     },
     {
-      name: 'Client',
+      name: 'masterNav.client',
       route: 'Client',
       icon: 'handshake',
-      description: 'Data klien',
+      description: 'masterNav.clientDesc',
     },
     {
-      name: 'Employee',
+      name: 'masterNav.employee',
       route: 'Employee',
       icon: 'badge',
-      description: 'Data karyawan',
+      description: 'masterNav.employeeDesc',
     },
   ];
 

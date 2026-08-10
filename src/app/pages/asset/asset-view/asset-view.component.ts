@@ -8,11 +8,13 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-asset-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     CommonModule,
     MatDialogModule,
     MatButtonModule,

@@ -22,7 +22,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -52,7 +51,6 @@ import { printPurchaseOrderD } from '../../../../helpers/purchase-order-d.helper
     MatSlideToggleModule,
     NgxMaskDirective,
     HeaderTitleComponent,
-    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-d.component.html',
   styleUrl: './purchase-order-create-d.component.scss',

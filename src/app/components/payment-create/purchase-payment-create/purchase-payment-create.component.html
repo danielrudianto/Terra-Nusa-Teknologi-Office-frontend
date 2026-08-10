@@ -174,7 +174,7 @@
       <div class="ppc-section__title ppc-section__title--mt">Pembayaran</div>
       <div class="ppc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal bayar</mat-label>
+          <mat-label>{{ "common.paymentDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -189,7 +189,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rekening pembayar</mat-label>
+          <mat-label>{{ "common.payerAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
               >{{ bank.bankAccountNumber }} —
@@ -199,7 +199,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="ppc-span2">
-          <mat-label>Nominal pembayaran</mat-label>
+          <mat-label>{{ "common.paymentAmount" | translate }}</mat-label>
           <input
             matInput
             formControlName="amount"
@@ -231,7 +231,7 @@
 
     <mat-dialog-actions class="ppc-actions">
       <button type="button" class="ppc-cancel" (click)="onClose()">
-        Batal
+        {{ "common.cancel" | translate }}
       </button>
       <button
         type="submit"

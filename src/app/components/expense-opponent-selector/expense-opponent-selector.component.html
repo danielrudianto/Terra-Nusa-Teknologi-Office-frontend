@@ -4,8 +4,12 @@
       <mat-icon>groups</mat-icon>
     </span>
     <div class="eos-head__text">
-      <h2 class="eos-title">Pilih lawan transaksi</h2>
-      <span class="eos-sub">Cari berdasarkan nama atau deskripsi</span>
+      <h2 class="eos-title">
+        {{ "expenseOpponentSelector.choose" | translate }}
+      </h2>
+      <span class="eos-sub">{{
+        "expenseOpponentSelector.searchHint" | translate
+      }}</span>
     </div>
   </div>
 
@@ -44,7 +48,7 @@
 
       <div class="eos-empty" *ngIf="opponents.length === 0">
         <mat-icon>person_search</mat-icon>
-        <span>Tidak ada data yang cocok.</span>
+        <span>{{ "common.noMatchingData" | translate }}</span>
       </div>
     </div>
   </mat-dialog-content>

@@ -1,51 +1,54 @@
 <div class="cal">
-  <!-- weekday header -->
-  <div class="cal-dow">
-    <div>{{ "common.mon" | translate }}</div>
-    <div>{{ "common.tue" | translate }}</div>
-    <div>{{ "common.wed" | translate }}</div>
-    <div>{{ "common.thu" | translate }}</div>
-    <div>{{ "common.fri" | translate }}</div>
-    <div class="cal-dow--we">{{ "common.sat" | translate }}</div>
-    <div class="cal-dow--we">{{ "common.sun" | translate }}</div>
-  </div>
+  <!-- Header dan kisi dibungkus satu papan: sel yang berdiri sendiri
+       terbaca sebagai kartu terpisah, bukan sebagai kalender. -->
+  <div class="cal-board">
+    <div class="cal-dow">
+      <div>{{ "common.mon" | translate }}</div>
+      <div>{{ "common.tue" | translate }}</div>
+      <div>{{ "common.wed" | translate }}</div>
+      <div>{{ "common.thu" | translate }}</div>
+      <div>{{ "common.fri" | translate }}</div>
+      <div class="cal-dow--we">{{ "common.sat" | translate }}</div>
+      <div class="cal-dow--we">{{ "common.sun" | translate }}</div>
+    </div>
 
-  <!-- day grid -->
-  <div class="cal-grid">
-    <ng-container *ngFor="let week of weeks">
-      <div
-        *ngFor="let day of week"
-        class="cal-cell"
-        [ngClass]="{
-          'is-active': day != null,
-          'is-selected': day === selectedDay && day != null,
-          'is-empty': day == null,
-        }"
-        (click)="onDayClick(day)"
-      >
-        <div class="cal-cell__top">
-          <div class="cal-date" [ngClass]="{ 'is-today': dayIsToday(day) }">
-            {{ day || "\u00A0" }}
+    <div class="cal-grid">
+      <ng-container *ngFor="let week of weeks">
+        <div
+          *ngFor="let day of week"
+          class="cal-cell"
+          [ngClass]="{
+            'is-active': day != null,
+            'is-selected': day === selectedDay && day != null,
+            'is-empty': day == null,
+            'is-weekend': isWeekend(day),
+          }"
+          (click)="onDayClick(day)"
+        >
+          <div class="cal-cell__top">
+            <div class="cal-date" [ngClass]="{ 'is-today': dayIsToday(day) }">
+              {{ day || "\u00A0" }}
+            </div>
+
+            <div
+              class="cal-ip"
+              [ngClass]="{ 'is-shown': interpaymentExistsForDay(day) }"
+              matTooltip="Ada interpayment di tanggal ini"
+            >
+              <mat-icon>swap_horiz</mat-icon>
+            </div>
           </div>
 
           <div
-            class="cal-ip"
-            [ngClass]="{ 'is-shown': interpaymentExistsForDay(day) }"
-            matTooltip="Ada interpayment di tanggal ini"
+            class="cal-cell__value"
+            *ngIf="day != null"
+            [ngClass]="valueClass(day)"
           >
-            <mat-icon>swap_horiz</mat-icon>
+            {{ dataForDay(day) | shortCurrency: "Rp. " }}
           </div>
         </div>
-
-        <div
-          class="cal-cell__value"
-          *ngIf="day != null"
-          [ngClass]="valueClass(day)"
-        >
-          {{ dataForDay(day) | shortCurrency: "Rp. " }}
-        </div>
-      </div>
-    </ng-container>
+      </ng-container>
+    </div>
   </div>
 
   <div class="cal-foot">

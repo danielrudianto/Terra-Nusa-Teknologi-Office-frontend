@@ -80,6 +80,8 @@
     <p class="iv-created" *ngIf="formGroup.value.createdAt">
       {{ "income.viewCreatedAt" | translate }} {{ formGroup.value.createdAt }}
     </p>
+    <div class="audit-divider"></div>
+    <app-audit-trail entity="income" [entityId]="data.id"></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions class="iv-actions">

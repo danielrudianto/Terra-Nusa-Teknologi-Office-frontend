@@ -16,7 +16,6 @@ import moment from 'moment';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BankMutationDownloadComponent } from './bank-mutation-download/bank-mutation-download.component';
@@ -35,7 +34,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatTableModule,
     CommonModule,
     MatPaginatorModule,
-    HeaderTitleComponent,
     MatIconModule,
     MatButtonModule,
     CalendarMonthSelectorComponent,

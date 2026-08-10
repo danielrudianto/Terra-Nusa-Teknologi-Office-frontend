@@ -15,9 +15,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../app/services/api.service';
 import { AuthService } from '../../../app/services/auth.service';
 import {
+  BrandColor,
+  Density,
+  PAGE_SIZES,
+  PageSize,
   SettingsService,
   TextScale,
-  BrandColor,
 } from '../../../app/services/setting.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
@@ -114,6 +117,16 @@ export class SettingsComponent implements OnInit {
 
   selectBrandColor(color: BrandColor): void {
     this.settings.setBrandColor(color);
+  }
+
+  readonly pageSizes = PAGE_SIZES;
+
+  selectPageSize(value: PageSize): void {
+    this.settings.setPageSize(value);
+  }
+
+  selectDensity(value: Density): void {
+    this.settings.setDensity(value);
   }
 
   get brandColorKeys(): BrandColor[] {

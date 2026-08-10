@@ -350,7 +350,7 @@ export class InvoiceComponent {
     const nama = this.purchaseOrderName;
     if (!nama) return of(null);
     return this.apiService
-      .get('purchase-orders', { params: { keyword: nama, page_size: 5 } })
+      .get('purchase-orders', { keyword: nama, page_size: 5 })
       .pipe(
         map((res: any) => {
           const list = res?.data ?? res?.items ?? [];
@@ -416,11 +416,11 @@ export class InvoiceComponent {
       workerAddress: po?.supplierAddress ?? '',
       workerCity: po?.supplierCity ?? '',
       workerNpwp: po?.supplierNpwp ?? '',
+      // PO-D mencatat komponen upah: label + nominal per satuan.
       items: (po?.items ?? []).map((it: any) => ({
-        name: it.task || it.item_description || '',
-        quantity: Number(it.quantity) || 0,
-        unit: it.unit,
-        price: Number(it.price) || 0,
+        label: it.task || it.item_description || '',
+        amount: Number(it.price) || 0,
+        unit: it.unit ?? '',
       })),
       clauseContext: custom,
       templateVersion: po?.templateVersion ?? '1.0',

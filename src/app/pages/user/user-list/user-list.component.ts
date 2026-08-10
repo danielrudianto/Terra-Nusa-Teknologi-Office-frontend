@@ -19,6 +19,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { UserCreateComponent } from '../user-create/user-create.component';
 import { UserUpdateComponent } from '../user-update/user-update.component';
 import { UserViewComponent } from '../user-view/user-view.component';
+import { SettingsService } from '../../../services/setting.service';
 
 @Component({
   selector: 'app-user-list',
@@ -43,6 +44,7 @@ import { UserViewComponent } from '../user-view/user-view.component';
 })
 export class UserListComponent {
   constructor(
+    public settings: SettingsService,
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -51,7 +53,8 @@ export class UserListComponent {
 
   formControl: FormControl = new FormControl('');
   page: number = 1;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
   isLoading: boolean = false;
   users: any[] = [];
   count: number = 0;
@@ -76,11 +79,29 @@ export class UserListComponent {
     this.fetchUsers(event.pageIndex + 1);
   }
 
+  /** Kolom & arah pengurutan; dikirim ke server agar mencakup seluruh data. */
+  sortBy: string = 'name';
+  sortByDirection: 'asc' | 'desc' = 'asc';
+
+  /** Mengklik kolom yang sama membalik arahnya. */
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchUsers();
+  }
+
   fetchUsers(targetPage: number = 1) {
     this.isLoading = true;
     this.page = targetPage;
     this.apiService
       .get('users', {
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
         page: this.page,
         pageSize: this.pageSize,
         keyword: this.formControl.value,

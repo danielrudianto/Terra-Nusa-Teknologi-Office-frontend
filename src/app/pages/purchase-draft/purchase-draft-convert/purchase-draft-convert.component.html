@@ -1,12 +1,17 @@
 <div class="title__wrapper mb-4">
   <h1 class="title">
-    <a routerLink="/Purchase-draft">Purchase draft</a> / Convert to purchase
+    <a routerLink="/Purchase-draft">{{
+      "purchaseDraft.purchaseDraft" | translate
+    }}</a>
+    / Convert to purchase
   </h1>
 </div>
 <mat-stepper #stepper>
   <mat-step [stepControl]="metaFormGroup">
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-      <ng-template matStepLabel>Meta Data</ng-template>
+      <ng-template matStepLabel>{{
+        "expense.metaData" | translate
+      }}</ng-template>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.date" | translate }}</mat-label>
@@ -121,16 +126,24 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.documentType" | translate }}</mat-label>
         <mat-select formControlName="documentType">
-          <mat-option [value]="'goods'">Goods purchase</mat-option>
-          <mat-option [value]="'other'">Other purchase</mat-option>
+          <mat-option [value]="'goods'">{{
+            "purchaseDraft.goodsPurchase" | translate
+          }}</mat-option>
+          <mat-option [value]="'other'">{{
+            "purchaseDraft.otherPurchase" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>{{ "draftConvert.documentStatus" | translate }}</mat-label>
         <mat-select formControlName="lastStatus">
-          <mat-option value="draft">Waiting</mat-option>
-          <mat-option value="ready">Ready</mat-option>
+          <mat-option value="draft">{{
+            "purchaseDraft.waiting" | translate
+          }}</mat-option>
+          <mat-option value="ready">{{
+            "purchaseDraft.ready" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -169,7 +182,9 @@
   </mat-step>
   <mat-step [stepControl]="valueFormGroup">
     <form [formGroup]="valueFormGroup">
-      <ng-template matStepLabel>Value Data</ng-template>
+      <ng-template matStepLabel>{{
+        "expense.valueData" | translate
+      }}</ng-template>
 
       <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>{{ "draftConvert.dpp" | translate }}</mat-label>
@@ -300,9 +315,15 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.otherValueNote" | translate }}</mat-label>
         <mat-select formControlName="otherValueNote">
-          <mat-option value="">Select</mat-option>
-          <mat-option value="delivery">Delivery fee</mat-option>
-          <mat-option value="packing">Packing fee</mat-option>
+          <mat-option value="">{{
+            "purchaseDraft.select" | translate
+          }}</mat-option>
+          <mat-option value="delivery">{{
+            "purchaseDraft.deliveryFee" | translate
+          }}</mat-option>
+          <mat-option value="packing">{{
+            "purchaseDraft.packingFee" | translate
+          }}</mat-option>
           <mat-option value="packing">PPh 22</mat-option>
         </mat-select>
       </mat-form-field>
@@ -351,7 +372,9 @@
   </mat-step>
   <mat-step [stepControl]="attachmentFormGroup">
     <form [formGroup]="attachmentFormGroup">
-      <ng-template matStepLabel>Attachments Data</ng-template>
+      <ng-template matStepLabel>{{
+        "purchaseDraft.attachmentsData" | translate
+      }}</ng-template>
 
       <mat-slide-toggle
         color="primary"
@@ -414,7 +437,9 @@
   </mat-step>
   <mat-step [stepControl]="paymentFormGroup">
     <form [formGroup]="paymentFormGroup">
-      <ng-template matStepLabel>Payment Data</ng-template>
+      <ng-template matStepLabel>{{
+        "expense.paymentData" | translate
+      }}</ng-template>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.bankName" | translate }}</mat-label>
@@ -450,9 +475,15 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.paymentMethod" | translate }}</mat-label>
         <mat-select formControlName="paymentMethod">
-          <mat-option value="bank">Bank Transfer</mat-option>
-          <mat-option value="va">Virtual Account</mat-option>
-          <mat-option value="cash">Cheque</mat-option>
+          <mat-option value="bank">{{
+            "expense.bankTransfer" | translate
+          }}</mat-option>
+          <mat-option value="va">{{
+            "expense.virtualAccount" | translate
+          }}</mat-option>
+          <mat-option value="cash">{{
+            "expense.cheque" | translate
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 

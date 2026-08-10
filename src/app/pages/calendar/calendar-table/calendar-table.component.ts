@@ -136,6 +136,18 @@ export class CalendarTableComponent {
       });
   }
 
+  /**
+   * Penanda akhir pekan.
+   *
+   * Sebelumnya ditentukan lewat urutan sel (nth-child), yang meleset begitu
+   * jumlah sel kosong di awal bulan berubah.
+   */
+  isWeekend(day: number | null): boolean {
+    if (day == null) return false;
+    const d = new Date(this.year, this.month - 1, day).getDay();
+    return d === 0 || d === 6;
+  }
+
   dayIsToday(day: number | null): boolean {
     if (day === null) {
       return false;

@@ -19,15 +19,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-sales-invoice-view',
   providers: [provideNgxMask()],
   imports: [
+    AuditTrailComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -36,7 +38,6 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatDialogModule,
     MatSnackBarModule,
-    NgxMaskDirective,
     MatListModule,
     MatIconModule,
     MatButtonModule,

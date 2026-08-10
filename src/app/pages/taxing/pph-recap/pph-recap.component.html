@@ -24,7 +24,7 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="txr-content">
       <div class="txr-yearrow">
-        <span class="txr-label">Periode</span>
+        <span class="txr-label">{{ "common.period" | translate }}</span>
         <div class="txr-year">
           <button
             type="button"

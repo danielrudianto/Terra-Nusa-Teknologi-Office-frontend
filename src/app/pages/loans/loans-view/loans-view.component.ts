@@ -11,11 +11,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-loans-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     TranslatePipe,
     CommonModule,
     MatDialogModule,

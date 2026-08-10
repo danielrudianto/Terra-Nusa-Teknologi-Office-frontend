@@ -39,25 +39,36 @@
 
 /* ---------- toolbar ---------- */
 .ex-toolbar {
+  /* Bertumpuk di layar sempit; berbaris pada layar lebar — sama
+     seperti halaman Pembelian. */
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
 
   .mat-mdc-form-field {
-    margin-bottom: -1.25em;
   }
 }
 .ex-range {
-  width: 260px;
+  flex: 0 0 auto;
+  width: 240px;
 }
 .ex-search {
-  width: 100%;
-  max-width: 400px;
+  /* Menyusut lebih dulu saat ruang menyempit, agar elemen lain tetap
+     sejajar. */
+  flex: 1 1 220px;
+  min-width: 160px;
+  max-width: 340px;
 }
 .ex-toggle {
   flex: 0 0 auto;
+  white-space: nowrap;
+  /*
+   * mat-form-field menyisakan ruang di bawahnya untuk pesan bantuan/kesalahan,
+   * sehingga kotaknya lebih tinggi dari toggle. Tanpa penyesuaian ini toggle
+   * tampak melorot dibanding kolom di sebelahnya.
+   */
+  margin-bottom: 1.34375em;
   --mdc-switch-selected-track-color: var(--brand, #154dec);
 }
 
@@ -330,4 +341,45 @@
 }
 :host ::ng-deep .ex-fchip--unpaid .mdc-evolution-chip__text-label::before {
   background: var(--bad-fg, #d64541);
+}
+
+/* kelompok kanan: rentang tanggal, pencarian, toggle */
+.ex-toolbar__right {
+  /*
+   * Kelompok kanan tidak boleh terpecah baris: `flex-wrap: wrap` membuat
+   * toggle terdorong turun begitu ruang menyempit. Yang mengalah adalah
+   * kolom pencarian, dengan menyusut sampai batas minimumnya.
+   */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.ex-search {
+  width: 100%;
+  max-width: 320px;
+}
+
+.ex-range {
+  max-width: 260px;
+}
+
+/* ---------- responsive ---------- */
+@media (min-width: 900px) {
+  .ex-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  /* Chip boleh membungkus ke bawah bila sempit; kelompok kanan tidak. */
+  .ex-toolbar > form {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
 }

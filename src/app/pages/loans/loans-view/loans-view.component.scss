@@ -19,8 +19,8 @@
   padding: 1.25rem 1.5rem !important;
   margin: 0 !important;
   text-align: left;
-  /* Latar rata seperti halaman sales invoice: gradien bernuansa merek
-     berubah jadi kebiruan pucat pada mode gelap. */
+  /* Latar rata: gradien bernuansa merek ikut berubah saat pengguna
+     mengganti warna tema, sedangkan kepala dialog lain polos. */
   background: var(--surface-2, #fafbfc);
   border-bottom: 1px solid var(--border, #e4e9fb);
   &::before {
@@ -177,7 +177,7 @@
 /* money */
 .lv-money {
   background: var(--surface-2, #fafbfc);
-  border: 0.5px solid var(--line, #e6e9ee);
+  border: 0.5px solid #e6e9ee;
   border-radius: 14px;
   padding: 0.3rem 1.15rem;
 }
@@ -253,7 +253,7 @@
   white-space: pre-line;
   line-height: 1.5;
   font-weight: 400;
-  color: var(--muted, #3f4653);
+  color: #3f4653;
 }
 .lv-mono {
   font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
@@ -263,7 +263,7 @@
 /* bank */
 .lv-bank {
   background: var(--surface-2, #fafbfc);
-  border: 0.5px solid var(--line, #e6e9ee);
+  border: 0.5px solid #e6e9ee;
   border-radius: 12px;
   padding: 0.9rem 1.15rem;
 }
@@ -279,7 +279,7 @@
   align-items: center;
   gap: 12px;
   padding: 0.65rem 0.9rem;
-  border: 0.5px solid var(--line, #e6e9ee);
+  border: 0.5px solid #e6e9ee;
   border-radius: 12px;
   background: var(--surface, #ffffff);
   &__icon {
@@ -364,7 +364,7 @@
   }
   &--ghost {
     background: var(--surface-2, #f1f3f7);
-    color: var(--muted, #3f4653);
+    color: #3f4653;
     &:hover {
       background: var(--hover, #e7eaef);
     }
@@ -375,4 +375,11 @@
   .lv-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* pemisah sebelum riwayat perubahan */
+.audit-divider {
+  height: 1px;
+  background: var(--line, #eef0f4);
+  margin: 1rem 0;
 }

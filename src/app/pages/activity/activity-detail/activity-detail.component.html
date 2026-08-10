@@ -1,0 +1,79 @@
+<div class="ad">
+  <div class="ad-head" mat-dialog-title>
+    <span class="ad-head__avatar">
+      @if (entry.userID) {
+        <app-avatar [userId]="entry.userID" [size]="40"></app-avatar>
+      } @else {
+        <span class="ad-head__icon"><mat-icon>history</mat-icon></span>
+      }
+    </span>
+    <div class="ad-head__text">
+      <h2 class="ad-title">{{ actionKey(entry.action) | translate }}</h2>
+      <span class="ad-sub">
+        {{ entityKey(entry.entity) | translate }} · #{{ entry.entityID }}
+      </span>
+    </div>
+    <button type="button" class="ad-close" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="ad-content">
+    <div class="ad-meta">
+      <div class="ad-meta__row">
+        <span class="ad-meta__label">{{ "activity.who" | translate }}</span>
+        <span class="ad-meta__value">{{ entry.userName || "—" }}</span>
+      </div>
+      <div class="ad-meta__row">
+        <span class="ad-meta__label">{{ "table.date" | translate }}</span>
+        <span class="ad-meta__value">
+          {{ entry.createdAt | date: "EEEE, dd MMMM yyyy HH:mm:ss" }}
+        </span>
+      </div>
+      @if (entry.ipAddress) {
+        <div class="ad-meta__row">
+          <span class="ad-meta__label">{{ "activity.ip" | translate }}</span>
+          <span class="ad-meta__value">{{ entry.ipAddress }}</span>
+        </div>
+      }
+      @if (entry.note) {
+        <div class="ad-meta__row">
+          <span class="ad-meta__label">{{ "activity.note" | translate }}</span>
+          <span class="ad-meta__value">{{ entry.note }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="ad-section">
+      <span class="ad-section__title">{{
+        "activity.changes" | translate
+      }}</span>
+    </div>
+
+    @if (changes.length === 0) {
+      <div class="ad-empty">
+        <mat-icon>remove</mat-icon>
+        <span>{{ "activity.noChanges" | translate }}</span>
+      </div>
+    } @else {
+      <table class="ad-table">
+        <thead>
+          <tr>
+            <th>{{ "activity.field" | translate }}</th>
+            <th>{{ "activity.before" | translate }}</th>
+            <th>{{ "activity.after" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of changes; track c.field) {
+            <tr>
+              <td class="ad-table__field">{{ c.field }}</td>
+              <td class="ad-table__from">{{ c.from }}</td>
+              <td class="ad-table__to">{{ c.to }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </mat-dialog-content>
+</div>

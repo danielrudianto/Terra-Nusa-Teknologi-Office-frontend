@@ -27,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
+import { SettingsService } from '../../../services/setting.service';
 
 @Component({
   selector: 'app-purchase-list',
@@ -53,6 +54,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class PurchaseListComponent {
   constructor(
+    public settings: SettingsService,
     private apiService: ApiService,
     private dialog: MatDialog,
     private router: Router,
@@ -89,7 +91,8 @@ export class PurchaseListComponent {
   purchases: any[] = [];
   count: number = 0;
   isLoading: boolean = false;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
   displayedColumns: string[] = [
     'date',
     'invoiceName',

@@ -3,7 +3,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ApiService } from '../../../services/api.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SalarySlipViewComponent } from './salary-slip-view/salary-slip-view.component';
+import { SalarySlipViewComponent } from '../salary-slip-view/salary-slip-view.component';
 import { SalaryPaymentCreateComponent } from 'src/app/components/payment-create/salary-payment-create/salary-payment-create.component';
 import { debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -25,6 +25,7 @@ import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
+import { SettingsService } from '../../../services/setting.service';
 
 const moment = _rollupMoment || _moment;
 
@@ -66,6 +67,7 @@ export const MY_FORMATS = {
 })
 export class SalarySlipListComponent {
   constructor(
+    public settings: SettingsService,
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -110,7 +112,8 @@ export class SalarySlipListComponent {
   dataSource: any[] = [];
   dataCount: number = 0;
   page: number = 1;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
   displayedColumns = [
     'name',
     'month',
@@ -151,10 +154,28 @@ export class SalarySlipListComponent {
     }
   }
 
+  /** Kolom & arah pengurutan; dikirim ke server agar mencakup seluruh data. */
+  sortBy: string = 'name';
+  sortByDirection: 'asc' | 'desc' = 'asc';
+
+  /** Mengklik kolom yang sama membalik arahnya. */
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchSalarySlips(1);
+  }
+
   fetchSalarySlips(targetPage: number = this.page) {
     this.page = targetPage;
     this.apiService
       .get('salary-slips', {
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
         page: this.page,
         pageSize: this.pageSize,
         keyword: this.formControl.value,

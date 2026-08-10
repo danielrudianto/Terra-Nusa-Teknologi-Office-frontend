@@ -11,7 +11,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatIconModule } from '@angular/material/icon';
-import { NgxMaskDirective } from 'ngx-mask';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -32,7 +31,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatStepperModule,
     MatIconModule,
     MatDialogModule,
-    NgxMaskDirective,
     FormsModule,
     ReactiveFormsModule,
   ],

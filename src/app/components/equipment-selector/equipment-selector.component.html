@@ -1,23 +1,51 @@
 <div class="eqs">
   <div class="eqs-head" mat-dialog-title>
     <span class="eqs-badge">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15V7h10v8"/><path d="M12 10h4l3 3v2h-7z"/><circle cx="6" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M2 15V7h10v8" />
+        <path d="M12 10h4l3 3v2h-7z" />
+        <circle cx="6" cy="17" r="1.6" />
+        <circle cx="16" cy="17" r="1.6" />
+      </svg>
     </span>
     <div class="eqs-head__text">
-      <h2 class="eqs-title">Pilih Equipment</h2>
-      <span class="eqs-sub">Katalog alat berat untuk sewa</span>
+      <h2 class="eqs-title">{{ "selector.chooseEquipment" | translate }}</h2>
+      <span class="eqs-sub">{{ "selector.equipmentCatalog" | translate }}</span>
     </div>
   </div>
 
   <mat-dialog-content class="eqs-content">
     <mat-form-field appearance="outline" class="eqs-search">
-      <mat-label>Cari equipment</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="Nama, kategori, kapasitas, atau brand" autocomplete="off" />
+      <mat-label>{{ "selector.searchEquipment" | translate }}</mat-label>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="Nama, kategori, kapasitas, atau brand"
+        autocomplete="off"
+      />
     </mat-form-field>
-    <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="eqs-progress"></mat-progress-bar>
+    <mat-progress-bar
+      *ngIf="isLoading"
+      mode="indeterminate"
+      class="eqs-progress"
+    ></mat-progress-bar>
 
     <div class="eqs-list">
-      <button type="button" class="eqs-item" *ngFor="let item of items" (click)="select(item)">
+      <button
+        type="button"
+        class="eqs-item"
+        *ngFor="let item of items"
+        (click)="select(item)"
+      >
         <span class="eqs-item__badge">{{ (item.name || "?").charAt(0) }}</span>
         <span class="eqs-item__body">
           <span class="eqs-item__name">{{ item.name }}</span>
@@ -28,17 +56,42 @@
           </span>
         </span>
         <span class="eqs-item__arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
         </span>
       </button>
       <div class="eqs-empty" *ngIf="!isLoading && items.length === 0">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <span>Tidak ada equipment yang cocok.</span>
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <span>{{ "selector.equipmentNotFound" | translate }}</span>
       </div>
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions class="eqs-actions">
-    <button type="button" class="eqs-cancel" (click)="onCancel()">Tutup</button>
+    <button type="button" class="eqs-cancel" (click)="onCancel()">
+      {{ "common.close" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

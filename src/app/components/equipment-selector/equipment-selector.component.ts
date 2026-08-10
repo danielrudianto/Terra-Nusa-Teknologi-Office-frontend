@@ -8,14 +8,20 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-equipment-selector',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatProgressSpinnerModule,
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatProgressBarModule,
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressBarModule,
   ],
   templateUrl: './equipment-selector.component.html',
   styleUrl: './equipment-selector.component.scss',
@@ -32,13 +38,19 @@ export class EquipmentSelectorComponent {
 
   ngOnInit(): void {
     this.fetch();
-    this.searchControl.valueChanges.pipe(debounceTime(350)).subscribe(() => this.fetch());
+    this.searchControl.valueChanges
+      .pipe(debounceTime(350))
+      .subscribe(() => this.fetch());
   }
 
   fetch() {
     this.isLoading = true;
     this.apiService
-      .get('master-equipment', { keyword: this.searchControl.value || '', page: 1, page_size: 25 })
+      .get('master-equipment', {
+        keyword: this.searchControl.value || '',
+        page: 1,
+        page_size: 25,
+      })
       .subscribe({
         next: (res: any) => (this.items = res.data || []),
         error: () => (this.items = []),
@@ -46,6 +58,10 @@ export class EquipmentSelectorComponent {
       .add(() => (this.isLoading = false));
   }
 
-  select(item: any) { this.dialogRef.close(item); }
-  onCancel() { this.dialogRef.close(); }
+  select(item: any) {
+    this.dialogRef.close(item);
+  }
+  onCancel() {
+    this.dialogRef.close();
+  }
 }

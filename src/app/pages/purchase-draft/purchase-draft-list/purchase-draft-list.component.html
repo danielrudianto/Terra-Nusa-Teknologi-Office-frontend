@@ -92,12 +92,14 @@
               <span class="pdl-avatar">{{
                 (purchase.supplier?.name || "?").charAt(0)
               }}</span>
-              <span class="pdl-primary"
-                >{{ purchase.supplier?.name
-                }}<span class="pdl-faint" *ngIf="purchase.supplier?.prefix"
-                  >, {{ purchase.supplier.prefix }}</span
-                ></span
-              >
+              <div class="pdl-supplier__text">
+                <span class="pdl-primary">{{
+                  purchase.supplier?.name || "—"
+                }}</span>
+                <span class="pdl-secondary" *ngIf="purchase.supplier?.prefix">{{
+                  purchase.supplier?.prefix
+                }}</span>
+              </div>
             </div>
           </td>
         </ng-container>

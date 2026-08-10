@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -21,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-asset-update',
@@ -28,7 +28,6 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './asset-update.component.html',
   styleUrl: './asset-update.component.scss',
   imports: [
-    TranslatePipe,
     CommonModule,
     MatButtonModule,
     MatSnackBarModule,
@@ -40,6 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatSelectModule,
     MatDialogModule,
     MatIconModule,
+    TranslatePipe,
   ],
 })
 export class AssetUpdateComponent implements OnInit {

@@ -1,0 +1,41 @@
+<svg
+  [attr.width]="size"
+  [attr.height]="size"
+  viewBox="0 0 300 300"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="TERRABOT"
+>
+  <!--
+    Bidang utama memakai warna aksen yang sedang dipilih. Lencana bintang
+    dibiarkan hijau: perannya sebagai warna penegas, bukan bagian palet aksen.
+  -->
+  <rect
+    x="6"
+    y="18"
+    width="268"
+    height="262"
+    rx="30"
+    fill="var(--brand, #2f6bff)"
+  />
+
+  <!-- dua cincin bertaut -->
+  <g fill="none" stroke="#ffffff" stroke-width="18">
+    <circle cx="92" cy="153" r="43" />
+    <circle cx="177" cy="153" r="43" />
+  </g>
+
+  <!-- batang penghubung berujung bulat -->
+  <g fill="#101114">
+    <rect x="88" y="146" width="93" height="14" rx="7" />
+    <circle cx="92" cy="153" r="11" />
+    <circle cx="177" cy="153" r="11" />
+  </g>
+
+  <!-- lencana bintang -->
+  <circle cx="252" cy="40" r="40" fill="#18c964" />
+  <path
+    d="M252 14c3 12.4 5.6 15 18 18-12.4 3-15 5.6-18 18-3-12.4-5.6-15-18-18 12.4-3 15-5.6 18-18z"
+    fill="#ffffff"
+  />
+</svg>

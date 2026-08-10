@@ -265,3 +265,10 @@
 .pov-copy {
   color: var(--brand, #154dec);
 }
+
+/* pemisah sebelum riwayat perubahan */
+.pov-divider {
+  height: 1px;
+  background: var(--line, #eef0f4);
+  margin: 1rem 0;
+}

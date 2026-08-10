@@ -115,6 +115,14 @@
         }
       </section>
     }
+
+    @if (mode !== "raw" && data?.id) {
+      <div class="pov-divider"></div>
+      <app-audit-trail
+        entity="purchase_orders"
+        [entityId]="data.id"
+      ></app-audit-trail>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions class="pov-foot">

@@ -1,0 +1,149 @@
+<div class="activity-list">
+  <app-header-title
+    [title]="'activity.title' | translate"
+    [description]="'activity.subtitle' | translate"
+  />
+
+  <!-- Toolbar: penyaring modul + rentang tanggal -->
+  <div class="al-toolbar">
+    <div class="al-filters">
+      <mat-form-field appearance="outline" class="al-filter">
+        <mat-label>{{ "activity.filterEntity" | translate }}</mat-label>
+        <mat-select [formControl]="entityControl">
+          <mat-option value="">{{
+            "activity.allEntities" | translate
+          }}</mat-option>
+          @for (e of entities; track e) {
+            <mat-option [value]="e">{{ entityKey(e) | translate }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="al-date">
+        <mat-label>{{ "activity.dateFrom" | translate }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="dpFrom"
+          [formControl]="dateFromControl"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="dpFrom"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #dpFrom></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="al-date">
+        <mat-label>{{ "activity.dateTo" | translate }}</mat-label>
+        <input matInput [matDatepicker]="dpTo" [formControl]="dateToControl" />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="dpTo"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #dpTo></mat-datepicker>
+      </mat-form-field>
+
+      @if (hasFilter) {
+        <button type="button" class="al-reset" (click)="resetFilters()">
+          <mat-icon>close</mat-icon>
+          {{ "activity.clearFilter" | translate }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="al-card" [class.is-loading]="isLoading">
+    @if (isLoading) {
+      <mat-progress-bar mode="indeterminate" class="al-bar"></mat-progress-bar>
+    }
+
+    <div class="al-tablewrap">
+      <table mat-table [dataSource]="entries" class="al-table">
+        <ng-container matColumnDef="when">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.date" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let e" class="al-when">
+            {{ e.createdAt | date: "dd MMM yyyy HH:mm" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="who">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "activity.who" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let e">
+            <div class="al-who">
+              @if (e.userID) {
+                <app-avatar [userId]="e.userID" [size]="26"></app-avatar>
+              }
+              <span class="al-primary">{{ e.userName || "—" }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="what">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "activity.what" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let e">
+            <span class="al-action">
+              <mat-icon class="al-action__icon">{{ icon(e.action) }}</mat-icon>
+              {{ actionKey(e.action) | translate }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="where">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "activity.module" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let e">
+            <span class="al-tag">{{ entityKey(e.entity) | translate }}</span>
+            <span class="al-secondary">#{{ e.entityID }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="detail">
+          <th mat-header-cell *matHeaderCellDef class="al-r">
+            {{ "activity.changes" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let e" class="al-r">
+            @if (changeList(e).length) {
+              <span class="al-count">{{ changeList(e).length }}</span>
+            } @else {
+              <span class="al-secondary">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: columns"
+          class="al-row"
+          (click)="openDetail(row)"
+        ></tr>
+        <tr class="mat-row al-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="columns.length">
+            <div class="al-empty">
+              <mat-icon>{{ hasError ? "cloud_off" : "history" }}</mat-icon>
+              <span>{{
+                (hasError ? "activity.loadFailed" : "activity.empty")
+                  | translate
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="pageSize"
+      [pageIndex]="page - 1"
+      (page)="onPageChange($event)"
+      [pageSizeOptions]="[10, 25, 50]"
+    ></mat-paginator>
+  </div>
+</div>

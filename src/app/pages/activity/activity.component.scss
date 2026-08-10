@@ -1,0 +1,188 @@
+/*
+ * Tata letak mengikuti halaman Pembelian: pembungkus -> header -> toolbar
+ * di luar kartu -> kartu berisi tabel + paginator. Disamakan supaya
+ * perpindahan antar halaman terasa sama.
+ */
+.activity-list {
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* ---------- toolbar ---------- */
+.al-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.al-filters {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.al-filter {
+  min-width: 220px;
+}
+
+.al-date {
+  min-width: 170px;
+}
+
+.al-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+    color: var(--ink, #16181d);
+  }
+}
+
+/* ---------- card ---------- */
+.al-card {
+  position: relative;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+  overflow: hidden;
+}
+
+.al-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.al-tablewrap {
+  overflow-x: auto;
+}
+
+.al-table {
+  width: 100%;
+}
+
+.al-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+/* ---------- cells ---------- */
+.al-when {
+  white-space: nowrap;
+  color: var(--muted, #6b7280);
+  font-size: 0.8rem;
+}
+
+.al-who {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.al-primary {
+  display: block;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.al-secondary {
+  display: inline-block;
+  font-size: 0.74rem;
+  color: var(--faint, #9aa0ab);
+  line-height: 1.2;
+  margin-left: 4px;
+}
+
+.al-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+
+  &__icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--muted, #9aa1ad);
+  }
+}
+
+.al-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.12rem 0.5rem;
+  border-radius: 8px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+.al-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 7px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--ink, #16181d);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.al-r {
+  text-align: right;
+}
+
+/* ---------- empty ---------- */
+.al-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: var(--faint, #9aa0ab);
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    opacity: 0.6;
+  }
+}
+
+/* baris "tidak ada data" tidak boleh ikut menyorot seperti baris biasa */
+.al-norow:hover {
+  background: transparent;
+}

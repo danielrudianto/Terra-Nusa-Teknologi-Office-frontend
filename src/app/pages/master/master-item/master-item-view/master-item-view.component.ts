@@ -10,11 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
+import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-master-item-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     CommonModule,
     MatDialogModule,
     MatButtonModule,

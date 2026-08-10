@@ -18,7 +18,7 @@
       </svg>
     </span>
     <div class="mis-head__text">
-      <h2 class="mis-title">Pilih Barang</h2>
+      <h2 class="mis-title">{{ "masterItem.chooseItem" | translate }}</h2>
       <span class="mis-sub"
         >Katalog tersedia untuk tipe {{ purchaseType }}</span
       >
@@ -27,7 +27,7 @@
 
   <mat-dialog-content class="mis-content">
     <mat-form-field appearance="outline" class="mis-search">
-      <mat-label>Cari barang</mat-label>
+      <mat-label>{{ "masterItem.searchItem" | translate }}</mat-label>
       <input
         matInput
         [formControl]="searchControl"
@@ -94,6 +94,8 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="mis-actions">
-    <button type="button" class="mis-cancel" (click)="onCancel()">Tutup</button>
+    <button type="button" class="mis-cancel" (click)="onCancel()">
+      {{ "common.close" | translate }}
+    </button>
   </mat-dialog-actions>
 </div>

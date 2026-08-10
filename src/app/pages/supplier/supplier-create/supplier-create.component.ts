@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -33,6 +34,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatChipsModule,
     MatDividerModule,
     MatIconModule,
+    TranslatePipe,
   ],
 })
 export class SupplierCreateComponent {

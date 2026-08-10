@@ -18,17 +18,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from 'src/app/services/api.service';
+import { ApiService } from '../../../services/api.service';
 import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import {
   downloadRecapExcel,
   sheetFromObjects,
 } from '../../../helpers/tax-recap-excel';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-monthly-recap',
   imports: [
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,

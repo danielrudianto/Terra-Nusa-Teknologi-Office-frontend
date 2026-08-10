@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ClientCreateComponent } from '../client-create/client-create.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 
 @Component({
   selector: 'app-client-list',
@@ -22,6 +23,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss',
   imports: [
+    HeaderTitleComponent,
     CommonModule,
     MatTableModule,
     MatInputModule,

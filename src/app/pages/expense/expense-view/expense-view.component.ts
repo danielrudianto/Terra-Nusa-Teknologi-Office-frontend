@@ -22,11 +22,13 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-expense-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,

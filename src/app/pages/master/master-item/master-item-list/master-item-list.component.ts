@@ -24,6 +24,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../../../../services/setting.service';
 
 @Component({
   selector: 'app-master-item-list',
@@ -52,6 +54,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class MasterItemListComponent {
   constructor(
+    public settings: SettingsService,
+    private translate: TranslateService,
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -77,7 +81,8 @@ export class MasterItemListComponent {
   ];
   items: any[] = [];
   page: number = 1;
-  pageSize: number = 10;
+  /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */
+  pageSize: number = this.settings.pageSize;
   count: number = 0;
   displayedColumns: string[] = [
     'sku',
@@ -98,11 +103,29 @@ export class MasterItemListComponent {
     });
   }
 
+  /** Kolom & arah pengurutan; dikirim ke server agar mencakup seluruh data. */
+  sortBy: string = 'sku';
+  sortByDirection: 'asc' | 'desc' = 'asc';
+
+  /** Mengklik kolom yang sama membalik arahnya. */
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchItems();
+  }
+
   fetchItems(targetPage: number = 1) {
     this.isLoading = true;
     this.page = targetPage;
     this.apiService
       .get('master-items', {
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
         keyword: this.searchControl.value || '',
         page: this.page,
         page_size: this.pageSize,
@@ -286,8 +309,10 @@ export class MasterItemListComponent {
   deleteItem(item: any) {
     const ref = this.dialog.open(DeleteConfirmationComponent, {
       data: {
-        title: 'Hapus item',
-        prompt: `Yakin mau menghapus "${item.sku}" dari katalog?`,
+        title: this.translate.instant('confirm.deleteTitle'),
+        prompt: this.translate.instant('confirm.deleteNamed', {
+          name: item.sku,
+        }),
       },
     });
     ref.afterClosed().subscribe((confirmed) => {

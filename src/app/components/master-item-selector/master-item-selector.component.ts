@@ -12,11 +12,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-master-item-selector',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,

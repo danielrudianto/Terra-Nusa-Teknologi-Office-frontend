@@ -88,7 +88,7 @@
                 formControlName="name"
                 placeholder="000-INV-XXXX-I-2026"
               />
-              <mat-hint>Format: 000-INV-XXXX-BULAN(romawi)-TAHUN</mat-hint>
+              <mat-hint>{{ "salesInvoice.numberFormat" | translate }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -138,7 +138,9 @@
                 <mat-option [value]="'Progress final'"
                   >Progress final</mat-option
                 >
-                <mat-option [value]="'Retensi'">Retensi</mat-option>
+                <mat-option [value]="'Retensi'">{{
+                  "salesInvoice.retention" | translate
+                }}</mat-option>
                 <mat-optgroup label="Progress">
                   <mat-option [value]="'Progress pertama (1)'"
                     >Progress pertama (1)</mat-option

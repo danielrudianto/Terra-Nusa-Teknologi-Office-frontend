@@ -1,5 +1,7 @@
 <div class="pod">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.titleD' | translate"
     [description]="'poForm.descD' | translate"
   />
@@ -35,9 +37,9 @@
             (keyup)="toUpperCase()"
             [placeholder]="'poForm.projectCodePlaceholderD' | translate"
           />
-          <mat-error *ngIf="f['projectName'].hasError('pattern')"
-            >Harus 4–5 karakter kapital.</mat-error
-          >
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "common.projectCodeError" | translate
+          }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pod-span2">
@@ -330,12 +332,11 @@
             color="primary"
             formControlName="includeShiftClause"
             class="pod-toggle"
+            >{{ "poD.includeShift" | translate }}</mat-slide-toggle
           >
-            Cantumkan poin jam shift
-          </mat-slide-toggle>
-          <span class="pod-toggles__hint">
-            Matikan bila jam kerja ditentukan berbeda setiap harinya.
-          </span>
+          <span class="pod-toggles__hint">{{
+            "poD.includeShiftHint" | translate
+          }}</span>
         </div>
 
         <div class="pod-toggles__row">
@@ -343,9 +344,8 @@
             color="primary"
             formControlName="includePlacementClause"
             class="pod-toggle"
+            >{{ "poD.includePlacement" | translate }}</mat-slide-toggle
           >
-            Cantumkan poin kesediaan ditempatkan di seluruh Indonesia
-          </mat-slide-toggle>
         </div>
 
         <div class="pod-toggles__row">
@@ -353,9 +353,8 @@
             color="primary"
             formControlName="isFieldStaff"
             class="pod-toggle"
+            >{{ "poD.fieldStaff" | translate }}</mat-slide-toggle
           >
-            Staf lapangan (mis. staff engineer)
-          </mat-slide-toggle>
           <span class="pod-toggles__hint">
             Menambahkan seksi Laporan Lapangan dan Tata Cara Pembayaran bulanan.
           </span>
@@ -364,7 +363,7 @@
         @if (isFieldStaff) {
           <div class="pod-toggles__row">
             <mat-form-field appearance="outline" class="pod-payout">
-              <mat-label>Tanggal pembayaran</mat-label>
+              <mat-label>{{ "poD.payoutDate" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="payoutDay"
@@ -372,7 +371,7 @@
                 [min]="1"
                 [max]="31"
               />
-              <mat-hint>Cut off setiap bulan</mat-hint>
+              <mat-hint>{{ "poD.cutOffMonthly" | translate }}</mat-hint>
             </mat-form-field>
           </div>
         }
@@ -397,7 +396,7 @@
       <div class="pod-card">
         <div class="pod-cardhead">
           <div class="pod-section__title pod-section__title--flush">
-            Uraian Tugas
+            {{ "poD.jobDesc" | translate }}
           </div>
           <button type="button" class="pod-add" (click)="addJobDescription()">
             <mat-icon>add</mat-icon> Tambah tugas
@@ -411,7 +410,7 @@
         @if (jobDescriptions.controls.length === 0) {
           <div class="pod-empty">
             <mat-icon>assignment</mat-icon>
-            <span>Belum ada uraian tugas.</span>
+            <span>{{ "poD.noJobDesc" | translate }}</span>
           </div>
         } @else {
           <div formArrayName="jobDescriptions" class="pod-list">
@@ -419,7 +418,7 @@
               <div class="pod-krow">
                 <span class="pod-krow__no">{{ i + 1 }}</span>
                 <mat-form-field appearance="outline" class="pod-krow__field">
-                  <mat-label>Uraian tugas</mat-label>
+                  <mat-label>{{ "poD.jobDescItem" | translate }}</mat-label>
                   <textarea matInput [formControlName]="i" rows="2"></textarea>
                 </mat-form-field>
                 <button

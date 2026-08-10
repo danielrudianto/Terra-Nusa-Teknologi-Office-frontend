@@ -8,6 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-master-equipment-view',
@@ -18,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    AuditTrailComponent,
   ],
   templateUrl: './master-equipment-view.component.html',
   styleUrl: './master-equipment-view.component.scss',

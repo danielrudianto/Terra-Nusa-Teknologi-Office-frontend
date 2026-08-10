@@ -6,81 +6,84 @@
     (onActionButtonClicked)="createNewExpense()"
   />
 
-  <!-- filter chips -->
-  <form [formGroup]="filterFormGroup">
-    <mat-chip-listbox
-      class="ex-chips"
-      multiple
-      aria-label="Filter Selection"
-      [disabled]="isLoading"
-    >
-      <mat-chip-option
-        class="ex-fchip ex-fchip--due"
-        [selected]="isChipSelected('isDue')"
-        (selectionChange)="changeSelection('isDue', $event)"
-        >{{ "status.due" | translate }}</mat-chip-option
-      >
-      <mat-chip-option
-        class="ex-fchip ex-fchip--notdue"
-        [selected]="isChipSelected('isNotDue')"
-        (selectionChange)="changeSelection('isNotDue', $event)"
-        >{{ "status.notYetDue" | translate }}</mat-chip-option
-      >
-      <mat-chip-option
-        class="ex-fchip ex-fchip--paid"
-        [selected]="isChipSelected('isPaid')"
-        (selectionChange)="changeSelection('isPaid', $event)"
-        >{{ "status.paid" | translate }}</mat-chip-option
-      >
-      <mat-chip-option
-        class="ex-fchip ex-fchip--unpaid"
-        [selected]="isChipSelected('isUnpaid')"
-        (selectionChange)="changeSelection('isUnpaid', $event)"
-        >{{ "status.unpaid" | translate }}</mat-chip-option
-      >
-    </mat-chip-listbox>
-  </form>
-
   <!-- date range + search + toggle -->
   <div class="ex-toolbar">
-    <mat-form-field appearance="outline" class="ex-range">
-      <mat-label>{{ "expense.dateRange" | translate }}</mat-label>
-      <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
-        <input
-          matStartDate
-          formControlName="start"
-          [placeholder]="'interpayment.startDate' | translate"
-        />
-        <input
-          matEndDate
-          formControlName="end"
-          [placeholder]="'interpayment.endDate' | translate"
-        />
-      </mat-date-range-input>
-      <mat-datepicker-toggle
-        matIconPrefix
-        [for]="picker"
-      ></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-    </mat-form-field>
+    <form [formGroup]="filterFormGroup">
+      <mat-chip-listbox
+        class="ex-chips"
+        multiple
+        aria-label="Filter Selection"
+        [disabled]="isLoading"
+      >
+        <mat-chip-option
+          class="ex-fchip ex-fchip--due"
+          [selected]="isChipSelected('isDue')"
+          (selectionChange)="changeSelection('isDue', $event)"
+          >{{ "status.due" | translate }}</mat-chip-option
+        >
+        <mat-chip-option
+          class="ex-fchip ex-fchip--notdue"
+          [selected]="isChipSelected('isNotDue')"
+          (selectionChange)="changeSelection('isNotDue', $event)"
+          >{{ "status.notYetDue" | translate }}</mat-chip-option
+        >
+        <mat-chip-option
+          class="ex-fchip ex-fchip--paid"
+          [selected]="isChipSelected('isPaid')"
+          (selectionChange)="changeSelection('isPaid', $event)"
+          >{{ "status.paid" | translate }}</mat-chip-option
+        >
+        <mat-chip-option
+          class="ex-fchip ex-fchip--unpaid"
+          [selected]="isChipSelected('isUnpaid')"
+          (selectionChange)="changeSelection('isUnpaid', $event)"
+          >{{ "status.unpaid" | translate }}</mat-chip-option
+        >
+      </mat-chip-listbox>
+    </form>
 
-    <mat-form-field appearance="outline" class="ex-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
-      <input
-        matInput
-        [placeholder]="'expense.searchPlaceholder' | translate"
-        [formControl]="searchControl"
-      />
-    </mat-form-field>
+    <!-- Rentang tanggal, pencarian, dan toggle dikelompokkan di kanan
+         sejajar chip, mengikuti tata letak halaman Pembelian. -->
+    <div class="ex-toolbar__right">
+      <mat-form-field appearance="outline" class="ex-range">
+        <mat-label>{{ "expense.dateRange" | translate }}</mat-label>
+        <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
+          <input
+            matStartDate
+            formControlName="start"
+            [placeholder]="'interpayment.startDate' | translate"
+          />
+          <input
+            matEndDate
+            formControlName="end"
+            [placeholder]="'interpayment.endDate' | translate"
+          />
+        </mat-date-range-input>
+        <mat-datepicker-toggle
+          matIconPrefix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
 
-    <mat-slide-toggle
-      class="ex-toggle"
-      [disabled]="searchControl.value == ''"
-      [formControl]="ignoreControl"
-    >
-      Ignore date
-    </mat-slide-toggle>
+      <mat-form-field appearance="outline" class="ex-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>{{ "common.search" | translate }}</mat-label>
+        <input
+          matInput
+          [placeholder]="'expense.searchPlaceholder' | translate"
+          [formControl]="searchControl"
+        />
+      </mat-form-field>
+
+      <mat-slide-toggle
+        class="ex-toggle"
+        [disabled]="searchControl.value == ''"
+        [formControl]="ignoreControl"
+      >
+        Ignore date
+      </mat-slide-toggle>
+    </div>
   </div>
 
   <!-- table card -->

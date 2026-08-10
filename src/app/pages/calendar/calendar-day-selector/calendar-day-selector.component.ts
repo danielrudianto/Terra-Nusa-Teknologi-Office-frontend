@@ -24,7 +24,7 @@ import { ReimbursementViewComponent } from '../../reimbursement/reimbursement-vi
 import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.component';
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-list/salary-slip-view/salary-slip-view.component';
+import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-view/salary-slip-view.component';
 
 interface BankAccountSummary {
   id: number;
@@ -42,6 +42,11 @@ interface BankAccountSummary {
   interbankTransferCount: number;
   sameBankTransferCount: number;
   unknownDestinationCount: number;
+  /** Nilai transfer masuk & keluar pada hari itu. */
+  incomingAmount: number;
+  outgoingAmount: number;
+  /** Pembayaran yang belum disetujui pada hari itu. */
+  pendingCount: number;
 }
 
 @Component({
@@ -123,18 +128,39 @@ export class CalendarDaySelectorComponent {
       });
   }
 
+  /** Dua rekening dianggap sebank bila nama banknya sama. */
+  private isSameBank(origin?: string, destination?: string): boolean {
+    if (!origin || !destination) return false;
+    return origin.trim().toLowerCase() === destination.trim().toLowerCase();
+  }
+
   get payments() {
-    if (this.selectAccount == null) return [];
-    return this.rawData.data.filter(
+    // `selectAccount` adalah method, jadi perbandingannya tidak pernah null;
+    // yang dimaksud adalah rekening yang sedang dipilih.
+    if (this.selectedAccount == null) return [];
+    return (this.rawData?.data ?? []).filter(
       (payment: any) => payment.bankAccountID === this.selectedAccount?.id,
     );
   }
 
+  /**
+   * Transfer antar rekening pada hari itu — masuk maupun keluar.
+   *
+   * Sebelumnya hanya yang keluar (`Origin`) yang disaring, sehingga dana
+   * masuk tidak pernah tampil padahal ikut menentukan saldo.
+   */
   get interpayments() {
-    if (this.selectAccount == null) return [];
-    return this.rawData.interpayments.filter(
-      (ip: any) => ip.bankAccountIDOrigin === this.selectedAccount?.id,
+    if (this.selectedAccount == null) return [];
+    const id = this.selectedAccount.id;
+    return (this.rawData?.interpayments ?? []).filter(
+      (ip: any) =>
+        ip.bankAccountIDOrigin === id || ip.bankAccountIDDestination === id,
     );
+  }
+
+  /** Arah transfer terhadap rekening yang sedang dilihat. */
+  isIncomingInterpayment(ip: any): boolean {
+    return ip?.bankAccountIDDestination === this.selectedAccount?.id;
   }
 
   getAccountName(data: any) {
@@ -213,8 +239,31 @@ export class CalendarDaySelectorComponent {
         (ip: any) => ip.bankAccountIDOrigin === bankAccount.id,
       );
 
-      const totalAmount = payments.reduce(
-        (sum: number, payment: any) => sum + payment.amount,
+      // Saldo dari server sudah memperhitungkan pembayaran yang disetujui,
+      // sehingga hanya yang BELUM disetujui yang boleh dikurangkan lagi —
+      // kalau tidak, nilainya terhitung dua kali dan saldo tampak kurang.
+      const pendingPayments = payments.filter((p: any) => !p.isApprove);
+
+      const totalAmount = pendingPayments.reduce(
+        (sum: number, payment: any) => sum + (Number(payment.amount) || 0),
+        0,
+      );
+
+      // Transfer antar rekening ikut mengubah saldo: yang keluar mengurangi,
+      // yang masuk menambah. Sebelumnya hanya jumlahnya yang dihitung untuk
+      // penanda aktivitas, sehingga saldo akhir bisa tampak minus padahal
+      // dana masuk dari rekening sendiri.
+      // Nilainya hanya untuk ditampilkan, TIDAK dikurangkan/ditambahkan lagi
+      // ke saldo: transfer antar rekening dicatat langsung sebagai mutasi
+      // (tabelnya tidak punya status persetujuan), sehingga saldo dari server
+      // sudah memuatnya.
+      const incomingAmount = incomingInterpayments.reduce(
+        (sum: number, ip: any) => sum + (Number(ip.amount) || 0),
+        0,
+      );
+
+      const outgoingAmount = outgoingInterpayments.reduce(
+        (sum: number, ip: any) => sum + (Number(ip.amount) || 0),
         0,
       );
 
@@ -225,7 +274,23 @@ export class CalendarDaySelectorComponent {
 
       const openingBalance =
         bankAccount.openingBalance ?? bankAccount.balance ?? 0;
-      const estimatedAdminFee = bankAccount.estimatedAdminFee ?? 0;
+      // Biaya transfer hanya dikenakan pada pengiriman ke bank LAIN;
+      // transfer ke rekening di bank yang sama tidak berbiaya. Tujuan yang
+      // tidak diketahui dihitung berbiaya (perkiraan teraman), mengikuti
+      // aturan yang dipakai server.
+      const feePerTransfer = this.rawData?.interbankTransferFee ?? 2500;
+      const chargedTransfers = pendingPayments.filter(
+        (p: any) =>
+          !this.isSameBank(bankAccount.bankName, p.destinationBankName),
+      );
+      const estimatedAdminFee = chargedTransfers.length * feePerTransfer;
+
+      // Spanduk memakai angka yang sama dengan biaya di atas. Hitungan dari
+      // server mencakup pembayaran yang sudah disetujui dan tidak selalu
+      // mengenali bank tujuan, sehingga bisa berbeda dengan biaya yang
+      // benar-benar akan timbul.
+      const chargedCount = chargedTransfers.length;
+      const freeCount = pendingPayments.length - chargedCount;
 
       return {
         id: bankAccount.id,
@@ -233,17 +298,23 @@ export class CalendarDaySelectorComponent {
         bankAccountName: bankAccount.bankAccountName,
         bankAccountNumber: bankAccount.bankAccountNumber,
         paymentCount: payments.length,
+        // Yang masih akan dijalankan — dipakai spanduk biaya transfer.
+        pendingCount: pendingPayments.length,
         incomingCount: incomingInterpayments.length,
         outgoingCount: outgoingInterpayments.length,
         totalAmount,
         hasActivities,
         openingBalance,
         estimatedAdminFee,
-        closingBalance:
-          bankAccount.closingBalance ??
-          openingBalance - totalAmount - estimatedAdminFee,
-        interbankTransferCount: bankAccount.interbankTransferCount ?? 0,
-        sameBankTransferCount: bankAccount.sameBankTransferCount ?? 0,
+        incomingAmount,
+        outgoingAmount,
+        // Saldo dari server sudah memuat seluruh mutasi yang benar-benar
+        // terjadi (termasuk transfer antar rekening dan pembayaran yang sudah
+        // disetujui). Yang tersisa dikurangkan di sini hanyalah pembayaran
+        // yang belum disetujui beserta biaya transfernya.
+        closingBalance: openingBalance - totalAmount - estimatedAdminFee,
+        interbankTransferCount: chargedCount,
+        sameBankTransferCount: freeCount,
         unknownDestinationCount: bankAccount.unknownDestinationCount ?? 0,
       };
     });

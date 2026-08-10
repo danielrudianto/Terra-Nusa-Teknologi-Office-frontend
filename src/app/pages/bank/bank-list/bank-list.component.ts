@@ -18,6 +18,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-bank-list',
@@ -41,6 +42,7 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class BankListComponent {
   constructor(
+    private translate: TranslateService,
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -71,12 +73,30 @@ export class BankListComponent {
     });
   }
 
+  /** Kolom & arah pengurutan; dikirim ke server agar mencakup seluruh data. */
+  sortBy: string = 'bankName';
+  sortByDirection: 'asc' | 'desc' = 'asc';
+
+  /** Mengklik kolom yang sama membalik arahnya. */
+  changeSortBy(sortBy: string) {
+    if (this.sortBy === sortBy) {
+      this.sortByDirection = this.sortByDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = sortBy;
+      this.sortByDirection = 'asc';
+    }
+
+    this.fetchBankAccounts();
+  }
+
   fetchBankAccounts(targetPage: number = 1) {
     this.isLoading = true;
 
     this.page = targetPage;
     this.apiService
       .get('banks', {
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
         page: this.page,
         keyword: this.formControl.value,
       })
@@ -161,8 +181,8 @@ export class BankListComponent {
     this.dialog
       .open(DeleteConfirmationComponent, {
         data: {
-          title: 'Delete Bank Account',
-          prompt: 'Are you sure you want to delete this bank account?',
+          title: this.translate.instant('confirm.deleteTitle'),
+          prompt: this.translate.instant('confirm.deletePrompt'),
         },
       })
       .afterClosed()

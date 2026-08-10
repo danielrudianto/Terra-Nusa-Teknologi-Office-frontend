@@ -17,6 +17,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-ppn-recap',
@@ -33,6 +34,7 @@ import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
     MatSlideToggleModule,
     MatInputModule,
     MatButtonModule,
+    TranslatePipe,
   ],
 })
 export class PpnRecapComponent {

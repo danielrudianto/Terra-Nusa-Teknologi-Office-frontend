@@ -110,6 +110,60 @@
 
     <div class="st-divider"></div>
 
+    <!-- baris per halaman -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">{{ "settings.pageSize" | translate }}</span>
+        <span class="st-row__hint">{{
+          "settings.pageSizeHint" | translate
+        }}</span>
+      </div>
+      <div class="st-seg">
+        @for (n of pageSizes; track n) {
+          <button
+            type="button"
+            class="st-seg__opt"
+            [class.is-active]="settings.pageSize === n"
+            (click)="selectPageSize(n)"
+          >
+            {{ n }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
+    <!-- kerapatan tabel -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">{{ "settings.density" | translate }}</span>
+        <span class="st-row__hint">{{
+          "settings.densityHint" | translate
+        }}</span>
+      </div>
+      <div class="st-seg">
+        <button
+          type="button"
+          class="st-seg__opt"
+          [class.is-active]="settings.density === 'normal'"
+          (click)="selectDensity('normal')"
+        >
+          {{ "settings.densityNormal" | translate }}
+        </button>
+        <button
+          type="button"
+          class="st-seg__opt"
+          [class.is-active]="settings.density === 'compact'"
+          (click)="selectDensity('compact')"
+        >
+          {{ "settings.densityCompact" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
     <!-- brand / accent colour -->
     <div class="st-row">
       <div class="st-row__text">
