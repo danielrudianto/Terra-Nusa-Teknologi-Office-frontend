@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-bank-update',
@@ -32,6 +33,7 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatAutocompleteModule,
     MatDialogModule,
+    TranslatePipe,
   ],
 })
 export class BankUpdateComponent {

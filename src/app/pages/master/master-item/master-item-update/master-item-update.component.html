@@ -18,8 +18,8 @@
       </svg>
     </span>
     <div class="mic-head__text">
-      <h2 class="mic-title">Edit Master Item</h2>
-      <span class="mic-sub">Perbarui data barang di katalog</span>
+      <h2 class="mic-title">{{ "itemEditForm.title" | translate }}</h2>
+      <span class="mic-sub">{{ "itemEditForm.subtitle" | translate }}</span>
     </div>
   </div>
 
@@ -27,7 +27,7 @@
     <mat-dialog-content class="mic-content">
       <!-- SKU read-only (kunci katalog, tidak diubah) -->
       <div class="mic-sku">
-        <span class="mic-sku__k">SKU</span>
+        <span class="mic-sku__k">{{ "masterItem.sku" | translate }}</span>
         <span class="mic-sku__v">{{ item.sku }}</span>
         <span class="mic-sku__lock">
           <svg
@@ -49,7 +49,7 @@
 
       <div class="mic-grid">
         <mat-form-field appearance="outline" class="mic-span2">
-          <mat-label>Deskripsi</mat-label>
+          <mat-label>{{ "itemForm.description" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="description"
@@ -60,7 +60,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Brand</mat-label>
+          <mat-label>{{ "itemForm.brand" | translate }}</mat-label>
           <input
             matInput
             formControlName="brand"
@@ -70,7 +70,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Tipe</mat-label>
+          <mat-label>{{ "itemForm.type" | translate }}</mat-label>
           <input
             matInput
             formControlName="type"
@@ -80,7 +80,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Satuan</mat-label>
+          <mat-label>{{ "itemForm.unit" | translate }}</mat-label>
           <mat-select formControlName="unit">
             <mat-option *ngFor="let u of units" [value]="u">{{ u }}</mat-option>
           </mat-select>
@@ -88,7 +88,10 @@
 
         <div class="mic-span2 mic-types-field">
           <div class="mic-typeslabel">
-            Tipe PO <span class="mic-req">wajib pilih min. 1</span>
+            Tipe PO
+            <span class="mic-req">{{
+              "masterItem.minOneRequired" | translate
+            }}</span>
           </div>
           <div class="mic-types">
             <button
@@ -122,7 +125,7 @@
 
     <mat-dialog-actions class="mic-actions">
       <button type="button" class="mic-cancel" (click)="onCancel()">
-        Batal
+        {{ "itemForm.cancel" | translate }}
       </button>
       <button
         type="submit"

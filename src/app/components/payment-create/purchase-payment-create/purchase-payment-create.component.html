@@ -36,25 +36,27 @@
           >{{ metaFormGroup.get("purchaseOrderName")?.value }}</span
         >
         <span class="ppc-chip" *ngIf="metaFormGroup.get('projectName')?.value"
-          ><span class="ppc-chip__k">Project</span
+          ><span class="ppc-chip__k">{{ "common.project" | translate }}</span
           >{{ metaFormGroup.get("projectName")?.value }}</span
         >
         <span
           class="ppc-chip"
           *ngIf="metaFormGroup.get('taxInvoiceName')?.value"
-          ><span class="ppc-chip__k">Faktur</span
+          ><span class="ppc-chip__k">{{ "common.invoice" | translate }}</span
           >{{ metaFormGroup.get("taxInvoiceName")?.value }}</span
         >
         <span
           class="ppc-chip ppc-chip--due"
           *ngIf="metaFormGroup.get('dueDate')?.value"
-          ><span class="ppc-chip__k">Jatuh tempo</span
+          ><span class="ppc-chip__k">{{ "common.dueDate" | translate }}</span
           >{{ metaFormGroup.get("dueDate")?.value }}</span
         >
       </div>
 
       <!-- value breakdown -->
-      <div class="ppc-section__title">Rincian Nilai</div>
+      <div class="ppc-section__title">
+        {{ "common.valueBreakdown" | translate }}
+      </div>
       <div class="ppc-money">
         <div class="ppc-money__row">
           <span>DPP</span
@@ -104,7 +106,7 @@
           >
         </div>
         <div class="ppc-money__row ppc-money__row--total">
-          <span>Total tagihan</span
+          <span>{{ "common.totalBill" | translate }}</span
           ><span
             >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
           >
@@ -134,7 +136,7 @@
       <!-- payment history -->
       <div *ngIf="payments && payments.length > 0">
         <div class="ppc-section__title ppc-section__title--mt">
-          Riwayat Pembayaran
+          {{ "common.paymentHistory" | translate }}
         </div>
         <div class="ppc-history">
           <div class="ppc-hist" *ngFor="let p of payments">
@@ -171,7 +173,9 @@
       </div>
 
       <!-- payment inputs -->
-      <div class="ppc-section__title ppc-section__title--mt">Pembayaran</div>
+      <div class="ppc-section__title ppc-section__title--mt">
+        {{ "common.payment" | translate }}
+      </div>
       <div class="ppc-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "common.paymentDate" | translate }}</mat-label>

@@ -11,6 +11,15 @@
     <div class="pob-card">
       <div class="pob-section__title">{{ "common.poInfo" | translate }}</div>
       <div class="pob-grid">
+        <!-- Sewa alat untuk transportasi diterbitkan sebagai dokumen tipe A. -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poB.documentType" | translate }}</mat-label>
+          <mat-select formControlName="purchaseType">
+            <mat-option value="B">{{ "poB.typeB" | translate }}</mat-option>
+            <mat-option value="A">{{ "poB.typeA" | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>{{ "poB.poDate" | translate }}</mat-label>
           <input

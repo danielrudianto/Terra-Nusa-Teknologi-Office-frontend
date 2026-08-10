@@ -71,6 +71,11 @@ export class PurchaseOrderCreateBComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
+    /*
+     * Sewa alat angkut untuk transportasi diterbitkan sebagai dokumen tipe A,
+     * sementara sewa alat kerja tetap tipe B. Isinya sama, yang berbeda hanya
+     * penomoran dan judul dokumennya.
+     */
     purchaseType: new FormControl('B'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
@@ -231,7 +236,7 @@ export class PurchaseOrderCreateBComponent {
     return {
       date: this.toISO(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
-      purchaseType: 'B',
+      purchaseType: this.formGroup.get('purchaseType')?.value || 'B',
       projectName: projectCode,
       projectCode: projectCode,
       name: '',

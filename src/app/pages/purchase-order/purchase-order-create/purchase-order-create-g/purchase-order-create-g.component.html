@@ -1,5 +1,7 @@
 <div class="pog">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.headerTitleG' | translate"
     [description]="'poForm.headerDescG' | translate"
   />
@@ -33,7 +35,7 @@
             (keyup)="toUpperCase()"
             [placeholder]="'poForm.projectCodePlaceholder' | translate"
           />
-          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
           >
@@ -75,7 +77,7 @@
     <div class="pog-card">
       <div class="pog-cardhead">
         <div class="pog-section__title pog-section__title--flush">
-          Daftar Barang
+          {{ "common.itemList" | translate }}
         </div>
         <button type="button" class="pog-add" (click)="openItemSelector()">
           <mat-icon>add</mat-icon> {{ "poForm.addItemBtn" | translate }}
@@ -195,8 +197,10 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
           <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
-            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+            <mat-option [value]="0">{{
+              "poForm.franco" | translate
+            }}</mat-option>
+            <mat-option [value]="1">{{ "poForm.loco" | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -245,7 +249,7 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <span matSuffix>&nbsp;hari</span>
+          <span matSuffix>{{ "common.days" | translate }}</span>
           <mat-hint *ngIf="!creditEnabled">{{
             "poForm.termNotApplicable" | translate
           }}</mat-hint>
@@ -254,7 +258,7 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <span matSuffix>&nbsp;%</span>
+          <span matSuffix>{{ "common.percent" | translate }}</span>
           <mat-hint *ngIf="!prepaidEnabled">{{
             "poForm.termNotApplicable" | translate
           }}</mat-hint>

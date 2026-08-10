@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../../../services/api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-income-tax-create',
@@ -31,6 +32,7 @@ import { ApiService } from '../../../../services/api.service';
     MatFormFieldModule,
     MatButtonModule,
     MatIconModule,
+    TranslatePipe,
   ],
   templateUrl: './income-tax-create.component.html',
   styleUrl: './income-tax-create.component.scss',

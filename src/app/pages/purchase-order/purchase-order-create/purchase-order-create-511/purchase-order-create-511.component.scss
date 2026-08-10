@@ -387,4 +387,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 }
 
 /* rich-text notes */
-app-wysiwyg { display: block; margin-bottom: 0.5rem; }
+app-wysiwyg {
+  display: block;
+  margin-bottom: 0.5rem;
+}

@@ -1,5 +1,7 @@
 <div class="pof">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.titleF' | translate"
     [description]="'poForm.descF' | translate"
   />
@@ -35,7 +37,7 @@
             (keyup)="toUpperCase()"
             placeholder="Ex. MICZ"
           />
-          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
           >
@@ -176,7 +178,7 @@
               <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
             </div>
             <div class="pof-summary__row pof-summary__row--total">
-              <span>Total</span
+              <span>{{ "common.total" | translate }}</span
               ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
             </div>
           </div>
@@ -319,8 +321,8 @@
       <div class="pof-note">
         <mat-icon>info</mat-icon>
         <span
-          >Bila <b>Franco</b> dipilih, alamat di atas adalah alamat
-          pengiriman.</span
+          >Bila <b>{{ "common.franco" | translate }}</b> dipilih, alamat di atas
+          adalah alamat pengiriman.</span
         >
       </div>
     </div>
@@ -351,13 +353,13 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <span matSuffix>&nbsp;hari</span>
+          <span matSuffix>{{ "common.days" | translate }}</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <span matSuffix>&nbsp;%</span>
+          <span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
       </div>
     </div>

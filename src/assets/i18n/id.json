@@ -94,7 +94,27 @@
     "notApplicable": "Tidak berlaku untuk termin ini",
     "change": "Ganti",
     "noDataFilter": "Tidak ada data yang cocok dengan penyaring.",
-    "pending": "Menunggu"
+    "pending": "Menunggu",
+    "noMatchingData": "Tidak ada data yang cocok.",
+    "noResult": "Tidak ada hasil.",
+    "balance": "Saldo",
+    "city": "Kota",
+    "onlyNumbers": "Hanya boleh angka.",
+    "loadingAccounts": "Memuat rekening…",
+    "unknown": "Tidak diketahui",
+    "delivery": "Pengiriman",
+    "goods": "Barang",
+    "service": "Jasa",
+    "deliveryList": "Daftar Pengiriman",
+    "addItem": "Tambah item",
+    "noItemsAdded": "Belum ada item ditambahkan.",
+    "noMutation": "tanpa mutasi",
+    "attachmentsData": "Data Lampiran",
+    "documentData": "Data Dokumen",
+    "valueAndTax": "Nilai & Pajak",
+    "projectName": "Nama proyek",
+    "invoice": "Faktur",
+    "itemListPo": "Daftar Item"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -176,7 +196,11 @@
     "taxInvoice": "Faktur Pajak",
     "taxInvoiceData": "Data untuk Faktur Pajak",
     "taxInvoiceNumber": "Nomor faktur pajak",
-    "invoice": "Invoice"
+    "invoice": "Invoice",
+    "numberFormat": "Format: 000-INV-XXXX-BULAN(romawi)-TAHUN",
+    "retention": "Retensi",
+    "noPaymentReceived": "Belum ada pembayaran diterima.",
+    "spkNumberShort": "Nomor SPK"
   },
   "language": {
     "label": "Bahasa",
@@ -336,7 +360,8 @@
     "createNew": "Buat transfer baru",
     "dateRange": "Pilih rentang tanggal",
     "startDate": "Tanggal mulai",
-    "endDate": "Tanggal akhir"
+    "endDate": "Tanggal akhir",
+    "sameAccount": "Rekening asal dan tujuan tidak boleh sama."
   },
   "purchaseOrder": {
     "title": "Purchase Order",
@@ -490,7 +515,8 @@
     "department": "Departemen",
     "position": "Jabatan",
     "startDate": "Tanggal mulai",
-    "taxCategory": "Kategori pajak"
+    "taxCategory": "Kategori pajak",
+    "createSub": "Lengkapi data karyawan baru"
   },
   "taxing": {
     "title": "Pusat Pajak",
@@ -514,7 +540,13 @@
     "asset": "Aset",
     "loans": "Pinjaman",
     "purchase": "Pembelian",
-    "sales": "Penjualan"
+    "sales": "Penjualan",
+    "pphPurchaseRecap": "Rekap PPh (Purchase)",
+    "pphPurchaseSub": "Unduh laporan PPh dari purchase",
+    "pphSalaryRecap": "Rekap PPh (Gaji)",
+    "pphSalarySub": "Unduh laporan PPh gaji karyawan",
+    "ppnRecap": "Rekap PPN",
+    "ppnSub": "Unduh laporan PPN periode terpilih"
   },
   "dashboardReimbursement": {
     "dialogTitle": "Reimbursement Hari Ini",
@@ -526,7 +558,10 @@
     "title": "Klien",
     "subtitle": "Kelola data klien perusahaan",
     "createNew": "Tambah klien",
-    "searchPlaceholder": "Cari nama, kota, atau NPWP"
+    "searchPlaceholder": "Cari nama, kota, atau NPWP",
+    "individual": "Perorangan",
+    "foundation": "Yayasan",
+    "other": "Lainnya"
   },
   "expense": {
     "viewValueBreakdown": "Rincian Nilai",
@@ -776,7 +811,9 @@
     "cancel": "Batal",
     "saving": "Menyimpan...",
     "saveCreate": "Simpan",
-    "saveUpdate": "Simpan perubahan"
+    "saveUpdate": "Simpan perubahan",
+    "saleOptional": "Penjualan (opsional)",
+    "fillIfSold": "Isi jika asset sudah dijual"
   },
   "loans": {
     "title": "Pinjaman",
@@ -784,7 +821,12 @@
     "createNew": "Buat pinjaman baru",
     "searchPlaceholder": "Cari kreditur atau deskripsi",
     "menuCreatePayment": "Buat pembayaran",
-    "menuView": "Lihat pinjaman"
+    "menuView": "Lihat pinjaman",
+    "received": "Dana diterima (received)",
+    "debt": "Total utang (debt)",
+    "loadingData": "Memuat data…",
+    "createLoan": "Catat pinjaman / utang baru",
+    "companyAccount": "Rekening perusahaan tempat dana pinjaman diterima"
   },
   "loansCreate": {
     "title": "Buat Pinjaman",
@@ -915,7 +957,13 @@
     "menuEdit": "Edit item",
     "menuDelete": "Hapus item",
     "noData": "Belum ada item. Import CSV untuk mulai mengisi katalog.",
-    "addItem": "Tambah item"
+    "addItem": "Tambah item",
+    "chooseItem": "Pilih Barang",
+    "searchItem": "Cari barang",
+    "sku": "SKU",
+    "capitalNoSpace": "Kapital, tanpa spasi (pakai _)",
+    "minOneRequired": "wajib pilih min. 1",
+    "filterHint": "Saring berdasarkan brand, tipe, atau tipe PO"
   },
   "salesInvoiceCreate": {
     "title": "Buat Sales Invoice",
@@ -1135,7 +1183,10 @@
     "awaitingApproval": "menunggu persetujuan",
     "retry": "Coba lagi",
     "seeAll": "Lihat semua",
-    "more": "lagi"
+    "more": "lagi",
+    "pdfSub": "Gabung, pisah, dan rapikan dokumen dalam hitungan detik.",
+    "noReimbursement": "Tidak ada reimbursement tertunda.",
+    "tasksSub": "Rencanakan, prioritaskan, dan selesaikan tugas dengan mudah."
   },
   "calendarDay": {
     "title": "Ringkasan Keuangan Harian",
@@ -1865,7 +1916,8 @@
     "pph": "PPh",
     "pphTaxObject": "Objek PPh",
     "total": "Total",
-    "paymentTotal": "Total pembayaran"
+    "paymentTotal": "Total pembayaran",
+    "subtitle": "Rincian & riwayat pembayaran"
   },
   "draftConvert": {
     "date": "Tanggal",
@@ -2276,7 +2328,29 @@
     "perHour": "/jam",
     "hours": "jam",
     "serviceProvider": "Penyedia jasa",
-    "serviceReceiver": "Penerima jasa"
+    "serviceReceiver": "Penerima jasa",
+    "shipmentPic": "Penanggung jawab (opsional, menimpa yang di atas)",
+    "shipmentPicPhone": "Telepon PIC (opsional)",
+    "volume": "Volume",
+    "unit": "Satuan",
+    "originPlaceName": "Nama tempat asal",
+    "destinationPlaceName": "Nama tempat tujuan",
+    "picOriginPhone": "Telepon wakil di asal",
+    "picDestinationPhone": "Telepon wakil di tujuan",
+    "unloadingDate": "Jadwal pembongkaran",
+    "picHint": "Diisi sekali di sini berlaku untuk semua pengiriman; baris boleh menimpanya.",
+    "requireInsuranceDoc": "Asuransi diurus PIHAK KEDUA",
+    "insuranceValue": "Nilai pertanggungan (opsional)",
+    "insuranceValueHint": "Kosongkan untuk menulis \"sesuai kesepakatan\"",
+    "airService": "Cakupan layanan udara",
+    "closingDate": "Jadwal closing container",
+    "etd": "Estimated Time of Departure",
+    "eta": "Estimated Time of Arrival",
+    "containerInsuranceValue": "Nilai pertanggungan per kontainer",
+    "containerInsuranceHint": "Isi 0 untuk menghilangkan klausul ini",
+    "ppnRate": "Tarif PPN",
+    "ppnRate11": "11% — jasa angkutan umum",
+    "ppnRate11Percent": "1,1% — jasa pengurusan transportasi (DPP nilai lain)"
   },
   "salaryAllowance": {
     "perfBonus": "Bonus kinerja",
@@ -2311,7 +2385,10 @@
     "dateTo": "Sampai tanggal",
     "volume": "Volume",
     "unit": "Satuan",
-    "unitPrice": "Harga satuan"
+    "unitPrice": "Harga satuan",
+    "documentType": "Tipe dokumen",
+    "typeB": "B — sewa alat kerja",
+    "typeA": "A — sewa alat angkut"
   },
   "poD": {
     "fieldStaff": "Staf lapangan (mis. staff engineer)",
@@ -2363,5 +2440,120 @@
     "noPphClose": "Tanpa PPh & Tutup",
     "skb": "SKB",
     "rateZero": "tarif 0%"
+  },
+  "incomeTax": {
+    "title": "Bukti potong PPh",
+    "slipNumber": "Nomor bukti potong",
+    "slipHint": "Nomor bukti pemotongan PPh dari client",
+    "invoiceNumber": "Nomor invoice",
+    "pphCode": "Kode PPh",
+    "pphObject": "Objek PPh",
+    "pphRate": "Tarif PPh",
+    "pphWithheld": "PPh dipotong"
+  },
+  "salaryPayment": {
+    "salaryDetail": "Rincian Gaji",
+    "division": "Divisi",
+    "position": "Posisi",
+    "grossSalary": "Gaji kotor",
+    "netSalary": "Gaji bersih",
+    "pph21": "PPh 21"
+  },
+  "po512": {
+    "question": "Mau beli barangnya, atau pesan jasanya?",
+    "buyGoods": "Beli barang",
+    "orderService": "Pesan jasa",
+    "serviceHint": "Jasa perbaikan / servis, uraian pekerjaan ditulis bebas.",
+    "assetMaintenance": "Perawatan aset",
+    "goodsHint": "Sparepart / material perawatan, diambil dari master item."
+  },
+  "selector": {
+    "chooseSupplier": "Pilih Supplier",
+    "searchSupplier": "Cari supplier",
+    "searchByNameAddress": "Cari berdasarkan nama atau alamat",
+    "supplierNotFound": "Supplier tidak ditemukan",
+    "blacklist": "Blacklist",
+    "chooseEquipment": "Pilih Equipment",
+    "searchEquipment": "Cari equipment",
+    "equipmentCatalog": "Katalog alat berat untuk sewa",
+    "equipmentNotFound": "Tidak ada equipment yang cocok."
+  },
+  "salesInvoicePayment": {
+    "receivePayment": "Terima Pembayaran",
+    "invoiceDetail": "Rincian Invoice",
+    "receivedAmount": "Nominal diterima",
+    "destinationAccount": "Rekening tujuan",
+    "receivedDate": "Tanggal terima"
+  },
+  "pdf": {
+    "noPdf": "Belum ada PDF",
+    "dragToSort": "Geser untuk urutkan",
+    "selectPages": "Pilih halaman tertentu",
+    "processing": "Memproses berkas PDF...",
+    "quickProcess": "Proses cepat",
+    "dragDrop": "Tarik & lepas PDF di sini",
+    "browse": "telusuri",
+    "releaseToUpload": "Lepas untuk upload",
+    "multiFileSupport": "Mendukung banyak file PDF sekaligus",
+    "willProcess": "File PDF-mu akan langsung diproses"
+  },
+  "reimbursementPayment": {
+    "createPayment": "Buat pembayaran reimbursement",
+    "itemDetail": "Rincian Item",
+    "matchesTotal": "Sesuai total reimbursement",
+    "date": "Tanggal"
+  },
+  "blacklistDialog": {
+    "reason": "Alasan blacklist",
+    "currentReason": "Alasan saat ini",
+    "reasonRequired": "Alasan wajib diisi.",
+    "warning": "peringatan"
+  },
+  "poCreate": {
+    "title": "Buat Purchase Order",
+    "subtitle": "Pilih jenis pembelian yang mau dibuat",
+    "officeExpenses": "Biaya kantor",
+    "projectExpenses": "Biaya proyek"
+  },
+  "salarySlipSelector": {
+    "createSlip": "Buat Salary Slip",
+    "choosePeriod": "Pilih periode gaji karyawan",
+    "month": "Bulan",
+    "year": "Tahun"
+  },
+  "todayPayment": {
+    "title": "Pembayaran Hari Ini",
+    "noPayments": "Tidak ada pembayaran hari ini.",
+    "totalPaid": "Total dibayar",
+    "transactions": "transaksi"
+  },
+  "expenseOpponentSelector": {
+    "choose": "Pilih lawan transaksi",
+    "searchHint": "Cari berdasarkan nama atau deskripsi",
+    "notFound": "Tidak ada lawan transaksi ditemukan."
+  },
+  "po641": {
+    "legalDocs": "Dokumen Legal",
+    "noDocs": "Belum ada dokumen. Klik \"Tambah dokumen\".",
+    "emptyIfNone": "Kosongkan bila tidak ada",
+    "emptyIfNoValidity": "Kosongkan kalau tidak ada masa berlaku"
+  },
+  "fleet": {
+    "vehicleGuide": "Panduan Jenis Kendaraan",
+    "dimensionsHint": "Dimensi & kapasitas indikatif tiap armada"
+  },
+  "poC": {
+    "fuelSurcharge": "Nominal, ditambahkan ke total (khusus BBM)"
+  },
+  "expensePayment": {
+    "invoice": "Faktur",
+    "note": "Ket"
+  },
+  "poCommon": {
+    "deliveryAndPic": "Pengiriman & Kontak Penanggung Jawab",
+    "projectCodeHint": "4–5 karakter, huruf kapital / angka"
+  },
+  "engineering": {
+    "addPile": "Tambah tiang baru"
   }
 }

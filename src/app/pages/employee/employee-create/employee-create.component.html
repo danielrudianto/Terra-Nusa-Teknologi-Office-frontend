@@ -1,137 +1,158 @@
-<h1 mat-dialog-title>{{ "employee.createEmployee" | translate }}</h1>
+<div class="ec">
+  <div class="ec-head" mat-dialog-title>
+    <span class="ec-head__icon"><mat-icon>badge</mat-icon></span>
+    <div class="ec-head__text">
+      <h1 class="ec-title">{{ "employee.createEmployee" | translate }}</h1>
+      <span class="ec-sub">{{ "employee.createSub" | translate }}</span>
+    </div>
+  </div>
 
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "common.name" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="name"
-        placeholder="Enter employee name"
-      />
-    </mat-form-field>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="ec-content">
+      <div class="ec-grid">
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "common.name" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Enter employee name"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.birthDate" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="birthday"
-        placeholder="Enter employee department"
-        [matDatepicker]="picker"
-      />
-      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.birthDate" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="birthday"
+            placeholder="Enter employee department"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.nik" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="nik"
-        placeholder="Enter employee NIK (National ID)"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.nik" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="nik"
+            placeholder="Enter employee NIK (National ID)"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "common.address" | translate }}</mat-label>
-      <textarea
-        matInput
-        formControlName="address"
-        placeholder="Enter employee address"
-        rows="3"
-        style="resize: none"
-      ></textarea>
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "common.address" | translate }}</mat-label>
+          <textarea
+            matInput
+            formControlName="address"
+            placeholder="Enter employee address"
+            rows="3"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "common.email" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="email"
-        placeholder="Enter employee email"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "common.email" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            placeholder="Enter employee email"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.phoneNumber" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="phoneNumber"
-        placeholder="Enter employee phone number"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.phoneNumber" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="phoneNumber"
+            placeholder="Enter employee phone number"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.position" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="position"
-        placeholder="Enter employee position"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.position" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="position"
+            placeholder="Enter employee position"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.department" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="department"
-        placeholder="Enter employee department"
-      />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.department" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="department"
+            placeholder="Enter employee department"
+          />
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.taxCategory" | translate }}</mat-label>
-      <mat-select
-        formControlName="taxCategory"
-        placeholder="Select tax category"
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.taxCategory" | translate }}</mat-label>
+          <mat-select
+            formControlName="taxCategory"
+            placeholder="Select tax category"
+          >
+            <mat-optgroup label="Tidak kawin">
+              <mat-option value="TK/0">{{
+                "salarySlip.tk0" | translate
+              }}</mat-option>
+              <mat-option value="TK/1">{{
+                "salarySlip.tk1" | translate
+              }}</mat-option>
+              <mat-option value="TK/2">{{
+                "salarySlip.tk2" | translate
+              }}</mat-option>
+              <mat-option value="TK/3">{{
+                "salarySlip.tk3" | translate
+              }}</mat-option>
+            </mat-optgroup>
+            <mat-optgroup label="Kawin">
+              <mat-option value="K/0">{{
+                "salarySlip.k0" | translate
+              }}</mat-option>
+              <mat-option value="K/1">{{
+                "salarySlip.k1" | translate
+              }}</mat-option>
+              <mat-option value="K/2">{{
+                "salarySlip.k2" | translate
+              }}</mat-option>
+              <mat-option value="K/3">{{
+                "salarySlip.k3" | translate
+              }}</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="ec-field">
+          <mat-label>{{ "employee.startDate" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="startDate"
+            placeholder="Enter start date"
+            [matDatepicker]="startPicker"
+          />
+          <mat-datepicker-toggle
+            matPrefix
+            [for]="startPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button
+        mat-stroked-button
+        color="primary"
+        style="letter-spacing: 0"
+        type="submit"
+        [disabled]="formGroup.invalid || isSubmitting"
       >
-        <mat-optgroup label="Tidak kawin">
-          <mat-option value="TK/0">{{
-            "salarySlip.tk0" | translate
-          }}</mat-option>
-          <mat-option value="TK/1">{{
-            "salarySlip.tk1" | translate
-          }}</mat-option>
-          <mat-option value="TK/2">{{
-            "salarySlip.tk2" | translate
-          }}</mat-option>
-          <mat-option value="TK/3">{{
-            "salarySlip.tk3" | translate
-          }}</mat-option>
-        </mat-optgroup>
-        <mat-optgroup label="Kawin">
-          <mat-option value="K/0">{{ "salarySlip.k0" | translate }}</mat-option>
-          <mat-option value="K/1">{{ "salarySlip.k1" | translate }}</mat-option>
-          <mat-option value="K/2">{{ "salarySlip.k2" | translate }}</mat-option>
-          <mat-option value="K/3">{{ "salarySlip.k3" | translate }}</mat-option>
-        </mat-optgroup>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "employee.startDate" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="startDate"
-        placeholder="Enter start date"
-        [matDatepicker]="startPicker"
-      />
-      <mat-datepicker-toggle
-        matPrefix
-        [for]="startPicker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #startPicker></mat-datepicker>
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      type="submit"
-      [disabled]="formGroup.invalid || isSubmitting"
-    >
-      Submit
-    </button>
-  </mat-dialog-actions>
-</form>
+        Submit
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

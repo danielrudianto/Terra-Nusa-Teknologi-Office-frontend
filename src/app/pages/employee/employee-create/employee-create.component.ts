@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-employee-create',
@@ -29,6 +30,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    MatIconModule,
   ],
 })
 export class EmployeeCreateComponent {

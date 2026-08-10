@@ -39,12 +39,14 @@ import {
 import { IPPh } from '../../../../utils/pph';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-purchase-order-create-a',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    MatAutocompleteModule,
     MatSelectModule,
     TranslatePipe,
     CommonModule,
@@ -84,19 +86,67 @@ export class PurchaseOrderCreateAComponent {
     { value: 'darat', label: 'Darat' },
     { value: 'laut', label: 'Laut' },
     { value: 'udara', label: 'Udara' },
-    { value: 'ekspedisi', label: 'Ekspedisi' },
   ];
+
+  /** Apakah ada baris pengiriman dengan moda tersebut. */
+  /*
+   * Termin pembayaran mengikuti pola PO-G: kode baku, bukan teks bebas.
+   * Dengan begitu isinya seragam antar dokumen dan bisa direkap.
+   */
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  /** Kolom tempo/uang muka hanya aktif bila terminnya memang memakainya. */
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  usesMode(mode: string): boolean {
+    return (this.t.value || []).some((x: any) => x.mode === mode);
+  }
 
   providerLabel(mode: string): string {
     if (mode === 'laut') return 'Nama kapal / pelayaran';
     if (mode === 'udara') return 'Maskapai';
-    return 'Nama ekspedisi';
+    // Tersisa untuk PO lama yang masih bermoda ekspedisi.
+    return 'Nama penyedia';
   }
   refLabel(mode: string): string {
     if (mode === 'laut') return 'No. kontainer';
     if (mode === 'udara') return 'No. AWB';
     return 'No. resi';
   }
+
+  /**
+   * Satuan yang lazim dipakai. Daftar ini hanya saran — kolomnya tetap bisa
+   * diketik sendiri bila vendor memakai satuan lain.
+   */
+  unitOptions: string[] = ['Ls', 'kg', 'rit', 'trip', 'unit', 'koli', 'm3'];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -107,6 +157,13 @@ export class PurchaseOrderCreateAComponent {
     transportMode: new FormControl('darat'),
     insuranceDays: new FormControl(3, [Validators.min(0)]),
     consignmentDays: new FormControl(3, [Validators.min(0)]),
+    // Asuransi kadang diurus sendiri oleh PIHAK PERTAMA; bila dimatikan,
+    // klausulnya tidak dicetak sama sekali.
+    requireInsuranceDoc: new FormControl(true),
+    insuranceValue: new FormControl(null),
+    // Udara: cakupan layanan yang tercetak di poin pertama.
+    airService: new FormControl('door-to-door'),
+    containerInsuranceValue: new FormControl(200000000),
     deliveryRisk: new FormControl('penyedia'),
     unloadingRisk: new FormControl('penerima'),
     // khusus sewa alat (template PO-B)
@@ -120,8 +177,6 @@ export class PurchaseOrderCreateAComponent {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
-    picFromName: new FormControl('', Validators.required),
-    picToName: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -135,6 +190,14 @@ export class PurchaseOrderCreateAComponent {
     ]),
     shipments: new FormArray([]),
     includePPN: new FormControl(true),
+    /*
+     * Jasa pengiriman bisa dikenakan dua tarif:
+     *   11%  — jasa angkutan pada umumnya
+     *   1,1% — jasa pengurusan transportasi (freight forwarding) yang memakai
+     *          DPP nilai lain, yaitu 10% dari nilai tagihan
+     * Bila PPN dimatikan, tarif yang tercatat adalah 0.
+     */
+    ppnRate: new FormControl(11),
   });
 
   get f() {
@@ -158,9 +221,24 @@ export class PurchaseOrderCreateAComponent {
       fleet_id: ['', Validators.required], // darat only (validator toggled by mode)
       nopol: [''],
       driver: [''], // darat: nama & NIK supir -> remarks_4
-      provider: [''], // laut/udara/ekspedisi -> remarks_3
+      provider: [''], // laut/udara -> remarks_3
       refNumber: [''], // no. kontainer / AWB / resi -> remarks_4
       amount: [0, [Validators.required, Validators.min(1)]],
+      // Volume & satuan mengikuti bentuk tagihan vendor: jasa antar udara
+      // kerap ditagih per kilogram, bukan lump sum.
+      quantity: [1, [Validators.required, Validators.min(1)]],
+      unit: ['Ls', Validators.required],
+      // Jadwal melekat pada pengiriman, bukan pada kontrak: satu SPK bisa
+      // memuat beberapa pengiriman dengan jadwal dan rute berbeda.
+      unloadingDate: [''],
+      closingDate: [''],
+      etd: [''],
+      eta: [''],
+      // Penanggung jawab per pengiriman. Sebagian penyedia (mis. layanan
+      // antar berbasis aplikasi) tidak punya satu PIC untuk seluruh
+      // kontrak — tiap pengiriman ditangani orang berbeda.
+      picName: [''],
+      picPhone: [''],
     });
   }
 
@@ -211,8 +289,15 @@ export class PurchaseOrderCreateAComponent {
     // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
     return this.rawTotal;
   }
+  /** Tarif PPN yang sedang dipilih, dalam persen. */
+  get ppnRate(): number {
+    return Number(this.formGroup.get('ppnRate')?.value ?? 11);
+  }
+
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
+    return this.formGroup.get('includePPN')?.value
+      ? this.rawTotal * (this.ppnRate / 100)
+      : 0;
   }
   get grandTotal(): number {
     return this.subTotal + this.ppnAmount;
@@ -243,7 +328,7 @@ export class PurchaseOrderCreateAComponent {
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;
     const dpp = this.rawTotal;
-    const ppn = includePPN ? 11 : 0;
+    const ppn = includePPN ? this.ppnRate : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
       date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
@@ -259,31 +344,44 @@ export class PurchaseOrderCreateAComponent {
       billing_requirements: {},
       // structured items -> purchase_order_items table
       items: this.t.value.map((x: any) => ({
-        fleet_id: x.mode === 'darat' ? x.fleet_id : MODE_FLEET_ID[x.mode], // 1000/1001/1002 for udara/laut/ekspedisi
+        fleet_id: x.mode === 'darat' ? x.fleet_id : MODE_FLEET_ID[x.mode], // 1000 udara, 1001 laut
         remarks_1: x.from, // lokasi asal
         remarks_2: x.to, // lokasi tujuan
-        // darat: nopol | others: provider (nama kapal / maskapai / ekspedisi)
+        // darat: nopol | lainnya: provider (nama kapal / maskapai)
         remarks_3: x.mode === 'darat' ? x.nopol : x.provider,
         // darat: nama & NIK supir | others: reference no. (kontainer / AWB / resi)
         remarks_4: x.mode === 'darat' ? x.driver : x.refNumber,
-        quantity: 1,
-        price: x.amount,
-        unit: x.mode, // 'darat' | 'laut' | 'udara' | 'ekspedisi'
+        // Penanggung jawab: yang ditulis pada baris menimpa yang di atas.
+        // Dengan begitu satu pengiriman cukup mengisi sekali di tingkat
+        // kontrak, sementara SPK rapelan bisa berbeda tiap barisnya — tanpa
+        // perlu dua jenis formulir.
+        remarks_5: x.picName || null,
+        remarks_6: x.picPhone || null,
+        // Moda tetap terbaca dari fleet_id, sehingga kolom unit bisa dipakai
+        // sebagai satuan sungguhan (Ls, kg, rit, trip).
+        quantity: x.unit === 'Ls' ? 1 : Number(x.quantity) || 1,
+        // Berasal dari kolom bertopeng, jadi berupa teks ("6 540 000").
+        price: Number(String(x.amount ?? '').replace(/[^\d.-]/g, '')) || 0,
+        unit: x.unit,
         task: x.deliveryDate
           ? new Date(x.deliveryDate).toISOString().split('T')[0]
           : null,
       })),
-      // customData is kept lean — PO-wide PIC contacts + notes
+      // Penanggung jawab kini melekat pada tiap baris pengiriman, sehingga
+      // tidak lagi disimpan di tingkat PO.
       customData: {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
-        picFromName: this.formGroup.get('picFromName')?.value,
-        picToName: this.formGroup.get('picToName')?.value,
       },
     };
   }
 
+  /**
+   * Sewa alat angkut tidak lagi dibuat lewat formulir ini — pakai PO-B dan
+   * pilih tipe dokumen A di sana. Getter dipertahankan agar PO lama yang
+   * masih berjenis 'sewa-alat' tetap tampil benar saat dibuka kembali.
+   */
   get isSewaAlat(): boolean {
     return this.formGroup.get('workKind')?.value === 'sewa-alat';
   }
@@ -351,21 +449,40 @@ export class PurchaseOrderCreateAComponent {
       pphTaxObject: v.pphTaxObject,
       pphPercentage: v.pphPercentage,
       workKind: v.workKind,
-      transportMode: v.transportMode,
+      // Tidak dikirim bila belum ada baris pengiriman: moda ditentukan oleh
+      // baris, dan tanpa itu klausul moda sebaiknya belum tampil sama sekali.
+      transportMode: (this.t.value || []).length ? v.transportMode : undefined,
+      // Diambil dari baris yang benar-benar diisi, sehingga SPK campuran
+      // memuat klausul kedua modanya.
+      transportModes: (this.t.value || [])
+        .map((x: any) => x.mode)
+        .filter((m: string) => !!m),
       insuranceDays: v.insuranceDays,
       consignmentDays: v.consignmentDays,
+      requireInsuranceDoc: v.requireInsuranceDoc,
+      insuranceValue: v.insuranceValue || undefined,
+      airService: v.airService,
+      // Satu blok jadwal untuk tiap pengiriman, apa pun modanya. Klausul
+      // menyaringnya sendiri sesuai bagian moda yang sedang dicetak.
+      shipmentSchedules: (this.t.value || []).map((x: any) => ({
+        mode: x.mode,
+        from: x.from,
+        to: x.to,
+        deliveryDateText: tgl(x.deliveryDate),
+        unloadingDateText: tgl(x.unloadingDate),
+        closingDateText: tgl(x.closingDate),
+        etdText: tgl(x.etd),
+        etaText: tgl(x.eta),
+      })),
+      containerInsuranceValue: v.containerInsuranceValue,
       deliveryRisk: v.deliveryRisk,
       unloadingRisk: v.unloadingRisk,
       shiftHours: v.shiftHours,
-      overtimeRate: v.overtimeRate,
+      overtimeRate:
+        Number(String(v.overtimeRate ?? '').replace(/[^\d.-]/g, '')) || 0,
       includeTransportCoordination: true,
       // Titik kirim diambil dari baris pengiriman pertama.
       deliveryDateText: tgl(s.deliveryDate),
-      originName: v.picFromName,
-      originAddress: s.from,
-      destinationName: v.picToName,
-      destinationAddress: s.to,
-      officePICName: v.picFromName,
     };
   }
 
@@ -389,9 +506,13 @@ export class PurchaseOrderCreateAComponent {
             )[],
           },
         ]
-      : buildTransportClauses(ctx as any);
+      : buildTransportClauses(ctx as any, extra);
 
+    // Sewa alat memakai tata letak PO-B, yang menggabungkan poin tambahan
+    // dengan caranya sendiri.
     if (!extra.length || !sections.length) return sections;
+    if (!transportUsesRentalLayout(ctx.workKind)) return sections;
+
     const last = sections[sections.length - 1];
     return [
       ...sections.slice(0, -1),

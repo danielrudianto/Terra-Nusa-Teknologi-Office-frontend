@@ -1,5 +1,7 @@
 <div class="po511">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.title511' | translate"
     [description]="'poForm.desc511' | translate"
   />
@@ -7,7 +9,7 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="po511-card">
-      <div class="po511-section__title">Informasi PO</div>
+      <div class="po511-section__title">{{ "common.poInfo" | translate }}</div>
       <div class="po511-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.dateGeneric" | translate }}</mat-label>
@@ -33,7 +35,7 @@
             (keyup)="toUpperCase()"
             placeholder="Ex. MICZ"
           />
-          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
           >
@@ -75,7 +77,7 @@
     <div class="po511-card">
       <div class="po511-cardhead">
         <div class="po511-section__title po511-section__title--flush">
-          Daftar Barang
+          {{ "common.itemList" | translate }}
         </div>
         <button type="button" class="po511-add" (click)="openItemSelector()">
           <mat-icon>add</mat-icon> Tambah barang
@@ -176,7 +178,8 @@
             <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
           <div class="po511-summary__row po511-summary__row--total">
-            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
           </div>
         </div>
       </div>
@@ -192,7 +195,9 @@
 
     <!-- ===== 3. Pengiriman ===== -->
     <div class="po511-card">
-      <div class="po511-section__title">Pengiriman</div>
+      <div class="po511-section__title">
+        {{ "common.delivery" | translate }}
+      </div>
       <div class="po511-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
@@ -217,15 +222,15 @@
       <div class="po511-note">
         <mat-icon>info</mat-icon>
         <span
-          >Bila <b>Franco</b> dipilih, alamat di atas adalah alamat
-          pengiriman.</span
+          >Bila <b>{{ "common.franco" | translate }}</b> dipilih, alamat di atas
+          adalah alamat pengiriman.</span
         >
       </div>
     </div>
 
     <!-- ===== 4. Pembayaran ===== -->
     <div class="po511-card">
-      <div class="po511-section__title">Pembayaran</div>
+      <div class="po511-section__title">{{ "common.payment" | translate }}</div>
       <div class="po511-grid">
         <mat-form-field appearance="outline" class="po511-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
@@ -247,20 +252,22 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input matInput formControlName="creditTerm" />
-          <span matSuffix>&nbsp;hari</span>
+          <span matSuffix>{{ "common.days" | translate }}</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
           <input matInput formControlName="prepaidTerm" [min]="0" [max]="100" />
-          <span matSuffix>&nbsp;%</span>
+          <span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
       </div>
     </div>
 
     <!-- ===== 5. Kontak PIC ===== -->
     <div class="po511-card">
-      <div class="po511-section__title">Kontak Penanggung Jawab</div>
+      <div class="po511-section__title">
+        {{ "common.picContact" | translate }}
+      </div>
       <div class="po511-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.supplierPIC" | translate }}</mat-label>
@@ -299,7 +306,9 @@
 
     <!-- ===== Catatan / Poin Perjanjian ===== -->
     <div class="po511-card">
-      <div class="po511-section__title">Catatan / Poin Perjanjian</div>
+      <div class="po511-section__title">
+        {{ "common.notesAndPoints" | translate }}
+      </div>
       <app-wysiwyg
         formControlName="notes"
         [minHeight]="200"

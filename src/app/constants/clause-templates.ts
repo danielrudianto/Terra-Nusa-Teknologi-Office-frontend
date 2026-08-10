@@ -1019,6 +1019,47 @@ export interface TransportContext extends MandorContext {
   workKind?: 'pengiriman' | 'sewa-alat';
   /** Moda angkutan; menentukan seksi tambahan pada klausul. */
   transportMode?: 'darat' | 'laut' | 'udara';
+  /**
+   * Moda yang dipakai pada baris pengiriman; boleh lebih dari satu sehingga
+   * satu SPK dapat memuat klausul darat sekaligus udara.
+   */
+  transportModes?: string[];
+  /** Cetak klausul dokumen asuransi? false berarti diurus PIHAK PERTAMA. */
+  requireInsuranceDoc?: boolean;
+  /** Nilai pertanggungan yang disepakati; kosong berarti "sesuai kesepakatan". */
+  insuranceValue?: number | string;
+  /** Udara: cakupan layanan yang tercetak pada poin pertama. */
+  airService?: 'door-to-door' | 'port-to-door' | 'port-to-port';
+  /**
+   * Laut: jadwal kapal per pengiriman. Satu SPK bisa memuat dua keberangkatan
+   * dengan jadwal berbeda.
+   */
+  shipmentSchedules?: {
+    mode?: string;
+    from?: string;
+    to?: string;
+    deliveryDateText?: string;
+    unloadingDateText?: string;
+    closingDateText?: string;
+    etdText?: string;
+    etaText?: string;
+  }[];
+  /** Dipertahankan untuk PO lama yang jadwalnya masih di tingkat kontrak. */
+  closingDateText?: string;
+  etdText?: string;
+  etaText?: string;
+  /** Laut: nilai pertanggungan per kontainer; 0 berarti klausul dilewati. */
+  containerInsuranceValue?: number | string | null;
+  /** Nama & telepon penerima di titik tujuan. */
+  destinationPICName?: string;
+  destinationPICPhone?: string;
+  /**
+   * Pemotongan PPh. Sudah dipakai pada klausul sejak awal namun belum pernah
+   * dideklarasikan di sini.
+   */
+  pphCode?: string;
+  pphTaxObject?: string;
+  pphPercentage?: number | string;
   /** Jadwal & titik pengiriman (jenis 'pengiriman'). */
   deliveryDateText?: string;
   unloadingDateText?: string;
@@ -1050,6 +1091,13 @@ const MODE_TITLE: Record<string, string> = {
   udara: 'Udara',
 };
 
+/** Cakupan layanan pengiriman udara, tercetak pada poin pertama. */
+const AIR_SERVICE_LABEL: { [k: string]: string } = {
+  'door-to-door': 'door-to-door',
+  'port-to-door': 'port-to-door',
+  'port-to-port': 'port-to-port',
+};
+
 /**
  * Sewa alat untuk keperluan transportasi dicatat sebagai PO-A, tetapi isi
  * perjanjiannya sama dengan sewa alat biasa (PO-B): kelaikan alat, kuota jam
@@ -1069,8 +1117,28 @@ export function transportUsesRentalLayout(workKind?: string): boolean {
  * Pada dokumen asli, penanggung risiko ditulis "Penerima jasa/Penyedia jasa"
  * lalu dicoret manual — di sini dipilih lewat formulir agar tercetak tegas.
  */
-export function buildTransportClauses(ctx: TransportContext): ClauseSection[] {
-  const mode = ctx.transportMode || 'darat';
+export function buildTransportClauses(
+  ctx: TransportContext,
+  additionalClauses?: string[],
+): ClauseSection[] {
+  /*
+   * Satu SPK bisa memuat pengiriman lewat moda berbeda (mis. sebagian darat,
+   * sebagian udara). Klausul yang dicetak mengikuti moda yang benar-benar
+   * dipakai pada baris — satu bagian untuk tiap moda, bukan satu bagian
+   * yang dipilih di muka.
+   */
+  /*
+   * Bila belum ada baris pengiriman, tidak ada moda yang bisa dipastikan.
+   * Sebelumnya keadaan ini jatuh ke 'darat', sehingga pratinjau menampilkan
+   * klausul darat pada SPK yang ternyata lewat udara — menyesatkan pembaca
+   * sebelum apa pun diisi.
+   */
+  const modes: string[] =
+    ctx.transportModes && ctx.transportModes.length
+      ? [...new Set<string>(ctx.transportModes)]
+      : ctx.transportMode
+        ? [ctx.transportMode]
+        : [];
   const asuransi = ctx.insuranceDays ?? 3;
   const consignment = ctx.consignmentDays ?? 3;
 
@@ -1092,55 +1160,193 @@ export function buildTransportClauses(ctx: TransportContext): ClauseSection[] {
     'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
     'Keamanan dan keselamatan alat kerja beserta kargo yang diangkut bersama alat kerja tersebut menjadi tanggung jawab PIHAK KEDUA.',
     'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
-    `PIHAK KEDUA wajib menyerahkan dokumen asuransi dengan nominal yang telah disepakati oleh PIHAK PERTAMA selambat-lambatnya ${asuransi} (${terbilangHari(asuransi)}) hari sebelum barang dikirimkan.`,
+    ...(ctx.requireInsuranceDoc === false
+      ? []
+      : [
+          // Sebagian pengiriman diasuransikan sendiri oleh PIHAK PERTAMA;
+          // klausul ini hanya dicetak bila vendor yang menanggung. Nilai
+          // pertanggungan disebut bila sudah disepakati.
+          `PIHAK KEDUA wajib menyerahkan dokumen asuransi ${
+            // Nilai dari kolom bertopeng berupa teks; 0 dan kosong sama-sama
+            // berarti nominalnya belum ditentukan.
+            Number(String(ctx.insuranceValue ?? '').replace(/[^\d.-]/g, '')) > 0
+              ? `dengan nilai pertanggungan ${rupiah(
+                  Number(String(ctx.insuranceValue).replace(/[^\d.-]/g, '')),
+                )}`
+              : 'dengan nominal yang telah disepakati oleh PIHAK PERTAMA'
+          } selambat-lambatnya ${asuransi} (${terbilangHari(asuransi)}) hari sebelum barang dikirimkan.`,
+        ]),
     `PIHAK KEDUA wajib menyerahkan dokumen consignment note selambat-lambatnya ${consignment} (${terbilangHari(consignment)}) hari setelah barang diterima oleh PIHAK PERTAMA.`,
     `Rencana keterlambatan pengiriman barang oleh PIHAK KEDUA wajib diinformasikan kepada PIHAK PERTAMA melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
   );
 
+  /*
+   * Isi bagian moda berbeda-beda: darat merinci biaya perjalanan, udara
+   * menyebut cakupan layanan pintu-ke-pintu, laut memakai jadwal kapal dan
+   * nilai pertanggungan per kontainer.
+   */
+  const bagianModa = (mode: string): ClauseSection => {
+    const rincianModa: (string | string[])[] =
+      mode === 'udara'
+        ? [
+            `Harga di atas merupakan harga dengan layanan ${
+              AIR_SERVICE_LABEL[ctx.airService || 'door-to-door']
+            }.`,
+            'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
+            [
+              'asuransi;',
+              'biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan;',
+              'kecelakaan dalam perjalanan.',
+            ],
+          ]
+        : mode === 'laut'
+          ? (() => {
+              /*
+               * Nilainya datang dari kolom bertopeng, sehingga berupa teks
+               * ("200 000 000"), bukan angka. Perbandingan langsung dengan 0
+               * tidak pernah terpenuhi — nilainya harus diubah dulu.
+               *
+               * Kosong berarti memakai nilai bawaan; 0 berarti klausulnya
+               * sengaja dihilangkan.
+               */
+              const nilai =
+                ctx.containerInsuranceValue === undefined ||
+                ctx.containerInsuranceValue === null ||
+                ctx.containerInsuranceValue === ''
+                  ? 200000000
+                  : Number(
+                      String(ctx.containerInsuranceValue).replace(
+                        /[^\d.-]/g,
+                        '',
+                      ),
+                    ) || 0;
+
+              return nilai === 0
+                ? []
+                : [
+                    `Harga sudah mencakup asuransi dengan nilai pertanggungan ${rupiah(
+                      nilai,
+                    )} per kontainer.`,
+                  ];
+            })()
+          : [
+              'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
+              [
+                'asuransi;',
+                'upah pengendara;',
+                'bahan bakar minyak (BBM);',
+                'biaya koordinasi bongkar dan muat;',
+                'retribusi perjalanan;',
+                'pengawalan selama perjalanan;',
+                'pajak kendaraan/emisi kendaraan;',
+                'biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan;',
+                'kecelakaan dalam perjalanan.',
+              ],
+            ];
+
+    /*
+     * Laut memakai jadwal kapal (closing, ETD, ETA) dan hanya menyebut titik
+     * tujuan; darat dan udara menyebut jadwal kirim/bongkar beserta titik asal.
+     */
+    /*
+     * Jadwal, titik asal, dan titik tujuan tidak lagi ditulis sebagai klausul:
+     * ketiganya sudah tercatat pada tiap baris pengiriman, sehingga menulisnya
+     * dua kali justru berisiko berbeda isi. Pengiriman laut tetap memakai
+     * jadwal kapal karena tidak punya padanan di baris.
+     */
+    /*
+     * Tiap pengiriman ditulis sebagai blok jadwalnya sendiri, berikut rutenya.
+     * Ini penting pada SPK rapelan: tanpa penyebutan rute, sepuluh pengiriman
+     * dalam satu dokumen tidak bisa dibedakan satu sama lain.
+     */
+    const jadwalBaris = (ctx.shipmentSchedules ?? []).filter(
+      (j) => (j.mode || 'darat') === mode,
+    );
+
+    const jadwalDanTitik: (string | string[])[] = jadwalBaris.length
+      ? jadwalBaris.flatMap((j, i) => [
+          jadwalBaris.length > 1
+            ? `Jadwal pekerjaan pengiriman ${i + 1} (${j.from || '—'} ke ${j.to || '—'}):`
+            : 'Jadwal pekerjaan:',
+          mode === 'laut'
+            ? [
+                `Jadwal Closing Container: ${j.closingDateText || '—'}`,
+                `Estimated Time of Departure: ${j.etdText || '—'}`,
+                `Estimated Time of Arrival: ${j.etaText || '—'}`,
+              ]
+            : [
+                // Rute hanya perlu disebut di sini bila judul bloknya belum
+                // memuatnya (yakni saat pengirimannya tunggal).
+                ...(jadwalBaris.length > 1
+                  ? []
+                  : [`Rute: ${j.from || '—'} ke ${j.to || '—'}`]),
+                `Jadwal Pengiriman: ${j.deliveryDateText || '—'}`,
+                `Jadwal Pembongkaran: ${j.unloadingDateText || j.deliveryDateText || '—'}`,
+              ],
+        ])
+      : mode === 'laut'
+        ? [
+            // Jalur lama: PO yang jadwalnya masih tersimpan di tingkat kontrak.
+            'Jadwal pekerjaan:',
+            [
+              `Jadwal Closing Container: ${ctx.closingDateText || '—'}`,
+              `Estimated Time of Departure: ${ctx.etdText || '—'}`,
+              `Estimated Time of Arrival: ${ctx.etaText || '—'}`,
+            ],
+          ]
+        : [];
+
+    const risiko: string[] = [
+      `Proses pengiriman barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
+        RISK_LABEL[ctx.deliveryRisk || 'penyedia']
+      }.`,
+      `Proses bongkar barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
+        RISK_LABEL[ctx.unloadingRisk || 'penerima']
+      }.`,
+    ];
+
+    /* Dua kewajiban dokumen di bawah hanya berlaku pada pengiriman laut. */
+    const tambahanLaut: string[] =
+      mode === 'laut'
+        ? [
+            `PIHAK PERTAMA wajib memberikan daftar barang yang akan dikirimkan selambat-lambatnya ${asuransi} (${terbilangHari(
+              asuransi,
+            )}) hari sebelum proses muat.`,
+            `PIHAK KEDUA wajib memberikan salinan sebagian manifest kapal (kontainer yang disewakan) selambat-lambatnya ${consignment} (${terbilangHari(
+              consignment,
+            )}) hari setelah proses muat selesai.`,
+          ]
+        : [];
+
+    return {
+      title: MODE_TITLE[mode] || 'Darat',
+      items: [...rincianModa, ...jadwalDanTitik, ...risiko, ...tambahanLaut],
+    };
+  };
+
+  // Urutan tetap darat -> udara -> laut agar susunan dokumen konsisten.
+  const URUTAN = ['darat', 'udara', 'laut'];
+  const terpakai = URUTAN.filter((m) => modes.includes(m));
+  const lainnya = modes.filter((m) => !URUTAN.includes(m));
+
+  const tambahan = (additionalClauses ?? []).filter((x) => !!x && x.trim());
+
   return [
     { title: 'Umum', items: umum },
-    {
-      title: MODE_TITLE[mode] || 'Darat',
-      items: [
-        'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
-        [
-          'asuransi;',
-          'upah pengendara;',
-          'bahan bakar minyak (BBM);',
-          'biaya koordinasi bongkar dan muat;',
-          'retribusi perjalanan;',
-          'pengawalan selama perjalanan;',
-          'pajak kendaraan/emisi kendaraan;',
-          'biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan;',
-          'kecelakaan dalam perjalanan.',
-        ],
-        ...(ctx.deliveryDateText || ctx.originName || ctx.destinationName
-          ? [
-              'Jadwal pekerjaan:',
-              [
-                `Jadwal Pengiriman: ${ctx.deliveryDateText || '—'}`,
-                `Jadwal Pembongkaran: ${ctx.unloadingDateText || ctx.deliveryDateText || '—'}`,
-              ],
-              'Pengiriman dilakukan dari:',
-              [
-                `Nama Tempat: ${ctx.originName || '—'}`,
-                `Lokasi: ${ctx.originAddress || '—'}`,
-              ],
-              'Pengiriman dilakukan ke:',
-              [
-                `Nama Tempat: ${ctx.destinationName || '—'}`,
-                `Lokasi: ${ctx.destinationAddress || '—'}`,
-              ],
-            ]
-          : []),
-        `Proses pengiriman barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
-          RISK_LABEL[ctx.deliveryRisk || 'penyedia']
-        }.`,
-        `Proses bongkar barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
-          RISK_LABEL[ctx.unloadingRisk || 'penerima']
-        }.`,
-      ],
-    },
+    ...[...terpakai, ...lainnya].map(bagianModa),
+    /*
+     * Berdiri sebagai bagian sendiri. Bila ditempelkan ke bagian moda
+     * terakhir, poin yang mengikat seluruh pekerjaan bisa terbaca seolah
+     * hanya berlaku bagi moda itu.
+     */
+    ...(tambahan.length
+      ? [
+          {
+            title: 'Catatan Tambahan',
+            items: tambahan as (string | string[])[],
+          },
+        ]
+      : []),
   ];
 }
 

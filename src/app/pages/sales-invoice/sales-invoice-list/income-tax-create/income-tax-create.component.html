@@ -4,7 +4,7 @@
       <mat-icon>description</mat-icon>
     </span>
     <div class="itc-head__text">
-      <h2 class="itc-title">Bukti potong PPh</h2>
+      <h2 class="itc-title">{{ "incomeTax.title" | translate }}</h2>
       <span class="itc-sub" *ngIf="data.name">{{ data.name }}</span>
       <span class="itc-sub" *ngIf="!data.name"
         >Masukkan nomor bukti potong</span
@@ -17,7 +17,9 @@
       <!-- info invoice & pajak -->
       <div class="itc-info">
         <div class="itc-info__row">
-          <span class="itc-info__label">Nomor invoice</span>
+          <span class="itc-info__label">{{
+            "incomeTax.invoiceNumber" | translate
+          }}</span>
           <span class="itc-info__value">{{ data.name || "—" }}</span>
         </div>
         <div class="itc-info__row">
@@ -27,21 +29,29 @@
           >
         </div>
         <div class="itc-info__row">
-          <span class="itc-info__label">Tarif PPh</span>
+          <span class="itc-info__label">{{
+            "incomeTax.pphRate" | translate
+          }}</span>
           <span class="itc-info__value">{{ data.pphPercentage || 0 }}%</span>
         </div>
         <div class="itc-info__row">
-          <span class="itc-info__label">Kode PPh</span>
+          <span class="itc-info__label">{{
+            "incomeTax.pphCode" | translate
+          }}</span>
           <span class="itc-info__value">{{ data.pphCode || "—" }}</span>
         </div>
         <div class="itc-info__row" *ngIf="data.pphTaxObject">
-          <span class="itc-info__label">Objek PPh</span>
+          <span class="itc-info__label">{{
+            "incomeTax.pphObject" | translate
+          }}</span>
           <span class="itc-info__value itc-info__value--wrap">{{
             data.pphTaxObject
           }}</span>
         </div>
         <div class="itc-info__row itc-info__row--total">
-          <span class="itc-info__label">PPh dipotong</span>
+          <span class="itc-info__label">{{
+            "incomeTax.pphWithheld" | translate
+          }}</span>
           <span class="itc-info__value itc-info__value--accent"
             >Rp {{ pphAmount | number: "1.0-0" }}</span
           >
@@ -49,7 +59,7 @@
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Nomor bukti potong</mat-label>
+        <mat-label>{{ "incomeTax.slipNumber" | translate }}</mat-label>
         <input
           matInput
           formControlName="incomeTaxInvoiceName"
@@ -57,7 +67,7 @@
           autocomplete="off"
           maxlength="100"
         />
-        <mat-hint>Nomor bukti pemotongan PPh dari client</mat-hint>
+        <mat-hint>{{ "incomeTax.slipHint" | translate }}</mat-hint>
       </mat-form-field>
     </mat-dialog-content>
 
@@ -68,7 +78,7 @@
         (click)="onCancel()"
         class="itc-btn itc-btn--ghost"
       >
-        Batal
+        {{ "common.cancel" | translate }}
       </button>
       <button
         type="submit"

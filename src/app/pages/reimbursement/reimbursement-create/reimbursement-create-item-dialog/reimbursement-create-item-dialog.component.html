@@ -1,34 +1,45 @@
 <div class="ri">
   <div class="ri-head" mat-dialog-title>
     <span class="ri-badge">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
         <path d="M14 2v6h6M9 13h6M9 17h4" />
       </svg>
     </span>
     <div class="ri-head__text">
-      <h2 class="ri-title">Tambah Item Reimbursement</h2>
-      <span class="ri-sub">Isi detail pengeluaran</span>
+      <h2 class="ri-title">{{ "reimbItemForm.title" | translate }}</h2>
+      <span class="ri-sub">{{ "reimbItemForm.subtitle" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup">
     <mat-dialog-content class="ri-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Tanggal</mat-label>
+        <mat-label>{{ "reimbItemForm.date" | translate }}</mat-label>
         <input
           matInput
           placeholder="Date"
           [matDatepicker]="picker"
           formControlName="date"
         />
-        <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker-toggle
+          matIconPrefix
+          [for]="picker"
+        ></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Deskripsi</mat-label>
+        <mat-label>{{ "reimbItemForm.description" | translate }}</mat-label>
         <textarea
           matInput
           type="text"
@@ -39,11 +50,13 @@
           style="resize: none"
           maxlength="255"
         ></textarea>
-        <mat-hint align="end">{{ formGroup.get("description")?.value.length }} / 255</mat-hint>
+        <mat-hint align="end"
+          >{{ formGroup.get("description")?.value.length }} / 255</mat-hint
+        >
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Jumlah</mat-label>
+        <mat-label>{{ "reimbItemForm.amount" | translate }}</mat-label>
         <input
           matInput
           type="text"
@@ -59,14 +72,16 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="ri-actions">
-      <button type="button" class="ri-cancel" (click)="onCancel()">Batal</button>
+      <button type="button" class="ri-cancel" (click)="onCancel()">
+        {{ "reimbItemForm.cancel" | translate }}
+      </button>
       <button
         type="button"
         class="ri-submit"
         (click)="onSubmit()"
         [disabled]="formGroup.invalid"
       >
-        Tambah item
+        {{ "common.addItem" | translate }}
       </button>
     </mat-dialog-actions>
   </form>

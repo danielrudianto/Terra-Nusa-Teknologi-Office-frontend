@@ -1,5 +1,7 @@
 <div class="poc">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="'poForm.headerTitleC' | translate"
     [description]="'poForm.headerDescC' | translate"
   />
@@ -33,7 +35,7 @@
             (keyup)="toUpperCase()"
             [placeholder]="'poForm.projectCodePlaceholder' | translate"
           />
-          <mat-hint>4–5 huruf/angka kapital (kode project)</mat-hint>
+          <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
           >
@@ -75,7 +77,7 @@
     <div class="poc-card">
       <div class="poc-cardhead">
         <div class="poc-section__title poc-section__title--flush">
-          Daftar Barang
+          {{ "common.itemList" | translate }}
         </div>
         <button type="button" class="poc-add" (click)="openItemSelector()">
           <mat-icon>add</mat-icon> {{ "poForm.addItemBtn" | translate }}
@@ -186,7 +188,7 @@
                 prefix="Rp. "
                 placeholder="0"
               />
-              <mat-hint>Nominal, ditambahkan ke total (khusus BBM)</mat-hint>
+              <mat-hint>{{ "poC.fuelSurcharge" | translate }}</mat-hint>
             </mat-form-field>
             <mat-form-field appearance="outline" class="poc-taxfield">
               <mat-label>{{ "poForm.pbbkb" | translate }}</mat-label>
@@ -292,7 +294,7 @@
           <mat-hint *ngIf="!creditEnabled">{{
             "poForm.termNotApplicable" | translate
           }}</mat-hint>
-          <span matSuffix>&nbsp;hari</span>
+          <span matSuffix>{{ "common.days" | translate }}</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -301,7 +303,7 @@
           <mat-hint *ngIf="!prepaidEnabled">{{
             "poForm.termNotApplicable" | translate
           }}</mat-hint>
-          <span matSuffix>&nbsp;%</span>
+          <span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
       </div>
     </div>

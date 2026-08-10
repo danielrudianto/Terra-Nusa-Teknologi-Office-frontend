@@ -94,7 +94,27 @@
     "notApplicable": "Not applicable for this term",
     "change": "Change",
     "noDataFilter": "No data matching the filter.",
-    "pending": "Pending"
+    "pending": "Pending",
+    "noMatchingData": "No matching data.",
+    "noResult": "No result found.",
+    "balance": "Balance",
+    "city": "City",
+    "onlyNumbers": "Numbers only.",
+    "loadingAccounts": "Loading accounts…",
+    "unknown": "Unknown",
+    "delivery": "Delivery",
+    "goods": "Goods",
+    "service": "Service",
+    "deliveryList": "Delivery list",
+    "addItem": "Add item",
+    "noItemsAdded": "No items added yet.",
+    "noMutation": "no mutation",
+    "attachmentsData": "Attachments",
+    "documentData": "Document data",
+    "valueAndTax": "Value & tax",
+    "projectName": "Project name",
+    "invoice": "Invoice",
+    "itemListPo": "Item list"
   },
   "nav": {
     "pinned": "Pinned",
@@ -176,7 +196,11 @@
     "taxInvoice": "Tax invoice",
     "taxInvoiceData": "Tax invoice data",
     "taxInvoiceNumber": "Tax invoice number",
-    "invoice": "Invoice"
+    "invoice": "Invoice",
+    "numberFormat": "Format: 000-INV-XXXX-MONTH(roman)-YEAR",
+    "retention": "Retention",
+    "noPaymentReceived": "No payment received yet.",
+    "spkNumberShort": "Work order number"
   },
   "language": {
     "label": "Language",
@@ -336,7 +360,8 @@
     "createNew": "Create new interpayment",
     "dateRange": "Enter a date range",
     "startDate": "Start date",
-    "endDate": "End date"
+    "endDate": "End date",
+    "sameAccount": "Origin and destination accounts must differ."
   },
   "purchaseOrder": {
     "title": "Purchase order",
@@ -490,7 +515,8 @@
     "department": "Department",
     "position": "Position",
     "startDate": "Start date",
-    "taxCategory": "Tax category"
+    "taxCategory": "Tax category",
+    "createSub": "Complete the new employee data"
   },
   "taxing": {
     "title": "Tax Center",
@@ -514,7 +540,13 @@
     "asset": "Asset",
     "loans": "Loans",
     "purchase": "Purchase",
-    "sales": "Sales"
+    "sales": "Sales",
+    "pphPurchaseRecap": "Withholding tax recap (purchase)",
+    "pphPurchaseSub": "Download withholding tax report from purchases",
+    "pphSalaryRecap": "Withholding tax recap (salary)",
+    "pphSalarySub": "Download employee salary withholding tax report",
+    "ppnRecap": "VAT recap",
+    "ppnSub": "Download VAT report for the selected period"
   },
   "dashboardReimbursement": {
     "dialogTitle": "Today's Reimbursements",
@@ -526,7 +558,10 @@
     "title": "Client",
     "subtitle": "Manage company client data",
     "createNew": "Add client",
-    "searchPlaceholder": "Search name, city, or NPWP"
+    "searchPlaceholder": "Search name, city, or NPWP",
+    "individual": "Individual",
+    "foundation": "Foundation",
+    "other": "Other"
   },
   "expense": {
     "viewValueBreakdown": "Value breakdown",
@@ -776,7 +811,9 @@
     "cancel": "Cancel",
     "saving": "Saving...",
     "saveCreate": "Save",
-    "saveUpdate": "Save changes"
+    "saveUpdate": "Save changes",
+    "saleOptional": "Sale (optional)",
+    "fillIfSold": "Fill if the asset has been sold"
   },
   "loans": {
     "title": "Loans",
@@ -784,7 +821,12 @@
     "createNew": "Create new loan",
     "searchPlaceholder": "Search creditor or description",
     "menuCreatePayment": "Create payment",
-    "menuView": "View loan"
+    "menuView": "View loan",
+    "received": "Funds received",
+    "debt": "Total debt",
+    "loadingData": "Loading data…",
+    "createLoan": "Record new loan / debt",
+    "companyAccount": "Company account receiving the loan"
   },
   "loansCreate": {
     "title": "Create Loan",
@@ -915,7 +957,13 @@
     "menuEdit": "Edit item",
     "menuDelete": "Delete item",
     "noData": "No items yet. Import CSV to start filling the catalog.",
-    "addItem": "Add item"
+    "addItem": "Add item",
+    "chooseItem": "Select item",
+    "searchItem": "Search item",
+    "sku": "SKU",
+    "capitalNoSpace": "Capitals, no spaces (use _)",
+    "minOneRequired": "choose at least 1",
+    "filterHint": "Filter by brand, type, or PO type"
   },
   "salesInvoiceCreate": {
     "title": "Create Sales Invoice",
@@ -1135,7 +1183,10 @@
     "awaitingApproval": "awaiting approval",
     "retry": "Retry",
     "seeAll": "See all",
-    "more": "more"
+    "more": "more",
+    "pdfSub": "Merge, split, and tidy documents in seconds.",
+    "noReimbursement": "No pending reimbursement.",
+    "tasksSub": "Plan, prioritize, and accomplish your tasks with ease."
   },
   "calendarDay": {
     "title": "Daily Financial Overview",
@@ -1865,7 +1916,8 @@
     "pph": "PPh",
     "pphTaxObject": "PPh tax object name",
     "total": "Total",
-    "paymentTotal": "Payment total"
+    "paymentTotal": "Payment total",
+    "subtitle": "Payment details & history"
   },
   "draftConvert": {
     "date": "Date",
@@ -2276,7 +2328,29 @@
     "perHour": "/hour",
     "hours": "hours",
     "serviceProvider": "Service provider",
-    "serviceReceiver": "Service receiver"
+    "serviceReceiver": "Service receiver",
+    "shipmentPic": "PIC (optional, overrides above)",
+    "shipmentPicPhone": "PIC phone (optional)",
+    "volume": "Volume",
+    "unit": "Unit",
+    "originPlaceName": "Origin place name",
+    "destinationPlaceName": "Destination place name",
+    "picOriginPhone": "Origin PIC phone",
+    "picDestinationPhone": "Destination PIC phone",
+    "unloadingDate": "Unloading date",
+    "picHint": "Filled once here applies to all shipments; a row may override it.",
+    "requireInsuranceDoc": "Vendor provides insurance document",
+    "insuranceValue": "Insured value (optional)",
+    "insuranceValueHint": "Leave empty to write \"as agreed\"",
+    "airService": "Air service scope",
+    "closingDate": "Closing container date",
+    "etd": "Estimated time of departure",
+    "eta": "Estimated time of arrival",
+    "containerInsuranceValue": "Insured value per container",
+    "containerInsuranceHint": "Fill 0 to omit this clause",
+    "ppnRate": "VAT rate",
+    "ppnRate11": "11% — general transport service",
+    "ppnRate11Percent": "1.1% — freight forwarding (other tax base)"
   },
   "salaryAllowance": {
     "perfBonus": "Performance bonus",
@@ -2311,7 +2385,10 @@
     "dateTo": "To date",
     "volume": "Volume",
     "unit": "Unit",
-    "unitPrice": "Unit price"
+    "unitPrice": "Unit price",
+    "documentType": "Document type",
+    "typeB": "B — equipment rental",
+    "typeA": "A — transport equipment rental"
   },
   "poD": {
     "fieldStaff": "Field staff (e.g. staff engineer)",
@@ -2363,5 +2440,120 @@
     "noPphClose": "No withholding tax & close",
     "skb": "SKB",
     "rateZero": "0% rate"
+  },
+  "incomeTax": {
+    "title": "Withholding tax slip",
+    "slipNumber": "Slip number",
+    "slipHint": "Withholding slip number from client",
+    "invoiceNumber": "Invoice number",
+    "pphCode": "Withholding tax code",
+    "pphObject": "Tax object",
+    "pphRate": "Tax rate",
+    "pphWithheld": "Tax withheld"
+  },
+  "salaryPayment": {
+    "salaryDetail": "Salary details",
+    "division": "Division",
+    "position": "Position",
+    "grossSalary": "Gross salary",
+    "netSalary": "Net salary",
+    "pph21": "Income tax 21"
+  },
+  "po512": {
+    "question": "Buying goods, or ordering a service?",
+    "buyGoods": "Buy goods",
+    "orderService": "Order service",
+    "serviceHint": "Repair / maintenance service, work description written freely.",
+    "assetMaintenance": "Asset maintenance",
+    "goodsHint": "Spare parts / maintenance material, taken from master item."
+  },
+  "selector": {
+    "chooseSupplier": "Select supplier",
+    "searchSupplier": "Search supplier",
+    "searchByNameAddress": "Search by name or address",
+    "supplierNotFound": "Supplier not found",
+    "blacklist": "Blacklist",
+    "chooseEquipment": "Select equipment",
+    "searchEquipment": "Search equipment",
+    "equipmentCatalog": "Heavy equipment rental catalogue",
+    "equipmentNotFound": "No matching equipment."
+  },
+  "salesInvoicePayment": {
+    "receivePayment": "Receive payment",
+    "invoiceDetail": "Invoice details",
+    "receivedAmount": "Received amount",
+    "destinationAccount": "Destination account",
+    "receivedDate": "Received date"
+  },
+  "pdf": {
+    "noPdf": "No PDF yet",
+    "dragToSort": "Drag to reorder",
+    "selectPages": "Select specific pages",
+    "processing": "Processing PDF files...",
+    "quickProcess": "Quick process",
+    "dragDrop": "Drag & drop PDF here",
+    "browse": "browse",
+    "releaseToUpload": "Release to upload",
+    "multiFileSupport": "Supports multiple PDF files at once",
+    "willProcess": "Your PDF will be processed right away"
+  },
+  "reimbursementPayment": {
+    "createPayment": "Create reimbursement payment",
+    "itemDetail": "Item details",
+    "matchesTotal": "Matches reimbursement total",
+    "date": "Date"
+  },
+  "blacklistDialog": {
+    "reason": "Blacklist reason",
+    "currentReason": "Current reason",
+    "reasonRequired": "Reason is required.",
+    "warning": "warning"
+  },
+  "poCreate": {
+    "title": "Create purchase order",
+    "subtitle": "Choose the purchase type to create",
+    "officeExpenses": "Office expenses",
+    "projectExpenses": "Project expenses"
+  },
+  "salarySlipSelector": {
+    "createSlip": "Create salary slip",
+    "choosePeriod": "Choose employee salary period",
+    "month": "Month",
+    "year": "Year"
+  },
+  "todayPayment": {
+    "title": "Today’s payments",
+    "noPayments": "No payments today.",
+    "totalPaid": "Total paid",
+    "transactions": "transactions"
+  },
+  "expenseOpponentSelector": {
+    "choose": "Select counterparty",
+    "searchHint": "Search by name or description",
+    "notFound": "No counterparty found."
+  },
+  "po641": {
+    "legalDocs": "Legal documents",
+    "noDocs": "No documents yet. Click \"Add document\".",
+    "emptyIfNone": "Leave empty if none",
+    "emptyIfNoValidity": "Leave empty if there is no validity period"
+  },
+  "fleet": {
+    "vehicleGuide": "Vehicle type guide",
+    "dimensionsHint": "Indicative dimensions & capacity per fleet"
+  },
+  "poC": {
+    "fuelSurcharge": "Amount, added to total (fuel only)"
+  },
+  "expensePayment": {
+    "invoice": "Invoice",
+    "note": "Note"
+  },
+  "poCommon": {
+    "deliveryAndPic": "Delivery & person in charge",
+    "projectCodeHint": "4–5 characters, uppercase letters / digits"
+  },
+  "engineering": {
+    "addPile": "Add new pile"
   }
 }

@@ -20,6 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -37,6 +38,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatSelectModule,
     MatInputModule,
     NgxMaskDirective,
+    TranslatePipe,
   ],
   templateUrl: './reimbursement-payment-create.component.html',
   styleUrl: './reimbursement-payment-create.component.scss',

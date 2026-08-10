@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-expense-payment-create',
@@ -37,6 +38,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    TranslatePipe,
   ],
 })
 export class ExpensePaymentCreateComponent {

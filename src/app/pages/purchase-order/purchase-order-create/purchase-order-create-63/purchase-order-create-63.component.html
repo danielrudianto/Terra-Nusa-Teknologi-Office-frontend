@@ -1,5 +1,7 @@
 <div class="po63">
   <app-header-title
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
     [title]="('poForm.poCodePrefix' | translate) + purchaseType"
     [description]="typeLabel"
   />
@@ -10,7 +12,7 @@
       <div class="po63-card">
         <div class="po63-cardhead">
           <div class="po63-section__title po63-section__title--flush">
-            Informasi PO
+            {{ "common.poInfo" | translate }}
           </div>
           <span class="po63-modechip">
             <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
@@ -19,7 +21,7 @@
               class="po63-modechip__btn"
               (click)="askMode()"
             >
-              Ganti
+              {{ "common.change" | translate }}
             </button>
           </span>
         </div>
@@ -48,9 +50,9 @@
               (keyup)="toUpperCase()"
               placeholder="Ex. MICZ"
             />
-            <mat-error *ngIf="f['projectName'].hasError('pattern')"
-              >Harus 4–5 karakter kapital.</mat-error
-            >
+            <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+              "common.projectCodeError" | translate
+            }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po63-span2">
@@ -78,7 +80,7 @@
       <div class="po63-card">
         <div class="po63-cardhead">
           <div class="po63-section__title po63-section__title--flush">
-            Daftar Item
+            {{ "common.itemListPo" | translate }}
           </div>
           @if (isGoods) {
             <button type="button" class="po63-add" (click)="openItemSelector()">
@@ -178,9 +180,9 @@
                         >
                       </mat-select>
                     }
-                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
-                      >Lump sum — volume dikunci 1</mat-hint
-                    >
+                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">{{
+                      "common.lumpSumLocked" | translate
+                    }}</mat-hint>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline">
@@ -225,14 +227,14 @@
           }}</mat-slide-toggle>
           <div class="po63-summary">
             <div class="po63-summary__row">
-              <span>Subtotal (DPP)</span
+              <span>{{ "common.subtotalDpp" | translate }}</span
               ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
             <div class="po63-summary__row">
               <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
             </div>
             <div class="po63-summary__row po63-summary__row--total">
-              <span>Total</span
+              <span>{{ "common.total" | translate }}</span
               ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
             </div>
           </div>
@@ -241,7 +243,9 @@
 
       <!-- ===== Pembayaran ===== -->
       <div class="po63-card">
-        <div class="po63-section__title">Pembayaran</div>
+        <div class="po63-section__title">
+          {{ "common.payment" | translate }}
+        </div>
         <div class="po63-grid">
           <mat-form-field appearance="outline" class="po63-span2">
             <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
@@ -253,9 +257,9 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
-            <input matInput formControlName="creditTerm" /><span matSuffix
-              >&nbsp;hari</span
-            >
+            <input matInput formControlName="creditTerm" /><span matSuffix>{{
+              "common.days" | translate
+            }}</span>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
@@ -264,14 +268,16 @@
               formControlName="prepaidTerm"
               [min]="0"
               [max]="100"
-            /><span matSuffix>&nbsp;%</span>
+            /><span matSuffix>{{ "common.percent" | translate }}</span>
           </mat-form-field>
         </div>
       </div>
 
       <!-- ===== Catatan / Poin Perjanjian ===== -->
       <div class="po63-card">
-        <div class="po63-section__title">Catatan / Poin Perjanjian</div>
+        <div class="po63-section__title">
+          {{ "common.notesAndPoints" | translate }}
+        </div>
         <app-wysiwyg
           formControlName="notes"
           [minHeight]="200"

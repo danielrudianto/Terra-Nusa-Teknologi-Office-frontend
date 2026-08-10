@@ -177,7 +177,7 @@
       matStepperNext
       [disabled]="metaFormGroup.invalid"
     >
-      Next
+      {{ "common.stepNext" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="valueFormGroup">
@@ -359,7 +359,7 @@
       mat-button
       matStepperPrevious
     >
-      Previous
+      {{ "common.stepPrev" | translate }}
     </button>
     <button
       matStepperNext
@@ -367,7 +367,7 @@
       mat-stroked-button
       [disabled]="valueFormGroup.invalid || !isFinal"
     >
-      Next
+      {{ "common.stepNext" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="attachmentFormGroup">
@@ -424,7 +424,7 @@
       mat-button
       matStepperPrevious
     >
-      Previous
+      {{ "common.stepPrev" | translate }}
     </button>
     <button
       style="letter-spacing: 0"
@@ -432,7 +432,7 @@
       matStepperNext
       [disabled]="attachmentFormGroup.invalid"
     >
-      Next
+      {{ "common.stepNext" | translate }}
     </button>
   </mat-step>
   <mat-step [stepControl]="paymentFormGroup">
@@ -569,14 +569,14 @@
       class="me-2"
       matStepperPrevious
     >
-      Previous
+      {{ "common.stepPrev" | translate }}
     </button>
     <button
       class="btn"
       (click)="onSubmit()"
       [disabled]="!isValid || isSubmitting"
     >
-      Submit
+      {{ "common.submit" | translate }}
     </button>
   </mat-step>
 </mat-stepper>

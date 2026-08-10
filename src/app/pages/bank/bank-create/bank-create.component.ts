@@ -13,6 +13,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 
@@ -28,6 +29,7 @@ import { banks, IBank } from 'src/app/utils/bank';
     MatDialogModule,
     MatSnackBarModule,
     MatButtonModule,
+    TranslatePipe,
   ],
   templateUrl: './bank-create.component.html',
   styleUrl: './bank-create.component.scss',

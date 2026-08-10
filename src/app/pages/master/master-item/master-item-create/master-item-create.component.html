@@ -35,7 +35,7 @@
             (input)="uppercaseSku()"
             [placeholder]="'itemForm.skuPlaceholder' | translate"
           />
-          <mat-hint>Kapital, tanpa spasi (pakai _)</mat-hint>
+          <mat-hint>{{ "masterItem.capitalNoSpace" | translate }}</mat-hint>
           <mat-error *ngIf="formGroup.get('sku')?.hasError('maxlength')"
             >Maks 45 karakter.</mat-error
           >
@@ -81,7 +81,10 @@
 
         <div class="mic-span2 mic-types-field">
           <div class="mic-typeslabel">
-            Tipe PO <span class="mic-req">wajib pilih min. 1</span>
+            Tipe PO
+            <span class="mic-req">{{
+              "masterItem.minOneRequired" | translate
+            }}</span>
           </div>
           <div class="mic-types">
             <button

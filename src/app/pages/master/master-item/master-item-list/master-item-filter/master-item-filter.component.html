@@ -4,16 +4,18 @@
       <mat-icon>filter_list</mat-icon>
     </span>
     <div class="mif-head__text">
-      <h2 class="mif-title">Filter item</h2>
-      <span class="mif-sub">Saring berdasarkan brand, tipe, atau tipe PO</span>
+      <h2 class="mif-title">{{ "itemFilter.title" | translate }}</h2>
+      <span class="mif-sub">{{ "masterItem.filterHint" | translate }}</span>
     </div>
   </div>
 
   <mat-dialog-content class="mif-content">
     <mat-form-field appearance="outline" class="mif-field">
-      <mat-label>Brand</mat-label>
+      <mat-label>{{ "itemFilter.brand" | translate }}</mat-label>
       <mat-select [formControl]="brandControl">
-        <mat-option value="">Semua brand</mat-option>
+        <mat-option value="">{{
+          "itemFilter.allBrand" | translate
+        }}</mat-option>
         <mat-option *ngFor="let b of data.brands" [value]="b">{{
           b
         }}</mat-option>
@@ -21,9 +23,9 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="mif-field">
-      <mat-label>Tipe</mat-label>
+      <mat-label>{{ "itemFilter.type" | translate }}</mat-label>
       <mat-select [formControl]="typeControl">
-        <mat-option value="">Semua tipe</mat-option>
+        <mat-option value="">{{ "itemFilter.allType" | translate }}</mat-option>
         <mat-option *ngFor="let t of data.types" [value]="t">{{
           t
         }}</mat-option>
@@ -31,9 +33,11 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="mif-field">
-      <mat-label>Tipe PO</mat-label>
+      <mat-label>{{ "itemFilter.poType" | translate }}</mat-label>
       <mat-select [formControl]="purchaseTypeControl">
-        <mat-option value="">Semua tipe PO</mat-option>
+        <mat-option value="">{{
+          "itemFilter.allPoType" | translate
+        }}</mat-option>
         <mat-option
           *ngFor="let p of data.purchaseTypeOptions"
           [value]="p.code"
@@ -60,7 +64,7 @@
       class="mif-btn mif-btn--ghost"
       (click)="cancel()"
     >
-      Batal
+      {{ "common.cancel" | translate }}
     </button>
     <button
       type="button"
@@ -68,7 +72,7 @@
       class="mif-btn mif-btn--primary"
       (click)="apply()"
     >
-      Terapkan
+      {{ "common.apply" | translate }}
     </button>
   </mat-dialog-actions>
 </div>

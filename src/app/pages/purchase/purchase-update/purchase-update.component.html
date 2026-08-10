@@ -10,7 +10,9 @@
     <mat-stepper [linear]="true" #stepper>
       <mat-step [stepControl]="metaFormGroup">
         <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-          <ng-template matStepLabel>Meta Data</ng-template>
+          <ng-template matStepLabel>{{
+            "expense.metaData" | translate
+          }}</ng-template>
           <mat-form-field appearance="outline" class="w-100 d-none">
             <mat-label>{{ "purchaseUpdate.id" | translate }}</mat-label>
             <input matInput formControlName="id" readonly />
@@ -143,11 +145,15 @@
         </form>
 
         <mat-divider class="my-3"></mat-divider>
-        <button mat-stroked-button color="primary" matStepperNext>Next</button>
+        <button mat-stroked-button color="primary" matStepperNext>
+          {{ "common.stepNext" | translate }}
+        </button>
       </mat-step>
       <mat-step [stepControl]="valueFormGroup">
         <form [formGroup]="valueFormGroup">
-          <ng-template matStepLabel>Value Data</ng-template>
+          <ng-template matStepLabel>{{
+            "expense.valueData" | translate
+          }}</ng-template>
           <mat-divider class="mt-3"></mat-divider>
 
           <mat-form-field appearance="outline" class="w-100">
@@ -284,7 +290,7 @@
           style="letter-spacing: 0"
           matStepperPrevious
         >
-          Previous
+          {{ "common.stepPrev" | translate }}
         </button>
 
         <button
@@ -294,12 +300,14 @@
           class="ms-2"
           matStepperNext
         >
-          Next
+          {{ "common.stepNext" | translate }}
         </button>
       </mat-step>
       <mat-step [stepControl]="attachmentFormGroup">
         <form [formGroup]="attachmentFormGroup">
-          <ng-template matStepLabel>Attachments Data</ng-template>
+          <ng-template matStepLabel>{{
+            "common.attachmentsData" | translate
+          }}</ng-template>
           <mat-divider class="mt-3"></mat-divider>
 
           <mat-slide-toggle
@@ -350,7 +358,7 @@
           style="letter-spacing: 0"
           matStepperPrevious
         >
-          Previous
+          {{ "common.stepPrev" | translate }}
         </button>
 
         <button
@@ -361,7 +369,7 @@
           type="button"
           (click)="onSubmit()"
         >
-          Submit
+          {{ "common.submit" | translate }}
         </button>
       </mat-step>
     </mat-stepper>

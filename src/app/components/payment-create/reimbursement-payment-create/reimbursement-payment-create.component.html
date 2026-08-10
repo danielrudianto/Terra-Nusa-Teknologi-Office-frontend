@@ -21,7 +21,9 @@
           metaFormGroup.get("reimbursementName")?.value || "Bayar Reimbursement"
         }}
       </h2>
-      <span class="rpc-sub">Buat pembayaran reimbursement</span>
+      <span class="rpc-sub">{{
+        "reimbursementPayment.createPayment" | translate
+      }}</span>
     </div>
   </div>
 
@@ -30,24 +32,28 @@
       <!-- meta chips -->
       <div class="rpc-chips">
         <span class="rpc-chip" *ngIf="metaFormGroup.get('projectName')?.value">
-          <span class="rpc-chip__k">Project</span
+          <span class="rpc-chip__k">{{ "common.project" | translate }}</span
           >{{ metaFormGroup.get("projectName")?.value }}
         </span>
         <span class="rpc-chip" *ngIf="metaFormGroup.get('date')?.value">
-          <span class="rpc-chip__k">Tanggal</span
+          <span class="rpc-chip__k">{{
+            "reimbursementPayment.date" | translate
+          }}</span
           >{{ metaFormGroup.get("date")?.value }}
         </span>
         <span
           class="rpc-chip rpc-chip--due"
           *ngIf="metaFormGroup.get('dueDate')?.value"
         >
-          <span class="rpc-chip__k">Jatuh tempo</span
+          <span class="rpc-chip__k">{{ "common.dueDate" | translate }}</span
           >{{ metaFormGroup.get("dueDate")?.value }}
         </span>
       </div>
 
       <!-- items -->
-      <div class="rpc-section__title">Rincian Item</div>
+      <div class="rpc-section__title">
+        {{ "reimbursementPayment.itemDetail" | translate }}
+      </div>
       <div class="rpc-items">
         <div class="rpc-item" *ngFor="let item of t.controls">
           <div class="rpc-item__main">
@@ -60,7 +66,7 @@
         </div>
 
         <div class="rpc-total">
-          <span>Total</span>
+          <span>{{ "common.total" | translate }}</span>
           <span class="rpc-total__val"
             >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
           >
@@ -68,10 +74,12 @@
       </div>
 
       <!-- payment inputs -->
-      <div class="rpc-section__title rpc-section__title--mt">Pembayaran</div>
+      <div class="rpc-section__title rpc-section__title--mt">
+        {{ "common.payment" | translate }}
+      </div>
       <div class="rpc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal bayar</mat-label>
+          <mat-label>{{ "common.paymentDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -86,7 +94,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rekening pembayar</mat-label>
+          <mat-label>{{ "common.payerAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccountID">
             @for (bank of bankAccounts; track bank) {
               <mat-option [value]="bank.id"
@@ -98,7 +106,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="rpc-span2">
-          <mat-label>Nominal pembayaran</mat-label>
+          <mat-label>{{ "common.paymentAmount" | translate }}</mat-label>
           <input
             matInput
             formControlName="amount"
@@ -109,14 +117,16 @@
             mask="separator.2"
             readonly
           />
-          <mat-hint>Sesuai total reimbursement</mat-hint>
+          <mat-hint>{{
+            "reimbursementPayment.matchesTotal" | translate
+          }}</mat-hint>
         </mat-form-field>
       </div>
     </mat-dialog-content>
 
     <mat-dialog-actions class="rpc-actions">
       <button type="button" class="rpc-cancel" (click)="onClose()">
-        Batal
+        {{ "common.cancel" | translate }}
       </button>
       <button
         type="button"

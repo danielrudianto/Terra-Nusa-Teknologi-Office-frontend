@@ -15,19 +15,19 @@
       </svg>
     </span>
     <div class="bu-head__text">
-      <h2 class="bu-title">Ubah Rekening Bank</h2>
-      <span class="bu-sub">Perbarui data rekening perusahaan</span>
+      <h2 class="bu-title">{{ "bankForm.editTitle" | translate }}</h2>
+      <span class="bu-sub">{{ "bankForm.editSubtitle" | translate }}</span>
     </div>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="bu-content">
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Bank Name</mat-label>
+        <mat-label>{{ "bankForm.bankName" | translate }}</mat-label>
         <input
           #input
           type="text"
-          placeholder="Pilih bank"
+          [placeholder]="'bankForm.bankNamePlaceholder' | translate"
           matInput
           formControlName="bankName"
           [matAutocomplete]="auto"
@@ -44,35 +44,37 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Account name</mat-label>
+        <mat-label>{{ "bankForm.accountName" | translate }}</mat-label>
         <input
           matInput
           formControlName="bankAccountName"
           type="text"
-          placeholder="Nama pemilik rekening"
+          [placeholder]="'bankForm.accountNamePlaceholder' | translate"
           required
         />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Account number</mat-label>
+        <mat-label>{{ "bankForm.accountNumber" | translate }}</mat-label>
         <input
           matInput
           formControlName="bankAccountNumber"
           type="text"
           inputmode="numeric"
-          placeholder="Nomor rekening"
+          [placeholder]="'bankForm.accountNumberPlaceholder' | translate"
           required
         />
         <mat-error
           *ngIf="formGroup.get('bankAccountNumber')?.hasError('pattern')"
-          >Hanya boleh angka.</mat-error
+          >{{ "common.onlyNumbers" | translate }}</mat-error
         >
       </mat-form-field>
     </mat-dialog-content>
 
     <mat-dialog-actions class="bu-actions">
-      <button type="button" class="bu-cancel" (click)="onClose()">Batal</button>
+      <button type="button" class="bu-cancel" (click)="onClose()">
+        {{ "bankForm.cancel" | translate }}
+      </button>
       <button
         type="submit"
         class="bu-submit"

@@ -1,0 +1,163 @@
+/*
+ * Sebelumnya berkas ini kosong: halaman memakai tabel Bootstrap polos dan
+ * seluruh kolom bertumpuk satu per satu, sehingga tampil berbeda sendiri
+ * dibanding halaman lain. Gaya di sini mengikuti pola dialog Client/Supplier.
+ */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+
+.ph {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  color: $ink;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+/* ---------- kepala ---------- */
+.ph-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: var(--surface-2, #fafbfc);
+  border-bottom: 1px solid var(--border, #e4e9fb);
+
+  /* Material menambahkan garis pemisahnya sendiri lewat ::before */
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--brand-soft, #e7ecfb);
+    color: $brand;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+
+.ph-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.ph-sub {
+  font-size: 0.8rem;
+  color: $muted;
+}
+
+/* ---------- isi ---------- */
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding: 1rem 1.5rem !important;
+}
+
+/*
+ * Kisi dipasang pada <form>, bukan lewat pembungkus baru di HTML: kolomnya
+ * anak langsung form, jadi tidak perlu membongkar struktur yang sudah ada.
+ */
+.ph form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.ph-field {
+  width: 100%;
+}
+
+/* Tabel dan tombol mengambil satu baris penuh. */
+.ph form > table,
+.ph form > .ph-actions {
+  grid-column: 1 / -1;
+}
+
+/* ---------- tabel ---------- */
+.ph-table {
+  grid-column: 1 / -1;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.84rem;
+
+  thead th {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $muted;
+    background: var(--surface-2, #fafbfc);
+    border-bottom: 1px solid $line;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--line, #f2f4f7);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Nominal rata kanan dengan angka lebar tetap agar mudah dibandingkan. */
+  tbody td:last-child,
+  thead th:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- stepper ---------- */
+:host ::ng-deep .mat-horizontal-stepper-header-container,
+:host ::ng-deep .mat-vertical-stepper-header {
+  background: transparent;
+}
+
+:host ::ng-deep .mat-step-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .ph form {
+    grid-template-columns: 1fr;
+  }
+}

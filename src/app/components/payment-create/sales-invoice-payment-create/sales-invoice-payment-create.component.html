@@ -27,7 +27,9 @@
 
   <mat-dialog-content class="sip-content">
     <!-- money breakdown -->
-    <div class="sip-section__title">Rincian Invoice</div>
+    <div class="sip-section__title">
+      {{ "salesInvoicePayment.invoiceDetail" | translate }}
+    </div>
     <div class="sip-money">
       <div class="sip-money__row">
         <span>DPP</span
@@ -46,7 +48,7 @@
         >
       </div>
       <div class="sip-money__row sip-money__row--total">
-        <span>Total tagihan</span
+        <span>{{ "common.totalBill" | translate }}</span
         ><span>Rp {{ formGroup.get("total")?.value | number: "1.0-0" }}</span>
       </div>
     </div>
@@ -68,7 +70,7 @@
     <!-- existing payments -->
     <div *ngIf="t.controls.length > 0">
       <div class="sip-section__title sip-section__title--mt">
-        Riwayat Pembayaran
+        {{ "common.paymentHistory" | translate }}
       </div>
       <div class="sip-history">
         <div class="sip-hist" *ngFor="let p of t.controls">
@@ -98,12 +100,14 @@
 
     <!-- payment inputs -->
     <div class="sip-section__title sip-section__title--mt">
-      Terima Pembayaran
+      {{ "salesInvoicePayment.receivePayment" | translate }}
     </div>
     <form [formGroup]="paymentFormGroup">
       <div class="sip-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal terima</mat-label>
+          <mat-label>{{
+            "salesInvoicePayment.receivedDate" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -118,7 +122,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rekening tujuan</mat-label>
+          <mat-label>{{
+            "salesInvoicePayment.destinationAccount" | translate
+          }}</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
               {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
@@ -127,7 +133,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="sip-span2">
-          <mat-label>Nominal diterima</mat-label>
+          <mat-label>{{
+            "salesInvoicePayment.receivedAmount" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="amount"
@@ -143,7 +151,9 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="sip-actions">
-    <button type="button" class="sip-cancel" mat-dialog-close>Batal</button>
+    <button type="button" class="sip-cancel" mat-dialog-close>
+      {{ "common.cancel" | translate }}
+    </button>
     <button
       type="button"
       class="sip-submit"

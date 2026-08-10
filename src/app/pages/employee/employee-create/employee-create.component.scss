@@ -1,10 +1,109 @@
-h1.mat-mdc-dialog-title {
-  font-family: "Poppins";
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding-bottom: 0;
+/*
+ * Mengikuti pola dialog Client/Supplier/Asset: pembungkus bertoken warna,
+ * kepala berlatar, dan kisi dua kolom. Sebelumnya berkas ini hampir kosong
+ * sehingga formnya tampil polos dan kolomnya menumpuk satu per satu.
+ */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+
+.ec {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  color: $ink;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }
 
-.mdc-dialog__content {
-  padding-top: 0;
+/* ---------- kepala ---------- */
+.ec-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: var(--surface-2, #fafbfc);
+  border-bottom: 1px solid var(--border, #e4e9fb);
+
+  /* Material menambahkan garis pemisah sendiri lewat ::before */
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--brand-soft, #e7ecfb);
+    color: $brand;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+}
+
+.ec-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.ec-sub {
+  font-size: 0.8rem;
+  color: $muted;
+}
+
+/* ---------- isi ---------- */
+.ec-content {
+  padding: 1.15rem 1.5rem 0.5rem !important;
+  width: 560px;
+  max-width: 100%;
+}
+
+/* Dua kolom pada layar lega; menumpuk sendiri saat sempit. */
+.ec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.ec-field {
+  width: 100%;
+}
+
+/* Kolom yang isinya panjang mengambil satu baris penuh. */
+.ec-field.ec-field--wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .ec-grid {
+    grid-template-columns: 1fr;
+  }
+  .ec-content {
+    width: 100%;
+  }
 }

@@ -58,24 +58,6 @@
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "poForm.picOrigin" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="picFromName"
-            placeholder="Nama PIC di asal"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "poForm.picDestination" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="picToName"
-            placeholder="Nama PIC di tujuan"
-          />
-        </mat-form-field>
       </div>
     </div>
 
@@ -88,9 +70,6 @@
           <mat-select formControlName="workKind">
             <mat-option value="pengiriman">{{
               "poA.shipmentService" | translate
-            }}</mat-option>
-            <mat-option value="sewa-alat">{{
-              "poA.equipmentRental" | translate
             }}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -166,6 +145,56 @@
             <span matSuffix>{{ "common.days" | translate }}</span>
           </mat-form-field>
 
+          <!-- Asuransi: bila diurus sendiri, klausulnya tidak dicetak. -->
+          <mat-slide-toggle
+            formControlName="requireInsuranceDoc"
+            class="poa-toggle"
+          >
+            {{ "poA.requireInsuranceDoc" | translate }}
+          </mat-slide-toggle>
+
+          @if (formGroup.get("requireInsuranceDoc")?.value) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "poA.insuranceValue" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="insuranceValue"
+                thousandSeparator=" "
+                mask="separator.2"
+              />
+              <mat-hint>{{ "poA.insuranceValueHint" | translate }}</mat-hint>
+            </mat-form-field>
+          }
+
+          <!-- Hanya relevan bila ada pengiriman lewat udara. -->
+          @if (usesMode("udara")) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "poA.airService" | translate }}</mat-label>
+              <mat-select formControlName="airService">
+                <mat-option value="door-to-door">door-to-door</mat-option>
+                <mat-option value="port-to-door">port-to-door</mat-option>
+                <mat-option value="port-to-port">port-to-port</mat-option>
+              </mat-select>
+            </mat-form-field>
+          }
+          <!-- Berlaku untuk seluruh pengiriman laut dalam SPK ini. -->
+          @if (usesMode("laut")) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{
+                "poA.containerInsuranceValue" | translate
+              }}</mat-label>
+              <input
+                matInput
+                formControlName="containerInsuranceValue"
+                thousandSeparator=" "
+                mask="separator.2"
+              />
+              <mat-hint>{{
+                "poA.containerInsuranceHint" | translate
+              }}</mat-hint>
+            </mat-form-field>
+          }
+
           <mat-form-field appearance="outline">
             <mat-label>{{ "poA.deliveryRisk" | translate }}</mat-label>
             <mat-select formControlName="deliveryRisk">
@@ -205,7 +234,7 @@
     <div class="poa-card">
       <div class="poa-cardhead">
         <div class="poa-section__title poa-section__title--flush">
-          Daftar Pengiriman
+          {{ "common.deliveryList" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addShipment()">
           <mat-icon>add</mat-icon> Tambah pengiriman
@@ -328,6 +357,89 @@
                   <mat-datepicker #dp></mat-datepicker>
                 </mat-form-field>
 
+                <!-- Volume & satuan: jasa antar udara kerap ditagih per kilogram.
+                       Satuan boleh dipilih maupun diketik sendiri. -->
+                <!-- Bongkar bisa berbeda hari dari kirim; diisi per pengiriman. -->
+                @if (t.at($index).get("mode")?.value !== "laut") {
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poA.unloadingDate" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="unloadingDate"
+                      [matDatepicker]="ud"
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="ud"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #ud></mat-datepicker>
+                  </mat-form-field>
+                }
+
+                <!-- Jadwal kapal melekat pada pengiriman ini. -->
+                @if (t.at($index).get("mode")?.value === "laut") {
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poA.closingDate" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="closingDate"
+                      [matDatepicker]="cd"
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="cd"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #cd></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poA.etd" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="etd"
+                      [matDatepicker]="etdp"
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="etdp"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #etdp></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poA.eta" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="eta"
+                      [matDatepicker]="etap"
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="etap"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #etap></mat-datepicker>
+                  </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poA.volume" | translate }}</mat-label>
+                  <input matInput type="number" formControlName="quantity" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poA.unit" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="unit"
+                    [matAutocomplete]="unitAuto"
+                  />
+                  <mat-autocomplete #unitAuto="matAutocomplete">
+                    @for (u of unitOptions; track u) {
+                      <mat-option [value]="u">{{ u }}</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poForm.amount" | translate }}</mat-label>
                   <input
@@ -447,6 +559,19 @@
                       cdkAutosizeMaxRows="4"
                     ></textarea>
                   </mat-form-field>
+
+                  <!-- Penanggung jawab per pengiriman; boleh dikosongkan. -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poA.shipmentPic" | translate }}</mat-label>
+                    <input matInput formControlName="picName" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{
+                      "poA.shipmentPicPhone" | translate
+                    }}</mat-label>
+                    <input matInput formControlName="picPhone" />
+                  </mat-form-field>
                 </div>
               } @else {
                 <div class="poa-leg__grid poa-leg__grid--tail">
@@ -481,13 +606,29 @@
         <mat-slide-toggle formControlName="includePPN" color="primary">{{
           "poForm.includePpn" | translate
         }}</mat-slide-toggle>
+
+        <!-- Jasa pengurusan transportasi memakai DPP nilai lain (1,1%). -->
+        @if (formGroup.get("includePPN")?.value) {
+          <mat-form-field appearance="outline" class="poa-ppn-rate">
+            <mat-label>{{ "poA.ppnRate" | translate }}</mat-label>
+            <mat-select formControlName="ppnRate">
+              <mat-option [value]="11">{{
+                "poA.ppnRate11" | translate
+              }}</mat-option>
+              <mat-option [value]="1.1">{{
+                "poA.ppnRate11Percent" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        }
         <div class="poa-summary">
           <div class="poa-summary__row">
             <span>Subtotal (DPP)</span
             ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
           </div>
           <div class="poa-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>PPN {{ ppnRate }}%</span
+            ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
           </div>
           <div class="poa-summary__row poa-summary__row--total">
             <span>{{ "common.total" | translate }}</span
@@ -501,13 +642,24 @@
     <div class="poa-card">
       <div class="poa-section__title">{{ "common.payment" | translate }}</div>
       <div class="poa-grid">
-        <mat-form-field appearance="outline" class="poa-span2">
+        <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
-          <input
-            matInput
+          <mat-select
             formControlName="paymentTerm"
-            placeholder="Ex. Tempo 30 hari / CASH"
-          />
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>

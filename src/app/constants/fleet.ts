@@ -247,12 +247,14 @@ export const FLEET_OPTIONS: FleetOption[] = [
 export const MODE_FLEET_ID: { [mode: string]: number } = {
   udara: 1000,
   laut: 1001,
-  ekspedisi: 1002,
 };
 
 /** Reverse lookup: mode label from a sentinel fleet_id (for read-back). */
 export const FLEET_ID_MODE: { [id: number]: string } = {
   1000: 'udara',
   1001: 'laut',
+  // Ekspedisi tidak lagi ditawarkan saat membuat PO baru karena isinya
+  // tumpang tindih dengan ketiga moda lain. Pemetaan ini dipertahankan agar
+  // PO lama yang memakainya tetap terbaca.
   1002: 'ekspedisi',
 };

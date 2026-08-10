@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-payment-history',
@@ -29,6 +30,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss',
   imports: [
+    MatIconModule,
     TranslatePipe,
     MatDialogModule,
     FormsModule,

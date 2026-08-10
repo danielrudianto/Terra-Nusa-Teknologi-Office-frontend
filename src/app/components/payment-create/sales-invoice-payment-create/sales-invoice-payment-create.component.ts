@@ -23,6 +23,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
@@ -40,6 +41,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
     MatFormFieldModule,
     MatSelectModule,
     MatDatepickerModule,
+    TranslatePipe,
   ],
 })
 export class SalesInvoicePaymentCreateComponent {

@@ -21,6 +21,7 @@ import {
   PURCHASE_TYPE_LABELS,
   MASTER_ITEM_PURCHASE_TYPES,
 } from 'src/app/constants/purchase-type-label.constant';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-master-item-update',
@@ -34,6 +35,7 @@ import {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    TranslatePipe,
   ],
   templateUrl: './master-item-update.component.html',
   styleUrl: './master-item-update.component.scss',

@@ -32,25 +32,31 @@
         <span
           class="epc-chip"
           *ngIf="metaFormGroup.get('opponentDescription')?.value"
-          ><span class="epc-chip__k">Ket</span
+          ><span class="epc-chip__k">{{
+            "expensePayment.note" | translate
+          }}</span
           >{{ metaFormGroup.get("opponentDescription")?.value }}</span
         >
         <span
           class="epc-chip"
           *ngIf="metaFormGroup.get('taxInvoiceName')?.value"
-          ><span class="epc-chip__k">Faktur</span
+          ><span class="epc-chip__k">{{
+            "expensePayment.invoice" | translate
+          }}</span
           >{{ metaFormGroup.get("taxInvoiceName")?.value }}</span
         >
         <span
           class="epc-chip epc-chip--due"
           *ngIf="metaFormGroup.get('dueDate')?.value"
-          ><span class="epc-chip__k">Jatuh tempo</span
+          ><span class="epc-chip__k">{{ "common.dueDate" | translate }}</span
           >{{ metaFormGroup.get("dueDate")?.value }}</span
         >
       </div>
 
       <!-- value breakdown -->
-      <div class="epc-section__title">Rincian Nilai</div>
+      <div class="epc-section__title">
+        {{ "common.valueBreakdown" | translate }}
+      </div>
       <div class="epc-money">
         <div class="epc-money__row">
           <span>DPP</span
@@ -75,7 +81,7 @@
           >
         </div>
         <div class="epc-money__row epc-money__row--total">
-          <span>Total tagihan</span
+          <span>{{ "common.totalBill" | translate }}</span
           ><span
             >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
           >
@@ -105,7 +111,7 @@
       <!-- payment history -->
       <div *ngIf="payments && payments.length > 0">
         <div class="epc-section__title epc-section__title--mt">
-          Riwayat Pembayaran
+          {{ "common.paymentHistory" | translate }}
         </div>
         <div class="epc-history">
           <div class="epc-hist" *ngFor="let p of payments">
@@ -142,10 +148,12 @@
       </div>
 
       <!-- payment inputs -->
-      <div class="epc-section__title epc-section__title--mt">Pembayaran</div>
+      <div class="epc-section__title epc-section__title--mt">
+        {{ "common.payment" | translate }}
+      </div>
       <div class="epc-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal bayar</mat-label>
+          <mat-label>{{ "common.paymentDate" | translate }}</mat-label>
           <input
             matInput
             formControlName="date"
@@ -160,7 +168,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Rekening pembayar</mat-label>
+          <mat-label>{{ "common.payerAccount" | translate }}</mat-label>
           <mat-select formControlName="bankAccountID">
             <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
               >{{ bank.bankAccountNumber }} —
@@ -170,7 +178,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="epc-span2">
-          <mat-label>Nominal pembayaran</mat-label>
+          <mat-label>{{ "common.paymentAmount" | translate }}</mat-label>
           <input
             matInput
             formControlName="amount"
@@ -202,7 +210,7 @@
 
     <mat-dialog-actions class="epc-actions">
       <button type="button" class="epc-cancel" (click)="onClose()">
-        Batal
+        {{ "common.cancel" | translate }}
       </button>
       <button
         type="submit"
