@@ -266,6 +266,14 @@ export const routes: Routes = [
               ),
             data: { title: 'Purchase order' },
           },
+          {
+            path: 'Create/H',
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-h/purchase-order-create-h.component').then(
+                (m) => m.PurchaseOrderCreateHComponent,
+              ),
+            data: { title: 'Purchase order' },
+          },
         ],
       },
       {

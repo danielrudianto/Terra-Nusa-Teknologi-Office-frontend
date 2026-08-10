@@ -22,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { MatInputModule } from '@angular/material/input';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 export const amountValidator: ValidatorFn = (
   control: AbstractControl,
@@ -44,9 +45,11 @@ export const amountValidator: ValidatorFn = (
 @Component({
   selector: 'app-salary-payment-create',
   standalone: true,
+  providers: [provideNgxMask()],
   templateUrl: './salary-payment-create.component.html',
   styleUrl: './salary-payment-create.component.scss',
   imports: [
+    NgxMaskDirective,
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,

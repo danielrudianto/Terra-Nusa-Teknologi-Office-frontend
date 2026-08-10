@@ -121,9 +121,17 @@
 
         <div class="iv-audit">
           <div class="iv-audit__row">
-            <span class="iv-audit__icon iv-audit__icon--create">
-              <mat-icon>add_circle_outline</mat-icon>
-            </span>
+            @if (ip.createdBy) {
+              <app-avatar
+                class="iv-audit__avatar"
+                [userId]="ip.createdBy"
+                [size]="32"
+              ></app-avatar>
+            } @else {
+              <span class="iv-audit__icon iv-audit__icon--create">
+                <mat-icon>add_circle_outline</mat-icon>
+              </span>
+            }
             <div class="iv-audit__text">
               <span class="iv-audit__action"
                 >{{ "interpaymentView.createdBy" | translate }}

@@ -18,8 +18,16 @@
   padding: 1.75rem 2rem;
   border-radius: 22px;
   overflow: hidden;
-  background: linear-gradient(135deg, #2f6bff 0%, #154dec 55%, #0b2fa8 100%);
-  box-shadow: 0 12px 34px rgba(21, 77, 236, 0.22);
+  /* Gradien diturunkan dari warna aksen pilihan pengguna: sisi terang
+     dicampur putih, sisi gelap memakai varian brand-strong. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand, #154dec) 82%, #ffffff) 0%,
+    var(--brand, #154dec) 55%,
+    var(--brand-strong, #0f3fd0) 100%
+  );
+  box-shadow: 0 12px 34px
+    color-mix(in srgb, var(--brand, #154dec) 22%, transparent);
 
   &__content {
     position: relative;
@@ -249,7 +257,8 @@
     background: var(--brand, #154dec);
     border-color: var(--brand, #154dec);
     color: #fff;
-    box-shadow: 0 3px 10px rgba(21, 77, 236, 0.28);
+    box-shadow: 0 3px 10px
+      color-mix(in srgb, var(--brand, #154dec) 28%, transparent);
   }
 }
 

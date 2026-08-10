@@ -22,13 +22,16 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
   standalone: true,
+  providers: [provideNgxMask()],
   templateUrl: './sales-invoice-payment-create.component.html',
   styleUrl: './sales-invoice-payment-create.component.scss',
   imports: [
+    NgxMaskDirective,
     MatInputModule,
     MatDialogModule,
     CommonModule,

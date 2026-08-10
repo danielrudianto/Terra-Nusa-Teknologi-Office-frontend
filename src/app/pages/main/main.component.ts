@@ -56,70 +56,70 @@ export class MainComponent {
 
   sideNavItems = [
     {
-      name: 'Menu',
+      name: 'nav.menu',
       children: [
         {
-          name: 'Purchase Draft',
+          name: 'nav.purchaseDraft',
           icon: 'purchase-invoice.svg',
           route: '/Purchase-draft',
         },
         {
-          name: 'Purchase Order',
+          name: 'nav.purchaseOrder',
           icon: 'purchase-order.svg',
           route: '/Purchase-order',
         },
         {
-          name: 'Income',
+          name: 'nav.income',
           icon: 'income.svg',
           route: '/Income',
         },
         {
-          name: 'Sales invoice',
+          name: 'nav.salesInvoice',
           icon: 'sales-invoice.svg',
           route: '/Sales-invoice',
         },
         {
-          name: 'Inter-payment',
+          name: 'nav.interPayment',
           icon: 'transfer.svg',
           route: '/Interpayment',
         },
         {
-          name: 'Salary Slip',
+          name: 'nav.salarySlip',
           icon: 'salary-slip.svg',
           route: '/Salary-slip',
         },
       ],
     },
     {
-      name: 'Master',
+      name: 'nav.master',
       children: [
         {
-          name: 'Master Data',
+          name: 'nav.masterData',
           icon: 'package.svg',
           route: '/Master',
         },
         {
-          name: 'Asset',
+          name: 'nav.asset',
           icon: 'asset.svg',
           route: '/Asset',
         },
       ],
     },
     {
-      name: 'Administrator',
+      name: 'nav.administrator',
       children: [
         {
-          name: 'Loans',
+          name: 'nav.loans',
           icon: 'loan.svg',
           route: '/Loans',
         },
         {
-          name: 'Taxing',
+          name: 'nav.taxing',
           icon: 'tax.svg',
           route: '/Taxing',
         },
         {
-          name: 'User',
+          name: 'nav.user',
           icon: 'user.svg',
           route: '/User',
         },
@@ -127,50 +127,50 @@ export class MainComponent {
     },
 
     {
-      name: 'Implementations',
+      name: 'nav.implementations',
       children: [
         {
-          name: 'Bank',
+          name: 'nav.bank',
           icon: 'payment-method.svg',
           route: '/Bank',
         },
         {
-          name: 'Calendar',
+          name: 'nav.calendar',
           icon: 'calendar.svg',
           route: '/Calendar',
         },
         {
-          name: 'Payment',
+          name: 'nav.payment',
           icon: 'payment-method.svg',
           route: '/Payment',
         },
         {
-          name: 'Purchase',
+          name: 'nav.purchase',
           icon: 'purchase-invoice.svg',
           route: '/Purchase',
         },
         {
-          name: 'Reimbursement',
+          name: 'nav.reimbursement',
           icon: 'reimbursement.svg',
           route: '/Reimbursement',
         },
         {
-          name: 'Expense',
+          name: 'nav.expense',
           icon: 'expense.svg',
           route: '/Expense',
         },
       ],
     },
     {
-      name: 'General',
+      name: 'nav.general',
       children: [
         {
-          name: 'Settings',
+          name: 'nav.settings',
           icon: 'setting.svg',
           route: '/Settings',
         },
         {
-          name: 'Logout',
+          name: 'nav.logout',
           icon: 'logout.svg',
           click: () => {
             localStorage.removeItem('access_token');

@@ -310,3 +310,26 @@ $hover: var(--hover, #f6f8ff);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.pol-date {
+  font-size: 0.88rem;
+  color: var(--ink, #16181d);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* status tambahan */
+.pol-chip.is-published {
+  background: color-mix(in srgb, var(--brand, #154dec) 12%, transparent);
+  color: var(--brand, #154dec);
+  &::before {
+    background: var(--brand, #154dec);
+  }
+}
+.pol-chip.is-deleted {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  color: #b91c1c;
+  &::before {
+    background: #ef4444;
+  }
+}

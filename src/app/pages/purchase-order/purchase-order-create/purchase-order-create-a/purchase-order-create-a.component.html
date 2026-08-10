@@ -77,6 +77,118 @@
       </div>
     </div>
 
+    <!-- ===== Jenis Pekerjaan ===== -->
+    <div class="poa-card">
+      <div class="poa-section__title">Jenis Pekerjaan</div>
+      <div class="poa-grid">
+        <mat-form-field appearance="outline" class="poa-span2">
+          <mat-label>Jenis pekerjaan</mat-label>
+          <mat-select formControlName="workKind">
+            <mat-option value="pengiriman">Jasa pengiriman barang</mat-option>
+            <mat-option value="sewa-alat"
+              >Sewa alat angkut + operator</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kode PPh</mat-label>
+          <input
+            matInput
+            formControlName="pphCode"
+            readonly
+            (click)="openPphSelector()"
+            placeholder="Pilih kode PPh"
+          />
+          <button
+            matSuffix
+            type="button"
+            class="poa-reset"
+            (click)="openPphSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          @if (formGroup.value.pphTaxObject) {
+            <mat-hint>
+              {{ formGroup.value.pphPercentage }}% —
+              {{ formGroup.value.pphTaxObject }}
+            </mat-hint>
+          }
+        </mat-form-field>
+
+        @if (isSewaAlat) {
+          <mat-form-field appearance="outline">
+            <mat-label>Kuota jam per shift</mat-label>
+            <input
+              matInput
+              formControlName="shiftHours"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>&nbsp;jam</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tarif lembur</mat-label>
+            <input
+              matInput
+              formControlName="overtimeRate"
+              prefix="Rp. "
+              thousandSeparator="."
+              mask="separator.0"
+            />
+            <span matSuffix>&nbsp;/jam</span>
+          </mat-form-field>
+        } @else {
+          <mat-form-field appearance="outline">
+            <mat-label>Dokumen asuransi</mat-label>
+            <input
+              matInput
+              formControlName="insuranceDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>&nbsp;hari</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Consignment note</mat-label>
+            <input
+              matInput
+              formControlName="consignmentDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>&nbsp;hari</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Risiko pengiriman</mat-label>
+            <mat-select formControlName="deliveryRisk">
+              <mat-option value="penyedia">Penyedia jasa</mat-option>
+              <mat-option value="penerima">Penerima jasa</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Risiko bongkar</mat-label>
+            <mat-select formControlName="unloadingRisk">
+              <mat-option value="penerima">Penerima jasa</mat-option>
+              <mat-option value="penyedia">Penyedia jasa</mat-option>
+            </mat-select>
+          </mat-form-field>
+        }
+      </div>
+      <p class="poa-hint">
+        @if (isSewaAlat) {
+          Ketentuannya mengikuti SPK sewa alat (PO-B); kategorinya tetap A.
+        } @else {
+          Ketentuan jasa transportasi: asuransi, consignment note, dan titik
+          kirim.
+        }
+      </p>
+    </div>
+
     <!-- ===== Daftar Pengiriman ===== -->
     <div class="poa-card">
       <div class="poa-cardhead">
@@ -352,9 +464,9 @@
       }
 
       <div class="poa-foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary"
-          >Termasuk PPN 11%</mat-slide-toggle
-        >
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
         <div class="poa-summary">
           <div class="poa-summary__row">
             <span>Subtotal (DPP)</span
@@ -398,11 +510,73 @@
     <!-- ===== Catatan / Poin Perjanjian ===== -->
     <div class="poa-card">
       <div class="poa-section__title">Catatan / Poin Perjanjian</div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: tanggung jawab kerusakan muatan, biaya tunggu/inap, BBM & tol ditanggung siapa, denda keterlambatan, dll"
-      ></app-wysiwyg>
+      <div class="poa-cardhead">
+        <div class="poa-section__title poa-section__title--flush">
+          Poin Tambahan
+        </div>
+        <button type="button" class="poa-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="poa-hint">
+        Ditulis sendiri; tercetak melanjutkan nomor poin terakhir.
+      </p>
+
+      @if (additionalClauses.controls.length === 0) {
+        <div class="poa-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>Belum ada poin tambahan.</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="poa-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="poa-krow">
+              <span class="poa-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="poa-krow__field">
+                <mat-label>Poin tambahan</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="poa-divider"></div>
+      <div class="poa-section__title">Pratinjau Catatan Perjanjian</div>
+      <p class="poa-hint">
+        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
+        isian di atas.
+      </p>
+      <div class="poa-preview">
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="poa-preview__title">{{ sec.title }}</div>
+          }
+          <ol class="poa-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="poa-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li>{{ d }}</li>
+                  }
+                </ol>
+              } @else {
+                <li>{{ asText(p) }}</li>
+              }
+            }
+          </ol>
+        }
+      </div>
+
+      <div class="poa-divider"></div>
 
       <div class="poa-actions">
         <span class="poa-spacer"></span>

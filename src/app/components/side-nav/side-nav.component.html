@@ -27,15 +27,15 @@
       <input
         type="text"
         [(ngModel)]="filter"
-        placeholder="Cari menu..."
-        aria-label="Cari menu"
+        [placeholder]="'nav.searchMenu' | translate"
+        [attr.aria-label]="'nav.searchMenu' | translate"
       />
       <button
         *ngIf="isFiltering"
         class="snav-search__clear"
         type="button"
         (click)="clearFilter()"
-        aria-label="Bersihkan"
+        [attr.aria-label]="'nav.clear' | translate"
       >
         <svg
           width="14"
@@ -95,7 +95,7 @@
             (click)="toggleGroup(group.name)"
             [disabled]="isFiltering"
           >
-            <span class="snav-group__name">{{ group.name }}</span>
+            <span class="snav-group__name">{{ group.name | translate }}</span>
             <span class="snav-group__count">{{ group.children.length }}</span>
             <svg
               class="snav-group__chev"

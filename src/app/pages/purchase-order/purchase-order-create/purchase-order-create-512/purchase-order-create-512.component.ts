@@ -235,17 +235,14 @@ export class PurchaseOrderCreate512Component {
     return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
   }
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   openSupplierSelector() {
@@ -338,7 +335,7 @@ export class PurchaseOrderCreate512Component {
 
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;
-    const dpp = includePPN ? this.rawTotal / 1.11 : this.rawTotal;
+    const dpp = this.rawTotal;
     const ppn = includePPN ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {

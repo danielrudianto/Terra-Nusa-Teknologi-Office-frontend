@@ -1,76 +1,95 @@
-<h2 mat-dialog-title>{{ "loanPayment.title" | translate }}</h2>
-<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-  <mat-dialog-content class="mat-typography">
-    <p class="lpc-desc">{{ "loanPayment.subtitle" | translate }}</p>
+<div class="lpc">
+  <div class="lpc-head" mat-dialog-title>
+    <span class="lpc-head__icon"><mat-icon>payments</mat-icon></span>
+    <div class="lpc-head__text">
+      <h2 class="lpc-title">{{ "loanPayment.title" | translate }}</h2>
+      <span class="lpc-sub">{{ "loanPayment.subtitle" | translate }}</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "loanPayment.date" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="date"
-        [matDatepicker]="paymentDatePicker"
-        [placeholder]="'loanPayment.datePlaceholder' | translate"
-      />
-      <mat-datepicker-toggle
-        matIconPrefix
-        [for]="paymentDatePicker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #paymentDatePicker></mat-datepicker>
-    </mat-form-field>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="lpc-content">
+      <!-- sisa tagihan ditonjolkan: ini angka acuan saat mengisi nominal -->
+      <div class="lpc-outstanding">
+        <span class="lpc-outstanding__label">
+          {{ "loanPayment.maxAmount" | translate }}
+        </span>
+        <span class="lpc-outstanding__value">
+          Rp {{ totalAmount | number: "1.0-0" }}
+        </span>
+      </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "loanPayment.bankAccount" | translate }}</mat-label>
-      <mat-select formControlName="bankAccountID">
-        <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-          >{{ bank.bankAccountNumber }} --
-          {{ bank.bankAccountName }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
+      <div class="lpc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "loanPayment.date" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="paymentDatePicker"
+            [placeholder]="'loanPayment.datePlaceholder' | translate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="paymentDatePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #paymentDatePicker></mat-datepicker>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "loanPayment.amount" | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="amount"
-        type="text"
-        [placeholder]="'loanPayment.amountPlaceholder' | translate"
-        prefix="Rp. "
-        thousandSeparator=" "
-        mask="separator.2"
-      />
-      <button matSuffix mat-icon-button type="button" (click)="fullAmount()">
-        <mat-icon>check_circle</mat-icon>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "loanPayment.bankAccount" | translate }}</mat-label>
+          <mat-select formControlName="bankAccountID">
+            @for (bank of bankAccounts; track bank.id) {
+              <mat-option [value]="bank.id">
+                {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="lpc-span2">
+          <mat-label>{{ "loanPayment.amount" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="amount"
+            type="text"
+            [placeholder]="'loanPayment.amountPlaceholder' | translate"
+            prefix="Rp. "
+            thousandSeparator="."
+            mask="separator.0"
+          />
+          <button
+            matSuffix
+            type="button"
+            class="lpc-full"
+            (click)="fullAmount()"
+          >
+            {{ "loanPayment.payFull" | translate }}
+          </button>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="lpc-foot">
+      <button
+        type="button"
+        class="lpc-cancel"
+        (click)="onClose()"
+        [disabled]="isSubmitting"
+      >
+        {{ "loanPayment.cancel" | translate }}
       </button>
-      <mat-hint>
-        {{ "loanPayment.maxAmount" | translate }}
-        {{ totalAmount | number: "0.2-2" }}
-      </mat-hint>
-    </mat-form-field>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="onClose()"
-      [disabled]="isSubmitting"
-      style="letter-spacing: 0"
-    >
-      {{ "loanPayment.cancel" | translate }}
-    </button>
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      [disabled]="formGroup.invalid || isSubmitting"
-      style="letter-spacing: 0"
-    >
-      {{
-        isSubmitting
-          ? ("loanPayment.submitting" | translate)
-          : ("loanPayment.submit" | translate)
-      }}
-    </button>
-  </mat-dialog-actions>
-</form>
+      <span class="lpc-spacer"></span>
+      <button
+        type="submit"
+        class="lpc-submit"
+        [disabled]="formGroup.invalid || isSubmitting"
+      >
+        {{
+          isSubmitting
+            ? ("loanPayment.submitting" | translate)
+            : ("loanPayment.submit" | translate)
+        }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

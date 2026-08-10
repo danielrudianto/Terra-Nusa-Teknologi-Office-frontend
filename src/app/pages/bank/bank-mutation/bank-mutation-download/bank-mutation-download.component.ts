@@ -13,14 +13,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
-import { saveAs } from 'file-saver';
-import * as xlsx from 'xlsx';
 import { DatePipe } from '@angular/common';
+import {
+  downloadRecapExcel,
+  sheetFromObjects,
+} from '../../../../helpers/tax-recap-excel';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-bank-mutation-download',
   providers: [DatePipe],
   imports: [
+    MatIconModule,
+    TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -35,7 +41,13 @@ import { DatePipe } from '@angular/common';
 export class BankMutationDownloadComponent {
   constructor(
     private datePipe: DatePipe,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number },
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      id: number;
+      /** Diisi bila pemanggil mengetahui detail rekeningnya. */
+      accountNumber?: string;
+      name?: string;
+    },
     private apiService: ApiService,
     private snackBar: MatSnackBar,
   ) {}
@@ -50,124 +62,104 @@ export class BankMutationDownloadComponent {
     ]),
   });
 
+  /** Pilihan bulan memakai label terjemahan, bukan teks Inggris tetap. */
+  readonly months = [
+    { value: 1, label: 'common.january' },
+    { value: 2, label: 'common.february' },
+    { value: 3, label: 'common.march' },
+    { value: 4, label: 'common.april' },
+    { value: 5, label: 'common.may' },
+    { value: 6, label: 'common.june' },
+    { value: 7, label: 'common.july' },
+    { value: 8, label: 'common.august' },
+    { value: 9, label: 'common.september' },
+    { value: 10, label: 'common.october' },
+    { value: 11, label: 'common.november' },
+    { value: 12, label: 'common.december' },
+  ];
+
+  /** Lima tahun ke belakang sampai tahun berjalan. */
+  readonly years = Array.from(
+    { length: 6 },
+    (_, i) => new Date().getFullYear() - i,
+  );
+
+  private readonly monthLabel = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
   download() {
     this.isLoading = true;
+    const month = Number(this.formGroup.value.month);
+    const year = Number(this.formGroup.value.year);
+    const periode = `${this.monthLabel[month - 1] ?? month} ${year}`;
+    // Detail rekening bersifat opsional; bila tidak dikirim, judul & nama
+    // berkas cukup memakai periode saja agar tidak muncul teks kosong.
+    const rekening = this.data?.accountNumber || this.data?.name || '';
 
     this.apiService
       .post(`banks/mutation/download`, {
         bankAccountID: this.data.id,
-        month: this.formGroup.value.month,
-        year: this.formGroup.value.year,
+        month,
+        year,
       })
       .subscribe({
-        next: (data: any) => {
-          const worksheet: xlsx.WorkSheet = xlsx.utils.aoa_to_sheet([]);
-          xlsx.utils.sheet_add_aoa(
-            worksheet,
-            [
-              [
-                'Date',
-                'Opponent',
-                'Document',
-                'Reference',
-                'Amount',
-                'Balance',
-              ],
-            ],
-            { origin: 0 },
+        next: (res: any) => {
+          const list: any[] = Array.isArray(res) ? res : res?.data || [];
+          const rows = list.map((x: any) => ({
+            Tanggal: new Date(x.date),
+            'Lawan Transaksi': x.opponent ?? '',
+            Dokumen: x.document ?? '',
+            Referensi: x.reference ?? '',
+            // Dipisah debit/kredit agar mudah dijumlahkan dan dibaca;
+            // sebelumnya hanya satu kolom bertanda minus.
+            Debit: Number(x.amount) < 0 ? Math.abs(Number(x.amount)) : 0,
+            Kredit: Number(x.amount) > 0 ? Number(x.amount) : 0,
+            Saldo: Number(x.balance) || 0,
+          }));
+
+          const sheet = sheetFromObjects(
+            'Mutasi',
+            rekening ? `MUTASI REKENING ${rekening}` : 'MUTASI REKENING',
+            rows,
+            `Periode ${periode}`,
           );
-          const numberFormat = '#,##0.00';
-          const wrapTextStyle = { alignment: { wrapText: true } };
-
-          let rowIndex = 2; // Excel row (header di row 1)
-
-          data.forEach((x: any, i: number) => {
-            const row = [
-              // Date (REAL Excel date)
-              { v: new Date(x.date), t: 'd', z: 'dd mmmm yyyy' },
-
-              // Opponent (wrap text)
-              { v: x.opponent ?? '', t: 's', s: wrapTextStyle },
-
-              // Document (wrap text)
-              { v: x.document ?? '', t: 's', s: wrapTextStyle },
-
-              // Reference (wrap text)
-              { v: x.reference ?? '', t: 's', s: wrapTextStyle },
-
-              // Amount (number + thousand separator)
-              { v: x.amount, t: 'n', z: numberFormat },
-
-              // Balance
-              i === 0
-                ? // saldo awal → angka biasa
-                  { v: x.balance, t: 'n', z: numberFormat }
-                : // saldo berikutnya → FORMULA
-                  { f: `F${rowIndex - 1} + E${rowIndex}`, z: numberFormat },
-            ];
-
-            xlsx.utils.sheet_add_aoa(worksheet, [row], { origin: -1 });
-            rowIndex++;
-          });
-
-          /* =========================
-           * 5. COLUMN WIDTH
-           * ========================= */
-          worksheet['!cols'] = [
-            { wpx: 120 }, // Date
-            { wpx: 220 }, // Opponent
-            { wpx: 200 }, // Document
-            { wpx: 200 }, // Reference
-            { wpx: 140 }, // Amount
-            { wpx: 140 }, // Balance
-          ];
-
-          /* =========================
-           * 6. ROW HEIGHT (biar wrap keliatan)
-           * ========================= */
-          worksheet['!rows'] = [
-            {}, // header
-            ...data.map(() => ({ hpx: 40 })),
-          ];
-
-          /* =========================
-           * 7. CREATE WORKBOOK
-           * ========================= */
-          const workbook: xlsx.WorkBook = xlsx.utils.book_new();
-          xlsx.utils.book_append_sheet(workbook, worksheet, 'Mutation');
-
-          /* =========================
-           * 8. EXPORT FILE
-           * ========================= */
-          const excelBuffer = xlsx.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-
-          this.saveAsExcelFile(
-            excelBuffer,
-            `Bank Mutation ${this.formGroup.value.month}-${this.formGroup.value.year}`,
+          // Saldo adalah nilai berjalan, bukan komponen yang bisa dijumlah.
+          sheet.columns = sheet.columns.map((c) =>
+            c.key === 'Saldo' ? { ...c, total: false } : c,
           );
-        },
-        error: (error) => {
-          this.snackBar.open(
-            error.error?.detail ?? 'Download failed',
-            'Close',
-            {
+
+          downloadRecapExcel(
+            sheet,
+            rekening ? `Mutasi ${rekening} ${periode}` : `Mutasi ${periode}`,
+          ).catch((e) => {
+            console.error('Gagal membuat berkas Excel:', e);
+            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
               duration: 3000,
-            },
+            });
+          });
+        },
+        error: (error: any) => {
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal mengambil data mutasi',
+            'Close',
+            { duration: 3000 },
           );
         },
       })
       .add(() => {
         this.isLoading = false;
       });
-  }
-
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `${fileName}}.xlsx`);
   }
 }

@@ -16,8 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
-import * as xlsx from 'xlsx';
-import { saveAs } from 'file-saver';
+import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 
 @Component({
   selector: 'app-pph-salary-recap',
@@ -78,347 +77,279 @@ export class PphSalaryRecapComponent {
     year: new FormControl('', Validators.required),
   });
 
+  private readonly monthLabel = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  private money(width = 16) {
+    return {
+      width,
+      align: 'right' as const,
+      numFmt: '#,##0',
+      total: true,
+    };
+  }
+
+  /** Jumlahkan tunjangan/potongan sesuai statusnya terhadap hitungan PPh. */
+  private sumBy(list: any[], included: boolean): number {
+    return (list || [])
+      .filter((x: any) => !!x.isIncluded === included)
+      .reduce((a: number, b: any) => a + (Number(b.amount) || 0), 0);
+  }
+
   onSubmit() {
     this.isLoading = true;
+    const month = Number(this.formGroup.get('month')?.value);
+    const year = Number(this.formGroup.get('year')?.value);
+    const periode = `${this.monthLabel[month - 1] ?? month} ${year}`;
+
     this.apiService
       .get('taxes/pph-salary', this.formGroup.value)
       .subscribe({
-        next: (data: any) => {
-          const worksheet: xlsx.WorkSheet = xlsx.utils.aoa_to_sheet([]);
-          xlsx.utils.sheet_add_aoa(
-            worksheet,
-            [
-              [
-                'Name',
-                'NIK',
-                'Position',
-                'Department',
-                'Tax class',
-                'Basic salary',
-                'Meal allowance',
-                'Transportation allowance',
-                'Overtime allowance',
-                'Other allowances (Included in PPh Calculation)',
-                'Other allowances (Excluded in PPh Calculation)',
-                'Deduction (Included in PPh Calculation)',
-                'Deduction (Excluded in PPh Calculation)',
-                'Income (Used for PPh Calculation)',
-                'Tax amount',
-                'Total',
-              ],
-            ],
-            { origin: 0 },
-          );
+        next: (res: any) => {
+          // Endpoint mengembalikan { data: [...] }, bukan array langsung —
+          // membacanya sebagai array membuat rekap selalu kosong.
+          const list: any[] = Array.isArray(res) ? res : res?.data || [];
+          const rows = list.map((x: any) => {
+            const meal =
+              (Number(x.mealAllowanceQuantity) || 0) *
+              (Number(x.mealAllowanceRate) || 0);
+            const transport =
+              (Number(x.transportationAllowanceQuantity) || 0) *
+              (Number(x.transportationAllowanceRate) || 0);
+            const overtime =
+              (Number(x.overtimeQuantity) || 0) * (Number(x.overtimeRate) || 0);
+            const allowanceIn = this.sumBy(x.allowances, true);
+            const allowanceOut = this.sumBy(x.allowances, false);
+            const deductionIn = this.sumBy(x.deductions, true);
+            const deductionOut = this.sumBy(x.deductions, false);
+            const basic = Number(x.basicSalary) || 0;
+            // Penghasilan yang menjadi dasar hitungan PPh: hanya komponen
+            // yang ditandai included.
+            const taxable =
+              basic + meal + transport + overtime + allowanceIn - deductionIn;
+            const tax = Number(x.taxAmount) || 0;
 
-          data.data.forEach((x: any) => {
-            xlsx.utils.sheet_add_aoa(
-              worksheet,
-              [
-                [
-                  x.name,
-                  x.nik,
-                  x.position,
-                  x.department,
-                  x.taxCategory,
-                  x.basicSalary,
-                  x.mealAllowanceQuantity * x.mealAllowanceRate,
-                  x.transportationAllowanceQuantity *
-                    x.transportationAllowanceRate,
-                  x.overtimeQuantity * x.overtimeRate,
-                  x.allowances
-                    .filter((x: any) => {
-                      return x.isIncluded;
-                    })
-                    .reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0),
-                  x.allowances
-                    .filter((x: any) => {
-                      return !x.isIncluded;
-                    })
-                    .reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0),
-                  x.deductions
-                    .filter((x: any) => x.isIncluded)
-                    .reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0),
-                  x.deductions
-                    .filter((x: any) => !x.isIncluded)
-                    .reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0),
-                  x.basicSalary +
-                    x.mealAllowanceQuantity * x.mealAllowanceRate +
-                    x.transportationAllowanceQuantity *
-                      x.transportationAllowanceRate +
-                    x.overtimeQuantity * x.overtimeRate +
-                    x.allowances
-                      .filter((x: any) => x.isIncluded)
-                      .reduce((a: any, b: any) => {
-                        return a + b.amount;
-                      }, 0) -
-                    x.deductions
-                      .filter((x: any) => x.isIncluded)
-                      .reduce((a: any, b: any) => {
-                        return a + b.amount;
-                      }, 0),
+            return {
+              name: x.name,
+              nik: x.nik,
+              position: x.position,
+              department: x.department,
+              taxCategory: x.taxCategory,
+              basicSalary: basic,
+              meal,
+              transport,
+              overtime,
+              allowanceIn,
+              allowanceOut,
+              deductionIn,
+              deductionOut,
+              taxable,
+              tax,
+              total: taxable + allowanceOut - deductionOut - tax,
+            };
+          });
 
-                  x.taxAmount,
-                  x.basicSalary +
-                    x.mealAllowanceQuantity * x.mealAllowanceRate +
-                    x.transportationAllowanceQuantity *
-                      x.transportationAllowanceRate +
-                    x.overtimeQuantity * x.overtimeRate +
-                    x.allowances.reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0) -
-                    x.deductions.reduce((a: any, b: any) => {
-                      return a + b.amount;
-                    }, 0) -
-                    x.taxAmount,
-                ],
-              ],
-              { origin: -1 },
+          // Selain lembar ringkasan, dokumen lama juga memuat satu lembar
+          // rincian per karyawan (dinamai NIK) — tetap dipertahankan.
+          const detailSheets = list.map((x: any) => {
+            const meal =
+              (Number(x.mealAllowanceQuantity) || 0) *
+              (Number(x.mealAllowanceRate) || 0);
+            const transport =
+              (Number(x.transportationAllowanceQuantity) || 0) *
+              (Number(x.transportationAllowanceRate) || 0);
+            const overtime =
+              (Number(x.overtimeQuantity) || 0) * (Number(x.overtimeRate) || 0);
+            const allowanceTotal = (x.allowances || []).reduce(
+              (a: number, b: any) => a + (Number(b.amount) || 0),
+              0,
             );
-          });
 
-          const wscols = [
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 80 }, // width in pixels
-            { wpx: 80 }, // width in pixels
-            { wpx: 80 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 150 }, // width in pixels
-            { wpx: 200 }, // width in pixels
-          ];
-
-          worksheet['!cols'] = wscols;
-
-          const workbook: xlsx.WorkBook = xlsx.utils.book_new();
-          xlsx.utils.book_append_sheet(workbook, worksheet, 'Salary');
-
-          data.data.forEach((x: any) => {
-            const allowancesData =
-              x.allowances.length == 0
-                ? [['Tidak ada pendapatan lainnya']]
-                : [
-                    ...(x.allowances as any[]).map((u, index) => [
-                      u.name,
-                      '1',
-                      'LS',
-                      u.amount,
-                      u.amount,
-                    ]),
-                  ];
-
-            const deductionsData =
-              x.deductions.length == 0
-                ? [['Tidak ada pengurangan']]
-                : [
-                    ...(x.deductions as any[]).map((u, index) => [
-                      u.name,
-                      '1',
-                      'LS',
-                      u.amount,
-                      u.amount,
-                    ]),
-                  ];
-
-            const sheetData = [
-              ['Name', x.name],
-              ['NIK', x.nik],
-              ['Position', x.position],
-              ['Department', x.department],
-              ['Tax Category', x.taxCategory],
-              ['Pendapatan'],
-              ['Gaji Pokok', '1', 'LS', x.basicSalary, x.basicSalary],
-              [
-                'Tunjangan uang makan',
-                x.mealAllowanceQuantity,
-                'hari',
-                x.mealAllowanceRate,
-                x.mealAllowanceRate * x.mealAllowanceQuantity,
-              ],
-              [
-                'Tunjangan transportasi',
-                x.transportationAllowanceQuantity,
-                'hari',
-                x.transportationAllowanceRate,
-                x.transportationAllowanceRate *
-                  x.transportationAllowanceQuantity,
-              ],
-
-              [
-                'Lembur',
-                x.overtimeQuantity,
-                'jam',
-                x.overtimeRate,
-                x.overtimeRate * x.overtimeQuantity,
-              ],
-              ['Pendapatan lainnya'],
-              ...allowancesData,
-              [
-                'Jumlah pendapatan',
-                '',
-                '',
-                '',
-                x.basicSalary +
-                  x.mealAllowanceQuantity * x.mealAllowanceRate +
-                  x.transportationAllowanceQuantity *
-                    x.transportationAllowanceRate +
-                  x.overtimeQuantity * x.overtimeRate +
-                  x.allowances.reduce((a: any, b: any) => {
-                    return a + b.amount;
-                  }, 0),
-              ],
-              ['Pengurangan'],
-              ...deductionsData,
-              ['Potongan PPH21', '', '', '', x.taxAmount],
-            ];
-
-            const allowanceMerge =
-              x.allowances.length === 0
-                ? [
-                    {
-                      s: {
-                        r: 11,
-                        c: 0,
-                      },
-                      e: {
-                        r: 11,
-                        c: 4,
-                      },
-                    },
-                  ]
-                : (x.allowances as any[]).map((_, index) => ({
-                    s: {
-                      r: 11 + index,
-                      c: 0,
-                    },
-                    e: {
-                      r: 11 + index,
-                      c: 3,
-                    },
-                  }));
-
-            const deductionMerge =
-              x.deductions.length === 0
-                ? [
-                    {
-                      s: {
-                        r:
-                          13 +
-                          (x.allowances.length === 0 ? 1 : x.allowances.length),
-                        c: 0,
-                      },
-                      e: {
-                        r:
-                          13 +
-                          (x.allowances.length === 0 ? 1 : x.allowances.length),
-                        c: 4,
-                      },
-                    },
-                  ]
-                : (x.deductions as any[]).map((_, index) => ({
-                    s: {
-                      r:
-                        13 +
-                        (x.allowances.length === 0 ? 1 : x.allowances.length) +
-                        index,
-                      c: 0,
-                    },
-                    e: {
-                      r:
-                        13 +
-                        (x.allowances.length === 0 ? 1 : x.allowances.length) +
-                        index,
-                      c: 3,
-                    },
-                  }));
-
-            const merge = [
-              { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } },
-              { s: { r: 1, c: 1 }, e: { r: 1, c: 4 } },
-              { s: { r: 2, c: 1 }, e: { r: 2, c: 4 } },
-              { s: { r: 3, c: 1 }, e: { r: 3, c: 4 } },
-              { s: { r: 4, c: 1 }, e: { r: 4, c: 4 } },
-              { s: { r: 5, c: 0 }, e: { r: 5, c: 4 } },
-              { s: { r: 10, c: 0 }, e: { r: 10, c: 4 } },
-              ...allowanceMerge,
+            const detailRows: any[] = [
+              { kind: 'field', label: 'Nama', value: x.name },
+              { kind: 'field', label: 'NIK', value: x.nik },
+              { kind: 'field', label: 'Jabatan', value: x.position },
+              { kind: 'field', label: 'Departemen', value: x.department },
+              { kind: 'field', label: 'Kelas Pajak', value: x.taxCategory },
+              { kind: 'section', label: 'PENDAPATAN' },
               {
-                s: {
-                  r: 11 + (x.allowances.length === 0 ? 1 : x.allowances.length),
-                  c: 0,
-                },
-                e: {
-                  r: 11 + (x.allowances.length === 0 ? 1 : x.allowances.length),
-                  c: 3,
-                },
+                kind: 'item',
+                label: 'Gaji Pokok',
+                quantity: 1,
+                unit: 'LS',
+                rate: Number(x.basicSalary) || 0,
+                amount: Number(x.basicSalary) || 0,
               },
               {
-                s: {
-                  r: 12 + (x.allowances.length === 0 ? 1 : x.allowances.length),
-                  c: 0,
-                },
-                e: {
-                  r: 12 + (x.allowances.length === 0 ? 1 : x.allowances.length),
-                  c: 4,
-                },
+                kind: 'item',
+                label: 'Tunjangan uang makan',
+                quantity: x.mealAllowanceQuantity,
+                unit: 'hari',
+                rate: Number(x.mealAllowanceRate) || 0,
+                amount: meal,
               },
-              ...deductionMerge,
+              {
+                kind: 'item',
+                label: 'Tunjangan transportasi',
+                quantity: x.transportationAllowanceQuantity,
+                unit: 'hari',
+                rate: Number(x.transportationAllowanceRate) || 0,
+                amount: transport,
+              },
+              {
+                kind: 'item',
+                label: 'Lembur',
+                quantity: x.overtimeQuantity,
+                unit: 'jam',
+                rate: Number(x.overtimeRate) || 0,
+                amount: overtime,
+              },
+              { kind: 'section', label: 'PENDAPATAN LAINNYA' },
             ];
 
-            const wscols = [
-              { wpx: 270 }, // width in pixels
-              { wpx: 50 }, // width in pixels
-              { wpx: 50 }, // width in pixels
-              { wpx: 100 }, // width in pixels
-              { wpx: 100 }, // width in pixels
-            ];
+            if ((x.allowances || []).length === 0) {
+              detailRows.push({
+                kind: 'note',
+                label: 'Tidak ada pendapatan lainnya',
+              });
+            } else {
+              (x.allowances as any[]).forEach((u) =>
+                detailRows.push({
+                  kind: 'item',
+                  label: u.name,
+                  quantity: 1,
+                  unit: 'LS',
+                  rate: Number(u.amount) || 0,
+                  amount: Number(u.amount) || 0,
+                }),
+              );
+            }
 
-            const worksheet = xlsx.utils.aoa_to_sheet(sheetData);
-            const sheetName = `${x.nik}`;
+            detailRows.push({
+              kind: 'total',
+              label: 'Jumlah pendapatan',
+              amount:
+                (Number(x.basicSalary) || 0) +
+                meal +
+                transport +
+                overtime +
+                allowanceTotal,
+            });
 
-            worksheet['!cols'] = wscols;
-            worksheet['!merges'] = merge;
+            detailRows.push({ kind: 'section', label: 'PENGURANGAN' });
+            if ((x.deductions || []).length === 0) {
+              detailRows.push({ kind: 'note', label: 'Tidak ada pengurangan' });
+            } else {
+              (x.deductions as any[]).forEach((u) =>
+                detailRows.push({
+                  kind: 'item',
+                  label: u.name,
+                  quantity: 1,
+                  unit: 'LS',
+                  rate: Number(u.amount) || 0,
+                  amount: Number(u.amount) || 0,
+                }),
+              );
+            }
+            detailRows.push({
+              kind: 'total',
+              label: 'Potongan PPh 21',
+              amount: Number(x.taxAmount) || 0,
+            });
 
-            xlsx.utils.book_append_sheet(workbook, worksheet, sheetName);
+            return {
+              // nama lembar Excel maksimal 31 karakter
+              sheetName: String(x.nik || x.name || 'Slip').slice(0, 31),
+              title: x.name,
+              subtitle: `NIK ${x.nik ?? '-'}  •  Periode ${periode}`,
+              rows: detailRows,
+            };
           });
 
-          const excelBuffer: any = xlsx.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
+          downloadRecapExcel(
+            [
+              {
+                fileName: `Rekap PPh Gaji ${periode}`,
+                sheetName: 'Ringkasan',
+                title: 'REKAP PPh PASAL 21 — GAJI KARYAWAN',
+                subtitle: `Periode ${periode}`,
+                rows,
+                columns: [
+                  { header: 'Nama', key: 'name', width: 28 },
+                  { header: 'NIK', key: 'nik', width: 22 },
+                  { header: 'Jabatan', key: 'position', width: 20 },
+                  { header: 'Departemen', key: 'department', width: 18 },
+                  {
+                    header: 'Kelas Pajak',
+                    key: 'taxCategory',
+                    width: 12,
+                    align: 'center' as const,
+                  },
+                  { header: 'Gaji Pokok', key: 'basicSalary', ...this.money() },
+                  { header: 'Uang Makan', key: 'meal', ...this.money() },
+                  { header: 'Transportasi', key: 'transport', ...this.money() },
+                  { header: 'Lembur', key: 'overtime', ...this.money() },
+                  {
+                    header: 'Tunjangan\n(kena PPh)',
+                    key: 'allowanceIn',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Tunjangan\n(non-PPh)',
+                    key: 'allowanceOut',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Potongan\n(kena PPh)',
+                    key: 'deductionIn',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Potongan\n(non-PPh)',
+                    key: 'deductionOut',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Dasar Hitung PPh',
+                    key: 'taxable',
+                    ...this.money(18),
+                  },
+                  { header: 'PPh 21', key: 'tax', ...this.money() },
+                  { header: 'Diterima', key: 'total', ...this.money() },
+                ],
+              },
+              ...detailSheets,
+            ],
+            `Rekap PPh Gaji ${periode}`,
+          ).catch((e) => {
+            console.error('Gagal membuat berkas Excel:', e);
+            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+              duration: 3000,
+            });
           });
-          this.saveAsExcelFile(
-            excelBuffer,
-            `PPh Salary Recap ${Number(this.formGroup.value.month)} ${
-              this.formGroup.value.year
-            }`,
-          );
         },
-        error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
-            duration: 3000,
-          });
+        error: (error: any) => {
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal mengambil data PPh gaji',
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {
         this.isLoading = false;
       });
-  }
-
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `${fileName}}.xlsx`);
   }
 }

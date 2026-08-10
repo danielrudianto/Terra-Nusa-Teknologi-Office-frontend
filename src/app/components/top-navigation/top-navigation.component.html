@@ -29,7 +29,11 @@
     [matMenuTriggerFor]="accountMenu"
     aria-label="Account"
   >
-    <span class="tn-account__avatar">{{ initials }}</span>
+    @if (userId) {
+      <app-avatar [userId]="userId" [size]="34"></app-avatar>
+    } @else {
+      <span class="tn-account__avatar">{{ initials }}</span>
+    }
     <span class="tn-account__meta">
       <span class="tn-account__name">{{ displayName }}</span>
       <span class="tn-account__role" *ngIf="email">{{ email }}</span>
@@ -39,9 +43,13 @@
 
   <mat-menu #accountMenu="matMenu" class="tn-account-menu">
     <div class="tn-account-menu__head" mat-menu-item disabled>
-      <span class="tn-account__avatar tn-account__avatar--lg">{{
-        initials
-      }}</span>
+      @if (userId) {
+        <app-avatar [userId]="userId" [size]="48"></app-avatar>
+      } @else {
+        <span class="tn-account__avatar tn-account__avatar--lg">{{
+          initials
+        }}</span>
+      }
       <span class="tn-account-menu__text">
         <span class="tn-account-menu__name">{{ displayName }}</span>
         <span class="tn-account-menu__email" *ngIf="email">{{ email }}</span>

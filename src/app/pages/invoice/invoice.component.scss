@@ -1,0 +1,279 @@
+.inv {
+  /* Lebar dibatasi seperti halaman formulir lain: baris yang terlalu
+     panjang melelahkan dibaca pada layar lebar. */
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.inv * {
+  box-sizing: border-box;
+}
+
+.inv-card {
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  padding: 1.25rem 1.35rem;
+  margin-bottom: 1.1rem;
+}
+.inv-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line, #eef0f4);
+}
+.inv-hint {
+  margin: -0.4rem 0 0.9rem;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.85rem;
+}
+.inv-span2 {
+  grid-column: 1 / -1;
+}
+:host ::ng-deep .inv-grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* tombol pilih supplier di dalam kolom */
+.inv-pick {
+  border: none;
+  background: transparent;
+  color: var(--muted, #9aa1ad);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover {
+    color: var(--brand, #154dec);
+  }
+}
+
+/* nomor dokumen tersusun otomatis */
+.inv-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+}
+.inv-number__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand, #154dec);
+}
+.inv-number__value {
+  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+  word-break: break-all;
+}
+
+/* ===== rincian pekerjaan ===== */
+.inv-items {
+  display: flex;
+  flex-direction: column;
+}
+.inv-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) 0.8fr 0.7fr 1.1fr auto;
+  gap: 0 0.7rem;
+  align-items: center;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px dashed var(--line, #eef0f4);
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+.inv-item__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-bottom: 1.1rem;
+}
+.inv-item__amount {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: right;
+  padding-bottom: 1.1rem;
+  min-width: 120px;
+  font-variant-numeric: tabular-nums;
+}
+:host ::ng-deep .inv-items .mat-mdc-form-field {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .inv-item {
+    grid-template-columns: 1fr 1fr;
+  }
+  .inv-item__name,
+  .inv-item__amount {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-bottom: 0.35rem;
+  }
+}
+
+.inv-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line, #eef0f4);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.inv-total__value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== aksi ===== */
+.inv-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+.inv-spacer {
+  flex: 1 1 auto;
+}
+.inv-secondary,
+.inv-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.55rem 1.3rem;
+  cursor: pointer;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+.inv-secondary {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+.inv-submit {
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+/* lebar kolom rincian diatur oleh grid; kelasnya dipakai agar tiap
+   kolom bisa disesuaikan bila susunannya berubah */
+.inv-item__qty,
+.inv-item__unit,
+.inv-item__price {
+  width: 100%;
+}
+
+/* ringkasan nilai saat pembelian ikut dicatat */
+.inv-summary {
+  margin-top: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+.inv-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.86rem;
+  padding: 0.18rem 0;
+  span:last-child {
+    font-variant-numeric: tabular-nums;
+  }
+  &--neg {
+    color: var(--bad-fg, #b3322f);
+  }
+  &--total {
+    margin-top: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--line, #eef0f4);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+}
+
+/* rincian PPh terpilih: objek pajak dan tarifnya */
+.inv-pph {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.9rem;
+  border-radius: 10px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.inv-pph__object {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--ink, #16181d);
+}
+.inv-pph__rate {
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+  font-variant-numeric: tabular-nums;
+}
+.inv-pph__clear {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #9aa1ad);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+  &:hover {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+  }
+}

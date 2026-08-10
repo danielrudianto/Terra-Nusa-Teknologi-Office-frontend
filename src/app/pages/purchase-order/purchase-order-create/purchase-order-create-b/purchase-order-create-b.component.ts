@@ -31,6 +31,7 @@ import {
   buildClauseHtml,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 
 @Component({
   selector: 'app-purchase-order-create-b',
@@ -73,6 +74,10 @@ export class PurchaseOrderCreateBComponent {
     purchaseType: new FormControl('B'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
+    supplierNpwp: new FormControl(''),
+    supplierPIC: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
@@ -183,17 +188,14 @@ export class PurchaseOrderCreateBComponent {
     return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
   }
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   openSupplierSelector() {
@@ -223,7 +225,7 @@ export class PurchaseOrderCreateBComponent {
 
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;
-    const dpp = includePPN ? this.rawTotal / 1.11 : this.rawTotal;
+    const dpp = this.rawTotal;
     const ppn = includePPN ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -260,6 +262,37 @@ export class PurchaseOrderCreateBComponent {
     };
   }
 
+  /** Susun data cetak SPK dari isian form (klausul dirakit di helper). */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
+      supplierAddress: v.supplierAddress,
+      supplierCity: v.supplierCity,
+      supplierNpwp: v.supplierNpwp,
+      supplierPIC: v.supplierPIC,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          // nama alat dari katalog equipment; lokasi & periode sewa
+          // sudah tercermin pada klausul, jadi tidak diulang di tabel
+          name: x.name,
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: this.templateVersion,
+      clauseContext: { paymentTermText: v.paymentTerm },
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
@@ -271,6 +304,15 @@ export class PurchaseOrderCreateBComponent {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan SPK yang tersimpan.
+          try {
+            printPurchaseOrderB(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF surat perintah kerja:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) =>

@@ -12,11 +12,13 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 import { SettingsService } from '../../services/setting.service';
 import { AccountService } from '../../services/account.service';
+import { AvatarComponent } from '../avatar/avatar.component';
 
 @Component({
   selector: 'app-top-navigation',
   standalone: true,
   imports: [
+    AvatarComponent,
     CommonModule,
     TopNavigationBookmarkComponent,
     LanguageSwitcherComponent,
@@ -58,6 +60,11 @@ export class TopNavigationComponent {
   get displayName(): string {
     return this.account.displayName;
   }
+  /** Id pengguna untuk memuat avatar; null bila belum masuk. */
+  get userId(): number | null {
+    return this.account.user?.id ?? null;
+  }
+
   get email(): string {
     return this.account.email;
   }

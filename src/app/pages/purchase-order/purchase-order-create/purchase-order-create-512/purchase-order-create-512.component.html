@@ -240,9 +240,9 @@
         }
 
         <div class="po512-foot">
-          <mat-slide-toggle formControlName="includePPN" color="primary"
-            >Termasuk PPN 11%</mat-slide-toggle
-          >
+          <mat-slide-toggle formControlName="includePPN" color="primary">{{
+            "poForm.includePpn" | translate
+          }}</mat-slide-toggle>
           <div class="po512-summary">
             <div class="po512-summary__row">
               <span>Subtotal (DPP)</span
@@ -299,8 +299,12 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ "poForm.deliveryTerm" | translate }}</mat-label>
               <mat-select formControlName="deliveryMethod">
-                <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
-                <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+                <mat-option [value]="0">{{
+                  "poForm.franco" | translate
+                }}</mat-option>
+                <mat-option [value]="1">{{
+                  "poForm.loco" | translate
+                }}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">

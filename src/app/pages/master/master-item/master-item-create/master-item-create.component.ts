@@ -18,7 +18,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import {
   PURCHASE_TYPE_LABELS,
   MASTER_ITEM_PURCHASE_TYPES,
-} from 'src/app/constants/purchase-type-label';
+} from 'src/app/constants/purchase-type-label.constant';
 
 @Component({
   selector: 'app-master-item-create',

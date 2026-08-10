@@ -177,6 +177,9 @@ export class BankMutationComponent {
     this.dialog.open(BankMutationDownloadComponent, {
       data: {
         id: Number(this.route.snapshot.params['id']),
+        // detail rekening dipakai untuk judul dokumen & nama berkas
+        accountNumber: this.bankAccount?.accountNumber,
+        name: this.bankAccount?.name,
       },
     });
   }

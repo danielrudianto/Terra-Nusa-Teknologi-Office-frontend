@@ -20,18 +20,7 @@ $hover: var(--hover, #f6f8ff);
 }
 
 /* chips */
-.ll-chips {
-  margin: 0;
-}
-:host ::ng-deep .ll-chips .mat-mdc-chip-option {
-  --mdc-chip-elevated-container-color: var(--surface-2, #f1f3f7);
-  --mdc-chip-label-text-color: var(--muted, #5f6672);
-  border-radius: 999px;
-  font-weight: 600;
-}
-:host ::ng-deep .ll-chips .mat-mdc-chip-option .mdc-evolution-chip__graphic {
-  display: none;
-}
+
 :host
   ::ng-deep
   .ll-fchip.mdc-evolution-chip--selected
@@ -306,4 +295,13 @@ $hover: var(--hover, #f6f8ff);
   border-top: 1px solid $line;
   color: $muted;
   font-family: "Montserrat", sans-serif;
+}
+
+/* ===== chip filter: seragam dengan purchase-list =====
+   Tampilan chip dibiarkan bawaan Material; yang diubah hanya penanda
+   status (titik) dan warna saat terpilih, seperti pada purchase-list. */
+.ll-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

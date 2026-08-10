@@ -18,7 +18,6 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -27,11 +26,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import {
+  buildClauseHtml,
+  latestClauseVersion,
+} from '../../../../constants/clause-templates';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-purchase-order-create-f',
   providers: [provideNgxMask()],
   imports: [
+    MatRadioModule,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -43,7 +50,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatIconModule,
     MatButtonModule,
     HeaderTitleComponent,
-    WysiwygComponent,
     MatSlideToggleModule,
     MatCheckboxModule,
     NgxMaskDirective,
@@ -90,6 +96,8 @@ export class PurchaseOrderCreateFComponent {
     purchaseType: new FormControl('F'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
@@ -110,8 +118,18 @@ export class PurchaseOrderCreateFComponent {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
-    notes: new FormControl(''),
     // auto-surfaced clause when a steel ("besi") item is in the order
+    // Beton dan material lain memakai rangkaian klausul yang berbeda
+    materialType: new FormControl('beton', Validators.required),
+    // opsional: hanya dicetak bila diisi
+    deliveryDate: new FormControl(''),
+    paymentDueDate: new FormControl(''),
+    // khusus jasa uji tekan silinder
+    sampleCount: new FormControl(0, [Validators.min(0)]),
+    testUnitPrice: new FormControl(0, [Validators.min(0)]),
+    testReportDays: new FormControl(0, [Validators.min(0)]),
+    sampleHandover: new FormControl(''),
+    additionalClauses: new FormArray([]),
     steelTestRequired: new FormControl(true),
     includePPN: new FormControl(true),
   });
@@ -188,19 +206,16 @@ export class PurchaseOrderCreateFComponent {
   }
 
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
 
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
 
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -219,22 +234,133 @@ export class PurchaseOrderCreateFComponent {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            supplierPrefix: data.prefix,
+            supplierCity: [data.city, data.province]
+              .filter((x: string) => !!x)
+              .join(', '),
             supplierAddress: data.address,
           });
         }
       });
   }
 
+  templateVersion = latestClauseVersion('F');
+
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  private get additionalClauseValues(): string[] {
+    return ((this.additionalClauses.value as string[]) || [])
+      .map((c) => (c || '').trim())
+      .filter((c) => c.length > 0);
+  }
+
+  /** Data sumber klausul — kalimatnya dirakit dari template. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      materialType: v.materialType,
+      deliveryDate: v.deliveryDate,
+      paymentDueDate: v.paymentDueDate,
+      sampleCount: v.sampleCount,
+      testReportDays: v.testReportDays,
+      sampleHandover: v.sampleHandover,
+      // Hanya relevan untuk besi; bila tidak dicentang, poin ujinya tetap
+      // dicetak namun dicoret (bukan dihilangkan).
+      materialTestRequired: !!v.steelTestRequired,
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      deliveryMethod: v.deliveryMethod,
+      deliveryAddress: v.deliveryAddress,
+      supplierPICName: v.supplierPICName,
+      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+      officePICName: v.officePICName,
+      officePICPhoneNumber: v.officePICPhoneNumber,
+    };
+  }
+
+  get clausePreview(): string {
+    return buildClauseHtml(
+      'F',
+      this.clauseContext(),
+      this.templateVersion,
+      this.additionalClauseValues,
+    );
+  }
+
+  /**
+   * Jasa uji tekan silinder bukan pembelian barang, sehingga dokumennya
+   * dicetak sebagai Surat Perintah Kerja, bukan Purchase Order.
+   */
+  get isTestService(): boolean {
+    const v = this.formGroup.get('materialType')?.value;
+    return v === 'ujitekan' || v === 'ujibesi';
+  }
+
+  /** Judul pekerjaan pada rincian SPK, mengikuti jenis pengujian. */
+  get testItemName(): string {
+    return this.formGroup.get('materialType')?.value === 'ujibesi'
+      ? 'Pengujian tarik dan tekuk besi tulangan'
+      : 'Pengujian kuat tekan silinder beton';
+  }
+
+  /** Susun data cetak dari isian form. */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: 'F',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
+      supplierAddress: v.supplierAddress,
+      supplierCity: v.supplierCity,
+      // Jasa uji tidak memakai katalog barang: satu baris dibentuk dari
+      // jumlah benda uji dan harga per benda uji.
+      items: this.isTestService
+        ? [
+            {
+              name: this.testItemName,
+              quantity: Number(v.sampleCount) || 0,
+              unit: 'benda uji',
+              price: Number(v.testUnitPrice) || 0,
+            },
+          ]
+        : this.t.controls.map((c) => {
+            const x = c.getRawValue();
+            return {
+              name: x.description || x.sku || '',
+              quantity: Number(x.quantity) || 0,
+              unit: x.unit,
+              price: Number(x.price) || 0,
+              // Catatan per baris ikut dicetak di bawah nama barang.
+              remarks: x.remarks,
+            };
+          }),
+      includePpn: !!v.includePPN,
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
   formatData() {
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+    const dpp = this.t.value.reduce(
+      (acc: any, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -247,9 +373,45 @@ export class PurchaseOrderCreateFComponent {
       dpp: dpp,
       ppn: ppn,
       payment_term: this.formGroup.get('paymentTerm')?.value,
-      templateVersion: '1.0',
+      templateVersion: this.templateVersion,
       billing_requirements: {},
+      // Baris item PO. Tanpa ini `purchase_order_items` tidak pernah terisi,
+      // sehingga dokumen yang dicetak ulang kehilangan seluruh daftar barang.
+      // Jasa uji tidak memakai katalog barang: satu baris dibentuk dari
+      // jumlah benda uji dan harga per benda uji.
+      items: this.isTestService
+        ? [
+            {
+              // Jasa uji: satu baris dari jumlah benda uji × harga per uji.
+              task: this.testItemName,
+              quantity: Number(this.formGroup.get('sampleCount')?.value) || 0,
+              unit: 'benda uji',
+              price: Number(this.formGroup.get('testUnitPrice')?.value) || 0,
+            },
+          ]
+        : this.t.controls.map((c) => {
+            const x = c.getRawValue();
+            return {
+              item_id: x.item_id,
+              task: x.description,
+              quantity: x.unit === 'LS' ? 1 : x.quantity,
+              price: x.price,
+              unit: x.unit,
+              remarks_1: x.remarks,
+              remarks_2: x.sku,
+            };
+          }),
       customData: {
+        materialType: this.formGroup.get('materialType')?.value,
+        deliveryDate: this.formGroup.get('deliveryDate')?.value,
+        sampleCount: Number(this.formGroup.get('sampleCount')?.value) || 0,
+        testUnitPrice: Number(this.formGroup.get('testUnitPrice')?.value) || 0,
+        testReportDays:
+          Number(this.formGroup.get('testReportDays')?.value) || 0,
+        sampleHandover: this.formGroup.get('sampleHandover')?.value,
+        paymentDueDate: this.formGroup.get('paymentDueDate')?.value,
+        materialTestRequired: !!this.formGroup.get('steelTestRequired')?.value,
+        additionalClauses: this.additionalClauseValues,
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
@@ -261,22 +423,11 @@ export class PurchaseOrderCreateFComponent {
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
         // rich-text agreement points / notes (HTML string)
-        notes: this.formGroup.get('notes')?.value,
         // steel (besi) mill-test clause — only meaningful when a steel item exists
         steelTestRequired: this.hasSteelItem
           ? !!this.formGroup.get('steelTestRequired')?.value
           : false,
         steelTestClause: this.hasSteelItem ? this.steelTestClause : null,
-        // catalog-referenced items -> maps to purchase_order_items later
-        purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
-          sku: x.sku,
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks: x.remarks,
-        })),
       },
     };
   }
@@ -292,6 +443,19 @@ export class PurchaseOrderCreateFComponent {
             'Close',
             { duration: 3000 },
           );
+          try {
+            const printData = this.buildPrintData(
+              res?.purchase_order_name ?? '',
+            );
+            if (this.isTestService) {
+              printPurchaseOrderB(printData);
+            } else {
+              printPurchaseOrderG(printData);
+            }
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

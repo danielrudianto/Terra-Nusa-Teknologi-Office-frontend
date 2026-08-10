@@ -1,72 +1,276 @@
-<app-header-title
-  title="Invoice"
-  description="Create new invoice"
-></app-header-title>
+<div class="inv">
+  <app-header-title
+    [title]="'invoiceGen.title' | translate"
+    [description]="'invoiceGen.subtitle' | translate"
+  ></app-header-title>
 
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <form [formGroup]="formGroup">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Date</mat-label>
-          <input matInput formControlName="date" type="date" />
+  <form [formGroup]="formGroup">
+    <!-- ===== Informasi ===== -->
+    <div class="inv-card">
+      <div class="inv-section__title">{{ "invoiceGen.info" | translate }}</div>
+
+      <div class="inv-grid">
+        <mat-form-field appearance="outline" class="inv-span2">
+          <mat-label>{{ "invoiceGen.supplier" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            (click)="openSupplierSelector()"
+            [placeholder]="'invoiceGen.selectSupplier' | translate"
+          />
+          <button
+            matSuffix
+            type="button"
+            class="inv-pick"
+            (click)="openSupplierSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "invoiceGen.projectCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="projectCode"
+            maxlength="6"
+            placeholder="Ex. R501"
+            oninput="this.value = this.value.toUpperCase()"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "invoiceGen.city" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="city"
+            [placeholder]="'invoiceGen.cityPlaceholder' | translate"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "invoiceGen.cutOffDate" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="cutOffDate"
+            [matDatepicker]="cutOffPicker"
+          />
           <mat-datepicker-toggle
-            matPrefix
-            [for]="picker"
+            matIconSuffix
+            [for]="cutOffPicker"
           ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
+          <mat-datepicker #cutOffPicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Opponent</mat-label>
-          <input
-            matInput
-            formControlName="opponent_name"
-            type="text"
-            placeholder="Ex. Anura Aldiansyah"
-          />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "invoiceGen.invoiceDate" | translate }}</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="datePicker" />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="datePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
         </mat-form-field>
+      </div>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Location</mat-label>
-          <input
-            matInput
-            formControlName="location"
-            type="text"
-            placeholder="Ex. Bandung"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Invoice Number</mat-label>
-          <input
-            matInput
-            formControlName="name"
-            type="text"
-            placeholder="Ex. 001-17-INV-XII-2025"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Description</mat-label>
-          <input
-            matInput
-            formControlName="description"
-            type="text"
-            placeholder="Ex. Pembayaran atas invoice 001-17-INV-XII-2025"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Bank Account Number</mat-label>
-          <input
-            matInput
-            formControlName="bankAccountNumber"
-            type="text"
-            placeholder="Ex. 8090175441"
-          />
-        </mat-form-field>
-      </form>
+      <!-- nomor dokumen tersusun otomatis dari isian di atas -->
+      <div class="inv-number">
+        <span class="inv-number__label">
+          {{ "invoiceGen.documentNumber" | translate }}
+        </span>
+        <span class="inv-number__value">{{ invoiceNumber }}</span>
+      </div>
     </div>
-  </div>
+
+    <!-- ===== Rincian ===== -->
+    <div class="inv-card">
+      <div class="inv-section__title">{{ "invoiceGen.items" | translate }}</div>
+
+      <div formArrayName="items" class="inv-items">
+        @for (item of items.controls; track $index) {
+          <div class="inv-item" [formGroup]="itemAt($index)">
+            <span class="inv-item__name">{{ itemAt($index).value.name }}</span>
+
+            <mat-form-field appearance="outline" class="inv-item__qty">
+              <mat-label>{{ "invoiceGen.quantity" | translate }}</mat-label>
+              <input matInput formControlName="quantity" mask="separator.0" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="inv-item__unit">
+              <mat-label>{{ "invoiceGen.unit" | translate }}</mat-label>
+              <input matInput formControlName="unit" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="inv-item__price">
+              <mat-label>{{ "invoiceGen.price" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="price"
+                prefix="Rp. "
+                thousandSeparator="."
+                mask="separator.0"
+              />
+            </mat-form-field>
+
+            <span class="inv-item__amount">
+              Rp {{ lineTotal($index) | number: "1.0-0" }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <div class="inv-total">
+        <span>{{ "invoiceGen.total" | translate }}</span>
+        <span class="inv-total__value">
+          Rp {{ grandTotal | number: "1.0-0" }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ===== Catat pembelian sekalian ===== -->
+    <div class="inv-card">
+      <div class="inv-section__title">
+        {{ "invoiceGen.purchase" | translate }}
+      </div>
+
+      <mat-checkbox formControlName="createPurchase" color="primary">
+        {{ "invoiceGen.createPurchase" | translate }}
+      </mat-checkbox>
+      <p class="inv-hint">{{ "invoiceGen.createPurchaseHint" | translate }}</p>
+
+      @if (willCreatePurchase) {
+        <div class="inv-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Nomor SPK</mat-label>
+            <input
+              matInput
+              formControlName="purchaseOrderNumber"
+              type="number"
+              [min]="1"
+              placeholder="Ex. 1"
+            />
+            <mat-hint>
+              @if (purchaseOrderName) {
+                {{ purchaseOrderName }}
+              } @else {
+                Cukup isi angkanya; nomor lengkap dirakit otomatis
+              }
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "invoiceGen.pphCode" | translate }}</mat-label>
+            <mat-select
+              formControlName="pphCode"
+              (selectionChange)="onPphSelected($event.value)"
+            >
+              @for (p of pphOptions; track p.code) {
+                <mat-option [value]="p.code">
+                  {{ p.code }} — {{ p.tariff }}%
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        @if (formGroup.value.pphCode) {
+          <div class="inv-pph">
+            <span class="inv-pph__object">{{
+              formGroup.value.pphTaxObject
+            }}</span>
+            <span class="inv-pph__rate"
+              >{{ formGroup.value.pphPercentage }}%</span
+            >
+            <button type="button" class="inv-pph__clear" (click)="clearPph()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+        <div class="inv-summary">
+          <div class="inv-summary__row">
+            <span>{{ "invoiceGen.dpp" | translate }}</span>
+            <span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="inv-summary__row inv-summary__row--neg">
+            <span>{{ "invoiceGen.pphCut" | translate }}</span>
+            <span>− Rp {{ pphValue | number: "1.0-0" }}</span>
+          </div>
+          <div class="inv-summary__row inv-summary__row--total">
+            <span>{{ "invoiceGen.netTotal" | translate }}</span>
+            <span>Rp {{ netTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ===== Rekening ===== -->
+    <div class="inv-card">
+      <div class="inv-section__title">{{ "invoiceGen.bank" | translate }}</div>
+      <p class="inv-hint">{{ "invoiceGen.bankHint" | translate }}</p>
+
+      <div class="inv-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "invoiceGen.bankAccountNumber" | translate
+          }}</mat-label>
+          <input matInput formControlName="bankAccountNumber" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "invoiceGen.bankName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankName"
+            [matAutocomplete]="bankAuto"
+            (input)="filterBanks()"
+            (focus)="filterBanks()"
+            [placeholder]="'invoiceGen.selectBank' | translate"
+          />
+          <mat-autocomplete requireSelection #bankAuto="matAutocomplete">
+            @for (b of filteredBanks; track b.name) {
+              <mat-option [value]="b.name">{{ b.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="inv-span2">
+          <mat-label>{{ "invoiceGen.bankAccountName" | translate }}</mat-label>
+          <input matInput formControlName="bankAccountName" />
+        </mat-form-field>
+      </div>
+
+      <div class="inv-actions">
+        <span class="inv-spacer"></span>
+
+        <button type="button" class="inv-secondary" (click)="print('download')">
+          <mat-icon>download</mat-icon>
+          {{ "invoiceGen.download" | translate }}
+        </button>
+
+        <button type="button" class="inv-secondary" (click)="print('open')">
+          <mat-icon>picture_as_pdf</mat-icon>
+          {{ "invoiceGen.generate" | translate }}
+        </button>
+
+        @if (willCreatePurchase) {
+          <button
+            type="button"
+            class="inv-submit"
+            [disabled]="isSubmitting"
+            (click)="save()"
+          >
+            <mat-icon>save</mat-icon>
+            {{
+              isSubmitting
+                ? ("invoiceGen.saving" | translate)
+                : ("invoiceGen.generateAndSave" | translate)
+            }}
+          </button>
+        }
+      </div>
+    </div>
+  </form>
 </div>

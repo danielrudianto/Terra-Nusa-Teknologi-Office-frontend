@@ -18,14 +18,32 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
-import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label';
+import {
+  PURCHASE_TYPE_LABELS,
+  purchaseTypeKey,
+} from '../../../constants/purchase-type-label.constant';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { printPurchaseOrderG } from '../../../helpers/purchase-order-g.helper';
+import { printPurchaseOrderC } from '../../../helpers/purchase-order-c.helper';
+import { printPurchaseOrderD } from '../../../helpers/purchase-order-d.helper';
+import { printPurchaseOrderB } from '../../../helpers/purchase-order-b.helper';
+import { printPurchaseOrderH } from '../../../helpers/purchase-order-h.helper';
+import { PurchaseOrderViewComponent } from '../purchase-order-view/purchase-order-view.component';
+import { PurchaseOrderTypeSelectorComponent } from '../purchase-order-type-selector/purchase-order-type-selector.component';
+import {
+  buildBuangLumpurClauses,
+  buildClauseLines,
+  buildGroutingClauses,
+  buildMandorClauses,
+  buildPasal5,
+} from '../../../constants/clause-templates';
+import { MatSortModule, Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
+    MatSortModule,
     MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
@@ -46,6 +64,16 @@ import { printPurchaseOrderG } from '../../../helpers/purchase-order-g.helper';
   styleUrl: './purchase-order-list.component.scss',
 })
 export class PurchaseOrderListComponent {
+  /**
+   * Status yang ditampilkan. PO terhapus ditandai lewat `isDelete`,
+   * bukan kolom status, sehingga perlu diperiksa terpisah.
+   */
+  displayStatus(po: any): string {
+    if (po?.isDelete) return 'deleted';
+    if (po?.isApproved) return 'approved';
+    return po?.status || 'draft';
+  }
+
   /** i18n key untuk status PO. */
   statusKey(status: string): string {
     switch (status) {
@@ -55,6 +83,10 @@ export class PurchaseOrderListComponent {
         return 'status.cancelled';
       case 'pending':
         return 'status.pending';
+      case 'published':
+        return 'status.published';
+      case 'deleted':
+        return 'status.deleted';
       case 'draft':
       default:
         return 'status.draft';
@@ -74,6 +106,9 @@ export class PurchaseOrderListComponent {
   isReprinting: number | null = null;
   searchControl: FormControl = new FormControl('');
   orders: any[] = [];
+  /** Kolom & arah pengurutan; dikirim ke server agar seluruh data ikut. */
+  sortBy: string = 'date';
+  sortDir: 'asc' | 'desc' = 'desc';
   page: number = 1;
   pageSize: number = 10;
   count: number = 0;
@@ -87,6 +122,17 @@ export class PurchaseOrderListComponent {
     'status',
     'action',
   ];
+
+  /**
+   * Ganti kolom pengurut. Mengklik kolom yang sama membalik arahnya.
+   * Pengurutan dilakukan di server supaya mencakup seluruh data,
+   * bukan hanya halaman yang sedang tampil.
+   */
+  onSortChange(sort: Sort) {
+    this.sortBy = sort.active;
+    this.sortDir = (sort.direction || 'desc') as 'asc' | 'desc';
+    this.fetch(1);
+  }
 
   ngOnInit(): void {
     this.fetch();
@@ -103,6 +149,8 @@ export class PurchaseOrderListComponent {
         keyword: this.searchControl.value || '',
         page: this.page,
         page_size: this.pageSize,
+        sort_by: this.sortBy,
+        sort_dir: this.sortDir,
       })
       .subscribe({
         next: (res: any) => {
@@ -133,8 +181,14 @@ export class PurchaseOrderListComponent {
     );
   }
 
+  /**
+   * Nama jenis PO diambil dari berkas terjemahan; peta lama dipakai sebagai
+   * cadangan bila kodenya belum punya terjemahan.
+   */
   typeLabel(code: string): string {
-    return PURCHASE_TYPE_LABELS[code] || code;
+    const key = purchaseTypeKey(code);
+    const label = this.translate.instant(key);
+    return label === key ? PURCHASE_TYPE_LABELS[code] || code : label;
   }
 
   total(po: any): number {
@@ -144,11 +198,23 @@ export class PurchaseOrderListComponent {
   }
 
   createNewPurchaseOrder() {
-    this.router.navigate(['Create'], { relativeTo: this.route });
+    this.openTypeSelector();
   }
 
   /** Tipe PO yang sudah punya template cetak. */
-  private readonly printableTypes = ['G'];
+  // PO-H disimpan sebagai 'H1' (badan usaha) atau 'H2' (perorangan),
+  // bukan 'H' — keduanya memakai dokumen dan helper yang sama.
+  private readonly printableTypes = [
+    'G',
+    'C',
+    'D',
+    'F',
+    'B',
+    'H',
+    'H1',
+    'H2',
+    '5.1.6',
+  ];
 
   canReprint(po: any): boolean {
     return this.printableTypes.includes(po?.purchaseType);
@@ -159,6 +225,16 @@ export class PurchaseOrderListComponent {
    * perjanjian dirakit dari template + templateVersion PO tersebut —
    * bukan dari teks tersimpan — sehingga hasilnya konsisten dengan datanya.
    */
+
+  /** Buka detail PO: tampilan rapi atau data mentah. */
+  viewOrder(po: any) {
+    this.dialog.open(PurchaseOrderViewComponent, {
+      data: { id: po.id },
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
+  }
+
   reprint(po: any) {
     if (!this.canReprint(po)) return;
     this.isReprinting = po.id;
@@ -169,11 +245,13 @@ export class PurchaseOrderListComponent {
         next: (data: any) => {
           const custom = data.customData || {};
           try {
-            printPurchaseOrderG({
+            const printData = {
+              poType: po.purchaseType,
               purchaseOrderName: data.name,
               date: data.date,
               projectName: data.projectName,
               supplierName: data.supplierName ?? '',
+              supplierPrefix: data.supplierPrefix ?? '',
               supplierAddress: data.supplierAddress ?? '',
               supplierCity: data.supplierCity ?? '',
               supplierNpwp: data.supplierNpwp ?? '',
@@ -188,6 +266,8 @@ export class PurchaseOrderListComponent {
                   it.task ||
                   it.sku ||
                   '',
+                // Catatan per baris disimpan pada kolom remarks_1.
+                remarks: it.remarks_1 || '',
                 quantity: Number(it.quantity) || 0,
                 unit: it.unit,
                 price: Number(it.price) || 0,
@@ -205,9 +285,120 @@ export class PurchaseOrderListComponent {
                 officePICName: custom.officePICName,
                 officePICPhoneNumber: custom.officePICPhoneNumber,
                 fuelReportRequired: custom.fuelReportRequired,
+                materialType: custom.materialType,
+                deliveryDate: custom.deliveryDate,
               },
               additionalClauses: custom.additionalClauses || [],
-            });
+            };
+
+            if (String(po.purchaseType || '').startsWith('H')) {
+              // SPK pekerjaan: bentuk dokumen mengikuti jenis pekerjaannya.
+              const scope = custom.workScope || 'borongan';
+              const ringkas = scope !== 'borongan';
+              printPurchaseOrderH({
+                purchaseOrderName: data.name,
+                date: data.date,
+                projectName: data.projectName,
+                supplierName: data.supplierName ?? '',
+                supplierPrefix: data.supplierPrefix ?? '',
+                supplierAddress: data.supplierAddress ?? '',
+                supplierCity: data.supplierCity ?? '',
+                supplierNpwp: data.supplierNpwp ?? '',
+                supplierPIC: custom.supplierPIC ?? '',
+                pasal1: buildClauseLines('H', custom, data.templateVersion),
+                scopes: (data.items || []).map((it: any) => ({
+                  task: it.task || it.item_description || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                isLumpSum: custom.rateType === 'lumpsum',
+                lumpSumPrice: Number(custom.lumpSumPrice) || 0,
+                includePpn: Number(data.ppn) > 0,
+                kewajiban: custom.kewajiban || [],
+                keterangan: custom.keterangan || [],
+                pasal5: buildPasal5(custom, custom.billingDocuments),
+                mode: ringkas ? 'ringkas' : 'lengkap',
+                sections:
+                  scope === 'grouting'
+                    ? buildGroutingClauses(custom)
+                    : scope.startsWith('mandor-')
+                      ? buildMandorClauses(custom, scope)
+                      : undefined,
+                catatan:
+                  scope === 'buang-lumpur'
+                    ? buildBuangLumpurClauses(custom)
+                    : undefined,
+                closingText:
+                  scope === 'buang-lumpur'
+                    ? undefined
+                    : ringkas
+                      ? 'Demikian PERJANJIAN KERJA SAMA ini dibuat sesuai dengan kesepakatan bersama dan akan digunakan sebagai dasar pekerjaan dan penagihan.'
+                      : undefined,
+              });
+            } else if (po.purchaseType === 'B') {
+              // SPK sewa alat: nama alat dari katalog equipment
+              printPurchaseOrderB({
+                purchaseOrderName: data.name,
+                date: data.date,
+                projectName: data.projectName,
+                supplierName: data.supplierName ?? '',
+                supplierPrefix: data.supplierPrefix ?? '',
+                supplierAddress: data.supplierAddress ?? '',
+                supplierCity: data.supplierCity ?? '',
+                supplierNpwp: data.supplierNpwp ?? '',
+                items: (data.items || []).map((it: any) => ({
+                  name:
+                    it.equipment_name || it.item_description || it.task || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                templateVersion: data.templateVersion,
+                clauseContext: { paymentTermText: custom.paymentTerm },
+                additionalClauses: printData.additionalClauses,
+              });
+            } else if (po.purchaseType === 'D') {
+              // SPK tenaga kerja: satu baris item = satu komponen upah
+              printPurchaseOrderD({
+                purchaseOrderName: data.name,
+                date: data.date,
+                projectName: data.projectName,
+                workerName: data.supplierName ?? '',
+                workerPrefix: data.supplierPrefix ?? '',
+                workerAddress: data.supplierAddress ?? '',
+                workerCity: data.supplierCity ?? '',
+                workerNpwp: data.supplierNpwp ?? '',
+                task: (data.items || [])[0]?.task,
+                items: (data.items || []).map((it: any) => ({
+                  label: it.remarks_3 || it.task || '',
+                  amount: Number(it.price) || 0,
+                  unit: it.unit,
+                })),
+                templateVersion: data.templateVersion,
+                clauseContext: printData.clauseContext,
+                additionalClauses: printData.additionalClauses,
+              });
+            } else if (
+              po.purchaseType === 'F' &&
+              custom.materialType === 'ujitekan'
+            ) {
+              // jasa uji: dokumennya SPK
+              printPurchaseOrderB({
+                ...printData,
+                includePpn: Number(data.ppn) > 0,
+              });
+            } else if (po.purchaseType === 'C') {
+              printPurchaseOrderC({
+                ...printData,
+                // komponen pajak khas PO-C (pembelian BBM)
+                pbbkbPercent: Number(custom.pbbkbPercent) || 0,
+                pph22: Number(custom.pph22) || 0,
+              });
+            } else {
+              printPurchaseOrderG(printData);
+            }
           } catch (e) {
             console.error('Gagal membuat PDF purchase order:', e);
             this.snackBar.open(
@@ -272,6 +463,48 @@ export class PurchaseOrderListComponent {
             );
           },
         });
+      });
+  }
+
+  /** Kode jenis PO -> segmen rute pembuatannya. */
+  private readonly createRoutes: Record<string, string> = {
+    A: 'A',
+    B: 'B',
+    C: 'C',
+    D: 'D',
+    F: 'F',
+    G: 'G',
+    H: 'H',
+    '5.1.1': '511',
+    '5.1.2': '512',
+    '5.1.6': '516',
+    '5.1.12': '5112',
+    '6.3.1': '631',
+    '6.3.2': '632',
+    '6.4.1': '641',
+  };
+
+  /**
+   * Pemilih jenis PO dibuka sebagai dialog, bukan halaman tersendiri, agar
+   * daftar PO tetap terlihat dan menutupnya tidak perlu navigasi balik.
+   */
+  openTypeSelector() {
+    this.dialog
+      .open(PurchaseOrderTypeSelectorComponent, {
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((type: string) => {
+        if (!type) return;
+        const segment = this.createRoutes[type];
+        if (!segment) {
+          this.snackBar.open(`Jenis PO ${type} belum tersedia`, 'Close', {
+            duration: 3000,
+          });
+          return;
+        }
+        this.router.navigate(['Create', segment], { relativeTo: this.route });
       });
   }
 }

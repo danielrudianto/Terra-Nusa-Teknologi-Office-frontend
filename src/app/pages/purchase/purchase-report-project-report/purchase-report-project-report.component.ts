@@ -26,7 +26,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
+import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlatDataSource,

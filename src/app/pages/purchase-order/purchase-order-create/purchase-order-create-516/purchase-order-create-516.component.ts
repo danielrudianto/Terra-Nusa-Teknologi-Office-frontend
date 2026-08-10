@@ -29,6 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 
 @Component({
   selector: 'app-purchase-order-create-516',
@@ -92,6 +93,8 @@ export class PurchaseOrderCreate516Component {
     purchaseType: new FormControl('5.1.6'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
@@ -202,19 +205,16 @@ export class PurchaseOrderCreate516Component {
   }
 
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
 
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
 
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -233,6 +233,10 @@ export class PurchaseOrderCreate516Component {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            supplierPrefix: data.prefix,
+            supplierCity: [data.city, data.province]
+              .filter((x: string) => !!x)
+              .join(', '),
             supplierAddress: data.address,
           });
         }
@@ -293,15 +297,11 @@ export class PurchaseOrderCreate516Component {
   }
 
   formatData() {
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+    const dpp = this.t.value.reduce(
+      (acc: any, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -316,6 +316,21 @@ export class PurchaseOrderCreate516Component {
       payment_term: this.formGroup.get('paymentTerm')?.value,
       templateVersion: this.templateVersion,
       billing_requirements: {},
+      // Baris item PO. Tanpa ini `purchase_order_items` tidak pernah terisi,
+      // sehingga dokumen yang dicetak ulang kehilangan seluruh daftar barang.
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          item_id: x.item_id,
+          task: x.description,
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.remarks,
+          // SKU tidak disalin ke sini: sudah tersimpan di master_item
+          // dan ikut terbaca lewat item_id saat PO dibuka kembali.
+        };
+      }),
       customData: {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
@@ -334,17 +349,38 @@ export class PurchaseOrderCreate516Component {
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
-        // catalog-referenced items -> maps to purchase_order_items later
-        purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
-          sku: x.sku,
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks: x.remarks,
-        })),
       },
+    };
+  }
+
+  /** Susun data cetak dari isian form (klausul dirakit di helper). */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      // 5.1.6 memakai tata letak dokumen yang sama dengan PO G
+      poType: '5.1.6',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
+      supplierAddress: v.supplierAddress,
+      supplierCity: v.supplierCity,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: x.description || x.sku || '',
+          quantity: Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+          // Catatan per baris ikut dicetak di bawah nama barang.
+          remarks: x.remarks,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
     };
   }
 
@@ -359,6 +395,15 @@ export class PurchaseOrderCreate516Component {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            printPurchaseOrderG(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

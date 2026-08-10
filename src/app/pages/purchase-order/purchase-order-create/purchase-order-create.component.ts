@@ -81,6 +81,12 @@ export class PurchaseOrderCreateComponent {
         'Purchase orders used for equipment purchases such as hammer, hoe, boots, etc.',
       link: 'G',
     },
+    {
+      type: 'H',
+      title: 'Subcontracted work',
+      description:
+        'Pekerjaan yang dikerjakan pihak ketiga, dengan harga satuan atau borongan.',
+    },
   ];
 
   officeTiles = [
@@ -208,6 +214,9 @@ export class PurchaseOrderCreateComponent {
         this.router.navigate(['F'], {
           relativeTo: this.route,
         });
+        break;
+      case 'H':
+        this.router.navigate(['H'], { relativeTo: this.route });
         break;
       case 'G':
         this.router.navigate(['G'], {

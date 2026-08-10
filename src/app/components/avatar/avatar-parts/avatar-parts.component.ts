@@ -145,6 +145,71 @@ export const HAIRS: Record<
     draw: (c) =>
       `<path d="M29 41c0-14 9-23 21-23 7 0 13 3 17 9-6-1-16 2-24 7-4 2-8 4-9 9-2-1-4 0-5-2z" fill="${c.fill}"/>`,
   },
+  'hair-06': {
+    label: 'Undercut',
+    draw: (c) =>
+      `<path d="M30 41c0-13 9-23 20-23s20 9 20 22c0-4-2-7-5-8-4 2-9 3-15 3-6 0-11-1-15-3-3 1-5 4-5 9z" fill="${c.fill}"/><path d="M30 41c0-3 1-6 3-8 1 6 2 9 3 11-2 0-4-1-6-3zm40 0c0-3-1-6-3-8-1 6-2 9-3 11 2 0 4-1 6-3z" fill="${c.fill}" opacity="0.45"/>`,
+  },
+  'hair-07': {
+    label: 'Undercut with quiff',
+    draw: (c) =>
+      `<path d="M32 40c0-12 8-22 18-22 7 0 13 4 16 10 2 4 2 8 2 12-1-4-3-7-6-8-4 2-9 3-15 3-6 0-11-1-14-3-1 2-1 5-1 8z" fill="${c.fill}"/><path d="M46 18c6-3 13-1 17 4-5-2-11-3-17-4z" fill="${c.fill}"/><path d="M32 40c0-2 0-4 1-6 1 5 2 8 3 10-2 0-3-2-4-4zm36 0c0-2 0-4-1-6-1 5-2 8-3 10 2 0 3-2 4-4z" fill="${c.fill}" opacity="0.45"/>`,
+  },
+  'hair-08': {
+    label: 'Buzz cut',
+    draw: (c) =>
+      `<path d="M31 42c0-13 8-23 19-23s19 10 19 23c0-5-2-8-5-9-4 2-9 3-14 3s-10-1-14-3c-3 1-5 4-5 9z" fill="${c.fill}" opacity="0.85"/>`,
+  },
+  'hair-09': {
+    label: 'Curly',
+    draw: (c) =>
+      `<path d="M30 43c-2-5 0-10 3-12-1-5 3-9 7-9 3-4 9-6 14-4 5-1 10 2 12 6 4 1 6 6 5 10 2 3 2 7 0 10 0-6-3-9-6-10-4 2-9 3-15 3-7 0-13-1-16-4-2 2-4 5-4 10z" fill="${c.fill}"/><circle cx="36" cy="27" r="4" fill="${c.fill}"/><circle cx="50" cy="21" r="5" fill="${c.fill}"/><circle cx="64" cy="27" r="4" fill="${c.fill}"/>`,
+  },
+  'hair-10': {
+    label: 'Bun',
+    draw: (c) =>
+      `<path d="M29 41c0-14 9-22 21-22s21 8 21 22c0-6-3-9-6-10-4 2-9 3-15 3-7 0-13-1-16-4-3 2-5 5-5 11z" fill="${c.fill}"/><circle cx="50" cy="14" r="7" fill="${c.fill}"/>`,
+  },
+  'hair-11': {
+    label: 'Ponytail',
+    draw: (c) =>
+      `<path d="M29 41c0-14 9-22 21-22s21 8 21 22c0-6-3-9-6-10-4 2-9 3-15 3-7 0-13-1-16-4-3 2-5 5-5 11z" fill="${c.fill}"/><path d="M69 34c6 3 9 10 8 17-1 5-4 9-8 11 3-4 4-9 3-14-1-6-3-10-3-14z" fill="${c.fill}"/>`,
+  },
+  'hair-12': {
+    label: 'Bob',
+    draw: (c) =>
+      `<path d="M28 44c0-15 10-25 22-25s22 10 22 25v10c-2-4-3-8-3-13-4 3-11 4-19 4s-15-1-19-4c0 5-1 9-3 13z" fill="${c.fill}"/>`,
+  },
+  'hair-13': {
+    label: 'Wavy long',
+    draw: (c) =>
+      `<path d="M28 44c0-16 10-25 22-25s22 9 22 25v22c-3-3-4-8-4-13-1 6-2 10-4 13 0-8-1-14-2-19-4 2-8 3-12 3s-8-1-12-3c-1 5-2 11-2 19-2-3-3-7-4-13 0 5-1 10-4 13z" fill="${c.fill}"/>`,
+  },
+  'hair-14': {
+    label: 'Bald with sides',
+    draw: (c) =>
+      `<path d="M31 45c0-5 1-9 3-12 0 6 1 10 2 13-2 0-4-1-5-1zm38 0c0-5-1-9-3-12 0 6-1 10-2 13 2 0 4-1 5-1z" fill="${c.fill}"/>`,
+  },
+  'hijab-01': {
+    label: 'Hijab',
+    draw: (c) =>
+      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 6-1 11-3 15h-6c2-5 3-10 3-15 0-13-8-21-18-21s-18 8-18 21c0 5 1 10 3 15h-6c-2-4-3-9-3-15z" fill="${c.fill}"/><path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M35 40c0-9 7-15 15-15s15 6 15 15c0 3-1 5-2 7-2-8-7-13-13-13s-11 5-13 13c-1-2-2-4-2-7z" fill="#ffffff" opacity="0.12"/>`,
+  },
+  'hijab-02': {
+    label: 'Hijab with under-cap',
+    draw: (c) =>
+      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M33 44c0-11 8-18 17-18s17 7 17 18c0 2 0 4-1 6-2-9-8-15-16-15s-14 6-16 15c-1-2-1-4-1-6z" fill="#ffffff" opacity="0.22"/>`,
+  },
+  'hijab-03': {
+    label: 'Hijab with draped side',
+    draw: (c) =>
+      `<path d="M26 46c0-16 11-28 24-28s24 12 24 28c0 8-2 15-5 20l-4 20H35l-4-20c-3-5-5-12-5-20z" fill="${c.fill}"/><path d="M70 58c5 4 8 11 7 18-1 6-5 11-10 13 4-5 5-11 4-17-1-6-2-11-1-14z" fill="${c.fill}"/>`,
+  },
+  'hijab-04': {
+    label: 'Turban style',
+    draw: (c) =>
+      `<path d="M27 45c0-15 10-26 23-26s23 11 23 26c0 5-1 9-2 13H29c-1-4-2-8-2-13z" fill="${c.fill}"/><path d="M27 40c8-4 15-6 23-6s15 2 23 6c-1-4-3-8-5-11-6-3-12-4-18-4s-12 1-18 4c-2 3-4 7-5 11z" fill="#ffffff" opacity="0.18"/><path d="M29 58h42l-3 8H32z" fill="${c.fill}"/>`,
+  },
 };
 
 export const EYES: Record<string, { label: string; draw: () => string }> = {
@@ -257,6 +322,46 @@ export const ACCESSORIES: Record<
     label: 'Earrings',
     draw: () =>
       `<circle cx="30" cy="47" r="2.2" fill="#d9a441"/><circle cx="70" cy="47" r="2.2" fill="#d9a441"/>`,
+  },
+  'glasses-03': {
+    label: 'Rimless',
+    draw: () =>
+      `<g fill="none" stroke="#6b7280" stroke-width="1.1"><path d="M37 39h11v8H37zM52 39h11v8H52z" opacity="0.55"/><path d="M48 43h4M37 41l-6-1M63 41l6-1"/></g><g fill="#cfd6e4" opacity="0.28"><rect x="37" y="39" width="11" height="8"/><rect x="52" y="39" width="11" height="8"/></g>`,
+  },
+  'glasses-04': {
+    label: 'Half-rim',
+    draw: () =>
+      `<g fill="none" stroke="#2b2b33" stroke-width="1.6"><path d="M36 39h13v4a6 6 0 0 1-13 0z"/><path d="M51 39h13v4a6 6 0 0 1-13 0z"/><path d="M49 41h2M36 40l-5-1M64 40l5-1"/></g>`,
+  },
+  'glasses-05': {
+    label: 'Round metal',
+    draw: () =>
+      `<g fill="none" stroke="#9aa1ad" stroke-width="1.3"><circle cx="42" cy="43" r="6.5"/><circle cx="58" cy="43" r="6.5"/><path d="M48.5 43h3M35.5 42l-4.5-1M64.5 42l4.5-1"/></g>`,
+  },
+  'glasses-06': {
+    label: 'Thick frame',
+    draw: () =>
+      `<g fill="none" stroke="#16181d" stroke-width="3"><rect x="35.5" y="38" width="13" height="10" rx="2.5"/><rect x="51.5" y="38" width="13" height="10" rx="2.5"/><path d="M48.5 43h3M35.5 41l-5-1M64.5 41l5-1"/></g>`,
+  },
+  'shades-02': {
+    label: 'Aviator',
+    draw: () =>
+      `<g stroke="#4b5563" stroke-width="1.3" fill="#374151" opacity="0.9"><path d="M35 40h13l-2 8a4.5 4.5 0 0 1-9 0z"/><path d="M52 40h13l-2 8a4.5 4.5 0 0 1-9 0z"/></g><path d="M48 41h4" stroke="#4b5563" stroke-width="1.3" fill="none"/>`,
+  },
+  'earrings-02': {
+    label: 'Hoop earrings',
+    draw: () =>
+      `<g fill="none" stroke="#e0b64a" stroke-width="1.6"><circle cx="30" cy="49" r="3.5"/><circle cx="70" cy="49" r="3.5"/></g>`,
+  },
+  'mask-01': {
+    label: 'Face mask',
+    draw: () =>
+      `<path d="M36 48c4 2 9 3 14 3s10-1 14-3c0 8-6 14-14 14s-14-6-14-14z" fill="#dbeafe" stroke="#93b4d8" stroke-width="1"/><path d="M36 50l-6-3M64 50l6-3" stroke="#93b4d8" stroke-width="1.2" fill="none"/>`,
+  },
+  'safety-01': {
+    label: 'Safety helmet',
+    draw: () =>
+      `<path d="M27 40c0-13 10-22 23-22s23 9 23 22z" fill="#f59e0b"/><path d="M24 40h52v3H24z" fill="#d97706"/><path d="M46 19h8v20h-8z" fill="#d97706" opacity="0.5"/>`,
   },
 };
 

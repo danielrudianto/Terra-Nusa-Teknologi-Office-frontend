@@ -16,8 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
-import * as xlsx from 'xlsx';
-import { saveAs } from 'file-saver';
+import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 
 @Component({
   selector: 'app-pph-recap',
@@ -77,189 +76,181 @@ export class PphRecapComponent {
     year: new FormControl('', Validators.required),
   });
 
+  private readonly monthLabel = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  private money(width = 16) {
+    return {
+      width,
+      align: 'right' as const,
+      numFmt: '#,##0',
+      total: true,
+    };
+  }
+
   onSubmit() {
     this.isLoading = true;
+    const month = Number(this.formGroup.get('month')?.value);
+    const year = Number(this.formGroup.get('year')?.value);
+    const periode = `${this.monthLabel[month - 1] ?? month} ${year}`;
+    const tanggal = (v: any) =>
+      v ? this.datePipe.transform(new Date(v), 'dd MMMM yyyy') : '';
+
     this.apiService
       .get('taxes/pph', this.formGroup.value)
       .subscribe({
         next: (data: any) => {
-          const worksheet: xlsx.WorkSheet = xlsx.utils.aoa_to_sheet([]);
-          xlsx.utils.sheet_add_aoa(
-            worksheet,
+          const purchaseRows = (data?.purchase || []).map((x: any) => ({
+            date: tanggal(x.date),
+            paymentDate: tanggal(x.payment_date),
+            supplier: [x.supplier_prefix, x.supplier_name]
+              .filter(Boolean)
+              .join(' '),
+            npwp: x.supplier_npwp,
+            projectName: x.projectName,
+            purchaseOrderName: x.purchaseOrderName,
+            invoiceName: x.invoiceName,
+            receiptName: x.receiptName,
+            taxInvoiceName: x.taxInvoiceName,
+            dpp: Number(x.dpp) || 0,
+            ppn: ((Number(x.ppn) || 0) * (Number(x.dpp) || 0)) / 100,
+            pphPercentage: Number(x.pphPercentage) || 0,
+            pphValue:
+              ((Number(x.pphPercentage) || 0) * (Number(x.dpp) || 0)) / 100,
+            pphCode: x.pphCode,
+            pphTaxObject: x.pphTaxObject,
+            amount: Number(x.amount) || 0,
+            previousAmount: Number(x.previous_amount) || 0,
+          }));
+
+          const expenseRows = (data?.expense || []).map((x: any) => ({
+            date: tanggal(x.date),
+            paymentDate: tanggal(x.payment_date),
+            opponent: x.opponent_name,
+            npwp: x.opponent_npwp,
+            invoiceName: x.invoiceName,
+            receiptName: x.receiptName,
+            dpp: Number(x.dpp) || 0,
+            pphPercentage: Number(x.pphPercentage) || 0,
+            pphValue:
+              ((Number(x.pphPercentage) || 0) * (Number(x.dpp) || 0)) / 100,
+            pphCode: x.pphCode,
+            pphTaxObject: x.pphTaxObject,
+            amount: Number(x.amount) || 0,
+            previousAmount: Number(x.previous_amount) || 0,
+          }));
+
+          downloadRecapExcel(
             [
-              [
-                'Date',
-                'Payment date',
-                'Prefix',
-                'Name',
-                'NPWP',
-                'Project name',
-                'Purchase order name',
-                'Invoice name',
-                'Receipt name',
-                'Tax invoice name',
-                'DPP',
-                'PPN',
-                'PPh',
-                'PPh value',
-                'PPh Code',
-                'PPh Tax Object',
-                'Current payment',
-                'Previous payment',
-              ],
-            ],
-            { origin: 0 },
-          );
-
-          data.purchase.forEach((x: any) => {
-            xlsx.utils.sheet_add_aoa(
-              worksheet,
-              [
-                [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
-                  this.datePipe.transform(
-                    new Date(x.payment_date),
-                    'dd MMMM yyyy',
-                  ),
-                  x.supplier_prefix,
-                  x.supplier_name,
-                  x.supplier_npwp,
-                  x.projectName,
-                  x.purchaseOrderName,
-                  x.invoiceName,
-                  x.receiptName,
-                  x.taxInvoiceName,
-                  x.dpp,
-                  (x.ppn * x.dpp) / 100,
-                  x.pphPercentage,
-                  (x.pphPercentage * x.dpp) / 100,
-                  x.pphCode,
-                  x.pphTaxObject,
-                  x.amount,
-                  x.previous_amount,
+              {
+                fileName: `Rekap PPh ${periode}`,
+                sheetName: 'Pembelian',
+                title: 'REKAP PPh — PEMBELIAN',
+                subtitle: `Periode ${periode}`,
+                rows: purchaseRows,
+                columns: [
+                  { header: 'Tanggal', key: 'date', width: 18 },
+                  { header: 'Tgl. Bayar', key: 'paymentDate', width: 18 },
+                  { header: 'Supplier', key: 'supplier', width: 30 },
+                  { header: 'NPWP', key: 'npwp', width: 22 },
+                  { header: 'Proyek', key: 'projectName', width: 18 },
+                  { header: 'No. PO', key: 'purchaseOrderName', width: 22 },
+                  { header: 'No. Invoice', key: 'invoiceName', width: 22 },
+                  { header: 'No. Kwitansi', key: 'receiptName', width: 22 },
+                  {
+                    header: 'No. Faktur Pajak',
+                    key: 'taxInvoiceName',
+                    width: 24,
+                  },
+                  { header: 'DPP', key: 'dpp', ...this.money() },
+                  { header: 'PPN', key: 'ppn', ...this.money() },
+                  {
+                    header: 'PPh (%)',
+                    key: 'pphPercentage',
+                    width: 10,
+                    align: 'center' as const,
+                  },
+                  { header: 'Nilai PPh', key: 'pphValue', ...this.money() },
+                  { header: 'Kode PPh', key: 'pphCode', width: 12 },
+                  { header: 'Objek Pajak', key: 'pphTaxObject', width: 28 },
+                  {
+                    header: 'Bayar Periode Ini',
+                    key: 'amount',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Bayar Sebelumnya',
+                    key: 'previousAmount',
+                    ...this.money(18),
+                  },
                 ],
-              ],
-              { origin: -1 },
-            );
-          });
-
-          const wscols = [
-            { wpx: 110 }, // width in pixels
-            { wpx: 50 }, // width in pixels
-            { wpx: 220 }, // width in pixels
-            { wpx: 140 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 80 }, // width in pixels
-            { wpx: 200 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-          ];
-
-          worksheet['!cols'] = wscols;
-
-          const expenseWorksheet: xlsx.WorkSheet = xlsx.utils.aoa_to_sheet([]);
-          xlsx.utils.sheet_add_aoa(
-            expenseWorksheet,
-            [
-              [
-                'Date',
-                'Payment date',
-                'Name',
-                'NPWP',
-                'Invoice name',
-                'Receipt name',
-                'DPP',
-                'PPh',
-                'PPh value',
-                'PPh Code',
-                'PPh Tax Object',
-                'Current payment',
-                'Previous payment',
-              ],
-            ],
-            { origin: 0 },
-          );
-
-          data.expense.forEach((x: any) => {
-            xlsx.utils.sheet_add_aoa(
-              expenseWorksheet,
-              [
-                [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
-                  this.datePipe.transform(
-                    new Date(x.payment_date),
-                    'dd MMMM yyyy',
-                  ),
-                  x.opponent_name,
-                  x.opponent_npwp,
-                  x.invoiceName,
-                  x.receiptName,
-                  x.dpp,
-                  x.pphPercentage,
-                  (x.pphPercentage * x.dpp) / 100,
-                  x.pphCode,
-                  x.pphTaxObject,
-                  x.amount,
-                  x.previous_amount,
+              },
+              {
+                fileName: `Rekap PPh ${periode}`,
+                sheetName: 'Pengeluaran',
+                title: 'REKAP PPh — PENGELUARAN',
+                subtitle: `Periode ${periode}`,
+                rows: expenseRows,
+                columns: [
+                  { header: 'Tanggal', key: 'date', width: 18 },
+                  { header: 'Tgl. Bayar', key: 'paymentDate', width: 18 },
+                  { header: 'Nama', key: 'opponent', width: 30 },
+                  { header: 'NPWP', key: 'npwp', width: 22 },
+                  { header: 'No. Invoice', key: 'invoiceName', width: 22 },
+                  { header: 'No. Kwitansi', key: 'receiptName', width: 22 },
+                  { header: 'DPP', key: 'dpp', ...this.money() },
+                  {
+                    header: 'PPh (%)',
+                    key: 'pphPercentage',
+                    width: 10,
+                    align: 'center' as const,
+                  },
+                  { header: 'Nilai PPh', key: 'pphValue', ...this.money() },
+                  { header: 'Kode PPh', key: 'pphCode', width: 12 },
+                  { header: 'Objek Pajak', key: 'pphTaxObject', width: 28 },
+                  {
+                    header: 'Bayar Periode Ini',
+                    key: 'amount',
+                    ...this.money(18),
+                  },
+                  {
+                    header: 'Bayar Sebelumnya',
+                    key: 'previousAmount',
+                    ...this.money(18),
+                  },
                 ],
-              ],
-              { origin: -1 },
-            );
+              },
+            ],
+            `Rekap PPh ${periode}`,
+          ).catch((e) => {
+            console.error('Gagal membuat berkas Excel:', e);
+            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+              duration: 3000,
+            });
           });
-
-          const expenseWscols = [
-            { wpx: 110 }, // width in pixels
-            { wpx: 220 }, // width in pixels
-            { wpx: 140 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 80 }, // width in pixels
-            { wpx: 200 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-          ];
-
-          expenseWorksheet['!cols'] = expenseWscols;
-
-          const workbook: xlsx.WorkBook = xlsx.utils.book_new();
-          xlsx.utils.book_append_sheet(workbook, worksheet, 'Purchase');
-          xlsx.utils.book_append_sheet(workbook, expenseWorksheet, 'Expense');
-
-          const excelBuffer: any = xlsx.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-          this.saveAsExcelFile(
-            excelBuffer,
-            `PPh Recap ${Number(this.formGroup.value.month)} ${
-              this.formGroup.value.year
-            }`,
-          );
         },
-        error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
-            duration: 3000,
-          });
+        error: (error: any) => {
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal mengambil data PPh',
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {
         this.isLoading = false;
       });
-  }
-
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `${fileName}}.xlsx`);
   }
 }

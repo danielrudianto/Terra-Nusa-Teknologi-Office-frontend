@@ -31,13 +31,21 @@ import {
 import { FleetIconComponent } from '../../../../components/fleet-icon/fleet-icon.component';
 import { FleetInfoDialogComponent } from '../../../../components/fleet-info-dialog/fleet-info-dialog.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
+import {
+  buildClauseLines,
+  buildTransportClauses,
+  transportUsesRentalLayout,
+} from '../../../../constants/clause-templates';
+import { IPPh } from '../../../../utils/pph';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-purchase-order-create-a',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    MatSelectModule,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -52,7 +60,6 @@ import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.compone
     NgxMaskDirective,
     HeaderTitleComponent,
     FleetIconComponent,
-    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-a.component.html',
   styleUrl: './purchase-order-create-a.component.scss',
@@ -94,6 +101,22 @@ export class PurchaseOrderCreateAComponent {
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
     purchaseType: new FormControl('A'),
+    // Jenis pekerjaan menentukan template klausul: pengiriman memakai
+    // template transportasi, sewa alat memakai template PO-B.
+    workKind: new FormControl('pengiriman', Validators.required),
+    transportMode: new FormControl('darat'),
+    insuranceDays: new FormControl(3, [Validators.min(0)]),
+    consignmentDays: new FormControl(3, [Validators.min(0)]),
+    deliveryRisk: new FormControl('penyedia'),
+    unloadingRisk: new FormControl('penerima'),
+    // khusus sewa alat (template PO-B)
+    shiftHours: new FormControl(6, [Validators.min(0)]),
+    overtimeRate: new FormControl(0, [Validators.min(0)]),
+    paymentTermText: new FormControl(''),
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+    additionalClauses: new FormArray([]),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
@@ -185,17 +208,14 @@ export class PurchaseOrderCreateAComponent {
     );
   }
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   openSupplierSelector() {
@@ -222,7 +242,7 @@ export class PurchaseOrderCreateAComponent {
 
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;
-    const dpp = includePPN ? this.rawTotal / 1.11 : this.rawTotal;
+    const dpp = this.rawTotal;
     const ppn = includePPN ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -262,6 +282,133 @@ export class PurchaseOrderCreateAComponent {
         picToName: this.formGroup.get('picToName')?.value,
       },
     };
+  }
+
+  get isSewaAlat(): boolean {
+    return this.formGroup.get('workKind')?.value === 'sewa-alat';
+  }
+
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  private get additionalClauseValues(): string[] {
+    return ((this.additionalClauses.value as string[]) || [])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    // Baris pengiriman pertama dipakai sebagai titik kirim pada klausul.
+    const s = this.t.controls[0]?.getRawValue?.() ?? {};
+    const tgl = (d: any) =>
+      d
+        ? new Date(d).toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+        : '';
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      paymentTermText: v.paymentTermText,
+      pphCode: v.pphCode,
+      pphTaxObject: v.pphTaxObject,
+      pphPercentage: v.pphPercentage,
+      workKind: v.workKind,
+      transportMode: v.transportMode,
+      insuranceDays: v.insuranceDays,
+      consignmentDays: v.consignmentDays,
+      deliveryRisk: v.deliveryRisk,
+      unloadingRisk: v.unloadingRisk,
+      shiftHours: v.shiftHours,
+      overtimeRate: v.overtimeRate,
+      includeTransportCoordination: true,
+      // Titik kirim diambil dari baris pengiriman pertama.
+      deliveryDateText: tgl(s.deliveryDate),
+      originName: v.picFromName,
+      originAddress: s.from,
+      destinationName: v.picToName,
+      destinationAddress: s.to,
+      officePICName: v.picFromName,
+    };
+  }
+
+  /**
+   * Pratinjau catatan perjanjian.
+   *
+   * Sewa alat angkut memakai template PO-B, sehingga hasilnya satu daftar
+   * tanpa judul seksi; jasa pengiriman memakai template transportasi yang
+   * terbagi seksi Umum dan moda angkutan.
+   */
+  get previewSections(): { title?: string; items: (string | string[])[] }[] {
+    const ctx = this.clauseContext();
+    const extra = this.additionalClauseValues;
+
+    const sections = transportUsesRentalLayout(ctx.workKind)
+      ? [
+          {
+            items: buildClauseLines('B', ctx as any, '1.0') as (
+              | string
+              | string[]
+            )[],
+          },
+        ]
+      : buildTransportClauses(ctx as any);
+
+    if (!extra.length || !sections.length) return sections;
+    const last = sections[sections.length - 1];
+    return [
+      ...sections.slice(0, -1),
+      { ...last, items: [...last.items, ...extra] },
+    ];
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   onSubmit() {

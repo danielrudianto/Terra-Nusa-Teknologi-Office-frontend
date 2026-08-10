@@ -1,35 +1,51 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { Alignment, Margins, PageSize } from 'pdfmake/interfaces';
-import {
-  ClauseContext,
-  OFFICE_CONTACT,
-  buildClauseLines,
-} from '../constants/clause-templates';
-import {
-  APPROVAL_BOX,
-  FOOTER_RULE,
-  LETTERHEAD,
-  OFFICE_FOOTER,
-} from '../constants/letterhead.constant';
+import { Alignment, Margins } from 'pdfmake/interfaces';
+import { ClauseContext, buildClauseLines } from '../constants/clause-templates';
 import { documentFonts } from '../constants/document-font.constant';
+import {
+  DOCUMENT_DEFAULT_STYLE,
+  DOCUMENT_PAGE,
+  DOCUMENT_STYLES,
+  PdfOutput,
+  TABLE_LAYOUT,
+  buildBillingTerms,
+  clauseToPdf,
+  documentFooter,
+  documentHeader,
+  formatDate,
+  isTempoTerm,
+  rupiah,
+  signatureBlock,
+  vendorDisplayName,
+} from './purchase-order-shared.helper';
 
 // Font TIDAK didaftarkan lewat variabel global pdfMake.vfs — helper PDF
 // lain menimpanya saat modul dimuat, sehingga Calibri bisa hilang dari
 // virtual file system. Konfigurasinya dikirim langsung ke createPdf().
 
 export interface IPurchaseOrderGItem {
-  name: string; // nama pekerjaan / barang
+  name: string;
+  /** Catatan per baris; dicetak kecil di bawah nama barang. */
+  remarks?: string; // nama pekerjaan / barang
   quantity: number;
   unit: string;
   price: number; // harga satuan
 }
 
 export interface IPurchaseOrderG {
+  /**
+   * Kode jenis PO untuk memilih template klausul. Default 'G'.
+   * PO 5.1.6 (ATK & dokumen) memakai tata letak yang sama persis, hanya
+   * kode templatenya berbeda — jadi keduanya memakai builder ini.
+   */
+  poType?: string;
   purchaseOrderName: string; // 157-PO-TSKBP-G
   date: Date | string; // tanggal PO
   projectName: string; // Tatar Surawisesa-KBP (TSKBP)
   supplierName: string;
+  /** Bentuk badan usaha (PT., CV., UD.) — dicetak setelah nama. */
+  supplierPrefix?: string;
   supplierAddress: string;
   /** Kota (+ provinsi) supplier — dicetak sebagai baris tersendiri. */
   supplierCity?: string;
@@ -42,35 +58,6 @@ export interface IPurchaseOrderG {
   additionalClauses?: string[];
 }
 
-const MONTHS = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-];
-
-function formatDate(value: Date | string): string {
-  const d = value instanceof Date ? value : new Date(value);
-  if (isNaN(d.getTime())) return '-';
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function rupiah(value: number): string {
-  return (Number(value) || 0).toLocaleString('id-ID', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-}
-
-/** Baris tabel barang + baris Sub Total / PPN / Total. */
 function buildItemTable(data: IPurchaseOrderG) {
   // Semua judul kolom rata tengah.
   // pdfmake tidak punya properti vertical-align. Judul kolom harga memakai
@@ -97,7 +84,24 @@ function buildItemTable(data: IPurchaseOrderG) {
     const amount = (Number(item.quantity) || 0) * (Number(item.price) || 0);
     return [
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
-      { text: item.name || '-', style: 'td' },
+      {
+        style: 'td',
+        // Catatan ditaruh di bawah nama, bukan kolom baru: tabelnya sudah
+        // enam kolom dan kolom tambahan membuat harga terlalu sempit.
+        stack: [
+          { text: item.name || '-' },
+          ...(item.remarks
+            ? [
+                {
+                  text: item.remarks,
+                  fontSize: 9,
+                  italics: true,
+                  color: '#6b7280',
+                },
+              ]
+            : []),
+        ],
+      },
       {
         text: rupiah(item.quantity),
         style: 'td',
@@ -113,6 +117,7 @@ function buildItemTable(data: IPurchaseOrderG) {
     ];
   });
 
+  // Harga satuan pada formulir adalah DPP; PPN 11% ditambahkan di atasnya.
   const subTotal = data.items.reduce(
     (acc, item) =>
       acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
@@ -152,91 +157,10 @@ function buildItemTable(data: IPurchaseOrderG) {
       widths: [22, '*', 42, 42, 78, 82],
       body,
     },
-    layout: {
-      hLineWidth: () => 0.5,
-      vLineWidth: () => 0.5,
-      hLineColor: () => '#9aa1ad',
-      vLineColor: () => '#9aa1ad',
-      // Padding atas-bawah dibuat sama besar sehingga teks satu baris
-      // tampil di tengah sel. (pdfmake tidak menyediakan vertical-align,
-      // jadi nama barang yang sampai membungkus dua baris akan membuat
-      // sel tetangganya rata atas.)
-      paddingTop: () => 6,
-      paddingBottom: () => 6,
-    },
+    layout: TABLE_LAYOUT,
     margin: [0, 6, 0, 12] as Margins,
   };
 }
-
-/**
- * Lampiran "Tata cara penagihan dan pembayaran" (lembar terpisah),
- * disalin sesuai dokumen resmi PEMBELIAN BARANG CASH.
- */
-const BILLING_TERMS: any[] = [
-  {
-    stack: [
-      {
-        text: 'PIHAK PENJUAL berhak menagihkan barang penjualannya sebelum pengambilan/pengiriman barang dengan mengirimkan dokumen-dokumen sebagai berikut:',
-      },
-      {
-        ul: [
-          `Proforma Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (soft copy) via email ke ${OFFICE_CONTACT.email} atau via hardcopy ke alamat yang tertera dibawah;`,
-          'Purchase Order (PO) yang telah ditandatangani (salinan);',
-        ],
-        margin: [0, 2, 0, 0] as Margins,
-      },
-    ],
-  },
-  {
-    stack: [
-      {
-        text: 'PIHAK PENJUAL berkewajiban untuk mengirimkan dokumen-dokumen penjualan asli selambat-lambatnya 3 (tiga) hari kerja setelah transaksi pembayaran dilakukan. Adapun dokumen yang diperlukan adalah sebagai berikut:',
-      },
-      {
-        ul: [
-          'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
-          'Kwitansi bermaterai (asli);',
-          'Purchase Order (PO) yang telah ditandatangani (salinan);',
-          'Dokumentasi (video) penyerahterimaan barang beserta kondisi pada saat serah terima;',
-          'Surat Jalan yang sudah ditandatangani oleh perwakilan PIHAK PEMBELI;',
-          'Faktur Pajak (bila ada);',
-          'Surat Keaslian Barang (bila ada); dan',
-          'Sertifikat Garansi (bila ada).',
-        ],
-        margin: [0, 2, 0, 0] as Margins,
-      },
-    ],
-  },
-  {
-    stack: [
-      {
-        text: 'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
-      },
-      {
-        text: 'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
-        bold: true,
-        decoration: 'underline' as any,
-        alignment: 'center' as Alignment,
-        margin: [0, 4, 0, 0] as Margins,
-      },
-      {
-        text: 'RUKO ASIA TROPIS AT 12 NO. 21',
-        alignment: 'center' as Alignment,
-      },
-      {
-        text: 'KOTA HARAPAN INDAH - BEKASI',
-        alignment: 'center' as Alignment,
-      },
-    ],
-  },
-  'Proses pembayaran tagihan vendor dilakukan melalui Transfer Bank ke nomor rekening yang tercantum dalam dokumen penagihan (WAJIB sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor WAJIB memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-  'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan tarif Bank Indonesia yang berlaku (bila ada).',
-  'Khusus untuk penerima kontrak yang berada diluar Jabodetabek, pengiriman dokumen penagihan dapat dilakukan melalui jasa Kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
-  'Tata cara pembayaran ini merupakan sebuah kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
-];
-
-/** Cara dokumen dibuka: tab baru (default), dialog print, atau unduh. */
-export type PdfOutput = 'open' | 'print' | 'download';
 
 export function printPurchaseOrderG(
   data: IPurchaseOrderG,
@@ -244,74 +168,55 @@ export function printPurchaseOrderG(
 ) {
   // Poin perjanjian dirakit dari template + data, sehingga PO yang diedit
   // selalu mencetak kalimat yang sesuai dengan datanya.
+  // Lampiran tata cara mengikuti termin: berjangka -> TEMPO, selain itu CASH.
+  const tempo = isTempoTerm(data.clauseContext?.paymentTerm as string);
+
   const clauses = buildClauseLines(
-    'G',
+    data.poType || 'G',
     data.clauseContext,
     data.templateVersion,
     data.additionalClauses,
   );
 
   const dd = {
-    pageSize: 'A4' as PageSize,
-    // ruang atas untuk kop, bawah untuk garis + alamat + kotak paraf
-    pageMargins: [45, 86, 45, 80] as Margins,
-    header: () => ({
-      stack: [
-        { image: LETTERHEAD, width: 505 },
-        { image: FOOTER_RULE, width: 505, margin: [0, 4, 0, 0] as Margins },
-      ],
-      margin: [45, 18, 45, 0] as Margins,
-    }),
-    footer: () => ({
-      stack: [
-        { image: FOOTER_RULE, width: 505, margin: [0, 0, 0, 5] as Margins },
-        {
-          columns: [
-            { text: '', width: 60 },
-            {
-              width: '*',
-              stack: [
-                { text: `Office : ${OFFICE_FOOTER.office}` },
-                { text: `Phone : ${OFFICE_FOOTER.phone}` },
-                { text: `Email : ${OFFICE_FOOTER.email}` },
-              ],
-              alignment: 'center' as Alignment,
-              fontSize: 9,
-              // footer memakai spacing rapat sendiri; mengikuti 1.5 milik
-              // isi dokumen akan membuatnya melampaui ruang margin bawah
-              lineHeight: 1.15,
-            },
-            // kotak paraf PROC / PM / DIR di sisi kanan
-            { image: APPROVAL_BOX, width: 60 },
-          ],
-        },
-      ],
-      margin: [45, 8, 45, 0] as Margins,
-    }),
+    ...DOCUMENT_PAGE,
+    header: () => documentHeader(),
+    footer: () => documentFooter(),
     content: [
       {
         text: `Bekasi, ${formatDate(data.date)}`,
         alignment: 'right' as Alignment,
-        margin: [0, 0, 0, 10] as Margins,
+        margin: [0, 0, 0, 5] as Margins,
       },
       { text: 'PURCHASE ORDER', style: 'docTitle' },
       {
         text: `No.: ${data.purchaseOrderName}`,
-        alignment: 'center' as Alignment,
+        style: 'docSubTitle',
       },
       {
         text: `Proyek: ${data.projectName}`,
-        alignment: 'center' as Alignment,
+        style: 'docSubTitle',
         margin: [0, 0, 0, 14] as Margins,
       },
 
       { text: 'Kepada Yth.', margin: [0, 0, 0, 2] as Margins },
-      { text: data.supplierName, bold: true },
-      { text: data.supplierAddress },
-      // baris kota hanya muncul bila datanya ada, agar tidak menyisakan
-      // baris kosong pada supplier yang kotanya belum diisi
-      ...(data.supplierCity ? [{ text: data.supplierCity }] : []),
-      ...(data.supplierNpwp ? [{ text: `NPWP: ${data.supplierNpwp}` }] : []),
+      // Identitas penerima dijadikan satu blok ber-spacing 1; bila tiap baris
+      // berdiri sendiri, jaraknya mengikuti spacing isi surat dan terlihat
+      // seperti paragraf terpisah. Baris kota/NPWP hanya muncul bila terisi.
+      {
+        lineHeight: 1,
+        stack: [
+          {
+            text: vendorDisplayName(data.supplierName, data.supplierPrefix),
+            bold: true,
+          },
+          { text: data.supplierAddress },
+          ...(data.supplierCity ? [{ text: data.supplierCity }] : []),
+          ...(data.supplierNpwp
+            ? [{ text: `NPWP: ${data.supplierNpwp}` }]
+            : []),
+        ],
+      },
 
       { text: 'Dengan hormat,', margin: [0, 12, 0, 4] as Margins },
       {
@@ -326,7 +231,7 @@ export function printPurchaseOrderG(
         margin: [0, 2, 0, 4] as Margins,
       },
       {
-        ol: clauses,
+        ol: clauses.map(clauseToPdf),
         margin: [0, 0, 0, 12] as Margins,
       },
 
@@ -335,42 +240,21 @@ export function printPurchaseOrderG(
         margin: [0, 0, 0, 22] as Margins,
       },
 
-      // Blok tanda tangan rata kiri, sesuai dokumen asli.
-      // unbreakable: salam, nama perusahaan, dan nama penanda tangan wajib
-      // berada di halaman yang sama — bila sisa ruang tidak cukup, seluruh
-      // blok pindah ke halaman berikutnya.
-      {
-        unbreakable: true,
-        stack: [
-          { text: 'Hormat kami,' },
-          { text: 'PT. Alpha Konstruksi Nusantara' },
-          { text: '\n\n\n' },
-          { text: 'Daniel Tri', bold: true },
-          { text: 'Direktur' },
-        ],
-      },
+      signatureBlock(),
 
       // Judul lampiran: dua baris dengan gaya yang sama (Calibri 16 bold).
       {
-        text: 'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPEMBELIAN BARANG CASH',
+        text: `TATA CARA PENAGIHAN DAN PEMBAYARAN\nPEMBELIAN BARANG ${
+          tempo ? 'TEMPO' : 'CASH'
+        }`,
         style: 'docTitle',
         pageBreak: 'before' as any,
         margin: [0, 0, 0, 12] as Margins,
       },
-      { ol: BILLING_TERMS },
+      { ol: buildBillingTerms(tempo) },
     ],
-    styles: {
-      docTitle: {
-        fontSize: 16,
-        bold: true,
-        alignment: 'center' as Alignment,
-        margin: [0, 0, 0, 2] as Margins,
-      },
-      // tabel memakai spacing lebih rapat daripada isi surat (1.5)
-      th: { bold: true, fontSize: 11, fillColor: '#eef1f5', lineHeight: 1.15 },
-      td: { fontSize: 11, lineHeight: 1.15 },
-    },
-    defaultStyle: { font: 'Calibri', fontSize: 11, lineHeight: 1.5 },
+    styles: DOCUMENT_STYLES,
+    defaultStyle: DOCUMENT_DEFAULT_STYLE,
   };
 
   // pdfmake 0.2.x mengekspor { vfs }, versi lama mengekspor objeknya langsung

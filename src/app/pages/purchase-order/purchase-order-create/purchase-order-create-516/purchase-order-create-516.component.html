@@ -164,9 +164,9 @@
       }
 
       <div class="po516-items__foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary"
-          >Termasuk PPN 11%</mat-slide-toggle
-        >
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
         <div class="po516-summary">
           <div class="po516-summary__row">
             <span>Subtotal (DPP)</span
@@ -197,8 +197,10 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
           <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
-            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+            <mat-option [value]="0">{{
+              "poForm.franco" | translate
+            }}</mat-option>
+            <mat-option [value]="1">{{ "poForm.loco" | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -231,12 +233,20 @@
             formControlName="paymentTerm"
             (selectionChange)="onPaymentTermChange()"
           >
-            <mat-option value="CASH">Cash (bayar tunai)</mat-option>
-            <mat-option value="COD">Cash on delivery</mat-option>
-            <mat-option value="CBD">Cash before delivery</mat-option>
-            <mat-option value="PPD">Prepaid</mat-option>
-            <mat-option value="CR">Credit</mat-option>
-            <mat-option value="CRD">Credit with prepaid</mat-option>
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 

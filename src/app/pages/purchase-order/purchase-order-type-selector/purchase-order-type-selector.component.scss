@@ -1,0 +1,203 @@
+.pots {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.pots * {
+  box-sizing: border-box;
+}
+
+/* ===== header ===== */
+.pots-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.pots-head__icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.pots-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pots-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+.pots-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+.pots-close {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #9aa1ad);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+    color: var(--ink, #16181d);
+  }
+}
+
+/* ===== isi ===== */
+.pots-content {
+  padding: 1.1rem 1.5rem 1.35rem !important;
+  background: var(--surface, #fff);
+  width: 720px;
+  max-width: 100%;
+  max-height: 70vh;
+}
+
+.pots-search {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--muted, #9aa1ad);
+  }
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.88rem;
+    color: inherit;
+  }
+}
+
+.pots-section {
+  margin-bottom: 1.25rem;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.pots-section__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line, #eef0f4);
+}
+.pots-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+}
+.pots-section__count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+/* ===== ubin ===== */
+.pots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.6rem;
+}
+.pots-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  &:hover {
+    border-color: var(--brand, #154dec);
+    background: var(--hover, #f6f8ff);
+  }
+}
+.pots-tile__badge {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 7px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+.pots-tile__title {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+}
+.pots-tile__desc {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+}
+
+.pots-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 2rem 1rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  mat-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    opacity: 0.5;
+  }
+}

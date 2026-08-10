@@ -16,8 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
-import * as xlsx from 'xlsx';
-import { saveAs } from 'file-saver';
+import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 
 @Component({
   selector: 'app-ppn-recap',
@@ -77,94 +76,93 @@ export class PpnRecapComponent {
     year: new FormControl('', Validators.required),
   });
 
+  private readonly monthLabel = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
   onSubmit() {
     this.isLoading = true;
+    const month = Number(this.formGroup.get('month')?.value);
+    const year = Number(this.formGroup.get('year')?.value);
+    const periode = `${this.monthLabel[month - 1] ?? month} ${year}`;
+
     this.apiService
       .get('taxes/ppn', this.formGroup.value)
       .subscribe({
         next: (data: any) => {
-          const worksheet: xlsx.WorkSheet = xlsx.utils.aoa_to_sheet([]);
-          xlsx.utils.sheet_add_aoa(
-            worksheet,
-            [
-              [
-                'Date',
-                'Prefix',
-                'Name',
-                'NPWP',
-                'Invoice name',
-                'Receipt name',
-                'Tax invoice name',
-                'DPP',
-                'PPN',
-              ],
+          const rows = (data || []).map((x: any) => ({
+            date: this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
+            supplier: [x.supplier?.prefix, x.supplier?.name]
+              .filter(Boolean)
+              .join(' '),
+            npwp: x.supplier?.npwp,
+            invoiceName: x.invoiceName,
+            receiptName: x.receiptName,
+            taxInvoiceName: x.taxInvoiceName,
+            dpp: Number(x.dpp) || 0,
+            ppn: ((Number(x.ppn) || 0) * (Number(x.dpp) || 0)) / 100,
+          }));
+
+          downloadRecapExcel({
+            fileName: `Rekap PPN ${periode}`,
+            sheetName: 'PPN',
+            title: 'REKAP PAJAK PERTAMBAHAN NILAI (PPN)',
+            subtitle: `Periode ${periode}`,
+            rows,
+            columns: [
+              { header: 'Tanggal', key: 'date', width: 18 },
+              // prefix digabung ke nama supaya tidak ada kolom sempit
+              // berisi "PT."/"CV." saja
+              { header: 'Supplier', key: 'supplier', width: 32 },
+              { header: 'NPWP', key: 'npwp', width: 22 },
+              { header: 'No. Invoice', key: 'invoiceName', width: 24 },
+              { header: 'No. Kwitansi', key: 'receiptName', width: 24 },
+              { header: 'No. Faktur Pajak', key: 'taxInvoiceName', width: 26 },
+              {
+                header: 'DPP',
+                key: 'dpp',
+                width: 16,
+                align: 'right',
+                numFmt: '#,##0',
+                total: true,
+              },
+              {
+                header: 'PPN',
+                key: 'ppn',
+                width: 16,
+                align: 'right',
+                numFmt: '#,##0',
+                total: true,
+              },
             ],
-            { origin: 0 },
-          );
-
-          data.forEach((x: any) => {
-            xlsx.utils.sheet_add_aoa(
-              worksheet,
-              [
-                [
-                  this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
-                  x.supplier.prefix,
-                  x.supplier.name,
-                  x.supplier.npwp,
-                  x.invoiceName,
-                  x.receiptName,
-                  x.taxInvoiceName,
-                  x.dpp,
-                  (x.ppn * x.dpp) / 100,
-                ],
-              ],
-              { origin: -1 },
-            );
+          }).catch((e) => {
+            console.error('Gagal membuat berkas Excel:', e);
+            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+              duration: 3000,
+            });
           });
-
-          const wscols = [
-            { wpx: 110 }, // width in pixels
-            { wpx: 50 }, // width in pixels
-            { wpx: 220 }, // width in pixels
-            { wpx: 140 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 180 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-            { wpx: 100 }, // width in pixels
-          ];
-
-          worksheet['!cols'] = wscols;
-
-          const workbook: xlsx.WorkBook = xlsx.utils.book_new();
-          xlsx.utils.book_append_sheet(workbook, worksheet, 'PPN');
-
-          const excelBuffer: any = xlsx.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-          this.saveAsExcelFile(
-            excelBuffer,
-            `PPN Recap ${Number(this.formGroup.value.month)} ${
-              this.formGroup.value.year
-            }`,
-          );
         },
-        error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
-            duration: 3000,
-          });
+        error: (error: any) => {
+          this.snackBar.open(
+            error?.error?.detail ?? 'Gagal mengambil data PPN',
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {
         this.isLoading = false;
       });
-  }
-
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `${fileName}}.xlsx`);
   }
 }

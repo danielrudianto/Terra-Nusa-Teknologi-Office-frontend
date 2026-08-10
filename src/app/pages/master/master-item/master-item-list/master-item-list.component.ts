@@ -21,7 +21,7 @@ import { MasterItemUpdateComponent } from '../master-item-update/master-item-upd
 import { MasterItemViewComponent } from '../master-item-view/master-item-view.component';
 import { MasterItemFilterComponent } from './master-item-filter/master-item-filter.component';
 import { ApiService } from 'src/app/services/api.service';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
+import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 

@@ -1,13 +1,4 @@
 /* token-based → dark-aware */
-$brand: var(--brand, #154dec);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
-$surface: var(--surface, #ffffff);
-$surface2: var(--surface-2, #fafbfc);
-$border: var(--border, #e3e6eb);
-$brandSoft: var(--brand-soft, #e7ecfb);
 
 :host {
   display: block;
@@ -18,7 +9,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-family: "Montserrat", sans-serif;
   width: 100%;
   box-sizing: border-box;
-  color: $ink;
+  color: var(--ink, #16181d);
 }
 .txr *,
 .txr *::before,
@@ -59,20 +50,21 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: $surface;
-  color: $brand;
-  box-shadow: 0 2px 6px rgba(21, 77, 236, 0.14);
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  box-shadow: 0 2px 6px
+    color-mix(in srgb, var(--brand, #154dec) 14%, transparent);
 }
 .txr-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: $ink;
+  color: var(--ink, #16181d);
   margin: 0;
   line-height: 1.2;
 }
 .txr-sub {
   font-size: 0.76rem;
-  color: $muted;
+  color: var(--muted, #6b7280);
 }
 
 /* content */
@@ -88,7 +80,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: $faint;
+  color: var(--faint, #9aa0ab);
 }
 .txr-yearrow {
   display: flex;
@@ -100,8 +92,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: $surface2;
-  border: 0.5px solid $border;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 10px;
   padding: 3px;
   button {
@@ -112,12 +104,12 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     border-radius: 8px;
     border: none;
     background: transparent;
-    color: $ink;
+    color: var(--ink, #16181d);
     cursor: pointer;
     transition: background 0.14s ease;
     &:hover {
       background: var(--hover, #e9eefc);
-      color: $brand;
+      color: var(--brand, #154dec);
     }
   }
   span {
@@ -125,7 +117,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     text-align: center;
     font-weight: 800;
     font-size: 0.95rem;
-    color: $ink;
+    color: var(--ink, #16181d);
     font-variant-numeric: tabular-nums;
   }
 }
@@ -141,20 +133,21 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 0.8rem;
-  border: 0.5px solid $border;
-  background: $surface;
-  color: $muted;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
+  color: var(--muted, #6b7280);
   transition: all 0.13s ease;
   &:hover {
-    border-color: var(--faint, #c2ccde);
-    color: $ink;
+    border-color: #c2ccde;
+    color: var(--ink, #16181d);
     background: var(--hover, #f6f8ff);
   }
   &.is-active {
-    background: $brand;
-    border-color: $brand;
+    background: var(--brand, #154dec);
+    border-color: var(--brand, #154dec);
     color: #fff;
-    box-shadow: 0 3px 10px rgba(21, 77, 236, 0.28);
+    box-shadow: 0 3px 10px
+      color-mix(in srgb, var(--brand, #154dec) 28%, transparent);
   }
 }
 
@@ -173,8 +166,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   align-items: center;
   padding: 0.6rem 0.85rem;
   border-radius: 12px;
-  border: 0.5px solid $border;
-  background: $surface2;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
   ::ng-deep .mdc-form-field {
     width: 100%;
   }
@@ -182,7 +175,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     font-family: "Montserrat", sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
-    color: $ink;
+    color: var(--ink, #16181d);
   }
 }
 
@@ -191,7 +184,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   padding: 1rem 1.5rem 1.25rem !important;
   display: flex !important;
   justify-content: flex-end;
-  border-top: 1px solid $line;
+  border-top: 1px solid var(--line, #eef0f3);
 }
 .txr-submit {
   display: inline-flex;
@@ -204,9 +197,10 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   padding: 0.65rem 1.5rem;
   cursor: pointer;
   border: none;
-  background: $brand;
+  background: var(--brand, #154dec);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  box-shadow: 0 4px 12px
+    color-mix(in srgb, var(--brand, #154dec) 22%, transparent);
   transition: background 0.15s ease;
   svg {
     flex: 0 0 auto;
@@ -215,8 +209,8 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     background: var(--brand-strong, #0f3fd0);
   }
   &:disabled {
-    background: var(--line, #e6e9ee);
-    color: var(--faint, #9aa0ab);
+    background: #e6e9ee;
+    color: #9aa0ab;
     box-shadow: none;
     cursor: default;
   }

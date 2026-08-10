@@ -20,8 +20,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { saveAs } from 'file-saver';
-import * as xlsx from 'xlsx-js-style';
 import { CommonModule } from '@angular/common';
+import {
+  downloadRecapExcel,
+  sheetFromObjects,
+} from '../../../helpers/tax-recap-excel';
 
 @Component({
   selector: 'app-monthly-recap',
@@ -221,6 +224,30 @@ export class MonthlyRecapComponent {
     }
   }
 
+  /** Nama bulan untuk keterangan periode pada berkas. */
+  private readonly monthLabel = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  /**
+   * Kolom tarif disimpan sebagai pecahan (0,11), jadi harus diformat persen.
+   * Tanpa ini Excel menampilkannya sebagai 0.
+   */
+  private readonly PERCENT_FORMATS: Record<string, string> = {
+    'Tarif PPh': '0.00%',
+  };
+
   onSubmit() {
     if (this.isDownloading) return;
 
@@ -234,7 +261,15 @@ export class MonthlyRecapComponent {
         next: (data: any) => {
           console.log(data);
           // create an excel file
-          const workbook = xlsx.utils.book_new();
+          // Semua lembar dikumpulkan dulu, lalu ditulis sekali lewat
+          // helper bergaya (header berwarna, border, total, freeze).
+          const m = Number(this.formGroup.value.month);
+          const y = Number(this.formGroup.value.year);
+          const periode = `${this.monthLabel[m - 1] ?? m} ${y}`;
+
+          // Semua lembar dikumpulkan dulu, lalu ditulis sekali lewat
+          // helper bergaya (header berwarna, border, total, freeze).
+          const sheets: any[] = [];
 
           // if bankAccountMutation
           if (this.formGroup.value.mutation) {
@@ -249,696 +284,258 @@ export class MonthlyRecapComponent {
             // }
 
             Object.keys(data.mutation).forEach((key) => {
-              const worksheet = xlsx.utils.json_to_sheet(
-                data.mutation[key].data.map((x: any) => {
-                  return {
-                    Tanggal: new Date(x.date),
-                    'Nomor akun': data.mutation[key].detail.bankAccountNumber,
-                    Proyek: x.projectname,
-                    'Nama lawan transaksi': x.opponent,
-                    'Tipe transaksi': this.getMutationType(x.type),
-                    Deskripsi: x.document,
-                    Debit: x.amount < 0 ? Math.abs(x.amount) : 0,
-                    Kredit: x.amount > 0 ? x.amount : 0,
-                    Saldo: x.balance,
-                  };
-                }),
-                {
-                  cellDates: true,
-                },
+              sheets.push(
+                sheetFromObjects(
+                  // nama lembar = nomor rekening bank
+                  data.mutation[key].detail.bankAccountNumber,
+                  `Mutasi ${data.mutation[key].detail.bankAccountNumber}`,
+                  data.mutation[key].data.map((x: any) => {
+                    return {
+                      Tanggal: new Date(x.date),
+                      'Nomor akun': data.mutation[key].detail.bankAccountNumber,
+                      Proyek: x.projectname,
+                      'Nama lawan transaksi': x.opponent,
+                      'Tipe transaksi': this.getMutationType(x.type),
+                      Deskripsi: x.document,
+                      Debit: x.amount < 0 ? Math.abs(x.amount) : 0,
+                      Kredit: x.amount > 0 ? x.amount : 0,
+                      Saldo: x.balance,
+                    };
+                  }),
+                  periode,
+                  undefined,
+                  this.PERCENT_FORMATS,
+                ),
               );
-
-              xlsx.utils.book_append_sheet(
-                workbook,
-                worksheet,
-                data.mutation[key].detail.bankAccountNumber,
-              );
-
-              // width of the columns (in pixel)
-              // 10, 20, 15, 50, 25, 50, 15, 15, 15
-              worksheet['!cols'] = [
-                { wch: 10 },
-                { wch: 20 },
-                { wch: 15 },
-                { wch: 50 },
-                { wch: 25 },
-                { wch: 50 },
-                { wch: 15 },
-                { wch: 15 },
-                { wch: 15 },
-              ];
-
-              // a => date, b - f => string, g - i => number (with thousand separator)
-              const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-              for (let row = range.s.r + 1; row <= range.e.r; ++row) {
-                // ===== Column A (Date) =====
-                const dateCell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: 0 })];
-                if (dateCell) {
-                  dateCell.t = 'd';
-                  dateCell.z = 'dd/mm/yyyy';
-                }
-
-                // ===== Column B - F (String) =====
-                for (let col = 1; col <= 5; col++) {
-                  const stringCell =
-                    worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                  if (stringCell) {
-                    stringCell.t = 's';
-                  }
-                }
-
-                // ===== Column G - I (Number with thousand separator) =====
-                for (let col = 6; col <= 8; col++) {
-                  const numberCell =
-                    worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                  if (numberCell) {
-                    numberCell.t = 'n';
-                    numberCell.z = '#,##0';
-                  }
-                }
-              }
             });
           }
 
           // if sales
           if (this.formGroup.value.sales) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.sales as any[]).map((x) => {
-                return {
-                  'Tanggal invoice': new Date(x.date),
-                  'Nama klien': x.client_name,
-                  Faktur: x.name,
-                  'Faktur pajak': x.taxInvoiceName,
-                  'Nomor SPK': x.spkNumber,
-                  Deskripsi: x.description,
-                  DPP: x.dpp,
-                  PPN: (x.dpp * x.ppn) / 100,
-                  PPh: (x.dpp * x.pphPercentage) / 100,
-                  BPJS: x.bpjs,
-                  'Tarif PPh': x.pphPercentage / 100,
-                  'Kode objek pajak': x.pphCode,
-                  'Objek pajak': x.pphTaxObject,
-                  'Total tagihan':
-                    x.dpp +
-                    (x.dpp * x.ppn) / 100 -
-                    x.bpjs -
-                    (x.dpp * x.pphPercentage) / 100,
-                };
-              }),
-              {
-                cellDates: true,
-              },
+            sheets.push(
+              sheetFromObjects(
+                'Sales',
+                'Sales',
+                (data.sales as any[]).map((x) => {
+                  return {
+                    'Tanggal invoice': new Date(x.date),
+                    'Nama klien': x.client_name,
+                    Faktur: x.name,
+                    'Faktur pajak': x.taxInvoiceName,
+                    'Nomor SPK': x.spkNumber,
+                    Deskripsi: x.description,
+                    DPP: x.dpp,
+                    PPN: (x.dpp * x.ppn) / 100,
+                    PPh: (x.dpp * x.pphPercentage) / 100,
+                    BPJS: x.bpjs,
+                    'Tarif PPh': x.pphPercentage / 100,
+                    'Kode objek pajak': x.pphCode,
+                    'Objek pajak': x.pphTaxObject,
+                    'Total tagihan':
+                      x.dpp +
+                      (x.dpp * x.ppn) / 100 -
+                      x.bpjs -
+                      (x.dpp * x.pphPercentage) / 100,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Sales');
             // width of the columns should be (in pixel)
             // 10, 35, 25, 25, 35, 35, 20, 20, 20, 20, 10, 15, 35, 20
-            worksheet['!cols'] = [
-              { wch: 10 },
-              { wch: 35 },
-              { wch: 25 },
-              { wch: 25 },
-              { wch: 35 },
-              { wch: 35 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 10 },
-              { wch: 15 },
-              { wch: 35 },
-              { wch: 20 },
-            ];
-
-            // format the columns as follow
-            // a => date, b - f => string, g - j => number (with thousand separator), k => percentage, l - m =>  string, n => number (with thousand separator)
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-              // A => Date
-              const cellA = worksheet[xlsx.utils.encode_cell({ r: R, c: 0 })];
-              if (cellA) {
-                cellA.t = 'd';
-                cellA.z = 'dd/mm/yyyy';
-              }
-
-              // G-J => number with thousand separator
-              for (let C = 6; C <= 9; C++) {
-                const cell = worksheet[xlsx.utils.encode_cell({ r: R, c: C })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-
-              // K => percentage
-              const cellK = worksheet[xlsx.utils.encode_cell({ r: R, c: 10 })];
-              if (cellK) {
-                cellK.t = 'n';
-                cellK.z = '0.00%';
-              }
-
-              // N => number with thousand separator
-              const cellN = worksheet[xlsx.utils.encode_cell({ r: R, c: 13 })];
-              if (cellN) {
-                cellN.t = 'n';
-                cellN.z = '#,##0';
-              }
-            }
-
-            for (let R = range.s.r; R <= range.e.r; ++R) {
-              for (let C = range.s.c; C <= range.e.c; ++C) {
-                const cellAddress = xlsx.utils.encode_cell({ r: R, c: C });
-                const cell = worksheet[cellAddress];
-
-                if (cell) {
-                  if (!cell.s) cell.s = {};
-                  cell.s.alignment = {
-                    wrapText: true,
-                    vertical: 'center',
-                  };
-                }
-              }
-            }
-
-            worksheet['!rows'] = Array.from({ length: range.e.r + 1 }, () => ({
-              hpt: -1,
-            }));
           }
 
           // if purchases
           if (this.formGroup.value.purchase) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.purchase as any[]).map((x) => {
-                return {
-                  Tanggal: new Date(x.date),
-                  'Nama supplier': x.supplier_name,
-                  'Nama invoice': x.invoiceName,
-                  'Nomor kuitansi': x.receiptName,
-                  'Nomor faktur pajak': x.taxInvoiceName,
-                  'PO / SPK': x.purchaseOrderName,
-                  Proyek: x.projectName,
-                  DPP: x.dpp,
-                  'Nilai lain': x.otherValue,
-                  'Keterangan nilai lain': x.otherValueNote,
-                  PPN: (x.dpp * x.ppn) / 100,
-                  PPh: (x.dpp * x.pphPercentage) / 100,
-                  PBBKB: x.pbbkb,
-                  'Tarif PPh': x.pphPercentage / 100,
-                  'Kode objek pajak': x.pphCode,
-                  'Objek pajak': x.pphTaxObject,
-                  Total:
-                    x.dpp +
-                    x.pbbkb +
-                    x.otherValue +
-                    (x.dpp * x.ppn) / 100 -
-                    (x.dpp * x.pphPercentage) / 100,
-                };
-              }),
-              {
-                cellDates: true,
-              },
+            sheets.push(
+              sheetFromObjects(
+                'Purchase',
+                'Purchase',
+                (data.purchase as any[]).map((x) => {
+                  return {
+                    Tanggal: new Date(x.date),
+                    'Nama supplier': x.supplier_name,
+                    'Nama invoice': x.invoiceName,
+                    'Nomor kuitansi': x.receiptName,
+                    'Nomor faktur pajak': x.taxInvoiceName,
+                    'PO / SPK': x.purchaseOrderName,
+                    Proyek: x.projectName,
+                    DPP: x.dpp,
+                    'Nilai lain': x.otherValue,
+                    'Keterangan nilai lain': x.otherValueNote,
+                    PPN: (x.dpp * x.ppn) / 100,
+                    PPh: (x.dpp * x.pphPercentage) / 100,
+                    PBBKB: x.pbbkb,
+                    'Tarif PPh': x.pphPercentage / 100,
+                    'Kode objek pajak': x.pphCode,
+                    'Objek pajak': x.pphTaxObject,
+                    Total:
+                      x.dpp +
+                      x.pbbkb +
+                      x.otherValue +
+                      (x.dpp * x.ppn) / 100 -
+                      (x.dpp * x.pphPercentage) / 100,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Purchase');
             // width of the columns should be (in pixel)
             // 10, 35, 25, 25, 35, 35, 20, 20, 20, 20, 10, 15, 35, 20
-            worksheet['!cols'] = [
-              { wch: 10 },
-              { wch: 50 },
-              { wch: 30 },
-              { wch: 30 },
-              { wch: 20 },
-              { wch: 25 },
-              { wch: 10 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 10 },
-              { wch: 15 },
-              { wch: 30 },
-              { wch: 15 },
-            ];
-
-            // format the columns as follow
-            // a => date, b - g => string, h - k => number (with thousand separator), l => percentage, m - n => string, o => number (with thousand separator)
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-              // A => Date
-              const cellA = worksheet[xlsx.utils.encode_cell({ r: R, c: 0 })];
-              if (cellA) {
-                cellA.t = 'd';
-                cellA.z = 'dd/mm/yyyy';
-              }
-
-              // H - K => number (7 - 10)
-              for (let C = 7; C <= 10; C++) {
-                const cell = worksheet[xlsx.utils.encode_cell({ r: R, c: C })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-
-              // L => percentage (index 11)
-              const cellL = worksheet[xlsx.utils.encode_cell({ r: R, c: 11 })];
-              if (cellL) {
-                cellL.t = 'n';
-                cellL.z = '0.00%';
-              }
-
-              // O => total (index 14)
-              const cellO = worksheet[xlsx.utils.encode_cell({ r: R, c: 16 })];
-              if (cellO) {
-                cellO.t = 'n';
-                cellO.z = '#,##0';
-              }
-            }
-
-            worksheet['!rows'] = Array.from({ length: range.e.r + 1 }, () => ({
-              hpt: -1,
-            }));
 
             //
             // 🔥 WRAP TEXT SEMUA CELL (including header)
             //
-            for (let R = range.s.r; R <= range.e.r; ++R) {
-              for (let C = range.s.c; C <= range.e.c; ++C) {
-                const cellAddress = xlsx.utils.encode_cell({ r: R, c: C });
-                const cell = worksheet[cellAddress];
-
-                if (cell) {
-                  if (!cell.s) cell.s = {};
-                  cell.s.alignment = {
-                    wrapText: true,
-                    vertical: 'center',
-                    horizontal: 'left',
-                  };
-                }
-              }
-            }
           }
 
           // if loans
           if (this.formGroup.value.loans) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.loans as any[]).map((x) => {
-                return {
-                  'Tanggal pinjaman': new Date(x.date),
-                  'Nama peminjam': x.creditorName,
-                  'NPWP peminjam': x.creditorNPWP,
-                  'Alamat peminjam': x.creditorAddress,
-                  Deskripsi: x.description,
-                  'Manfaat diterima': x.received,
-                  Hutang: x.debt,
-                  Pembayaran: x.total_paid,
-                };
-              }),
-              {
-                cellDates: true,
-              },
+            sheets.push(
+              sheetFromObjects(
+                'Loans',
+                'Loans',
+                (data.loans as any[]).map((x) => {
+                  return {
+                    'Tanggal pinjaman': new Date(x.date),
+                    'Nama peminjam': x.creditorName,
+                    'NPWP peminjam': x.creditorNPWP,
+                    'Alamat peminjam': x.creditorAddress,
+                    Deskripsi: x.description,
+                    'Manfaat diterima': x.received,
+                    Hutang: x.debt,
+                    Pembayaran: x.total_paid,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Loans');
-
             //width for each column is as follow (in pixel)
             // 10, 30, 20, 90, 60, 20, 20, 20
-            worksheet['!cols'] = [
-              { wch: 10 },
-              { wch: 30 },
-              { wch: 20 },
-              { wch: 90 },
-              { wch: 60 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 20 },
-            ];
-
             // a => date, b - e => string, f - h => number (with thousand separator)
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-              // A => Date
-              const cellA = worksheet[xlsx.utils.encode_cell({ r: R, c: 0 })];
-              if (cellA) {
-                cellA.t = 'd';
-                cellA.z = 'dd/mm/yyyy';
-              }
-
-              // F - H => number (7 - 9)
-              for (let C = 7; C <= 9; C++) {
-                const cell = worksheet[xlsx.utils.encode_cell({ r: R, c: C })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-            }
-
-            worksheet['!rows'] = Array.from({ length: range.e.r + 1 }, () => ({
-              hpt: -1,
-            }));
           }
 
           // if asset
           if (this.formGroup.value.asset) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.asset as any[]).map((x) => {
-                return {
-                  Nama: x.name,
-                  Description: x.description,
-                  Merek: x.brand,
-                  Type: x.type,
-                  Depresiasi: x.depreciation,
-                  Lokasi: x.location,
-                  'Nama PO': x.purchaseOrderName,
-                  'Tanggal PO': new Date(x.purchaseDate),
-                  Nilai: x.value,
-                };
-              }),
-              {
-                cellDates: true,
-              },
+            sheets.push(
+              sheetFromObjects(
+                'Asset',
+                'Asset',
+                (data.asset as any[]).map((x) => {
+                  return {
+                    Nama: x.name,
+                    Description: x.description,
+                    Merek: x.brand,
+                    Type: x.type,
+                    Depresiasi: x.depreciation,
+                    Lokasi: x.location,
+                    'Nama PO': x.purchaseOrderName,
+                    'Tanggal PO': new Date(x.purchaseDate),
+                    Nilai: x.value,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Asset');
-
             // width of each column is as follow (in pixel)
             // 50, 175, 25, 15, 15, 15, 25, 15, 15
-            worksheet['!cols'] = [
-              { wch: 50 },
-              { wch: 175 },
-              { wch: 25 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 25 },
-              { wch: 15 },
-              { wch: 15 },
-            ];
-
             //a - d => string, e => number, f - g => string, h => date, i => number (with thousand separator)
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let row = range.s.r + 1; row <= range.e.r; ++row) {
-              // ===== A - D (String) =====
-              for (let col = 0; col <= 3; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== E (Number) =====
-              const depreciationCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 4 })];
-              if (depreciationCell) {
-                depreciationCell.t = 'n';
-                depreciationCell.z = '0'; // integer
-              }
-
-              // ===== F - G (String) =====
-              for (let col = 5; col <= 6; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== H (Date) =====
-              const dateCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 7 })];
-              if (dateCell) {
-                dateCell.t = 'd';
-                dateCell.z = 'dd/mm/yyyy';
-              }
-
-              // ===== I (Number with thousand separator) =====
-              const valueCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 8 })];
-              if (valueCell) {
-                valueCell.t = 'n';
-                valueCell.z = '#,##0';
-              }
-            }
           }
 
           // if Account Receivable (AR)
           if (this.formGroup.value.ar) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.ar.data as any[]).map((x) => {
-                return {
-                  date: new Date(x.date),
-                  'Nama klien': x.client_name,
-                  'Nomor invoice': x.name,
-                  'Nomor faktur pajak': x.taxInvoiceName,
-                  Proyek: x.projectName,
-                  'Nomor SPK': x.spkNumber,
-                  Deskripsi: x.description,
-                  DPP: x.dpp,
-                  PPN: (x.ppn * x.dpp) / 100,
-                  PPh: (x.pphPercentage * x.dpp) / 100,
-                  BPJS: x.bpjs,
-                  'Tarif PPh': x.pphPercentage / 100,
-                  'Kode objek pajak': x.pphCode,
-                  'Objek pajak': x.pphTaxObject,
-                  'Total tagihan':
-                    x.dpp +
-                    (x.ppn * x.dpp) / 100 -
-                    x.bpjs -
-                    (x.pphPercentage * x.dpp) / 100,
-                  Pembayaran: x.total_paid,
-                };
-              }),
-              {
-                cellDates: true,
-              },
+            sheets.push(
+              sheetFromObjects(
+                'Piutang',
+                'Piutang',
+                (data.ar.data as any[]).map((x) => {
+                  return {
+                    date: new Date(x.date),
+                    'Nama klien': x.client_name,
+                    'Nomor invoice': x.name,
+                    'Nomor faktur pajak': x.taxInvoiceName,
+                    Proyek: x.projectName,
+                    'Nomor SPK': x.spkNumber,
+                    Deskripsi: x.description,
+                    DPP: x.dpp,
+                    PPN: (x.ppn * x.dpp) / 100,
+                    PPh: (x.pphPercentage * x.dpp) / 100,
+                    BPJS: x.bpjs,
+                    'Tarif PPh': x.pphPercentage / 100,
+                    'Kode objek pajak': x.pphCode,
+                    'Objek pajak': x.pphTaxObject,
+                    'Total tagihan':
+                      x.dpp +
+                      (x.ppn * x.dpp) / 100 -
+                      x.bpjs -
+                      (x.pphPercentage * x.dpp) / 100,
+                    Pembayaran: x.total_paid,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Piutang');
-
             // width of each column in (pixel)
             // 10, 35, 25, 25, 15, 35, 35, 20, 20, 20, 20, 15, 20, 30, 20, 20
-            worksheet['!cols'] = [
-              { wch: 10 },
-              { wch: 35 },
-              { wch: 25 },
-              { wch: 25 },
-              { wch: 15 },
-              { wch: 35 },
-              { wch: 35 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 20 },
-              { wch: 15 },
-              { wch: 20 },
-              { wch: 30 },
-              { wch: 20 },
-              { wch: 20 },
-            ];
-
             // a => date, b - g => string, h - k => number (with thousand separator), l => percentage, m - n => string, o - p => number (with thousand separator)
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let row = range.s.r + 1; row <= range.e.r; ++row) {
-              // ===== A (Date) =====
-              const dateCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 0 })];
-              if (dateCell) {
-                dateCell.t = 'd';
-                dateCell.z = 'dd/mm/yyyy';
-              }
-
-              // ===== B - G (String) =====
-              for (let col = 1; col <= 6; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== H - K (Number with thousand separator) =====
-              for (let col = 7; col <= 10; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-
-              // ===== L (Percentage) =====
-              const percentCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 11 })];
-              if (percentCell) {
-                percentCell.t = 'n';
-                percentCell.z = '0%';
-              }
-
-              // ===== M - N (String) =====
-              for (let col = 12; col <= 13; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== O - P (Number with thousand separator) =====
-              for (let col = 14; col <= 15; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-            }
           }
 
           // if Account Payable (AP)
           if (this.formGroup.value.ap) {
-            const worksheet = xlsx.utils.json_to_sheet(
-              (data.ap.data as any[]).map((x) => {
-                return {
-                  Tanggal: x.date,
-                  'Nama supplier': x.supplier_name,
-                  'Nomor invoice': x.invoiceName,
-                  'Nomor kwitansi': x.receiptName,
-                  'Nomor faktur pajak': x.taxInvoiceName,
-                  'PO / SPK': x.purchaseOrderName,
-                  Proyek: x.projectName,
-                  DPP: x.dpp,
-                  PPN: (x.ppn * x.dpp) / 100,
-                  PBBKB: x.pbbkb,
-                  'Nilai lain': x.otherValue,
-                  'Catatan nilai lain': x.otherValueNote,
-                  PPh: (x.pphPercentage * x.dpp) / 100,
-                  'Tarif PPh': x.pphPercentage / 100,
-                  'Kode objek pajak': x.pphCode,
-                  'Objek pajak': x.pphTaxObject,
-                  Total:
-                    x.dpp +
-                    (x.ppn * x.dpp) / 100 +
-                    x.pbbkb +
-                    x.otherValue -
-                    (x.pphPercentage * x.dpp) / 100,
-                  Pembayaran: x.total_paid,
-                };
-              }),
+            sheets.push(
+              sheetFromObjects(
+                'Hutang',
+                'Hutang',
+                (data.ap.data as any[]).map((x) => {
+                  return {
+                    Tanggal: x.date,
+                    'Nama supplier': x.supplier_name,
+                    'Nomor invoice': x.invoiceName,
+                    'Nomor kwitansi': x.receiptName,
+                    'Nomor faktur pajak': x.taxInvoiceName,
+                    'PO / SPK': x.purchaseOrderName,
+                    Proyek: x.projectName,
+                    DPP: x.dpp,
+                    PPN: (x.ppn * x.dpp) / 100,
+                    PBBKB: x.pbbkb,
+                    'Nilai lain': x.otherValue,
+                    'Catatan nilai lain': x.otherValueNote,
+                    PPh: (x.pphPercentage * x.dpp) / 100,
+                    'Tarif PPh': x.pphPercentage / 100,
+                    'Kode objek pajak': x.pphCode,
+                    'Objek pajak': x.pphTaxObject,
+                    Total:
+                      x.dpp +
+                      (x.ppn * x.dpp) / 100 +
+                      x.pbbkb +
+                      x.otherValue -
+                      (x.pphPercentage * x.dpp) / 100,
+                    Pembayaran: x.total_paid,
+                  };
+                }),
+                periode,
+                undefined,
+                this.PERCENT_FORMATS,
+              ),
             );
-
-            // width
-            // 10, 50, 30, 30, 20, 25, 10, 15, 15, 15, 15, 15, 15, 10, 15, 30, 15, 15
-            worksheet['!cols'] = [
-              { wch: 10 },
-              { wch: 50 },
-              { wch: 30 },
-              { wch: 30 },
-              { wch: 20 },
-              { wch: 25 },
-              { wch: 10 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 15 },
-              { wch: 10 },
-              { wch: 15 },
-              { wch: 30 },
-              { wch: 15 },
-              { wch: 15 },
-            ];
-
-            // a => date, b - g => string, h - k => number (with thousand separator), l => string, m => number (with thousand separator), n => percentage
-            // o - p => string, q - r => number (with thousand separator),
-
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Hutang');
-
-            const range = xlsx.utils.decode_range(worksheet['!ref']!);
-
-            for (let row = range.s.r + 1; row <= range.e.r; ++row) {
-              // ===== A (Date) =====
-              const dateCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 0 })];
-              if (dateCell) {
-                dateCell.t = 'd';
-                dateCell.z = 'dd/mm/yyyy';
-              }
-
-              // ===== B - G (String) =====
-              for (let col = 1; col <= 6; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== H - K (Number with thousand separator) =====
-              for (let col = 7; col <= 10; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-
-              // ===== L (String) =====
-              const lCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 11 })];
-              if (lCell) {
-                lCell.t = 's';
-              }
-
-              // ===== M (Number with thousand separator) =====
-              const mCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 12 })];
-              if (mCell) {
-                mCell.t = 'n';
-                mCell.z = '#,##0';
-              }
-
-              // ===== N (Percentage) =====
-              const percentCell =
-                worksheet[xlsx.utils.encode_cell({ r: row, c: 13 })];
-              if (percentCell) {
-                percentCell.t = 'n';
-                percentCell.z = '0%';
-              }
-
-              // ===== O - P (String) =====
-              for (let col = 14; col <= 15; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 's';
-                }
-              }
-
-              // ===== Q - R (Number with thousand separator) =====
-              for (let col = 16; col <= 17; col++) {
-                const cell =
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-                if (cell) {
-                  cell.t = 'n';
-                  cell.z = '#,##0';
-                }
-              }
-            }
           }
 
           // save as the file
-          xlsx.writeFile(workbook, 'Monthly Recap.xlsx');
+          downloadRecapExcel(sheets, `Rekap Bulanan ${periode}`).catch((e) => {
+            console.error('Gagal membuat berkas Excel:', e);
+            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+              duration: 3000,
+            });
+          });
         },
         error: (error) => {
           this.snackBar.open(error.error.detail, 'Close', {

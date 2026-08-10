@@ -91,6 +91,7 @@ export class PurchaseOrderCreateGComponent {
     purchaseType: new FormControl('G'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     // Kota + provinsi supplier: hanya untuk dicetak, tidak dikirim sebagai
     // kolom PO (backend mengambilnya lagi dari supplierID saat cetak ulang).
@@ -254,20 +255,22 @@ export class PurchaseOrderCreateGComponent {
     );
   }
 
+  /**
+   * Harga satuan yang diisi user adalah DPP (belum termasuk PPN).
+   * PPN 11% ditambahkan di atasnya bila togglenya aktif — sebelumnya harga
+   * dianggap sudah termasuk PPN sehingga DPP harus dibagi 1,11 dan mudah
+   * salah dibaca.
+   */
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    return this.rawTotal;
   }
 
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
 
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -286,6 +289,7 @@ export class PurchaseOrderCreateGComponent {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            supplierPrefix: data.prefix,
             supplierAddress: data.address,
             supplierCity: [data.city, data.province]
               .filter((x: string) => !!x)
@@ -296,15 +300,12 @@ export class PurchaseOrderCreateGComponent {
   }
 
   formatData() {
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+    // Harga yang diisi = DPP; PPN disimpan sebagai persentase (11 atau 0).
+    const dpp = this.t.value.reduce(
+      (acc: any, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -319,6 +320,21 @@ export class PurchaseOrderCreateGComponent {
       payment_term: this.formGroup.get('paymentTerm')?.value,
       templateVersion: this.templateVersion,
       billing_requirements: {},
+      // Baris item PO. Tanpa ini `purchase_order_items` tidak pernah terisi,
+      // sehingga dokumen yang dicetak ulang kehilangan seluruh daftar barang.
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          item_id: x.item_id,
+          task: x.description,
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.remarks,
+          // SKU tidak disalin ke sini: sudah tersimpan di master_item
+          // dan ikut terbaca lewat item_id saat PO dibuka kembali.
+        };
+      }),
       customData: {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
@@ -337,16 +353,6 @@ export class PurchaseOrderCreateGComponent {
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
-        // catalog-referenced items -> maps to purchase_order_items later
-        purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
-          sku: x.sku,
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks: x.remarks,
-        })),
       },
     };
   }
@@ -362,6 +368,7 @@ export class PurchaseOrderCreateGComponent {
       date: v.date,
       projectName: v.projectName,
       supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
       supplierAddress: v.supplierAddress,
       supplierCity: v.supplierCity,
       items: this.t.controls.map((c) => {
@@ -371,6 +378,8 @@ export class PurchaseOrderCreateGComponent {
           quantity: Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
+          // Catatan per baris ikut dicetak di bawah nama barang.
+          remarks: x.remarks,
         };
       }),
       includePpn: !!v.includePPN,

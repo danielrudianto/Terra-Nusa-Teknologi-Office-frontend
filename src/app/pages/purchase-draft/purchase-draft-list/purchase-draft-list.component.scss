@@ -9,15 +9,7 @@
 }
 
 /* chips */
-.pdl-chips {
-  margin: 0;
-}
-:host ::ng-deep .pdl-chips .mat-mdc-chip-option {
-  --mdc-chip-elevated-container-color: var(--surface-2, #f1f3f7);
-  --mdc-chip-label-text-color: var(--muted, #5f6672);
-  border-radius: 999px;
-  font-weight: 600;
-}
+
 :host
   ::ng-deep
   .pdl-fchip.mdc-evolution-chip--selected
@@ -290,4 +282,13 @@
   border-top: 1px solid var(--line, #eef0f3);
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
+}
+
+/* ===== chip filter: seragam dengan purchase-list =====
+   Tampilan chip dibiarkan bawaan Material; yang diubah hanya penanda
+   status (titik) dan warna saat terpilih, seperti pada purchase-list. */
+.pdl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

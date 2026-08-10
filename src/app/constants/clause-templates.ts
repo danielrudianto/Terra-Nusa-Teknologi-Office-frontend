@@ -26,6 +26,10 @@ export const OFFICE_CONTACT = {
 /** Everything a template might need to fill in the variable points (1-5). */
 export interface ClauseContext {
   paymentTerm?: string; // CASH | COD | CBD | PPD | CR | CRD
+  /** Cara pelunasan sisa setelah uang muka: 'cash' atau 'tempo'. */
+  settlementMode?: 'cash' | 'tempo';
+  /** Lama tempo pelunasan (hari); dipakai bila settlementMode = 'tempo'. */
+  settlementDays?: number | string;
   creditTerm?: number;
   prepaidTerm?: number;
   deliveryMethod?: string | number; // 0 = Franco, 1 = Loco
@@ -37,6 +41,27 @@ export interface ClauseContext {
   // PO-C (fuel): whether the fuel-analysis / calibration clause is required.
   // Stored on the PO so old POs re-render with the same on/off state.
   fuelReportRequired?: boolean;
+  // PO-F: 'beton' | 'besi' | 'lain' | 'ujitekan' — menentukan rangkaian klausul
+  // Khusus 'ujitekan' & 'ujibesi', dokumennya SPK (jasa, bukan barang).
+  /** Jumlah benda uji yang diuji; diisi manual pada formulir. */
+  sampleCount?: number | string;
+  /** Tenggat penerbitan laporan hasil uji (hari kerja). */
+  testReportDays?: number | string;
+  /** Cara penyerahan benda uji ke laboratorium. */
+  sampleHandover?: string;
+  materialType?: string;
+  // PO-H: keterangan pekerjaan
+  workLocation?: string;
+  jobType?: string;
+  startDate?: string;
+  endDate?: string;
+  /** 'unit' (harga satuan) atau 'lumpsum' (borongan). */
+  rateType?: string;
+  // PO-F: tanggal pengiriman & batas pembayaran (teks siap cetak, opsional)
+  deliveryDate?: string;
+  paymentDueDate?: string;
+  // PO-F: uji tarik & tekuk (umumnya untuk besi tulangan)
+  materialTestRequired?: boolean;
   // PO-5.1.12 (software) fields
   softwareIsSubscription?: boolean; // true = langganan, false = beli putus
   subscriptionStartDate?: string; // ISO / display date
@@ -52,6 +77,26 @@ export interface ClauseContext {
   overtimeRate?: number; // upah lembur per jam
   wageSchedules?: string[]; // kalimat jadwal bayar tiap komponen upah
   shiftHours?: number; // jam kerja per shift
+  /**
+   * PO-D: dua poin pertama tidak selalu berlaku.
+   * - shift: sebagian pekerjaan menentukan jam kerja harian
+   * - penempatan: tidak semua pekerja bersedia ditempatkan luar kota
+   * Bernilai true secara bawaan agar SPK lama tidak berubah.
+   */
+  includeShiftClause?: boolean;
+  includePlacementClause?: boolean;
+  /**
+   * Staf lapangan (mis. staff engineer): penagihan bulanan, wajib FDP.
+   * Uraian tugas ditulis sendiri dan hanya tercetak bila diisi.
+   */
+  isFieldStaff?: boolean;
+  payoutDay?: number | string;
+  jobDescriptions?: string[];
+  /**
+   * Sewa alat angkut (dicatat PO-A): mencantumkan poin koordinasi
+   * (BBM, upah operator, retribusi, dst) seperti pada SPK transportasi.
+   */
+  includeTransportCoordination?: boolean;
   includeSundayPolicy?: boolean; // sertakan kebijakan Hari Minggu
 }
 
@@ -74,8 +119,18 @@ function paymentSentence(ctx: ClauseContext): string {
     case 'CBD':
       return 'Termin pembayaran adalah tunai sebelum barang dikirim (Cash before Delivery).';
     case 'PPD':
-    case 'CRD':
-      return `Termin pembayaran adalah prepaid sebesar ${prepaid}% di muka, sisanya dibayarkan secara kredit dalam ${credit} hari.`;
+    case 'CRD': {
+      // Cara pelunasan sisa uang muka: tunai saat serah terima, atau tempo
+      // sekian hari. Sebelumnya keduanya selalu ditulis kredit, sehingga
+      // termin PPD yang seharusnya lunas tunai ikut tertulis "dalam 0 hari".
+      const tempo =
+        ctx.settlementMode === 'cash'
+          ? 'sisanya dilunasi secara tunai pada saat serah terima pekerjaan'
+          : `sisanya dilunasi secara tempo dalam ${
+              Number(ctx.settlementDays) || credit
+            } hari sejak dokumen penagihan lengkap diterima`;
+      return `Termin pembayaran adalah uang muka sebesar ${prepaid}% di muka, ${tempo}.`;
+    }
     case 'CR':
       return `Termin pembayaran adalah kredit dalam ${credit} hari.`;
     default:
@@ -110,8 +165,10 @@ const G_CLAUSES: ClauseTemplate[] = [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
         `Alamat pengiriman/pengambilan barang adalah: ${ctx.deliveryAddress || '—'}.`,
-        `Kontak penanggung jawab penerima/pemberi barang adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
-        `Kontak penanggung jawab pengirim/pengambil adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        // Sebelumnya memakai istilah pengambil/pengirim/penerima yang mudah
+        // tertukar; cukup sebut pemilik kontaknya saja.
+        `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
         `PIHAK PENJUAL dan PEMBELI wajib mendokumentasikan (video) serah terima yang berisi pemeriksaan kondisi barang.`,
         `Bila Franco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PENJUAL wajib memberikan detail Kontak Penanggung Jawab Pengiriman, nomor polisi kendaraan pengirim beserta bukti kelengkapan dokumen pengirim (STNK, KIR, SIM) dalam bentuk softcopy melalui e-mail ke ${OFFICE_CONTACT.email};`,
         `Bila Loco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PEMBELI akan memberikan detail Kontak Penanggung Jawab Penerima, dalam bentuk softcopy melalui nomor telepon/fax atau alamat e-mail yang diberikan;`,
@@ -132,8 +189,8 @@ const C_CLAUSES: ClauseTemplate[] = [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
         `Alamat pengiriman / pengambilan barang: ${ctx.deliveryAddress || '—'}.`,
-        `Kontak penanggung jawab pengambil / pengirim: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
-        `Kontak penanggung jawab pengambil / penerima: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
         // 6 & 7 are a linked pair: toggling 6 off strikes both through.
         strikeIf(
           !fuelOn,
@@ -274,8 +331,18 @@ const D_CLAUSES: ClauseTemplate[] = [
 
       const lines: string[] = [
         // HAK PEKERJA
-        `Shift kerja adalah ${shift} jam per hari. Awal mula jam shift akan diinformasikan oleh penanggung jawab proyek.`,
-        'Selama perjanjian kerjasama, PIHAK KEDUA bersedia ditempatkan di seluruh Indonesia sesuai lokasi proyek.',
+        // Jam shift tidak selalu tetap — sebagian pekerjaan menentukannya
+        // harian, sehingga poin ini hanya dicetak bila memang disepakati.
+        ...(ctx.includeShiftClause !== false
+          ? [
+              `Shift kerja adalah ${shift} jam per hari. Awal mula jam shift akan diinformasikan oleh penanggung jawab proyek.`,
+            ]
+          : []),
+        ...(ctx.includePlacementClause !== false
+          ? [
+              'Selama perjanjian kerja sama, PIHAK KEDUA bersedia ditempatkan di seluruh Indonesia sesuai lokasi proyek.',
+            ]
+          : []),
         `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
         'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
 
@@ -354,6 +421,841 @@ const B_CLAUSES: ClauseTemplate[] = [
         'PIHAK KEDUA tidak bertanggung jawab atas permasalahan PIHAK PERTAMA dengan pihak-pihak lainnya diluar kontrak kerja ini.',
       ];
 
+      // Sewa alat angkut (dicatat sebagai PO-A) memakai template ini juga.
+      // Poin berikut hanya muncul bila datanya diisi, sehingga sewa alat
+      // biasa tidak ikut berubah.
+      if (ctx.shiftHours) {
+        lines.push(
+          'Penggunaan alat kerja dihitung berdasarkan jam kedatangan alat kerja yang dikonfirmasi oleh perwakilan PIHAK PERTAMA.',
+          `Kuota penggunaan alat kerja per shift adalah ${ctx.shiftHours} jam.${
+            ctx.overtimeRate
+              ? ` Kelebihan pemakaian per alat kerja dikenakan tambahan biaya Rp. ${rupiah(
+                  ctx.overtimeRate,
+                )} per jam.`
+              : ''
+          }`,
+          'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah jam kerja secara proporsional.',
+        );
+      }
+
+      if (ctx.includeTransportCoordination) {
+        lines.push(
+          'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada: upah operator; bahan bakar minyak (BBM); biaya koordinasi bongkar dan muat; retribusi perjalanan; pengawalan selama perjalanan; pajak kendaraan/emisi kendaraan; biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan; serta kecelakaan dalam perjalanan.',
+        );
+      }
+
+      return lines;
+    },
+  },
+];
+
+// ---- PO-F: pembelian material (beton / material lain) ------------------
+
+const F_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const loco = isLoco(ctx);
+
+      // Beton memakai rangkaian klausul mutu yang khas (mix design & uji
+      // kuat tekan). Besi dan material lain mengikuti pola pembelian barang
+      // biasa; besi punya tambahan poin uji tarik & tekuk.
+      // Jasa pengujian: bukan pembelian barang, melainkan pekerjaan yang
+      // dikerjakan laboratorium independen — dokumennya berbentuk SPK.
+      if (ctx.materialType === 'ujitekan' || ctx.materialType === 'ujibesi') {
+        const besi = ctx.materialType === 'ujibesi';
+        const lines: string[] = [
+          ctx.sampleCount
+            ? `Lingkup pekerjaan adalah ${
+                besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
+              } sebanyak ${ctx.sampleCount} benda uji ${
+                besi ? 'besi tulangan' : 'silinder beton'
+              }.`
+            : `Lingkup pekerjaan adalah ${
+                besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
+              } benda uji ${
+                besi ? 'besi tulangan' : 'silinder beton'
+              } sesuai rincian pekerjaan.`,
+          `PIHAK KEDUA merupakan laboratorium independen yang tidak terafiliasi dengan pemasok ${
+            besi ? 'besi' : 'beton'
+          } pada proyek ini.`,
+          besi
+            ? 'Pengujian dilakukan mengikuti SNI 2052 tentang baja tulangan beton, meliputi uji tarik dan uji tekuk.'
+            : 'Pengujian dilakukan mengikuti SNI 1974 tentang cara uji kuat tekan beton dengan benda uji silinder.',
+          'Seluruh alat uji yang digunakan wajib dalam keadaan terkalibrasi dan bukti kalibrasinya dapat ditunjukkan apabila diminta oleh PIHAK PERTAMA.',
+        ];
+
+        if (ctx.sampleHandover) {
+          lines.push(`Penyerahan benda uji dilakukan ${ctx.sampleHandover}.`);
+        }
+
+        lines.push(
+          ctx.testReportDays
+            ? `Laporan hasil uji diterbitkan selambat-lambatnya ${ctx.testReportDays} hari kerja setelah benda uji diterima, dalam bentuk laporan resmi bertanda tangan penanggung jawab laboratorium.`
+            : 'Laporan hasil uji diterbitkan dalam bentuk laporan resmi bertanda tangan penanggung jawab laboratorium.',
+          'Laporan hasil uji disampaikan kepada PIHAK PERTAMA dalam bentuk asli dan salinan lunak (softcopy).',
+          paymentSentence(ctx),
+          `Kontak penanggung jawab laboratorium adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+          `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+          'Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan surat perintah kerja ini.',
+        );
+
+        return lines;
+      }
+
+      if (ctx.materialType === 'beton') {
+        return [
+          'Volume penagihan adalah volume yang telah disetujui oleh perwakilan pembeli;',
+          paymentSentence(ctx),
+          'Mix Design harus disetujui oleh pihak pembeli sebelum dokumen pembelian ini berlaku;',
+          'Beton yang dikirimkan harus mengikuti Mix Design yang telah disetujui oleh pembeli;',
+          'Pihak penjual beton bersedia untuk mengirimkan teknisi yang cakap dalam setiap pengiriman beton;',
+          'Pihak penjual beton berkewajiban untuk menyediakan Superplasticizer setiap pengiriman beton;',
+          '4 (empat) benda uji dari setiap kendaraan pengangkut beton akan diambil dan disimpan oleh pihak penjual beton;',
+          'Uji kuat tekan beton dilakukan dengan ketentuan sebagai berikut: sebanyak 1 benda uji dengan usia 7 (tujuh) hari dan 1 benda uji dengan usia 14 (empat belas) hari dilakukan oleh pihak penjual beton di laboratorium internal; sebanyak 2 benda uji dengan usia 28 (dua puluh delapan) hari dilakukan di laboratorium independen;',
+          'Pengantaran sampel uji dengan usia 28 (dua puluh delapan) hari ke laboratorium independen dilakukan oleh penjual beton;',
+          'Biaya untuk pengujian beton di laboratorium independen ditanggung oleh pihak pembeli;',
+          'Penjual wajib melampirkan hasil uji beton yang sudah jatuh tempo umur dan dokumentasi slump test selama periode tersebut;',
+          'Tata cara penagihan dan pembayaran dapat dilihat di lembar terlampir.',
+        ];
+      }
+
+      // ---- besi & material lain (pola pembelian barang biasa) ----
+      const lines: string[] = [
+        paymentSentence(ctx),
+        `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
+        `Alamat pengiriman/pengambilan barang adalah: ${ctx.deliveryAddress || '—'}.`,
+        `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+      ];
+
+      // Poin tanggal bersifat opsional: hanya muncul bila tanggalnya diisi.
+      if (ctx.deliveryDate) {
+        lines.push(`Pengiriman dilakukan sebelum tanggal ${ctx.deliveryDate}.`);
+      }
+      if (ctx.paymentDueDate) {
+        lines.push(
+          `Pembayaran dilakukan sebelum tanggal ${ctx.paymentDueDate}.`,
+        );
+      }
+
+      lines.push(
+        'PIHAK PENJUAL wajib mengirimkan barang sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PEMBELI.',
+      );
+
+      // Khusus besi: poin uji mutu selalu ditampilkan, namun dicoret bila
+      // pengujian tidak diberlakukan — sehingga pembaca tetap tahu poin itu
+      // ada dan sengaja tidak dipakai, bukan terlewat.
+      if (ctx.materialType === 'besi') {
+        // Poin penggantian barang tetap ditampilkan walau pengujian tidak
+        // diberlakukan — dicoret, agar pembaca tahu poin itu sengaja tidak
+        // dipakai. Rincian benda uji tidak dicantumkan di sini; bila perlu,
+        // tuliskan lewat Poin Tambahan.
+        lines.push(
+          strikeIf(
+            ctx.materialTestRequired === false,
+            'PIHAK PENJUAL bersedia untuk mengirimkan penggantian barang apabila terjadi kegagalan dalam uji mutu.',
+          ),
+        );
+      }
+
+      lines.push(
+        'PIHAK PENJUAL dan PEMBELI wajib mendokumentasikan (video) serah terima yang berisi pemeriksaan kondisi barang.',
+        `Bila Franco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PENJUAL wajib memberikan detail Kontak Penanggung Jawab Pengiriman, nomor polisi kendaraan pengirim beserta bukti kelengkapan dokumen pengirim (STNK, KIR, SIM) dalam bentuk softcopy melalui e-mail ke ${OFFICE_CONTACT.email};`,
+        'Bila Loco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PEMBELI akan memberikan detail Kontak Penanggung Jawab Penerima, dalam bentuk softcopy melalui nomor telepon/fax atau alamat e-mail yang diberikan;',
+        'Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan kontrak jual/beli ini.',
+      );
+
+      return lines;
+    },
+  },
+];
+
+/**
+ * Isi bawaan Pasal 3 dan Pasal 4 pada SPK pekerjaan (PO-H).
+ *
+ * Disimpan sebagai daftar kalimat, bukan satu blok teks: isinya tetap bisa
+ * diubah, ditambah, atau dihapus per poin, sementara penomoran dan
+ * pencetakannya tetap ditangani secara otomatis.
+ */
+export const H_PASAL_3_DEFAULT: string[] = [
+  'PIHAK KEDUA berkewajiban untuk mengisi Form Data Pekerja dan Form List Peralatan sebelum pekerjaan dimulai;',
+  'PIHAK KEDUA berkewajiban untuk memberikan laporan dan dokumentasi sesuai dengan arahan dan permintaan dari PIHAK PERTAMA;',
+  'Dokumentasi tersebut wajib disampaikan kepada Project Manager PIHAK PERTAMA;',
+  'PIHAK KEDUA wajib melaporkan kepada PIHAK PERTAMA apabila terdapat perubahan Data Pekerja dan/atau list peralatan selambat-lambatnya 2 x 24 jam sejak terjadinya perubahan tersebut.',
+];
+
+export const H_PASAL_4_DEFAULT: string[] = [
+  'Material besi dan beton, akses lokasi, persiapan lahan, perataan lokasi pekerjaan, bobokan pondasi eksisting, penentuan titik (survey), keamanan & pengawalan keluar masuk alat, uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya menjadi tanggung jawab PIHAK PERTAMA.',
+  'Asuransi CAR & TPLL (jika ada) merupakan tanggung jawab PIHAK PERTAMA.',
+  'Standby alat karena lahan tidak bisa dikerjakan, menunggu gambar, dan kendala lain persiapan dari pemberi tugas akan dikenakan biaya standby alat sebesar Rp. 5.000.000,- per hari untuk 1 set alat, berlaku setelah standby selama 3 hari berturut-turut.',
+];
+
+/** Dokumen penagihan pada Pasal 5 — jadi sub-poin bernomor 5.3.1 dst. */
+export const H_PASAL_5_DOCUMENTS: string[] = [
+  'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+  'Kwitansi bermaterai (asli);',
+  'Faktur pajak;',
+  'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+  'Certificate of Payment - CoP (asli).',
+];
+
+export interface Pasal5Context {
+  /** Periode penagihan, mis. "2 (dua) minggu" atau "bulanan". */
+  billingPeriod?: string;
+  /** Tenggat pembayaran setelah dokumen lengkap diterima (hari). */
+  paymentDays?: number | string;
+  /** Tenggat pembayaran akhir setelah demobilisasi (hari kalender). */
+  finalPaymentDays?: number | string;
+  /** Uang muka: hanya dicantumkan bila memang disepakati. */
+  hasDownPayment?: boolean;
+  downPaymentPercent?: number | string;
+  downPaymentDays?: number | string;
+  /** Retensi: ditahan dari tiap penagihan, dilepas setelah pemeliharaan. */
+  hasRetention?: boolean;
+  retentionPercent?: number | string;
+  retentionReleaseDays?: number | string;
+}
+
+/**
+ * Rakit Pasal 5 (Penagihan & Pembayaran).
+ *
+ * Poin ke-3 memuat daftar dokumen sebagai sub-poin, sehingga strukturnya
+ * bertingkat: item bertipe string adalah poin biasa, sedangkan array berisi
+ * daftar dokumen yang menempel pada poin sebelumnya.
+ */
+export function buildPasal5(
+  ctx: Pasal5Context,
+  documents: string[] = H_PASAL_5_DOCUMENTS,
+): (string | string[])[] {
+  // Bagian yang belum diisi ditandai garis bawah agar terlihat saat diperiksa,
+  // bukan hilang begitu saja.
+  const isian = (v: any) => {
+    const t = String(v ?? '').trim();
+    return t ? t : '______';
+  };
+
+  const lines: (string | string[])[] = [];
+
+  // Uang muka disebut lebih dulu karena dibayarkan sebelum pekerjaan mulai.
+  if (ctx.hasDownPayment) {
+    lines.push(
+      `Uang muka sebesar ${isian(ctx.downPaymentPercent)}% dari nilai pekerjaan dibayarkan selambat-lambatnya ${isian(ctx.downPaymentDays)} hari sejak Surat Perintah Kerja ditandatangani kedua belah pihak, dan diperhitungkan secara proporsional pada setiap penagihan.`,
+    );
+  }
+
+  lines.push(
+    `Penagihan dilakukan setiap periode ${isian(ctx.billingPeriod)}.`,
+    'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan.',
+    'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
+    documents,
+    `Pembayaran dilakukan ${isian(ctx.paymentDays)} hari sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.`,
+  );
+
+  if (ctx.hasRetention) {
+    lines.push(
+      `Retensi sebesar ${isian(ctx.retentionPercent)}% ditahan dari setiap penagihan dan dibayarkan selambat-lambatnya ${isian(ctx.retentionReleaseDays)} hari kalender setelah masa pemeliharaan berakhir serta seluruh kewajiban PIHAK KEDUA dinyatakan selesai.`,
+    );
+  }
+
+  lines.push(
+    `Pembayaran akhir dilakukan selambat-lambatnya ${isian(ctx.finalPaymentDays)} hari kalender sejak seluruh proses demobilisasi, serah terima, dan pemeriksaan alat kerja disetujui oleh PIHAK PERTAMA.`,
+  );
+
+  return lines;
+}
+
+/**
+ * Klausul SPK pembuangan lumpur/tanah (PO-H ringkas).
+ *
+ * Sebagian besar poin bersifat baku; yang diambil dari formulir hanya termin
+ * pembayaran dan blok keterangan proyek pada poin 6. Nilai balikan bisa berisi
+ * array — itu menjadi sub-poin bertingkat pada dokumen.
+ */
+export interface BuangLumpurContext extends ClauseContext {
+  /** Poin 6 — keterangan proyek. */
+  scheduleText?: string;
+  projectName?: string;
+  workLocation?: string;
+  officePICName?: string;
+  officePICPhoneNumber?: string;
+  /** Tenggat pengiriman dokumen sebelum mobilisasi (hari kalender). */
+  mobilizationNoticeDays?: number | string;
+  /** Pemotongan PPh: kode, nama objek pajak, dan tarifnya. */
+  pphCode?: string;
+  pphTaxObject?: string;
+  pphPercentage?: number | string;
+}
+
+export function buildBuangLumpurClauses(
+  ctx: BuangLumpurContext,
+): (string | string[])[] {
+  const n = Number(ctx.mobilizationNoticeDays ?? 7);
+  const email = OFFICE_CONTACT.email;
+
+  /**
+   * Tenggat pengiriman dokumen. Bila diisi 0, dokumennya boleh menyusul pada
+   * hari pelaksanaan — menulis "selambat-lambatnya 0 (nol) hari" justru
+   * membingungkan.
+   */
+  const tenggat =
+    n > 0
+      ? `selambat-lambatnya ${n} (${terbilangHari(n)}) hari kalender sebelum tanggal tenggat mobilisasi`
+      : 'selambat-lambatnya pada hari pelaksanaan pekerjaan';
+
+  return [
+    'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+    paymentSentence(ctx),
+    'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
+    // Pemotongan PPh hanya dicantumkan bila kodenya memang dipilih.
+    ...(ctx.pphCode
+      ? [
+          `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+            ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+          }.`,
+        ]
+      : []),
+    'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
+    [
+      'retribusi perjalanan;',
+      'pengawalan selama perjalanan;',
+      'buka/tutup pintu gerbang pada lokasi pembuangan;',
+      'pajak kendaraan/emisi kendaraan;',
+      'biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan;',
+      'kecelakaan dalam perjalanan.',
+    ],
+    'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
+    // Poin 6 berupa blok keterangan, bukan kalimat.
+    'Keterangan pekerjaan:',
+    [
+      `Jadwal Pekerjaan: ${ctx.scheduleText || '—'}`,
+      `Nama Proyek: ${ctx.projectName || '—'}`,
+      `Lokasi Pekerjaan: ${ctx.workLocation || '—'}`,
+      `Nama Wakil PIHAK PERTAMA: ${ctx.officePICName || '—'}`,
+      `Nomor Telepon: ${ctx.officePICPhoneNumber || '—'}`,
+    ],
+    `PIHAK KEDUA wajib memberikan daftar alat kerja dan tenaga kerja yang akan beraktivitas di lingkungan proyek tersebut di atas ${tenggat} melalui e-mail ke alamat ${email}.`,
+    'Hanya alat kerja dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.',
+    `PIHAK KEDUA wajib mengirimkan dokumen Surat Tanda Nomor Kendaraan (STNK) dan Dokumen Lulus Keur/KIR sesuai dengan peraturan dan perundang-undangan yang berlaku di Republik Indonesia untuk alat kerja yang akan digunakan sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA. Seluruh dokumen tersebut wajib dikirimkan melalui e-mail ke alamat ${email} ${tenggat}.`,
+    'PIHAK KEDUA wajib menyediakan pengendara yang cakap, handal dan memiliki Surat Izin Mengemudi (SIM) sesuai dengan jenis kelas kendaraan yang digunakan dan masih berlaku setidaknya selama 6 (enam) bulan sejak tanggal perjanjian.',
+    'Pembuangan limbah/sampah dilakukan berdasarkan instruksi dan arahan dari perwakilan PIHAK PERTAMA.',
+    'Keamanan dan keselamatan alat kerja menjadi tanggung jawab PIHAK KEDUA.',
+    'Kebersihan jalan raya selama pekerjaan ini berlangsung menjadi tanggung jawab PIHAK KEDUA.',
+    'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
+  ];
+}
+
+/** Ejaan angka hari untuk penulisan "7 (tujuh) hari". */
+function terbilangHari(n: number | string): string {
+  const kata: Record<string, string> = {
+    '1': 'satu',
+    '2': 'dua',
+    '3': 'tiga',
+    '4': 'empat',
+    '5': 'lima',
+    '6': 'enam',
+    '7': 'tujuh',
+    '8': 'delapan',
+    '9': 'sembilan',
+    '10': 'sepuluh',
+    '14': 'empat belas',
+    '30': 'tiga puluh',
+  };
+  return kata[String(n)] ?? String(n);
+}
+
+/** Satu seksi klausul: judul opsional + daftar poin (boleh bertingkat). */
+export interface ClauseSection {
+  title?: string;
+  items: (string | string[])[];
+}
+
+// Mewarisi Pasal5Context juga: klausul mandor & grouting memakai periode
+// penagihan dan tenggat pembayaran akhir dari sana.
+export interface MandorContext extends BuangLumpurContext, Pasal5Context {
+  /**
+   * Cara menentukan periode penagihan:
+   * - 'sejak-mulai'  → dihitung sekian minggu sejak pekerjaan dimulai
+   * - 'periode-pekan' → batas pekan tetap, mis. Kamis s.d. Rabu
+   *
+   * Hanya poin ini yang membedakan SPK mandor perorangan dan perusahaan,
+   * sehingga keduanya memakai satu template yang sama.
+   */
+  billingCycleMode?: 'sejak-mulai' | 'periode-pekan';
+  weekStartDay?: string;
+  weekEndDay?: string;
+  /**
+   * Keterangan pemotongan PPh (poin 2) dan penyediaan alat (poin 3).
+   *
+   * Keduanya berubah menurut jenis vendor — perorangan memakai PPh Final
+   * UMKM, badan usaha konstruksi memakai PPh Final Jasa Konstruksi — sehingga
+   * dijadikan isian, bukan template terpisah.
+   */
+  pphNote?: string;
+  toolingNote?: string;
+}
+
+/** Pilihan baku keterangan PPh pada SPK mandor. */
+export const MANDOR_PPH_NOTES: string[] = [
+  'PPh Final 2,5% (untuk usaha perorangan)',
+  'PPh Final Jasa Konstruksi kelas kecil 1,75% (SBU dilampirkan)',
+];
+
+/** Pilihan baku keterangan penyediaan alat kerja. */
+export const MANDOR_TOOLING_NOTES: string[] = [
+  'Peralatan kerja disediakan oleh pihak pemberi kerja.',
+  'Sudah termasuk bar cutter dan mesin rol.',
+];
+
+/**
+ * Daftar foto dokumentasi yang wajib dikirim, berbeda menurut jenis mandor.
+ *
+ * Hanya bagian inilah yang membedakan SPK mandor besi, bor, dan cor — sisanya
+ * identik, sehingga ketiganya memakai satu template.
+ */
+export const MANDOR_DOCUMENTATION: Record<string, string[]> = {
+  'mandor-besi': [
+    'proses persiapan pembesian dan alat bantu pekerjaan tersebut;',
+    'hasil kerja pembesian dalam periode hari tersebut; dan',
+    'laporan dokumentasi disertai checklist bersama.',
+  ],
+  'mandor-bor': [
+    'proses persiapan pembesian dan alat bantu pekerjaan tersebut;',
+    'hasil kerja pembesian dalam periode hari tersebut;',
+    'laporan proses persiapan pengecoran (pemasangan tremi dan hopper);',
+    'laporan foto hasil pengecoran periode hari tersebut;',
+    'PIHAK KEDUA wajib memberikan laporan tremi yang sudah dicuci setiap habis pengecoran;',
+    'apabila tremi tidak dicuci dan menyebabkan tremi jatuh/hilang/rusak, maka akan menjadi tanggung jawab PIHAK KEDUA; dan',
+    'laporan dokumentasi disertai checklist bersama.',
+  ],
+  'mandor-cor': [
+    'laporan proses persiapan pengecoran (pemasangan tremi dan hopper);',
+    'laporan foto hasil pengecoran periode hari tersebut;',
+    'PIHAK KEDUA wajib memberikan laporan tremi yang sudah dicuci setiap habis pengecoran;',
+    'apabila tremi tidak dicuci dan menyebabkan tremi jatuh/hilang/rusak, maka akan menjadi tanggung jawab PIHAK KEDUA; dan',
+    'laporan dokumentasi disertai checklist bersama.',
+  ],
+};
+
+/**
+ * Klausul SPK mandor (besi / bor / cor).
+ *
+ * Dokumennya terbagi tiga seksi, sehingga dikembalikan sebagai daftar seksi
+ * — bukan satu daftar panjang — agar judulnya ikut tercetak. Perbedaan antar
+ * jenis mandor hanya pada daftar dokumentasi.
+ */
+export function buildMandorClauses(
+  ctx: MandorContext,
+  scope: string = 'mandor-besi',
+): ClauseSection[] {
+  const pph = String(ctx.pphPercentage ?? '2,5').replace('.', ',');
+
+  return [
+    {
+      items: [
+        'Volume akan dihitung berdasarkan volume teoritis (hasil perhitungan gambar kerja dan volume teoritis tiang bor).',
+        // Keterangan PPh mengikuti isian; bila kosong, dirakit dari tarif
+        // kode PPh yang dipilih agar angkanya tidak pernah bertentangan.
+        `Harga di atas akan dipotong ${
+          ctx.pphNote || `PPh Final ${pph}% (untuk usaha perorangan)`
+        }.`,
+        ctx.toolingNote ||
+          'Peralatan kerja disediakan oleh pihak pemberi kerja.',
+        'Unit rate di atas tidak termasuk:',
+        [
+          'biaya akomodasi (ditanggung oleh Perusahaan);',
+          'Catatan penting: semua pengeluaran tanpa persetujuan Project Manager tidak akan digantikan oleh Perusahaan.',
+        ],
+      ],
+    },
+    {
+      title: 'LAPORAN LAPANGAN',
+      items: [
+        'PIHAK KEDUA berkewajiban untuk mengisi Form Data Pekerja (FDP) sebelum pekerjaan dimulai;',
+        'PIHAK KEDUA berkewajiban untuk memberikan laporan foto absensi setiap hari masuk bekerja dan selesai bekerja;',
+        'Pekerja berkewajiban untuk memberikan laporan foto dokumentasi pada saat:',
+        MANDOR_DOCUMENTATION[scope] ?? MANDOR_DOCUMENTATION['mandor-besi'],
+        'Dokumentasi tersebut wajib disampaikan kepada Field Supervisor (FS) dan Project Engineer (PE).',
+      ],
+    },
+    {
+      title: 'TATA CARA PEMBAYARAN',
+      items: [
+        ctx.billingCycleMode === 'periode-pekan'
+          ? `Mula periode pekan adalah hari ${
+              ctx.weekStartDay || 'Kamis'
+            }, akhir periode pekan adalah hari ${ctx.weekEndDay || 'Rabu'};`
+          : `Penagihan dapat dilakukan ${
+              ctx.billingPeriod || '2 (dua) minggu'
+            } setelah pekerjaan dimulai;`,
+        'Penagihan pertama harus meliputi transportasi kedatangan tim;',
+        ...commonPaymentClauses(ctx).slice(0, 3),
+        // Khas SPK mandor: pembayaran mingguan tiap Sabtu.
+        'Pembayaran dilakukan setiap hari Sabtu berdasarkan CoP yang sudah diterima PIHAK PERTAMA;',
+        ...commonPaymentClauses(ctx).slice(3),
+      ],
+    },
+  ];
+}
+
+/**
+ * Poin tata cara pembayaran yang berlaku sama pada SPK mandor maupun
+ * subkontraktor. Dipisahkan agar revisi redaksinya cukup sekali.
+ */
+function commonPaymentClauses(ctx: MandorContext): string[] {
+  const hari = ctx.finalPaymentDays || 7;
+  return [
+    'Dari data yang diterima FS dan PE setiap harinya, PIHAK PERTAMA akan memberikan rangkuman kemajuan pekerjaan di periode pekan tersebut;',
+    'Bilamana tidak ditemukan laporan pada sebagian/seluruh periode pekan tersebut, PIHAK PERTAMA tidak berkewajiban untuk membayarkan hasil kerja PIHAK KEDUA;',
+    'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan;',
+    `Pembayaran akhir dilakukan selambat-lambatnya ${hari} (${terbilangHari(hari)}) hari kalender sejak seluruh proses demobilisasi, serah terima, dan pemeriksaan alat kerja disetujui oleh PIHAK PERTAMA;`,
+    'PIHAK PERTAMA berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada hutang pekerja kepada PIHAK KETIGA yang belum diselesaikan;',
+    'Apabila PIHAK KEDUA tidak menyelesaikan pekerjaannya, sisa perhitungan pekerjaan tidak dapat ditagihkan dan/atau dibayarkan.',
+  ];
+}
+
+/**
+ * Klausul SPK subkontraktor grouting.
+ *
+ * Bagian pembayarannya sebagian besar sama dengan SPK mandor, sehingga
+ * memakai `commonPaymentClauses`; yang khas hanya termin di poin pertama.
+ */
+export function buildGroutingClauses(ctx: MandorContext): ClauseSection[] {
+  const common = commonPaymentClauses(ctx);
+
+  return [
+    {
+      title: 'LAPORAN LAPANGAN',
+      items: [
+        'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+        'Pekerja berkewajiban untuk memberikan laporan foto dokumentasi pada saat:',
+        [
+          'proses persiapan grouting (pembobokan area);',
+          'proses injeksi grouting;',
+          'hasil kerja grouting dalam periode hari tersebut; dan',
+          'laporan dokumentasi disertai checklist bersama.',
+        ],
+        'Dokumentasi tersebut wajib disampaikan kepada Field Supervisor (FS) dan Project Engineer (PE).',
+        'Pekerjaan di atas sudah termasuk biaya mobilisasi dan demobilisasi serta penggunaan alat bantu (scaffolding, dan lain-lain).',
+        `Waktu pekerjaan adalah ${ctx.scheduleText || '—'}.`,
+      ],
+    },
+    {
+      title: 'TATA CARA PEMBAYARAN',
+      items: [
+        // Termin diambil dari formulir; sisanya memakai poin bersama.
+        `${paymentSentence(ctx).replace(/\.$/, '')} setelah data-data penagihan lengkap kami terima;`,
+        ...common.slice(0, 3),
+        ...common.slice(3),
+      ],
+    },
+  ];
+}
+
+/**
+ * Butir lampiran tata cara penagihan.
+ *
+ * Bisa berupa kalimat, daftar bertingkat (array), atau blok alamat yang
+ * dicetak rata tengah — strukturnya bersarang hingga tiga tingkat.
+ */
+export type BillingItem = string | BillingItem[] | { block: string[] };
+
+/**
+ * Lampiran "Tata Cara Penagihan dan Pembayaran — Penyedia Jasa".
+ *
+ * Dipakai pada SPK pekerjaan jasa (PO-H). Berbeda dengan lampiran pembelian
+ * barang: penagihannya berbasis periode pekan dan wajib disertai Certificate
+ * of Payment.
+ */
+export function buildServiceBillingTerms(
+  ctx: MandorContext = {},
+): BillingItem[] {
+  const mulai = ctx.weekStartDay || 'Kamis';
+  const akhir = ctx.weekEndDay || 'Rabu';
+
+  return [
+    'Penagihan dilakukan dengan cara:',
+    [
+      `Mula periode pekan adalah hari ${mulai}, akhir periode pekan adalah hari ${akhir};`,
+      `PIHAK KEDUA memberikan progres pekerjaan paling lambat pada hari ${mulai} sebelum pukul 12.00 waktu setempat kepada perwakilan PIHAK PERTAMA, yang berisi:`,
+      [
+        'Laporan Kemajuan Pekerjaan periode pekan (mula periode pekan hingga akhir periode pekan);',
+        'Dokumentasi Pekerjaan;',
+        'Laporan Pekerjaan yang sudah diperiksa dan disetujui perwakilan PIHAK PERTAMA.',
+      ],
+    ],
+    'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan menyerahkannya kepada PIHAK KEDUA sebagai salah satu persyaratan penagihan.',
+    'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
+    [
+      'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+      'Kwitansi bermaterai (asli);',
+      'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+      'Certificate of Payment (CoP);',
+      'Faktur pajak (bila ada).',
+    ],
+    'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+    {
+      block: [
+        'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
+        'RUKO ASIA TROPIS AT 12 NO. 21',
+        'KOTA HARAPAN INDAH - BEKASI',
+      ],
+    },
+    'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
+    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
+    'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
+  ];
+}
+
+/** Pihak yang menanggung risiko: penerima jasa (Alpha) atau penyedia jasa. */
+export type RiskBearer = 'penerima' | 'penyedia';
+
+export interface TransportContext extends MandorContext {
+  /**
+   * Jenis pekerjaan PO-A:
+   * - 'pengiriman' → jasa angkut barang antar lokasi
+   * - 'sewa-alat'  → sewa alat kerja berikut operator
+   */
+  workKind?: 'pengiriman' | 'sewa-alat';
+  /** Moda angkutan; menentukan seksi tambahan pada klausul. */
+  transportMode?: 'darat' | 'laut' | 'udara';
+  /** Jadwal & titik pengiriman (jenis 'pengiriman'). */
+  deliveryDateText?: string;
+  unloadingDateText?: string;
+  originName?: string;
+  originAddress?: string;
+  destinationName?: string;
+  destinationAddress?: string;
+  /**
+   * Jenis 'sewa-alat' memakai template PO-B; field ketentuan alatnya
+   * mengikuti ClauseContext milik B (shiftHours, overtimeRate, dst).
+   */
+  /** Tenggat penyerahan dokumen asuransi sebelum pengiriman (hari). */
+  insuranceDays?: number | string;
+  /** Tenggat penyerahan consignment note setelah barang diterima (hari). */
+  consignmentDays?: number | string;
+  /** Penanggung risiko proses pengiriman dan proses bongkar. */
+  deliveryRisk?: RiskBearer;
+  unloadingRisk?: RiskBearer;
+}
+
+const RISK_LABEL: Record<RiskBearer, string> = {
+  penerima: 'Penerima jasa',
+  penyedia: 'Penyedia jasa',
+};
+
+const MODE_TITLE: Record<string, string> = {
+  darat: 'Darat',
+  laut: 'Laut',
+  udara: 'Udara',
+};
+
+/**
+ * Sewa alat untuk keperluan transportasi dicatat sebagai PO-A, tetapi isi
+ * perjanjiannya sama dengan sewa alat biasa (PO-B): kelaikan alat, kuota jam
+ * per shift, dan kewajiban operator. Karena itu dokumennya memakai template
+ * dan tata letak PO-B — bukan template transportasi.
+ *
+ * Kategorinya tetap 'A' agar pelaporannya tidak berubah.
+ */
+export function transportUsesRentalLayout(workKind?: string): boolean {
+  return workKind === 'sewa-alat';
+}
+
+/**
+ * Klausul SPK jasa transportasi (PO-A).
+ *
+ * Terbagi dua seksi: ketentuan umum dan ketentuan per moda angkutan.
+ * Pada dokumen asli, penanggung risiko ditulis "Penerima jasa/Penyedia jasa"
+ * lalu dicoret manual — di sini dipilih lewat formulir agar tercetak tegas.
+ */
+export function buildTransportClauses(ctx: TransportContext): ClauseSection[] {
+  const mode = ctx.transportMode || 'darat';
+  const asuransi = ctx.insuranceDays ?? 3;
+  const consignment = ctx.consignmentDays ?? 3;
+
+  const umum: (string | string[])[] = [
+    'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+    paymentSentence(ctx),
+    'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
+  ];
+
+  if (ctx.pphCode) {
+    umum.push(
+      `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+        ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+      }.`,
+    );
+  }
+
+  umum.push(
+    'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
+    'Keamanan dan keselamatan alat kerja beserta kargo yang diangkut bersama alat kerja tersebut menjadi tanggung jawab PIHAK KEDUA.',
+    'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
+    `PIHAK KEDUA wajib menyerahkan dokumen asuransi dengan nominal yang telah disepakati oleh PIHAK PERTAMA selambat-lambatnya ${asuransi} (${terbilangHari(asuransi)}) hari sebelum barang dikirimkan.`,
+    `PIHAK KEDUA wajib menyerahkan dokumen consignment note selambat-lambatnya ${consignment} (${terbilangHari(consignment)}) hari setelah barang diterima oleh PIHAK PERTAMA.`,
+    `Rencana keterlambatan pengiriman barang oleh PIHAK KEDUA wajib diinformasikan kepada PIHAK PERTAMA melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
+  );
+
+  return [
+    { title: 'Umum', items: umum },
+    {
+      title: MODE_TITLE[mode] || 'Darat',
+      items: [
+        'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
+        [
+          'asuransi;',
+          'upah pengendara;',
+          'bahan bakar minyak (BBM);',
+          'biaya koordinasi bongkar dan muat;',
+          'retribusi perjalanan;',
+          'pengawalan selama perjalanan;',
+          'pajak kendaraan/emisi kendaraan;',
+          'biaya yang diakibatkan oleh kelalaian dan kesalahan pengendara angkutan;',
+          'kecelakaan dalam perjalanan.',
+        ],
+        ...(ctx.deliveryDateText || ctx.originName || ctx.destinationName
+          ? [
+              'Jadwal pekerjaan:',
+              [
+                `Jadwal Pengiriman: ${ctx.deliveryDateText || '—'}`,
+                `Jadwal Pembongkaran: ${ctx.unloadingDateText || ctx.deliveryDateText || '—'}`,
+              ],
+              'Pengiriman dilakukan dari:',
+              [
+                `Nama Tempat: ${ctx.originName || '—'}`,
+                `Lokasi: ${ctx.originAddress || '—'}`,
+              ],
+              'Pengiriman dilakukan ke:',
+              [
+                `Nama Tempat: ${ctx.destinationName || '—'}`,
+                `Lokasi: ${ctx.destinationAddress || '—'}`,
+              ],
+            ]
+          : []),
+        `Proses pengiriman barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
+          RISK_LABEL[ctx.deliveryRisk || 'penyedia']
+        }.`,
+        `Proses bongkar barang dan seluruh risiko yang termasuk di dalam proses tersebut akan menjadi tanggung jawab ${
+          RISK_LABEL[ctx.unloadingRisk || 'penerima']
+        }.`,
+      ],
+    },
+  ];
+}
+
+/**
+ * Lampiran "Tata Cara Penagihan dan Pembayaran — Jasa Transportasi".
+ *
+ * Berbeda dengan lampiran jasa borongan: dokumen wajibnya menyertakan
+ * surat jalan/manifest, bukan Certificate of Payment.
+ */
+export function buildTransportBillingTerms(): BillingItem[] {
+  return [
+    'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
+    [
+      'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+      'Kwitansi bermaterai (asli);',
+      'Faktur pajak (asli);',
+      'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+      'Surat Jalan/Manifest yang sudah ditandatangani oleh perwakilan PIHAK PERTAMA.',
+    ],
+    'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+    {
+      block: [
+        'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
+        'RUKO ASIA TROPIS AT 12 NO. 21',
+        'KOTA HARAPAN INDAH - BEKASI',
+      ],
+    },
+    'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
+    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
+    'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
+    'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
+  ];
+}
+
+/**
+ * Klausul tambahan SPK tenaga kerja untuk staf lapangan (PO-D).
+ *
+ * Berbeda dengan pekerja harian: staf proyek (mis. staff engineer) menagih
+ * bulanan dan wajib mengisi Form Data Pekerja. Karena itu poinnya
+ * dikembalikan sebagai seksi terpisah dan hanya dipakai bila ditandai.
+ */
+export function buildStaffClauses(ctx: ClauseContext = {}): ClauseSection[] {
+  const tanggal = ctx.payoutDay ?? 10;
+
+  const seksi: ClauseSection[] = [];
+
+  if (ctx.jobDescriptions?.length) {
+    seksi.push({
+      title: 'URAIAN TUGAS',
+      items: ctx.jobDescriptions
+        .map((x) => (x || '').trim())
+        .filter((x) => x.length > 0),
+    });
+  }
+
+  seksi.push(
+    {
+      title: 'LAPORAN LAPANGAN',
+      items: [
+        'PIHAK KEDUA berkewajiban untuk mengisi Form Data Pekerja (FDP) sebelum pekerjaan dimulai;',
+        'PIHAK KEDUA berkewajiban untuk memberikan laporan foto absensi setiap hari masuk bekerja dan selesai bekerja.',
+      ],
+    },
+    {
+      title: 'TATA CARA PEMBAYARAN',
+      items: [
+        `Pembayaran dilakukan setiap tanggal ${tanggal} dengan cut off setiap bulannya;`,
+        'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan;',
+        'PIHAK PERTAMA berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada hutang pekerja kepada PIHAK KETIGA yang belum diselesaikan;',
+        'Apabila pekerja tidak menyelesaikan pekerjaannya, sisa perhitungan pekerjaan tidak dapat ditagihkan dan/atau dibayarkan.',
+      ],
+    },
+  );
+
+  return seksi;
+}
+
+// ---- PO-H: pekerjaan borongan / jasa pelaksanaan -----------------------
+
+const H_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const lines: string[] = [];
+
+      if (ctx.workLocation) {
+        lines.push(`Lokasi pekerjaan: ${ctx.workLocation}.`);
+      }
+      if (ctx.jobType) {
+        lines.push(`Jenis pekerjaan: ${ctx.jobType}.`);
+      }
+
+      // Tanggal selesai boleh kosong: pekerjaan berjalan sampai tuntas.
+      if (ctx.startDate) {
+        lines.push(
+          ctx.endDate
+            ? `Waktu pelaksanaan: ${ctx.startDate} sampai dengan ${ctx.endDate}.`
+            : `Waktu pelaksanaan: ${ctx.startDate} sampai dengan pekerjaan selesai.`,
+        );
+      }
+
+      lines.push(
+        ctx.rateType === 'lumpsum'
+          ? 'Nilai pekerjaan bersifat lump sum (borongan) untuk seluruh lingkup pekerjaan yang tercantum.'
+          : 'Nilai pekerjaan dihitung berdasarkan harga satuan sesuai volume pekerjaan yang terlaksana dan disetujui.',
+      );
+
+      lines.push(
+        // Termin & tata cara pembayaran seluruhnya diatur pada Pasal 5,
+        // sehingga tidak diulang di sini.
+        'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+        'PIHAK KEDUA bertanggung jawab atas keselamatan kerja seluruh personil yang dikerahkan pada pekerjaan ini.',
+        'Pekerjaan dinyatakan selesai setelah diperiksa dan disetujui oleh perwakilan PIHAK PERTAMA.',
+      );
+
       return lines;
     },
   },
@@ -364,6 +1266,8 @@ export const CLAUSE_TEMPLATES: { [poType: string]: ClauseTemplate[] } = {
   D: D_CLAUSES,
   B: B_CLAUSES,
   C: C_CLAUSES,
+  F: F_CLAUSES,
+  H: H_CLAUSES,
   '5.1.12': SOFTWARE_CLAUSES,
   '5.1.2': MAINTENANCE_CLAUSES,
   // 5.1.6 sengaja berbagi template dengan G — ubah G = ubah 5.1.6 juga (satu kebijakan).

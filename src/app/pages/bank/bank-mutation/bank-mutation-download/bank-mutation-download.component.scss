@@ -1,10 +1,123 @@
-h1.mat-mdc-dialog-title {
-  font-family: "Poppins";
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding-bottom: 0;
+.bmd {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.bmd * {
+  box-sizing: border-box;
 }
 
-.mdc-dialog__content {
-  padding-top: 0;
+/* ===== header ===== */
+.bmd-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.bmd-head__icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.bmd-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bmd-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+.bmd-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+/* ===== isi ===== */
+.bmd-content {
+  padding: 1.25rem 1.5rem 0.5rem !important;
+  background: var(--surface, #fff);
+  width: 420px;
+  max-width: 100%;
+}
+.bmd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.75rem;
+}
+:host ::ng-deep .bmd-grid .mat-mdc-form-field {
+  width: 100%;
+}
+.bmd-hint {
+  margin: 0.15rem 0 0.35rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}
+
+/* ===== footer ===== */
+.bmd-foot {
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  display: flex;
+  align-items: center;
+}
+.bmd-spacer {
+  flex: 1 1 auto;
+}
+.bmd-cancel,
+.bmd-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+.bmd-cancel {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+.bmd-submit {
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

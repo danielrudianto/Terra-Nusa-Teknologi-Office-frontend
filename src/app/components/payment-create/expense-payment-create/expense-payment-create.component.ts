@@ -19,13 +19,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
 import { ApiService } from 'src/app/services/api.service';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-expense-payment-create',
+  providers: [provideNgxMask()],
   templateUrl: './expense-payment-create.component.html',
   styleUrl: './expense-payment-create.component.scss',
   standalone: true,
   imports: [
+    NgxMaskDirective,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,

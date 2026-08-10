@@ -11,11 +11,13 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { AvatarComponent } from '../../../components/avatar/avatar.component';
 
 @Component({
   selector: 'app-interpayment-view',
   standalone: true,
   imports: [
+    AvatarComponent,
     TranslatePipe,
     CommonModule,
     MatDialogModule,

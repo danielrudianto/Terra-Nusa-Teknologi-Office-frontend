@@ -128,6 +128,255 @@
         </div>
       </div>
 
+      <!-- ===== Jenis Pekerjaan ===== -->
+      <div class="poh-card">
+        <div class="poh-section__title">Jenis Pekerjaan</div>
+
+        <div class="poh-grid">
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>Jenis pekerjaan</mat-label>
+            <mat-select
+              formControlName="workScope"
+              (selectionChange)="onWorkScopeChange()"
+            >
+              <mat-option value="borongan"
+                >Borongan / jasa umum (lengkap)</mat-option
+              >
+              <mat-option value="mandor-bor">Mandor bor</mat-option>
+              <mat-option value="mandor-besi">Mandor besi</mat-option>
+              <mat-option value="mandor-cor">Mandor cor</mat-option>
+              <mat-option value="grouting">Subkontraktor grouting</mat-option>
+              <mat-option value="buang-lumpur"
+                >Pembuangan lumpur/tanah</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <p class="poh-rate__hint">
+          @if (isRingkas) {
+            Syaratnya sudah baku — Pasal 3, 4, dan 5 serta daftar pekerja tidak
+            dipakai untuk jenis ini.
+          } @else {
+            Dokumen disusun per pasal; isi Pasal 3, 4, dan 5 di bawah.
+          }
+        </p>
+
+        @if (isRingkas) {
+          <div class="poh-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Kode PPh</mat-label>
+              <input
+                matInput
+                formControlName="pphCode"
+                readonly
+                (click)="openPphSelector()"
+                placeholder="Pilih kode PPh"
+              />
+              <button
+                matSuffix
+                type="button"
+                class="poh-reset"
+                (click)="openPphSelector()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+              @if (formGroup.value.pphTaxObject) {
+                <mat-hint>
+                  {{ formGroup.value.pphPercentage }}% —
+                  {{ formGroup.value.pphTaxObject }}
+                </mat-hint>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Pembayaran akhir</mat-label>
+              <input
+                matInput
+                formControlName="finalPaymentDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>&nbsp;hari</span>
+            </mat-form-field>
+          </div>
+
+          @if (formGroup.value.pphCode) {
+            <div class="poh-optrow">
+              <span class="poh-krow__no"
+                >{{ formGroup.value.pphPercentage }}%</span
+              >
+              <span>{{ formGroup.value.pphTaxObject }}</span>
+              <button type="button" class="poh-reset" (click)="clearPph()">
+                <mat-icon>close</mat-icon> Hapus
+              </button>
+            </div>
+          }
+        }
+
+        @if (isMandor) {
+          <div class="poh-grid">
+            <mat-form-field appearance="outline" class="poh-span2">
+              <mat-label>Keterangan PPh (poin 2)</mat-label>
+              <input
+                matInput
+                formControlName="pphNote"
+                [matAutocomplete]="pphNoteAuto"
+              />
+              <mat-autocomplete #pphNoteAuto="matAutocomplete">
+                @for (n of pphNoteOptions; track n) {
+                  <mat-option [value]="n">{{ n }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="poh-span2">
+              <mat-label>Keterangan alat kerja (poin 3)</mat-label>
+              <input
+                matInput
+                formControlName="toolingNote"
+                [matAutocomplete]="toolAuto"
+              />
+              <mat-autocomplete #toolAuto="matAutocomplete">
+                @for (n of toolingNoteOptions; track n) {
+                  <mat-option [value]="n">{{ n }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (isMandor) {
+          <div class="poh-optrow">
+            <mat-radio-group
+              formControlName="billingCycleMode"
+              class="poh-rate"
+            >
+              <mat-radio-button value="sejak-mulai" color="primary">
+                Penagihan sejak pekerjaan dimulai
+              </mat-radio-button>
+              <mat-radio-button value="periode-pekan" color="primary">
+                Batas pekan tetap
+              </mat-radio-button>
+            </mat-radio-group>
+
+            @if (formGroup.value.billingCycleMode === "periode-pekan") {
+              <div class="poh-optrow__fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Mula pekan</mat-label>
+                  <input matInput formControlName="weekStartDay" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Akhir pekan</mat-label>
+                  <input matInput formControlName="weekEndDay" />
+                </mat-form-field>
+              </div>
+            } @else {
+              <div class="poh-optrow__fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Periode penagihan</mat-label>
+                  <input
+                    matInput
+                    formControlName="billingPeriod"
+                    placeholder="Ex. 2 (dua) minggu"
+                  />
+                </mat-form-field>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ===== Keterangan Pekerjaan ===== -->
+      <div class="poh-card">
+        <div class="poh-section__title">Keterangan Pekerjaan</div>
+
+        <div class="poh-grid">
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>Lokasi pekerjaan</mat-label>
+            <input
+              matInput
+              formControlName="workLocation"
+              placeholder="Ex. R501 Kota Baru Parahyangan"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>Jenis pekerjaan</mat-label>
+            <input
+              matInput
+              formControlName="jobType"
+              placeholder="Ex. Pekerjaan bore pile diameter 600mm"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Mulai pelaksanaan</mat-label>
+            <input
+              matInput
+              formControlName="startDate"
+              [matDatepicker]="startPicker"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="startPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Selesai pelaksanaan</mat-label>
+            <input
+              matInput
+              formControlName="endDate"
+              [matDatepicker]="endPicker"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="endPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-hint>Kosongkan bila sampai pekerjaan selesai</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="poh-section__title poh-section__title--sub">
+          Jenis Harga
+        </div>
+        <mat-radio-group
+          formControlName="rateType"
+          class="poh-rate"
+          (change)="onRateTypeChange()"
+        >
+          <mat-radio-button value="unit" color="primary">
+            Unit rate (harga satuan)
+          </mat-radio-button>
+          <mat-radio-button value="lumpsum" color="primary">
+            Lump sum (borongan)
+          </mat-radio-button>
+        </mat-radio-group>
+        <p class="poh-rate__hint">
+          @if (isLumpSum) {
+            Nilai pekerjaan satu harga untuk seluruh lingkup; kolom harga per
+            baris tidak dipakai.
+          } @else {
+            Nilai dihitung dari volume × harga satuan tiap baris pekerjaan.
+          }
+        </p>
+
+        @if (isLumpSum) {
+          <mat-form-field appearance="outline" class="poh-span2">
+            <mat-label>Nilai borongan</mat-label>
+            <input
+              matInput
+              formControlName="lumpSumPrice"
+              prefix="Rp. "
+              thousandSeparator="."
+              mask="separator.0"
+            />
+          </mat-form-field>
+        }
+      </div>
+
       <!-- ===== Lingkup Pekerjaan ===== -->
       <div class="poh-card">
         <div class="poh-cardhead">
@@ -153,9 +402,11 @@
                   <span class="poh-scope__label">{{
                     getFormGroupAt(i).value.task || "Pekerjaan belum diisi"
                   }}</span>
-                  <span class="poh-scope__amt"
-                    >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
-                  >
+                  @if (!isLumpSum) {
+                    <span class="poh-scope__amt"
+                      >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                    >
+                  }
                   <button
                     mat-icon-button
                     type="button"
@@ -205,17 +456,21 @@
                     >
                   </mat-form-field>
 
-                  <mat-form-field appearance="outline">
-                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
-                    <input
-                      matInput
-                      formControlName="price"
-                      thousandSeparator=" "
-                      mask="separator.2"
-                      prefix="Rp. "
-                      placeholder="0"
-                    />
-                  </mat-form-field>
+                  @if (!isLumpSum) {
+                    <mat-form-field appearance="outline">
+                      <mat-label>{{
+                        "poForm.unitPrice" | translate
+                      }}</mat-label>
+                      <input
+                        matInput
+                        formControlName="price"
+                        thousandSeparator=" "
+                        mask="separator.2"
+                        prefix="Rp. "
+                        placeholder="0"
+                      />
+                    </mat-form-field>
+                  }
                 </div>
               </div>
             }
@@ -242,8 +497,8 @@
         </div>
       </div>
 
-      <!-- ===== Data Pekerja (H2 saja) ===== -->
-      @if (!isEntity) {
+      <!-- ===== Data Pekerja (tidak dipakai untuk buang lumpur) ===== -->
+      @if (!isEntity && !isBuangLumpur) {
         <div class="poh-card">
           <div class="poh-cardhead">
             <div class="poh-section__title poh-section__title--flush">
@@ -296,58 +551,489 @@
         </div>
       }
 
-      <!-- ===== Pembayaran ===== -->
-      <div class="poh-card">
-        <div class="poh-section__title">Pembayaran</div>
-        <div class="poh-grid">
-          <mat-form-field appearance="outline" class="poh-span2">
-            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="paymentTerm"
-              placeholder="Ex. Progres 30-60-100 / Tempo 30 hari"
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
-            <input matInput formControlName="creditTerm" /><span matSuffix
-              >&nbsp;hari</span
-            >
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="prepaidTerm"
-              [min]="0"
-              [max]="100"
-            /><span matSuffix>&nbsp;%</span>
-          </mat-form-field>
+      <!-- ===== Pasal 3 — Kewajiban ===== -->
+      @if (!isRingkas) {
+        <div class="poh-card">
+          <div class="poh-cardhead">
+            <div class="poh-section__title poh-section__title--flush">
+              Pasal 3 — Kewajiban
+            </div>
+            <button type="button" class="poh-add" (click)="addKewajiban()">
+              <mat-icon>add</mat-icon> Tambah poin
+            </button>
+            <button type="button" class="poh-reset" (click)="resetKewajiban()">
+              <mat-icon>restart_alt</mat-icon> Kembalikan
+            </button>
+          </div>
+          <p class="poh-rate__hint">
+            Sudah terisi dengan ketentuan baku; ubah, tambah, atau hapus poin
+            bila perlu.
+          </p>
+
+          @if (kewajiban.controls.length === 0) {
+            <div class="poh-empty">
+              <mat-icon>rule</mat-icon>
+              <span>Belum ada poin kewajiban.</span>
+            </div>
+          } @else {
+            <div formArrayName="kewajiban" class="poh-list">
+              @for (k of kewajiban.controls; track k; let i = $index) {
+                <div class="poh-krow">
+                  <span class="poh-krow__no">3.{{ i + 1 }}</span>
+                  <mat-form-field appearance="outline" class="poh-krow__field">
+                    <mat-label>Poin kewajiban</mat-label>
+                    <textarea
+                      matInput
+                      [formControlName]="i"
+                      rows="2"
+                    ></textarea>
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeKewajiban(i)"
+                    aria-label="Hapus poin"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
         </div>
-      </div>
+      }
 
-      <!-- ===== Catatan / Poin Perjanjian ===== -->
+      <!-- ===== Pasal 4 — Keterangan ===== -->
+      @if (!isRingkas) {
+        <div class="poh-card">
+          <div class="poh-cardhead">
+            <div class="poh-section__title poh-section__title--flush">
+              Pasal 4 — Keterangan
+            </div>
+            <button type="button" class="poh-add" (click)="addKeterangan()">
+              <mat-icon>add</mat-icon> Tambah poin
+            </button>
+            <button type="button" class="poh-reset" (click)="resetKeterangan()">
+              <mat-icon>restart_alt</mat-icon> Kembalikan
+            </button>
+          </div>
+          <p class="poh-rate__hint">
+            Sudah terisi dengan ketentuan baku; ubah, tambah, atau hapus poin
+            bila perlu.
+          </p>
+
+          @if (keterangan.controls.length === 0) {
+            <div class="poh-empty">
+              <mat-icon>notes</mat-icon>
+              <span>Belum ada poin keterangan.</span>
+            </div>
+          } @else {
+            <div formArrayName="keterangan" class="poh-list">
+              @for (k of keterangan.controls; track k; let i = $index) {
+                <div class="poh-krow">
+                  <span class="poh-krow__no">4.{{ i + 1 }}</span>
+                  <mat-form-field appearance="outline" class="poh-krow__field">
+                    <mat-label>Poin keterangan</mat-label>
+                    <textarea
+                      matInput
+                      [formControlName]="i"
+                      rows="2"
+                    ></textarea>
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeKeterangan(i)"
+                    aria-label="Hapus poin"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ===== Pasal 5 — Penagihan & Pembayaran ===== -->
+      @if (!isRingkas) {
+        <div class="poh-card">
+          <div class="poh-section__title">
+            Pasal 5 — Penagihan &amp; Pembayaran
+          </div>
+
+          <div class="poh-grid">
+            <mat-form-field appearance="outline" class="poh-span2">
+              <mat-label>Periode penagihan</mat-label>
+              <input
+                matInput
+                formControlName="billingPeriod"
+                placeholder="Ex. 2 (dua) minggu, bulanan, per progres 25%"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Pembayaran (hari)</mat-label>
+              <input
+                matInput
+                formControlName="paymentDays"
+                type="number"
+                [min]="0"
+              />
+              <mat-hint>Sejak dokumen penagihan lengkap</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Pembayaran akhir (hari kalender)</mat-label>
+              <input
+                matInput
+                formControlName="finalPaymentDays"
+                type="number"
+                [min]="0"
+              />
+              <mat-hint
+                >Sejak demobilisasi &amp; serah terima disetujui</mat-hint
+              >
+            </mat-form-field>
+          </div>
+
+          <div class="poh-optrow">
+            <mat-checkbox formControlName="hasDownPayment" color="primary">
+              Ada uang muka (DP)
+            </mat-checkbox>
+            @if (hasDownPayment) {
+              <div class="poh-optrow__fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Besar DP</mat-label>
+                  <input
+                    matInput
+                    formControlName="downPaymentPercent"
+                    type="number"
+                    [min]="0"
+                    [max]="100"
+                  />
+                  <span matSuffix>&nbsp;%</span>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dibayar dalam</mat-label>
+                  <input
+                    matInput
+                    formControlName="downPaymentDays"
+                    type="number"
+                    [min]="0"
+                  />
+                  <span matSuffix>&nbsp;hari</span>
+                </mat-form-field>
+              </div>
+            }
+          </div>
+
+          <div class="poh-optrow">
+            <mat-checkbox formControlName="hasRetention" color="primary">
+              Ada retensi
+            </mat-checkbox>
+            @if (hasRetention) {
+              <div class="poh-optrow__fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Besar retensi</mat-label>
+                  <input
+                    matInput
+                    formControlName="retentionPercent"
+                    type="number"
+                    [min]="0"
+                    [max]="100"
+                  />
+                  <span matSuffix>&nbsp;%</span>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Dilepas dalam</mat-label>
+                  <input
+                    matInput
+                    formControlName="retentionReleaseDays"
+                    type="number"
+                    [min]="0"
+                  />
+                  <span matSuffix>&nbsp;hari</span>
+                </mat-form-field>
+              </div>
+            }
+          </div>
+
+          <div class="poh-cardhead">
+            <div
+              class="poh-section__title poh-section__title--flush poh-section__title--sub"
+            >
+              Dokumen penagihan
+            </div>
+            <button
+              type="button"
+              class="poh-add"
+              (click)="addBillingDocument()"
+            >
+              <mat-icon>add</mat-icon> Tambah dokumen
+            </button>
+            <button
+              type="button"
+              class="poh-reset"
+              (click)="resetBillingDocuments()"
+            >
+              <mat-icon>restart_alt</mat-icon> Kembalikan
+            </button>
+          </div>
+
+          <div formArrayName="billingDocuments" class="poh-list">
+            @for (d of billingDocuments.controls; track d; let i = $index) {
+              <div class="poh-krow">
+                <span class="poh-krow__no">5.3.{{ i + 1 }}</span>
+                <mat-form-field appearance="outline" class="poh-krow__field">
+                  <mat-label>Dokumen</mat-label>
+                  <input matInput [formControlName]="i" />
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeBillingDocument(i)"
+                  aria-label="Hapus dokumen"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- pratinjau: isian kosong tampil sebagai ______ -->
+          <div class="poh-preview">
+            <div class="poh-preview__title">Pratinjau Pasal 5</div>
+            <ol class="poh-preview__list">
+              @for (p of pasal5Preview; track $index) {
+                @if (isSubList(p)) {
+                  <ol class="poh-preview__sub">
+                    @for (d of asList(p); track d) {
+                      <li>{{ d }}</li>
+                    }
+                  </ol>
+                } @else {
+                  <li>{{ asText(p) }}</li>
+                }
+              }
+            </ol>
+          </div>
+        </div>
+      }
+
+      <!-- ===== Pembayaran ===== -->
+      @if (isBuangLumpur || isGrouting) {
+        <div class="poh-card">
+          <div class="poh-section__title">Pembayaran</div>
+          <div class="poh-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Termin pembayaran</mat-label>
+              <mat-select formControlName="paymentTerm">
+                <mat-option value="CASH">Tunai (Cash)</mat-option>
+                <mat-option value="COD"
+                  >Bayar saat barang diterima (COD)</mat-option
+                >
+                <mat-option value="CBD">Bayar di muka (CBD)</mat-option>
+                <mat-option value="PPD">Uang muka (Prepaid)</mat-option>
+                <mat-option value="CR">Kredit / tempo</mat-option>
+                <mat-option value="CRD">Uang muka + tempo</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            @if (needsCreditTerm) {
+              <mat-form-field appearance="outline">
+                <mat-label>Lama tempo</mat-label>
+                <input
+                  matInput
+                  formControlName="creditTerm"
+                  type="number"
+                  [min]="0"
+                />
+                <span matSuffix>&nbsp;hari</span>
+              </mat-form-field>
+            }
+
+            @if (needsPrepaidTerm) {
+              <mat-form-field appearance="outline">
+                <mat-label>Uang muka</mat-label>
+                <input
+                  matInput
+                  formControlName="prepaidTerm"
+                  type="number"
+                  [min]="0"
+                  [max]="100"
+                />
+                <span matSuffix>&nbsp;%</span>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Pelunasan sisa</mat-label>
+                <mat-select formControlName="settlementMode">
+                  <mat-option value="cash">Tunai saat serah terima</mat-option>
+                  <mat-option value="tempo">Tempo sekian hari</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              @if (formGroup.value.settlementMode === "tempo") {
+                <mat-form-field appearance="outline">
+                  <mat-label>Lama tempo pelunasan</mat-label>
+                  <input
+                    matInput
+                    formControlName="settlementDays"
+                    type="number"
+                    [min]="0"
+                  />
+                  <span matSuffix>&nbsp;hari</span>
+                </mat-form-field>
+              }
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ===== Pelaporan Lapangan ===== -->
+      @if (isBuangLumpur) {
+        <div class="poh-card">
+          <div class="poh-section__title">Pelaporan Lapangan</div>
+          <div class="poh-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Nama wakil PIHAK PERTAMA</mat-label>
+              <input
+                matInput
+                formControlName="officePICName"
+                placeholder="Ex. Stephanie"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nomor telepon wakil</mat-label>
+              <input
+                matInput
+                formControlName="officePICPhoneNumber"
+                placeholder="Ex. 0811 902 590"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="poh-span2">
+              <mat-label>Dokumen dikirim sebelum mobilisasi</mat-label>
+              <input
+                matInput
+                formControlName="mobilizationNoticeDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>&nbsp;hari</span>
+              <mat-hint
+                >Isi 0 bila boleh menyusul pada hari pelaksanaan</mat-hint
+              >
+            </mat-form-field>
+          </div>
+        </div>
+      }
+
+      <!-- ===== Poin Tambahan ===== -->
       <div class="poh-card">
-        <div class="poh-section__title">Catatan / Poin Perjanjian</div>
-        <app-wysiwyg
-          formControlName="notes"
-          [minHeight]="200"
-          placeholder="Contoh: lingkup detail, mutu pekerjaan, retensi, APD & K3, denda keterlambatan, termin progres, dll"
-        ></app-wysiwyg>
-
-        <div class="poh-actions">
-          <span class="poh-spacer"></span>
-          <button
-            type="submit"
-            class="poh-submit"
-            [disabled]="
-              formGroup.invalid || t.controls.length === 0 || isSubmitting
-            "
-          >
-            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        <div class="poh-cardhead">
+          <div class="poh-section__title poh-section__title--flush">
+            Poin Tambahan
+          </div>
+          <button type="button" class="poh-add" (click)="addClause()">
+            <mat-icon>add</mat-icon> Tambah poin
           </button>
         </div>
+        <p class="poh-rate__hint">
+          Ditulis sendiri; tercetak melanjutkan nomor poin terakhir.
+        </p>
+
+        @if (additionalClauses.controls.length === 0) {
+          <div class="poh-empty">
+            <mat-icon>playlist_add</mat-icon>
+            <span>Belum ada poin tambahan.</span>
+          </div>
+        } @else {
+          <div formArrayName="additionalClauses" class="poh-list">
+            @for (c of additionalClauses.controls; track c; let i = $index) {
+              <div class="poh-krow">
+                <span class="poh-krow__no">+{{ i + 1 }}</span>
+                <mat-form-field appearance="outline" class="poh-krow__field">
+                  <mat-label>Poin tambahan</mat-label>
+                  <textarea matInput [formControlName]="i" rows="2"></textarea>
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeClause(i)"
+                  aria-label="Hapus poin"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        @if (!isRingkas) {
+          <div class="poh-divider"></div>
+          <div class="poh-actions">
+            <span class="poh-spacer"></span>
+            <button
+              type="submit"
+              class="poh-submit"
+              [disabled]="
+                formGroup.invalid || t.controls.length === 0 || isSubmitting
+              "
+            >
+              {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+            </button>
+          </div>
+        }
       </div>
+
+      <!-- ===== Pratinjau klausul ===== -->
+      @if (isRingkas) {
+        <div class="poh-card">
+          <div class="poh-section__title">Pratinjau Catatan Perjanjian</div>
+          <p class="poh-rate__hint">
+            Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
+            isian di atas.
+          </p>
+
+          <div class="poh-preview">
+            @for (sec of previewSections; track $index) {
+              @if (sec.title) {
+                <div class="poh-preview__title">{{ sec.title }}</div>
+              }
+              <ol class="poh-preview__list">
+                @for (p of sec.items; track $index) {
+                  @if (isSubList(p)) {
+                    <ol class="poh-preview__sub">
+                      @for (d of asList(p); track d) {
+                        <li>{{ d }}</li>
+                      }
+                    </ol>
+                  } @else {
+                    <li>{{ asText(p) }}</li>
+                  }
+                }
+              </ol>
+            }
+          </div>
+
+          <div class="poh-divider"></div>
+          <div class="poh-actions">
+            <span class="poh-spacer"></span>
+            <button
+              type="submit"
+              class="poh-submit"
+              [disabled]="
+                formGroup.invalid || t.controls.length === 0 || isSubmitting
+              "
+            >
+              {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+            </button>
+          </div>
+        </div>
+      }
     </form>
   }
 </div>

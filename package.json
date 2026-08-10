@@ -28,6 +28,7 @@
     "@types/chart.js": "^2.9.41",
     "bootstrap": "^5.3.5",
     "chart.js": "^4.5.1",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "fuzzy-search": "^3.2.1",
     "moment": "^2.30.1",

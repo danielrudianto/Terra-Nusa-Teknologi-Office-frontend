@@ -7,7 +7,9 @@
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="pof-card">
-      <div class="pof-section__title">Informasi PO</div>
+      <div class="pof-section__title">
+        {{ "poForm.sectionInfo" | translate }}
+      </div>
       <div class="pof-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.dateGeneric" | translate }}</mat-label>
@@ -71,134 +73,236 @@
       </div>
     </div>
 
-    <!-- ===== 2. Daftar Barang ===== -->
-    <div class="pof-card">
-      <div class="pof-cardhead">
-        <div class="pof-section__title pof-section__title--flush">
-          Daftar Barang
+    <!-- ===== 2. Daftar Barang (tidak dipakai untuk jasa uji) ===== -->
+    @if (!isTestService) {
+      <div class="pof-card">
+        <div class="pof-cardhead">
+          <div class="pof-section__title pof-section__title--flush">
+            {{ "poForm.itemListTitle" | translate }}
+          </div>
+          <button type="button" class="pof-add" (click)="openItemSelector()">
+            <mat-icon>add</mat-icon> {{ "poForm.addItem" | translate }}
+          </button>
         </div>
-        <button type="button" class="pof-add" (click)="openItemSelector()">
-          <mat-icon>add</mat-icon> Tambah barang
-        </button>
-      </div>
 
-      @if (t.controls.length === 0) {
-        <div class="pof-empty">
-          <mat-icon>inventory_2</mat-icon>
-          <span
-            >Belum ada barang. Klik "Tambah barang" untuk memilih dari
-            katalog.</span
-          >
-        </div>
-      } @else {
-        <div class="pof-itemlist">
-          @for (item of t.controls; track item; let i = $index) {
-            <div class="pof-itemcard" [formGroup]="getFormGroupAt(i)">
-              <div class="pof-itemcard__id">
-                <span class="pof-itembadge">{{
-                  (getFormGroupAt(i).value.sku || "?").charAt(0)
-                }}</span>
-                <div class="pof-itemid__text">
-                  <span class="pof-itemdesc">{{
-                    getFormGroupAt(i).value.description
+        @if (t.controls.length === 0) {
+          <div class="pof-empty">
+            <mat-icon>inventory_2</mat-icon>
+            <span>{{ "poForm.noItemYet" | translate }}</span>
+          </div>
+        } @else {
+          <div class="pof-itemlist">
+            @for (item of t.controls; track item; let i = $index) {
+              <div class="pof-itemcard" [formGroup]="getFormGroupAt(i)">
+                <div class="pof-itemcard__id">
+                  <span class="pof-itembadge">{{
+                    (getFormGroupAt(i).value.sku || "?").charAt(0)
                   }}</span>
-                  <span class="pof-itemsku">{{
-                    getFormGroupAt(i).value.sku
-                  }}</span>
+                  <div class="pof-itemid__text">
+                    <span class="pof-itemdesc">{{
+                      getFormGroupAt(i).value.description
+                    }}</span>
+                    <span class="pof-itemsku">{{
+                      getFormGroupAt(i).value.sku
+                    }}</span>
+                  </div>
+                  <div class="pof-itemtotal">
+                    Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  </div>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeAt(i)"
+                    aria-label="Hapus barang"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
                 </div>
-                <div class="pof-itemtotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
-                </div>
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="removeAt(i)"
-                  aria-label="Hapus barang"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
-              </div>
 
-              <div class="pof-itemcard__inputs">
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.qty" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="quantity"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                    placeholder="0"
-                  />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.unit" | translate }}</mat-label>
-                  <mat-select formControlName="unit">
-                    <mat-option *ngFor="let u of units" [value]="u">{{
-                      u
-                    }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="price"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                    prefix="Rp. "
-                    placeholder="0"
-                  />
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="pof-itemremarks">
-                  <mat-label>{{ "poForm.remarks" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="remarks"
-                    placeholder="Catatan (opsional)"
-                  />
-                </mat-form-field>
+                <div class="pof-itemcard__inputs">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.qty" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="quantity"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.unit" | translate }}</mat-label>
+                    <mat-select formControlName="unit">
+                      <mat-option *ngFor="let u of units" [value]="u">{{
+                        u
+                      }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="price"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      prefix="Rp. "
+                      placeholder="0"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="pof-itemremarks">
+                    <mat-label>{{ "poForm.remarks" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="remarks"
+                      placeholder="Catatan (opsional)"
+                    />
+                  </mat-form-field>
+                </div>
               </div>
+            }
+          </div>
+        }
+
+        <div class="pof-items__foot">
+          <mat-slide-toggle formControlName="includePPN" color="primary">{{
+            "poForm.includePpn" | translate
+          }}</mat-slide-toggle>
+          <div class="pof-summary">
+            <div class="pof-summary__row">
+              <span>Subtotal (DPP)</span
+              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
-          }
-        </div>
-      }
-
-      <div class="pof-items__foot">
-        <mat-slide-toggle formControlName="includePPN" color="primary"
-          >Termasuk PPN 11%</mat-slide-toggle
-        >
-        <div class="pof-summary">
-          <div class="pof-summary__row">
-            <span>Subtotal (DPP)</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
-          </div>
-          <div class="pof-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
-          </div>
-          <div class="pof-summary__row pof-summary__row--total">
-            <span>Total</span><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            <div class="pof-summary__row">
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            </div>
+            <div class="pof-summary__row pof-summary__row--total">
+              <span>Total</span
+              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="pof-note">
-        <mat-icon>info</mat-icon>
-        <span
-          >Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib
-          melampirkan faktur pajak saat penagihan.</span
-        >
+        <div class="pof-note">
+          <mat-icon>info</mat-icon>
+          <span>{{ "poForm.ppnNote" | translate }}</span>
+        </div>
       </div>
-    </div>
+    }
 
     <!-- ===== 3. Pengiriman ===== -->
     <div class="pof-card">
-      <div class="pof-section__title">Pengiriman</div>
+      <div class="pof-section__title">
+        {{ "poForm.materialTypeTitle" | translate }}
+      </div>
+      <mat-radio-group formControlName="materialType" class="pof-material">
+        <mat-radio-button value="beton" color="primary">
+          {{ "poForm.materialConcrete" | translate }}
+        </mat-radio-button>
+        <mat-radio-button value="besi" color="primary">
+          {{ "poForm.materialSteel" | translate }}
+        </mat-radio-button>
+        <mat-radio-button value="lain" color="primary">
+          {{ "poForm.materialOther" | translate }}
+        </mat-radio-button>
+        <mat-radio-button value="ujitekan" color="primary">
+          {{ "poForm.materialTest" | translate }}
+        </mat-radio-button>
+        <mat-radio-button value="ujibesi" color="primary">
+          {{ "poForm.materialTestSteel" | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <p class="pof-material__hint">{{ "poForm.materialHint" | translate }}</p>
+
+      @if (isTestService) {
+        <p class="pof-material__hint pof-material__note">
+          {{ "poForm.materialTestNote" | translate }}
+        </p>
+        <div class="pof-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.sampleCount" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="sampleCount"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>&nbsp;{{ "poForm.samplePcs" | translate }}</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.testUnitPrice" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="testUnitPrice"
+              prefix="Rp. "
+              thousandSeparator="."
+              mask="separator.0"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.testReportDays" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="testReportDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>&nbsp;{{ "poForm.workDays" | translate }}</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.sampleHandover" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="sampleHandover"
+              [placeholder]="'poForm.sampleHandoverPlaceholder' | translate"
+            />
+            <mat-hint>{{ "poForm.sampleHandoverHint" | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
+      }
+
+      @if (formGroup.get("materialType")?.value === "besi") {
+        <mat-checkbox formControlName="steelTestRequired" color="primary">
+          {{ "poForm.materialTestClause" | translate }}
+        </mat-checkbox>
+        <p class="pof-material__hint">
+          {{ "poForm.materialTestHint" | translate }}
+        </p>
+      }
+
+      @if (formGroup.get("materialType")?.value !== "beton") {
+        <div class="pof-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.deliveryDateOpt" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="deliveryDate"
+              [placeholder]="'poForm.dateOptPlaceholder' | translate"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.paymentDueDateOpt" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="paymentDueDate"
+              [placeholder]="'poForm.dateOptPlaceholder' | translate"
+            />
+          </mat-form-field>
+        </div>
+      }
+
+      <div class="pof-section__title">
+        {{ "poForm.sectionDelivery" | translate }}
+      </div>
       <div class="pof-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
           <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">Franco (dikirim ke lokasi)</mat-option>
-            <mat-option [value]="1">Loco (diambil sendiri)</mat-option>
+            <mat-option [value]="0">{{
+              "poForm.franco" | translate
+            }}</mat-option>
+            <mat-option [value]="1">{{ "poForm.loco" | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -223,16 +327,24 @@
 
     <!-- ===== 4. Pembayaran ===== -->
     <div class="pof-card">
-      <div class="pof-section__title">Pembayaran</div>
+      <div class="pof-section__title">
+        {{ "poForm.sectionPayment" | translate }}
+      </div>
       <div class="pof-grid">
         <mat-form-field appearance="outline" class="pof-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
           <mat-select formControlName="paymentTerm">
-            <mat-option value="COD">Cash on delivery</mat-option>
-            <mat-option value="CBD">Cash before delivery</mat-option>
-            <mat-option value="PPD">Prepaid</mat-option>
-            <mat-option value="CR">Credit</mat-option>
-            <mat-option value="CRD">Credit with prepaid</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -252,7 +364,9 @@
 
     <!-- ===== 5. Kontak PIC ===== -->
     <div class="pof-card">
-      <div class="pof-section__title">Kontak Penanggung Jawab</div>
+      <div class="pof-section__title">
+        {{ "poForm.sectionPic" | translate }}
+      </div>
       <div class="pof-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.supplierPIC" | translate }}</mat-label>
@@ -291,7 +405,9 @@
 
     <!-- ===== Catatan / Poin Perjanjian ===== -->
     <div class="pof-card">
-      <div class="pof-section__title">Catatan / Poin Perjanjian</div>
+      <div class="pof-section__title">
+        {{ "poForm.sectionNotes" | translate }}
+      </div>
 
       @if (hasSteelItem) {
         <div class="pof-clause">
@@ -313,7 +429,9 @@
             </svg>
           </div>
           <div class="pof-clause__body">
-            <div class="pof-clause__title">Terdeteksi material besi</div>
+            <div class="pof-clause__title">
+              {{ "poForm.steelDetected" | translate }}
+            </div>
             <mat-checkbox
               formControlName="steelTestRequired"
               color="primary"
@@ -325,11 +443,61 @@
         </div>
       }
 
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: garansi material, toleransi dimensi, syarat retur, ketentuan pengiriman, dll"
-      ></app-wysiwyg>
+      <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+      <div class="pof-card">
+        <div class="pof-cardhead">
+          <div class="pof-section__title">
+            {{ "poForm.extraClauseTitle" | translate }}
+          </div>
+          <button type="button" class="pof-addclause" (click)="addClause()">
+            <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
+          </button>
+        </div>
+        <p class="pof-clausenote">
+          Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan),
+          bukan menggantikannya. Contoh: jadwal pengiriman, syarat khusus, dsb.
+        </p>
+
+        <div formArrayName="additionalClauses">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="pof-clauserow">
+              <span class="pof-clausenum">{{ i + 1 }}.</span>
+              <mat-form-field appearance="outline" class="pof-clausefield">
+                <input
+                  matInput
+                  [formControlName]="i"
+                  placeholder="Contoh: Barang dikirim paling lambat 15 Agustus 2026"
+                />
+              </mat-form-field>
+              <button
+                type="button"
+                class="pof-clauseremove"
+                (click)="removeClause(i)"
+                [attr.aria-label]="'poForm.removeClause' | translate"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+          @if (additionalClauses.length === 0) {
+            <div class="pof-clauseempty">
+              {{ "poForm.noExtraClause" | translate }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
+      <div class="pof-card">
+        <div class="pof-section__title">
+          {{ "poForm.clauseTitle" | translate }}
+        </div>
+        <div class="pof-clausehint">
+          <mat-icon>lock</mat-icon>
+          <span>{{ "poForm.clausePreviewG" | translate }}</span>
+        </div>
+        <div class="pof-clausebox" [innerHTML]="clausePreview"></div>
+      </div>
 
       <div class="pof-actions">
         <span class="pof-spacer"></span>

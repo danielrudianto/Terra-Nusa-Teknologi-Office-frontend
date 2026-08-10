@@ -28,8 +28,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import {
   buildClauseHtml,
   latestClauseVersion,
+  buildStaffClauses,
 } from '../../../../constants/clause-templates';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { printPurchaseOrderD } from '../../../../helpers/purchase-order-d.helper';
 
 @Component({
   selector: 'app-purchase-order-create-d',
@@ -91,12 +93,22 @@ export class PurchaseOrderCreateDComponent {
     purchaseType: new FormControl('D'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
+    supplierNpwp: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     overtimeRate: new FormControl(0, [Validators.min(0)]),
+    // Dua poin pertama SPK tidak selalu berlaku; lihat clause-templates.
+    includeShiftClause: new FormControl(true),
+    includePlacementClause: new FormControl(true),
+    // Staf lapangan: penagihan bulanan + uraian tugas
+    isFieldStaff: new FormControl(false),
+    payoutDay: new FormControl(10, [Validators.min(1), Validators.max(31)]),
+    jobDescriptions: new FormArray([]),
     // Shift maksimal 24 jam — lebih dari itu tidak masuk akal untuk 1 hari.
     shiftHours: new FormControl(8, [
       Validators.required,
@@ -271,6 +283,11 @@ export class PurchaseOrderCreateDComponent {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            supplierPrefix: data.prefix,
+            supplierNpwp: data.npwp,
+            supplierCity: [data.city, data.province]
+              .filter((x: string) => !!x)
+              .join(', '),
             supplierAddress: data.address,
           });
         }
@@ -348,6 +365,12 @@ export class PurchaseOrderCreateDComponent {
           24,
           Math.max(1, Number(this.formGroup.get('shiftHours')?.value) || 8),
         ),
+        includeShiftClause: !!this.formGroup.get('includeShiftClause')?.value,
+        includePlacementClause: !!this.formGroup.get('includePlacementClause')
+          ?.value,
+        isFieldStaff: this.isFieldStaff,
+        payoutDay: Number(this.formGroup.get('payoutDay')?.value) || 10,
+        jobDescriptions: this.jobDescriptionValues,
         includeSundayPolicy: !!this.formGroup.get('includeSundayPolicy')?.value,
         // poin custom yang memang diketik sendiri oleh user
         additionalClauses: (this.additionalClauses.value as string[])
@@ -356,6 +379,33 @@ export class PurchaseOrderCreateDComponent {
         // rich-text agreement points / notes (HTML string)
         notes: this.formGroup.get('notes')?.value,
       },
+    };
+  }
+
+  /** Susun data cetak SPK dari isian form (klausul dirakit di helper). */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    const worker = this.t.at(0)?.getRawValue();
+    const wages = (worker?.wages as any[]) || [];
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      // Pekerja = supplier yang dipilih pada formulir
+      workerName: v.supplierName,
+      workerPrefix: v.supplierPrefix,
+      workerAddress: v.supplierAddress,
+      workerCity: v.supplierCity,
+      workerNpwp: v.supplierNpwp,
+      task: worker?.task,
+      items: wages.map((w) => ({
+        label: w.label,
+        amount: Number(w.amount) || 0,
+        unit: w.unit,
+      })),
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
     };
   }
 
@@ -370,6 +420,15 @@ export class PurchaseOrderCreateDComponent {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan SPK yang tersimpan.
+          try {
+            printPurchaseOrderD(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF surat perintah kerja:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) =>
@@ -400,9 +459,46 @@ export class PurchaseOrderCreateDComponent {
     return (this.additionalClauses.value as string[]) || [];
   }
 
+  get isFieldStaff(): boolean {
+    return !!this.formGroup.get('isFieldStaff')?.value;
+  }
+
+  get jobDescriptions(): FormArray {
+    return this.formGroup.get('jobDescriptions') as FormArray;
+  }
+
+  addJobDescription() {
+    this.jobDescriptions.push(new FormControl(''));
+  }
+
+  removeJobDescription(i: number) {
+    this.jobDescriptions.removeAt(i);
+  }
+
+  private get jobDescriptionValues(): string[] {
+    return ((this.jobDescriptions.value as string[]) || [])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+
+  /** Seksi tambahan khusus staf lapangan; kosong untuk pekerja harian. */
+  get staffSections(): { title?: string; items: (string | string[])[] }[] {
+    if (!this.isFieldStaff) return [];
+    return buildStaffClauses({
+      payoutDay: this.formGroup.get('payoutDay')?.value,
+      jobDescriptions: this.jobDescriptionValues,
+    });
+  }
+
   private clauseContext() {
     const v = this.formGroup.getRawValue();
     return {
+      isFieldStaff: this.isFieldStaff,
+      payoutDay: this.formGroup.get('payoutDay')?.value,
+      jobDescriptions: this.jobDescriptionValues,
+      includeShiftClause: !!this.formGroup.get('includeShiftClause')?.value,
+      includePlacementClause: !!this.formGroup.get('includePlacementClause')
+        ?.value,
       overtimeRate: v.overtimeRate,
       shiftHours: v.shiftHours,
       includeSundayPolicy: v.includeSundayPolicy,

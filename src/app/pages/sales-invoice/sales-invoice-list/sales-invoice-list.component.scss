@@ -23,9 +23,6 @@
     justify-content: space-between;
   }
 }
-.sil-chips {
-  margin: 0;
-}
 
 /* warna per filter chip (saat selected) */
 :host
@@ -398,4 +395,13 @@
     padding: 0;
     background: transparent;
   }
+}
+
+/* ===== chip filter: seragam dengan purchase-list =====
+   Tampilan chip dibiarkan bawaan Material; yang diubah hanya penanda
+   status (titik) dan warna saat terpilih, seperti pada purchase-list. */
+.sil-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

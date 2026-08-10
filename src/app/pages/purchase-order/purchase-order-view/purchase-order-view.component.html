@@ -1,0 +1,132 @@
+<div class="pov">
+  <div class="pov-head" mat-dialog-title>
+    <span class="pov-head__icon"><mat-icon>receipt_long</mat-icon></span>
+    <div class="pov-head__text">
+      <h2 class="pov-title">
+        {{ data?.name || ("purchaseOrder.viewTitle" | translate) }}
+      </h2>
+      <span class="pov-sub">{{ typeLabel(data?.purchaseType) }}</span>
+    </div>
+
+    <mat-button-toggle-group
+      class="pov-toggle"
+      [value]="mode"
+      (change)="mode = $event.value"
+      hideSingleSelectionIndicator
+    >
+      <mat-button-toggle value="formatted">
+        <mat-icon>description</mat-icon>
+        {{ "purchaseOrder.viewFormatted" | translate }}
+      </mat-button-toggle>
+      <mat-button-toggle value="raw">
+        <mat-icon>data_object</mat-icon>
+        {{ "purchaseOrder.viewRaw" | translate }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <mat-dialog-content class="pov-content">
+    @if (isLoading) {
+      <div class="pov-state"><mat-spinner diameter="34"></mat-spinner></div>
+    } @else if (mode === "raw") {
+      <pre class="pov-raw">{{ rawJson }}</pre>
+    } @else {
+      <!-- ===== ringkasan ===== -->
+      <section class="pov-section">
+        <div class="pov-section__title">
+          {{ "purchaseOrder.viewSummary" | translate }}
+        </div>
+        <div class="pov-grid">
+          <div class="pov-field">
+            <span class="pov-label">{{ "table.date" | translate }}</span>
+            <span class="pov-value">{{
+              data?.date | date: "dd MMM yyyy"
+            }}</span>
+          </div>
+          <div class="pov-field">
+            <span class="pov-label">{{ "table.project" | translate }}</span>
+            <span class="pov-value">{{ data?.projectName || "—" }}</span>
+          </div>
+          <div class="pov-field pov-field--wide">
+            <span class="pov-label">{{ "table.supplier" | translate }}</span>
+            <span class="pov-value">{{ data?.supplierName || "—" }}</span>
+            <span class="pov-value pov-value--sm">{{
+              data?.supplierAddress
+            }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== barang ===== -->
+      <section class="pov-section">
+        <div class="pov-section__title">
+          {{ "purchaseOrder.viewItems" | translate }}
+        </div>
+        @if (items.length === 0) {
+          <div class="pov-empty">
+            <mat-icon>inventory_2</mat-icon>
+            <span>{{ "purchaseOrder.viewNoItems" | translate }}</span>
+          </div>
+        } @else {
+          <div class="pov-items">
+            @for (item of items; track $index) {
+              <div class="pov-item">
+                <span class="pov-item__no">{{ $index + 1 }}</span>
+                <span class="pov-item__text">
+                  <span class="pov-item__name">{{ itemName(item) }}</span>
+                  <span class="pov-item__meta">
+                    {{ item.quantity }} {{ item.unit }} ×
+                    {{ item.price | number: "1.0-0" }}
+                  </span>
+                </span>
+                <span class="pov-item__amount">
+                  Rp {{ lineTotal(item) | number: "1.0-0" }}
+                </span>
+              </div>
+            }
+            <div class="pov-item pov-item--total">
+              <span class="pov-item__text">{{
+                "purchaseOrder.viewSubtotal" | translate
+              }}</span>
+              <span class="pov-item__amount"
+                >Rp {{ subTotal | number: "1.0-0" }}</span
+              >
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- ===== poin perjanjian ===== -->
+      <section class="pov-section">
+        <div class="pov-section__title">
+          {{ "purchaseOrder.viewClauses" | translate }}
+        </div>
+        @if (clauses.length === 0) {
+          <div class="pov-empty">
+            <mat-icon>gavel</mat-icon>
+            <span>{{ "purchaseOrder.viewNoClauses" | translate }}</span>
+          </div>
+        } @else {
+          <ol class="pov-clauses">
+            @for (clause of clauses; track $index) {
+              <li>{{ clause }}</li>
+            }
+          </ol>
+        }
+      </section>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="pov-foot">
+    @if (mode === "raw" && !isLoading) {
+      <button type="button" class="pov-copy" (click)="copyRaw()">
+        <mat-icon>content_copy</mat-icon>
+        {{ "purchaseOrder.copyRaw" | translate }}
+      </button>
+    }
+    <span class="pov-spacer"></span>
+    <button type="button" class="pov-close" mat-dialog-close>
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

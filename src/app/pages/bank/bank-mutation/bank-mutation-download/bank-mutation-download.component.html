@@ -1,38 +1,61 @@
-<h1 mat-dialog-title>Download bank mutation</h1>
-<form [formGroup]="formGroup">
-  <mat-dialog-content>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Month</mat-label>
-      <mat-select formControlName="month">
-        <mat-option [value]="1">January</mat-option>
-        <mat-option [value]="2">February</mat-option>
-        <mat-option [value]="3">March</mat-option>
-        <mat-option [value]="4">April</mat-option>
-        <mat-option [value]="5">May</mat-option>
-        <mat-option [value]="6">June</mat-option>
-        <mat-option [value]="7">July</mat-option>
-        <mat-option [value]="8">August</mat-option>
-        <mat-option [value]="9">September</mat-option>
-        <mat-option [value]="10">October</mat-option>
-        <mat-option [value]="11">November</mat-option>
-        <mat-option [value]="12">December</mat-option>
-      </mat-select>
-    </mat-form-field>
+<div class="bmd">
+  <div class="bmd-head" mat-dialog-title>
+    <span class="bmd-head__icon"><mat-icon>download</mat-icon></span>
+    <div class="bmd-head__text">
+      <h2 class="bmd-title">{{ "bankMutationDl.title" | translate }}</h2>
+      <span class="bmd-sub">{{
+        data?.name ||
+          data?.accountNumber ||
+          ("bankMutationDl.subtitle" | translate)
+      }}</span>
+    </div>
+  </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Year</mat-label>
-      <input matInput formControlName="year" />
-    </mat-form-field>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button
-      mat-stroked-button
-      color="primary"
-      style="letter-spacing: 0"
-      [disabled]="isLoading || !formGroup.valid"
-      (click)="download()"
-    >
-      Download
-    </button>
-  </mat-dialog-actions>
-</form>
+  <form [formGroup]="formGroup">
+    <mat-dialog-content class="bmd-content">
+      <div class="bmd-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "common.month" | translate }}</mat-label>
+          <mat-select formControlName="month">
+            @for (m of months; track m.value) {
+              <mat-option [value]="m.value">{{
+                m.label | translate
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "common.year" | translate }}</mat-label>
+          <mat-select formControlName="year">
+            @for (y of years; track y) {
+              <mat-option [value]="y">{{ y }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <p class="bmd-hint">{{ "bankMutationDl.hint" | translate }}</p>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="bmd-foot">
+      <button type="button" class="bmd-cancel" mat-dialog-close>
+        {{ "common.cancel" | translate }}
+      </button>
+      <span class="bmd-spacer"></span>
+      <button
+        type="button"
+        class="bmd-submit"
+        [disabled]="isLoading || !formGroup.valid"
+        (click)="download()"
+      >
+        <mat-icon>download</mat-icon>
+        {{
+          isLoading
+            ? ("common.processing" | translate)
+            : ("bankMutationDl.download" | translate)
+        }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

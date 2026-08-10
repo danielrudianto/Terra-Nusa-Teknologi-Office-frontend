@@ -62,3 +62,18 @@ export const MASTER_ITEM_PURCHASE_TYPES: string[] = [
   '6.5.1',
   '6.5.2',
 ];
+
+/**
+ * Kunci terjemahan untuk satu kode jenis PO.
+ *
+ * Titik pada kode (mis. "5.1.1") tidak bisa dipakai langsung sebagai kunci
+ * i18n karena dianggap pemisah tingkat, sehingga diganti garis bawah.
+ */
+export function purchaseTypeKey(code: string): string {
+  return `poType.t${String(code || '').replace(/\./g, '_')}`;
+}
+
+/** Kunci terjemahan untuk keterangan jenis PO. */
+export function purchaseTypeDescKey(code: string): string {
+  return `${purchaseTypeKey(code)}Desc`;
+}

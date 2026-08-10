@@ -9,7 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label';
+import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
 
 @Component({
   selector: 'app-master-item-view',

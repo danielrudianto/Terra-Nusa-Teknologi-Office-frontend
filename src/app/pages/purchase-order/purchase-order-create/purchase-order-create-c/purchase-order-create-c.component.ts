@@ -30,6 +30,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { printPurchaseOrderC } from '../../../../helpers/purchase-order-c.helper';
 
 @Component({
   selector: 'app-purchase-order-create-g',
@@ -94,6 +95,8 @@ export class PurchaseOrderCreateCComponent {
     purchaseType: new FormControl('C'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
       Validators.required,
@@ -203,15 +206,12 @@ export class PurchaseOrderCreateCComponent {
   }
 
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
 
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
 
   /** PBBKB = percentage of DPP */
@@ -225,9 +225,10 @@ export class PurchaseOrderCreateCComponent {
   }
 
   get grandTotal(): number {
-    // PBBKB adds to the bill; PPh 22 is withheld (subtracted)
-    // untuk BBM, PPh22 ditambahkan (bukan dipotong) — sesuai data purchases (otherValueNote='PPH22')
-    return this.rawTotal + this.pbbkbAmount + this.pph22Amount;
+    // Harga yang diisi = DPP, PPN ditambahkan di atasnya.
+    // PBBKB menambah tagihan; untuk BBM PPh 22 juga ditambahkan
+    // (bukan dipotong) — sesuai data purchases (otherValueNote='PPH22').
+    return this.subTotal + this.ppnAmount + this.pbbkbAmount + this.pph22Amount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -246,6 +247,10 @@ export class PurchaseOrderCreateCComponent {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            supplierPrefix: data.prefix,
+            supplierCity: [data.city, data.province]
+              .filter((x: string) => !!x)
+              .join(', '),
             supplierAddress: data.address,
           });
         }
@@ -311,15 +316,11 @@ export class PurchaseOrderCreateCComponent {
   }
 
   formatData() {
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+    const dpp = this.t.value.reduce(
+      (acc: any, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -339,6 +340,21 @@ export class PurchaseOrderCreateCComponent {
       otherValue: this.pph22Amount > 0 ? this.pph22Amount : null,
       otherValueNote: this.pph22Amount > 0 ? 'PPH22' : null,
       billing_requirements: {},
+      // Baris item PO. Tanpa ini `purchase_order_items` tidak pernah terisi,
+      // sehingga dokumen yang dicetak ulang kehilangan seluruh daftar barang.
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          item_id: x.item_id,
+          task: x.description,
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.remarks,
+          // SKU tidak disalin ke sini: sudah tersimpan di master_item
+          // dan ikut terbaca lewat item_id saat PO dibuka kembali.
+        };
+      }),
       customData: {
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
@@ -359,17 +375,38 @@ export class PurchaseOrderCreateCComponent {
           .filter((x) => x.length > 0),
         // fuel-analysis clause on/off, stored so old POs re-render identically
         fuelReportRequired: this.fuelReportRequired,
-        // catalog-referenced items -> maps to purchase_order_items later
-        purchase_order: this.t.value.map((x: any) => ({
-          item_id: x.item_id,
-          sku: x.sku,
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks: x.remarks,
-        })),
       },
+    };
+  }
+
+  /** Susun data cetak dari isian form (klausul dirakit di helper). */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
+      supplierAddress: v.supplierAddress,
+      supplierCity: v.supplierCity,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: x.description || x.sku || '',
+          quantity: Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+          // Catatan per baris ikut dicetak di bawah nama barang.
+          remarks: x.remarks,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      pbbkbPercent: Number(v.pbbkbPercent) || 0,
+      pph22: Number(v.pph22) || 0,
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
     };
   }
 
@@ -384,6 +421,15 @@ export class PurchaseOrderCreateCComponent {
             'Close',
             { duration: 3000 },
           );
+          // Langsung buka PDF-nya; gagal cetak tidak membatalkan PO tersimpan.
+          try {
+            printPurchaseOrderC(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

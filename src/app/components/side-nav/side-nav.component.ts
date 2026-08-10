@@ -3,10 +3,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-side-nav',
-  imports: [CommonModule, FormsModule, RouterModule, SideNavItemComponent],
+  imports: [
+    TranslatePipe,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    SideNavItemComponent,
+  ],
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss'],
   standalone: true,
@@ -14,7 +21,10 @@ import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
 export class SideNavComponent implements OnInit {
   @Input('items') items: any[] = [];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   buildStatus: string = 'Alpha';
   version: string = '1.0.0';
@@ -112,9 +122,18 @@ export class SideNavComponent implements OnInit {
     return this.filter.trim().length > 0;
   }
 
+  /**
+   * Cocokkan pencarian dengan teks yang tampil, bukan kunci i18n.
+   *
+   * Nama menu kini berupa kunci ('nav.purchaseOrder'), sehingga mencocokkan
+   * nilai mentahnya membuat pencarian dalam bahasa apa pun tidak ketemu.
+   */
   matches(item: any): boolean {
     const q = this.filter.trim().toLowerCase();
-    return !q || (item?.name || '').toLowerCase().includes(q);
+    if (!q) return true;
+    const key = item?.name || '';
+    const label = this.translate.instant(key) || key;
+    return String(label).toLowerCase().includes(q);
   }
 
   groupHasMatch(group: any): boolean {

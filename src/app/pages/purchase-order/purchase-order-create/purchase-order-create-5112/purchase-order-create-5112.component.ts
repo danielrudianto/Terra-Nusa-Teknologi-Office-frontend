@@ -238,19 +238,16 @@ export class PurchaseOrderCreate5112Component {
   }
 
   get subTotal(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal / 1.11
-      : this.rawTotal;
+    // Harga yang diisi user adalah DPP; PPN ditambahkan di atasnya.
+    return this.rawTotal;
   }
 
   get ppnAmount(): number {
-    return this.formGroup.get('includePPN')?.value
-      ? this.rawTotal - this.rawTotal / 1.11
-      : 0;
+    return this.formGroup.get('includePPN')?.value ? this.rawTotal * 0.11 : 0;
   }
 
   get grandTotal(): number {
-    return this.rawTotal;
+    return this.subTotal + this.ppnAmount;
   }
 
   get lineTotal(): (i: number) => number {
@@ -319,15 +316,11 @@ export class PurchaseOrderCreate5112Component {
 
   formatData() {
     const v = this.formGroup.getRawValue();
-    const dpp = this.formGroup.get('includePPN')?.value
-      ? this.t.value.reduce(
-          (acc: any, x: any) => acc + (x.price * x.quantity) / 1.11,
-          0,
-        )
-      : this.t.value.reduce(
-          (acc: any, x: any) => acc + x.price * x.quantity,
-          0,
-        );
+    const dpp = this.t.value.reduce(
+      (acc: any, x: any) =>
+        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      0,
+    );
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -342,6 +335,18 @@ export class PurchaseOrderCreate5112Component {
       payment_term: this.formGroup.get('paymentTerm')?.value,
       templateVersion: this.templateVersion,
       billing_requirements: {},
+      // Baris item PO (tanpa katalog barang — deskripsi diketik manual).
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          item_id: null,
+          task: x.description,
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.remarks,
+        };
+      }),
       customData: {
         paymentTerm: v.paymentTerm,
         creditTerm: v.creditTerm,
@@ -363,13 +368,6 @@ export class PurchaseOrderCreate5112Component {
         additionalClauses: this.additionalClauseValues
           .map((x) => (x || '').trim())
           .filter((x) => x.length > 0),
-        purchase_order: this.t.value.map((x: any) => ({
-          description: x.description,
-          quantity: x.quantity,
-          price: x.price,
-          unit: x.unit,
-          remarks: x.remarks,
-        })),
       },
     };
   }

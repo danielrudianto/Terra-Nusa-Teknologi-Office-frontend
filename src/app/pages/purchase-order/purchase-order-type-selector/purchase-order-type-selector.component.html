@@ -1,0 +1,81 @@
+<div class="pots">
+  <div class="pots-head" mat-dialog-title>
+    <span class="pots-head__icon"><mat-icon>add_shopping_cart</mat-icon></span>
+    <div class="pots-head__text">
+      <h2 class="pots-title">{{ "purchaseOrder.createTitle" | translate }}</h2>
+      <span class="pots-sub">{{
+        "purchaseOrder.createSubtitle" | translate
+      }}</span>
+    </div>
+    <button type="button" class="pots-close" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="pots-content">
+    <div class="pots-search">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        [(ngModel)]="keyword"
+        [placeholder]="'purchaseOrder.searchType' | translate"
+        cdkFocusInitial
+      />
+    </div>
+
+    @if (isEmpty) {
+      <div class="pots-empty">
+        <mat-icon>search_off</mat-icon>
+        <span>{{ "purchaseOrder.noTypeMatch" | translate }}</span>
+      </div>
+    }
+
+    @if (filteredProject.length) {
+      <div class="pots-section">
+        <div class="pots-section__head">
+          <span class="pots-section__title">{{
+            "purchaseOrder.projectExpenses" | translate
+          }}</span>
+          <span class="pots-section__count">{{ filteredProject.length }}</span>
+        </div>
+        <div class="pots-grid">
+          @for (tile of filteredProject; track tile.type) {
+            <button type="button" class="pots-tile" (click)="select(tile.type)">
+              <span class="pots-tile__badge">{{ tile.type }}</span>
+              <span class="pots-tile__title">{{
+                typeKey(tile.type) | translate
+              }}</span>
+              <span class="pots-tile__desc">
+                {{ typeDescKey(tile.type) | translate }}
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (filteredOffice.length) {
+      <div class="pots-section">
+        <div class="pots-section__head">
+          <span class="pots-section__title">{{
+            "purchaseOrder.officeExpenses" | translate
+          }}</span>
+          <span class="pots-section__count">{{ filteredOffice.length }}</span>
+        </div>
+        <div class="pots-grid">
+          @for (tile of filteredOffice; track tile.type) {
+            <button type="button" class="pots-tile" (click)="select(tile.type)">
+              <span class="pots-tile__badge">{{ tile.type }}</span>
+              <span class="pots-tile__title">{{
+                typeKey(tile.type) | translate
+              }}</span>
+              <span class="pots-tile__desc">
+                {{ typeDescKey(tile.type) | translate }}
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </mat-dialog-content>
+</div>
