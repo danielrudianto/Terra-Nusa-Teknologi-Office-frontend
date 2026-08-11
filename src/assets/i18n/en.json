@@ -2317,6 +2317,7 @@
     "shipmentService": "Goods delivery service",
     "equipmentRental": "Equipment rental + operator",
     "insuranceDoc": "Insurance document",
+    "cargoListDays": "Cargo list before loading",
     "consignmentNote": "Consignment note",
     "deliveryRisk": "Delivery risk",
     "unloadingRisk": "Unloading risk",

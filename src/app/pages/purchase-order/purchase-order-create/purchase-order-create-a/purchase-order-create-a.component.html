@@ -124,17 +124,6 @@
           </mat-form-field>
         } @else {
           <mat-form-field appearance="outline">
-            <mat-label>{{ "poA.insuranceDoc" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="insuranceDays"
-              type="number"
-              [min]="0"
-            />
-            <span matSuffix>{{ "common.days" | translate }}</span>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
             <mat-label>{{ "poA.consignmentNote" | translate }}</mat-label>
             <input
               matInput
@@ -145,15 +134,30 @@
             <span matSuffix>{{ "common.days" | translate }}</span>
           </mat-form-field>
 
-          <!-- Asuransi: bila diurus sendiri, klausulnya tidak dicetak. -->
-          <mat-slide-toggle
+          <!--
+            Asuransi: bila diurus sendiri oleh PIHAK PERTAMA, klausulnya tidak
+            dicetak. Tenggat dan nilai pertanggungan berada di bawah kotak
+            centang ini agar keduanya ikut hilang saat dimatikan.
+          -->
+          <mat-checkbox
             formControlName="requireInsuranceDoc"
-            class="poa-toggle"
+            class="poa-checkbox"
           >
             {{ "poA.requireInsuranceDoc" | translate }}
-          </mat-slide-toggle>
+          </mat-checkbox>
 
           @if (formGroup.get("requireInsuranceDoc")?.value) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "poA.insuranceDoc" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="insuranceDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>{{ "common.days" | translate }}</span>
+            </mat-form-field>
+
             <mat-form-field appearance="outline">
               <mat-label>{{ "poA.insuranceValue" | translate }}</mat-label>
               <input
@@ -163,6 +167,23 @@
                 mask="separator.2"
               />
               <mat-hint>{{ "poA.insuranceValueHint" | translate }}</mat-hint>
+            </mat-form-field>
+          }
+
+          <!--
+            Kewajiban PIHAK PERTAMA pada pengiriman laut. Berdiri sendiri:
+            tetap berlaku walau asuransi diurus sendiri.
+          -->
+          @if (usesMode("laut")) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "poA.cargoListDays" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="cargoListDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>{{ "common.days" | translate }}</span>
             </mat-form-field>
           }
 

@@ -1,4 +1,4 @@
-<div class="pos">
+<div class="po641">
   <app-header-title
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
@@ -80,15 +80,12 @@
               <div class="po641-line__head">
                 <span class="po641-line__no">#{{ i + 1 }}</span>
                 <span class="po641-line__label">
-                  {{ resolvedType(i) || "Dokumen belum dipilih" }}
+                  {{ resolvedType(i) || "Jenis pengurusan belum dipilih" }}
                   <span
                     class="po641-validity"
-                    *ngIf="getFormGroupAt(i).value.validUntil"
+                    *ngIf="getFormGroupAt(i).value.description"
                   >
-                    s/d
-                    {{
-                      getFormGroupAt(i).value.validUntil | date: "dd MMM yyyy"
-                    }}
+                    — {{ getFormGroupAt(i).value.description }}
                   </span>
                 </span>
                 <span class="po641-line__amt"
@@ -105,12 +102,12 @@
               </div>
               <div class="po641-line__grid">
                 <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.documentType" | translate }}</mat-label>
+                  <mat-label>Jenis pengurusan</mat-label>
                   <mat-select
-                    formControlName="documentType"
-                    (selectionChange)="onDocumentTypeChange(i)"
+                    formControlName="serviceType"
+                    (selectionChange)="onServiceTypeChange(i)"
                   >
-                    <mat-option *ngFor="let d of documentTypes" [value]="d">{{
+                    <mat-option *ngFor="let d of serviceTypes" [value]="d">{{
                       d
                     }}</mat-option>
                   </mat-select>
@@ -118,60 +115,41 @@
 
                 @if (isOther(i)) {
                   <mat-form-field appearance="outline">
-                    <mat-label>{{
-                      "poForm.documentName" | translate
-                    }}</mat-label>
+                    <mat-label>Sebutkan pengurusannya</mat-label>
                     <input
                       matInput
                       formControlName="customType"
                       maxlength="100"
-                      placeholder="Tulis nama dokumennya"
+                      placeholder="Tulis jenis pengurusannya"
                     />
                   </mat-form-field>
                 }
 
+                <!--
+                  Nomor dokumen dan masa berlaku tidak diminta di sini: itu
+                  hasil pengurusan, belum ada saat SPK dibuat.
+                -->
                 <mat-form-field appearance="outline">
-                  <mat-label>{{
-                    "poForm.documentNumber" | translate
-                  }}</mat-label>
+                  <mat-label>Objek yang diurus</mat-label>
                   <input
                     matInput
-                    formControlName="documentNumber"
-                    placeholder="Ex. 0123/SBU/2026"
+                    formControlName="description"
+                    maxlength="150"
+                    placeholder="Ex. SBU BS004 Bangunan Gedung"
                   />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.validFrom" | translate }}</mat-label>
+                  <mat-label>Target selesai</mat-label>
                   <input
                     matInput
-                    formControlName="validFrom"
-                    [matDatepicker]="dpFrom"
-                    placeholder="Mulai berlaku"
+                    formControlName="targetDays"
+                    type="number"
+                    [min]="0"
+                    placeholder="Ex. 30"
                   />
-                  <mat-datepicker-toggle
-                    matIconPrefix
-                    [for]="dpFrom"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #dpFrom></mat-datepicker>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poForm.validUntil" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="validUntil"
-                    [matDatepicker]="dpUntil"
-                    placeholder="Masa berlaku habis"
-                  />
-                  <mat-datepicker-toggle
-                    matIconPrefix
-                    [for]="dpUntil"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #dpUntil></mat-datepicker>
-                  <mat-hint>{{
-                    "po641.emptyIfNoValidity" | translate
-                  }}</mat-hint>
+                  <span matSuffix>hari kerja</span>
+                  <mat-hint>Dihitung sejak berkas dinyatakan lengkap</mat-hint>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -242,11 +220,25 @@
       <div class="po641-grid">
         <mat-form-field appearance="outline" class="po641-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
-          <input
-            matInput
+          <mat-select
             formControlName="paymentTerm"
-            placeholder="Ex. Tempo 30 hari / CASH"
-          />
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
@@ -263,6 +255,176 @@
             [max]="100"
           /><span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po641-span2">
+          <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="pphCode"
+            readonly
+            (click)="openPphSelector()"
+            placeholder="Pilih kode PPh"
+          />
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            (click)="openPphSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          @if (formGroup.value.pphTaxObject) {
+            <mat-hint>
+              {{ formGroup.value.pphPercentage }}% —
+              {{ formGroup.value.pphTaxObject }}
+            </mat-hint>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Perkiraan biaya resmi ===== -->
+    <div class="po641-card">
+      <div class="po641-section__title">Perkiraan biaya resmi</div>
+      <p class="po641-hint">
+        PNBP, retribusi, atau iuran lembaga yang disetorkan atas nama AKN. Bukan
+        pendapatan vendor — tidak dikenakan PPN maupun potongan PPh, dan tidak
+        masuk nilai jasa. Ditagihkan sesuai bukti setor.
+      </p>
+
+      @for (fee of fees.controls; track fee; let i = $index) {
+        <div class="po641-line" [formGroup]="getFeeGroupAt(i)">
+          <div class="po641-line__head">
+            <span class="po641-line__no">#{{ i + 1 }}</span>
+            <span class="po641-line__label">
+              {{ getFeeGroupAt(i).value.task || "Biaya belum diisi" }}
+            </span>
+            <span class="po641-line__amt"
+              >Rp {{ getFeeGroupAt(i).value.amount | number: "1.0-0" }}</span
+            >
+            <button
+              mat-icon-button
+              type="button"
+              (click)="removeFeeAt(i)"
+              aria-label="Hapus"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <div class="po641-line__grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Uraian biaya resmi</mat-label>
+              <input
+                matInput
+                formControlName="task"
+                maxlength="100"
+                placeholder="Ex. PNBP pengesahan akta"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Keterangan</mat-label>
+              <input matInput formControlName="description" maxlength="150" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Perkiraan jumlah</mat-label>
+              <input
+                matInput
+                formControlName="amount"
+                thousandSeparator=" "
+                mask="separator.2"
+              />
+              <span matPrefix>Rp&nbsp;</span>
+            </mat-form-field>
+          </div>
+        </div>
+      }
+
+      <div class="po641-actions">
+        <button mat-stroked-button type="button" (click)="addFee()">
+          <mat-icon>add</mat-icon> Tambah biaya resmi
+        </button>
+        <span class="po641-spacer"></span>
+        @if (hasOfficialFee) {
+          <span class="po641-line__amt"
+            >Perkiraan total: Rp {{ officialFeeTotal | number: "1.0-0" }}</span
+          >
+        }
+      </div>
+    </div>
+
+    <!-- ===== Ketentuan pelaksanaan ===== -->
+    <div class="po641-card">
+      <div class="po641-section__title">Ketentuan pelaksanaan</div>
+      <div class="po641-grid">
+        @if (hasOfficialFee) {
+          <mat-form-field appearance="outline" class="po641-span2">
+            <mat-label>Bila ditolak di luar kelalaian vendor</mat-label>
+            <mat-select formControlName="rejectionCostBearer">
+              <mat-option
+                *ngFor="let r of rejectionBearers"
+                [value]="r.value"
+                >{{ r.label }}</mat-option
+              >
+            </mat-select>
+            <mat-hint
+              >Penanggung biaya resmi yang sudah disetor dan tidak bisa ditarik
+              kembali</mat-hint
+            >
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline">
+          <mat-label>Pengembalian dokumen asli</mat-label>
+          <input
+            matInput
+            formControlName="documentReturnDays"
+            type="number"
+            [min]="0"
+          />
+          <span matSuffix>hari kerja</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Interval pelaporan</mat-label>
+          <input
+            matInput
+            formControlName="reportingIntervalDays"
+            type="number"
+            [min]="0"
+          />
+          <span matSuffix>hari</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Pratinjau catatan perjanjian ===== -->
+    <div class="po641-card">
+      <div class="po641-section__title">
+        {{ "poH.previewAgreement" | translate }}
+      </div>
+      <p class="po641-hint">
+        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
+        isian di atas.
+      </p>
+      <div class="po641-preview">
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="po641-preview__title">{{ sec.title }}</div>
+          }
+          <ol class="po641-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="po641-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li>{{ d }}</li>
+                  }
+                </ol>
+              } @else {
+                <li>{{ asText(p) }}</li>
+              }
+            }
+          </ol>
+        }
       </div>
     </div>
 

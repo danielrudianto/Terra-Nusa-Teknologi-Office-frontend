@@ -27,9 +27,14 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { ApiService } from '../../../../services/api.service';
 import {
   buildClauseHtml,
+  buildMaintenanceBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-dialog/purchase-order-512-mode-dialog.component';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { TranslatePipe } from '@ngx-translate/core';
 
 /**
@@ -111,10 +116,75 @@ export class PurchaseOrderCreate512Component {
     supplierPICPhoneNumber: new FormControl(''),
     officePICName: new FormControl(''),
     officePICPhoneNumber: new FormControl(''),
+    // Pemotongan PPh hanya relevan pada mode jasa; dikosongkan lagi bila
+    // penggunanya berpindah ke mode barang.
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
     additionalClauses: new FormArray([]),
     lines: new FormArray([]),
     includePPN: new FormControl(true),
   });
+
+  /*
+   * Termin memakai kode baku, bukan teks bebas. Kalimat termin pada klausul
+   * dipilih berdasarkan kode ini; teks bebas tidak cocok dengan satu pun
+   * cabangnya sehingga dokumennya dulu tercetak tanpa termin.
+   */
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  /** Kolom tempo/uang muka hanya aktif bila terminnya memang memakainya. */
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
 
   ngOnInit(): void {
     this.askMode(true);
@@ -287,6 +357,11 @@ export class PurchaseOrderCreate512Component {
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,
       maintenanceMode: this.mode || 'barang',
+      // Hanya jasa yang dipotong PPh; mode barang tidak mengirimkannya
+      // sehingga klausulnya tidak ikut tercetak.
+      pphCode: this.isGoods ? '' : v.pphCode,
+      pphTaxObject: this.isGoods ? '' : v.pphTaxObject,
+      pphPercentage: this.isGoods ? 0 : v.pphPercentage,
       // dipakai mode barang (clause G)
       deliveryMethod: v.deliveryMethod,
       deliveryAddress: v.deliveryAddress,
@@ -300,6 +375,9 @@ export class PurchaseOrderCreate512Component {
   /** field pengiriman + kontak PJ wajib hanya saat mode barang */
   private setGoodsValidators() {
     const goods = this.isGoods;
+    // Pindah ke mode barang membuang PPh yang sempat dipilih, agar tidak
+    // ikut tersimpan diam-diam pada PO pembelian sparepart.
+    if (goods) this.clearPph();
     const req = [
       'deliveryAddress',
       'supplierPICName',
@@ -364,6 +442,13 @@ export class PurchaseOrderCreate512Component {
       }),
       customData: {
         maintenanceMode: this.mode, // 'barang' | 'jasa'
+        pphCode: this.isGoods ? '' : this.formGroup.get('pphCode')?.value,
+        pphTaxObject: this.isGoods
+          ? ''
+          : this.formGroup.get('pphTaxObject')?.value,
+        pphPercentage: this.isGoods
+          ? 0
+          : this.formGroup.get('pphPercentage')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
@@ -385,6 +470,45 @@ export class PurchaseOrderCreate512Component {
     };
   }
 
+  /**
+   * Susun data cetak dari isian form.
+   *
+   * Dua mode menghasilkan dokumen berbeda: sparepart adalah pembelian
+   * barang (Purchase Order, tata letak G), sedangkan perbaikan adalah
+   * pemesanan jasa (Surat Perintah Kerja, tata letak B). Keduanya memakai
+   * template klausul '5.1.2' yang sama.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: '5.1.2',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          // Barang memakai deskripsi katalog; jasa memakai uraian pekerjaan.
+          name: this.isGoods ? x.description : x.task,
+          // Aset yang dirawat ikut dicetak agar dokumen bisa ditelusuri ke
+          // alat mana; tanpa ini satu-satunya penanda hanya nomor PO.
+          remarks: [x.asset, x.note].filter(Boolean).join(' — '),
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: this.templateVersion,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues
+        .map((x) => (x || '').trim())
+        .filter((x) => x.length > 0),
+    };
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
@@ -396,6 +520,25 @@ export class PurchaseOrderCreate512Component {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            const printData = this.buildPrintData(
+              res?.purchase_order_name ?? '',
+            );
+            if (this.isGoods) {
+              printPurchaseOrderG(printData);
+            } else {
+              printPurchaseOrderB({
+                ...printData,
+                billingTerms: buildMaintenanceBillingTerms(),
+                billingTitle:
+                  'TATA CARA PENAGIHAN DAN PEMBAYARAN\nJASA PERBAIKAN & PERAWATAN',
+              });
+            }
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) =>

@@ -26,6 +26,12 @@ export interface IPurchaseOrderBItem {
 }
 
 export interface IPurchaseOrderB {
+  /**
+   * Kode jenis PO untuk memilih template klausul. Default 'B'.
+   * PO 5.1.2 mode jasa memakai tata letak SPK yang sama persis, hanya
+   * kode templatenya berbeda — sama seperti 5.1.6 yang menumpang PO-G.
+   */
+  poType?: string;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -41,6 +47,41 @@ export interface IPurchaseOrderB {
   templateVersion?: string;
   clauseContext: ClauseContext;
   additionalClauses?: string[];
+  /**
+   * Lampiran tata cara penagihan, dicetak di lembar terpisah.
+   *
+   * SPK sewa alat tidak memakainya; PO 5.1.2 mode jasa memakainya karena
+   * catatan perjanjiannya menyebut adanya lembar terpisah.
+   */
+  billingTerms?: any[];
+  /** Judul lampiran, dua baris seperti dokumen PO lain. */
+  billingTitle?: string;
+}
+
+/**
+ * Penomoran bersarang untuk lampiran; gaya penomoran berganti tiap tingkat,
+ * dan blok alamat dicetak rata tengah tanpa nomor.
+ */
+const LIST_STYLES = ['decimal', 'lower-alpha', 'lower-roman'];
+
+function nestedList(items: any[], level = 0): any {
+  return {
+    ol: items.map((item) => {
+      if (Array.isArray(item)) return nestedList(item, level + 1);
+      if (item && typeof item === 'object' && Array.isArray(item.block)) {
+        return {
+          text: item.block.join('\n'),
+          alignment: 'center' as Alignment,
+          bold: true,
+          margin: [0, 6, 0, 6] as Margins,
+          listType: 'none' as any,
+        };
+      }
+      return clauseToPdf(item);
+    }),
+    type: LIST_STYLES[Math.min(level, LIST_STYLES.length - 1)] as any,
+    margin: [0, 0, 0, 4] as Margins,
+  };
 }
 
 const DAY_NAMES = [
@@ -202,7 +243,7 @@ export function printPurchaseOrderB(
 ) {
   // Poin perjanjian dirakit dari template + data, bukan teks tersimpan.
   const clauses = buildClauseLines(
-    'B',
+    data.poType || 'B',
     data.clauseContext,
     data.templateVersion,
     data.additionalClauses,
@@ -248,6 +289,21 @@ export function printPurchaseOrderB(
       },
 
       signatureColumns(data),
+
+      // ---------- lampiran: tata cara penagihan ----------
+      ...(data.billingTerms?.length
+        ? [
+            {
+              text:
+                data.billingTitle ||
+                'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEDIA JASA',
+              style: 'docTitle',
+              pageBreak: 'before' as any,
+              margin: [0, 0, 0, 12] as Margins,
+            },
+            nestedList(data.billingTerms),
+          ]
+        : []),
     ],
     styles: DOCUMENT_STYLES,
     defaultStyle: DOCUMENT_DEFAULT_STYLE,

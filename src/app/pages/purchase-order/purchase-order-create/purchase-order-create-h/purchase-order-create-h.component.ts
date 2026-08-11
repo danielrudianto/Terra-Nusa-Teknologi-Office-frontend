@@ -96,11 +96,31 @@ export class PurchaseOrderCreateHComponent {
   }
 
   clearPph() {
+    // Subkontraktor perorangan tidak boleh tanpa kode objek pajak: kodenya
+    // sudah baku, sehingga mengosongkannya hanya menghasilkan PO tanpa dasar
+    // pemotongan. Dikembalikan ke kode baku, bukan dikosongkan.
+    if (!this.isEntity) {
+      this.applyPeroranganPph();
+      this.onPphNoteChange();
+      return;
+    }
+
     this.formGroup.patchValue({
       pphCode: '',
       pphTaxObject: '',
       pphPercentage: 0,
     });
+  }
+
+  /**
+   * Penjaga terakhir sebelum PO tersimpan.
+   *
+   * Menyembunyikan tombol saja tidak cukup: kode objek pajak bisa hilang
+   * lewat jalur lain (mis. berpindah jenis subkontraktor). Tombol simpan
+   * ikut dikunci agar PO perorangan tidak mungkin terbit tanpa PPh.
+   */
+  get pphMissingForPerorangan(): boolean {
+    return !this.isEntity && !this.formGroup.get('pphCode')?.value;
   }
 
   /** Bentuk ringkas dipakai untuk pekerjaan yang syaratnya sudah baku. */
@@ -144,11 +164,36 @@ export class PurchaseOrderCreateHComponent {
   }
 
   /** Daftar pekerja dikosongkan saat jenis yang tidak memakainya dipilih. */
+  /**
+   * Jenis pekerjaan bawaan untuk tiap jenis mandor.
+   *
+   * Diisikan otomatis supaya penulisannya seragam antar dokumen — isian
+   * bebas menghasilkan "pengeboran", "Pengeboran", "bor pile" untuk
+   * pekerjaan yang sama, dan itu menyulitkan penelusuran nanti.
+   */
+  private readonly JOB_TYPE_DEFAULTS: Record<string, string> = {
+    'mandor-bor': 'Pekerjaan Pengeboran',
+    'mandor-cor': 'Pekerjaan Pengecoran',
+    'mandor-besi': 'Pekerjaan Pembesian',
+  };
+
   onWorkScopeChange() {
     if (this.isBuangLumpur) {
       this.w.clear();
     } else if (!this.isEntity && this.w.length === 0) {
       this.addWorker();
+    }
+
+    // Hanya diisikan bila masih kosong atau masih memakai salah satu isian
+    // bawaan. Yang sudah disunting sendiri tidak ditimpa — pengguna bisa
+    // saja menulis "Pekerjaan Pengeboran D-400".
+    const baru = this.JOB_TYPE_DEFAULTS[this.formGroup.get('workScope')?.value];
+    if (!baru) return;
+
+    const jobType = this.formGroup.get('jobType');
+    const kini = String(jobType?.value || '').trim();
+    if (kini === '' || Object.values(this.JOB_TYPE_DEFAULTS).includes(kini)) {
+      jobType?.setValue(baru);
     }
   }
 
@@ -301,10 +346,87 @@ export class PurchaseOrderCreateHComponent {
       : 'Non-badan usaha (mandor / perorangan)';
   }
 
+  /**
+   * Kode objek pajak untuk subkontraktor perorangan.
+   *
+   * Ditetapkan berdasarkan arahan konsultan pajak AKN: mandor perorangan
+   * diperlakukan sebagai bukan pegawai, bukan sebagai penyedia jasa
+   * konstruksi yang dikenakan PPh Final Pasal 4 ayat (2).
+   *
+   * Karena itu kodenya tunggal dan tidak dapat dipilih di sini — mengubahnya
+   * berarti mengubah dasar perpajakan seluruh PO perorangan, jadi harus
+   * lewat konsultan pajak, bukan lewat pengguna form.
+   */
+  private readonly PPH_PERORANGAN = {
+    code: '21-100-09',
+    taxObject:
+      'Tidak final - Bukan Pegawai yang Menerima Penghasilan yang Tidak Bersifat Berkesinambungan',
+    tariff: 2.5,
+  };
+
+  /**
+   * Kode PPh untuk mandor dengan Sertifikat Badan Usaha kualifikasi kecil.
+   *
+   * Dipakai bila keterangan PPh yang dipilih menyebut tarif 1,75%.
+   */
+  private readonly PPH_SBU_KECIL = {
+    code: '28-409-22',
+    taxObject:
+      'Pekerjaan konstruksi yang dilakukan oleh Penyedia Jasa yang memiliki sertifikat badan usaha kualifikasi kecil atau sertifikat kompetensi kerja untuk usaha orang perseorangan.',
+    tariff: 1.75,
+  };
+
+  /**
+   * Samakan kode objek pajak dengan keterangan PPh yang dipilih.
+   *
+   * Keterangan PPh dicetak pada dokumen, sedangkan kode objek pajak yang
+   * tersimpan dipakai untuk pelaporan. Bila keduanya tidak disamakan,
+   * dokumen bisa menyebut 1,75% sementara yang terlapor 2,5% — bertentangan
+   * di dalam satu dokumen yang sama.
+   *
+   * Keterangan yang diketik sendiri di luar dua pilihan baku tidak mengubah
+   * kode apa pun; kodenya tetap seperti terakhir dipilih.
+   */
+  onPphNoteChange() {
+    const note = String(this.formGroup.get('pphNote')?.value || '');
+    if (note.includes('1,75')) {
+      this.formGroup.patchValue({
+        pphCode: this.PPH_SBU_KECIL.code,
+        pphTaxObject: this.PPH_SBU_KECIL.taxObject,
+        pphPercentage: this.PPH_SBU_KECIL.tariff,
+      });
+    } else if (note.includes('2,5')) {
+      this.applyPeroranganPph();
+    }
+  }
+
+  /** Terapkan kode PPh baku untuk subkontraktor perorangan. */
+  applyPeroranganPph() {
+    this.formGroup.patchValue({
+      pphCode: this.PPH_PERORANGAN.code,
+      pphTaxObject: this.PPH_PERORANGAN.taxObject,
+      pphPercentage: this.PPH_PERORANGAN.tariff,
+    });
+  }
+
   /** first screen: pick the subcontractor kind */
   chooseSubType(value: 'H1' | 'H2') {
     this.subType = value;
     this.formGroup.patchValue({ purchaseType: value });
+
+    if (value === 'H2') {
+      // Perorangan bukan Pengusaha Kena Pajak, sehingga tidak dapat
+      // menerbitkan Faktur Pajak. Pilihan PPN dimatikan, bukan sekadar
+      // disembunyikan, agar tidak ada PO perorangan yang terlanjur
+      // tersimpan dengan PPN.
+      this.formGroup.patchValue({ includePPN: false });
+      this.formGroup.get('includePPN')?.disable();
+      this.applyPeroranganPph();
+      // Keterangan PPh mungkin sudah terpilih lebih dulu; samakan kodenya.
+      this.onPphNoteChange();
+    } else {
+      this.formGroup.get('includePPN')?.enable();
+    }
     if (this.t.length === 0) this.addScope();
     if (value === 'H2') {
       // Buang lumpur tidak memakai daftar pekerja; menambah baris kosong
@@ -419,15 +541,22 @@ export class PurchaseOrderCreateHComponent {
     };
 
     const extra = this.additionalClauseValues;
-    /** Poin tambahan menempel di akhir daftar terakhir agar nomornya lanjut. */
+    /**
+     * Poin tambahan menjadi seksi tersendiri, bukan menempel di ekor seksi
+     * terakhir.
+     *
+     * Menempelkannya membuat poin bebas terbaca sebagai bagian dari pasal
+     * yang sudah baku — pembaca tidak bisa membedakan mana ketentuan tetap
+     * dan mana tambahan khusus PO ini. Sama seperti PO-A, PO-D, dan 6.4.1
+     * yang sudah memakai seksi terpisah.
+     */
     const withExtra = (
       sections: { title?: string; items: (string | string[])[] }[],
     ) => {
-      if (!extra.length || !sections.length) return sections;
-      const last = sections[sections.length - 1];
+      if (!extra.length) return sections;
       return [
-        ...sections.slice(0, -1),
-        { ...last, items: [...last.items, ...extra] },
+        ...sections,
+        { title: 'Catatan Tambahan', items: extra as (string | string[])[] },
       ];
     };
 

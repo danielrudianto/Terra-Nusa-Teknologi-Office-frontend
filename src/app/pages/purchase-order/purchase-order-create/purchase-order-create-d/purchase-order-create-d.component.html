@@ -326,6 +326,47 @@
           </mat-form-field>
         }
       </div>
+
+      <!--
+        Jangka waktu perjanjian. Perjanjian waktu tertentu justru ditandai
+        oleh adanya batas waktu; tanpa itu jangka waktunya tidak jelas.
+        Dua bentuk: tanggal berakhir, atau terikat selesainya proyek.
+      -->
+      <div class="pod-section__title">Jangka waktu perjanjian</div>
+      <div class="pod-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Mulai berlaku</mat-label>
+          <input
+            matInput
+            formControlName="contractStart"
+            [matDatepicker]="dpStart"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="dpStart"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dpStart></mat-datepicker>
+        </mat-form-field>
+
+        @if (!formGroup.value.contractUntilProjectDone) {
+          <mat-form-field appearance="outline">
+            <mat-label>Berakhir</mat-label>
+            <input
+              matInput
+              formControlName="contractEnd"
+              [matDatepicker]="dpEnd"
+            />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="dpEnd"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #dpEnd></mat-datepicker>
+          </mat-form-field>
+        }
+      </div>
+      <mat-checkbox formControlName="contractUntilProjectDone">
+        Berlaku sampai pekerjaan pada proyek ini selesai
+      </mat-checkbox>
       <div class="pod-toggles">
         <div class="pod-toggles__row">
           <mat-slide-toggle
@@ -345,6 +386,39 @@
             formControlName="includePlacementClause"
             class="pod-toggle"
             >{{ "poD.includePlacement" | translate }}</mat-slide-toggle
+          >
+        </div>
+
+        <!-- Pekerja yang didatangkan dari luar kota. -->
+        <div class="pod-toggles__row">
+          <mat-slide-toggle
+            color="primary"
+            formControlName="includeTransportHome"
+            class="pod-toggle"
+            >Tanggung biaya transportasi dari kampung halaman</mat-slide-toggle
+          >
+          <span class="pod-toggles__hint">
+            Untuk pekerja yang dimobilisasi dari luar kota.
+          </span>
+        </div>
+
+        <div class="pod-toggles__row">
+          <mat-slide-toggle
+            color="primary"
+            formControlName="includeHomeLeave"
+            class="pod-toggle"
+            >Hak pulang ke kampung halaman setelah proyek
+            selesai</mat-slide-toggle
+          >
+        </div>
+
+        <div class="pod-toggles__row">
+          <mat-slide-toggle
+            color="primary"
+            formControlName="includeEquipmentEscort"
+            class="pod-toggle"
+            >Wajib mendampingi alat saat mobilisasi &amp;
+            demobilisasi</mat-slide-toggle
           >
         </div>
 
@@ -486,7 +560,24 @@
         <mat-icon>lock</mat-icon>
         <span>{{ "poForm.clausePreviewD" | translate }}</span>
       </div>
-      <div class="pod-clausebox" [innerHTML]="clausePreview"></div>
+      <div class="pod-clausebox">
+        @for (sec of previewSections; track $index) {
+          <div class="pod-preview__title">{{ sec.title }}</div>
+          <ol class="pod-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="pod-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li>{{ d }}</li>
+                  }
+                </ol>
+              } @else {
+                <li>{{ asText(p) }}</li>
+              }
+            }
+          </ol>
+        }
+      </div>
 
       <div class="pod-actions">
         <span class="pod-spacer"></span>

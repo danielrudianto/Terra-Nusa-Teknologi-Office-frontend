@@ -173,30 +173,45 @@
 
         @if (isRingkas) {
           <div class="poh-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="pphCode"
-                readonly
-                (click)="openPphSelector()"
-                placeholder="Pilih kode PPh"
-              />
-              <button
-                matSuffix
-                type="button"
-                class="poh-reset"
-                (click)="openPphSelector()"
-              >
-                <mat-icon>search</mat-icon>
-              </button>
-              @if (formGroup.value.pphTaxObject) {
+            <!--
+              Perorangan memakai kode baku 21-100-09 sesuai arahan konsultan
+              pajak, sehingga tidak dipilih dari daftar.
+            -->
+            @if (isEntity) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="pphCode"
+                  readonly
+                  (click)="openPphSelector()"
+                  placeholder="Pilih kode PPh"
+                />
+                <button
+                  matSuffix
+                  type="button"
+                  class="poh-reset"
+                  (click)="openPphSelector()"
+                >
+                  <mat-icon>search</mat-icon>
+                </button>
+                @if (formGroup.value.pphTaxObject) {
+                  <mat-hint>
+                    {{ formGroup.value.pphPercentage }}% —
+                    {{ formGroup.value.pphTaxObject }}
+                  </mat-hint>
+                }
+              </mat-form-field>
+            } @else {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+                <input matInput formControlName="pphCode" readonly />
                 <mat-hint>
-                  {{ formGroup.value.pphPercentage }}% —
-                  {{ formGroup.value.pphTaxObject }}
+                  {{ formGroup.value.pphPercentage }}% — baku untuk
+                  subkontraktor perorangan
                 </mat-hint>
-              }
-            </mat-form-field>
+              </mat-form-field>
+            }
 
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.finalPayment" | translate }}</mat-label>
@@ -216,9 +231,17 @@
                 >{{ formGroup.value.pphPercentage }}%</span
               >
               <span>{{ formGroup.value.pphTaxObject }}</span>
-              <button type="button" class="poh-reset" (click)="clearPph()">
-                <mat-icon>close</mat-icon> Hapus
-              </button>
+              <!--
+                Perorangan tidak boleh terbit tanpa PPh: kodenya sudah baku,
+                jadi menghapusnya hanya membuat PO tersimpan tanpa dasar
+                pemotongan. Tombol hapus hanya untuk badan usaha, yang kode
+                objek pajaknya memang dipilih sendiri.
+              -->
+              @if (isEntity) {
+                <button type="button" class="poh-reset" (click)="clearPph()">
+                  <mat-icon>close</mat-icon> Hapus
+                </button>
+              }
             </div>
           }
         }
@@ -231,12 +254,20 @@
                 matInput
                 formControlName="pphNote"
                 [matAutocomplete]="pphNoteAuto"
+                (input)="onPphNoteChange()"
               />
-              <mat-autocomplete #pphNoteAuto="matAutocomplete">
+              <mat-autocomplete
+                #pphNoteAuto="matAutocomplete"
+                (optionSelected)="onPphNoteChange()"
+              >
                 @for (n of pphNoteOptions; track n) {
                   <mat-option [value]="n">{{ n }}</mat-option>
                 }
               </mat-autocomplete>
+              <mat-hint>
+                Kode objek pajak menyesuaikan otomatis dengan tarif yang disebut
+                di sini.
+              </mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="poh-span2">
@@ -488,9 +519,20 @@
         }
 
         <div class="poh-foot">
-          <mat-slide-toggle formControlName="includePPN" color="primary"
-            >Termasuk PPN 11%</mat-slide-toggle
-          >
+          <!--
+            Perorangan bukan Pengusaha Kena Pajak, sehingga tidak dapat
+            menerbitkan Faktur Pajak. Pilihan PPN tidak ditampilkan, dan
+            nilainya sudah dimatikan saat jenis subkontraktor dipilih.
+          -->
+          @if (isEntity) {
+            <mat-slide-toggle formControlName="includePPN" color="primary"
+              >Termasuk PPN 11%</mat-slide-toggle
+            >
+          } @else {
+            <span class="poh-rate__hint">
+              Subkontraktor perorangan bukan PKP — tidak dikenakan PPN.
+            </span>
+          }
           <div class="poh-summary">
             <div class="poh-summary__row">
               <span>Subtotal (DPP)</span
@@ -1004,7 +1046,10 @@
               type="submit"
               class="poh-submit"
               [disabled]="
-                formGroup.invalid || t.controls.length === 0 || isSubmitting
+                formGroup.invalid ||
+                t.controls.length === 0 ||
+                pphMissingForPerorangan ||
+                isSubmitting
               "
             >
               {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
@@ -1052,7 +1097,10 @@
               type="submit"
               class="poh-submit"
               [disabled]="
-                formGroup.invalid || t.controls.length === 0 || isSubmitting
+                formGroup.invalid ||
+                t.controls.length === 0 ||
+                pphMissingForPerorangan ||
+                isSubmitting
               "
             >
               {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}

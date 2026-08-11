@@ -25,7 +25,7 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
-  buildClauseHtml,
+  buildManpowerClauses,
   latestClauseVersion,
   buildStaffClauses,
 } from '../../../../constants/clause-templates';
@@ -88,6 +88,22 @@ export class PurchaseOrderCreateDComponent {
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
+    /*
+     * Jangka waktu perjanjian. Inti dari perjanjian waktu tertentu justru
+     * ada di batas waktunya; tanpa itu jangka waktunya menjadi tidak jelas.
+     *
+     * Dua bentuk yang dipakai di lapangan:
+     *   tanggal  — mulai & berakhir pada tanggal tertentu
+     *   proyek   — sampai pekerjaan pada proyek tersebut selesai
+     */
+    contractStart: new FormControl(''),
+    contractEnd: new FormControl(''),
+    contractUntilProjectDone: new FormControl(false),
+    // Pekerja didatangkan dari luar kota — bawaannya mati agar SPK pekerja
+    // setempat tidak ikut memuat poin transportasi dan hak pulang.
+    includeTransportHome: new FormControl(false),
+    includeHomeLeave: new FormControl(false),
+    includeEquipmentEscort: new FormControl(false),
     purchaseType: new FormControl('D'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
@@ -368,6 +384,17 @@ export class PurchaseOrderCreateDComponent {
           ?.value,
         isFieldStaff: this.isFieldStaff,
         payoutDay: Number(this.formGroup.get('payoutDay')?.value) || 10,
+        // Jangka waktu perjanjian: tanggal, atau terikat selesainya proyek.
+        contractStart: this.toISO(this.formGroup.get('contractStart')?.value),
+        contractEnd: this.toISO(this.formGroup.get('contractEnd')?.value),
+        contractUntilProjectDone: !!this.formGroup.get(
+          'contractUntilProjectDone',
+        )?.value,
+        includeTransportHome: !!this.formGroup.get('includeTransportHome')
+          ?.value,
+        includeHomeLeave: !!this.formGroup.get('includeHomeLeave')?.value,
+        includeEquipmentEscort: !!this.formGroup.get('includeEquipmentEscort')
+          ?.value,
         jobDescriptions: this.jobDescriptionValues,
         includeSundayPolicy: !!this.formGroup.get('includeSundayPolicy')?.value,
         // poin custom yang memang diketik sendiri oleh user
@@ -500,16 +527,33 @@ export class PurchaseOrderCreateDComponent {
       overtimeRate: v.overtimeRate,
       shiftHours: v.shiftHours,
       includeSundayPolicy: v.includeSundayPolicy,
+      includeTransportHome: !!v.includeTransportHome,
+      includeHomeLeave: !!v.includeHomeLeave,
+      includeEquipmentEscort: !!v.includeEquipmentEscort,
       wageSchedules: this.wageSchedules,
     };
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
-      'D',
+  /**
+   * Pratinjau catatan perjanjian, terbagi bagian seperti dokumennya.
+   *
+   * Memakai sumber yang sama dengan pencetakan, sehingga apa yang terbaca
+   * di layar tidak bisa berbeda dari yang keluar di PDF.
+   */
+  get previewSections() {
+    return buildManpowerClauses(
       this.clauseContext(),
-      this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 }

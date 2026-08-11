@@ -2317,6 +2317,7 @@
     "shipmentService": "货物运输服务",
     "equipmentRental": "设备租赁＋操作员",
     "insuranceDoc": "保险文件",
+    "cargoListDays": "装货前货物清单",
     "consignmentNote": "托运单",
     "deliveryRisk": "运输风险",
     "unloadingRisk": "卸货风险",

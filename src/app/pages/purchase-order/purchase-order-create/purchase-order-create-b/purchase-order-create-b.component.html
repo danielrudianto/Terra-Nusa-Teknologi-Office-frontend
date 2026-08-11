@@ -228,13 +228,118 @@
       <div class="pob-grid">
         <mat-form-field appearance="outline" class="pob-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+          <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
           <input
             matInput
-            formControlName="paymentTerm"
-            [placeholder]="'poForm.paymentTermPlaceholderB' | translate"
+            formControlName="creditTerm"
+            type="number"
+            [min]="0"
           />
+          <span matSuffix>{{ "common.days" | translate }}</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="prepaidTerm"
+            type="number"
+            [min]="0"
+            [max]="100"
+          />
+          <span matSuffix>{{ "common.percent" | translate }}</span>
         </mat-form-field>
       </div>
+    </div>
+
+    <!-- ===== Ketentuan Alat ===== -->
+    <div class="pob-card">
+      <div class="pob-section__title">Ketentuan alat</div>
+      <!--
+        Menentukan siapa menanggung risiko atas alat: yang mengendalikan
+        alat yang menanggung. Bila operatornya dari PIHAK PERTAMA,
+        tanggung jawabnya dibatasi pada nilai yang disepakati di berita
+        acara, dengan pengecualian keausan wajar dan kelalaian vendor.
+      -->
+      <div class="pob-grid">
+        <mat-form-field appearance="outline" class="pob-span2">
+          <mat-label>Penanggung keamanan &amp; keselamatan alat</mat-label>
+          <mat-select formControlName="equipmentRiskBearer">
+            <mat-option *ngFor="let r of riskBearers" [value]="r.value">{{
+              r.label
+            }}</mat-option>
+          </mat-select>
+          <mat-hint>
+            Batas nilainya tetap mengacu pada Berita Acara Serah Terima Alat.
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+      <mat-checkbox formControlName="operatorByVendor" class="pob-checkbox">
+        Alat disewa lengkap dengan operator dari vendor
+      </mat-checkbox>
+      <p class="pob-hint">
+        Bila dicentang, dokumen memuat kewajiban vendor menyediakan operator
+        ber-SIO beserta ketentuan penggantiannya.
+      </p>
+
+      <!--
+        Sewa per jam selalu diikat pada periode: kuota jamnya ada di kolom
+        volume, periodenya diisi di sini. Blok ini muncul sendiri begitu ada
+        baris bersatuan jam, agar klausulnya tidak mungkin tertinggal.
+      -->
+      @if (rentalByHour) {
+        <div class="pob-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Periode kuota</mat-label>
+            <input
+              matInput
+              formControlName="quotaPeriodDays"
+              type="number"
+              [min]="1"
+            />
+            <span matSuffix>hari kalender</span>
+            <mat-hint
+              >Kuota jamnya mengikuti volume pada tabel di atas</mat-hint
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tarif kelebihan jam</mat-label>
+            <input
+              matInput
+              formControlName="excessHourRate"
+              thousandSeparator=" "
+              mask="separator.2"
+            />
+            <span matPrefix>Rp&nbsp;</span>
+            <span matSuffix>/ jam</span>
+            <mat-hint>Kosongkan bila tidak diatur</mat-hint>
+          </mat-form-field>
+        </div>
+      }
     </div>
 
     <!-- ===== Poin Tambahan ===== -->

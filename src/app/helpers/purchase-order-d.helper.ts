@@ -1,7 +1,10 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
-import { ClauseContext, buildClauseLines } from '../constants/clause-templates';
+import {
+  ClauseContext,
+  buildManpowerClauses,
+} from '../constants/clause-templates';
 import { documentFonts } from '../constants/document-font.constant';
 import {
   DOCUMENT_DEFAULT_STYLE,
@@ -180,10 +183,9 @@ function signatureColumns(data: IPurchaseOrderD) {
  */
 function buildDocDefinition(data: IPurchaseOrderD) {
   // Poin perjanjian dirakit dari template + data, bukan teks tersimpan.
-  const clauses = buildClauseLines(
-    'D',
+  // Terbagi empat bagian agar pembaca tahu poin mana mengatur apa.
+  const sections = buildManpowerClauses(
     data.clauseContext,
-    data.templateVersion,
     data.additionalClauses,
   );
 
@@ -219,7 +221,18 @@ function buildDocDefinition(data: IPurchaseOrderD) {
         text: 'Catatan dalam perjanjian adalah:',
         margin: [0, 2, 0, 4] as Margins,
       },
-      { ol: clauses.map(clauseToPdf), margin: [0, 0, 0, 12] as Margins },
+      ...sections.flatMap((sec) => [
+        {
+          text: sec.title as string,
+          bold: true,
+          margin: [0, 8, 0, 4] as Margins,
+        },
+        {
+          ol: sec.items.map((x) => clauseToPdf(x as string)),
+          margin: [0, 0, 0, 4] as Margins,
+        },
+      ]),
+      { text: '', margin: [0, 0, 0, 8] as Margins },
 
       {
         text: 'Demikian surat perintah kerja ini dibuat untuk dilaksanakan sebagaimana mestinya.',

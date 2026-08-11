@@ -62,6 +62,7 @@ import {
   AppPaginatorIntl,
   appPaginatorIntlFactory,
 } from './services/app-paginator-intl';
+import { PermissionService } from './services/permission.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';

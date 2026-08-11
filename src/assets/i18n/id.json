@@ -2317,6 +2317,7 @@
     "shipmentService": "Jasa pengiriman barang",
     "equipmentRental": "Sewa alat angkut + operator",
     "insuranceDoc": "Dokumen asuransi",
+    "cargoListDays": "Daftar barang sebelum muat",
     "consignmentNote": "Consignment note",
     "deliveryRisk": "Risiko pengiriman",
     "unloadingRisk": "Risiko bongkar",

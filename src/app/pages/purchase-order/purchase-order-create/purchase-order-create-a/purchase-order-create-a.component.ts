@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -33,9 +34,14 @@ import { FleetInfoDialogComponent } from '../../../../components/fleet-info-dial
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   buildClauseLines,
+  buildTransportBillingTerms,
   buildTransportClauses,
   transportUsesRentalLayout,
 } from '../../../../constants/clause-templates';
+import {
+  IPurchaseOrderA,
+  printPurchaseOrderA,
+} from '../../../../helpers/purchase-order-a.helper';
 import { IPPh } from '../../../../utils/pph';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { MatSelectModule } from '@angular/material/select';
@@ -58,6 +64,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatIconModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatCheckboxModule,
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
@@ -157,6 +164,9 @@ export class PurchaseOrderCreateAComponent {
     transportMode: new FormControl('darat'),
     insuranceDays: new FormControl(3, [Validators.min(0)]),
     consignmentDays: new FormControl(3, [Validators.min(0)]),
+    // Kewajiban PIHAK PERTAMA pada pengiriman laut; berdiri sendiri karena
+    // tetap berlaku walau asuransi diurus sendiri.
+    cargoListDays: new FormControl(3, [Validators.min(0)]),
     // Asuransi kadang diurus sendiri oleh PIHAK PERTAMA; bila dimatikan,
     // klausulnya tidak dicetak sama sekali.
     requireInsuranceDoc: new FormControl(true),
@@ -369,10 +379,17 @@ export class PurchaseOrderCreateAComponent {
       })),
       // Penanggung jawab kini melekat pada tiap baris pengiriman, sehingga
       // tidak lagi disimpan di tingkat PO.
+      //
+      // Yang disimpan di sini hanya data sumber, bukan teks klausul: poin
+      // perjanjian dirakit ulang dari templateVersion + data ini saat
+      // dicetak. Tanpa ini, cetak ulang dari daftar akan memakai nilai
+      // bawaan dan menghasilkan dokumen yang berbeda isi dari yang pernah
+      // ditandatangani.
       customData: {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        ...this.clauseSourceData(),
       },
     };
   }
@@ -426,6 +443,56 @@ export class PurchaseOrderCreateAComponent {
     });
   }
 
+  /**
+   * Data sumber klausul yang ikut disimpan ke `customData`.
+   *
+   * Bentuknya mentah (tanggal ISO, angka apa adanya) — bukan teks yang sudah
+   * diformat — agar saat dicetak ulang bisa dirakit dengan aturan yang
+   * berlaku waktu itu. Jadwal pengiriman ikut disimpan di sini karena tabel
+   * `purchase_order_items` hanya punya satu kolom tanggal (`task`), sehingga
+   * jadwal bongkar dan jadwal kapal (closing/ETD/ETA) tidak punya tempat.
+   */
+  private clauseSourceData() {
+    const v = this.formGroup.getRawValue();
+    const iso = (d: any) =>
+      d ? new Date(d).toISOString().split('T')[0] : null;
+
+    return {
+      workKind: v.workKind,
+      insuranceDays: v.insuranceDays,
+      consignmentDays: v.consignmentDays,
+      cargoListDays: v.cargoListDays,
+      requireInsuranceDoc: v.requireInsuranceDoc,
+      insuranceValue:
+        Number(String(v.insuranceValue ?? '').replace(/[^\d.-]/g, '')) || null,
+      airService: v.airService,
+      containerInsuranceValue:
+        Number(
+          String(v.containerInsuranceValue ?? '').replace(/[^\d.-]/g, ''),
+        ) || 0,
+      deliveryRisk: v.deliveryRisk,
+      unloadingRisk: v.unloadingRisk,
+      paymentTermText: v.paymentTermText,
+      pphCode: v.pphCode,
+      pphTaxObject: v.pphTaxObject,
+      pphPercentage: v.pphPercentage,
+      // Tarif tersimpan terpisah dari kolom `ppn`: kolom itu ikut menjadi 0
+      // saat PPN dimatikan, sehingga tarif yang dipilih tidak lagi terbaca.
+      ppnRate: this.ppnRate,
+      additionalClauses: this.additionalClauseValues,
+      shipmentSchedules: (this.t.value || []).map((x: any) => ({
+        mode: x.mode,
+        from: x.from,
+        to: x.to,
+        deliveryDate: iso(x.deliveryDate),
+        unloadingDate: iso(x.unloadingDate),
+        closingDate: iso(x.closingDate),
+        etd: iso(x.etd),
+        eta: iso(x.eta),
+      })),
+    };
+  }
+
   /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
   private clauseContext() {
     const v = this.formGroup.getRawValue();
@@ -459,6 +526,7 @@ export class PurchaseOrderCreateAComponent {
         .filter((m: string) => !!m),
       insuranceDays: v.insuranceDays,
       consignmentDays: v.consignmentDays,
+      cargoListDays: v.cargoListDays,
       requireInsuranceDoc: v.requireInsuranceDoc,
       insuranceValue: v.insuranceValue || undefined,
       airService: v.airService,
@@ -532,6 +600,56 @@ export class PurchaseOrderCreateAComponent {
     return Array.isArray(x) ? '' : String(x ?? '');
   }
 
+  /**
+   * Susun data cetak SPK dari isian form.
+   *
+   * Seksi klausul memakai `previewSections` — yang sama persis dengan yang
+   * tampil di pratinjau — sehingga dokumen yang keluar tidak bisa berbeda
+   * dari yang sudah dibaca sebelum disimpan.
+   */
+  private buildPrintData(purchaseOrderName: string): IPurchaseOrderA {
+    const v = this.formGroup.getRawValue();
+    const tgl = (d: any) =>
+      d
+        ? new Date(d).toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+        : '';
+
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      shipments: (this.t.value || []).map((x: any) => ({
+        mode: x.mode,
+        from: x.from,
+        to: x.to,
+        fleetName: this.fleets.find((f) => f.id === Number(x.fleet_id))?.name,
+        nopol: x.nopol,
+        driver: x.driver,
+        provider: x.provider,
+        refNumber: x.refNumber,
+        picName: x.picName,
+        picPhone: x.picPhone,
+        // Satuan Ls selalu berjumlah satu, mengikuti aturan penyimpanan.
+        quantity: x.unit === 'Ls' ? 1 : Number(x.quantity) || 1,
+        unit: x.unit,
+        // Berasal dari kolom bertopeng, jadi berupa teks ("6 540 000").
+        price: Number(String(x.amount ?? '').replace(/[^\d.-]/g, '')) || 0,
+        deliveryDateText: tgl(x.deliveryDate),
+      })),
+      includePpn: !!v.includePPN,
+      ppnRate: this.ppnRate,
+      sections: this.previewSections,
+      billingTerms: buildTransportBillingTerms(),
+    };
+  }
+
   onSubmit() {
     this.isSubmitting = true;
     this.apiService
@@ -543,6 +661,15 @@ export class PurchaseOrderCreateAComponent {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan SPK yang tersimpan.
+          try {
+            printPurchaseOrderA(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF surat perintah kerja:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

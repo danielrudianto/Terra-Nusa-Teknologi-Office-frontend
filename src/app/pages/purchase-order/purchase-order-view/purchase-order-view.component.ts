@@ -13,7 +13,13 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.constant';
-import { buildClauseLines } from '../../../constants/clause-templates';
+import {
+  ClauseSection,
+  buildClauseLines,
+  buildLegalServiceClauses,
+  buildManpowerClauses,
+  buildTransportClauses,
+} from '../../../constants/clause-templates';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 type ViewMode = 'formatted' | 'raw';
@@ -103,6 +109,63 @@ export class PurchaseOrderViewComponent {
    * Poin perjanjian dirakit ulang dari template + data PO, bukan diambil
    * dari teks tersimpan — sama seperti saat dokumen dicetak.
    */
+  /**
+   * Poin perjanjian, terbagi seksi.
+   *
+   * Sebagian jenis PO merakit klausulnya lewat pembangun tersendiri yang
+   * mengembalikan seksi, bukan lewat CLAUSE_TEMPLATES — PO-A, PO-D, dan
+   * 6.4.1. Ketiganya tidak terdaftar di CLAUSE_TEMPLATES, sehingga
+   * buildClauseLines mengembalikan daftar kosong dan poinnya tidak pernah
+   * tampil di halaman ini.
+   */
+  get clauseSections(): ClauseSection[] {
+    if (!this.data) return [];
+    const custom = this.data.customData || {};
+    const tambahan: string[] = custom.additionalClauses || [];
+
+    switch (this.data.purchaseType) {
+      case 'A':
+        return buildTransportClauses(
+          {
+            ...custom,
+            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
+          },
+          tambahan,
+        );
+      case 'D':
+        return buildManpowerClauses(
+          {
+            ...custom,
+            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
+          },
+          tambahan,
+        );
+      case '6.4.1':
+        return buildLegalServiceClauses(
+          {
+            ...custom,
+            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
+            hasOfficialFee: (custom.officialFees || []).length > 0,
+          },
+          tambahan,
+        );
+      default: {
+        const lines = this.clauses;
+        return lines.length ? [{ items: lines }] : [];
+      }
+    }
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
   get clauses(): string[] {
     if (!this.data) return [];
     const custom = this.data.customData || {};

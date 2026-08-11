@@ -27,12 +27,33 @@ import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.compone
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
+import {
+  buildLegalServiceBillingTerms,
+  buildLegalServiceClauses,
+} from '../../../../constants/clause-templates';
+import {
+  IPurchaseOrder641,
+  printPurchaseOrder641,
+} from '../../../../helpers/purchase-order-641.helper';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
 
 /**
- * 6.4.1 Legal Document (Akta, SBU, ...).
- * Document type is picked from a fixed list (with a "Lainnya" escape hatch) so
- * the data stays consistent, and each line carries a validity window because
- * most legal documents expire and need renewal tracking.
+ * 6.4.1 Jasa pengurusan legalitas & perizinan (akta, SBU, izin).
+ *
+ * Yang dipesan adalah PEKERJAAN MENGURUS, bukan dokumennya. Nomor dokumen dan
+ * masa berlakunya adalah hasil pengurusan — belum ada saat PO dibuat — jadi
+ * keduanya tidak diminta di sini.
+ *
+ * Tagihannya memuat dua komponen berbeda sifat:
+ *   jasa   — pendapatan vendor; kena PPN, dipotong PPh
+ *   resmi  — PNBP/retribusi/iuran lembaga; dititipkan, ditagih sesuai bukti
+ *            setor tanpa penambahan, tanpa PPN dan tanpa potongan PPh
+ *
+ * Hanya baris jasa yang masuk `dpp`. Biaya resmi dicetak sebagai perkiraan
+ * dan dicatat di `customData`; saat tagihannya masuk, tempatnya adalah kolom
+ * `otherValue` pada tabel purchases — yang memang tidak ikut dikalikan PPN
+ * maupun PPh.
  */
 @Component({
   selector: 'app-purchase-order-create-641',
@@ -68,38 +89,110 @@ export class PurchaseOrderCreate641Component {
   ) {}
 
   isSubmitting = false;
-  /** common legal documents for an Indonesian construction company */
-  documentTypes: string[] = [
-    'Akta Pendirian',
-    'Akta Perubahan',
-    'SBU (Sertifikat Badan Usaha)',
-    'SKK Konstruksi',
-    'SKA / SKT',
-    'ISO 9001',
-    'ISO 14001',
-    'ISO 45001',
-    'KTA Asosiasi (GAPENSI, AKI, dll)',
-    'NIB / Perizinan OSS',
-    'Legalisir / Waarmerking Notaris',
+  /**
+   * Jenis pekerjaan pengurusan. Ditulis sebagai kata kerja karena yang
+   * dipesan adalah pekerjaannya, bukan dokumen jadi.
+   *
+   * Audit laporan keuangan sengaja TIDAK ada di sini: hasilnya berupa opini
+   * yang tidak boleh diarahkan oleh pemesan, sehingga klausul "pengajuan
+   * ulang tanpa biaya bila ditolak" tidak berlaku dan berbahaya bila ikut
+   * tercetak. Pesanan audit dibuat pada jenis PO tersendiri.
+   */
+  serviceTypes: string[] = [
+    'Penyusunan & review kontrak/SPK',
+    'Pembuatan akta pendirian',
+    'Pembuatan akta perubahan',
+    'Pengurusan SBU baru',
+    'Perpanjangan SBU',
+    'Pengurusan SKK Konstruksi',
+    'Pengurusan KTA asosiasi',
+    'Pengurusan NIB / perizinan OSS',
+    'Sertifikasi ISO',
+    'Legalisir / waarmerking notaris',
     'Lainnya',
   ];
 
   units: string[] = ['dokumen', 'LS', 'set', 'tahun', 'paket'];
+
+  /** Penanggung biaya resmi yang hangus bila pengajuan ditolak. */
+  rejectionBearers = [
+    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
+    { value: 'kedua', label: 'PIHAK KEDUA (vendor)' },
+    { value: 'kesepakatan', label: 'Kesepakatan tertulis kedua pihak' },
+  ];
+
+  /*
+   * Termin memakai kode baku, bukan teks bebas — kalimat termin pada klausul
+   * dipilih berdasarkan kode ini.
+   */
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
 
   get typeLabel(): string {
     return PURCHASE_TYPE_LABELS['6.4.1'] || 'Legal Document';
   }
 
   isOther(i: number): boolean {
-    return this.getFormGroupAt(i).value.documentType === 'Lainnya';
+    return this.getFormGroupAt(i).value.serviceType === 'Lainnya';
   }
 
   /** what actually gets written to the `task` column */
   resolvedType(i: number): string {
     const v = this.getFormGroupAt(i).value;
-    return v.documentType === 'Lainnya'
+    return v.serviceType === 'Lainnya'
       ? v.customType || 'Lainnya'
-      : v.documentType || '';
+      : v.serviceType || '';
   }
 
   formGroup: FormGroup = new FormGroup({
@@ -120,7 +213,17 @@ export class PurchaseOrderCreate641Component {
       Validators.max(100),
     ]),
     notes: new FormControl(''),
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+    // Ditolak di luar kelalaian vendor: biaya resmi yang terlanjur disetor
+    // dan tidak bisa ditarik kembali menjadi tanggungan siapa.
+    rejectionCostBearer: new FormControl('pertama', Validators.required),
+    documentReturnDays: new FormControl(7, [Validators.min(0)]),
+    reportingIntervalDays: new FormControl(7, [Validators.min(0)]),
     lines: new FormArray([]),
+    // Perkiraan biaya resmi; di luar dasar PPN dan tidak masuk `dpp`.
+    officialFees: new FormArray([]),
     includePPN: new FormControl(true),
   });
 
@@ -143,11 +246,13 @@ export class PurchaseOrderCreate641Component {
 
   private buildLine(): FormGroup {
     return this.formBuilder.group({
-      documentType: ['', Validators.required],
-      customType: [''], // used when documentType === 'Lainnya'
-      documentNumber: [''],
-      validFrom: [''],
-      validUntil: [''],
+      serviceType: ['', Validators.required],
+      customType: [''], // dipakai saat serviceType === 'Lainnya'
+      // Objek yang diurus, mis. "SBU BS004 Bangunan Gedung".
+      description: [''],
+      // Dihitung sejak berkas dinyatakan lengkap, bukan sejak SPK terbit:
+      // vendor tidak bisa mulai sebelum dokumen dari AKN masuk semua.
+      targetDays: [null, [Validators.min(0)]],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unit: ['dokumen', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
@@ -155,15 +260,44 @@ export class PurchaseOrderCreate641Component {
   }
 
   /** "Lainnya" makes the free-text name mandatory */
-  onDocumentTypeChange(i: number) {
+  onServiceTypeChange(i: number) {
     const g = this.getFormGroupAt(i);
     const custom = g.get('customType');
-    if (g.get('documentType')?.value === 'Lainnya') {
+    if (g.get('serviceType')?.value === 'Lainnya') {
       custom?.setValidators([Validators.required, Validators.maxLength(100)]);
     } else {
       custom?.clearValidators();
     }
     custom?.updateValueAndValidity();
+  }
+
+  // ---- perkiraan biaya resmi ----
+  get fees(): FormArray {
+    return this.formGroup.get('officialFees') as FormArray;
+  }
+  getFeeGroupAt(i: number) {
+    return this.fees.at(i) as FormGroup;
+  }
+  addFee() {
+    this.fees.push(
+      this.formBuilder.group({
+        task: ['', [Validators.required, Validators.maxLength(100)]],
+        description: [''],
+        amount: [0, [Validators.required, Validators.min(0)]],
+      }),
+    );
+  }
+  removeFeeAt(i: number) {
+    this.fees.removeAt(i);
+  }
+  get hasOfficialFee(): boolean {
+    return this.fees.length > 0;
+  }
+  get officialFeeTotal(): number {
+    return this.fees.controls.reduce(
+      (acc, c) => acc + (Number(c.getRawValue().amount) || 0),
+      0,
+    );
   }
   addLine() {
     this.t.push(this.buildLine());
@@ -239,18 +373,20 @@ export class PurchaseOrderCreate641Component {
       dpp: dpp,
       ppn: ppn,
       payment_term: this.formGroup.get('paymentTerm')?.value,
+      pphCode: this.formGroup.get('pphCode')?.value || null,
+      pphTaxObject: this.formGroup.get('pphTaxObject')?.value || null,
+      pphPercentage: Number(this.formGroup.get('pphPercentage')?.value) || 0,
       templateVersion: '1.0',
       billing_requirements: {},
       items: this.t.controls.map((c, i) => {
         const x = c.getRawValue();
         return {
-          task: this.resolvedType(i), // jenis dokumen
+          task: this.resolvedType(i), // jenis pengurusan
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
-          remarks_1: this.toISO(x.validFrom), // berlaku dari
-          remarks_2: this.toISO(x.validUntil), // berlaku sampai
-          remarks_3: x.documentNumber, // nomor dokumen
+          remarks_1: x.description || null, // objek yang diurus
+          remarks_2: x.targetDays ?? null, // target hari kerja
         };
       }),
       customData: {
@@ -258,7 +394,96 @@ export class PurchaseOrderCreate641Component {
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
         notes: this.formGroup.get('notes')?.value,
+        pphCode: this.formGroup.get('pphCode')?.value,
+        pphTaxObject: this.formGroup.get('pphTaxObject')?.value,
+        pphPercentage: this.formGroup.get('pphPercentage')?.value,
+        rejectionCostBearer: this.formGroup.get('rejectionCostBearer')?.value,
+        documentReturnDays: this.formGroup.get('documentReturnDays')?.value,
+        reportingIntervalDays: this.formGroup.get('reportingIntervalDays')
+          ?.value,
+        /*
+         * Biaya resmi disimpan di sini, BUKAN sebagai baris item.
+         *
+         * `dpp` adalah dasar pengenaan PPN dan PPh; memasukkan uang titipan
+         * ke dalamnya membuat kedua pajak terhitung dari angka yang bukan
+         * penghasilan vendor. Saat tagihannya masuk, tempat yang benar adalah
+         * kolom `otherValue` pada tabel purchases — kolom itu ditambahkan apa
+         * adanya ke nilai tagihan tanpa dikalikan PPN maupun PPh.
+         */
+        officialFees: this.fees.controls.map((c) => {
+          const x = c.getRawValue();
+          return {
+            task: x.task,
+            description: x.description || null,
+            amount: Number(x.amount) || 0,
+          };
+        }),
       },
+    };
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      pphCode: v.pphCode,
+      pphTaxObject: v.pphTaxObject,
+      pphPercentage: v.pphPercentage,
+      hasOfficialFee: this.hasOfficialFee,
+      rejectionCostBearer: v.rejectionCostBearer,
+      documentReturnDays: v.documentReturnDays,
+      reportingIntervalDays: v.reportingIntervalDays,
+    };
+  }
+
+  /** Pratinjau catatan perjanjian, terbagi seksi seperti dokumennya. */
+  get previewSections() {
+    return buildLegalServiceClauses(this.clauseContext() as any);
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
+  private buildPrintData(purchaseOrderName: string): IPurchaseOrder641 {
+    const v = this.formGroup.getRawValue();
+    return {
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      items: this.t.controls.map((c, i) => {
+        const x = c.getRawValue();
+        return {
+          task: this.resolvedType(i),
+          description: x.description,
+          targetDays: x.targetDays,
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      officialFees: this.fees.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          task: x.task,
+          description: x.description,
+          amount: Number(x.amount) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      sections: this.previewSections,
+      billingTerms: buildLegalServiceBillingTerms(this.hasOfficialFee),
     };
   }
 
@@ -273,6 +498,15 @@ export class PurchaseOrderCreate641Component {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan SPK yang tersimpan.
+          try {
+            printPurchaseOrder641(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF surat perintah kerja:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) =>

@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { permissionGuard } from './guards/permission.guard';
 import { RouterModule, Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -54,19 +55,21 @@ export const routes: Routes = [
       },
       {
         path: 'Invoice',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/invoice/invoice.component').then(
             (m) => m.InvoiceComponent,
           ),
-        data: { title: 'Invoice Generator' },
+        data: { title: 'Invoice Generator', permission: 'sales_invoice:read' },
       },
       {
         path: 'Purchase',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/purchase/purchase.component').then(
             (m) => m.PurchaseComponent,
           ),
-        data: { title: 'Purchase' },
+        data: { title: 'Purchase', permission: 'purchase:read' },
         children: [
           {
             path: '',
@@ -105,11 +108,12 @@ export const routes: Routes = [
       },
       {
         path: 'Purchase-draft',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/purchase-draft/purchase-draft.component').then(
             (m) => m.PurchaseDraftComponent,
           ),
-        data: { title: 'Purchase draft' },
+        data: { title: 'Purchase draft', permission: 'purchase_draft:read' },
         children: [
           {
             path: '',
@@ -140,19 +144,21 @@ export const routes: Routes = [
       },
       {
         path: 'Activity',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/activity/activity.component').then(
             (m) => m.ActivityComponent,
           ),
-        data: { title: 'Activity' },
+        data: { title: 'Activity', permission: 'audit_log:read' },
       },
       {
         path: 'Purchase-order',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/purchase-order/purchase-order.component').then(
             (m) => m.PurchaseOrderComponent,
           ),
-        data: { title: 'Purchase order' },
+        data: { title: 'Purchase order', permission: 'purchase_order:read' },
         children: [
           {
             path: '',
@@ -237,8 +243,8 @@ export const routes: Routes = [
           {
             path: 'Create/641',
             loadComponent: () =>
-              import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
-                (m) => m.PurchaseOrderCreate63Component,
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-641/purchase-order-create-641.component').then(
+                (m) => m.PurchaseOrderCreate641Component,
               ),
             data: { title: 'Purchase order', purchaseType: '6.4.1' },
           },
@@ -286,11 +292,12 @@ export const routes: Routes = [
       },
       {
         path: 'Reimbursement',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/reimbursement/reimbursement.component').then(
             (m) => m.ReimbursementComponent,
           ),
-        data: { title: 'Reimbursement' },
+        data: { title: 'Reimbursement', permission: 'reimbursement:read' },
         children: [
           {
             path: '',
@@ -313,9 +320,10 @@ export const routes: Routes = [
 
       {
         path: 'Bank',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/bank/bank.component').then((m) => m.BankComponent),
-        data: { title: 'Bank' },
+        data: { title: 'Bank', permission: 'bank:read' },
         children: [
           {
             path: '',
@@ -345,9 +353,10 @@ export const routes: Routes = [
       },
       {
         path: 'Asset',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/asset/asset.component').then((m) => m.AssetComponent),
-        data: { title: 'Asset' },
+        data: { title: 'Asset', permission: 'asset:read' },
         children: [
           {
             path: '',
@@ -369,11 +378,12 @@ export const routes: Routes = [
       },
       {
         path: 'Expense',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/expense/expense.component').then(
             (m) => m.ExpenseComponent,
           ),
-        data: { title: 'Expense' },
+        data: { title: 'Expense', permission: 'expenses:read' },
         children: [
           {
             path: '',
@@ -413,11 +423,12 @@ export const routes: Routes = [
       },
       {
         path: 'Income',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/income/income.component').then(
             (m) => m.IncomeComponent,
           ),
-        data: { title: 'Income' },
+        data: { title: 'Income', permission: 'income:read' },
         children: [
           {
             path: '',
@@ -437,9 +448,10 @@ export const routes: Routes = [
       },
       {
         path: 'Loans',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/loans/loans.component').then((m) => m.LoansComponent),
-        data: { title: 'Loans' },
+        data: { title: 'Loans', permission: 'loan:read' },
         children: [
           {
             path: '',
@@ -459,11 +471,12 @@ export const routes: Routes = [
       },
       {
         path: 'Sales-invoice',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/sales-invoice/sales-invoice.component').then(
             (m) => m.SalesInvoiceComponent,
           ),
-        data: { title: 'Sales invoice' },
+        data: { title: 'Sales invoice', permission: 'sales_invoice:read' },
         children: [
           {
             path: '',
@@ -484,9 +497,10 @@ export const routes: Routes = [
 
       {
         path: 'User',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/user/user.component').then((m) => m.UserComponent),
-        data: { title: 'User' },
+        data: { title: 'User', permission: 'user:read' },
         children: [
           {
             path: '',
@@ -499,11 +513,12 @@ export const routes: Routes = [
       },
       {
         path: 'Salary-slip',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/salary-slip/salary-slip.component').then(
             (m) => m.SalarySlipComponent,
           ),
-        data: { title: 'Salary slip' },
+        data: { title: 'Salary slip', permission: 'salary_slip:read' },
         children: [
           {
             path: '',
@@ -536,11 +551,12 @@ export const routes: Routes = [
       },
       {
         path: 'Interpayment',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/interpayment/interpayment.component').then(
             (m) => m.InterpaymentComponent,
           ),
-        data: { title: 'Interpayment' },
+        data: { title: 'Interpayment', permission: 'interpayment:read' },
         children: [
           {
             path: '',
@@ -560,11 +576,12 @@ export const routes: Routes = [
       },
       {
         path: 'Payment',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/payment/payment.component').then(
             (m) => m.PaymentComponent,
           ),
-        data: { title: 'Payment' },
+        data: { title: 'Payment', permission: 'payment_outgoing:read' },
         children: [
           {
             path: '',
@@ -590,11 +607,12 @@ export const routes: Routes = [
       },
       {
         path: 'Taxing',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/taxing/taxing.component').then(
             (m) => m.TaxingComponent,
           ),
-        data: { title: 'Taxing' },
+        data: { title: 'Taxing', permission: 'tax:read' },
         children: [
           {
             path: '',
@@ -621,11 +639,12 @@ export const routes: Routes = [
       },
       {
         path: 'Master',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/master/master.component').then(
             (m) => m.MasterComponent,
           ),
-        data: { title: 'Master Data' },
+        data: { title: 'Master Data', permission: 'master_item:read' },
         children: [
           {
             path: '',
@@ -688,11 +707,12 @@ export const routes: Routes = [
       },
       {
         path: 'Settings',
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
           ),
-        data: { title: 'Settings' },
+        data: { title: 'Settings', permission: 'user:read' },
       },
     ],
   },

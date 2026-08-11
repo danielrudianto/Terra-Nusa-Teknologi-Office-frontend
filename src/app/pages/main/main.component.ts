@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TopNavigationComponent } from '../../components/top-navigation/top-navigation.component';
@@ -24,6 +25,7 @@ import { filter, map } from 'rxjs';
 })
 export class MainComponent {
   constructor(
+    private permissionService: PermissionService,
     private router: Router,
     private route: ActivatedRoute,
   ) {}
@@ -40,6 +42,9 @@ export class MainComponent {
           // Get the activated route
           let child = this.route.firstChild;
           while (child) {
+            // Halaman bisa dibuka langsung dari alamat tersimpan, bukan hanya
+            // lewat login — izinnya dipastikan termuat di sini juga.
+            this.permissionService.load();
             if (child.firstChild) {
               child = child.firstChild;
             } else {
@@ -54,7 +59,7 @@ export class MainComponent {
       });
   }
 
-  sideNavItems = [
+  private readonly allSideNavItems = [
     {
       name: 'nav.menu',
       children: [
@@ -190,4 +195,48 @@ export class MainComponent {
       ],
     },
   ];
+
+  /**
+   * Menu yang boleh dilihat pengguna.
+   *
+   * Izin tiap butir dibaca dari definisi rutenya sendiri (`data.permission`),
+   * bukan ditulis ulang di sini. Menuliskannya dua kali berarti suatu saat
+   * menu dan rute tidak lagi sepakat — dan yang tampak akan menyesatkan.
+   *
+   * Butir tanpa izin pada rutenya dianggap terbuka, sehingga menu yang belum
+   * sempat dipetakan tidak hilang diam-diam.
+   */
+  get sideNavItems() {
+    const izinRute = (route: string): string | undefined => {
+      const path = String(route || '').replace(/^\//, '');
+      const cari = (routes: any[]): any => {
+        for (const r of routes || []) {
+          if (r.path === path) return r;
+          const dalam = r.children && cari(r.children);
+          if (dalam) return dalam;
+        }
+        return null;
+      };
+      return cari(this.router.config)?.data?.permission;
+    };
+
+    const boleh = (aturan?: string) => {
+      if (!aturan) return true;
+      const [modul, aksi] = aturan.split(':');
+      return this.permissionService.can(modul, (aksi || 'read').trim());
+    };
+
+    return (
+      this.allSideNavItems
+        .map((grup: any) => ({
+          ...grup,
+          children: (grup.children || []).filter((butir: any) =>
+            boleh(izinRute(butir.route)),
+          ),
+        }))
+        // Kelompok yang seluruh isinya tersembunyi ikut dibuang agar tidak
+        // menyisakan judul kelompok tanpa isi.
+        .filter((grup: any) => (grup.children || []).length > 0)
+    );
+  }
 }

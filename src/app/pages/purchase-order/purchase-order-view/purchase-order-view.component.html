@@ -101,17 +101,30 @@
         <div class="pov-section__title">
           {{ "purchaseOrder.viewClauses" | translate }}
         </div>
-        @if (clauses.length === 0) {
+        @if (clauseSections.length === 0) {
           <div class="pov-empty">
             <mat-icon>gavel</mat-icon>
             <span>{{ "purchaseOrder.viewNoClauses" | translate }}</span>
           </div>
         } @else {
-          <ol class="pov-clauses">
-            @for (clause of clauses; track $index) {
-              <li>{{ clause }}</li>
+          @for (sec of clauseSections; track $index) {
+            @if (sec.title) {
+              <div class="pov-clauses__title">{{ sec.title }}</div>
             }
-          </ol>
+            <ol class="pov-clauses">
+              @for (p of sec.items; track $index) {
+                @if (isSubList(p)) {
+                  <ol class="pov-clauses__sub">
+                    @for (d of asList(p); track d) {
+                      <li>{{ d }}</li>
+                    }
+                  </ol>
+                } @else {
+                  <li>{{ asText(p) }}</li>
+                }
+              }
+            </ol>
+          }
         }
       </section>
     }

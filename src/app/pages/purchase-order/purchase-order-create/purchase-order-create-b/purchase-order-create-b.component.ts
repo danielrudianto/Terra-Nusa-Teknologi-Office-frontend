@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -29,9 +30,11 @@ import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   buildClauseHtml,
+  buildEquipmentRentalBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
 
 @Component({
   selector: 'app-purchase-order-create-b',
@@ -49,6 +52,7 @@ import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper
     MatIconModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatCheckboxModule,
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
@@ -97,6 +101,15 @@ export class PurchaseOrderCreateBComponent {
     ]),
     additionalClauses: new FormArray([]),
     notes: new FormControl(''),
+    // Menentukan siapa menanggung risiko atas alat selama masa sewa.
+    // Sewa tanpa operator adalah pola yang selama ini dipakai, jadi itu
+    // yang menjadi bawaan.
+    operatorByVendor: new FormControl(false),
+    // Hasil negosiasi per vendor; bawaannya penyedia alat.
+    equipmentRiskBearer: new FormControl('kedua', Validators.required),
+    // Hanya dipakai bila ada baris sewa bersatuan jam.
+    quotaPeriodDays: new FormControl(30, [Validators.min(1)]),
+    excessHourRate: new FormControl(0),
     rentals: new FormArray([]),
     includePPN: new FormControl(true),
   });
@@ -162,6 +175,61 @@ export class PurchaseOrderCreateBComponent {
 
   templateVersion = latestClauseVersion('B');
 
+  /*
+   * Termin memakai kode baku, seragam dengan PO lain. Kalimat termin pada
+   * klausul dipilih berdasarkan kode ini; teks bebas tidak cocok dengan satu
+   * pun cabangnya.
+   */
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) {
+      credit?.enable();
+    } else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) {
+      prepaid?.enable();
+    } else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  /**
+   * Ada baris sewa yang dihitung per jam.
+   *
+   * Disimpulkan dari satuan yang benar-benar dipakai, bukan pilihan
+   * terpisah, agar klausul hourmeter tidak mungkin berbeda dari dasar
+   * perhitungan yang ditagihkan.
+   */
+  riskBearers = [
+    { value: 'kedua', label: 'PIHAK KEDUA (vendor pemilik alat)' },
+    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
+  ];
+
+  get rentalByHour(): boolean {
+    return this.t.controls.some(
+      (c) => String(c.getRawValue().unit || '').toLowerCase() === 'jam',
+    );
+  }
+
   get additionalClauses(): FormArray {
     return this.formGroup.get('additionalClauses') as FormArray;
   }
@@ -180,10 +248,33 @@ export class PurchaseOrderCreateBComponent {
       .filter((c) => c.length > 0);
   }
 
+  /**
+   * Konteks klausul; dipakai bersama pratinjau dan pencetakan.
+   *
+   * Satu sumber untuk keduanya — sebelumnya pratinjau merakit konteksnya
+   * sendiri dan ketinggalan saat field baru ditambahkan, sehingga tempo
+   * kredit tercetak 0 padahal sudah diisi.
+   */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      operatorByVendor: !!v.operatorByVendor,
+      equipmentRiskBearer: v.equipmentRiskBearer,
+      rentalByHour: this.rentalByHour,
+      quotaPeriodDays: this.rentalByHour ? v.quotaPeriodDays : null,
+      excessHourRate: this.rentalByHour
+        ? Number(String(v.excessHourRate ?? '').replace(/[^\d.-]/g, '')) || 0
+        : 0,
+    };
+  }
+
   get clausePreview(): string {
     return buildClauseHtml(
       'B',
-      { paymentTermText: this.formGroup.get('paymentTerm')?.value },
+      this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
@@ -262,6 +353,22 @@ export class PurchaseOrderCreateBComponent {
         // Hanya data sumber. Poin perjanjian dirakit ulang dari
         // templateVersion + data ini, tidak disimpan sebagai teks.
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
+        creditTerm: this.formGroup.get('creditTerm')?.value,
+        prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
+        operatorByVendor: this.formGroup.get('operatorByVendor')?.value,
+        equipmentRiskBearer: this.formGroup.get('equipmentRiskBearer')?.value,
+        rentalByHour: this.rentalByHour,
+        quotaPeriodDays: this.rentalByHour
+          ? Number(this.formGroup.get('quotaPeriodDays')?.value) || 30
+          : null,
+        excessHourRate: this.rentalByHour
+          ? Number(
+              String(this.formGroup.get('excessHourRate')?.value ?? '').replace(
+                /[^\d.-]/g,
+                '',
+              ),
+            ) || 0
+          : 0,
         additionalClauses: this.additionalClauseValues,
       },
     };
@@ -293,7 +400,11 @@ export class PurchaseOrderCreateBComponent {
       }),
       includePpn: !!v.includePPN,
       templateVersion: this.templateVersion,
-      clauseContext: { paymentTermText: v.paymentTerm },
+      billingTerms: buildEquipmentRentalBillingTerms(
+        isTempoTerm(v.paymentTerm),
+      ),
+      billingTitle: 'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEWAAN ALAT KERJA',
+      clauseContext: this.clauseContext(),
       additionalClauses: this.additionalClauseValues,
     };
   }

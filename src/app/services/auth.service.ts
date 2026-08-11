@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { PermissionService } from './permission.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private permissionService: PermissionService,
+  ) {}
 
   get isLoggedIn() {
     // const token = localStorage.getItem('token');
@@ -69,6 +73,9 @@ export class AuthService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+    // Izin dibersihkan agar pengguna berikutnya di perangkat yang sama tidak
+    // sempat melihat menu milik pengguna sebelumnya.
+    this.permissionService.clear();
     this.router.navigate(['/Login']);
   }
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PermissionService } from '../../services/permission.service';
 import {
   FormControl,
   FormGroup,
@@ -44,6 +45,7 @@ import {
 })
 export class LoginComponent {
   constructor(
+    private permissionService: PermissionService,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private router: Router,
@@ -93,11 +95,18 @@ export class LoginComponent {
         // return to the page the user was on before the session expired
         const returnUrl = localStorage.getItem('returnUrl');
         localStorage.removeItem('returnUrl');
-        if (returnUrl && !returnUrl.startsWith('/Login')) {
-          this.router.navigateByUrl(returnUrl);
-        } else {
-          this.router.navigate(['/']);
-        }
+
+        // Izin dimuat sebelum berpindah agar menu tidak sempat tampil kosong
+        // lalu terisi sesaat kemudian. Gagal memuat tidak menahan masuk:
+        // layarnya menampilkan sesedikit mungkin, dan server tetap menolak
+        // apa pun yang tidak berhak.
+        this.permissionService.load(true).finally(() => {
+          if (returnUrl && !returnUrl.startsWith('/Login')) {
+            this.router.navigateByUrl(returnUrl);
+          } else {
+            this.router.navigate(['/']);
+          }
+        });
       },
       error: (error) => {
         this.snackBar.open(error.error.detail, 'Close', {

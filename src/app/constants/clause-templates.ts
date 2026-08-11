@@ -73,6 +73,45 @@ export interface ClauseContext {
   maintenanceMode?: string;
   // PO-B: termin pembayaran ditulis bebas (bukan kode CR/CBD/dst)
   paymentTermText?: string;
+  /** Pemotongan PPh: kode objek pajak, namanya, dan tarifnya. */
+  pphCode?: string;
+  pphTaxObject?: string;
+  pphPercentage?: number | string;
+  // PO-B (sewa alat)
+  /**
+   * Alat disewa lengkap dengan operator dari PIHAK KEDUA.
+   *
+   * Menentukan siapa menanggung risiko atas alat: yang mengendalikan alat
+   * yang menanggung. Bernilai false secara bawaan karena sewa alat tanpa
+   * operator adalah pola yang selama ini dipakai.
+   */
+  operatorByVendor?: boolean;
+  /**
+   * Pihak yang menanggung keamanan dan keselamatan alat selama masa sewa.
+   *
+   * Bisa jatuh ke mana saja tergantung hasil negosiasi, sehingga tidak
+   * dipatok: sebagian penyedia menanggung sendiri karena alatnya sudah
+   * diasuransikan, sebagian lain melimpahkannya ke penyewa. Bawaannya
+   * 'kedua' (penyedia), mengikuti pola yang paling sering dipakai.
+   */
+  equipmentRiskBearer?: 'pertama' | 'kedua';
+  /**
+   * Sewa dihitung per jam, sehingga dasar perhitungannya hourmeter.
+   *
+   * Disimpulkan dari satuan baris sewa, bukan diisi manual — supaya tidak
+   * mungkin berbeda dari yang benar-benar ditagihkan.
+   */
+  rentalByHour?: boolean;
+  /**
+   * Panjang satu periode kuota, dalam hari kalender.
+   *
+   * Sewa per jam selalu diikat pada periode: kuota 200 jam per 30 hari,
+   * misalnya. Tanpa periode, alat bisa menganggur berbulan-bulan sementara
+   * jamnya belum terpakai — dan tidak ada penyedia yang mau menanggung itu.
+   */
+  quotaPeriodDays?: number | string;
+  /** Tarif tambahan per jam untuk pemakaian di atas kuota. */
+  excessHourRate?: number | string;
   // PO-D (SPK tenaga kerja harian)
   overtimeRate?: number; // upah lembur per jam
   wageSchedules?: string[]; // kalimat jadwal bayar tiap komponen upah
@@ -84,6 +123,15 @@ export interface ClauseContext {
    * Bernilai true secara bawaan agar SPK lama tidak berubah.
    */
   includeShiftClause?: boolean;
+  /**
+   * PO-D, pekerja yang didatangkan dari luar kota. Tiga poin berikut hanya
+   * berlaku bila pekerjanya memang dimobilisasi dari kampung halaman, jadi
+   * bawaannya mati agar SPK pekerja setempat tidak ikut memuatnya.
+   */
+  includeTransportHome?: boolean;
+  includeHomeLeave?: boolean;
+  /** Pekerja yang bertugas mendampingi alat saat mobilisasi/demobilisasi. */
+  includeEquipmentEscort?: boolean;
   includePlacementClause?: boolean;
   /**
    * Staf lapangan (mis. staff engineer): penagihan bulanan, wajib FDP.
@@ -134,7 +182,12 @@ function paymentSentence(ctx: ClauseContext): string {
     case 'CR':
       return `Termin pembayaran adalah kredit dalam ${credit} hari.`;
     default:
-      return 'Termin pembayaran adalah —.';
+      // PO lama menyimpan termin sebagai teks bebas ("Tempo 30 hari"), yang
+      // tidak cocok dengan satu pun kode di atas. Mencetak teksnya apa adanya
+      // jauh lebih baik daripada memunculkan tanda hubung tanpa keterangan.
+      return ctx.paymentTerm
+        ? `Termin pembayaran adalah ${ctx.paymentTerm}.`
+        : 'Termin pembayaran adalah —.';
   }
 }
 
@@ -289,6 +342,16 @@ const MAINTENANCE_CLAUSES: ClauseTemplate[] = [
 
       // Mode JASA (perbaikan): klausul ringkas (verifikasi + garansi).
       const points: string[] = [paymentSentence(ctx)];
+      // Jasa perbaikan adalah objek pemotongan PPh; pembelian sparepart
+      // tidak. Karena itu poin ini hanya ada di cabang jasa, dan hanya
+      // tercetak bila kode objek pajaknya memang dipilih.
+      if (ctx.pphCode) {
+        points.push(
+          `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+            ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+          }.`,
+        );
+      }
       points.push(
         `Pekerjaan dinyatakan selesai setelah diperiksa dan disetujui oleh perwakilan PIHAK PEMBELI; hasil yang tidak sesuai wajib diperbaiki oleh PIHAK PENJUAL tanpa biaya tambahan.`,
       );
@@ -386,27 +449,147 @@ const D_CLAUSES: ClauseTemplate[] = [
   },
 ];
 
+/**
+ * Klausul SPK tenaga kerja (PO-D), terbagi empat bagian.
+ *
+ * Isinya sama persis dengan daftar rata pada `D_CLAUSES` — yang berubah
+ * hanya pengelompokannya, sehingga pembaca tahu poin mana mengatur apa.
+ * Pengelompokan ini sebelumnya sudah ada sebagai komentar di kode, tetapi
+ * tidak pernah sampai ke dokumennya.
+ *
+ * Beberapa poin dipindahkan ke bagian yang lebih tepat dibanding komentar
+ * lama: jam shift dan kesediaan penempatan sebenarnya kewajiban, bukan hak;
+ * sedangkan absensi dan pelaporan alat rusak adalah laporan lapangan.
+ */
+export function buildManpowerClauses(
+  ctx: ClauseContext,
+  additionalClauses?: string[],
+): ClauseSection[] {
+  const overtime = rupiah(ctx.overtimeRate);
+  const shift = Number(ctx.shiftHours) || 8;
+
+  const hak: string[] = [
+    `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
+    'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+    ...(ctx.includeTransportHome
+      ? [
+          'Biaya transportasi dari domisili tetap (kampung halaman) pekerja menuju ke domisili perusahaan akan ditanggung oleh perusahaan.',
+        ]
+      : []),
+    ...(ctx.includeHomeLeave
+      ? [
+          'Selama durasi perjanjian ini berlangsung, pekerja memiliki hak pulang ke domisili tetap (kampung halaman) apabila proyek sudah selesai.',
+        ]
+      : []),
+  ];
+
+  // Kebijakan Hari Minggu mengatur besaran yang diterima pekerja, sehingga
+  // tempatnya di bagian hak. Hanya dicetak bila memang diberlakukan.
+  if (ctx.includeSundayPolicy) {
+    hak.push(
+      'Pada prinsipnya Hari Minggu merupakan hari libur lapangan (off).',
+      'Apabila karyawan hadir penuh dari hari Senin sampai Sabtu tanpa ada ketidakhadiran, dan tetap masuk pada Hari Minggu, maka gaji Hari Minggu dihitung 2 (dua) kali.',
+      'Apabila karyawan hadir penuh dari hari Senin sampai Sabtu, maka berhak mendapatkan gaji Hari Minggu dihitung 1 (satu) kali.',
+      'Apabila terdapat ketidakhadiran pada hari Senin sampai dengan Sabtu, maka kehadiran pada Hari Minggu tidak dihitung (0).',
+      'Apabila terdapat ketidakhadiran pada hari Senin sampai dengan Sabtu, namun karyawan tetap masuk pada Hari Minggu karena kebutuhan mendesak (urgent), maka kehadiran tersebut dihitung 1 (satu) kali.',
+    );
+  }
+
+  const kewajiban: string[] = [
+    // Jam shift tidak selalu tetap — sebagian pekerjaan menentukannya
+    // harian, sehingga poin ini hanya dicetak bila memang disepakati.
+    ...(ctx.includeShiftClause !== false
+      ? [
+          `Shift kerja adalah ${shift} jam per hari. Awal mula jam shift akan diinformasikan oleh penanggung jawab proyek.`,
+        ]
+      : []),
+    ...(ctx.includePlacementClause !== false
+      ? [
+          'Selama perjanjian kerja sama, PIHAK KEDUA bersedia ditempatkan di seluruh Indonesia sesuai lokasi proyek.',
+        ]
+      : []),
+    'Pekerja wajib melaksanakan tugas yang dipercayakan oleh penanggung jawab proyek dengan sebaik-baiknya tanpa mengabaikan unsur keselamatan kerja dan kebersihan lingkungan.',
+    'Pekerja wajib menjaga peralatan kerja yang digunakan dalam proyek.',
+    'Apabila pekerja lalai dan dengan atau tanpa sengaja menghilangkan barang, pekerja wajib melakukan ganti rugi berdasarkan harga barang tersebut.',
+    'Setiap akhir shift dan/atau lembur, pekerja wajib menyimpan seluruh peralatan kerja yang dikumpulkan di satu tempat penyimpanan, dikunci dan ditutup dalam keadaan bersih.',
+    'Selama perjanjian kontrak kerja ini berlangsung, apabila PIHAK KEDUA ingin mengundurkan diri, PIHAK KEDUA wajib memberikan Surat Pengunduran Diri secara tertulis minimal 30 hari kerja.',
+    // Dua poin berikut mengatur masa proyek berhenti dan kesiapan dipanggil
+    // kembali — keduanya membebani pekerja, sehingga tempatnya di sini.
+    'Selama masa non-aktif proyek, pekerja wajib mematuhi instruksi perusahaan dan mengikuti kebijakan yang berlaku sesuai dengan ketentuan yang ditetapkan.',
+    'Ketidaksiapan pekerja pada waktu yang telah ditentukan dapat menyebabkan pembatalan kontrak kerja.',
+    ...(ctx.includeEquipmentEscort
+      ? [
+          'Pekerja wajib mendampingi alat pada saat proses mobilisasi dan demobilisasi.',
+        ]
+      : []),
+  ];
+
+  const laporan: string[] = [
+    'PIHAK KEDUA berkewajiban untuk mengisi Form Data Pekerja (FDP) sebelum pekerjaan dimulai.',
+    'Pekerja wajib melakukan absensi di mula dan akhir shift.',
+    'Apabila pekerja memiliki alat kerja yang rusak, pekerja wajib memberikan informasi tertulis kepada penanggung jawab dan memberikan bukti barang yang rusak. Apabila bukti barang rusak tersebut tidak ada, maka barang tersebut dianggap hilang dan menjadi tanggung jawab pekerja.',
+  ];
+
+  const pembayaran: string[] = [
+    // Jadwal tiap komponen upah disebut lebih dulu agar poin di bawahnya
+    // terbaca sebagai pengecualian atas jadwal tersebut.
+    ...(ctx.wageSchedules && ctx.wageSchedules.length
+      ? ctx.wageSchedules
+      : ['Upah dibayarkan sesuai kesepakatan.']),
+    'Bilamana tidak ditemukan laporan absen pada sebagian/seluruh periode pekan tersebut, perusahaan tidak berkewajiban untuk membayarkan hasil kerja pekerja pada periode tersebut.',
+    'Apabila pekerja tidak menyelesaikan pekerjaannya, sisa perhitungan pekerjaan tidak dapat ditagihkan dan/atau dibayarkan.',
+    'Apabila pekerja tidak menyelesaikan perjanjian kerjasama ini, maka perusahaan berhak untuk tidak memberikan seluruh hak pekerja.',
+    'Apabila pekerja meninggalkan utang kepada Pihak Lain selain perusahaan, perusahaan berhak untuk tidak memberikan hak pekerja hingga permasalahan tersebut diselesaikan terlebih dahulu.',
+    'Perusahaan berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada utang pekerja kepada PIHAK KETIGA yang belum diselesaikan.',
+  ];
+
+  const tambahan = (additionalClauses ?? []).filter((x) => !!x && x.trim());
+
+  return [
+    { title: 'Hak Pekerja', items: hak },
+    { title: 'Kewajiban Pekerja', items: kewajiban },
+    { title: 'Laporan Lapangan', items: laporan },
+    { title: 'Tata Cara Pembayaran', items: pembayaran },
+    ...(tambahan.length
+      ? [
+          {
+            title: 'Catatan Tambahan',
+            items: tambahan as (string | string[])[],
+          },
+        ]
+      : []),
+  ];
+}
+
 // ---- PO-B: SPK penyewaan alat kerja ke vendor ---------------------------
 
 const B_CLAUSES: ClauseTemplate[] = [
   {
     version: '1.0',
     build: (ctx) => {
-      // Termin PO-B ditulis bebas karena bervariasi ("Tempo 30 hari",
-      // "sewa bulan pertama cash, berikutnya tempo 14 hari", dst).
-      const term = (ctx.paymentTermText || '').trim();
-
       const lines: string[] = [
         'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
-        term
-          ? `Termin pembayaran adalah ${term}`.replace(/\.?$/, '.')
-          : 'Termin pembayaran adalah sesuai kesepakatan.',
+        // Termin memakai kode baku, seragam dengan PO lain. PO-B lama
+        // menyimpannya sebagai teks bebas ("Tempo 30 hari"); paymentSentence
+        // mencetak teks itu apa adanya bila bukan kode yang dikenal.
+        paymentSentence({
+          ...ctx,
+          paymentTerm: ctx.paymentTerm || ctx.paymentTermText,
+        }),
         'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
         'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
         `PIHAK KEDUA wajib memberikan daftar alat kerja dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
         'Hanya alat kerja dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.',
         'PIHAK KEDUA wajib menyewakan alat kerja sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA.',
         `PIHAK KEDUA wajib mengirimkan dokumen Surat Izin Laik Operasi (SILO) sesuai dengan peraturan dan perundang-undangan yang berlaku di Republik Indonesia untuk alat kerja yang akan disewakan sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA. Seluruh dokumen Surat Izin Laik Operasi (SILO) wajib dikirimkan melalui e-mail ke alamat ${OFFICE_CONTACT.email} 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi.`,
+        // Alat yang disewa lengkap dengan operator: kecakapan dan izin
+        // operatornya menjadi tanggung jawab penyedianya.
+        ...(ctx.operatorByVendor
+          ? [
+              'PIHAK KEDUA wajib menyediakan operator alat kerja yang cakap, handal, dan memiliki Surat Ijin Operasi (SIO) yang masih berlaku setidaknya selama 3 (tiga) bulan sejak tanggal perjanjian.',
+              'PIHAK KEDUA berkewajiban untuk mengganti operator apabila dianggap tidak handal, tidak dapat mengikuti peraturan yang berlaku, atau tidak dapat berkomunikasi, atau menjalankan instruksi dari PIHAK PERTAMA. Apabila tidak disediakan operator pengganti selambat-lambatnya 3 (tiga) hari kalender sejak surat permintaan pergantian SDM, PIHAK PERTAMA berhak untuk memutus kontrak kerja ini.',
+            ]
+          : []),
         'Seluruh pengambilan dan pengisian Bahan Bakar Minyak (BBM) untuk operasional alat kerja wajib didokumentasikan oleh PIHAK KEDUA dan dilaporkan kepada perwakilan PIHAK PERTAMA.',
         'PIHAK KEDUA wajib memastikan alat kerja laik untuk digunakan sebelum proses mobilisasi dilaksanakan.',
         'PIHAK KEDUA wajib melakukan pemeriksaan kondisi alat kerja secara berkala selama perjanjian ini berlangsung.',
@@ -414,12 +597,73 @@ const B_CLAUSES: ClauseTemplate[] = [
         'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah hari kerja maksimum pada periode tersebut, sejumlah hari perbaikan terhitung dari laporan kerusakan alat kerja.',
         'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
         'Seluruh peralatan, perlengkapan dan material yang dibutuhkan selama perbaikan merupakan tanggung jawab PIHAK KEDUA.',
-        'Keamanan dan keselamatan alat kerja menjadi tanggung jawab PIHAK PERTAMA.',
+        // Risiko mengikuti kendali: alat yang dioperasikan personel PIHAK
+        // KEDUA tetap menjadi tanggung jawab mereka. Bila dioperasikan
+        // personel PIHAK PERTAMA, tanggung jawabnya dibatasi pada nilai yang
+        // sudah disepakati tertulis — tanpa batas ini, nilai penggantian
+        // ditentukan sepihak oleh pemilik alat setelah kejadian.
+        // Batas nilai selalu disebut agar bila terjadi klaim, angkanya
+        // mengacu pada berita acara — bukan ditentukan sepihak setelah
+        // kejadian, saat posisi tawar sudah timpang.
+        `Keamanan dan keselamatan alat kerja selama berada di lokasi kerja menjadi tanggung jawab ${
+          ctx.equipmentRiskBearer === 'pertama'
+            ? 'PIHAK PERTAMA'
+            : 'PIHAK KEDUA'
+        }, sebatas nilai alat kerja yang disepakati kedua belah pihak dan dicantumkan dalam Berita Acara Serah Terima Alat.`,
+        // Pengecualiannya mengikuti siapa yang menanggung: yang dikecualikan
+        // selalu hal-hal di luar kendali penanggungnya.
+        ...(ctx.equipmentRiskBearer === 'pertama'
+          ? [
+              'Tanggung jawab sebagaimana dimaksud tidak mencakup keausan wajar akibat pemakaian normal, cacat bawaan, kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian, serta kerusakan yang disebabkan oleh kelalaian personel atau mekanik PIHAK KEDUA.',
+            ]
+          : ctx.operatorByVendor
+            ? ['Alat kerja dioperasikan oleh personel PIHAK KEDUA.']
+            : [
+                // Alat dioperasikan personel PIHAK PERTAMA, sehingga
+                // kesalahan pengoperasian tidak dapat dibebankan ke pemilik.
+                'Tanggung jawab sebagaimana dimaksud tidak mencakup kerusakan yang disebabkan oleh kesalahan pengoperasian personel PIHAK PERTAMA, di luar keausan wajar akibat pemakaian normal, cacat bawaan, serta kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian.',
+              ]),
+        'Serah terima alat kerja dituangkan dalam Berita Acara Serah Terima Alat yang memuat kondisi alat beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat mobilisasi dan demobilisasi. Kondisi yang tidak tercatat pada saat mobilisasi tidak dapat ditagihkan pada saat demobilisasi.',
+        'PIHAK KEDUA wajib mengasuransikan alat kerja miliknya dan menyerahkan salinan polis yang masih berlaku kepada PIHAK PERTAMA sebelum mobilisasi dilaksanakan.',
         'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
         'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
         'Barang yang disewakan adalah milik PIHAK KEDUA. PIHAK PERTAMA tidak diizinkan untuk memperjualbelikan, menjadikan jaminan, memindahtangankan, dan/atau memindahkan barang ke lokasi lain tanpa persetujuan dari PIHAK KEDUA.',
         'PIHAK KEDUA tidak bertanggung jawab atas permasalahan PIHAK PERTAMA dengan pihak-pihak lainnya diluar kontrak kerja ini.',
       ];
+
+      // Sewa berbasis jam: dasar perhitungannya hourmeter, sehingga
+      // keabsahan dan angka awalnya perlu disepakati sejak mobilisasi.
+      // Tanpa acuan awal yang terdokumentasi, selisih jam menjadi
+      // perdebatan yang tidak bisa dibuktikan siapa pun.
+      if (ctx.rentalByHour) {
+        lines.push(
+          'Penggunaan alat kerja dihitung berdasarkan hourmeter yang terpasang di dalam alat kerja.',
+          'Hourmeter yang terpasang di dalam alat kerja wajib berfungsi dengan baik dan dapat dibuktikan keabsahannya.',
+          'Jam awal alat kerja wajib didokumentasikan dan berfungsi sebagai acuan awal penyewaan alat kerja, dan disepakati bersama dengan perwakilan PIHAK PERTAMA.',
+        );
+
+        // Kuota jamnya sudah tercantum sebagai volume pada tabel, sehingga
+        // tidak diulang di sini. Yang perlu ditegaskan adalah periodenya,
+        // sejak kapan dihitung, dan apa yang terjadi bila kurang atau lebih.
+        if (ctx.quotaPeriodDays) {
+          const hari = ctx.quotaPeriodDays;
+          lines.push(
+            `Kuota penggunaan alat kerja adalah sejumlah jam yang tercantum dalam tabel di atas, berlaku untuk setiap periode ${hari} (${terbilangHari(
+              hari,
+            )}) hari kalender, terhitung sejak tanggal alat kerja diterima di lokasi kerja sebagaimana tercatat dalam Berita Acara Serah Terima Alat.`,
+            'Pemakaian yang kurang dari kuota dalam satu periode tetap ditagihkan sejumlah kuota periode tersebut, dan sisa jam yang tidak terpakai tidak dapat dialihkan ke periode berikutnya.',
+            ...(ctx.excessHourRate
+              ? [
+                  // rupiah() sudah memuat awalan "Rp. ", jangan ditambah lagi.
+                  `Pemakaian di atas kuota dalam satu periode dikenakan tambahan biaya sebesar ${rupiah(
+                    Number(ctx.excessHourRate) || 0,
+                  )} per jam.`,
+                ]
+              : []),
+            'Pengakhiran sewa sebelum berakhirnya periode yang sedang berjalan tetap ditagihkan sejumlah kuota periode tersebut.',
+          );
+        }
+      }
 
       // Sewa alat angkut (dicatat sebagai PO-A) memakai template ini juga.
       // Poin berikut hanya muncul bila datanya diisi, sehingga sewa alat
@@ -1073,6 +1317,16 @@ export interface TransportContext extends MandorContext {
    */
   /** Tenggat penyerahan dokumen asuransi sebelum pengiriman (hari). */
   insuranceDays?: number | string;
+  /**
+   * Tenggat PIHAK PERTAMA menyerahkan daftar barang sebelum proses muat
+   * (hari) — khusus pengiriman laut.
+   *
+   * Dulu ikut memakai `insuranceDays`. Keduanya kebetulan sama-sama
+   * berjangka beberapa hari, tetapi tidak berkaitan: kewajiban ini tetap
+   * berlaku walau asuransi diurus sendiri oleh PIHAK PERTAMA. Karena
+   * berbagi satu field, tenggatnya ikut hilang begitu asuransi dimatikan.
+   */
+  cargoListDays?: number | string;
   /** Tenggat penyerahan consignment note setelah barang diterima (hari). */
   consignmentDays?: number | string;
   /** Penanggung risiko proses pengiriman dan proses bongkar. */
@@ -1141,6 +1395,9 @@ export function buildTransportClauses(
         : [];
   const asuransi = ctx.insuranceDays ?? 3;
   const consignment = ctx.consignmentDays ?? 3;
+  // PO lama tidak menyimpan field ini; nilainya dulu memang diambil dari
+  // insuranceDays, sehingga cetak ulangnya tetap menghasilkan angka sama.
+  const daftarBarang = ctx.cargoListDays ?? ctx.insuranceDays ?? 3;
 
   const umum: (string | string[])[] = [
     'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
@@ -1266,7 +1523,7 @@ export function buildTransportClauses(
     const jadwalDanTitik: (string | string[])[] = jadwalBaris.length
       ? jadwalBaris.flatMap((j, i) => [
           jadwalBaris.length > 1
-            ? `Jadwal pekerjaan pengiriman ${i + 1} (${j.from || '—'} ke ${j.to || '—'}):`
+            ? `Jadwal pekerjaan pengiriman ${i + 1} (dari ${j.from || '—'} ke ${j.to || '—'}):`
             : 'Jadwal pekerjaan:',
           mode === 'laut'
             ? [
@@ -1279,7 +1536,7 @@ export function buildTransportClauses(
                 // memuatnya (yakni saat pengirimannya tunggal).
                 ...(jadwalBaris.length > 1
                   ? []
-                  : [`Rute: ${j.from || '—'} ke ${j.to || '—'}`]),
+                  : [`Rute: dari ${j.from || '—'} ke ${j.to || '—'}`]),
                 `Jadwal Pengiriman: ${j.deliveryDateText || '—'}`,
                 `Jadwal Pembongkaran: ${j.unloadingDateText || j.deliveryDateText || '—'}`,
               ],
@@ -1309,8 +1566,8 @@ export function buildTransportClauses(
     const tambahanLaut: string[] =
       mode === 'laut'
         ? [
-            `PIHAK PERTAMA wajib memberikan daftar barang yang akan dikirimkan selambat-lambatnya ${asuransi} (${terbilangHari(
-              asuransi,
+            `PIHAK PERTAMA wajib memberikan daftar barang yang akan dikirimkan selambat-lambatnya ${daftarBarang} (${terbilangHari(
+              daftarBarang,
             )}) hari sebelum proses muat.`,
             `PIHAK KEDUA wajib memberikan salinan sebagian manifest kapal (kontainer yang disewakan) selambat-lambatnya ${consignment} (${terbilangHari(
               consignment,
@@ -1378,6 +1635,312 @@ export function buildTransportBillingTerms(): BillingItem[] {
     'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
     'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
+  ];
+}
+
+/**
+ * Lampiran "Tata Cara Penagihan dan Pembayaran — Jasa Perbaikan & Perawatan"
+ * (PO 5.1.2 mode jasa).
+ *
+ * Berbeda dengan lampiran pembelian barang: jasa ditagih setelah pekerjaan
+ * selesai, bukti selesainya Berita Acara Serah Terima (bukan Surat Jalan),
+ * dan nilainya dipotong PPh.
+ *
+ * Berbeda pula dengan lampiran jasa borongan: perbaikan berjalan sekali
+ * selesai, sehingga tidak memakai Certificate of Payment, periode penagihan,
+ * maupun retensi.
+ */
+export function buildMaintenanceBillingTerms(): BillingItem[] {
+  return [
+    'PIHAK KEDUA berhak menagihkan hasil pekerjaannya setelah pekerjaan dinyatakan selesai dan Berita Acara Serah Terima Pekerjaan ditandatangani oleh perwakilan PIHAK PERTAMA.',
+    'Dokumen penagihan yang wajib dikirimkan adalah sebagai berikut:',
+    [
+      'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+      'Kwitansi bermaterai (asli);',
+      'Faktur Pajak (bila PIHAK KEDUA merupakan Pengusaha Kena Pajak);',
+      'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+      'Berita Acara Serah Terima Pekerjaan yang telah ditandatangani oleh perwakilan PIHAK PERTAMA (asli);',
+      'Dokumentasi (foto/video) kondisi sebelum dan sesudah pekerjaan;',
+      'Daftar sparepart yang diganti beserta merek dan tipenya (bila pekerjaan mencakup penggantian sparepart);',
+      'Sertifikat garansi (bila ada).',
+    ],
+    'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+    {
+      block: [
+        'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
+        'RUKO ASIA TROPIS AT 12 NO. 21',
+        'KOTA HARAPAN INDAH - BEKASI',
+      ],
+    },
+    // Pengaman khas pekerjaan perawatan: tanpa ini sulit membuktikan
+    // sparepart benar-benar diganti dan bukan dibersihkan lalu ditagih baru.
+    'Sparepart atau komponen yang diganti wajib diserahkan kembali kepada PIHAK PERTAMA pada saat serah terima pekerjaan, kecuali disepakati lain secara tertulis.',
+    // Tarif tidak disebut di sini: kode objek pajak dan tarifnya sudah
+    // tercantum pada catatan perjanjian, dipilih per-PO lewat formulir.
+    'Atas jasa ini PIHAK PERTAMA melakukan pemotongan Pajak Penghasilan sesuai peraturan perpajakan yang berlaku. Bukti potong diserahkan kepada PIHAK KEDUA sesuai jangka waktu yang diatur dalam peraturan tersebut.',
+    'Pembayaran dilakukan sesuai termin yang tercantum dalam Surat Perintah Kerja, terhitung sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.',
+    'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
+    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
+    'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
+    'Pembayaran yang telah dilakukan tidak membebaskan PIHAK KEDUA dari kewajiban garansi atas hasil pekerjaan.',
+    'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
+  ];
+}
+
+// ---- PO 6.4.1: SPK jasa pengurusan legalitas & perizinan ------------------
+
+/**
+ * Penanggung biaya resmi yang hangus bila pengajuan ditolak bukan karena
+ * kelalaian PIHAK KEDUA.
+ */
+export type RejectionCostBearer = 'pertama' | 'kedua' | 'kesepakatan';
+
+/*
+ * Ditulis sebagai lanjutan kalimat (huruf kecil di awal), karena dipakai
+ * setelah anak kalimat "Bila pengajuan ditolak bukan karena kelalaian
+ * PIHAK KEDUA, ...".
+ */
+const REJECTION_COST_SENTENCE: Record<RejectionCostBearer, string> = {
+  pertama:
+    'biaya resmi yang telah disetorkan dan tidak dapat ditarik kembali menjadi tanggung jawab PIHAK PERTAMA.',
+  kedua:
+    'biaya resmi yang telah disetorkan dan tidak dapat ditarik kembali menjadi tanggung jawab PIHAK KEDUA.',
+  kesepakatan:
+    'biaya resmi yang telah disetorkan dan tidak dapat ditarik kembali ditanggung berdasarkan kesepakatan tertulis kedua belah pihak.',
+};
+
+export interface LegalServiceContext extends ClauseContext {
+  /** Ada baris berkategori biaya resmi pada dokumen ini. */
+  hasOfficialFee?: boolean;
+  /** Penanggung biaya resmi bila pengajuan ditolak di luar kelalaian vendor. */
+  rejectionCostBearer?: RejectionCostBearer;
+  /** Tenggat pengembalian dokumen asli setelah selesai/batal (hari kerja). */
+  documentReturnDays?: number | string;
+  /** Interval pelaporan perkembangan pengurusan (hari). */
+  reportingIntervalDays?: number | string;
+}
+
+/**
+ * Klausul SPK jasa pengurusan legalitas (PO 6.4.1).
+ *
+ * Berbeda dari SPK jasa lain karena hasil akhirnya tidak berada dalam kendali
+ * PIHAK KEDUA: yang menerbitkan akta, SBU, atau izin adalah instansi/lembaga.
+ * Karena itu klausulnya memisahkan dengan tegas kewajiban yang bisa dituntut
+ * (kelengkapan berkas, ketepatan pengajuan, tenggat) dari hasil yang tidak
+ * bisa dijanjikan siapa pun.
+ *
+ * Terbagi empat seksi supaya pembacanya tahu poin mana mengatur apa.
+ */
+export function buildLegalServiceClauses(
+  ctx: LegalServiceContext,
+  additionalClauses?: string[],
+): ClauseSection[] {
+  const kembali = ctx.documentReturnDays ?? 7;
+  const lapor = ctx.reportingIntervalDays ?? 7;
+
+  const umum: (string | string[])[] = [paymentSentence(ctx)];
+
+  if (ctx.pphCode) {
+    // Hanya nilai jasa yang dipotong; biaya resmi bukan penghasilan vendor.
+    umum.push(
+      `Nilai jasa di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+        ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+      }. Pemotongan tidak dikenakan atas biaya resmi.`,
+    );
+  }
+
+  if (ctx.hasOfficialFee) {
+    umum.push(
+      'Biaya resmi (Penerimaan Negara Bukan Pajak, retribusi, dan iuran lembaga sertifikasi/asosiasi) bukan merupakan bagian dari nilai jasa. Biaya tersebut ditagihkan sesuai jumlah yang sebenarnya disetorkan, tanpa penambahan, dan wajib disertai bukti setor asli atas nama PT. Alpha Konstruksi Nusantara.',
+      'Nilai biaya resmi yang tercantum dalam dokumen ini merupakan perkiraan. Selisih terhadap jumlah sebenarnya diperhitungkan pada saat penagihan.',
+    );
+  }
+
+  umum.push(
+    'PIHAK KEDUA tidak diizinkan mengalihtugaskan pekerjaan ini kepada pihak lain tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+    'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
+  );
+
+  const pelaksanaan: (string | string[])[] = [
+    'PIHAK KEDUA bertanggung jawab atas kelengkapan berkas, ketepatan pengisian, dan ketepatan waktu pengajuan kepada instansi atau lembaga penerbit.',
+    // Poin inti dokumen ini: memisahkan usaha dari hasil.
+    'Keputusan penerbitan berada pada instansi atau lembaga penerbit. Keterlambatan yang bersumber dari instansi atau lembaga tersebut tidak dihitung sebagai kelalaian PIHAK KEDUA, sepanjang PIHAK KEDUA dapat menunjukkan bukti pengajuan.',
+    'Target penyelesaian sebagaimana tercantum dalam tabel dihitung dalam hari kerja, terhitung sejak seluruh berkas dinyatakan lengkap oleh PIHAK KEDUA.',
+    `PIHAK KEDUA wajib melaporkan perkembangan pengurusan kepada PIHAK PERTAMA sekurang-kurangnya setiap ${lapor} (${terbilangHari(lapor)}) hari, dan segera bila terdapat permintaan perbaikan dari instansi atau lembaga penerbit.`,
+    'Bila pengajuan ditolak atau dikembalikan karena kelalaian PIHAK KEDUA, perbaikan dan pengajuan ulang dilakukan tanpa biaya jasa tambahan.',
+  ];
+
+  if (ctx.hasOfficialFee) {
+    pelaksanaan.push(
+      `Bila pengajuan ditolak bukan karena kelalaian PIHAK KEDUA, ${
+        REJECTION_COST_SENTENCE[ctx.rejectionCostBearer || 'pertama']
+      }`,
+    );
+  }
+
+  const dokumen: (string | string[])[] = [
+    'Dokumen milik PIHAK PERTAMA yang diserahkan hanya boleh digunakan untuk keperluan pengurusan sebagaimana tercantum dalam Surat Perintah Kerja ini, dan tidak boleh digandakan atau diserahkan kepada pihak lain tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+    `Seluruh dokumen asli wajib dikembalikan kepada PIHAK PERTAMA selambat-lambatnya ${kembali} (${terbilangHari(kembali)}) hari kerja setelah pengurusan dinyatakan selesai atau dibatalkan.`,
+    'Data perusahaan, keuangan, dan personel yang diperoleh dalam pelaksanaan pekerjaan ini bersifat rahasia. Kewajiban menjaga kerahasiaan tetap berlaku setelah Surat Perintah Kerja ini berakhir.',
+    'Hasil pengurusan diserahkan dalam bentuk dokumen asli beserta salinan digital, disertai keterangan masa berlaku bagi dokumen yang berjangka waktu.',
+  ];
+
+  const integritas: (string | string[])[] = [
+    'PIHAK KEDUA dilarang memberikan, menjanjikan, atau memfasilitasi pemberian dalam bentuk apa pun kepada pejabat atau pegawai instansi maupun lembaga penerbit, di luar biaya resmi yang berlaku. Pelanggaran atas ketentuan ini menjadi tanggung jawab PIHAK KEDUA sepenuhnya dan menjadi dasar bagi PIHAK PERTAMA untuk membatalkan Surat Perintah Kerja ini.',
+  ];
+
+  const tambahan = (additionalClauses ?? []).filter((x) => !!x && x.trim());
+
+  return [
+    { title: 'Umum', items: umum },
+    { title: 'Pelaksanaan', items: pelaksanaan },
+    { title: 'Dokumen & Kerahasiaan', items: dokumen },
+    { title: 'Integritas', items: integritas },
+    ...(tambahan.length
+      ? [
+          {
+            title: 'Catatan Tambahan',
+            items: tambahan as (string | string[])[],
+          },
+        ]
+      : []),
+  ];
+}
+
+/**
+ * Lampiran "Tata Cara Penagihan dan Pembayaran — Jasa Pengurusan Legalitas".
+ *
+ * Perbedaan utama dari lampiran jasa lain: tagihan memuat dua komponen yang
+ * berbeda sifat, sehingga wajib dirinci terpisah beserta bukti setornya.
+ */
+export function buildLegalServiceBillingTerms(
+  hasOfficialFee: boolean = true,
+): BillingItem[] {
+  const dokumen = [
+    'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+    'Kwitansi bermaterai (asli);',
+    'Faktur Pajak (bila PIHAK KEDUA merupakan Pengusaha Kena Pajak);',
+    'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+    'Salinan dokumen hasil pengurusan yang telah terbit;',
+    'Berita Acara Serah Terima dokumen yang ditandatangani oleh perwakilan PIHAK PERTAMA (asli).',
+  ];
+
+  if (hasOfficialFee) {
+    dokumen.splice(
+      3,
+      0,
+      'Rincian biaya resmi yang dipisahkan dari nilai jasa, disertai bukti setor asli atas nama PT. Alpha Konstruksi Nusantara;',
+    );
+  }
+
+  return [
+    'PIHAK KEDUA berhak menagihkan hasil pekerjaannya setelah dokumen hasil pengurusan diterbitkan dan diserahkan kepada PIHAK PERTAMA.',
+    'Dokumen penagihan yang wajib dikirimkan adalah sebagai berikut:',
+    dokumen,
+    ...(hasOfficialFee
+      ? [
+          'Nilai jasa dan biaya resmi wajib dicantumkan sebagai baris terpisah pada invoice. Biaya resmi ditagihkan sesuai jumlah yang sebenarnya disetorkan, tanpa penambahan, dan tidak dikenakan pemotongan Pajak Penghasilan.',
+        ]
+      : []),
+    'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+    {
+      block: [
+        'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
+        'RUKO ASIA TROPIS AT 12 NO. 21',
+        'KOTA HARAPAN INDAH - BEKASI',
+      ],
+    },
+    'Pembayaran dilakukan sesuai termin yang tercantum dalam Surat Perintah Kerja, terhitung sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.',
+    'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
+    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
+    'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
+    'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
+  ];
+}
+
+/**
+ * Lampiran "Tata Cara Penagihan dan Pembayaran — Penyewaan Alat Kerja"
+ * (PO-B).
+ *
+ * Dua versi, sama seperti lampiran pembelian barang:
+ *
+ *   tempo  — pekerjaan berjalan dulu, ditagih per periode pekan berdasarkan
+ *            time sheet dan Certificate of Payment
+ *   cash   — dibayar di muka, sehingga penagihannya memakai Proforma Invoice
+ *            sebelum mobilisasi; time sheet tetap wajib sebagai pembuktian
+ *            pemakaian dan dasar perhitungan selisih
+ */
+export function buildEquipmentRentalBillingTerms(
+  tempo: boolean = true,
+): BillingItem[] {
+  const timeSheetIsi: BillingItem = [
+    'Time sheet periode pekan (mula periode pekan hingga akhir periode pekan);',
+    'Dokumentasi Hour Meter pada mula periode pekan dan akhir periode pekan;',
+    'Dokumentasi pengambilan BBM selama periode pekan;',
+    'Dokumentasi perbaikan kerusakan selama periode pekan (bila ada).',
+  ];
+
+  const alamat: BillingItem = {
+    block: [
+      'KANTOR PT. ALPHA KONSTRUKSI NUSANTARA',
+      'RUKO ASIA TROPIS AT 12 NO. 21',
+      'KOTA HARAPAN INDAH - BEKASI',
+    ],
+  };
+
+  const penutup: BillingItem[] = [
+    'Proses pembayaran tagihan vendor dilakukan melalui Transfer Bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
+    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
+    'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa Kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
+    'Tata cara pembayaran ini merupakan sebuah kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
+  ];
+
+  if (!tempo) {
+    // Dibayar di muka: tagihan terbit sebelum alat bekerja, sehingga
+    // dokumen awalnya Proforma Invoice. Time sheet tetap diminta — tanpa itu
+    // pemakaian sebenarnya tidak bisa dibuktikan dan selisih terhadap kuota
+    // tidak bisa dihitung.
+    return [
+      'Mula periode pekan adalah hari Kamis, akhir periode pekan adalah hari Rabu.',
+      'PIHAK KEDUA berhak menagihkan sewa alat kerja sebelum mobilisasi dilaksanakan dengan mengirimkan dokumen-dokumen sebagai berikut:',
+      [
+        `Proforma Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (soft copy) via e-mail ke ${OFFICE_CONTACT.email} atau hard copy ke alamat yang tertera di bawah;`,
+        'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan).',
+      ],
+      'Penagihan pertama harus meliputi penagihan mobilisasi dan demobilisasi.',
+      'PIHAK KEDUA berkewajiban untuk mengirimkan dokumen-dokumen asli selambat-lambatnya 3 (tiga) hari kerja setelah transaksi pembayaran dilakukan. Adapun dokumen yang diperlukan adalah sebagai berikut:',
+      [
+        'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+        'Kwitansi bermaterai (asli);',
+        'Faktur Pajak (asli);',
+        'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan).',
+      ],
+      'PIHAK KEDUA tetap wajib memberikan time sheet paling lambat pada hari Kamis sebelum pukul 12.00 waktu setempat kepada perwakilan PIHAK PERTAMA sebagai pembuktian pemakaian alat kerja, yang berisi:',
+      timeSheetIsi,
+      'Selisih antara pemakaian yang telah dibayarkan di muka dengan pemakaian yang sebenarnya diperhitungkan pada penagihan periode berikutnya atau pada saat demobilisasi.',
+      'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+      alamat,
+      ...penutup,
+    ];
+  }
+
+  return [
+    'Mula periode pekan adalah hari Kamis, akhir periode pekan adalah hari Rabu.',
+    'Penagihan pertama harus meliputi penagihan mobilisasi dan demobilisasi.',
+    'PIHAK KEDUA memberikan time sheet paling lambat pada hari Kamis sebelum pukul 12.00 waktu setempat kepada perwakilan PIHAK PERTAMA yang berisi:',
+    timeSheetIsi,
+    'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan menyerahkan kepada PIHAK KEDUA sebagai salah satu persyaratan penagihan.',
+    'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
+    [
+      'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
+      'Kwitansi bermaterai (asli);',
+      'Faktur Pajak (asli);',
+      'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
+      'Certificate of Payment (CoP).',
+    ],
+    'Dokumen dapat dikirimkan ke alamat kantor PT. Alpha Konstruksi Nusantara, yaitu:',
+    alamat,
+    ...penutup,
   ];
 }
 
