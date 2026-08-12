@@ -96,6 +96,8 @@ export class PurchaseOrderCreateDComponent {
      *   tanggal  — mulai & berakhir pada tanggal tertentu
      *   proyek   — sampai pekerjaan pada proyek tersebut selesai
      */
+    // Lokasi kerja; bila kosong, dokumen memakai nama proyeknya.
+    workLocation: new FormControl(''),
     contractStart: new FormControl(''),
     contractEnd: new FormControl(''),
     contractUntilProjectDone: new FormControl(false),
@@ -385,6 +387,7 @@ export class PurchaseOrderCreateDComponent {
         isFieldStaff: this.isFieldStaff,
         payoutDay: Number(this.formGroup.get('payoutDay')?.value) || 10,
         // Jangka waktu perjanjian: tanggal, atau terikat selesainya proyek.
+        workLocation: this.formGroup.get('workLocation')?.value,
         contractStart: this.toISO(this.formGroup.get('contractStart')?.value),
         contractEnd: this.toISO(this.formGroup.get('contractEnd')?.value),
         contractUntilProjectDone: !!this.formGroup.get(
@@ -531,7 +534,26 @@ export class PurchaseOrderCreateDComponent {
       includeHomeLeave: !!v.includeHomeLeave,
       includeEquipmentEscort: !!v.includeEquipmentEscort,
       wageSchedules: this.wageSchedules,
+      // Informasi umum: lokasi kerja dan jangka waktu perjanjian.
+      workLocation: v.workLocation,
+      projectName: v.projectName,
+      contractStartText: this.tanggalPanjang(v.contractStart),
+      contractEndText: this.tanggalPanjang(v.contractEnd),
+      contractUntilProjectDone: !!v.contractUntilProjectDone,
     };
+  }
+
+  /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
+  private tanggalPanjang(nilai: any): string {
+    if (!nilai) return '';
+    const d = new Date(nilai);
+    return isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
   }
 
   /**

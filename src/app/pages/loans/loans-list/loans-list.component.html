@@ -230,6 +230,19 @@
                 <mat-icon>payments</mat-icon
                 ><span>{{ "loans.menuCreatePayment" | translate }}</span>
               </button>
+              <!--
+                Ubah data hanya untuk yang berhak; servernya sudah menolak,
+                tetapi menampilkan pilihan yang pasti gagal membuat orang
+                mengira sistemnya rusak.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'loan:update'"
+                (click)="editLoan(purchase)"
+              >
+                <mat-icon>edit</mat-icon
+                ><span>{{ "loans.menuEdit" | translate }}</span>
+              </button>
               <button mat-menu-item (click)="viewLoan(purchase.id)">
                 <mat-icon>view_array</mat-icon
                 ><span>{{ "loans.menuView" | translate }}</span>

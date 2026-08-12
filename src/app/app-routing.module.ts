@@ -241,6 +241,14 @@ export const routes: Routes = [
             data: { title: 'Purchase order', purchaseType: '6.3.2' },
           },
           {
+            path: 'Create/651',
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-651/purchase-order-create-651.component').then(
+                (m) => m.PurchaseOrderCreate651Component,
+              ),
+            data: { title: 'Purchase order', purchaseType: '6.5.1' },
+          },
+          {
             path: 'Create/641',
             loadComponent: () =>
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-641/purchase-order-create-641.component').then(
@@ -543,11 +551,14 @@ export const routes: Routes = [
 
       {
         path: 'Calendar',
+        // Kalender memuat jadwal pembayaran, bukan sekadar agenda — jadi
+        // wilayahnya mengikuti pembayaran keluar, bukan dibiarkan terbuka.
+        canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/calendar/calendar.component').then(
             (m) => m.CalendarComponent,
           ),
-        data: { title: 'Calendar' },
+        data: { title: 'Calendar', permission: 'payment_outgoing:read' },
       },
       {
         path: 'Interpayment',

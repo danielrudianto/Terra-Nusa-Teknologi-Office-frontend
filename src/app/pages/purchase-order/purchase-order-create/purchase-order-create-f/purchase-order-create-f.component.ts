@@ -28,6 +28,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   buildClauseHtml,
+  buildClauseLines,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
@@ -97,6 +98,8 @@ export class PurchaseOrderCreateFComponent {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierPrefix: new FormControl(''),
+
+    supplierNpwp: new FormControl(''),
     supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     projectName: new FormControl('', [
@@ -131,6 +134,10 @@ export class PurchaseOrderCreateFComponent {
     sampleHandover: new FormControl(''),
     additionalClauses: new FormArray([]),
     steelTestRequired: new FormControl(true),
+    // Ketentuan uji kuat tekan beton. Bila dimatikan, poinnya tetap tercetak
+    // dalam keadaan tercoret agar terlihat sengaja tidak dipakai.
+    concreteTestRequired: new FormControl(true),
+    concreteTestCostBearer: new FormControl('pembeli'),
     includePPN: new FormControl(true),
   });
 
@@ -235,6 +242,10 @@ export class PurchaseOrderCreateFComponent {
             supplierID: data.id,
             supplierName: data.name,
             supplierPrefix: data.prefix,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
             supplierCity: [data.city, data.province]
               .filter((x: string) => !!x)
               .join(', '),
@@ -277,6 +288,8 @@ export class PurchaseOrderCreateFComponent {
       // Hanya relevan untuk besi; bila tidak dicentang, poin ujinya tetap
       // dicetak namun dicoret (bukan dihilangkan).
       materialTestRequired: !!v.steelTestRequired,
+      concreteTestRequired: !!v.concreteTestRequired,
+      concreteTestCostBearer: v.concreteTestCostBearer,
       paymentTerm: v.paymentTerm,
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,
@@ -289,13 +302,29 @@ export class PurchaseOrderCreateFComponent {
     };
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
       'F',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   /**
@@ -325,6 +354,7 @@ export class PurchaseOrderCreateFComponent {
       supplierName: v.supplierName,
       supplierPrefix: v.supplierPrefix,
       supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
       supplierCity: v.supplierCity,
       // Jasa uji tidak memakai katalog barang: satu baris dibentuk dari
       // jumlah benda uji dan harga per benda uji.
@@ -411,6 +441,10 @@ export class PurchaseOrderCreateFComponent {
         sampleHandover: this.formGroup.get('sampleHandover')?.value,
         paymentDueDate: this.formGroup.get('paymentDueDate')?.value,
         materialTestRequired: !!this.formGroup.get('steelTestRequired')?.value,
+        concreteTestRequired: !!this.formGroup.get('concreteTestRequired')
+          ?.value,
+        concreteTestCostBearer: this.formGroup.get('concreteTestCostBearer')
+          ?.value,
         additionalClauses: this.additionalClauseValues,
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,

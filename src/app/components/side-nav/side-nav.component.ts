@@ -76,9 +76,21 @@ export class SideNavComponent implements OnInit {
     return list.find((g) => g.name === 'General') || list[list.length - 1];
   }
 
+  /*
+   * Hasilnya disimpan agar tidak menghasilkan array baru pada setiap siklus
+   * deteksi perubahan. Array baru membuat @for menganggap seluruh isinya
+   * berganti, sehingga menu dirender ulang terus-menerus.
+   */
+  private _topGroupsSrc: any[] | null = null;
+  private _topGroups: any[] = [];
+
   get topGroups(): any[] {
-    const bottom = this.bottomGroup;
-    return (this.items || []).filter((g) => g !== bottom);
+    if (this._topGroupsSrc !== this.items) {
+      this._topGroupsSrc = this.items;
+      const bottom = this.bottomGroup;
+      this._topGroups = (this.items || []).filter((g) => g !== bottom);
+    }
+    return this._topGroups;
   }
 
   isCollapsed(name: string): boolean {

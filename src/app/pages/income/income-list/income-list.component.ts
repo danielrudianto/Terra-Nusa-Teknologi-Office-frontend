@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import {
   FormControl,
   FormGroup,
@@ -34,6 +35,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-income-list',
   imports: [
+    CanDirective,
     RouterModule,
     CommonModule,
     FormsModule,

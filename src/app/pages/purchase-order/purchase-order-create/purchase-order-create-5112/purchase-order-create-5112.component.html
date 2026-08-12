@@ -124,8 +124,81 @@
               "po5112.autoRenew" | translate
             }}</mat-checkbox>
           </div>
+
+          <!--
+            Pasangan wajib dari perpanjangan otomatis: tanpa pemberitahuan,
+            langganan dapat diperpanjang pada nilai yang belum disepakati.
+          -->
+          @if (formGroup.value.autoRenew) {
+            <mat-form-field appearance="outline">
+              <mat-label>Pemberitahuan perpanjangan</mat-label>
+              <input
+                matInput
+                formControlName="renewalNoticeDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>hari</span>
+              <mat-hint>Sebelum periode berjalan berakhir</mat-hint>
+            </mat-form-field>
+          }
+
+          <mat-form-field appearance="outline">
+            <mat-label>Pengambilan data</mat-label>
+            <input
+              matInput
+              formControlName="dataRetrievalDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>hari</span>
+            <mat-hint>Setelah langganan berakhir</mat-hint>
+          </mat-form-field>
         </div>
       }
+
+      <div class="po5112-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Jumlah pengguna</mat-label>
+          <input
+            matInput
+            formControlName="userSeatCount"
+            type="number"
+            [min]="1"
+          />
+          <span matSuffix>user</span>
+          <mat-hint>Kosongkan bila tidak dibatasi per-seat</mat-hint>
+        </mat-form-field>
+
+        <!--
+          Sewa server, domain, dan langganan aplikasi umumnya merupakan objek
+          pemotongan PPh; kodenya dipilih per-PO, bukan dipatok.
+        -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="pphCode"
+            readonly
+            (click)="openPphSelector()"
+            placeholder="Pilih kode PPh"
+          />
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            (click)="openPphSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          @if (formGroup.value.pphTaxObject) {
+            <mat-hint>
+              {{ formGroup.value.pphPercentage }}% —
+              {{ formGroup.value.pphTaxObject }}
+            </mat-hint>
+          }
+        </mat-form-field>
+      </div>
     </div>
 
     <!-- ===== Item Software (bebas) ===== -->
@@ -311,8 +384,50 @@
       </div>
     </div>
 
-    <!-- ===== Poin Tambahan (custom) ===== -->
+    <!-- ===== Poin Perjanjian (preview) ===== -->
     <div class="po5112-card">
+      <div class="po5112-section__title">
+        {{ "common.agreementPoints" | translate }}
+      </div>
+      <div class="po5112-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span
+          >Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa
+          langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang
+          tersimpan.</span
+        >
+      </div>
+      <div class="po5112-preview">
+        <ol class="po5112-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="po5112-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <div class="po5112-actions">
+        <span class="po5112-spacer"></span>
+        <button
+          type="submit"
+          class="po5112-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
       <div class="po5112-cardhead">
         <div class="po5112-section__title">
           {{ "common.extraPoints" | translate }}
@@ -351,33 +466,6 @@
             {{ "common.noExtraPoints" | translate }}
           </div>
         }
-      </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (preview) ===== -->
-    <div class="po5112-card">
-      <div class="po5112-section__title">
-        {{ "common.agreementPoints" | translate }}
-      </div>
-      <div class="po5112-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span
-          >Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa
-          langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang
-          tersimpan.</span
-        >
-      </div>
-      <div class="po5112-clausebox" [innerHTML]="clausePreview"></div>
-
-      <div class="po5112-actions">
-        <span class="po5112-spacer"></span>
-        <button
-          type="submit"
-          class="po5112-submit"
-          [disabled]="formGroup.invalid || isSubmitting"
-        >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
       </div>
     </div>
   </form>

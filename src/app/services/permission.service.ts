@@ -38,35 +38,52 @@ export class PermissionService {
     if (this.loaded() && !force) return Promise.resolve();
     if (this.pending && !force) return this.pending;
 
-    this.pending = firstValueFrom(this.api.get('permissions/me', {}))
+    this.pending = this.fetch()
+      /*
+       * Satu kali percobaan ulang bila gagal.
+       *
+       * Permintaan pertama setelah lama menganggur kerap ditolak karena token
+       * sudah kedaluwarsa. Penyegaran token berjalan sendiri di interceptor,
+       * tetapi permintaan ini sudah terlanjur gagal — tanpa percobaan ulang,
+       * menu baru muncul setelah halaman dimuat ulang.
+       */
+      .catch(() => this.fetch())
       .then((res: any) => {
         this.permissions.set(res?.permissions ?? {});
         this.level.set(Number(res?.level) || 1);
         this.loaded.set(true);
       })
       .catch((err) => {
-        // Gagal memuat bukan berarti boleh segalanya: peta dikosongkan
-        // sehingga layar menampilkan sesedikit mungkin, dan server tetap
-        // menjadi penentu terakhir.
-        //
-        // Kegagalannya sengaja dicatat dengan jelas. Tanpa ini gejalanya
-        // menyesatkan: seluruh menu hilang dan setiap halaman memantul ke
-        // beranda, seolah izinnya salah — padahal endpoint-nya yang tidak
-        // terjangkau (mis. server belum dijalankan ulang setelah rute baru
-        // ditambahkan).
+        /*
+         * Gagal memuat bukan berarti boleh segalanya: peta dikosongkan
+         * sehingga layar menampilkan sesedikit mungkin, dan server tetap
+         * menjadi penentu terakhir.
+         *
+         * Yang penting: `loaded` TIDAK ditandai selesai.
+         *
+         * Menandainya selesai membuat kegagalan sesaat menjadi permanen —
+         * kasus yang paling sering terjadi adalah membuka aplikasi setelah
+         * lama tidak dipakai: token sudah kedaluwarsa, permintaan pertama
+         * ditolak, penyegaran token berhasil, tetapi izinnya sudah terlanjur
+         * dianggap "sudah dimuat" dalam keadaan kosong. Seluruh menu hilang
+         * sampai halaman dimuat ulang.
+         */
         console.error(
-          '[Izin] Gagal memuat permissions/me — seluruh menu akan tersembunyi. ' +
-            'Pastikan endpoint GET /permissions/me tersedia.',
+          '[Izin] Gagal memuat permissions/me — menu disembunyikan sementara ' +
+            'dan akan dicoba lagi.',
           err,
         );
         this.permissions.set({});
-        this.loaded.set(true);
       })
       .finally(() => {
         this.pending = null;
       });
 
     return this.pending;
+  }
+
+  private fetch(): Promise<any> {
+    return firstValueFrom(this.api.get('permissions/me', {}));
   }
 
   /** Bersihkan saat keluar agar pengguna berikutnya tidak mewarisi izin. */

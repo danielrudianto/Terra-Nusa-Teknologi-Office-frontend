@@ -826,7 +826,8 @@
     "debt": "Total debt",
     "loadingData": "Loading data…",
     "createLoan": "Record new loan / debt",
-    "companyAccount": "Company account receiving the loan"
+    "companyAccount": "Company account receiving the loan",
+    "menuEdit": "Edit details"
   },
   "loansCreate": {
     "title": "Create Loan",
@@ -2556,5 +2557,11 @@
   },
   "engineering": {
     "addPile": "Add new pile"
+  },
+  "loansUpdate": {
+    "title": "Edit Loan Details",
+    "lockedNote": "Loan amount, amount received, and date cannot be changed because they are already the basis of payment records. If incorrect, void the record and re-enter it.",
+    "save": "Save",
+    "digitsOnly": "Digits only."
   }
 }

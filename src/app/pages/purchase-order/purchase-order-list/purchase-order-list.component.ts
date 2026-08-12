@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CanDirective } from '../../../directives/can.directive';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,6 +55,7 @@ import { SettingsService } from '../../../services/setting.service';
   selector: 'app-purchase-order-list',
   standalone: true,
   imports: [
+    CanDirective,
     MatProgressSpinnerModule,
     CommonModule,
     ReactiveFormsModule,
@@ -223,7 +225,10 @@ export class PurchaseOrderListComponent {
   private readonly printableTypes = [
     'A',
     '5.1.2',
+    '6.3.1',
+    '6.3.2',
     '6.4.1',
+    '6.5.1',
     'G',
     'C',
     'D',
@@ -232,11 +237,53 @@ export class PurchaseOrderListComponent {
     'H',
     'H1',
     'H2',
+    '5.1.1',
     '5.1.6',
   ];
 
+  /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
+  private tanggalPanjang(nilai: any): string {
+    if (!nilai) return '';
+    const d = new Date(nilai);
+    return isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+  }
+
   canReprint(po: any): boolean {
-    return this.printableTypes.includes(po?.purchaseType);
+    if (!this.printableTypes.includes(po?.purchaseType)) return false;
+
+    /*
+     * SPK pekerjaan yang datanya berasal dari jenis PO lain tidak dapat
+     * dicetak ulang.
+     *
+     * Sebagian PO tipe H dulu dibuat lewat formulir jenis lain lalu
+     * direklasifikasi, sehingga `customData`-nya tidak memuat `workScope`
+     * maupun rincian pasal yang dibutuhkan template ini. Dokumennya tetap
+     * keluar, tetapi tanpa satu pun pasal — dan dokumen kosong yang
+     * terlihat resmi lebih berbahaya daripada tidak ada tombolnya.
+     *
+     * Dokumen aslinya tetap tersimpan sebagai arsip; yang ditutup hanya
+     * pembuatan ulangnya.
+     */
+    if (String(po.purchaseType || '').startsWith('H')) {
+      let custom: any = {};
+      try {
+        custom =
+          typeof po.customData === 'string'
+            ? JSON.parse(po.customData)
+            : po.customData || {};
+      } catch {
+        custom = {};
+      }
+      if (!custom.workScope) return false;
+    }
+
+    return true;
   }
 
   /**
@@ -306,6 +353,16 @@ export class PurchaseOrderListComponent {
                 fuelReportRequired: custom.fuelReportRequired,
                 materialType: custom.materialType,
                 deliveryDate: custom.deliveryDate,
+                /*
+                 * Informasi umum PO-D: lokasi kerja dan jangka waktu.
+                 * Tanggal disimpan dalam bentuk ISO, sehingga perlu
+                 * diformat ulang agar terbaca wajar di dokumen.
+                 */
+                workLocation: custom.workLocation,
+                projectName: data.projectName,
+                contractStartText: this.tanggalPanjang(custom.contractStart),
+                contractEndText: this.tanggalPanjang(custom.contractEnd),
+                contractUntilProjectDone: !!custom.contractUntilProjectDone,
               },
               additionalClauses: custom.additionalClauses || [],
             };
@@ -469,6 +526,107 @@ export class PurchaseOrderListComponent {
                   sections: buildTransportClauses(ctx, additional),
                   billingTerms: buildTransportBillingTerms(),
                 });
+              }
+            } else if (
+              po.purchaseType === '6.3.1' ||
+              po.purchaseType === '6.3.2'
+            ) {
+              // Merchandise adalah pembelian barang (tata letak G); jasa
+              // periklanan adalah pemesanan karya (tata letak SPK).
+              const barang = po.purchaseType === '6.3.2';
+              const data63 = {
+                ...printData,
+                poType: po.purchaseType,
+                items: (data.items || []).map((it: any) => ({
+                  name: barang
+                    ? it.item_description || it.sku || ''
+                    : it.task || '',
+                  remarks: it.remarks_1 || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                clauseContext: {
+                  ...printData.clauseContext,
+                  paymentTerm: custom.paymentTerm ?? data.payment_term,
+                  creditTerm: custom.creditTerm,
+                  prepaidTerm: custom.prepaidTerm,
+                  revisionCount: custom.revisionCount,
+                  latePenaltyPermil: custom.latePenaltyPermil,
+                  latePenaltyCapPercent: custom.latePenaltyCapPercent,
+                  // PO lama tidak menyimpan field ini; true adalah perilaku
+                  // sebelumnya (poin ditampilkan utuh).
+                  sampleApprovalRequired:
+                    custom.sampleApprovalRequired !== false,
+                  // Klausul pengiriman hanya berlaku pada merchandise.
+                  deliveryMethod: barang ? custom.deliveryMethod : undefined,
+                  deliveryAddress: barang ? custom.deliveryAddress : undefined,
+                  supplierPICName: barang ? custom.supplierPICName : undefined,
+                  supplierPICPhoneNumber: barang
+                    ? custom.supplierPICPhoneNumber
+                    : undefined,
+                  officePICName: barang ? custom.officePICName : undefined,
+                  officePICPhoneNumber: barang
+                    ? custom.officePICPhoneNumber
+                    : undefined,
+                  pphCode: custom.pphCode,
+                  pphTaxObject: custom.pphTaxObject,
+                  pphPercentage: custom.pphPercentage,
+                },
+                // PO lama menyimpan catatan sebagai satu blok teks pada
+                // `notes`; dipakai sebagai poin tunggal agar isinya tidak
+                // hilang dari dokumen.
+                additionalClauses: custom.additionalClauses?.length
+                  ? custom.additionalClauses
+                  : custom.notes
+                    ? [
+                        String(custom.notes)
+                          .replace(/<[^>]*>/g, '')
+                          .trim(),
+                      ]
+                    : [],
+              };
+
+              if (barang) {
+                printPurchaseOrderG(data63);
+              } else {
+                printPurchaseOrderB(data63);
+              }
+            } else if (po.purchaseType === '6.5.1') {
+              // Kuota adalah pembelian slot (tata letak surat pesanan);
+              // pemeriksaan peserta adalah pemesanan jasa (tata letak SPK).
+              const kuota = custom.recruitmentMode !== 'peserta';
+              const data651 = {
+                ...printData,
+                poType: '6.5.1',
+                items: (data.items || []).map((it: any) => ({
+                  name: it.task || '',
+                  remarks: it.remarks_1 || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                clauseContext: {
+                  ...printData.clauseContext,
+                  paymentTerm: custom.paymentTerm ?? data.payment_term,
+                  creditTerm: custom.creditTerm,
+                  prepaidTerm: custom.prepaidTerm,
+                  pphCode: custom.pphCode,
+                  pphTaxObject: custom.pphTaxObject,
+                  pphPercentage: custom.pphPercentage,
+                  recruitmentMode: custom.recruitmentMode || 'kuota',
+                  quotaValidUntil: this.tanggalPanjang(custom.quotaValidUntil),
+                  resultDueDays: custom.resultDueDays,
+                  participantCancelDays: custom.participantCancelDays,
+                },
+              };
+
+              if (kuota) {
+                printPurchaseOrderG(data651);
+              } else {
+                printPurchaseOrderB(data651);
               }
             } else if (po.purchaseType === '6.4.1') {
               // Biaya resmi tidak disimpan sebagai baris item — nilainya bukan
@@ -744,6 +902,8 @@ export class PurchaseOrderListComponent {
     '6.3.1': '631',
     '6.3.2': '632',
     '6.4.1': '641',
+    '6.5.1': '651',
+    '6.5.2': '652',
   };
 
   /**

@@ -64,6 +64,7 @@
             <mat-menu #menu="matMenu">
               <button
                 mat-menu-item
+                *appCan="'payment_outgoing:approve'"
                 [disabled]="payment.isApprove || payment.isDelete"
                 (click)="approvePayment(payment.id)"
               >
@@ -72,6 +73,7 @@
               </button>
               <button
                 mat-menu-item
+                *appCan="'payment_outgoing:approve'"
                 [disabled]="payment.isApprove || payment.isDelete"
                 (click)="rejectPayment(payment.id)"
               >

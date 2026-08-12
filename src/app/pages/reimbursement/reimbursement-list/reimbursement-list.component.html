@@ -254,6 +254,7 @@
               </button>
               <button
                 mat-menu-item
+                *appCan="'reimbursement:approve'"
                 [disabled]="r.isApprove || r.isDelete"
                 (click)="openConfirmationDialog(r.id)"
               >

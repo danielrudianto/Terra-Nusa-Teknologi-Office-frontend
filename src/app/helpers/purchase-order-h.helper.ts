@@ -8,6 +8,7 @@ import {
   DOCUMENT_STYLES,
   PdfOutput,
   TABLE_LAYOUT,
+  clauseList,
   clauseToPdf,
   documentFooter,
   documentHeader,
@@ -42,7 +43,7 @@ export interface IPurchaseOrderH {
   supplierPIC?: string;
 
   /** Pasal 1 — dirakit dari template klausul H. */
-  pasal1: string[];
+  pasal1: (string | string[])[];
   /** Pasal 2 — rincian lingkup pekerjaan. */
   scopes: IPurchaseOrderHScope[];
   /** Lump sum: nilai borongan tunggal, harga baris tidak dipakai. */
@@ -50,8 +51,8 @@ export interface IPurchaseOrderH {
   lumpSumPrice?: number;
   includePpn: boolean;
   /** Pasal 3 & 4 — daftar poin. */
-  kewajiban: string[];
-  keterangan: string[];
+  kewajiban: (string | string[])[];
+  keterangan: (string | string[])[];
   /** Pasal 5 — string biasa, atau array untuk sub-poin. */
   pasal5: (string | string[])[];
 
@@ -334,16 +335,16 @@ export function printPurchaseOrderH(
             ]
           : [
               pasalTitle('PASAL 1 — LINGKUP DAN WAKTU PEKERJAAN'),
-              { ol: data.pasal1.map(clauseToPdf) },
+              clauseList(data.pasal1),
 
               pasalTitle('PASAL 2 — NILAI PEKERJAAN'),
               scopeTable(data),
 
               pasalTitle('PASAL 3 — KEWAJIBAN'),
-              { ol: data.kewajiban.map(clauseToPdf) },
+              clauseList(data.kewajiban),
 
               pasalTitle('PASAL 4 — KETERANGAN'),
-              { ol: data.keterangan.map(clauseToPdf) },
+              clauseList(data.keterangan),
 
               pasalTitle('PASAL 5 — PENAGIHAN DAN PEMBAYARAN'),
               nestedList(data.pasal5),

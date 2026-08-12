@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CanDirective } from '../../../directives/can.directive';
 import { Component } from '@angular/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
@@ -21,12 +22,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { LoansCreateComponent } from '../loans-create/loans-create.component';
+import { LoansUpdateComponent } from '../loans-update/loans-update.component';
 import { LoanPaymentCreateComponent } from '../../../components/payment-create/loan-payment-create/loan-payment-create.component';
 import { LoansViewComponent } from '../loans-view/loans-view.component';
 
 @Component({
   selector: 'app-loans-list',
   imports: [
+    CanDirective,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -222,6 +225,22 @@ export class LoansListComponent {
         loanID: id,
       },
     });
+  }
+
+  /**
+   * Ubah data pinjaman.
+   *
+   * Barisnya dikirim utuh agar dialog dapat menampilkan nilai pinjaman
+   * sebagai keterangan — nilainya tidak dapat diubah, tetapi perlu terlihat
+   * agar pengguna tahu pinjaman mana yang sedang disunting.
+   */
+  editLoan(loan: any) {
+    this.dialog
+      .open(LoansUpdateComponent, { data: { loan } })
+      .afterClosed()
+      .subscribe((berubah) => {
+        if (berubah) this.fetchData(this.page, this.pageSize);
+      });
   }
 
   viewLoan(id: number) {

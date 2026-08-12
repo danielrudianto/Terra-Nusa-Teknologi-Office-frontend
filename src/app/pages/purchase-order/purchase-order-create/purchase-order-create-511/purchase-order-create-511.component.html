@@ -309,11 +309,62 @@
       <div class="po511-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Contoh: garansi, syarat retur, ketentuan pengiriman, dll"
-      ></app-wysiwyg>
+      <p class="po511-hint">
+        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
+        isian di atas; tambahkan poin bila ada kesepakatan khusus.
+      </p>
+
+      <div class="po511-preview">
+        <ol class="po511-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="po511-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <div class="po511-cardhead">
+        <div class="po511-section__title po511-section__title--flush">
+          {{ "common.extraPoints" | translate }}
+        </div>
+        <button type="button" class="po511-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po511-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po511-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po511-krow">
+              <span class="po511-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po511-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
 
       <div class="po511-actions">
         <span class="po511-spacer"></span>

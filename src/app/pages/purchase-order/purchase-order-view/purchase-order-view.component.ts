@@ -166,7 +166,7 @@ export class PurchaseOrderViewComponent {
     return Array.isArray(x) ? '' : String(x ?? '');
   }
 
-  get clauses(): string[] {
+  get clauses(): (string | string[])[] {
     if (!this.data) return [];
     const custom = this.data.customData || {};
     return buildClauseLines(

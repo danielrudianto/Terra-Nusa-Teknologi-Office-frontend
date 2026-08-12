@@ -342,10 +342,39 @@
       }
     </div>
 
-    <!-- ===== Poin Tambahan ===== -->
+    <!-- ===== Poin Perjanjian ===== -->
     <div class="pob-card">
+      <div class="pob-section__title">
+        {{ "poForm.clauseTitle" | translate }}
+      </div>
+      <p class="pob-hint">
+        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
+        isian di atas; tambahkan poin bila ada kesepakatan khusus.
+      </p>
+
+      <div class="pob-preview">
+        <ol class="pob-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="pob-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti, baru
+        tambahannya.
+      -->
       <div class="pob-cardhead">
-        <div class="pob-section__title">
+        <div class="pob-section__title pob-section__title--flush">
           {{ "poForm.extraClauseTitle" | translate }}
         </div>
         <button type="button" class="pob-addclause" (click)="addClause()">
@@ -357,7 +386,7 @@
       <div formArrayName="additionalClauses">
         @for (c of additionalClauses.controls; track c; let i = $index) {
           <div class="pob-clauserow">
-            <span class="pob-clausenum">{{ i + 1 }}.</span>
+            <span class="pob-clausenum">+{{ i + 1 }}</span>
             <mat-form-field appearance="outline" class="pob-clausefield">
               <input
                 matInput
@@ -381,18 +410,6 @@
           </div>
         }
       </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
-    <div class="pob-card">
-      <div class="pob-section__title">
-        {{ "poForm.clauseTitle" | translate }}
-      </div>
-      <div class="pob-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span>{{ "poForm.clausePreviewB" | translate }}</span>
-      </div>
-      <div class="pob-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="pob-actions">
         <span class="pob-spacer"></span>

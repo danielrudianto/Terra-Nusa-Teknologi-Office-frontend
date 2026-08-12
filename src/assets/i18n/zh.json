@@ -826,7 +826,8 @@
     "debt": "负债总额",
     "loadingData": "正在加载数据…",
     "createLoan": "登记新借款／负债",
-    "companyAccount": "接收借款的公司账户"
+    "companyAccount": "接收借款的公司账户",
+    "menuEdit": "编辑资料"
   },
   "loansCreate": {
     "title": "创建贷款",
@@ -2556,5 +2557,11 @@
   },
   "engineering": {
     "addPile": "添加新桩"
+  },
+  "loansUpdate": {
+    "title": "编辑贷款资料",
+    "lockedNote": "贷款金额、已收金额和日期无法修改，因为它们已作为付款记录的依据。如有错误，请作废该记录并重新录入。",
+    "save": "保存",
+    "digitsOnly": "仅限数字。"
   }
 }

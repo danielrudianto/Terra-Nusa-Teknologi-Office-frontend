@@ -388,65 +388,189 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* ===== fuel checklist + auto clauses (locked) ===== */
 .poc-fuel {
-  display: flex; flex-direction: column; gap: 4px; margin-bottom: 0.9rem;
-  padding: 0.8rem 0.95rem; border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 0.9rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 12px;
   background: var(--warn-bg, #fdf0e3);
   border: 0.5px solid rgba(162, 101, 26, 0.25);
   &__hint {
-    font-size: 0.75rem; color: var(--warn-fg, #a2651a); padding-left: 30px;
+    font-size: 0.75rem;
+    color: var(--warn-fg, #a2651a);
+    padding-left: 30px;
     line-height: 1.4;
   }
 }
 .poc-clausehint {
-  display: flex; align-items: flex-start; gap: 8px; margin-bottom: 0.75rem;
-  padding: 0.6rem 0.85rem; border-radius: 11px;
-  background: var(--surface-2, #fafbfc); border: 0.5px solid var(--border, #e3e6eb);
-  color: var(--muted, #6b7280); font-size: 0.78rem; line-height: 1.4;
-  mat-icon { font-size: 17px; width: 17px; height: 17px; flex: 0 0 auto; color: var(--faint, #9aa0ab); }
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 11px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    color: var(--faint, #9aa0ab);
+  }
 }
 .poc-clausebox {
-  border: 0.5px solid var(--border, #e3e6eb); border-radius: 13px;
-  background: var(--surface, #fff); padding: 0.4rem 1rem 0.4rem 0;
-  ::ng-deep ol { margin: 0; padding-left: 2.4rem; }
-  ::ng-deep li {
-    font-size: 0.85rem; line-height: 1.55; color: var(--ink, #16181d);
-    padding: 5px 0; border-bottom: 1px dashed var(--line, #eef0f3);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 13px;
+  background: var(--surface, #fff);
+  padding: 0.4rem 1rem 0.4rem 0;
+  ::ng-deep ol {
+    margin: 0;
+    padding-left: 2.4rem;
   }
-  ::ng-deep li:last-child { border-bottom: none; }
-  ::ng-deep s { color: var(--faint, #9aa0ab); }
+  ::ng-deep li {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--ink, #16181d);
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--line, #eef0f3);
+  }
+  ::ng-deep li:last-child {
+    border-bottom: none;
+  }
+  ::ng-deep s {
+    color: var(--faint, #9aa0ab);
+  }
 }
 
 /* fuel tax inputs — stacked vertically (lebih rapi) */
 .poc-taxcol {
-  display: flex; flex-direction: column; gap: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   margin: 0.5rem 0 0.25rem;
 }
-.poc-taxfield { width: 100%; }
-:host ::ng-deep .poc-taxfield .mat-mdc-form-field-subscript-wrapper { font-size: 0.7rem; }
+.poc-taxfield {
+  width: 100%;
+}
+:host ::ng-deep .poc-taxfield .mat-mdc-form-field-subscript-wrapper {
+  font-size: 0.7rem;
+}
 
 /* ===== poin tambahan (custom) ===== */
 .poc-cardhead {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 .poc-addclause {
-  display: inline-flex; align-items: center; gap: 4px; border: none; cursor: pointer;
-  background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec);
-  font-weight: 700; font-size: 0.8rem; padding: 6px 12px; border-radius: 10px; font-family: inherit;
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { filter: brightness(0.97); }
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  cursor: pointer;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  &:hover {
+    filter: brightness(0.97);
+  }
 }
-.poc-clausenote { margin: 0 0 0.75rem; font-size: 0.76rem; color: var(--muted, #6b7280); line-height: 1.45; }
-.poc-clauserow { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
+.poc-clausenote {
+  margin: 0 0 0.75rem;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.45;
+}
+.poc-clauserow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 2px;
+}
 .poc-clausenum {
-  flex: 0 0 auto; padding-top: 14px; font-size: 0.86rem; font-weight: 700;
-  color: var(--faint, #9aa0ab); min-width: 20px; text-align: right;
+  flex: 0 0 auto;
+  padding-top: 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--faint, #9aa0ab);
+  min-width: 20px;
+  text-align: right;
 }
-.poc-clausefield { flex: 1 1 auto; }
+.poc-clausefield {
+  flex: 1 1 auto;
+}
 .poc-clauseremove {
-  flex: 0 0 auto; margin-top: 8px; border: none; cursor: pointer; background: transparent;
-  color: var(--faint, #9aa0ab); border-radius: 8px; width: 32px; height: 32px;
-  display: grid; place-items: center;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-  &:hover { color: var(--bad-fg, #b3322f); background: var(--bad-bg, #fdecec); }
+  flex: 0 0 auto;
+  margin-top: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--faint, #9aa0ab);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover {
+    color: var(--bad-fg, #b3322f);
+    background: var(--bad-bg, #fdecec);
+  }
 }
-.poc-clauseempty { font-size: 0.8rem; color: var(--faint, #9aa0ab); font-style: italic; padding: 4px 0; }
+.poc-clauseempty {
+  font-size: 0.8rem;
+  color: var(--faint, #9aa0ab);
+  font-style: italic;
+  padding: 4px 0;
+}
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.poc-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.poc-preview__list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.poc-preview__sub {
+  padding-left: 1.2rem;
+  list-style: lower-alpha;
+}
+.poc-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.25rem 0 0.75rem;
+}
+.poc-section__title--flush {
+  margin-bottom: 0;
+}
+.poc-summary__row--total {
+  font-weight: 700;
+  border-top: 1px solid var(--line, #eef0f4);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+}

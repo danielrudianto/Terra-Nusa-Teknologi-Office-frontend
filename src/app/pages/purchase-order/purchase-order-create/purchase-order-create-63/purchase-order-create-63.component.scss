@@ -1163,3 +1163,75 @@ app-wysiwyg {
 :host ::ng-deep .po63-note textarea.mat-mdc-input-element {
   margin-top: 2px;
 }
+
+/* Kelas yang dipakai markup tanpa definisi gaya. */
+.po63-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.3rem 0 0;
+}
+.po63-section__title--flush {
+  margin-bottom: 0;
+}
+.po63-summary__row--total {
+  font-weight: 700;
+  border-top: 1px solid var(--line, #eef0f4);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+}
+.po63-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 0.9rem 0.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--line, #eef0f4);
+}
+
+.po63-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po63-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po63-krow__field {
+  flex: 1 1 auto;
+}
+
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.po63-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.po63-preview__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+  margin: 0.6rem 0 0.35rem;
+}
+.po63-preview__list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.po63-preview__sub {
+  padding-left: 1.2rem;
+  list-style: lower-alpha;
+}

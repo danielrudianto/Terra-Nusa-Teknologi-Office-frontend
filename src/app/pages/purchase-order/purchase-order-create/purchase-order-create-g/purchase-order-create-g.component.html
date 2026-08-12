@@ -305,8 +305,35 @@
       </div>
     </div>
 
-    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
     <div class="pog-card">
+      <div class="pog-section__title">
+        {{ "poForm.clauseTitle" | translate }}
+      </div>
+      <div class="pog-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span>{{ "poForm.clausePreviewG" | translate }}</span>
+      </div>
+      <div class="pog-preview">
+        <ol class="pog-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="pog-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
       <div class="pog-cardhead">
         <div class="pog-section__title">
           {{ "poForm.extraClauseTitle" | translate }}
@@ -347,18 +374,6 @@
           </div>
         }
       </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
-    <div class="pog-card">
-      <div class="pog-section__title">
-        {{ "poForm.clauseTitle" | translate }}
-      </div>
-      <div class="pog-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span>{{ "poForm.clausePreviewG" | translate }}</span>
-      </div>
-      <div class="pog-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="pog-actions">
         <span class="pog-spacer"></span>

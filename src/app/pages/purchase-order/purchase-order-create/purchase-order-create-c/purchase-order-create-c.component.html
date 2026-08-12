@@ -347,8 +347,47 @@
       </div>
     </div>
 
-    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+    <!-- ===== Poin Perjanjian (otomatis) ===== -->
     <div class="poc-card">
+      <div class="poc-section__title">
+        {{ "poForm.clauseTitle" | translate }}
+      </div>
+
+      <div class="poc-fuel">
+        <mat-checkbox formControlName="fuelReportRequired" color="primary">
+          Wajibkan Fuel Analysis Report &amp; Sertifikat Kalibrasi (poin 6-7)
+        </mat-checkbox>
+        <span class="poc-fuel__hint">
+          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak
+          berlaku).
+        </span>
+      </div>
+
+      <p class="poc-hint">
+        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
+        isian di atas; tambahkan poin bila ada kesepakatan khusus.
+      </p>
+
+      <div class="poc-preview">
+        <ol class="poc-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="poc-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
       <div class="poc-cardhead">
         <div class="poc-section__title">
           {{ "poForm.extraClauseTitle" | translate }}
@@ -388,29 +427,6 @@
           </div>
         }
       </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (otomatis) ===== -->
-    <div class="poc-card">
-      <div class="poc-section__title">
-        {{ "poForm.clauseTitle" | translate }}
-      </div>
-
-      <div class="poc-fuel">
-        <mat-checkbox formControlName="fuelReportRequired" color="primary">
-          Wajibkan Fuel Analysis Report &amp; Sertifikat Kalibrasi (poin 6-7)
-        </mat-checkbox>
-        <span class="poc-fuel__hint">
-          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak
-          berlaku).
-        </span>
-      </div>
-
-      <div class="poc-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span>{{ "poForm.clausePreviewFull" | translate }}</span>
-      </div>
-      <div class="poc-clausebox" [innerHTML]="clausePreview"></div>
 
       <div class="poc-actions">
         <span class="poc-spacer"></span>

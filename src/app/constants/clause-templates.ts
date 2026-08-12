@@ -62,6 +62,38 @@ export interface ClauseContext {
   paymentDueDate?: string;
   // PO-F: uji tarik & tekuk (umumnya untuk besi tulangan)
   materialTestRequired?: boolean;
+  /**
+   * Ketentuan uji kuat tekan beton diberlakukan.
+   *
+   * Bila false, poin-poinnya tetap tercetak dalam keadaan tercoret sehingga
+   * terlihat sengaja tidak dipakai, bukan terlewat.
+   */
+  concreteTestRequired?: boolean;
+  /** Penanggung biaya uji di laboratorium independen. */
+  concreteTestCostBearer?: 'pembeli' | 'penjual';
+  // ---- PO 6.3.1 / 6.3.2 (pemasaran) ----
+  /** Jumlah revisi yang sudah termasuk dalam nilai pekerjaan. */
+  revisionCount?: number | string;
+  /**
+   * Denda keterlambatan diberlakukan.
+   *
+   * Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret agar
+   * terbaca sengaja tidak dipakai, bukan terlewat saat penyusunan.
+   */
+  latePenaltyRequired?: boolean;
+  /** Masa berlaku media/tautan penyerahan berkas (hari kalender). */
+  fileRetentionDays?: number | string;
+  /** Denda keterlambatan per hari, dalam permil (‰) dari nilai pekerjaan. */
+  latePenaltyPermil?: number | string;
+  /** Batas atas denda keterlambatan, dalam persen dari nilai pekerjaan. */
+  latePenaltyCapPercent?: number | string;
+  /**
+   * Contoh barang disetujui sebelum produksi massal (PO 6.3.2).
+   *
+   * Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret agar
+   * terbaca sengaja tidak diberlakukan, bukan terlewat.
+   */
+  sampleApprovalRequired?: boolean;
   // PO-5.1.12 (software) fields
   softwareIsSubscription?: boolean; // true = langganan, false = beli putus
   subscriptionStartDate?: string; // ISO / display date
@@ -130,6 +162,36 @@ export interface ClauseContext {
    */
   includeTransportHome?: boolean;
   includeHomeLeave?: boolean;
+  // ---- PO 6.5.1 (biaya rekrutmen) ----
+  /**
+   * Bentuk pembelian rekrutmen: 'kuota' atau 'peserta'.
+   *
+   * Keduanya dipisah karena saat kewajiban membayar timbul berbeda — kuota
+   * dibayar di muka lalu dipakai, sedangkan pemeriksaan dibayar atas orang
+   * yang benar-benar diperiksa. Perbedaan itulah yang paling sering menjadi
+   * sengketa, sehingga tidak dapat diwakili satu rangkaian klausul.
+   */
+  recruitmentMode?: 'kuota' | 'peserta';
+  /** Kuota berlaku sampai tanggal, sudah diformat oleh pemanggil. */
+  quotaValidUntil?: string;
+  /** Tenggat penyerahan hasil pemeriksaan (hari kerja). */
+  resultDueDays?: number | string;
+  /** Batas pembatalan peserta sebelum jadwal (hari). */
+  participantCancelDays?: number | string;
+  // ---- PO 5.1.12 (perangkat lunak & langganan) ----
+  /** Tenggat pemberitahuan sebelum perpanjangan otomatis (hari kalender). */
+  renewalNoticeDays?: number | string;
+  /** Masa pengambilan data setelah langganan berakhir (hari kalender). */
+  dataRetrievalDays?: number | string;
+  /** Jumlah pengguna (user/seat) yang tercakup; kosong = tidak disebut. */
+  userSeatCount?: number | string;
+  /** Nama proyek; dipakai bila lokasi kerja tidak diisi. */
+  projectName?: string;
+  /** Jangka waktu perjanjian, sudah diformat oleh pemanggil. */
+  contractStartText?: string;
+  contractEndText?: string;
+  /** Berlaku sampai pekerjaan pada proyek selesai (tanpa tanggal akhir). */
+  contractUntilProjectDone?: boolean;
   /** Pekerja yang bertugas mendampingi alat saat mobilisasi/demobilisasi. */
   includeEquipmentEscort?: boolean;
   includePlacementClause?: boolean;
@@ -150,8 +212,14 @@ export interface ClauseContext {
 
 export interface ClauseTemplate {
   version: string;
-  /** returns the ordered list of clause lines for this version */
-  build: (ctx: ClauseContext) => string[];
+  /**
+   * Daftar poin perjanjian untuk versi ini.
+   *
+   * Anggota berupa array menjadi sub-poin bernomor huruf (a, b, c) di bawah
+   * poin sebelumnya — dipakai ketika satu ketentuan punya rincian yang perlu
+   * dibaca terpisah, seperti ketentuan uji kuat tekan beton.
+   */
+  build: (ctx: ClauseContext) => (string | string[])[];
 }
 
 // ---- shared helpers ------------------------------------------------------
@@ -269,9 +337,9 @@ const C_CLAUSES: ClauseTemplate[] = [
 function licenseDeliverySentence(ctx: ClauseContext): string {
   switch (ctx.licenseDelivery) {
     case 'email':
-      return 'License key / kredensial dikirim melalui e-mail resmi PIHAK PEMBELI.';
+      return 'License key / kredensial dikirim melalui e-mail resmi PIHAK PERTAMA.';
     case 'account':
-      return 'Lisensi diaktifkan langsung pada akun yang ditunjuk PIHAK PEMBELI.';
+      return 'Lisensi diaktifkan langsung pada akun yang ditunjuk PIHAK PERTAMA.';
     case 'download':
       return 'Perangkat lunak beserta lisensi disediakan melalui tautan unduhan resmi.';
     default:
@@ -279,12 +347,100 @@ function licenseDeliverySentence(ctx: ClauseContext): string {
   }
 }
 
+/**
+ * PO 5.1.12 — perangkat lunak, langganan, dan layanan daring.
+ *
+ * Memakai penyebutan PIHAK PERTAMA / PIHAK KEDUA, bukan PEMBELI / PENJUAL:
+ * yang dibeli lebih sering berupa layanan berjalan — sewa server, domain,
+ * langganan aplikasi — sehingga bentuk dokumennya Surat Perintah Kerja, bukan
+ * surat pesanan barang.
+ *
+ * Klausul yang berlaku hanya pada langganan (perpanjangan, pengambilan data)
+ * tidak dicetak pada pembelian putus, agar dokumennya tidak memuat ketentuan
+ * yang tidak berlaku.
+ */
+/**
+ * PO 6.5.1 — biaya rekrutmen.
+ *
+ * Dua bentuk yang berbeda kewajiban bayarnya:
+ *
+ *   kuota   — sejumlah slot dibeli di muka lalu dipakai sampai habis
+ *   peserta — pemeriksaan atas orang, dibayar per orang yang diperiksa
+ *
+ * Jasa pencarian kandidat (headhunter) sengaja belum dibuatkan: bentuknya
+ * berbasis hasil dan bergantung pada masa jaminan penggantian, yang tidak
+ * dapat dirumuskan dengan tepat sebelum ada kontrak yang benar-benar
+ * dijalankan.
+ */
+const RECRUITMENT_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const perPeserta = ctx.recruitmentMode === 'peserta';
+      const points: string[] = [paymentSentence(ctx)];
+
+      if (ctx.pphCode) {
+        points.push(
+          `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+            ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+          }.`,
+        );
+      }
+
+      if (perPeserta) {
+        const hasil = ctx.resultDueDays ?? 3;
+        const batal = ctx.participantCancelDays ?? 1;
+        points.push(
+          `Hasil pemeriksaan diserahkan selambat-lambatnya ${hasil} (${terbilangHari(hasil)}) hari kerja sejak pelaksanaan, dalam bentuk laporan tertulis untuk setiap peserta.`,
+          // Slot yang sudah disiapkan tetap menjadi biaya bagi penyedia;
+          // tanpa batas pembatalan, ketidakhadiran menjadi rebutan.
+          `Peserta yang tidak hadir pada jadwal yang telah ditentukan tetap diperhitungkan, kecuali pembatalan disampaikan sekurang-kurangnya ${batal} (${terbilangHari(batal)}) hari sebelum jadwal pelaksanaan.`,
+          'Penambahan peserta di luar jumlah yang tercantum dalam dokumen ini diperhitungkan sebagai pekerjaan tambahan dan disepakati secara tertulis sebelum dilaksanakan.',
+          // Hasil pemeriksaan menyangkut orang per orang; menyerahkannya
+          // kepada pihak lain, termasuk kepada pesertanya sendiri, dapat
+          // menimbulkan akibat yang tidak dimaksudkan.
+          'Hasil pemeriksaan bersifat rahasia dan hanya diserahkan kepada PIHAK PERTAMA. PIHAK KEDUA tidak diperkenankan menyampaikannya kepada pihak lain, termasuk kepada peserta, tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+          'Data pribadi peserta hanya digunakan untuk keperluan pemeriksaan sebagaimana tercantum dalam dokumen ini, dan dimusnahkan atau dikembalikan kepada PIHAK PERTAMA setelah pekerjaan dinyatakan selesai.',
+        );
+      } else {
+        points.push(
+          ctx.quotaValidUntil
+            ? // Kuota yang hangus tanpa disebut di awal adalah kerugian yang
+              // tidak pernah tercatat sebagai kerugian.
+              `Kuota yang dibeli berlaku sampai dengan tanggal ${ctx.quotaValidUntil}. Kuota yang tidak terpakai sampai dengan tanggal tersebut tidak dapat diuangkan maupun dialihkan, kecuali disepakati lain secara tertulis.`
+            : 'Masa berlaku kuota disepakati kedua belah pihak dan dicantumkan secara tertulis sebelum pemakaian dimulai.',
+          'PIHAK KEDUA menyediakan laporan pemakaian kuota kepada PIHAK PERTAMA atas permintaan.',
+          'Akun beserta kredensialnya didaftarkan atas nama PT. Alpha Konstruksi Nusantara menggunakan alamat surel resmi perusahaan, bukan atas nama perorangan.',
+          'Materi lowongan yang akan ditayangkan wajib memperoleh persetujuan tertulis dari PIHAK PERTAMA sebelum penayangan.',
+        );
+      }
+
+      points.push(
+        'PIHAK KEDUA tidak diizinkan mengalihtugaskan pekerjaan ini kepada pihak lain tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+        'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan dokumen ini.',
+      );
+
+      return points;
+    },
+  },
+];
+
 const SOFTWARE_CLAUSES: ClauseTemplate[] = [
   {
     version: '1.0',
     build: (ctx) => {
       const isSub = ctx.softwareIsSubscription !== false; // default langganan
       const points: string[] = [paymentSentence(ctx)];
+
+      // Sewa server, domain, dan langganan aplikasi umumnya merupakan objek
+      // pemotongan; kodenya dipilih per-PO lewat formulir.
+      if (ctx.pphCode) {
+        points.push(
+          `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+            ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+          }.`,
+        );
+      }
 
       if (isSub) {
         const dur =
@@ -299,9 +455,20 @@ const SOFTWARE_CLAUSES: ClauseTemplate[] = [
         );
         points.push(
           ctx.autoRenew
-            ? `Langganan diperpanjang otomatis (auto-renew) pada akhir periode, kecuali dibatalkan oleh PIHAK PEMBELI sebelum jatuh tempo.`
+            ? `Langganan diperpanjang otomatis (auto-renew) pada akhir periode, kecuali dibatalkan oleh PIHAK PERTAMA sebelum jatuh tempo.`
             : `Langganan tidak diperpanjang otomatis; perpanjangan memerlukan dokumen pembelian baru.`,
         );
+
+        // Pasangan wajib dari perpanjangan otomatis: tanpa pemberitahuan dan
+        // persetujuan harga, "otomatis" berarti dapat ditagih pada nilai yang
+        // belum pernah disepakati.
+        if (ctx.autoRenew) {
+          const hari = ctx.renewalNoticeDays ?? 30;
+          points.push(
+            `PIHAK KEDUA wajib memberitahukan rencana perpanjangan beserta nilainya selambat-lambatnya ${hari} (${terbilangHari(hari)}) hari kalender sebelum periode berjalan berakhir. Tanpa pemberitahuan tersebut, perpanjangan otomatis tidak mengikat PIHAK PERTAMA.`,
+            'Perubahan harga pada periode perpanjangan hanya berlaku setelah disetujui secara tertulis oleh PIHAK PERTAMA.',
+          );
+        }
       } else {
         points.push(
           `Pembelian bersifat beli putus (lisensi perpetual); lisensi berlaku tanpa batas waktu sesuai ketentuan penerbit perangkat lunak.`,
@@ -309,17 +476,40 @@ const SOFTWARE_CLAUSES: ClauseTemplate[] = [
       }
 
       points.push(licenseDeliverySentence(ctx));
+
+      // Poin yang paling menentukan: akun atas nama perorangan ikut hilang
+      // ketika orangnya berhenti, dan biasanya baru ketahuan saat dibutuhkan.
       points.push(
-        `Kontak penanggung jawab dari PIHAK PENJUAL: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
+        'Seluruh lisensi dan akun didaftarkan atas nama PT. Alpha Konstruksi Nusantara menggunakan alamat surel resmi perusahaan, bukan atas nama perorangan. Kredensial diserahkan kepada penanggung jawab PIHAK PERTAMA.',
+      );
+
+      if (ctx.userSeatCount) {
+        points.push(
+          `Nilai pekerjaan ini berlaku untuk ${ctx.userSeatCount} pengguna (user/seat). Penambahan pengguna di luar jumlah tersebut diperhitungkan sebagai pembelian tambahan dan disepakati secara tertulis sebelum diaktifkan.`,
+        );
+      }
+
+      points.push(
+        `Kontak penanggung jawab dari PIHAK KEDUA: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
       );
       points.push(
-        `Kontak penanggung jawab dari PIHAK PEMBELI: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        `Kontak penanggung jawab dari PIHAK PERTAMA: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
       );
       points.push(
         `Lisensi/akun harus aktif dan dapat digunakan selambat-lambatnya 3 (tiga) hari kerja setelah pembayaran diterima, kecuali disepakati lain.`,
       );
+
+      if (isSub) {
+        const unduh = ctx.dataRetrievalDays ?? 30;
+        points.push(
+          `Pada saat langganan berakhir atau dihentikan, PIHAK KEDUA wajib memberikan akses untuk mengunduh seluruh data milik PIHAK PERTAMA dalam format yang lazim terbaca, sekurang-kurangnya ${unduh} (${terbilangHari(unduh)}) hari kalender sejak tanggal berakhir.`,
+        );
+      }
+
       points.push(
-        `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan dokumen pembelian ini.`,
+        'Data yang tersimpan dalam perangkat lunak ini merupakan milik PIHAK PERTAMA dan bersifat rahasia. PIHAK KEDUA tidak diperkenankan mengakses, menggunakan, atau menyerahkannya kepada pihak lain selain untuk keperluan dukungan teknis atas permintaan PIHAK PERTAMA.',
+        'PIHAK KEDUA menyediakan dukungan teknis selama masa berlaku lisensi melalui kontak penanggung jawab yang tercantum dalam dokumen ini.',
+        `Tata cara penagihan dan/atau pembayaran dilampirkan dalam lembar terpisah yang menjadi kesatuan dengan dokumen ini.`,
       );
       return points;
     },
@@ -543,9 +733,35 @@ export function buildManpowerClauses(
     'Perusahaan berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada utang pekerja kepada PIHAK KETIGA yang belum diselesaikan.',
   ];
 
+  /*
+   * Informasi umum: lokasi kerja dan jangka waktu perjanjian.
+   *
+   * Sebelumnya jangka waktu tersimpan tetapi tidak pernah dicetak, sehingga
+   * mengubahnya di formulir tidak mengubah apa pun pada dokumen. Padahal
+   * justru batas waktu inilah yang membedakan perjanjian waktu tertentu dari
+   * perjanjian tanpa batas.
+   */
+  const umum: string[] = [];
+
+  const lokasi = ctx.workLocation || ctx.projectName;
+  if (lokasi) {
+    umum.push(`Pekerjaan dilaksanakan di ${lokasi}.`);
+  }
+
+  if (ctx.contractStartText) {
+    umum.push(
+      ctx.contractUntilProjectDone || !ctx.contractEndText
+        ? // Tanpa tanggal akhir: perjanjian mengikuti selesainya pekerjaan,
+          // bukan berarti tanpa batas waktu.
+          `Perjanjian ini berlaku sejak tanggal ${ctx.contractStartText} sampai dengan seluruh pekerjaan pada proyek tersebut dinyatakan selesai.`
+        : `Perjanjian ini berlaku sejak tanggal ${ctx.contractStartText} sampai dengan tanggal ${ctx.contractEndText}.`,
+    );
+  }
+
   const tambahan = (additionalClauses ?? []).filter((x) => !!x && x.trim());
 
   return [
+    ...(umum.length ? [{ title: 'Informasi Umum', items: umum }] : []),
     { title: 'Hak Pekerja', items: hak },
     { title: 'Kewajiban Pekerja', items: kewajiban },
     { title: 'Laporan Lapangan', items: laporan },
@@ -560,6 +776,111 @@ export function buildManpowerClauses(
       : []),
   ];
 }
+
+// ---- PO 6.3.1 : SPK jasa periklanan & produksi materi promosi -------------
+
+/**
+ * Jasa periklanan berbeda dari jasa tenaga kerja maupun perbaikan: yang
+ * dibeli adalah KARYA — video, foto, desain — bukan waktu kerja orang.
+ *
+ * Karena itu klausulnya berpusat pada tiga hal yang tidak muncul di SPK
+ * lain: berapa kali revisi sudah termasuk harga, siapa pemilik hasil dan
+ * berkas mentahnya, dan apa akibat keterlambatan penyerahan.
+ */
+const ADVERTISING_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const revisi = ctx.revisionCount ?? 2;
+      const permil = ctx.latePenaltyPermil ?? 1;
+      const cap = ctx.latePenaltyCapPercent ?? 5;
+      // Dicoret bila tidak diberlakukan: pembaca tetap tahu ketentuannya ada
+      // dan sengaja tidak dipakai, bukan terlewat.
+      const dendaMati = ctx.latePenaltyRequired === false;
+
+      const lines: (string | string[])[] = [paymentSentence(ctx)];
+
+      if (ctx.pphCode) {
+        lines.push(
+          `Harga di atas akan dipotong PPh sebesar ${ctx.pphPercentage ?? 0}% berdasarkan kode objek pajak ${ctx.pphCode}${
+            ctx.pphTaxObject ? ` (${ctx.pphTaxObject})` : ''
+          }.`,
+        );
+      }
+
+      lines.push(
+        // Batas "selesai" ditetapkan lebih dulu. Tanpa ini, selesai menjadi
+        // pendapat: berkas sudah dikirim menurut satu pihak, formatnya belum
+        // sesuai menurut pihak lain.
+        'Rincian hasil pekerjaan, termasuk durasi, jumlah, resolusi, dan format berkas, mengikuti tabel pada dokumen ini. Pekerjaan dinyatakan selesai setelah seluruh hasil diserahkan dalam format yang disepakati dan diterima secara tertulis oleh PIHAK PERTAMA.',
+        // Konsep disetujui lebih dulu: produksi yang terlanjur berjalan
+        // dengan arah yang salah tidak dapat diperbaiki lewat revisi.
+        'PIHAK KEDUA wajib menyampaikan konsep, naskah, atau rancangan awal kepada PIHAK PERTAMA untuk memperoleh persetujuan tertulis sebelum proses produksi dimulai.',
+        `Nilai pekerjaan sudah termasuk ${revisi} (${terbilangHari(revisi)}) kali revisi atas hasil pekerjaan. Revisi selanjutnya diperhitungkan sebagai pekerjaan tambahan dan disepakati tersendiri secara tertulis.`,
+        'Permintaan revisi disampaikan secara tertulis dan tidak mengubah lingkup pekerjaan yang telah disepakati.',
+        // Revisi memperbaiki yang sudah disepakati; pekerjaan tambahan
+        // menambah yang belum pernah disepakati. Bila tidak dibedakan,
+        // keduanya menjadi rebutan.
+        'Perubahan lingkup yang menambah pekerjaan di luar kesepakatan awal diperhitungkan sebagai pekerjaan tambahan dan disepakati secara tertulis sebelum dikerjakan.',
+        'Seluruh biaya talent, perizinan lokasi, properti, dan perlengkapan produksi sudah termasuk dalam nilai pekerjaan, kecuali disepakati lain secara tertulis sebelum produksi dimulai.',
+        // Berkas mentah disebut tegas: hasil akhir saja tidak cukup bila
+        // suatu saat materinya perlu diolah kembali tanpa vendor semula.
+        'Seluruh hasil pekerjaan beserta berkas mentahnya (raw file, file kerja, dan aset pendukung) menjadi milik PIHAK PERTAMA sepenuhnya setelah pembayaran dilunasi, termasuk hak untuk menggunakan, mengubah, dan menggandakannya tanpa batas waktu.',
+        'PIHAK KEDUA tidak diperkenankan menggunakan hasil pekerjaan ini untuk keperluan lain, termasuk portofolio dan publikasi, tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+        // Penutup risiko yang paling merepotkan: materi sudah tayang lalu
+        // harus diturunkan karena klaim atas musik atau rekaman stok.
+        'PIHAK KEDUA menjamin seluruh hasil pekerjaan merupakan karya orisinal dan tidak melanggar hak kekayaan intelektual pihak mana pun. Seluruh aset yang digunakan, termasuk musik, rekaman stok, gambar, dan huruf, wajib memiliki lisensi yang sah untuk penggunaan komersial, dan buktinya diserahkan bersama hasil pekerjaan.',
+        'Apabila timbul tuntutan atau klaim dari pihak ketiga atas hasil pekerjaan ini, penyelesaiannya menjadi tanggung jawab PIHAK KEDUA sepenuhnya, termasuk segala biaya yang timbul.',
+        'Konsep, materi, dan seluruh informasi yang diperoleh dalam pelaksanaan pekerjaan ini bersifat rahasia dan tidak boleh disampaikan kepada pihak lain sebelum PIHAK PERTAMA meluncurkannya. Kewajiban ini tetap berlaku setelah Surat Perintah Kerja ini berakhir.',
+        // Tautan yang kedaluwarsa sebulan kemudian, dan berkas mentahnya
+        // ikut hilang — kejadian yang lazim, bukan hipotetis.
+        `Hasil pekerjaan beserta berkas mentahnya diserahkan melalui media penyimpanan atau tautan unduh yang berlaku sekurang-kurangnya ${
+          ctx.fileRetentionDays ?? 30
+        } (${terbilangHari(ctx.fileRetentionDays ?? 30)}) hari kalender sejak tanggal penyerahan.`,
+        // Tidak diberlakukan berarti tidak dicetak sama sekali. Poin yang
+        // dicoret masih terbaca sebagai ketentuan yang pernah dipertimbangkan;
+        // untuk denda, keberadaannya di dokumen justru mengundang pertanyaan
+        // yang tidak perlu saat penandatanganan.
+        ...(dendaMati
+          ? []
+          : [
+              `Keterlambatan penyerahan hasil pekerjaan dikenakan denda sebesar ${permil}‰ (${terbilangHari(permil)} permil) dari nilai pekerjaan untuk setiap hari kalender keterlambatan, dengan denda maksimum sebesar ${cap}% (${terbilangHari(cap)} persen) dari nilai pekerjaan.`,
+              'Keterlambatan yang disebabkan oleh tertundanya persetujuan atau permintaan revisi dari PIHAK PERTAMA tidak diperhitungkan sebagai keterlambatan PIHAK KEDUA.',
+            ]),
+        'PIHAK KEDUA tidak diizinkan mengalihtugaskan pekerjaan ini kepada pihak lain tanpa persetujuan tertulis dari PIHAK PERTAMA.',
+        'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
+      );
+
+      return lines;
+    },
+  },
+];
+
+// ---- PO 6.3.2 : pembelian merchandise -------------------------------------
+
+/**
+ * Merchandise adalah pembelian barang biasa, sehingga seluruh klausulnya
+ * mengikuti PO-G — satu kebijakan, satu tempat perubahan.
+ *
+ * Yang ditambahkan hanya satu: persetujuan contoh sebelum produksi massal.
+ * Barang promosi dicetak dalam jumlah besar sekaligus, sehingga kesalahan
+ * warna atau ukuran baru ketahuan setelah semuanya terlanjur jadi.
+ */
+const MARKETING_GOODS_CLAUSES: ClauseTemplate[] = [
+  {
+    version: '1.0',
+    build: (ctx) => {
+      const dasar = G_CLAUSES[G_CLAUSES.length - 1].build(ctx);
+      return [
+        ...dasar,
+        strikeIf(
+          ctx.sampleApprovalRequired === false,
+          'PIHAK PENJUAL wajib menyerahkan contoh barang untuk memperoleh persetujuan tertulis dari PIHAK PEMBELI sebelum produksi massal dilaksanakan. Barang yang diproduksi wajib sesuai dengan contoh yang telah disetujui.',
+        ),
+      ];
+    },
+  },
+];
 
 // ---- PO-B: SPK penyewaan alat kerja ke vendor ---------------------------
 
@@ -748,6 +1069,23 @@ const F_CLAUSES: ClauseTemplate[] = [
       }
 
       if (ctx.materialType === 'beton') {
+        /*
+         * Ketentuan uji kuat tekan dipecah menjadi sub-poin a-e.
+         *
+         * Sebelumnya seluruhnya ditulis dalam satu kalimat panjang, sehingga
+         * jumlah benda uji, usianya, dan siapa yang menanggung biaya
+         * bercampur menjadi satu — justru bagian yang paling sering
+         * dipersoalkan saat hasil ujinya tidak sesuai.
+         *
+         * Seluruh poin ini dapat dinonaktifkan. Bila dinonaktifkan, poinnya
+         * tetap tercetak dalam keadaan tercoret, bukan dihilangkan, agar
+         * pembaca tahu ketentuan itu ada dan sengaja tidak diberlakukan —
+         * bukan terlewat saat penyusunan.
+         */
+        const ujiMati = ctx.concreteTestRequired === false;
+        const penanggung =
+          ctx.concreteTestCostBearer === 'penjual' ? 'penjual' : 'pembeli';
+
         return [
           'Volume penagihan adalah volume yang telah disetujui oleh perwakilan pembeli;',
           paymentSentence(ctx),
@@ -755,11 +1093,40 @@ const F_CLAUSES: ClauseTemplate[] = [
           'Beton yang dikirimkan harus mengikuti Mix Design yang telah disetujui oleh pembeli;',
           'Pihak penjual beton bersedia untuk mengirimkan teknisi yang cakap dalam setiap pengiriman beton;',
           'Pihak penjual beton berkewajiban untuk menyediakan Superplasticizer setiap pengiriman beton;',
-          '4 (empat) benda uji dari setiap kendaraan pengangkut beton akan diambil dan disimpan oleh pihak penjual beton;',
-          'Uji kuat tekan beton dilakukan dengan ketentuan sebagai berikut: sebanyak 1 benda uji dengan usia 7 (tujuh) hari dan 1 benda uji dengan usia 14 (empat belas) hari dilakukan oleh pihak penjual beton di laboratorium internal; sebanyak 2 benda uji dengan usia 28 (dua puluh delapan) hari dilakukan di laboratorium independen;',
-          'Pengantaran sampel uji dengan usia 28 (dua puluh delapan) hari ke laboratorium independen dilakukan oleh penjual beton;',
-          'Biaya untuk pengujian beton di laboratorium independen ditanggung oleh pihak pembeli;',
-          'Penjual wajib melampirkan hasil uji beton yang sudah jatuh tempo umur dan dokumentasi slump test selama periode tersebut;',
+          strikeIf(
+            ujiMati,
+            '4 (empat) benda uji dari setiap kendaraan pengangkut beton akan diambil dan disimpan oleh pihak penjual beton;',
+          ),
+          strikeIf(
+            ujiMati,
+            'Uji kuat tekan beton dilakukan dengan ketentuan sebagai berikut:',
+          ),
+          [
+            strikeIf(
+              ujiMati,
+              'Sebanyak 1 benda uji dengan usia 7 (tujuh) hari dilakukan oleh pihak penjual beton di laboratorium internal;',
+            ),
+            strikeIf(
+              ujiMati,
+              'Sebanyak 1 benda uji dengan usia 14 (empat belas) hari dilakukan oleh pihak penjual beton di laboratorium internal;',
+            ),
+            strikeIf(
+              ujiMati,
+              'Sebanyak 2 benda uji dengan usia 28 (dua puluh delapan) hari dilakukan oleh pihak penjual beton di laboratorium independen;',
+            ),
+            strikeIf(
+              ujiMati,
+              'Pengantaran sampel uji dengan usia 28 (dua puluh delapan) hari ke laboratorium independen dilakukan oleh penjual beton;',
+            ),
+            strikeIf(
+              ujiMati,
+              `Biaya untuk pengujian beton di laboratorium independen ditanggung oleh pihak ${penanggung}.`,
+            ),
+          ],
+          strikeIf(
+            ujiMati,
+            'Penjual wajib melampirkan hasil uji beton yang sudah jatuh tempo umur dan dokumentasi slump test selama periode tersebut;',
+          ),
           'Tata cara penagihan dan pembayaran dapat dilihat di lembar terlampir.',
         ];
       }
@@ -845,8 +1212,28 @@ export const H_PASAL_5_DOCUMENTS: string[] = [
 ];
 
 export interface Pasal5Context {
+  /**
+   * Siklus penagihan, sama seperti pada SPK mandor.
+   *
+   * Bila belum dipilih, kalimatnya jatuh ke keterangan bebas
+   * (`billingPeriod`) sebagaimana dokumen borongan lama.
+   */
+  billingCycleMode?:
+    'cutoff-tanggal' | 'periode-pekan' | 'selesai-pekerjaan' | 'sejak-mulai';
+  weekStartDay?: string;
+  weekEndDay?: string;
   /** Periode penagihan, mis. "2 (dua) minggu" atau "bulanan". */
   billingPeriod?: string;
+  /**
+   * Tanggal-tanggal cutoff penagihan dalam sebulan, mis. [15, 30].
+   *
+   * Disimpan sebagai daftar tanggal, bukan pasangan awal-akhir: periodenya
+   * tersirat dari sehari setelah cutoff sebelumnya sampai cutoff berikutnya,
+   * sehingga tidak mungkin ada tanggal yang terlewat maupun tumpang tindih.
+   */
+  cutoffDays?: number[];
+  /** Termin pembayaran sejak dokumen penagihan lengkap diterima (hari). */
+  billingTermDays?: number | string;
   /** Tenggat pembayaran setelah dokumen lengkap diterima (hari). */
   paymentDays?: number | string;
   /** Tenggat pembayaran akhir setelah demobilisasi (hari kalender). */
@@ -868,17 +1255,52 @@ export interface Pasal5Context {
  * bertingkat: item bertipe string adalah poin biasa, sedangkan array berisi
  * daftar dokumen yang menempel pada poin sebelumnya.
  */
+/**
+ * Kalimat siklus penagihan, dipakai bersama SPK borongan dan SPK mandor.
+ *
+ * Ditulis sekali agar tiga bentuknya berbunyi sama di seluruh dokumen —
+ * kalimat yang berbeda untuk aturan yang sama membuat pembaca mengira
+ * ketentuannya memang berbeda.
+ */
+// Bagian yang belum diisi ditandai garis bawah agar terlihat saat diperiksa,
+// bukan hilang begitu saja.
+function isian(v: any): string {
+  const t = String(v ?? '').trim();
+  return t ? t : '______';
+}
+
+function siklusPenagihan(ctx: any): string[] {
+  if (ctx.billingCycleMode === 'selesai-pekerjaan') {
+    return [
+      'Penagihan dilakukan satu kali setelah seluruh pekerjaan dinyatakan selesai dan diterima oleh PIHAK PERTAMA, dibuktikan dengan Berita Acara Serah Terima Pekerjaan yang ditandatangani kedua belah pihak.',
+    ];
+  }
+
+  if (ctx.billingCycleMode === 'periode-pekan') {
+    return [
+      `Penagihan dilakukan setiap periode pekan, dengan mula periode pekan hari ${
+        ctx.weekStartDay || 'Kamis'
+      } dan akhir periode pekan hari ${ctx.weekEndDay || 'Rabu'}.`,
+    ];
+  }
+
+  if (ctx.billingCycleMode === 'cutoff-tanggal' && ctx.cutoffDays?.length) {
+    return [
+      `Penagihan dilakukan berdasarkan tanggal cutoff, yaitu setiap ${daftarTanggal(
+        ctx.cutoffDays,
+      )} pada setiap bulan. Apabila tanggal dimaksud tidak terdapat pada bulan berjalan, cutoff jatuh pada hari terakhir bulan tersebut.`,
+      'Setiap penagihan meliputi pekerjaan sejak sehari setelah tanggal cutoff sebelumnya sampai dengan tanggal cutoff yang bersangkutan.',
+    ];
+  }
+
+  // Belum memilih siklus: pakai keterangan bebas seperti dokumen lama.
+  return [`Penagihan dilakukan setiap periode ${isian(ctx.billingPeriod)}.`];
+}
+
 export function buildPasal5(
   ctx: Pasal5Context,
   documents: string[] = H_PASAL_5_DOCUMENTS,
 ): (string | string[])[] {
-  // Bagian yang belum diisi ditandai garis bawah agar terlihat saat diperiksa,
-  // bukan hilang begitu saja.
-  const isian = (v: any) => {
-    const t = String(v ?? '').trim();
-    return t ? t : '______';
-  };
-
   const lines: (string | string[])[] = [];
 
   // Uang muka disebut lebih dulu karena dibayarkan sebelum pekerjaan mulai.
@@ -888,12 +1310,26 @@ export function buildPasal5(
     );
   }
 
+  /*
+   * Siklus penagihan disamakan dengan SPK mandor: tanggal cutoff, batas
+   * pekan tetap, atau sekali di akhir pekerjaan.
+   *
+   * Bentuk teks bebas (`billingPeriod`) tetap dipakai bila siklusnya belum
+   * dipilih — SPK borongan lama tersimpan dengan bentuk itu, dan mengganti
+   * kalimatnya berarti mengubah isi dokumen yang sudah ditandatangani.
+   */
   lines.push(
-    `Penagihan dilakukan setiap periode ${isian(ctx.billingPeriod)}.`,
+    ...siklusPenagihan(ctx),
     'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan.',
     'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
     documents,
-    `Pembayaran dilakukan ${isian(ctx.paymentDays)} hari sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.`,
+    // Termin diambil dari pilihan siklus penagihan bila sudah ditentukan.
+    // `paymentDays` adalah bentuk lama yang mengatur hal yang sama; keduanya
+    // sempat tampil bersamaan, dan yang tercetak justru bukan yang baru
+    // diisi pengguna.
+    `Pembayaran dilakukan ${isian(
+      ctx.billingTermDays ?? ctx.paymentDays,
+    )} hari sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.`,
   );
 
   if (ctx.hasRetention) {
@@ -990,6 +1426,22 @@ export function buildBuangLumpurClauses(
 }
 
 /** Ejaan angka hari untuk penulisan "7 (tujuh) hari". */
+/**
+ * Tulis daftar tanggal sebagai kalimat: [15, 30] -> "tanggal 15 dan 30".
+ *
+ * Diurutkan dan dibuang kembarnya agar dokumen tetap terbaca wajar walau
+ * pengisiannya tidak berurutan.
+ */
+function daftarTanggal(days: number[]): string {
+  const urut = [
+    ...new Set(days.map(Number).filter((d) => d >= 1 && d <= 31)),
+  ].sort((a, b) => a - b);
+  if (!urut.length) return '-';
+  if (urut.length === 1) return `tanggal ${urut[0]}`;
+  const akhir = urut.pop();
+  return `tanggal ${urut.join(', ')} dan ${akhir}`;
+}
+
 function terbilangHari(n: number | string): string {
   const kata: Record<string, string> = {
     '1': 'satu',
@@ -1019,13 +1471,16 @@ export interface ClauseSection {
 export interface MandorContext extends BuangLumpurContext, Pasal5Context {
   /**
    * Cara menentukan periode penagihan:
-   * - 'sejak-mulai'  → dihitung sekian minggu sejak pekerjaan dimulai
-   * - 'periode-pekan' → batas pekan tetap, mis. Kamis s.d. Rabu
+   * - 'cutoff-tanggal' → tanggal cutoff tetap dalam sebulan, mis. 15 dan 30
+   * - 'periode-pekan'  → batas pekan tetap, mis. Kamis s.d. Rabu
    *
-   * Hanya poin ini yang membedakan SPK mandor perorangan dan perusahaan,
-   * sehingga keduanya memakai satu template yang sama.
+   * 'sejak-mulai' masih dikenali agar PO lama tetap dapat dibaca, tetapi
+   * tidak lagi dapat dipilih dan tidak menghasilkan baris apa pun: bentuk
+   * itu menyatakan penagihan dihitung sekian minggu sejak pekerjaan dimulai,
+   * padahal yang dijalankan adalah tanggal cutoff yang disepakati.
    */
-  billingCycleMode?: 'sejak-mulai' | 'periode-pekan';
+  billingCycleMode?:
+    'cutoff-tanggal' | 'periode-pekan' | 'selesai-pekerjaan' | 'sejak-mulai';
   weekStartDay?: string;
   weekEndDay?: string;
   /**
@@ -1125,13 +1580,51 @@ export function buildMandorClauses(
     {
       title: 'TATA CARA PEMBAYARAN',
       items: [
-        ctx.billingCycleMode === 'periode-pekan'
-          ? `Mula periode pekan adalah hari ${
-              ctx.weekStartDay || 'Kamis'
-            }, akhir periode pekan adalah hari ${ctx.weekEndDay || 'Rabu'};`
-          : `Penagihan dapat dilakukan ${
-              ctx.billingPeriod || '2 (dua) minggu'
-            } setelah pekerjaan dimulai;`,
+        /*
+         * Dua bentuk siklus penagihan.
+         *
+         * Bentuk lama "penagihan dapat dilakukan N setelah pekerjaan dimulai"
+         * dibuang: yang terjadi di lapangan bukan hitungan sejak pekerjaan
+         * mulai, melainkan tanggal cutoff yang sudah disepakati. Menuliskan
+         * yang tidak dijalankan membuat seluruh dokumen kehilangan wibawa.
+         *
+         * PO lama yang tersimpan dengan bentuk itu tidak menampilkan baris
+         * ini sama sekali — lebih baik hilang daripada mencetak ketentuan
+         * yang tidak pernah dipakai.
+         */
+        ...(ctx.billingCycleMode === 'periode-pekan'
+          ? [
+              `Mula periode pekan adalah hari ${
+                ctx.weekStartDay || 'Kamis'
+              }, akhir periode pekan adalah hari ${ctx.weekEndDay || 'Rabu'};`,
+            ]
+          : ctx.billingCycleMode === 'selesai-pekerjaan'
+            ? [
+                'Penagihan dilakukan satu kali setelah seluruh pekerjaan dinyatakan selesai dan diterima oleh PIHAK PERTAMA, dibuktikan dengan Berita Acara Serah Terima Pekerjaan yang ditandatangani kedua belah pihak;',
+                ...(ctx.billingTermDays
+                  ? [
+                      `Pembayaran dilakukan dalam ${ctx.billingTermDays} (${terbilangHari(
+                        ctx.billingTermDays,
+                      )}) hari sejak dokumen penagihan lengkap diterima oleh PIHAK PERTAMA;`,
+                    ]
+                  : []),
+              ]
+            : ctx.billingCycleMode === 'cutoff-tanggal' &&
+                ctx.cutoffDays?.length
+              ? [
+                  `Penagihan dilakukan berdasarkan tanggal cutoff, yaitu setiap ${daftarTanggal(
+                    ctx.cutoffDays,
+                  )} pada setiap bulan. Apabila tanggal dimaksud tidak terdapat pada bulan berjalan, cutoff jatuh pada hari terakhir bulan tersebut;`,
+                  'Setiap penagihan meliputi pekerjaan sejak sehari setelah tanggal cutoff sebelumnya sampai dengan tanggal cutoff yang bersangkutan;',
+                  ...(ctx.billingTermDays
+                    ? [
+                        `Pembayaran dilakukan dalam ${ctx.billingTermDays} (${terbilangHari(
+                          ctx.billingTermDays,
+                        )}) hari sejak dokumen penagihan lengkap diterima oleh PIHAK PERTAMA;`,
+                      ]
+                    : []),
+                ]
+              : []),
         'Penagihan pertama harus meliputi transportasi kedatangan tim;',
         ...commonPaymentClauses(ctx).slice(0, 3),
         // Khas SPK mandor: pembayaran mingguan tiap Sabtu.
@@ -2038,9 +2531,15 @@ export const CLAUSE_TEMPLATES: { [poType: string]: ClauseTemplate[] } = {
   F: F_CLAUSES,
   H: H_CLAUSES,
   '5.1.12': SOFTWARE_CLAUSES,
+  '6.5.1': RECRUITMENT_CLAUSES,
   '5.1.2': MAINTENANCE_CLAUSES,
   // 5.1.6 sengaja berbagi template dengan G — ubah G = ubah 5.1.6 juga (satu kebijakan).
+  // 5.1.1 (pembelian aset) dan 5.1.6 sama-sama pembelian barang, sehingga
+  // berbagi template dengan G — satu kebijakan, satu tempat perubahan.
+  '5.1.1': G_CLAUSES,
   '5.1.6': G_CLAUSES,
+  '6.3.1': ADVERTISING_CLAUSES,
+  '6.3.2': MARKETING_GOODS_CLAUSES,
 };
 
 /** Latest version string for a PO type (what a new PO should store). */
@@ -2069,7 +2568,7 @@ export function buildClauseLines(
   ctx: ClauseContext,
   version?: string,
   additional?: string[],
-): string[] {
+): (string | string[])[] {
   const template = resolveTemplate(poType, version);
   const base = template ? template.build(ctx) : [];
   // user-supplied points are appended AFTER the baked-in ones (nomor lanjutan).

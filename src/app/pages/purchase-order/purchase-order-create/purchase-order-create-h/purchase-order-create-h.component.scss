@@ -1066,10 +1066,12 @@ app-wysiwyg {
 /* pratinjau pasal: memperlihatkan hasil rakitan sebelum dicetak */
 .poh-preview {
   margin-top: 0.9rem;
-  padding: 0.9rem 1rem;
+  padding: 0.9rem 1.1rem;
   border-radius: 12px;
   border: 0.5px solid var(--border, #e3e6eb);
   background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
 }
 .poh-preview__title {
   font-size: 0.7rem;
@@ -1133,4 +1135,72 @@ app-wysiwyg {
   .poh-optrow__fields {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== Tanggal cutoff =====
+   Kotak isian dibuat sempit dan mengalir dalam satu baris: isinya paling
+   banyak dua digit, sehingga kolom selebar setengah layar hanya menyisakan
+   ruang kosong. */
+.poh-cutoffs {
+  margin-top: 0.6rem;
+}
+.poh-cutoffs__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  margin-bottom: 0.4rem;
+}
+.poh-cutoffs__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.poh-cutoff {
+  width: 104px;
+  flex: 0 0 auto;
+}
+:host ::ng-deep .poh-cutoff .mat-mdc-form-field-infix {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  min-height: 40px;
+}
+:host ::ng-deep .poh-cutoff input {
+  text-align: center;
+}
+/* Panah naik-turun bawaan menyita ruang pada kotak sesempit ini. */
+:host ::ng-deep .poh-cutoff input::-webkit-outer-spin-button,
+:host ::ng-deep .poh-cutoff input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+:host ::ng-deep .poh-cutoff input[type='number'] {
+  -moz-appearance: textfield;
+}
+:host ::ng-deep .poh-cutoff__x {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+:host ::ng-deep .poh-cutoff__x .mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+.poh-cutoffs__add {
+  height: 40px;
+  flex: 0 0 auto;
+}
+.poh-cutoffs__preview {
+  font-size: 0.8rem;
+  color: var(--brand, #154dec);
+  margin: 0.55rem 0 0.9rem;
+}
+.poh-cutoffs__term {
+  width: 190px;
+}
+.poh-cutoffs__hint {
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+  margin: 0.3rem 0 0;
 }

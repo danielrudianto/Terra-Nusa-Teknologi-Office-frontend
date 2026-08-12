@@ -30,6 +30,7 @@ import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   buildClauseHtml,
+  buildClauseLines,
   buildEquipmentRentalBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
@@ -271,13 +272,29 @@ export class PurchaseOrderCreateBComponent {
     };
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
       'B',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   get rawTotal(): number {
@@ -304,6 +321,10 @@ export class PurchaseOrderCreateBComponent {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });

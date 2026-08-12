@@ -220,7 +220,11 @@
                 <mat-icon>print</mat-icon
                 ><span>{{ "purchaseOrder.menuReprint" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="deleteOrder(po)">
+              <button
+                mat-menu-item
+                *appCan="'purchase_order:delete'"
+                (click)="deleteOrder(po)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "purchaseOrder.menuDelete" | translate }}</span>
               </button>

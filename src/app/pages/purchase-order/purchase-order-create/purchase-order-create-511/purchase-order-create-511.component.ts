@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { buildClauseLines } from '../../../../constants/clause-templates';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import {
   FormArray,
   FormBuilder,
@@ -18,7 +20,6 @@ import { SupplierSelectorComponent } from '../../../../components/supplier-selec
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
@@ -42,7 +43,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatIconModule,
     MatButtonModule,
     HeaderTitleComponent,
-    WysiwygComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],
@@ -89,6 +89,7 @@ export class PurchaseOrderCreate511Component {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -108,7 +109,9 @@ export class PurchaseOrderCreate511Component {
     officePICPhoneNumber: new FormControl('', Validators.required),
     // items are picked from the master-item catalog (type G)
     purchase_order: new FormArray([]),
-    notes: new FormControl(''),
+    // Poin tambahan bebas, dicetak setelah ketentuan baku. Disimpan sebagai
+    // daftar agar tiap poin dapat dinomori dan dirakit ulang saat dicetak.
+    additionalClauses: new FormArray([]),
     includePPN: new FormControl(true),
   });
 
@@ -202,6 +205,10 @@ export class PurchaseOrderCreate511Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });
@@ -253,9 +260,102 @@ export class PurchaseOrderCreate511Component {
           ?.value,
         officePICName: this.formGroup.get('officePICName')?.value,
         officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
-        // rich-text agreement points / notes (HTML string)
-        notes: this.formGroup.get('notes')?.value,
+        additionalClauses: this.additionalClauseValues,
       },
+    };
+  }
+
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      deliveryMethod: v.deliveryMethod,
+      deliveryAddress: v.deliveryAddress,
+      supplierPICName: v.supplierPICName,
+      supplierPICPhoneNumber: v.supplierPICPhoneNumber,
+      officePICName: v.officePICName,
+      officePICPhoneNumber: v.officePICPhoneNumber,
+    };
+  }
+
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
+      '5.1.1',
+      this.clauseContext(),
+      '1.0',
+      this.additionalClauseValues,
+    );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
+  /**
+   * Susun data cetak.
+   *
+   * Pembelian aset adalah pembelian barang biasa, sehingga memakai tata
+   * letak dokumen yang sama dengan PO G — seperti 5.1.6.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: '5.1.1',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierPrefix: v.supplierPrefix,
+      supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
+      supplierCity: v.supplierCity,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: x.description || x.sku || '',
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+          remarks: x.remarks,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: '1.0',
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
     };
   }
 
@@ -270,6 +370,15 @@ export class PurchaseOrderCreate511Component {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            printPurchaseOrderG(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) => {

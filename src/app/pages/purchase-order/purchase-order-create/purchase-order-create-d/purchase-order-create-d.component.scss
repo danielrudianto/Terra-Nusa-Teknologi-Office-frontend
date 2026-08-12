@@ -1172,6 +1172,16 @@ app-wysiwyg {
 }
 
 /* Pratinjau catatan perjanjian per bagian. */
+
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.pod-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
 .pod-preview__title {
   font-size: 0.72rem;
   font-weight: 700;

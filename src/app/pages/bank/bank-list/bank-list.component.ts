@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs';
@@ -23,6 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-bank-list',
   imports: [
+    CanDirective,
     TranslatePipe,
     FormsModule,
     ReactiveFormsModule,

@@ -10,6 +10,7 @@ import {
   PdfOutput,
   TABLE_LAYOUT,
   buildBillingTerms,
+  clauseList,
   clauseToPdf,
   documentFooter,
   documentHeader,
@@ -200,7 +201,7 @@ export function printPurchaseOrderC(
           { text: data.supplierAddress },
           ...(data.supplierCity ? [{ text: data.supplierCity }] : []),
           ...(data.supplierNpwp
-            ? [{ text: `NPWP: ${data.supplierNpwp}` }]
+            ? [{ text: `NPWP/NIK: ${data.supplierNpwp}` }]
             : []),
         ],
       },
@@ -217,7 +218,7 @@ export function printPurchaseOrderC(
         text: 'Catatan dalam perjanjian ini:',
         margin: [0, 2, 0, 4] as Margins,
       },
-      { ol: clauses.map(clauseToPdf), margin: [0, 0, 0, 12] as Margins },
+      { ...clauseList(clauses), margin: [0, 0, 0, 12] as Margins },
 
       {
         text: 'Demikian kami sampaikan, atas perhatiannya kami ucapkan terima kasih.',

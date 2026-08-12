@@ -400,53 +400,6 @@
         </div>
       }
 
-      <!-- ===== Poin Tambahan (custom) ===== -->
-      <div class="po512-card">
-        <div class="po512-cardhead">
-          <div class="po512-section__title">
-            {{ "common.extraPoints" | translate }}
-          </div>
-          <button type="button" class="po512-addclause" (click)="addClause()">
-            <mat-icon>add</mat-icon> Tambah poin
-          </button>
-        </div>
-        <p class="po512-clausenote">
-          Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-          menggantikannya.
-        </p>
-        <div formArrayName="additionalClauses">
-          @for (c of additionalClauses.controls; track c; let i = $index) {
-            <div class="po512-clauserow">
-              <span class="po512-clausenum">{{ i + 1 }}.</span>
-              <mat-form-field appearance="outline" class="po512-clausefield">
-                <input
-                  matInput
-                  [formControlName]="i"
-                  [placeholder]="
-                    isGoods
-                      ? 'Cth: Garansi part 3 bulan'
-                      : 'Cth: Garansi servis 30 hari'
-                  "
-                />
-              </mat-form-field>
-              <button
-                type="button"
-                class="po512-clauseremove"
-                (click)="removeClause(i)"
-                aria-label="Hapus"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          }
-          @if (additionalClauses.length === 0) {
-            <div class="po512-clauseempty">
-              {{ "common.noExtraPoints" | translate }}
-            </div>
-          }
-        </div>
-      </div>
-
       <!-- ===== Poin Perjanjian (preview) ===== -->
       <div class="po512-card">
         <div class="po512-section__title">
@@ -461,7 +414,21 @@
             Teks inilah yang tersimpan.</span
           >
         </div>
-        <div class="po512-clausebox" [innerHTML]="clausePreview"></div>
+        <div class="po512-preview">
+          <ol class="po512-preview__list">
+            @for (p of clausePreview; track $index) {
+              @if (isSubList(p)) {
+                <ol class="po512-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li>{{ d }}</li>
+                  }
+                </ol>
+              } @else {
+                <li>{{ asText(p) }}</li>
+              }
+            }
+          </ol>
+        </div>
 
         <div class="po512-actions">
           <span class="po512-spacer"></span>
@@ -475,6 +442,54 @@
             {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
           </button>
         </div>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
+      <div class="po512-cardhead">
+        <div class="po512-section__title">
+          {{ "common.extraPoints" | translate }}
+        </div>
+        <button type="button" class="po512-addclause" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+      <p class="po512-clausenote">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+        menggantikannya.
+      </p>
+      <div formArrayName="additionalClauses">
+        @for (c of additionalClauses.controls; track c; let i = $index) {
+          <div class="po512-clauserow">
+            <span class="po512-clausenum">{{ i + 1 }}.</span>
+            <mat-form-field appearance="outline" class="po512-clausefield">
+              <input
+                matInput
+                [formControlName]="i"
+                [placeholder]="
+                  isGoods
+                    ? 'Cth: Garansi part 3 bulan'
+                    : 'Cth: Garansi servis 30 hari'
+                "
+              />
+            </mat-form-field>
+            <button
+              type="button"
+              class="po512-clauseremove"
+              (click)="removeClause(i)"
+              aria-label="Hapus"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+        @if (additionalClauses.length === 0) {
+          <div class="po512-clauseempty">
+            {{ "common.noExtraPoints" | translate }}
+          </div>
+        }
       </div>
     </form>
   }

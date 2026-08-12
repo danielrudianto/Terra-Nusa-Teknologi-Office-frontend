@@ -316,8 +316,49 @@
       </div>
     </div>
 
-    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+    <!-- ===== Poin Perjanjian (otomatis, terkunci) ===== -->
     <div class="po516-card">
+      <div class="po516-section__title">
+        {{ "common.agreementPoints" | translate }}
+      </div>
+      <div class="po516-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span
+          >Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks
+          ini yang akan tersimpan.</span
+        >
+      </div>
+      <div class="po516-preview">
+        <ol class="po516-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="po516-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <div class="po516-actions">
+        <span class="po516-spacer"></span>
+        <button
+          type="submit"
+          class="po516-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
       <div class="po516-cardhead">
         <div class="po516-section__title">
           {{ "common.extraPoints" | translate }}
@@ -356,32 +397,6 @@
             {{ "common.noExtraPoints" | translate }}
           </div>
         }
-      </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (otomatis, terkunci) ===== -->
-    <div class="po516-card">
-      <div class="po516-section__title">
-        {{ "common.agreementPoints" | translate }}
-      </div>
-      <div class="po516-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span
-          >Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks
-          ini yang akan tersimpan.</span
-        >
-      </div>
-      <div class="po516-clausebox" [innerHTML]="clausePreview"></div>
-
-      <div class="po516-actions">
-        <span class="po516-spacer"></span>
-        <button
-          type="submit"
-          class="po516-submit"
-          [disabled]="formGroup.invalid || isSubmitting"
-        >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
       </div>
     </div>
   </form>

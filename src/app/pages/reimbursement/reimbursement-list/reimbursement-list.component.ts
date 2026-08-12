@@ -1,4 +1,5 @@
 import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatTableModule } from '@angular/material/table';
@@ -28,6 +29,7 @@ import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
 @Component({
   selector: 'app-reimbursement-list',
   imports: [
+    CanDirective,
     TranslatePipe,
     CommonModule,
     ReactiveFormsModule,

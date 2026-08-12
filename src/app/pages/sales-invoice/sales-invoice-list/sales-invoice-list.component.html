@@ -256,6 +256,7 @@
               </button>
               <button
                 mat-menu-item
+                *appCan="'sales_invoice:approve'"
                 [disabled]="invoice.isDelete || invoice.isApprove"
                 (click)="openSalesInvoiceConfirmation(invoice.id)"
               >

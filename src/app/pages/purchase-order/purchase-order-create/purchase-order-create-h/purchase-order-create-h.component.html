@@ -286,21 +286,57 @@
           </div>
         }
 
-        @if (isMandor) {
+        <!--
+          Siklus penagihan berlaku untuk seluruh lingkup kerja bertahap —
+          mandor maupun borongan. Sebelumnya hanya mandor, sehingga borongan
+          terpaksa memakai keterangan bebas untuk hal yang sama.
+        -->
+        @if (isMandor || isBorongan) {
           <div class="poh-optrow">
             <mat-radio-group
               formControlName="billingCycleMode"
               class="poh-rate"
             >
-              <mat-radio-button value="sejak-mulai" color="primary">{{
-                "poH.billingSinceStart" | translate
-              }}</mat-radio-button>
-              <mat-radio-button value="periode-pekan" color="primary">{{
-                "poH.fixedWeekBoundary" | translate
-              }}</mat-radio-button>
+              <mat-radio-button value="cutoff-tanggal" color="primary"
+                >Per progres, tanggal cutoff</mat-radio-button
+              >
+              <mat-radio-button value="periode-pekan" color="primary"
+                >Per progres, mingguan</mat-radio-button
+              >
+              <mat-radio-button value="selesai-pekerjaan" color="primary"
+                >Saat pekerjaan selesai</mat-radio-button
+              >
             </mat-radio-group>
 
-            @if (formGroup.value.billingCycleMode === "periode-pekan") {
+            @if (formGroup.value.billingCycleMode === "selesai-pekerjaan") {
+              <!--
+                Sekali tagih di akhir: tidak ada tanggal cutoff maupun batas
+                pekan, yang perlu hanya terminnya.
+              -->
+              <div class="poh-cutoffs">
+                <p class="poh-cutoffs__preview">
+                  Penagihan dilakukan satu kali setelah seluruh pekerjaan
+                  dinyatakan selesai dan diterima PIHAK PERTAMA.
+                </p>
+                <mat-form-field
+                  appearance="outline"
+                  class="poh-cutoffs__term"
+                  subscriptSizing="dynamic"
+                >
+                  <mat-label>Termin pembayaran</mat-label>
+                  <input
+                    matInput
+                    formControlName="billingTermDays"
+                    type="number"
+                    [min]="0"
+                  />
+                  <span matSuffix>&nbsp;hari</span>
+                </mat-form-field>
+                <p class="poh-cutoffs__hint">
+                  Dihitung sejak dokumen penagihan lengkap diterima
+                </p>
+              </div>
+            } @else if (formGroup.value.billingCycleMode === "periode-pekan") {
               <div class="poh-optrow__fields">
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poH.weekStart" | translate }}</mat-label>
@@ -312,15 +348,83 @@
                 </mat-form-field>
               </div>
             } @else {
-              <div class="poh-optrow__fields">
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poH.billingPeriod" | translate }}</mat-label>
+              <!--
+                Cukup daftar tanggal cutoff — periodenya tersirat dari sehari
+                setelah cutoff sebelumnya. Pasangan tanggal awal-akhir justru
+                membuka celah: 1-15 dan 20-30 menyisakan tanggal 16-19 tanpa
+                ada yang menyadari.
+              -->
+              <div class="poh-cutoffs">
+                <div class="poh-cutoffs__label">
+                  Tanggal cutoff dalam sebulan
+                </div>
+
+                <div class="poh-cutoffs__row" formArrayName="cutoffDays">
+                  @for (c of cutoffDays.controls; track c; let i = $index) {
+                    <mat-form-field
+                      appearance="outline"
+                      class="poh-cutoff"
+                      subscriptSizing="dynamic"
+                    >
+                      <input
+                        matInput
+                        [formControlName]="i"
+                        type="number"
+                        [min]="1"
+                        [max]="31"
+                        placeholder="tgl"
+                      />
+                      @if (cutoffDays.length > 1) {
+                        <button
+                          matSuffix
+                          mat-icon-button
+                          type="button"
+                          class="poh-cutoff__x"
+                          (click)="removeCutoff(i)"
+                          aria-label="Hapus tanggal cutoff"
+                        >
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      }
+                    </mat-form-field>
+                  }
+
+                  @if (cutoffDays.length < MAX_CUTOFF) {
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      class="poh-cutoffs__add"
+                      (click)="addCutoff()"
+                    >
+                      <mat-icon>add</mat-icon> Tambah
+                    </button>
+                  }
+                </div>
+
+                <!--
+                  Pratinjau kalimat yang akan tercetak. Angka telanjang di
+                  kotak isian sulit dibayangkan hasilnya; kalimatnya membuat
+                  salah isi langsung terlihat sebelum dokumen dibuat.
+                -->
+                <p class="poh-cutoffs__preview">{{ cutoffPreview }}</p>
+
+                <mat-form-field
+                  appearance="outline"
+                  class="poh-cutoffs__term"
+                  subscriptSizing="dynamic"
+                >
+                  <mat-label>Termin pembayaran</mat-label>
                   <input
                     matInput
-                    formControlName="billingPeriod"
-                    placeholder="Ex. 2 (dua) minggu"
+                    formControlName="billingTermDays"
+                    type="number"
+                    [min]="0"
                   />
+                  <span matSuffix>&nbsp;hari</span>
                 </mat-form-field>
+                <p class="poh-cutoffs__hint">
+                  Dihitung sejak dokumen penagihan lengkap diterima
+                </p>
               </div>
             }
           </div>
@@ -715,25 +819,41 @@
           <div class="poh-section__title">{{ "poH.article5" | translate }}</div>
 
           <div class="poh-grid">
-            <mat-form-field appearance="outline" class="poh-span2">
-              <mat-label>{{ "poH.billingPeriod" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="billingPeriod"
-                placeholder="Ex. 2 (dua) minggu, bulanan, per progres 25%"
-              />
-            </mat-form-field>
+            <!--
+              Keterangan bebas hanya untuk dokumen lama yang siklusnya belum
+              dipilih; yang baru memakai pilihan siklus di atas agar
+              kalimatnya seragam.
+            -->
+            @if (!formGroup.value.billingCycleMode) {
+              <mat-form-field appearance="outline" class="poh-span2">
+                <mat-label>{{ "poH.billingPeriod" | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="billingPeriod"
+                  placeholder="Ex. 2 (dua) minggu, bulanan, per progres 25%"
+                />
+              </mat-form-field>
+            }
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "poH.paymentDays" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="paymentDays"
-                type="number"
-                [min]="0"
-              />
-              <mat-hint>{{ "poH.sinceDocsComplete" | translate }}</mat-hint>
-            </mat-form-field>
+            <!--
+              Termin pembayaran sudah diisi bersama pilihan siklus penagihan
+              di atas. Kotak ini bentuk lama yang mengatur hal sama; bila
+              keduanya tampil, yang tercetak justru bukan yang baru diisi.
+              Tetap ditampilkan untuk dokumen lama yang siklusnya belum
+              dipilih, agar nilainya tidak hilang.
+            -->
+            @if (!formGroup.value.billingCycleMode) {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poH.paymentDays" | translate }}</mat-label>
+                <input
+                  matInput
+                  formControlName="paymentDays"
+                  type="number"
+                  [min]="0"
+                />
+                <mat-hint>{{ "poH.sinceDocsComplete" | translate }}</mat-hint>
+              </mat-form-field>
+            }
 
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.finalPaymentDays" | translate }}</mat-label>

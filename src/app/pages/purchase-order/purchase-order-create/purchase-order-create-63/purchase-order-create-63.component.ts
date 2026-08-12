@@ -1,4 +1,10 @@
 import { Component } from '@angular/core';
+import { buildClauseLines } from '../../../../constants/clause-templates';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
+import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import {
   FormArray,
   FormBuilder,
@@ -24,10 +30,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
-import { PurchaseOrderCreate63ModeDialogComponent } from './purchase-order-create-63-mode-dialog/purchase-order-create-63-mode-dialog.component';
 import { TranslatePipe } from '@ngx-translate/core';
 
 /**
@@ -42,6 +46,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    MatCheckboxModule,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -56,7 +61,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
-    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-63.component.html',
   styleUrl: './purchase-order-create-63.component.scss',
@@ -73,8 +77,16 @@ export class PurchaseOrderCreate63Component {
 
   isSubmitting = false;
 
-  /** null until the mode dialog is answered — a PO is either goods or services */
-  mode: 'barang' | 'jasa' | null = null;
+  /**
+   * Barang atau jasa disimpulkan dari jenis PO-nya, bukan ditanyakan lagi.
+   *
+   * 6.3.1 memang selalu jasa periklanan dan 6.3.2 selalu merchandise —
+   * menanyakannya ulang hanya menambah satu langkah yang jawabannya sudah
+   * pasti, sekaligus membuka kemungkinan terpilih tidak sesuai kodenya.
+   */
+  get mode(): 'barang' | 'jasa' {
+    return this.purchaseType === '6.3.2' ? 'barang' : 'jasa';
+  }
 
   /** '6.3.1' or '6.3.2', taken from the route definition */
   purchaseType: string = '6.3.2';
@@ -100,6 +112,7 @@ export class PurchaseOrderCreate63Component {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -111,7 +124,38 @@ export class PurchaseOrderCreate63Component {
       Validators.min(0),
       Validators.max(100),
     ]),
-    notes: new FormControl(''),
+    // Poin tambahan bebas, dicetak setelah ketentuan baku. Disimpan sebagai
+    // daftar, bukan satu blok teks, agar tiap poin dapat dinomori dan
+    // dirakit ulang saat dokumennya dicetak.
+    additionalClauses: new FormArray([]),
+    // ---- 6.3.1 (jasa iklan) ----
+    revisionCount: new FormControl(2, [Validators.min(0)]),
+    // Sementara dimatikan atas keputusan pemilik proses; poinnya tetap
+    // tercetak dalam keadaan tercoret.
+    fileRetentionDays: new FormControl(30, [Validators.min(0)]),
+    latePenaltyRequired: new FormControl(false),
+    latePenaltyPermil: new FormControl(1, [Validators.min(0)]),
+    latePenaltyCapPercent: new FormControl(5, [Validators.min(0)]),
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+    // ---- 6.3.2 (merchandise) ----
+    sampleApprovalRequired: new FormControl(true),
+    /*
+     * Pengiriman dan kontak penanggung jawab.
+     *
+     * Hanya berlaku pada merchandise: barangnya dikirim, sehingga klausul
+     * Franco/Loco, alamat, dan kontak dua pihak harus terisi. Tanpa field
+     * ini, poin-poin tersebut tetap tercetak tetapi isinya tanda hubung.
+     *
+     * Jasa periklanan tidak memakainya — tidak ada barang yang dikirim.
+     */
+    deliveryMethod: new FormControl(0),
+    deliveryAddress: new FormControl(''),
+    supplierPICName: new FormControl(''),
+    supplierPICPhoneNumber: new FormControl(''),
+    officePICName: new FormControl(''),
+    officePICPhoneNumber: new FormControl(''),
     lines: new FormArray([]),
     includePPN: new FormControl(true),
   });
@@ -122,30 +166,52 @@ export class PurchaseOrderCreate63Component {
       this.purchaseType = routeType;
       this.formGroup.patchValue({ purchaseType: routeType });
     }
-    this.askMode(true);
+    // Mode sudah pasti dari jenis PO, jadi baris pertamanya bisa langsung
+    // disiapkan tanpa menunggu pilihan apa pun.
+    if (!this.isGoods && this.t.length === 0) this.addService();
   }
 
-  /** `initial` = dismissing sends the user back to the PO hub */
-  askMode(initial: boolean = false) {
-    this.dialog
-      .open(PurchaseOrderCreate63ModeDialogComponent, {
-        width: '600px',
-        maxWidth: '94vw',
-        autoFocus: false,
-        disableClose: initial,
-        data: { typeLabel: this.typeLabel },
-      })
-      .afterClosed()
-      .subscribe((picked) => {
-        if (!picked) {
-          if (initial) this.router.navigate(['/Purchase-order/Create']);
-          return;
-        }
-        if (picked === this.mode) return;
-        this.mode = picked;
-        this.t.clear(); // line shape differs per mode
-        if (picked === 'jasa') this.addService();
-      });
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Poinnya dirakit dari template, bukan diketik ulang — sehingga yang
+   * terbaca di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
+      this.purchaseType,
+      this.clauseContext() as any,
+      '1.0',
+      this.additionalClauseValues,
+    );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   get isGoods(): boolean {
@@ -262,6 +328,10 @@ export class PurchaseOrderCreate63Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });
@@ -313,10 +383,110 @@ export class PurchaseOrderCreate63Component {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
-        // rich-text agreement points / notes (HTML string)
-        notes: this.formGroup.get('notes')?.value,
+        // Data sumber klausul; poinnya dirakit ulang saat dicetak.
+        revisionCount: this.formGroup.get('revisionCount')?.value,
+        fileRetentionDays: this.formGroup.get('fileRetentionDays')?.value,
+        latePenaltyRequired: !!this.formGroup.get('latePenaltyRequired')?.value,
+        latePenaltyPermil: this.formGroup.get('latePenaltyPermil')?.value,
+        latePenaltyCapPercent: this.formGroup.get('latePenaltyCapPercent')
+          ?.value,
+        sampleApprovalRequired: !!this.formGroup.get('sampleApprovalRequired')
+          ?.value,
+        deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
+        deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
+        supplierPICName: this.formGroup.get('supplierPICName')?.value,
+        supplierPICPhoneNumber: this.formGroup.get('supplierPICPhoneNumber')
+          ?.value,
+        officePICName: this.formGroup.get('officePICName')?.value,
+        officePICPhoneNumber: this.formGroup.get('officePICPhoneNumber')?.value,
+        pphCode: this.isGoods ? '' : this.formGroup.get('pphCode')?.value,
+        pphTaxObject: this.isGoods
+          ? ''
+          : this.formGroup.get('pphTaxObject')?.value,
+        pphPercentage: this.isGoods
+          ? 0
+          : this.formGroup.get('pphPercentage')?.value,
+        additionalClauses: this.additionalClauseValues,
       },
     };
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      revisionCount: v.revisionCount,
+      fileRetentionDays: v.fileRetentionDays,
+      latePenaltyRequired: !!v.latePenaltyRequired,
+      latePenaltyPermil: v.latePenaltyPermil,
+      latePenaltyCapPercent: v.latePenaltyCapPercent,
+      sampleApprovalRequired: !!v.sampleApprovalRequired,
+      // Hanya merchandise yang memakai klausul pengiriman.
+      deliveryMethod: this.isGoods ? v.deliveryMethod : undefined,
+      deliveryAddress: this.isGoods ? v.deliveryAddress : undefined,
+      supplierPICName: this.isGoods ? v.supplierPICName : undefined,
+      supplierPICPhoneNumber: this.isGoods
+        ? v.supplierPICPhoneNumber
+        : undefined,
+      officePICName: this.isGoods ? v.officePICName : undefined,
+      officePICPhoneNumber: this.isGoods ? v.officePICPhoneNumber : undefined,
+      // Merchandise adalah pembelian barang, bukan objek pemotongan PPh.
+      pphCode: this.isGoods ? '' : v.pphCode,
+      pphTaxObject: this.isGoods ? '' : v.pphTaxObject,
+      pphPercentage: this.isGoods ? 0 : v.pphPercentage,
+    };
+  }
+
+  /**
+   * Susun data cetak.
+   *
+   * Merchandise adalah pembelian barang, sehingga memakai tata letak PO-G.
+   * Jasa periklanan berupa pemesanan karya, sehingga memakai tata letak
+   * Surat Perintah Kerja — bukan SPK tenaga kerja, karena yang dibeli hasil
+   * jadi, bukan waktu kerja orang.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: this.purchaseType,
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: this.isGoods ? x.description || x.name : x.task,
+          remarks: x.note,
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: '1.0',
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
   }
 
   onSubmit() {
@@ -330,6 +500,20 @@ export class PurchaseOrderCreate63Component {
             'Close',
             { duration: 3000 },
           );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            const printData = this.buildPrintData(
+              res?.purchase_order_name ?? '',
+            );
+            if (this.isGoods) {
+              printPurchaseOrderG(printData);
+            } else {
+              printPurchaseOrderB(printData);
+            }
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+
           this.router.navigate(['/Purchase-order']);
         },
         error: (error) =>

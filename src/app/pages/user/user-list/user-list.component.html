@@ -121,7 +121,11 @@
                 <mat-icon>edit</mat-icon
                 ><span>{{ "user.menuEdit" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onDeleteUser(element)">
+              <button
+                mat-menu-item
+                *appCan="'user:delete'"
+                (click)="onDeleteUser(element)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "user.menuDelete" | translate }}</span>
               </button>

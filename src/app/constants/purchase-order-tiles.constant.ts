@@ -35,13 +35,6 @@ export const PROJECT_TILES: PurchaseTypeTile[] = [
     link: 'D',
   },
   {
-    type: 'E',
-    title: 'Consumption; Coordination; and Accomodation',
-    description:
-      'Purchase orders used for consumption, coordination, and accomodation expenses, such as renting a house, etc.',
-    link: 'E',
-  },
-  {
     type: 'F',
     title: 'Material',
     description:

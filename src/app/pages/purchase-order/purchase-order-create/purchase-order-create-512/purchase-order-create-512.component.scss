@@ -657,3 +657,21 @@ app-wysiwyg { display: block; margin-bottom: 0.5rem; }
   }
   ::ng-deep li:last-child { border-bottom: none; }
 }
+
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.po512-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.po512-preview__list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.po512-preview__sub {
+  padding-left: 1.2rem;
+  list-style: lower-alpha;
+}

@@ -39,7 +39,12 @@ export interface IPurchaseOrderD {
   workerPrefix?: string;
   workerAddress: string;
   workerCity?: string;
-  /** NPWP atau NIK pekerja. */
+  /**
+   * NPWP atau NIK pekerja.
+   *
+   * Hanya dicetak bila terisi: sebagian pekerja belum ber-NPWP, dan baris
+   * kosong pada dokumen resmi lebih mengganggu daripada tidak ada barisnya.
+   */
   workerNpwp?: string;
   /** Jenis pekerjaan: tukang cor, operator boredpile, dst. */
   task?: string;
@@ -84,6 +89,7 @@ function buildIdentityTable(data: IPurchaseOrderD) {
     identityRow('Alamat', data.workerAddress),
   ];
   if (data.workerCity) rows.push(identityRow('', data.workerCity));
+  if (data.workerNpwp) rows.push(identityRow('NPWP/NIK', data.workerNpwp));
   if (data.workerNpwp) rows.push(identityRow('NPWP/NIK', data.workerNpwp));
   if (data.task) rows.push(identityRow('Jenis Pekerjaan', data.task));
 

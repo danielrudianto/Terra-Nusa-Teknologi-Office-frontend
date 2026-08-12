@@ -27,6 +27,7 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { ApiService } from '../../../../services/api.service';
 import {
   buildClauseHtml,
+  buildClauseLines,
   buildMaintenanceBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
@@ -98,6 +99,7 @@ export class PurchaseOrderCreate512Component {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -325,6 +327,10 @@ export class PurchaseOrderCreate512Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });
@@ -398,13 +404,29 @@ export class PurchaseOrderCreate512Component {
     }
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
       '5.1.2',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   private toISO(d: any): string | null {
@@ -487,6 +509,7 @@ export class PurchaseOrderCreate512Component {
       projectName: v.projectName,
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
         return {

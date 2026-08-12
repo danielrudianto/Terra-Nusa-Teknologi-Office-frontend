@@ -826,7 +826,8 @@
     "debt": "Total utang (debt)",
     "loadingData": "Memuat data…",
     "createLoan": "Catat pinjaman / utang baru",
-    "companyAccount": "Rekening perusahaan tempat dana pinjaman diterima"
+    "companyAccount": "Rekening perusahaan tempat dana pinjaman diterima",
+    "menuEdit": "Ubah data"
   },
   "loansCreate": {
     "title": "Buat Pinjaman",
@@ -2556,5 +2557,11 @@
   },
   "engineering": {
     "addPile": "Tambah tiang baru"
+  },
+  "loansUpdate": {
+    "title": "Ubah Data Pinjaman",
+    "lockedNote": "Nilai pinjaman, jumlah diterima, dan tanggal tidak dapat diubah karena sudah menjadi dasar pencatatan pembayaran. Bila keliru, batalkan pencatatannya dan catat ulang.",
+    "save": "Simpan",
+    "digitsOnly": "Hanya angka."
   }
 }

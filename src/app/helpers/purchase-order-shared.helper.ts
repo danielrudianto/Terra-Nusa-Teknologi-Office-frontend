@@ -235,6 +235,23 @@ export const TABLE_LAYOUT = {
  * membaca HTML, jadi tag itu harus diterjemahkan menjadi properti
  * `decoration: 'lineThrough'` — kalau tidak, tagnya ikut tercetak.
  */
+/**
+ * Daftar poin perjanjian, termasuk sub-poin bersarang.
+ *
+ * Anggota berupa array menjadi daftar huruf (a, b, c) di bawah poin
+ * sebelumnya. Dipakai bersama oleh seluruh helper agar penomoran bersarang
+ * tampil sama di setiap dokumen.
+ */
+export function clauseList(lines: (string | string[])[]): any {
+  return {
+    ol: (lines || []).map((x) =>
+      Array.isArray(x)
+        ? { ol: x.map(clauseToPdf), type: 'lower-alpha' as any }
+        : clauseToPdf(x),
+    ),
+  };
+}
+
 export function clauseToPdf(line: string): any {
   const match = /^\s*<s>([\s\S]*)<\/s>\s*$/i.exec(line || '');
   if (match) {

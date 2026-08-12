@@ -63,13 +63,6 @@ export class PurchaseOrderCreateComponent {
       link: 'D',
     },
     {
-      type: 'E',
-      title: 'Consumption; Coordination; and Accomodation',
-      description:
-        'Purchase orders used for consumption, coordination, and accomodation expenses, such as renting a house, etc.',
-      link: 'E',
-    },
-    {
       type: 'F',
       title: 'Material',
       description:
@@ -145,13 +138,13 @@ export class PurchaseOrderCreateComponent {
       type: '6.5.1',
       title: 'Recruitment',
       description: 'Purchase orders used to create recruitment expense',
-      link: '6.5.1',
+      link: '651',
     },
     {
       type: '6.5.2',
       title: 'Training',
       description: 'Purchase orders used to create training expense',
-      link: '6.5.2',
+      link: '652',
     },
   ];
 
@@ -189,6 +182,11 @@ export class PurchaseOrderCreateComponent {
         break;
       case '6.4.1':
         this.router.navigate(['641'], {
+          relativeTo: this.route,
+        });
+        break;
+      case '6.5.1':
+        this.router.navigate(['651'], {
           relativeTo: this.route,
         });
         break;

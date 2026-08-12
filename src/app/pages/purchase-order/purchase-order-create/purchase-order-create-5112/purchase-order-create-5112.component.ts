@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
 import {
   FormArray,
   FormBuilder,
@@ -23,6 +25,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
 import {
   buildClauseHtml,
+  buildClauseLines,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -87,6 +90,7 @@ export class PurchaseOrderCreate5112Component {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -105,6 +109,17 @@ export class PurchaseOrderCreate5112Component {
     subscriptionDuration: new FormControl(1),
     subscriptionDurationUnit: new FormControl('tahun'),
     autoRenew: new FormControl(false),
+    // Tenggat pemberitahuan sebelum perpanjangan otomatis; pasangan wajib
+    // dari auto-renew agar perpanjangan tidak terjadi diam-diam.
+    renewalNoticeDays: new FormControl(30, [Validators.min(0)]),
+    // Masa pengambilan data setelah langganan berakhir.
+    dataRetrievalDays: new FormControl(30, [Validators.min(0)]),
+    // Jumlah pengguna; dikosongkan bila tidak dibatasi per-seat.
+    userSeatCount: new FormControl(null),
+    // Sewa server, domain, dan langganan aplikasi umumnya objek pemotongan.
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
     licenseDelivery: new FormControl('account', Validators.required),
     // contacts
     supplierPICName: new FormControl('', Validators.required),
@@ -267,6 +282,10 @@ export class PurchaseOrderCreate5112Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });
@@ -302,16 +321,60 @@ export class PurchaseOrderCreate5112Component {
       subscriptionDurationUnit: v.subscriptionDurationUnit,
       autoRenew: v.autoRenew,
       licenseDelivery: v.licenseDelivery,
+      renewalNoticeDays: v.renewalNoticeDays,
+      dataRetrievalDays: v.dataRetrievalDays,
+      userSeatCount: v.userSeatCount,
+      pphCode: v.pphCode,
+      pphTaxObject: v.pphTaxObject,
+      pphPercentage: v.pphPercentage,
     };
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
+
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
       '5.1.12',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   formatData() {
@@ -359,6 +422,12 @@ export class PurchaseOrderCreate5112Component {
         subscriptionDurationUnit: v.subscriptionDurationUnit,
         autoRenew: v.autoRenew,
         licenseDelivery: v.licenseDelivery,
+        renewalNoticeDays: v.renewalNoticeDays,
+        dataRetrievalDays: v.dataRetrievalDays,
+        userSeatCount: v.userSeatCount,
+        pphCode: v.pphCode,
+        pphTaxObject: v.pphTaxObject,
+        pphPercentage: v.pphPercentage,
         supplierPICName: v.supplierPICName,
         supplierPICPhoneNumber: v.supplierPICPhoneNumber,
         officePICName: v.officePICName,

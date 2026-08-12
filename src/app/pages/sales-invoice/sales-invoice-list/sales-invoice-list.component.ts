@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
@@ -24,6 +25,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-sales-invoice-list',
   imports: [
+    CanDirective,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

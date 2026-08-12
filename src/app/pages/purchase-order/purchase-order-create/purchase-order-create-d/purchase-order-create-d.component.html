@@ -328,12 +328,25 @@
       </div>
 
       <!--
-        Jangka waktu perjanjian. Perjanjian waktu tertentu justru ditandai
-        oleh adanya batas waktu; tanpa itu jangka waktunya tidak jelas.
-        Dua bentuk: tanggal berakhir, atau terikat selesainya proyek.
+        Informasi umum: lokasi kerja dan jangka waktu perjanjian.
+
+        Perjanjian waktu tertentu justru ditandai oleh adanya batas waktu.
+        Tanggal berakhir yang dikosongkan berarti perjanjian mengikuti
+        selesainya pekerjaan — bukan tanpa batas — sehingga tidak perlu
+        pilihan terpisah untuk menyatakannya.
       -->
-      <div class="pod-section__title">Jangka waktu perjanjian</div>
+      <div class="pod-section__title">Informasi umum</div>
       <div class="pod-grid">
+        <mat-form-field appearance="outline" class="pod-span2">
+          <mat-label>Lokasi kerja</mat-label>
+          <input
+            matInput
+            formControlName="workLocation"
+            placeholder="Ex. Proyek Tol Cisumdawu STA 12+400"
+          />
+          <mat-hint>Bila dikosongkan, dokumen memakai nama proyek</mat-hint>
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Mulai berlaku</mat-label>
           <input
@@ -348,25 +361,22 @@
           <mat-datepicker #dpStart></mat-datepicker>
         </mat-form-field>
 
-        @if (!formGroup.value.contractUntilProjectDone) {
-          <mat-form-field appearance="outline">
-            <mat-label>Berakhir</mat-label>
-            <input
-              matInput
-              formControlName="contractEnd"
-              [matDatepicker]="dpEnd"
-            />
-            <mat-datepicker-toggle
-              matIconPrefix
-              [for]="dpEnd"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #dpEnd></mat-datepicker>
-          </mat-form-field>
-        }
+        <mat-form-field appearance="outline">
+          <mat-label>Berakhir</mat-label>
+          <input
+            matInput
+            formControlName="contractEnd"
+            [matDatepicker]="dpEnd"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="dpEnd"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dpEnd></mat-datepicker>
+          <mat-hint>Kosongkan bila sampai pekerjaan selesai</mat-hint>
+        </mat-form-field>
       </div>
-      <mat-checkbox formControlName="contractUntilProjectDone">
-        Berlaku sampai pekerjaan pada proyek ini selesai
-      </mat-checkbox>
+
       <div class="pod-toggles">
         <div class="pod-toggles__row">
           <mat-slide-toggle

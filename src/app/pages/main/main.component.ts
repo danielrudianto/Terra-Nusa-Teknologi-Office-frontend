@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -39,12 +39,20 @@ export class MainComponent {
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         map(() => {
+          /*
+           * Izin dipastikan termuat pada tiap perpindahan halaman.
+           *
+           * `load()` mengabaikan panggilan berikutnya bila sudah berhasil,
+           * sehingga ini tidak menembak server berulang — tetapi bila
+           * pemuatan sebelumnya gagal (mis. token kedaluwarsa setelah lama
+           * menganggur), perpindahan halaman berikutnya menjadi kesempatan
+           * untuk mencobanya lagi tanpa perlu memuat ulang halaman.
+           */
+          this.permissionService.load();
+
           // Get the activated route
           let child = this.route.firstChild;
           while (child) {
-            // Halaman bisa dibuka langsung dari alamat tersimpan, bukan hanya
-            // lewat login — izinnya dipastikan termuat di sini juga.
-            this.permissionService.load();
             if (child.firstChild) {
               child = child.firstChild;
             } else {
@@ -206,7 +214,16 @@ export class MainComponent {
    * Butir tanpa izin pada rutenya dianggap terbuka, sehingga menu yang belum
    * sempat dipetakan tidak hilang diam-diam.
    */
-  get sideNavItems() {
+  /*
+   * Dihitung sebagai signal, bukan getter biasa.
+   *
+   * Getter menghasilkan array dan objek BARU pada setiap siklus deteksi
+   * perubahan. Karena nilainya terikat ke @Input, Angular menganggap
+   * masukannya berubah terus, merender ulang, lalu memicu siklus berikutnya —
+   * layar berputar tanpa henti. `computed` menyimpan hasilnya dan hanya
+   * menghitung ulang ketika peta izin benar-benar berubah.
+   */
+  readonly sideNavItems = computed(() => {
     const izinRute = (route: string): string | undefined => {
       const path = String(route || '').replace(/^\//, '');
       const cari = (routes: any[]): any => {
@@ -238,5 +255,5 @@ export class MainComponent {
         // menyisakan judul kelompok tanpa isi.
         .filter((grup: any) => (grup.children || []).length > 0)
     );
-  }
+  });
 }

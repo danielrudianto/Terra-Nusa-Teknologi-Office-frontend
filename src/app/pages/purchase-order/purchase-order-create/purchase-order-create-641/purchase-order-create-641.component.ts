@@ -201,6 +201,7 @@ export class PurchaseOrderCreate641Component {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
     projectName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
@@ -343,6 +344,10 @@ export class PurchaseOrderCreate641Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
           });
         }
       });
@@ -462,6 +467,7 @@ export class PurchaseOrderCreate641Component {
       projectName: v.projectName,
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
       items: this.t.controls.map((c, i) => {
         const x = c.getRawValue();
         return {

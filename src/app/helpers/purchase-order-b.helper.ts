@@ -9,6 +9,7 @@ import {
   DOCUMENT_STYLES,
   PdfOutput,
   TABLE_LAYOUT,
+  clauseList,
   clauseToPdf,
   documentFooter,
   documentHeader,
@@ -281,7 +282,7 @@ export function printPurchaseOrderB(
         text: 'Catatan dalam perjanjian adalah:',
         margin: [0, 2, 0, 4] as Margins,
       },
-      { ol: clauses.map(clauseToPdf), margin: [0, 0, 0, 12] as Margins },
+      { ...clauseList(clauses), margin: [0, 0, 0, 12] as Margins },
 
       {
         text: 'Demikian kami sampaikan, atas perhatiannya kami ucapkan terima kasih.',

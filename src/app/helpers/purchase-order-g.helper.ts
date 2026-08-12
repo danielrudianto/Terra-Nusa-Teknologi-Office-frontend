@@ -10,6 +10,7 @@ import {
   PdfOutput,
   TABLE_LAYOUT,
   buildBillingTerms,
+  clauseList,
   clauseToPdf,
   documentFooter,
   documentHeader,
@@ -213,7 +214,7 @@ export function printPurchaseOrderG(
           { text: data.supplierAddress },
           ...(data.supplierCity ? [{ text: data.supplierCity }] : []),
           ...(data.supplierNpwp
-            ? [{ text: `NPWP: ${data.supplierNpwp}` }]
+            ? [{ text: `NPWP/NIK: ${data.supplierNpwp}` }]
             : []),
         ],
       },
@@ -231,7 +232,7 @@ export function printPurchaseOrderG(
         margin: [0, 2, 0, 4] as Margins,
       },
       {
-        ol: clauses.map(clauseToPdf),
+        ...clauseList(clauses),
         margin: [0, 0, 0, 12] as Margins,
       },
 

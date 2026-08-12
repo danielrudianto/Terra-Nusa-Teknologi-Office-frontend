@@ -156,7 +156,11 @@
                 <mat-icon>edit</mat-icon
                 ><span>{{ "bank.menuEdit" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onDelete(bank.id)">
+              <button
+                mat-menu-item
+                *appCan="'bank:delete'"
+                (click)="onDelete(bank.id)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "bank.menuDelete" | translate }}</span>
               </button>

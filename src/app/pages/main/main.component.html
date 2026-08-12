@@ -4,7 +4,7 @@
     [opened]="isSidenavigationOpened"
     class="dashboard__container__side"
   >
-    <app-side-nav style="overflow-y: hidden" [items]="sideNavItems" />
+    <app-side-nav style="overflow-y: hidden" [items]="sideNavItems()" />
   </mat-drawer>
   <mat-drawer-content class="dashboard__container__content">
     <app-top-navigation

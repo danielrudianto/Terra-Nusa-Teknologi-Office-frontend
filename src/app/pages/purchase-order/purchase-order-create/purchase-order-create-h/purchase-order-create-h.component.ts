@@ -137,6 +137,49 @@ export class PurchaseOrderCreateHComponent {
   }
 
   /** Kolom tempo & uang muka hanya berlaku untuk sebagian termin. */
+  readonly MAX_CUTOFF = 5;
+
+  get cutoffDays(): FormArray {
+    return this.formGroup.get('cutoffDays') as FormArray;
+  }
+
+  /** Daftar tanggal yang sah, terurut dan tanpa kembar. */
+  get cutoffValues(): number[] {
+    const nilai = (this.cutoffDays.value as any[])
+      .map((x) => Number(x))
+      .filter((d) => Number.isFinite(d) && d >= 1 && d <= 31);
+    return [...new Set(nilai)].sort((a, b) => a - b);
+  }
+
+  /**
+   * Pratinjau kalimat penagihan.
+   *
+   * Angka telanjang di kotak isian sulit dibayangkan hasilnya; kalimatnya
+   * membuat salah isi langsung terlihat sebelum dokumen dibuat.
+   */
+  get cutoffPreview(): string {
+    const d = this.cutoffValues;
+    if (!d.length) return 'Belum ada tanggal cutoff yang diisi.';
+    const akhir = d[d.length - 1];
+    const teks =
+      d.length === 1
+        ? `tanggal ${akhir}`
+        : `tanggal ${d.slice(0, -1).join(', ')} dan ${akhir}`;
+    return `Penagihan dilakukan setiap ${teks} pada setiap bulan.`;
+  }
+
+  addCutoff() {
+    if (this.cutoffDays.length >= this.MAX_CUTOFF) return;
+    this.cutoffDays.push(new FormControl(null));
+  }
+
+  removeCutoff(i: number) {
+    // Satu tanggal harus tetap ada; tanpa cutoff, klausul penagihannya
+    // kehilangan dasar dan barisnya hilang dari dokumen.
+    if (this.cutoffDays.length <= 1) return;
+    this.cutoffDays.removeAt(i);
+  }
+
   get additionalClauses(): FormArray {
     return this.formGroup.get('additionalClauses') as FormArray;
   }
@@ -195,6 +238,10 @@ export class PurchaseOrderCreateHComponent {
     if (kini === '' || Object.values(this.JOB_TYPE_DEFAULTS).includes(kini)) {
       jobType?.setValue(baru);
     }
+  }
+
+  get isBorongan(): boolean {
+    return this.formGroup.get('workScope')?.value === 'borongan';
   }
 
   get isBuangLumpur(): boolean {
@@ -282,7 +329,12 @@ export class PurchaseOrderCreateHComponent {
     workScope: new FormControl('borongan', Validators.required),
     mobilizationNoticeDays: new FormControl(7, [Validators.min(0)]),
     // Perorangan biasanya 'sejak-mulai', perusahaan memakai batas pekan tetap
-    billingCycleMode: new FormControl('sejak-mulai'),
+    // Bentuk lama 'sejak-mulai' dibuang: yang dipakai di lapangan adalah
+    // tanggal cutoff, bukan hitungan sejak pekerjaan dimulai.
+    billingCycleMode: new FormControl('cutoff-tanggal'),
+    // Tanggal cutoff dalam sebulan, mis. [15, 30]. Maksimal 5.
+    cutoffDays: new FormArray([new FormControl(30)]),
+    billingTermDays: new FormControl(14, [Validators.min(0)]),
     weekStartDay: new FormControl('Kamis'),
     weekEndDay: new FormControl('Rabu'),
     // Keterangan PPh & alat kerja (poin 2 & 3 seksi Catatan)
@@ -486,6 +538,11 @@ export class PurchaseOrderCreateHComponent {
     return buildPasal5(
       {
         billingPeriod: v.billingPeriod,
+        billingCycleMode: v.billingCycleMode,
+        weekStartDay: v.weekStartDay,
+        weekEndDay: v.weekEndDay,
+        cutoffDays: this.cutoffValues,
+        billingTermDays: v.billingTermDays,
         paymentDays: v.paymentDays,
         finalPaymentDays: v.finalPaymentDays,
         hasDownPayment: v.hasDownPayment,
@@ -537,6 +594,8 @@ export class PurchaseOrderCreateHComponent {
       finalPaymentDays: v.finalPaymentDays,
       billingCycleMode: v.billingCycleMode,
       weekStartDay: v.weekStartDay,
+      cutoffDays: this.cutoffValues,
+      billingTermDays: v.billingTermDays,
       weekEndDay: v.weekEndDay,
     };
 
@@ -771,6 +830,15 @@ export class PurchaseOrderCreateHComponent {
         rateType: this.formGroup.get('rateType')?.value,
         lumpSumPrice: Number(this.formGroup.get('lumpSumPrice')?.value) || 0,
         billingPeriod: this.formGroup.get('billingPeriod')?.value,
+        // Siklus penagihan beserta rinciannya; menjadi dasar klausul
+        // penagihan saat dokumen dicetak ulang. Tanpa billingCycleMode,
+        // cetak ulang jatuh ke keterangan bebas dan kalimatnya berubah.
+        billingCycleMode: this.formGroup.get('billingCycleMode')?.value,
+        weekStartDay: this.formGroup.get('weekStartDay')?.value,
+        weekEndDay: this.formGroup.get('weekEndDay')?.value,
+        cutoffDays: this.cutoffValues,
+        billingTermDays:
+          Number(this.formGroup.get('billingTermDays')?.value) || 0,
         paymentDays: Number(this.formGroup.get('paymentDays')?.value) || 0,
         finalPaymentDays:
           Number(this.formGroup.get('finalPaymentDays')?.value) || 0,
@@ -904,6 +972,8 @@ export class PurchaseOrderCreateHComponent {
                     billingCycleMode: v.billingCycleMode,
                     weekStartDay: v.weekStartDay,
                     weekEndDay: v.weekEndDay,
+                    cutoffDays: this.cutoffValues,
+                    billingTermDays: v.billingTermDays,
                     pphNote: v.pphNote,
                     toolingNote: v.toolingNote,
                   },

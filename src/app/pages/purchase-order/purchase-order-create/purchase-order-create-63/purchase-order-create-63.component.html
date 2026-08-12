@@ -6,297 +6,509 @@
     [description]="typeLabel"
   />
 
-  @if (mode) {
-    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-      <!-- ===== Informasi PO ===== -->
-      <div class="po63-card">
-        <div class="po63-cardhead">
-          <div class="po63-section__title po63-section__title--flush">
-            {{ "common.poInfo" | translate }}
-          </div>
-          <span class="po63-modechip">
-            <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
-            <button
-              type="button"
-              class="po63-modechip__btn"
-              (click)="askMode()"
-            >
-              {{ "common.change" | translate }}
-            </button>
-          </span>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== Informasi PO ===== -->
+    <div class="po63-card">
+      <div class="po63-cardhead">
+        <div class="po63-section__title po63-section__title--flush">
+          {{ "common.poInfo" | translate }}
         </div>
-        <div class="po63-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.date" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="date"
-              [matDatepicker]="picker"
-              placeholder="Tanggal PO"
-            />
-            <mat-datepicker-toggle
-              matIconPrefix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+        <!--
+            Penanda mode, bukan pilihan: jenisnya sudah ditentukan oleh kode
+            PO yang dibuka, sehingga tidak ada yang perlu diganti di sini.
+          -->
+        <span class="po63-modechip">
+          <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
+        </span>
+      </div>
+      <div class="po63-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.date" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+            placeholder="Tanggal PO"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="projectName"
-              maxlength="5"
-              (keyup)="toUpperCase()"
-              placeholder="Ex. MICZ"
-            />
-            <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
-              "common.projectCodeError" | translate
-            }}</mat-error>
-          </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+            placeholder="Ex. MICZ"
+          />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "common.projectCodeError" | translate
+          }}</mat-error>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline" class="po63-span2">
+          <mat-label>{{ "poForm.vendor" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            placeholder="Pilih vendor"
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="openSupplierSelector()"
+            aria-label="Pilih vendor"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Daftar Item ===== -->
+    <div class="po63-card">
+      <div class="po63-cardhead">
+        <div class="po63-section__title po63-section__title--flush">
+          {{ "common.itemListPo" | translate }}
+        </div>
+        @if (isGoods) {
+          <button type="button" class="po63-add" (click)="openItemSelector()">
+            <mat-icon>inventory_2</mat-icon> Tambah barang
+          </button>
+        } @else {
+          <button type="button" class="po63-add" (click)="addService()">
+            <mat-icon>design_services</mat-icon> Tambah jasa
+          </button>
+        }
+      </div>
+
+      @if (t.controls.length === 0) {
+        <div class="po63-empty">
+          <mat-icon>campaign</mat-icon>
+          <span>{{
+            isGoods
+              ? 'Belum ada barang. Klik "Tambah barang".'
+              : 'Belum ada jasa. Klik "Tambah jasa".'
+          }}</span>
+        </div>
+      } @else {
+        <div class="po63-list">
+          @for (line of t.controls; track line; let i = $index) {
+            <div class="po63-line" [formGroup]="getFormGroupAt(i)">
+              <div class="po63-line__head">
+                <span class="po63-line__no">#{{ i + 1 }}</span>
+                <span class="po63-line__label">
+                  @if (isGoods) {
+                    {{
+                      getFormGroupAt(i).value.description ||
+                        getFormGroupAt(i).value.sku
+                    }}
+                    <span class="po63-sku">{{
+                      getFormGroupAt(i).value.sku
+                    }}</span>
+                  } @else {
+                    {{ getFormGroupAt(i).value.task || "Jasa belum diisi" }}
+                  }
+                </span>
+                <span class="po63-line__amt"
+                  >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                >
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeAt(i)"
+                  aria-label="Hapus"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+
+              <div class="po63-line__grid">
+                @if (!isGoods) {
+                  <mat-form-field appearance="outline" class="po63-span3">
+                    <mat-label>{{
+                      "poForm.serviceDescription" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="task"
+                      maxlength="100"
+                      placeholder="Ex. Shooting video profil, Foto produk, Desain company profile"
+                    />
+                  </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poForm.volume" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    placeholder="0"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poForm.unit" | translate }}</mat-label>
+                  @if (isGoods) {
+                    <input matInput formControlName="unit" placeholder="pcs" />
+                  } @else {
+                    <mat-select
+                      formControlName="unit"
+                      (selectionChange)="onUnitChange(i)"
+                    >
+                      <mat-option *ngFor="let u of serviceUnits" [value]="u">{{
+                        u
+                      }}</mat-option>
+                    </mat-select>
+                  }
+                  <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">{{
+                    "common.lumpSumLocked" | translate
+                  }}</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="price"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    prefix="Rp. "
+                    placeholder="0"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  appearance="outline"
+                  class="po63-span3 po63-note"
+                >
+                  <mat-label>{{
+                    isGoods
+                      ? "Catatan barang (sablon, warna, ukuran)"
+                      : "Catatan jasa (durasi, revisi, deadline)"
+                  }}</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="note"
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="2"
+                    cdkAutosizeMaxRows="5"
+                    placeholder="Ex. Sablon logo 1 warna, mug putih 11oz"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po63-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
+        <div class="po63-summary">
+          <div class="po63-summary__row">
+            <span>{{ "common.subtotalDpp" | translate }}</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="po63-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="po63-summary__row po63-summary__row--total">
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Pembayaran ===== -->
+    <div class="po63-card">
+      <div class="po63-section__title">
+        {{ "common.payment" | translate }}
+      </div>
+      <div class="po63-grid">
+        <mat-form-field appearance="outline" class="po63-span2">
+          <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="paymentTerm"
+            placeholder="Ex. DP 50% / Tempo 30 hari"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
+          <input matInput formControlName="creditTerm" /><span matSuffix>{{
+            "common.days" | translate
+          }}</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="prepaidTerm"
+            [min]="0"
+            [max]="100"
+          /><span matSuffix>{{ "common.percent" | translate }}</span>
+        </mat-form-field>
+
+        <!--
+            Jasa periklanan adalah objek pemotongan PPh; pembelian
+            merchandise bukan, sehingga kolomnya tidak ditampilkan.
+          -->
+        @if (!isGoods) {
           <mat-form-field appearance="outline" class="po63-span2">
-            <mat-label>{{ "poForm.vendor" | translate }}</mat-label>
+            <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
             <input
               matInput
-              formControlName="supplierName"
+              formControlName="pphCode"
               readonly
-              placeholder="Pilih vendor"
+              (click)="openPphSelector()"
+              placeholder="Pilih kode PPh"
             />
             <button
-              mat-icon-button
-              matPrefix
+              matSuffix
               type="button"
-              (click)="openSupplierSelector()"
-              aria-label="Pilih vendor"
+              mat-icon-button
+              (click)="openPphSelector()"
             >
               <mat-icon>search</mat-icon>
             </button>
+            @if (formGroup.value.pphTaxObject) {
+              <mat-hint>
+                {{ formGroup.value.pphPercentage }}% —
+                {{ formGroup.value.pphTaxObject }}
+              </mat-hint>
+            }
+          </mat-form-field>
+        }
+      </div>
+    </div>
+
+    <!-- ===== Ketentuan pekerjaan ===== -->
+    @if (!isGoods) {
+      <div class="po63-card">
+        <div class="po63-section__title">Ketentuan pekerjaan</div>
+
+        <mat-checkbox formControlName="latePenaltyRequired" color="primary">
+          Berlakukan denda keterlambatan penyerahan
+        </mat-checkbox>
+        <p class="po63-hint">
+          Bila dimatikan, poin denda tidak dicetak sama sekali.
+        </p>
+
+        <div class="po63-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Berkas dapat diunduh</mat-label>
+            <input
+              matInput
+              formControlName="fileRetentionDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>hari</span>
+            <mat-hint>Masa berlaku tautan/media penyerahan</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Revisi termasuk harga</mat-label>
+            <input
+              matInput
+              formControlName="revisionCount"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>kali</span>
+            <mat-hint>Revisi berikutnya jadi pekerjaan tambahan</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Denda keterlambatan</mat-label>
+            <input
+              matInput
+              formControlName="latePenaltyPermil"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>‰ / hari</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Denda maksimum</mat-label>
+            <input
+              matInput
+              formControlName="latePenaltyCapPercent"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>%</span>
+            <mat-hint>Batas atas dari nilai pekerjaan</mat-hint>
           </mat-form-field>
         </div>
       </div>
+    }
 
-      <!-- ===== Daftar Item ===== -->
+    <!-- ===== Pengiriman & penanggung jawab ===== -->
+    @if (isGoods) {
+      <!--
+        Hanya merchandise: barangnya dikirim, sehingga klausul Franco/Loco,
+        alamat, dan kontak dua pihak harus terisi. Tanpa isian ini, poinnya
+        tetap tercetak tetapi berisi tanda hubung.
+      -->
       <div class="po63-card">
-        <div class="po63-cardhead">
-          <div class="po63-section__title po63-section__title--flush">
-            {{ "common.itemListPo" | translate }}
-          </div>
-          @if (isGoods) {
-            <button type="button" class="po63-add" (click)="openItemSelector()">
-              <mat-icon>inventory_2</mat-icon> Tambah barang
-            </button>
-          } @else {
-            <button type="button" class="po63-add" (click)="addService()">
-              <mat-icon>design_services</mat-icon> Tambah jasa
-            </button>
-          }
-        </div>
-
-        @if (t.controls.length === 0) {
-          <div class="po63-empty">
-            <mat-icon>campaign</mat-icon>
-            <span>{{
-              isGoods
-                ? 'Belum ada barang. Klik "Tambah barang".'
-                : 'Belum ada jasa. Klik "Tambah jasa".'
-            }}</span>
-          </div>
-        } @else {
-          <div class="po63-list">
-            @for (line of t.controls; track line; let i = $index) {
-              <div class="po63-line" [formGroup]="getFormGroupAt(i)">
-                <div class="po63-line__head">
-                  <span class="po63-line__no">#{{ i + 1 }}</span>
-                  <span class="po63-line__label">
-                    @if (isGoods) {
-                      {{
-                        getFormGroupAt(i).value.description ||
-                          getFormGroupAt(i).value.sku
-                      }}
-                      <span class="po63-sku">{{
-                        getFormGroupAt(i).value.sku
-                      }}</span>
-                    } @else {
-                      {{ getFormGroupAt(i).value.task || "Jasa belum diisi" }}
-                    }
-                  </span>
-                  <span class="po63-line__amt"
-                    >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
-                  >
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="removeAt(i)"
-                    aria-label="Hapus"
-                  >
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
-
-                <div class="po63-line__grid">
-                  @if (!isGoods) {
-                    <mat-form-field appearance="outline" class="po63-span3">
-                      <mat-label>{{
-                        "poForm.serviceDescription" | translate
-                      }}</mat-label>
-                      <input
-                        matInput
-                        formControlName="task"
-                        maxlength="100"
-                        placeholder="Ex. Shooting video profil, Foto produk, Desain company profile"
-                      />
-                    </mat-form-field>
-                  }
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>{{ "poForm.volume" | translate }}</mat-label>
-                    <input
-                      matInput
-                      formControlName="quantity"
-                      thousandSeparator=" "
-                      mask="separator.2"
-                      placeholder="0"
-                    />
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>{{ "poForm.unit" | translate }}</mat-label>
-                    @if (isGoods) {
-                      <input
-                        matInput
-                        formControlName="unit"
-                        placeholder="pcs"
-                      />
-                    } @else {
-                      <mat-select
-                        formControlName="unit"
-                        (selectionChange)="onUnitChange(i)"
-                      >
-                        <mat-option
-                          *ngFor="let u of serviceUnits"
-                          [value]="u"
-                          >{{ u }}</mat-option
-                        >
-                      </mat-select>
-                    }
-                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">{{
-                      "common.lumpSumLocked" | translate
-                    }}</mat-hint>
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
-                    <input
-                      matInput
-                      formControlName="price"
-                      thousandSeparator=" "
-                      mask="separator.2"
-                      prefix="Rp. "
-                      placeholder="0"
-                    />
-                  </mat-form-field>
-
-                  <mat-form-field
-                    appearance="outline"
-                    class="po63-span3 po63-note"
-                  >
-                    <mat-label>{{
-                      isGoods
-                        ? "Catatan barang (sablon, warna, ukuran)"
-                        : "Catatan jasa (durasi, revisi, deadline)"
-                    }}</mat-label>
-                    <textarea
-                      matInput
-                      formControlName="note"
-                      cdkTextareaAutosize
-                      cdkAutosizeMinRows="2"
-                      cdkAutosizeMaxRows="5"
-                      placeholder="Ex. Sablon logo 1 warna, mug putih 11oz"
-                    ></textarea>
-                  </mat-form-field>
-                </div>
-              </div>
-            }
-          </div>
-        }
-
-        <div class="po63-foot">
-          <mat-slide-toggle formControlName="includePPN" color="primary">{{
-            "poForm.includePpn" | translate
-          }}</mat-slide-toggle>
-          <div class="po63-summary">
-            <div class="po63-summary__row">
-              <span>{{ "common.subtotalDpp" | translate }}</span
-              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
-            </div>
-            <div class="po63-summary__row">
-              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
-            </div>
-            <div class="po63-summary__row po63-summary__row--total">
-              <span>{{ "common.total" | translate }}</span
-              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== Pembayaran ===== -->
-      <div class="po63-card">
-        <div class="po63-section__title">
-          {{ "common.payment" | translate }}
-        </div>
+        <div class="po63-section__title">Pengiriman</div>
         <div class="po63-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
+            <mat-select formControlName="deliveryMethod">
+              <mat-option [value]="0">{{
+                "poForm.franco" | translate
+              }}</mat-option>
+              <mat-option [value]="1">{{
+                "poForm.loco" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="po63-span2">
-            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+            <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
+            <textarea
+              matInput
+              formControlName="deliveryAddress"
+              rows="2"
+              style="resize: none"
+              placeholder="Alamat pengiriman / pengambilan barang"
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>PIC vendor</mat-label>
+            <input matInput formControlName="supplierPICName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>No. telepon PIC vendor</mat-label>
             <input
               matInput
-              formControlName="paymentTerm"
-              placeholder="Ex. DP 50% / Tempo 30 hari"
+              formControlName="supplierPICPhoneNumber"
+              inputmode="tel"
             />
           </mat-form-field>
+
           <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
-            <input matInput formControlName="creditTerm" /><span matSuffix>{{
-              "common.days" | translate
-            }}</span>
+            <mat-label>PIC kantor</mat-label>
+            <input matInput formControlName="officePICName" />
           </mat-form-field>
+
           <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+            <mat-label>No. telepon PIC kantor</mat-label>
             <input
               matInput
-              formControlName="prepaidTerm"
-              [min]="0"
-              [max]="100"
-            /><span matSuffix>{{ "common.percent" | translate }}</span>
+              formControlName="officePICPhoneNumber"
+              inputmode="tel"
+            />
           </mat-form-field>
         </div>
       </div>
+    }
 
-      <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <!-- ===== Ketentuan barang ===== -->
+    @if (isGoods) {
       <div class="po63-card">
-        <div class="po63-section__title">
-          {{ "common.notesAndPoints" | translate }}
-        </div>
-        <app-wysiwyg
-          formControlName="notes"
-          [minHeight]="200"
-          placeholder="Contoh: hak pakai materi, jumlah revisi, jadwal produksi, denda keterlambatan, dll"
-        ></app-wysiwyg>
-
-        <div class="po63-actions">
-          <span class="po63-spacer"></span>
-          <button
-            type="submit"
-            class="po63-submit"
-            [disabled]="
-              formGroup.invalid || t.controls.length === 0 || isSubmitting
-            "
-          >
-            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-          </button>
-        </div>
+        <div class="po63-section__title">Ketentuan barang</div>
+        <mat-checkbox formControlName="sampleApprovalRequired" color="primary">
+          Contoh barang disetujui sebelum produksi massal
+        </mat-checkbox>
+        <p class="po63-hint">
+          Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret —
+          sehingga terbaca sengaja tidak diberlakukan, bukan terlewat.
+        </p>
       </div>
-    </form>
-  }
+    }
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="po63-card">
+      <div class="po63-section__title">
+        {{ "common.notesAndPoints" | translate }}
+      </div>
+      <p class="po63-hint">
+        Ketentuan baku di bawah ini akan tercetak pada dokumen. Angka mengikuti
+        isian di atas; tambahkan poin bila ada kesepakatan khusus.
+      </p>
+
+      <div class="po63-preview">
+        <ol class="po63-preview__list">
+          @for (p of clausePreview; track $index) {
+            @if (isSubList(p)) {
+              <ol class="po63-preview__sub">
+                @for (d of asList(p); track d) {
+                  <li>{{ d }}</li>
+                }
+              </ol>
+            } @else {
+              <li>{{ asText(p) }}</li>
+            }
+          }
+        </ol>
+      </div>
+
+      <div class="po63-cardhead">
+        <div class="po63-section__title po63-section__title--flush">
+          {{ "common.extraPoints" | translate }}
+        </div>
+        <button type="button" class="po63-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> Tambah poin
+        </button>
+      </div>
+
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po63-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po63-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po63-krow">
+              <span class="po63-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po63-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po63-actions">
+        <span class="po63-spacer"></span>
+        <button
+          type="submit"
+          class="po63-submit"
+          [disabled]="
+            formGroup.invalid || t.controls.length === 0 || isSubmitting
+          "
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
 </div>

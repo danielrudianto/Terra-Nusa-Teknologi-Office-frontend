@@ -391,3 +391,62 @@ app-wysiwyg {
   display: block;
   margin-bottom: 0.5rem;
 }
+
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.po511-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.po511-preview__list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.po511-preview__sub {
+  padding-left: 1.2rem;
+  list-style: lower-alpha;
+}
+.po511-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.25rem 0 0.75rem;
+}
+
+/* Baris poin tambahan. */
+.po511-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+.po511-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po511-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po511-krow__field {
+  flex: 1 1 auto;
+}
+.po511-section__title--flush {
+  margin-bottom: 0;
+}
+.po511-summary__row--total {
+  font-weight: 700;
+  border-top: 1px solid var(--line, #eef0f4);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+}

@@ -23,6 +23,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../../../services/api.service';
 import {
   buildClauseHtml,
+  buildClauseLines,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -92,6 +93,8 @@ export class PurchaseOrderCreateGComponent {
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierPrefix: new FormControl(''),
+
+    supplierNpwp: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
     // Kota + provinsi supplier: hanya untuk dicetak, tidak dikirim sebagai
     // kolom PO (backend mengambilnya lagi dari supplierID saat cetak ulang).
@@ -194,13 +197,29 @@ export class PurchaseOrderCreateGComponent {
     };
   }
 
-  get clausePreview(): string {
-    return buildClauseHtml(
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get clausePreview(): (string | string[])[] {
+    return buildClauseLines(
       'G',
       this.clauseContext(),
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
   }
 
   getFormGroupAt(i: number) {
@@ -290,6 +309,10 @@ export class PurchaseOrderCreateGComponent {
             supplierID: data.id,
             supplierName: data.name,
             supplierPrefix: data.prefix,
+            // Diambil hanya bila terisi; vendor perorangan kerap
+            // belum ber-NPWP, dan baris kosong pada dokumen resmi
+            // lebih mengganggu daripada tidak ada barisnya.
+            supplierNpwp: data.npwp || '',
             supplierAddress: data.address,
             supplierCity: [data.city, data.province]
               .filter((x: string) => !!x)
@@ -370,6 +393,7 @@ export class PurchaseOrderCreateGComponent {
       supplierName: v.supplierName,
       supplierPrefix: v.supplierPrefix,
       supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
       supplierCity: v.supplierCity,
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();

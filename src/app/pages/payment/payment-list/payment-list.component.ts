@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CanDirective } from '../../../directives/can.directive';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,6 +21,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 @Component({
   selector: 'app-payment-list',
   imports: [
+    CanDirective,
     TranslatePipe,
     CommonModule,
     FormsModule,

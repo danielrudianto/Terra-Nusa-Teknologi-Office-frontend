@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
@@ -24,6 +25,7 @@ import { SettingsService } from '../../../services/setting.service';
 @Component({
   selector: 'app-user-list',
   imports: [
+    CanDirective,
     CommonModule,
     MatTableModule,
     FormsModule,
