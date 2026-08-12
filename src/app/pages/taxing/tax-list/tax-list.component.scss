@@ -109,19 +109,19 @@
     place-items: center;
 
     &--blue {
-      background: #e7ecfb;
+      background: var(--brand-soft, #e7ecfb);
       color: #154dec;
     }
     &--violet {
-      background: #efe9fd;
+      background: var(--brand-soft, #efe9fd);
       color: #6b3fd4;
     }
     &--green {
-      background: #e6f6ec;
+      background: var(--surface-2, #e6f6ec);
       color: #1a7f45;
     }
     &--amber {
-      background: #fdf0e3;
+      background: var(--surface-2, #fdf0e3);
       color: #b5731a;
     }
   }

@@ -10,10 +10,6 @@
     [description]="'poForm.descF' | translate"
   />
 
-  <div class="po-panduan">
-    <app-panduan-button topik="purchase-order" bagian="khusus-f-material" denganTeks />
-  </div>
-
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="pof-card">

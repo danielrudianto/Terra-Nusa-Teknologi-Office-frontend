@@ -35,13 +35,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
-import { PanduanButtonComponent } from '../../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-order-create-516',
   providers: [provideNgxMask()],
   imports: [
-    PanduanButtonComponent,
     ClauseLineComponent,
     TranslatePipe,
     CommonModule,

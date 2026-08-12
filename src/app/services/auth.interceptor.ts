@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   HttpEvent,
@@ -16,13 +16,51 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private readonly translate = inject(TranslateService);
+  /*
+   * TranslateService juga diambil malas, alasannya sama.
+   *
+   * Loader terjemahan dibuat lewat factory dengan `deps: [HttpClient]`,
+   * sehingga `inject(TranslateService)` pada tingkat field menyeret
+   * HttpClient masuk ke dalam pembuatan interceptor ini — lingkaran yang
+   * sama persis dengan ApiService. Pesannya hanya dibutuhkan saat sesi
+   * berakhir, jadi tidak ada alasan menyelesaikannya sejak awal.
+   */
+  private _translate?: TranslateService;
+
+  private get translate(): TranslateService {
+    if (!this._translate) this._translate = this.injector.get(TranslateService);
+    return this._translate;
+  }
+
   // single-flight refresh: only ONE refresh runs at a time; other 401s wait for it
   private isRefreshing = false;
   private refreshedToken$ = new BehaviorSubject<string | null>(null);
 
+  /*
+   * ApiService diambil LEWAT Injector, bukan disuntik di konstruktor.
+   *
+   * ApiService bergantung pada HttpClient, sedangkan HttpClient baru bisa
+   * dibuat setelah HTTP_INTERCEPTORS selesai — dan interceptor inilah salah
+   * satunya. Menyuntikkannya langsung membentuk lingkaran:
+   *
+   *   HttpClient -> HTTP_INTERCEPTORS -> AuthInterceptor -> ApiService
+   *              -> HttpClient
+   *
+   * Lingkarannya diam selama tidak ada yang memaksa rantai interceptor
+   * dibangun lebih awal, lalu muncul sebagai NG0200 pada perubahan yang
+   * sama sekali tidak berhubungan. Mengambilnya lewat Injector menunda
+   * penyelesaiannya sampai penyegaran token benar-benar dibutuhkan — saat
+   * itu HttpClient sudah lama jadi.
+   */
+  private _api?: ApiService;
+
+  private get apiService(): ApiService {
+    if (!this._api) this._api = this.injector.get(ApiService);
+    return this._api;
+  }
+
   constructor(
-    private apiService: ApiService,
+    private injector: Injector,
     private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,

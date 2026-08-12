@@ -14,6 +14,8 @@ import {
 import { PermissionService } from './permission.service';
 import { AppLang, LanguageService } from './language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 const BASIS = 'assets/panduan';
 
@@ -45,6 +47,8 @@ export class PanduanService {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly bahasa = inject(LanguageService);
   private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   /** Cache hasil render per topik supaya berkas tidak diambil ulang. */
   /** Kunci cache menyertakan bahasa: `pembelian:id`. */
@@ -76,6 +80,17 @@ export class PanduanService {
    */
   private readonly _lang = signal<AppLang>(this.bahasa.current);
 
+  /*
+   * Topik yang cocok untuk halaman yang sedang dibuka, dibaca dari
+   * `data.panduan` di berkas rute — pola yang sama dengan `data.permission`
+   * dan `data.title`.
+   *
+   * Pemetaannya sengaja di rute, bukan di tiap komponen halaman: satu
+   * tempat, satu bentuk, dan halaman baru cukup menambah satu kunci.
+   */
+  private readonly _topikRute = signal<string | null>(null);
+  private readonly _bagianRute = signal<string | null>(null);
+
   readonly terbuka = this._terbuka.asReadonly();
   readonly topikAktif = this._topikAktif.asReadonly();
   readonly daftarIsi = this._daftarIsi.asReadonly();
@@ -84,6 +99,17 @@ export class PanduanService {
   readonly anchorTertunda = this._anchorTertunda.asReadonly();
   readonly cari = this._cari.asReadonly();
   readonly lebar = this._lebar.asReadonly();
+  readonly bagianRute = this._bagianRute.asReadonly();
+
+  /**
+   * Topik untuk halaman saat ini, hanya bila pengguna memang berhak
+   * melihatnya. Dipakai tombol melayang untuk menentukan tampil atau tidak.
+   */
+  readonly topikRute = computed(() => {
+    const id = this._topikRute();
+    if (!id) return null;
+    return this.daftar().some((t) => t.id === id) ? id : null;
+  });
   readonly pakaiCadangan = this._pakaiCadangan.asReadonly();
 
   /**
@@ -159,6 +185,38 @@ export class PanduanService {
      * dan dibuka lagi — terlihat seperti pilihan bahasanya tidak berfungsi.
      * Cache berkunci bahasa, jadi bolak-balik tidak menembak server ulang.
      */
+    /*
+     * Topik dibaca ulang tiap perpindahan halaman.
+     *
+     * Indeks ikut dimuat di sini supaya `topikRute` bisa memeriksa izin —
+     * tanpa itu tombol melayang tidak pernah muncul pada pemuatan pertama
+     * karena daftarnya masih kosong.
+     */
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe(() => {
+        this.bacaTopikRute();
+        void this.muatIndeks();
+      });
+
+    // Membaca rute tidak menyentuh jaringan, jadi aman dilakukan langsung.
+    this.bacaTopikRute();
+
+    /*
+     * Pemuatan awal DITUNDA keluar dari konstruktor.
+     *
+     * `muatIndeks()` berujung pada permintaan HTTP. Memanggilnya langsung di
+     * konstruktor memaksa HttpClient membangun rantai interceptor saat
+     * layanan ini masih dalam proses dibuat — dan karena AuthInterceptor
+     * sendiri bergantung pada ApiService (yang bergantung pada HttpClient),
+     * Angular melaporkan NG0200: circular dependency pada HTTP_INTERCEPTORS.
+     *
+     * Aturan umumnya: konstruktor tidak menembak jaringan. `setTimeout`
+     * dipakai, bukan `queueMicrotask`, karena microtask masih berjalan di
+     * task yang sama dengan penyelesaian injeksi.
+     */
+    setTimeout(() => void this.muatIndeks(), 0);
+
     this.translate.onLangChange.subscribe(() => {
       this._lang.set(this.bahasa.current);
       const topik = this._topikAktif();
@@ -286,6 +344,24 @@ export class PanduanService {
     } catch {
       // Mode penyamaran atau penyimpanan penuh: cukup berlaku sesi ini.
     }
+  }
+
+  /** Telusuri sampai rute terdalam; anak menimpa induk. */
+  private bacaTopikRute(): void {
+    let r = this.route.snapshot;
+    let topik: string | null = null;
+    let bagian: string | null = null;
+
+    while (r) {
+      const d = r.data as Record<string, unknown>;
+      if (typeof d['panduan'] === 'string') topik = d['panduan'];
+      if (typeof d['panduanBagian'] === 'string')
+        bagian = d['panduanBagian'] as string;
+      r = r.firstChild as typeof r;
+    }
+
+    this._topikRute.set(topik);
+    this._bagianRute.set(bagian);
   }
 
   private bersihkanIsi(): void {

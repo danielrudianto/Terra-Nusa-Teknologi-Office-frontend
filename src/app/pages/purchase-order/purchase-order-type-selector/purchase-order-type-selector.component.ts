@@ -37,7 +37,34 @@ export class PurchaseOrderTypeSelectorComponent {
   readonly projectTiles = PROJECT_TILES;
   readonly officeTiles = OFFICE_TILES;
 
-  keyword = '';
+  /*
+   * Hasil saringan dihitung saat kata kuncinya berubah, bukan lewat getter.
+   *
+   * Sebagai getter, `filter()` berjalan ulang setiap kali templat membacanya
+   * — tiga kali per putaran, karena `isEmpty` ikut memanggil keduanya lagi.
+   * Daftar jenis PO panjang dan tiap baris memeriksa tiga medan sekaligus.
+   */
+  private _keyword = '';
+
+  get keyword(): string {
+    return this._keyword;
+  }
+
+  set keyword(nilai: string) {
+    this._keyword = nilai ?? '';
+    this.hitungSaringan();
+  }
+
+  filteredProject: typeof PROJECT_TILES = PROJECT_TILES;
+  filteredOffice: typeof OFFICE_TILES = OFFICE_TILES;
+  isEmpty = false;
+
+  private hitungSaringan(): void {
+    this.filteredProject = this.filter(this.projectTiles);
+    this.filteredOffice = this.filter(this.officeTiles);
+    this.isEmpty =
+      this.filteredProject.length === 0 && this.filteredOffice.length === 0;
+  }
 
   /** Nama & keterangan jenis PO diambil dari berkas terjemahan. */
   typeKey = purchaseTypeKey;
@@ -56,20 +83,6 @@ export class PurchaseOrderTypeSelectorComponent {
         t.type.toLowerCase().includes(q) ||
         t.title.toLowerCase().includes(q) ||
         (t.description ?? '').toLowerCase().includes(q),
-    );
-  }
-
-  get filteredProject() {
-    return this.filter(this.projectTiles);
-  }
-
-  get filteredOffice() {
-    return this.filter(this.officeTiles);
-  }
-
-  get isEmpty(): boolean {
-    return (
-      this.filteredProject.length === 0 && this.filteredOffice.length === 0
     );
   }
 

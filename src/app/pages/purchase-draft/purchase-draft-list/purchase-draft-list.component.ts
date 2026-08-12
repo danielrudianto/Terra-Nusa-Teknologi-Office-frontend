@@ -23,12 +23,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-draft-create.component';
-import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-draft-list',
   imports: [
-    PanduanButtonComponent,
     CanDirective,
     CommonModule,
     ReactiveFormsModule,

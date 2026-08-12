@@ -1,0 +1,81 @@
+<div class="pc">
+  <div class="pc__head">
+    <h2 class="pc__title">{{ "project.createTitle" | translate }}</h2>
+    <p class="pc__sub">{{ "project.createSub" | translate }}</p>
+  </div>
+
+  <form [formGroup]="formGroup" class="pc__form">
+    <div class="pc__grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "project.code" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="code"
+          (input)="onCodeInput()"
+          maxlength="20"
+          [placeholder]="'project.codePlaceholder' | translate"
+        />
+        <mat-hint>{{ "project.codeHint" | translate }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "project.name" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          [placeholder]="'project.namePlaceholder' | translate"
+        />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{ "project.client" | translate }}</mat-label>
+      <mat-select formControlName="clientID">
+        <mat-option [value]="null">{{ "project.noClient" | translate }}</mat-option>
+        <mat-option *ngFor="let c of clients" [value]="c.id">
+          {{ c.prefix }} {{ c.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{ "project.description" | translate }}</mat-label>
+      <input matInput formControlName="description" maxlength="500" />
+    </mat-form-field>
+
+    <div class="pc__grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "project.startDate" | translate }}</mat-label>
+        <input matInput [matDatepicker]="mulai" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="mulai"></mat-datepicker-toggle>
+        <mat-datepicker #mulai></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "project.endDate" | translate }}</mat-label>
+        <input matInput [matDatepicker]="selesai" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="selesai"></mat-datepicker-toggle>
+        <mat-datepicker #selesai></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <p class="pc__err" *ngIf="tanggalTerbalik">
+      {{ "project.dateReversed" | translate }}
+    </p>
+  </form>
+
+  <div class="pc__foot">
+    <button mat-stroked-button type="button" (click)="close()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid || tanggalTerbalik || isSubmitting"
+      (click)="onSubmit()"
+    >
+      {{ (isSubmitting ? "project.saving" : "project.save") | translate }}
+    </button>
+  </div>
+</div>

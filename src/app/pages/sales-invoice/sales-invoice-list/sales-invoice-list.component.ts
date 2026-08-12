@@ -22,7 +22,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
 import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -41,7 +40,6 @@ import { PanduanButtonComponent } from '../../../components/panduan/panduan-butt
     MatMenuModule,
     HeaderTitleComponent,
     TranslatePipe,
-    PanduanButtonComponent,
   ],
   templateUrl: './sales-invoice-list.component.html',
   styleUrl: './sales-invoice-list.component.scss',

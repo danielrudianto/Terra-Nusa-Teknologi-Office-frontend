@@ -5,13 +5,13 @@
 }
 
 .dashboard__container__side {
-  width: var(--sidenav-lebar, 250px);
+  width: 250px;
 }
 
 /* Body watermark: a soft brand glow in the top-right + a faint dot grid,
    so the page never feels empty. Kept very low-opacity so cards stay crisp. */
 .dashboard__container__content {
-  background-color: #f5f7fb;
+  background-color: var(--surface-2, #f5f7fb);
   background-image:
     radial-gradient(
       120% 80% at 100% 0%,

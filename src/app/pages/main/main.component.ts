@@ -2,6 +2,7 @@ import { Component, computed } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
+import { PanduanFabComponent } from '../../components/panduan/panduan-fab/panduan-fab.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TopNavigationComponent } from '../../components/top-navigation/top-navigation.component';
 import {
@@ -20,6 +21,7 @@ import { filter, map } from 'rxjs';
     SideNavComponent,
     RouterModule,
     PanduanPanelComponent,
+    PanduanFabComponent,
   ],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
@@ -145,6 +147,11 @@ export class MainComponent {
     {
       name: 'nav.master',
       children: [
+        {
+          name: 'nav.project',
+          icon: 'company.svg',
+          route: '/Project',
+        },
         {
           name: 'nav.masterData',
           icon: 'package.svg',

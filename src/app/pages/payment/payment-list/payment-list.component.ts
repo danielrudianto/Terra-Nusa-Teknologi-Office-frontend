@@ -62,8 +62,11 @@ export class PaymentListComponent implements OnInit, OnDestroy {
    * bukan sebagai aturan.
    */
   buatanSendiri(payment: any): boolean {
-    const saya = Number(this.account.user?.['id']) || 0;
-    return !!saya && Number(payment?.createdBy) === saya;
+    const saya = this.account.userId;
+    // Tanpa id, anggap bukan buatan sendiri; server tetap menolak bila
+    // ternyata iya, dan pesannya lebih jelas daripada tombol yang mati.
+    if (saya === null) return false;
+    return Number(payment?.createdBy) === saya;
   }
 
   /** Pemilik usaha boleh menyetujui dokumen buatannya sendiri. */

@@ -371,3 +371,17 @@
     color: var(--brand, #154dec);
   }
 }
+
+/* ---- Keamanan ---- */
+.st-pw {
+  padding: 0 4px;
+}
+
+.st-pw__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}

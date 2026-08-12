@@ -78,7 +78,7 @@ export const routes: Routes = [
           import('./pages/purchase/purchase.component').then(
             (m) => m.PurchaseComponent,
           ),
-        data: { title: 'Purchase', permission: 'purchase:read' },
+        data: { title: 'Purchase', permission: 'purchase:read' , panduan: 'pembelian' },
         children: [
           {
             path: '',
@@ -122,7 +122,7 @@ export const routes: Routes = [
           import('./pages/purchase-draft/purchase-draft.component').then(
             (m) => m.PurchaseDraftComponent,
           ),
-        data: { title: 'Purchase draft', permission: 'purchase_draft:read' },
+        data: { title: 'Purchase draft', permission: 'purchase_draft:read' , panduan: 'draft-pembelian' },
         children: [
           {
             path: '',
@@ -175,7 +175,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-list/purchase-order-list.component').then(
                 (m) => m.PurchaseOrderListComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order' },
           },
           {
             path: 'Create',
@@ -191,7 +191,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-g/purchase-order-create-g.component').then(
                 (m) => m.PurchaseOrderCreateGComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/H',
@@ -207,7 +207,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-511/purchase-order-create-511.component').then(
                 (m) => m.PurchaseOrderCreate511Component,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/512',
@@ -223,7 +223,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-516/purchase-order-create-516.component').then(
                 (m) => m.PurchaseOrderCreate516Component,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/5112',
@@ -303,7 +303,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-c/purchase-order-create-c.component').then(
                 (m) => m.PurchaseOrderCreateCComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'khusus-c-bahan-bakar' },
           },
           {
             path: 'Create/D',
@@ -319,7 +319,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-f/purchase-order-create-f.component').then(
                 (m) => m.PurchaseOrderCreateFComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'khusus-f-material' },
           },
         ],
       },
@@ -330,7 +330,7 @@ export const routes: Routes = [
           import('./pages/reimbursement/reimbursement.component').then(
             (m) => m.ReimbursementComponent,
           ),
-        data: { title: 'Reimbursement', permission: 'reimbursement:read' },
+        data: { title: 'Reimbursement', permission: 'reimbursement:read' , panduan: 'reimbursement' },
         children: [
           {
             path: '',
@@ -416,7 +416,7 @@ export const routes: Routes = [
           import('./pages/expense/expense.component').then(
             (m) => m.ExpenseComponent,
           ),
-        data: { title: 'Expense', permission: 'expenses:read' },
+        data: { title: 'Expense', permission: 'expenses:read' , panduan: 'beban' },
         children: [
           {
             path: '',
@@ -461,7 +461,7 @@ export const routes: Routes = [
           import('./pages/income/income.component').then(
             (m) => m.IncomeComponent,
           ),
-        data: { title: 'Income', permission: 'income:read' },
+        data: { title: 'Income', permission: 'income:read' , panduan: 'pendapatan-lain' },
         children: [
           {
             path: '',
@@ -484,7 +484,7 @@ export const routes: Routes = [
         canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/loans/loans.component').then((m) => m.LoansComponent),
-        data: { title: 'Loans', permission: 'loan:read' },
+        data: { title: 'Loans', permission: 'loan:read', panduan: 'pinjaman' },
         children: [
           {
             path: '',
@@ -509,7 +509,7 @@ export const routes: Routes = [
           import('./pages/sales-invoice/sales-invoice.component').then(
             (m) => m.SalesInvoiceComponent,
           ),
-        data: { title: 'Sales invoice', permission: 'sales_invoice:read' },
+        data: { title: 'Sales invoice', permission: 'sales_invoice:read' , panduan: 'faktur-penjualan' },
         children: [
           {
             path: '',
@@ -592,7 +592,7 @@ export const routes: Routes = [
           import('./pages/interpayment/interpayment.component').then(
             (m) => m.InterpaymentComponent,
           ),
-        data: { title: 'Interpayment', permission: 'interpayment:read' },
+        data: { title: 'Interpayment', permission: 'interpayment:read' , panduan: 'transfer-antar-rekening' },
         children: [
           {
             path: '',
@@ -670,6 +670,34 @@ export const routes: Routes = [
               import('./pages/taxing/pph-recap/pph-recap.component').then(
                 (m) => m.PphRecapComponent,
               ),
+          },
+        ],
+      },
+      {
+        path: 'Project',
+        canActivate: [permissionGuard],
+        loadComponent: () =>
+          import('./pages/project/project.component').then(
+            (m) => m.ProjectComponent,
+          ),
+        data: { title: 'Project', permission: 'project:read' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/project/project-list/project-list.component').then(
+                (m) => m.ProjectListComponent,
+              ),
+            pathMatch: 'full',
+            data: { title: 'Project' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./pages/project/project-view/project-view.component').then(
+                (m) => m.ProjectViewComponent,
+              ),
+            data: { title: 'Project' },
           },
         ],
       },

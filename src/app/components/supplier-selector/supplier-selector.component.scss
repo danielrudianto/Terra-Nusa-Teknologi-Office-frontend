@@ -30,7 +30,7 @@
 }
 .ss-x {
   border: none;
-  background: #f3f5f9;
+  background: var(--surface-2, #f3f5f9);
   color: var(--muted, #6b7280);
   width: 34px;
   height: 34px;
@@ -40,7 +40,7 @@
   cursor: pointer;
   flex: 0 0 auto;
   &:hover {
-    background: #e9edf3;
+    background: var(--surface-2, #e9edf3);
     color: var(--ink, #16181d);
   }
 }
@@ -90,7 +90,7 @@
     border-bottom: none;
   }
   &:hover {
-    background: #f6f8ff;
+    background: var(--surface-2, #f6f8ff);
   }
 }
 

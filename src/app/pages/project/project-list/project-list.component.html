@@ -1,0 +1,151 @@
+<div class="prl">
+  <app-header-title
+    [title]="'project.title' | translate"
+    [description]="'project.description' | translate"
+    [actionButtonLabel]="'project.createNew' | translate"
+    (onActionButtonClicked)="buatProyek()"
+  />
+
+  <div class="prl-toolbar">
+    <mat-chip-listbox [disabled]="isLoading">
+      <mat-chip-option
+        class="prl-fchip prl-fchip--jalan"
+        [selected]="saring === 'berjalan'"
+        (selectionChange)="pilihSaring('berjalan')"
+        >{{ "project.state.berjalan" | translate }}</mat-chip-option
+      >
+      <mat-chip-option
+        class="prl-fchip prl-fchip--selesai"
+        [selected]="saring === 'selesai'"
+        (selectionChange)="pilihSaring('selesai')"
+        >{{ "project.state.selesai" | translate }}</mat-chip-option
+      >
+      <mat-chip-option
+        class="prl-fchip prl-fchip--batal"
+        [selected]="saring === 'batal'"
+        (selectionChange)="pilihSaring('batal')"
+        >{{ "project.state.batal" | translate }}</mat-chip-option
+      >
+    </mat-chip-listbox>
+
+    <mat-form-field appearance="outline" class="prl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        [placeholder]="'project.searchPlaceholder' | translate"
+        [formControl]="searchControl"
+      />
+    </mat-form-field>
+  </div>
+
+  <div class="prl-card" [class.is-loading]="isLoading">
+    <div class="prl-loadingbar" *ngIf="isLoading"><span></span></div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="projects" #table>
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('code')">
+            {{ "project.code" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let p">
+            <span class="prl-code">{{ p.code }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
+            {{ "project.name" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let p">
+            <div class="prl-name">{{ p.name }}</div>
+            <div class="prl-desc" *ngIf="p.description">{{ p.description }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contractValue">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="num"
+            (click)="changeSortBy('contractValue')"
+          >
+            {{ "project.contractValue" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let p" class="num">
+            <span class="prl-uang" *ngIf="p.contractCount > 0">
+              {{ p.contractValue | number: "1.0-0" }}
+            </span>
+            <span class="prl-kosong" *ngIf="p.contractCount === 0">
+              {{ "project.noContract" | translate }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contractCount">
+          <th mat-header-cell *matHeaderCellDef class="num">
+            {{ "project.contractCount" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let p" class="num">{{ p.contractCount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "project.state.label" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let p">
+            <span class="prl-chip" [ngClass]="'prl-chip--' + keadaan(p)">
+              {{ "project.state." + keadaan(p) | translate }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <td mat-cell *matCellDef="let p" (click)="$event.stopPropagation()">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Row actions">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="lihatProyek(p)">
+                <mat-icon>view_array</mat-icon>
+                <span>{{ "project.menuView" | translate }}</span>
+              </button>
+              <button mat-menu-item *appCan="'project:update'" (click)="ubahProyek(p)">
+                <mat-icon>edit</mat-icon>
+                <span>{{ "project.menuEdit" | translate }}</span>
+              </button>
+              <button mat-menu-item *appCan="'project:delete'" (click)="hapusProyek(p)">
+                <mat-icon>delete</mat-icon>
+                <span>{{ "project.menuDelete" | translate }}</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="lihatProyek(row)"
+        ></tr>
+        <tr class="mat-row prl-norow" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="prl-empty">
+              <mat-icon>inbox</mat-icon>
+              <span>{{ "project.noData" | translate }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="count"
+      [pageSize]="pageSize"
+      [pageIndex]="page"
+      (page)="changePage($event)"
+      [pageSizeOptions]="[10, 25, 50]"
+    ></mat-paginator>
+  </div>
+</div>

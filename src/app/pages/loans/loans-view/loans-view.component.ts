@@ -41,50 +41,30 @@ export class LoansViewComponent {
 
   isLoading: boolean = true;
   loan: any = null;
-  payments: any[] = [];
+  /*
+   * Daftar turunan dihitung sekali saat `payments` diisi, bukan lewat getter.
+   *
+   * Sebagai getter, `.filter()` berjalan ulang setiap kali templat membacanya
+   * — dan templat membaca `activePayments` empat kali per putaran change
+   * detection, yang terjadi pada setiap klik, ketikan, dan respons jaringan.
+   *
+   * Turunannya sengaja dipasang lewat setter, bukan dipanggil manual setelah
+   * fetch: dengan begitu penugasan `payments` di mana pun nanti tidak mungkin
+   * lupa memperbaruinya, dan tidak ada kunci cache yang bisa basi.
+   */
+  private _payments: any[] = [];
 
-  ngOnInit(): void {
-    this.fetchData();
+  get payments(): any[] {
+    return this._payments;
   }
 
-  fetchData() {
-    this.isLoading = true;
-    this.apiService
-      .get('loans/payments/' + this.data.id, {})
-      .subscribe({
-        next: (data: any) => {
-          // Jawaban berhasil tetapi tanpa isi diperlakukan seperti gagal:
-          // menampilkannya menghasilkan halaman dengan nilai kosong dan
-          // persentase yang tidak sah, dan itu terbaca sebagai kerusakan.
-          if (!data?.loan?.id) {
-            this.snackBar.open(
-      this.translate.instant('notify.loanNotFound'), 'Close', {
-              duration: 3000,
-            });
-            this.dialogRef.close();
-            return;
-          }
-          this.loan = data.loan;
-          this.payments = data.payments || [];
-        },
-        error: (error) => {
-          this.snackBar.open(
-            error?.error?.detail || 'Gagal memuat data loan',
-            'Close',
-            { duration: 3000 },
-          );
-          this.dialogRef.close();
-        },
-      })
-      .add(() => {
-        this.isLoading = false;
-      });
+  set payments(nilai: any[]) {
+    this._payments = nilai ?? [];
+    this.hitungTurunan();
   }
 
   /** Pembayaran yang belum dihapus — termasuk yang belum disetujui. */
-  get activePayments(): any[] {
-    return this.payments.filter((p) => !p.isDelete);
-  }
+  activePayments: any[] = [];
 
   /**
    * Pembayaran yang benar-benar mengurangi hutang.
@@ -94,17 +74,22 @@ export class LoansViewComponent {
    * lebih kecil daripada kenyataannya, dan itu jenis kekeliruan yang tidak
    * terlihat karena angkanya tetap tampak wajar.
    */
-  get approvedPayments(): any[] {
-    return this.activePayments.filter((p) => p.isApprove === true);
-  }
+  approvedPayments: any[] = [];
 
   /** Pembayaran yang sudah diajukan tetapi belum disetujui. */
-  get pendingPayments(): any[] {
-    return this.activePayments.filter((p) => p.isApprove !== true);
-  }
+  pendingPayments: any[] = [];
 
-  get pendingAmount(): number {
-    return this.pendingPayments.reduce(
+  pendingAmount = 0;
+
+  private hitungTurunan(): void {
+    this.activePayments = this._payments.filter((p) => !p.isDelete);
+    this.approvedPayments = this.activePayments.filter(
+      (p) => p.isApprove === true,
+    );
+    this.pendingPayments = this.activePayments.filter(
+      (p) => p.isApprove !== true,
+    );
+    this.pendingAmount = this.pendingPayments.reduce(
       (a, b) => a + this.angka(b?.amount),
       0,
     );

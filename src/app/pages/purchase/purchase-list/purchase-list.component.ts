@@ -31,7 +31,6 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
-import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -52,7 +51,6 @@ import { PanduanButtonComponent } from '../../../components/panduan/panduan-butt
     HeaderTitleComponent,
     MatSnackBarModule,
     TranslatePipe,
-    PanduanButtonComponent,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],

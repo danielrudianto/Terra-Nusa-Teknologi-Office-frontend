@@ -22,6 +22,22 @@ export class AccountService {
     }
   }
 
+  /**
+   * Id pengguna yang sedang masuk.
+   *
+   * Dipakai untuk mengenali "saya" — menyembunyikan tombol setujui pada
+   * dokumen buatan sendiri, dan menyaring diri sendiri dari daftar orang
+   * yang dapat ditandai.
+   *
+   * Mengembalikan `null` bila tidak ada, bukan 0: nol adalah id yang sah
+   * secara bentuk, sehingga perbandingannya bisa lolos tanpa disengaja.
+   * Yang memanggil harus memutuskan apa yang dilakukan bila tidak diketahui.
+   */
+  get userId(): number | null {
+    const n = Number(this.user?.['id']);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
   /** Nama tampilan terbaik yang tersedia. */
   get displayName(): string {
     const u = this.user;

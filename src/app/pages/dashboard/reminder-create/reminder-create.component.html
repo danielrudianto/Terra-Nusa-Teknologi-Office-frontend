@@ -1,0 +1,104 @@
+<div class="rc">
+  <div class="rc-head" mat-dialog-title>
+    <span class="rc-head__icon"><mat-icon>push_pin</mat-icon></span>
+    <div class="rc-head__text">
+      <h2 class="rc-title">
+        {{ isEdit ? "Ubah pengingat" : "Pengingat baru" }}
+      </h2>
+      <span class="rc-sub">Tampil di agenda pada tanggal yang dipilih</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="rc-content">
+    <form [formGroup]="formGroup">
+      <div class="rc-grid">
+        <mat-form-field appearance="outline" class="rc-span2">
+          <mat-label>Judul</mat-label>
+          <input
+            matInput
+            formControlName="title"
+            maxlength="150"
+            placeholder="Ex. Kirim laporan PPh 21"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tanggal</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="dp" />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="dp"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Kategori</mat-label>
+          <mat-select formControlName="category">
+            @for (c of categories; track c) {
+              <mat-option [value]="c">{{ c }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rc-span2">
+          <mat-label>Catatan</mat-label>
+          <textarea
+            matInput
+            formControlName="note"
+            rows="2"
+            maxlength="500"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+
+        <!--
+          Menandai orang menggantikan pilihan "pribadi atau bersama": yang
+          sering dituju bukan diri sendiri, juga bukan semua orang, melainkan
+          satu-dua rekan.
+        -->
+        <mat-form-field appearance="outline" class="rc-span2">
+          <mat-label>Tandai rekan</mat-label>
+          <mat-select formControlName="targets" multiple>
+            @for (u of users; track u.id) {
+              <mat-option [value]="u.id">{{ u.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>
+            Yang ditandai melihatnya di agendanya sendiri. Kosongkan bila
+            hanya untuk Anda.
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!--
+        Pilihan untuk seluruh pengguna hanya muncul bagi yang berhak.
+        Menampilkannya kepada yang lain berarti menawarkan sesuatu yang
+        pasti ditolak server.
+      -->
+      @if (bolehUntukSemua) {
+        <mat-checkbox formControlName="isShared" color="primary" class="rc-all">
+          Untuk seluruh pengguna
+        </mat-checkbox>
+        <p class="rc-hint">
+          Tampil di agenda semua orang. Pakai hanya bila memang perlu
+          diketahui seluruh tim — agenda yang terlalu ramai berhenti dibaca.
+        </p>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="rc-foot">
+    <button type="button" class="rc-cancel" (click)="batal()">
+      {{ "user.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="rc-submit"
+      (click)="onSubmit()"
+      [disabled]="formGroup.invalid || isSubmitting"
+    >
+      {{ isSubmitting ? ("user.saving" | translate) : ("user.save" | translate) }}
+    </button>
+  </mat-dialog-actions>
+</div>

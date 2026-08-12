@@ -1,37 +1,115 @@
-h1 {
-  font-family: "Poppins";
-  font-size: 1rem;
-  font-weight: bold;
+/*
+ * Warna diambil dari variabel tema, bukan ditulis tetap.
+ *
+ * Sebelumnya latar peringatan dipatok `#eff6ff` dan teks tebalnya `black`.
+ * Pada mode gelap, kotak terang itu berdiri sendiri di atas dialog yang
+ * gelap — menyilaukan, dan tulisan hitamnya terbaca seperti tambalan.
+ *
+ * Warnanya juga keliru maknanya: peringatan dicetak biru, sehingga terbaca
+ * sebagai keterangan biasa padahal isinya hal yang perlu diperhatikan
+ * sebelum menyetujui pengeluaran uang.
+ */
+
+.cpc-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  margin: 0 0 0.25rem;
 }
 
-.banner__warning {
-  background-color: #eff6ff;
-  border-radius: 0.75rem;
+.cpc-prompt {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+  margin: 0 0 1rem;
+}
+
+/* Kotak peringatan. */
+.cpc-warning {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  max-width: 500px;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 0.5px solid var(--warn-fg, #a2651a);
+  color: var(--warn-fg, #a2651a);
 
   mat-icon {
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    color: var(--brand, #154dec);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    margin-top: 1px;
   }
 
   p {
-    font-family: "Poppins";
-    font-size: 0.85rem;
-    flex-grow: 1;
-    color: var(--brand, #154dec);
-    
-    span {
-        color:black;
-        font-weight: bold;
-    }
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.5;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+/* Persetujuan sebelum tombol aktif. */
+.cpc-agree {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.87rem;
+}
+
+.cpc-foot {
+  padding: 0.75rem 0 0;
+  gap: 10px;
+}
+
+.cpc-cancel {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  border-radius: 11px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+
+/* Tombol utama diberi latar penuh: yang dikerjakan di sini mengizinkan uang
+   keluar, sehingga tindakannya perlu terbaca sebagai yang utama — bukan
+   sejajar dengan tombol batal. */
+.cpc-confirm {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  border-radius: 11px;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+@media (max-width: 480px) {
+  .cpc-foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .cpc-cancel,
+  .cpc-confirm {
+    width: 100%;
   }
 }

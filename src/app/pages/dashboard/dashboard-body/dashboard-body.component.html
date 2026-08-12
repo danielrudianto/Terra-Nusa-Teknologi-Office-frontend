@@ -65,11 +65,15 @@
 
       <!-- Hero: Invoice generator -->
       <div class="col-4">
-        <a
-          class="hero hero--invoice"
-          *appCan="'sales_invoice:read'"
-          [routerLink]="'/Invoice'"
-        >
+        <!--
+          Generator invoice: bagian keuangan, atau akses 4 ke atas.
+          Bukan sekadar "boleh melihat sales invoice" — menerbitkan tagihan
+          ke klien adalah pekerjaan satu bagian, dan pengguna tanpa divisi
+          yang levelnya menengah lolos pemeriksaan izin biasa tanpa menjadi
+          bagian itu.
+        -->
+        @if (bolehBuatInvoice) {
+          <a class="hero hero--invoice" [routerLink]="'/Invoice'">
           <div class="hero__content">
             <span class="hero__eyebrow">{{
               "dashboard.automation" | translate
@@ -116,6 +120,7 @@
             />
           </svg>
         </a>
+        }
       </div>
 
       <!-- Today's payment (component) -->
@@ -125,27 +130,7 @@
 
       <!-- Right column: agenda + reimbursements -->
       <div class="col-6 mt-3">
-        <div class="dashboard-card white db-panel half-h">
-          <div class="db-panel__head">
-            <h2>{{ "dashboard.todayAgenda" | translate }}</h2>
-          </div>
-          <div class="db-panel__empty">
-            <svg
-              width="30"
-              height="30"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="3" />
-              <path d="M16 2v4M8 2v4M3 10h18" />
-            </svg>
-            <span>{{ "dashboard.noAgenda" | translate }}</span>
-          </div>
-        </div>
+        <app-agenda></app-agenda>
 
         <div style="margin-top: 20px" *appCan="'reimbursement:read'">
           <app-dashboard-reimbursement></app-dashboard-reimbursement>

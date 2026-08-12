@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export type TextScale = 'sm' | 'md' | 'lg';
 export type ThemeMode = 'light' | 'dark';
@@ -185,6 +185,7 @@ const THEME_KEY = 'app_theme';
 const BRAND_KEY = 'app_brand_color';
 const PAGE_SIZE_KEY = 'app_page_size';
 const DENSITY_KEY = 'app_density';
+const GUIDE_FAB_KEY = 'app_guide_fab';
 
 const SCALE_FACTOR: Record<TextScale, number> = {
   sm: 0.92,
@@ -199,6 +200,14 @@ export class SettingsService {
   private _brandColor: BrandColor = 'blue';
   private _pageSize: PageSize = 10;
   private _density: Density = 'normal';
+  /**
+   * Tombol panduan melayang. Menyala secara bawaan.
+   *
+   * Sinyal, bukan field biasa: tombolnya memakai `computed`, dan `computed`
+   * hanya menghitung ulang bila sinyal yang dibacanya berubah. Sebagai field
+   * biasa, sakelarnya tidak akan berpengaruh sampai halaman dimuat ulang.
+   */
+  private readonly _guideFab = signal(true);
 
   get textScale(): TextScale {
     return this._textScale;
@@ -223,6 +232,17 @@ export class SettingsService {
   setPageSize(value: PageSize): void {
     this._pageSize = value;
     localStorage.setItem(PAGE_SIZE_KEY, String(value));
+  }
+
+  readonly guideFab = this._guideFab.asReadonly();
+
+  setGuideFab(value: boolean): void {
+    this._guideFab.set(value);
+    try {
+      localStorage.setItem(GUIDE_FAB_KEY, value ? '1' : '0');
+    } catch {
+      // Mode penyamaran: cukup berlaku sesi ini.
+    }
   }
 
   get density(): Density {
@@ -257,6 +277,9 @@ export class SettingsService {
     if (PAGE_SIZES.includes(savedPageSize as PageSize)) {
       this._pageSize = savedPageSize as PageSize;
     }
+
+    // Hanya '0' yang mematikan; nilai lain atau kosong tetap menyala.
+    this._guideFab.set(localStorage.getItem(GUIDE_FAB_KEY) !== '0');
 
     const savedDensity = localStorage.getItem(DENSITY_KEY) as Density | null;
     if (savedDensity === 'normal' || savedDensity === 'compact') {

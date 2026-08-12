@@ -1,0 +1,85 @@
+<div class="dashboard-card white db-panel half-h ag">
+  <div class="db-panel__head ag-head">
+    <h2>{{ "dashboard.todayAgenda" | translate }}</h2>
+    <button
+      type="button"
+      class="ag-add"
+      (click)="tambah()"
+      matTooltip="Buat pengingat"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="ag-state">Memuat…</div>
+  } @else if (baris.length === 0) {
+    <div class="db-panel__empty">
+      <svg
+        width="30"
+        height="30"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="3" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </svg>
+      <span>{{ "dashboard.noAgenda" | translate }}</span>
+    </div>
+  } @else {
+    <div class="ag-list">
+      @for (b of baris; track $index) {
+        <div class="ag-row" [class.ag-row--today]="b.daysUntil <= 0">
+          <span
+            class="ag-icon"
+            [class.ag-icon--birthday]="b.jenis === 'birthday'"
+          >
+            <mat-icon>{{
+              b.jenis === "birthday" ? "cake" : "push_pin"
+            }}</mat-icon>
+          </span>
+
+          <div class="ag-text">
+            <span class="ag-title">{{ b.judul }}</span>
+            <span class="ag-note">
+              @if (b.kategori) {
+                <span class="ag-tag">{{ b.kategori }}</span>
+              }
+              {{ b.keterangan }}
+            </span>
+          </div>
+
+          <span class="ag-when">{{ jarak(b.daysUntil) }}</span>
+
+          <!--
+            Menu hanya untuk pengingat milik sendiri. Ulang tahun tidak dapat
+            diubah dari sini, dan pengingat orang lain memang bukan milik
+            pembacanya — server pun menolaknya.
+          -->
+          @if (milikSaya(b)) {
+            <button
+              mat-icon-button
+              class="ag-menu"
+              [matMenuTriggerFor]="menu"
+              aria-label="Tindakan"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="ubah(b)">
+                <mat-icon>edit</mat-icon><span>Ubah</span>
+              </button>
+              <button mat-menu-item (click)="hapus(b)">
+                <mat-icon>delete</mat-icon><span>Hapus</span>
+              </button>
+            </mat-menu>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

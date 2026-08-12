@@ -15,6 +15,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../app/services/api.service';
 import { AuthService } from '../../../app/services/auth.service';
 import {
+  BRAND_COLORS,
   BrandColor,
   Density,
   PAGE_SIZES,
@@ -26,7 +27,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
 import { AvatarBuilderComponent } from '../../components/avatar/avatar-builder/avatar-builder.component';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  AppLang,
+  LangOption,
+  LanguageService,
+} from '../../../app/services/language.service';
 
 @Component({
   selector: 'app-settings',
@@ -51,6 +57,8 @@ export class SettingsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
+    private language: LanguageService,
+    private translate: TranslateService,
     private authService: AuthService,
     public settings: SettingsService,
     private dialog: MatDialog,
@@ -129,9 +137,16 @@ export class SettingsComponent implements OnInit {
     this.settings.setDensity(value);
   }
 
-  get brandColorKeys(): BrandColor[] {
-    return Object.keys(this.settings.brandColors) as BrandColor[];
-  }
+  /**
+   * Daftar warna merek tidak pernah berubah saat aplikasi berjalan, jadi
+   * kuncinya dihitung sekali. Sebagai getter, `Object.keys()` membuat array
+   * baru setiap putaran change detection tanpa alasan.
+   *
+   * Dibaca langsung dari konstantanya, bukan lewat `this.settings`: field
+   * yang menyentuh parameter constructor saat inisialisasi memicu TS2729
+   * ("used before its initialization").
+   */
+  readonly brandColorKeys = Object.keys(BRAND_COLORS) as BrandColor[];
 
   get initials(): string {
     const name: string = this.profileFormGroup.get('name')?.value || '?';
@@ -141,4 +156,96 @@ export class SettingsComponent implements OnInit {
   selectTextScale(scale: TextScale): void {
     this.settings.setTextScale(scale);
   }
+
+  // ---- Bahasa -----------------------------------------------------------
+
+  get languages(): LangOption[] {
+    return this.language.languages;
+  }
+
+  get currentLang(): AppLang {
+    return this.language.current;
+  }
+
+  selectLang(code: AppLang): void {
+    this.language.use(code);
+  }
+
+  // ---- Ganti sandi ------------------------------------------------------
+
+  readonly passwordFormGroup = new FormGroup(
+    {
+      currentPassword: new FormControl('', Validators.required),
+      newPassword: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+      confirmPassword: new FormControl('', Validators.required),
+    },
+    { validators: [samaDenganKonfirmasi()] },
+  );
+
+  isChangingPassword = false;
+  showPassword = false;
+
+  changePassword(): void {
+    if (this.passwordFormGroup.invalid || this.isChangingPassword) return;
+
+    this.isChangingPassword = true;
+    const v = this.passwordFormGroup.value;
+
+    this.apiService
+      .put('users/me/password', {
+        currentPassword: v.currentPassword,
+        newPassword: v.newPassword,
+      })
+      .subscribe({
+        next: () => {
+          this.passwordFormGroup.reset();
+          this.snackBar.open(
+            this.translate.instant('settings.passwordChanged'),
+            'Close',
+            { duration: 4000 },
+          );
+        },
+        error: (err) => {
+          /*
+           * Pesan dipetakan di sini, bukan menampilkan `detail` dari server.
+           *
+           * Server mengirim kode tetap (`CURRENT_PASSWORD_INVALID`) supaya
+           * bisa diterjemahkan; menampilkannya mentah membuat pengguna
+           * membaca istilah teknis berbahasa Inggris.
+           */
+          const kode = err?.error?.detail;
+          const kunci =
+            kode === 'CURRENT_PASSWORD_INVALID'
+              ? 'settings.passwordWrong'
+              : kode === 'PASSWORD_UNCHANGED'
+                ? 'settings.passwordSame'
+                : 'settings.passwordFailed';
+          this.snackBar.open(this.translate.instant(kunci), 'Close', {
+            duration: 5000,
+          });
+        },
+      })
+      .add(() => {
+        this.isChangingPassword = false;
+      });
+  }
+}
+
+/**
+ * Sandi baru dan konfirmasinya harus sama.
+ *
+ * Diperiksa di tingkat grup, bukan per kolom: kesalahannya milik pasangan
+ * kolom, dan menandainya di salah satu saja membuat pesan muncul sebelum
+ * kolom keduanya sempat diisi.
+ */
+function samaDenganKonfirmasi() {
+  return (group: any) => {
+    const baru = group.get('newPassword')?.value;
+    const konfirmasi = group.get('confirmPassword')?.value;
+    if (!baru || !konfirmasi) return null;
+    return baru === konfirmasi ? null : { konfirmasiTidakCocok: true };
+  };
 }

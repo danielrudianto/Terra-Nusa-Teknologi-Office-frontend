@@ -1,11 +1,15 @@
 h1 {
-  font-family: "Poppins";
+  color: var(--ink, #16181d);
+  font-family: "Poppins", sans-serif;
   font-size: 1rem;
   font-weight: bold;
 }
 
 .banner__warning {
-  background-color: #eff6ff;
+  /* Menolak pembayaran adalah tindakan yang membatalkan; warnanya
+     mengikuti penanda peringatan, bukan keterangan biasa. */
+  background-color: var(--bad-bg, #fdecec);
+  border: 0.5px solid var(--bad-fg, #b3322f);
   border-radius: 0.75rem;
   display: flex;
   flex-direction: row;
@@ -20,17 +24,17 @@ h1 {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    color: var(--brand, #154dec);
+    color: var(--bad-fg, #b3322f);
   }
 
   p {
     font-family: "Poppins";
     font-size: 0.85rem;
     flex-grow: 1;
-    color: var(--brand, #154dec);
+    color: var(--bad-fg, #b3322f);
 
     span {
-      color: black;
+      color: var(--bad-fg, #b3322f);
       font-weight: bold;
     }
   }

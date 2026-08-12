@@ -128,7 +128,15 @@ export const MY_FORMATS = {
     MatToolbarModule,
     ClipboardModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'id',
+      /*
+       * `fallbackLang`, bukan `defaultLanguage`.
+       *
+       * Sejak ngx-translate v17 `defaultLanguage` dan `useDefaultLang`
+       * ditandai deprecated dan memicu peringatan di konsol. Namanya pun
+       * lebih jujur: ini bahasa yang dipakai ketika kunci tidak ada di
+       * bahasa aktif, bukan bahasa awal aplikasi.
+       */
+      fallbackLang: 'id',
       loader: {
         provide: TranslateLoader,
         useFactory: (http: HttpClient) =>

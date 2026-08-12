@@ -80,7 +80,7 @@ $line: var(--line, #eef0f3);
   letter-spacing: 0.03em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eef1f6;
+  background: var(--surface-2, #eef1f6);
   color: var(--muted, #5f6672);
 }
 

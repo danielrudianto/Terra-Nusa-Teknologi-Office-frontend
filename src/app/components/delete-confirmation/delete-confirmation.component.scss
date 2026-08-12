@@ -109,7 +109,7 @@ $danger: var(--bad-fg, #e5484d);
     background: var(--surface-2, #f1f3f7);
     color: var(--muted, #3f4653);
     &:hover {
-      background: #e7eaef;
+      background: var(--surface-2, #e7eaef);
     }
   }
 

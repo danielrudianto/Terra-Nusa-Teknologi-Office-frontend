@@ -55,7 +55,7 @@
     align-items: center;
     gap: 7px;
     border: none;
-    background: #fff;
+    background: var(--surface, #fff);
     color: var(--brand, #154dec);
     font-family: "Montserrat", sans-serif;
     font-size: 0.86rem;

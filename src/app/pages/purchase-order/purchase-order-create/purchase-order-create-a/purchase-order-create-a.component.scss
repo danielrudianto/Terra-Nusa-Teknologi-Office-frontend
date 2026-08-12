@@ -245,7 +245,7 @@
     background: var(--brand-strong, #0f3fd0);
   }
   &:disabled {
-    background: #e6e9ee;
+    background: var(--surface-2, #e6e9ee);
     color: #9aa0ab;
     box-shadow: none;
     cursor: default;

@@ -40,7 +40,10 @@ export class LanguageService {
   init(): void {
     const codes = this.languages.map((l) => l.code);
     this.translate.addLangs(codes);
-    this.translate.setDefaultLang(this.DEFAULT_LANG);
+    // `setFallbackLang`, bukan `setDefaultLang`: yang lama deprecated sejak
+    // v17. Perilakunya sama — bahasa yang dipakai bila kunci tidak ada di
+    // bahasa aktif.
+    this.translate.setFallbackLang(this.DEFAULT_LANG);
     this.translate.use(this.current);
   }
 

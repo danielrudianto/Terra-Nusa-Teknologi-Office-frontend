@@ -1,0 +1,214 @@
+/*
+ * Gaya kartu disalin dari dashboard-body.
+ *
+ * Angular mengisolasi gaya per komponen: `.dashboard-card`, `.db-panel`, dan
+ * `.half-h` yang didefinisikan di dashboard-body TIDAK berlaku di dalam
+ * komponen ini. Tanpa salinan berikut, kartunya tampil tanpa latar dan
+ * tombol tambah tidak terlihat sama sekali — bukan karena hilang dari DOM,
+ * melainkan karena tidak bergaya.
+ */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.dashboard-card {
+  width: 100%;
+  border-radius: 27px;
+  padding: 1.5rem;
+
+  &.white {
+    background-color: var(--surface, #fff);
+    border: 0.5px solid var(--border, #e3e6eb);
+    box-shadow:
+      0 1px 2px rgba(16, 24, 40, 0.04),
+      0 4px 16px rgba(16, 24, 40, 0.05);
+  }
+
+  &.half-h {
+    height: 190px;
+  }
+}
+
+.db-panel {
+  display: flex;
+  flex-direction: column;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    h2 {
+      font-family: "Montserrat", sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink, #16181d);
+      margin: 0;
+    }
+  }
+
+  &__empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--faint, #9aa0ab);
+    font-size: 0.82rem;
+
+    svg {
+      color: var(--faint, #cfd4dc);
+    }
+  }
+}
+
+.ag-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.ag-add {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0.5px solid var(--border, #d7deea);
+  background: var(--surface, #fff);
+  color: var(--brand, #154dec);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
+}
+
+.ag-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+}
+
+.ag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.ag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.5rem 0.15rem;
+  border-bottom: 1px solid var(--line, #eef0f3);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Yang jatuh hari ini dibedakan — itu satu-satunya baris yang menuntut
+   tindakan sekarang, sisanya sekadar pemberitahuan. */
+.ag-row--today .ag-title {
+  font-weight: 700;
+}
+.ag-row--today .ag-when {
+  color: var(--brand, #154dec);
+  font-weight: 700;
+}
+
+.ag-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2, #f4f6fa);
+  color: var(--muted, #6b7280);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+.ag-icon--birthday {
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+.ag-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ag-title {
+  font-size: 0.86rem;
+  color: var(--ink, #16181d);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ag-note {
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ag-tag {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--faint, #9aa0ab);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.ag-when {
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+  white-space: nowrap;
+}
+
+.ag-menu {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+/* Layar sempit: keterangan jarak dipindah ke bawah judul agar judulnya
+   tidak terpotong hanya untuk memberi ruang pada "3 hari lagi". */
+@media (max-width: 480px) {
+  .ag-when {
+    display: none;
+  }
+  .ag-note::after {
+    content: "";
+  }
+}

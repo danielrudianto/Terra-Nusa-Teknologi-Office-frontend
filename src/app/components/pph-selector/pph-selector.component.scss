@@ -46,7 +46,7 @@ $line: var(--line, #eef0f3);
   cursor: pointer;
   flex: 0 0 auto;
   &:hover {
-    background: #e9edf3;
+    background: var(--surface-2, #e9edf3);
     color: $ink;
   }
 }

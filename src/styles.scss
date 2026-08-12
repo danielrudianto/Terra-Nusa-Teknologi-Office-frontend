@@ -47,6 +47,23 @@ html[data-theme="dark"] {
   @include mat.all-component-colors($dark-theme);
 }
 
+/*
+ * Warna snackbar.
+ *
+ * Material memberi snackbar warna yang BERLAWANAN dengan latar halaman —
+ * gelap pada tema terang, terang pada tema gelap. Maksudnya agar menonjol,
+ * tetapi pada tema gelap hasilnya panel putih menyilaukan di tengah layar
+ * yang seluruhnya gelap.
+ *
+ * Di sini snackbar dibuat mengikuti tema, hanya sedikit lebih terang
+ * daripada permukaannya agar tetap terbaca sebagai lapisan di atas halaman.
+ */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--snackbar-background-color);
+  --mdc-snackbar-supporting-text-color: var(--on-snackbar-color);
+  --mat-snack-bar-button-color: var(--snackbar-action-color);
+}
+
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 
 @font-face {
@@ -150,6 +167,8 @@ html[data-theme="dark"] {
   --banner-background-color: rgba(21, 77, 236, 1);
   --on-banner-color: white;
   --snackbar-background-color: rgb(43, 43, 43);
+  --on-snackbar-color: rgba(255, 255, 255, 0.92);
+  --snackbar-action-color: rgb(150, 180, 255);
   --stepper-icon-background: rgba(0, 0, 0, 0);
   --stepper-icon-border: rgba(193, 205, 223, 1);
   --stepper-icon-background-selected: rgba(0, 0, 0, 1);
@@ -165,10 +184,6 @@ html[data-theme="dark"] {
 
   /* text scale (driven by SettingsService) */
   --app-text-scale: 1;
-
-  /* Lebar side navigation. Dipakai .dashboard__container__side dan panel
-     panduan saat diperbesar, supaya keduanya tidak pernah beda angka. */
-  --sidenav-lebar: 250px;
 }
 
 /* ===================================================================
@@ -189,6 +204,12 @@ html[data-theme="dark"] {
   --brand-strong: #9db8ff;
   --brand-soft: #22304f;
   --hover: #1f2531;
+
+  /* Sedikit lebih terang daripada permukaan, bukan putih: cukup untuk
+     terbaca sebagai lapisan di atas halaman, tanpa menyilaukan. */
+  --snackbar-background-color: #2b313d;
+  --on-snackbar-color: rgba(231, 233, 238, 0.94);
+  --snackbar-action-color: #9db8ff;
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.45);
 
   --ok-bg: #12301f;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -28,7 +28,6 @@ import { InterpaymentCreateComponent } from '../interpayment-create/interpayment
 import { InterpaymentViewComponent } from '../interpayment-view/interpayment-view.component';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
-import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-interpayment-list',
@@ -45,14 +44,13 @@ import { PanduanButtonComponent } from '../../../components/panduan/panduan-butt
     MatPaginatorModule,
     MatButtonModule,
     TranslatePipe,
-    PanduanButtonComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',
   styleUrl: './interpayment-list.component.scss',
   standalone: true,
 })
-export class InterpaymentListComponent {
+export class InterpaymentListComponent implements OnInit {
   constructor(
     public settings: SettingsService,
     private translate: TranslateService,
@@ -91,9 +89,22 @@ export class InterpaymentListComponent {
     'action',
   ];
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit(): void {
+  /*
+   * Pengambilan data dilakukan di ngOnInit, BUKAN ngAfterViewInit.
+   *
+   * `fetchData()` menyalakan `isLoading` secara langsung, sementara
+   * `isLoading` terikat ke `[class.is-loading]` di templat. ngAfterViewInit
+   * berjalan SETELAH Angular selesai memeriksa binding pada putaran yang
+   * sama, sehingga nilainya berubah dari false menjadi true di tengah jalan
+   * dan mode pengembangan melemparkan NG0100
+   * (ExpressionChangedAfterItHasBeenChecked).
+   *
+   * ngOnInit berjalan sebelum pemeriksaan itu, jadi urutannya benar.
+   * `this.table` yang dipakai di dalam fetchData hanya disentuh di dalam
+   * callback jaringan — sudah lewat inisialisasi tampilan — dan tetap
+   * memakai optional chaining.
+   */
+  ngOnInit(): void {
     this.fetchData();
 
     this.formGroup.valueChanges.pipe(debounceTime(100)).subscribe(() => {

@@ -1,0 +1,125 @@
+.prl-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.prl-search {
+  min-width: 18rem;
+}
+
+.prl-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.prl-loadingbar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.prl-loadingbar > span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: var(--brand);
+  animation: prl-geser 1.1s ease-in-out infinite;
+}
+@keyframes prl-geser {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(350%); }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+th.num,
+td.num {
+  text-align: right;
+}
+
+th[mat-header-cell] {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.prl-code {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.prl-name {
+  font-weight: 500;
+}
+
+.prl-desc {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.prl-uang {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.prl-kosong {
+  font-size: 0.74rem;
+  color: var(--faint);
+  font-style: italic;
+}
+
+.prl-chip {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.prl-chip--berjalan {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+.prl-chip--selesai {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.prl-chip--batal {
+  background: var(--bad-bg);
+  color: var(--bad-fg);
+}
+
+tr[mat-row] {
+  cursor: pointer;
+}
+tr[mat-row]:hover {
+  background: var(--hover);
+}
+
+.prl-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .prl-search {
+    min-width: 100%;
+  }
+}

@@ -46,6 +46,17 @@ interface PageData {
 })
 export class PdfMainComponent implements OnInit {
   processedDocuments: PageData[] = [];
+
+  /*
+   * Halaman terpilih dihitung di `updateSelectionState()`, bukan lewat getter.
+   *
+   * `selected` diubah per item (bukan dengan mengganti arraynya), sehingga
+   * setter pada `processedDocuments` tidak akan menangkapnya. Titik
+   * perubahannya sedikit dan jelas, jadi semuanya diarahkan memanggil satu
+   * metode ini — bukan cache berkunci yang harus ditebak kapan basinya.
+   */
+  selectedPages: PageData[] = [];
+  selectedCount = 0;
   isProcessing = false;
   isDragging = false;
   processingProgress = '';
@@ -144,6 +155,7 @@ export class PdfMainComponent implements OnInit {
           fileName: this.generatePageFileName(file.name, i + 1),
           originalFile: file.name,
         } as PageData);
+        this.updateSelectionState();
 
         // Let the UI breathe every few pages (a micro-yield, not a 100ms wall)
         if ((i & 3) === 3) {
@@ -278,6 +290,7 @@ export class PdfMainComponent implements OnInit {
 
       // Add animation class
       this.animateMovement(index, index - 1);
+      this.updateSelectionState();
     }
   }
 
@@ -289,6 +302,7 @@ export class PdfMainComponent implements OnInit {
 
       // Add animation class
       this.animateMovement(index, index + 1);
+      this.updateSelectionState();
     }
   }
 
@@ -299,6 +313,7 @@ export class PdfMainComponent implements OnInit {
 
   reverseOrder(): void {
     this.processedDocuments.reverse();
+    this.updateSelectionState();
   }
 
   shuffleOrder(): void {
@@ -310,6 +325,7 @@ export class PdfMainComponent implements OnInit {
         this.processedDocuments[i],
       ];
     }
+    this.updateSelectionState();
   }
 
   async mergePdfs(): Promise<void> {
@@ -387,32 +403,28 @@ export class PdfMainComponent implements OnInit {
   }
 
   toggleSelectAll(): void {
-    this.allSelected = !this.allSelected;
+    const target = !this.allSelected;
     this.processedDocuments.forEach((page) => {
-      page.selected = this.allSelected;
+      page.selected = target;
     });
+    this.updateSelectionState();
   }
 
   clearAllSelections(): void {
     this.processedDocuments.forEach((page) => {
       page.selected = false;
     });
-    this.allSelected = false;
+    this.updateSelectionState();
   }
 
   private updateSelectionState(): void {
-    const selectedCount = this.processedDocuments.filter(
-      (page) => page.selected,
-    ).length;
-    this.allSelected = selectedCount === this.processedDocuments.length;
-  }
-
-  get selectedPages(): PageData[] {
-    return this.processedDocuments.filter((page) => page.selected);
-  }
-
-  get selectedCount(): number {
-    return this.selectedPages.length;
+    this.selectedPages = this.processedDocuments.filter((page) => page.selected);
+    this.selectedCount = this.selectedPages.length;
+    // Tanpa halaman sama sekali, "semua terpilih" tidak punya arti — 0 === 0
+    // membuat sakelar pilih-semua menyala pada daftar kosong.
+    this.allSelected =
+      this.processedDocuments.length > 0 &&
+      this.selectedCount === this.processedDocuments.length;
   }
 
   async saveSelectedPages(): Promise<void> {
@@ -576,6 +588,6 @@ export class PdfMainComponent implements OnInit {
   clearAll(): void {
     this.processedDocuments = [];
     this.selectionMode = false;
-    this.allSelected = false;
+    this.updateSelectionState();
   }
 }

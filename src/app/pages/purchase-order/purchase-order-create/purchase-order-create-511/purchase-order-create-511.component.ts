@@ -31,13 +31,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PanduanButtonComponent } from '../../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-order-create-511',
   providers: [provideNgxMask()],
   imports: [
-    PanduanButtonComponent,
     ClauseLineComponent,
     TranslatePipe,
     CommonModule,

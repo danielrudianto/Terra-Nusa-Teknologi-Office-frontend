@@ -60,9 +60,9 @@
             type="email"
             [placeholder]="'settings.emailPlaceholder' | translate"
           />
-          <mat-error *ngIf="profileFormGroup.get('email')?.hasError('email')"
-            >Email tidak valid.</mat-error
-          >
+          <mat-error *ngIf="profileFormGroup.get('email')?.hasError('email')">
+            {{ "settings.emailInvalid" | translate }}
+          </mat-error>
         </mat-form-field>
       </div>
     </div>
@@ -82,13 +82,37 @@
       </div>
     </div>
 
+    <!-- bahasa -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">{{ "settings.language" | translate }}</span>
+        <span class="st-row__hint">{{
+          "settings.languageHint" | translate
+        }}</span>
+      </div>
+      <div class="st-seg">
+        @for (l of languages; track l.code) {
+          <button
+            type="button"
+            class="st-seg__opt"
+            [class.is-active]="currentLang === l.code"
+            (click)="selectLang(l.code)"
+          >
+            {{ l.flag }} {{ l.short }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="st-divider"></div>
+
     <!-- text size -->
     <div class="st-row st-row--stack">
       <div class="st-row__text">
         <span class="st-row__label">{{ "settings.textSize" | translate }}</span>
-        <span class="st-row__hint"
-          >Perbesar atau perkecil teks di seluruh aplikasi.</span
-        >
+        <span class="st-row__hint">{{
+          "settings.textSizeHint" | translate
+        }}</span>
       </div>
       <div class="st-scale">
         <button
@@ -196,16 +220,118 @@
     <div class="st-row">
       <div class="st-row__text">
         <span class="st-row__label">{{ "settings.darkMode" | translate }}</span>
-        <span class="st-row__hint"
-          >Gelapin tampilan. Shell &amp; komponen Material udah ikut; kartu
-          custom nyusul bertahap.</span
-        >
+        <span class="st-row__hint">{{
+          "settings.darkModeHint" | translate
+        }}</span>
       </div>
       <mat-slide-toggle
         color="primary"
         [checked]="settings.theme === 'dark'"
         (change)="settings.setTheme($event.checked ? 'dark' : 'light')"
       ></mat-slide-toggle>
+    </div>
+
+    <div class="st-divider"></div>
+
+    <!-- tombol panduan melayang -->
+    <div class="st-row">
+      <div class="st-row__text">
+        <span class="st-row__label">{{ "settings.guideFab" | translate }}</span>
+        <span class="st-row__hint">{{
+          "settings.guideFabHint" | translate
+        }}</span>
+      </div>
+      <mat-slide-toggle
+        color="primary"
+        [checked]="settings.guideFab()"
+        (change)="settings.setGuideFab($event.checked)"
+      ></mat-slide-toggle>
+    </div>
+  </section>
+
+  <!-- ===== SECURITY ===== -->
+  <section class="st-card">
+    <div class="st-card__head">
+      <span class="st-card__icon">
+        <mat-icon>lock</mat-icon>
+      </span>
+      <div class="st-card__titles">
+        <h2 class="st-card__title">{{ "settings.security" | translate }}</h2>
+        <span class="st-card__desc">{{
+          "settings.securitySub" | translate
+        }}</span>
+      </div>
+    </div>
+
+    <div class="st-pw" [formGroup]="passwordFormGroup">
+      <div class="st-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "settings.currentPassword" | translate
+          }}</mat-label>
+          <input
+            matInput
+            formControlName="currentPassword"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="current-password"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "settings.newPassword" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="newPassword"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="new-password"
+          />
+          <mat-hint>{{ "settings.passwordRule" | translate }}</mat-hint>
+          <mat-error
+            *ngIf="passwordFormGroup.get('newPassword')?.hasError('minlength')"
+          >
+            {{ "settings.passwordRule" | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "settings.confirmPassword" | translate
+          }}</mat-label>
+          <input
+            matInput
+            formControlName="confirmPassword"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="new-password"
+          />
+          <mat-error
+            *ngIf="passwordFormGroup.hasError('konfirmasiTidakCocok')"
+          >
+            {{ "settings.passwordMismatch" | translate }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="st-pw__foot">
+        <mat-slide-toggle
+          color="primary"
+          [checked]="showPassword"
+          (change)="showPassword = $event.checked"
+          >{{ "settings.showPassword" | translate }}</mat-slide-toggle
+        >
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="passwordFormGroup.invalid || isChangingPassword"
+          (click)="changePassword()"
+        >
+          {{
+            (isChangingPassword ? "settings.saving" : "settings.changePassword")
+              | translate
+          }}
+        </button>
+      </div>
     </div>
   </section>
 </div>

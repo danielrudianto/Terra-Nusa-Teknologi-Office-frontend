@@ -66,7 +66,7 @@
       mat-form-field {
         // solid white fill so inputs stand out on the translucent card
         ::ng-deep .mat-mdc-text-field-wrapper {
-          background: #ffffff;
+          background: var(--surface, #ffffff);
           border-radius: 0.6rem;
         }
         // stronger outline

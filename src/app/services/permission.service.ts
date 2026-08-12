@@ -23,6 +23,16 @@ export class PermissionService {
   /** Sinyal agar templat ikut menyegarkan begitu izin selesai dimuat. */
   readonly permissions = signal<PermissionMap>({});
   readonly level = signal<number>(1);
+
+  /**
+   * Divisi yang dipegang pengguna.
+   *
+   * Diperlukan untuk membedakan "orang keuangan" dari "orang tanpa divisi
+   * yang levelnya tinggi": keduanya lolos pemeriksaan izin yang sama,
+   * tetapi bukan hal yang sama. Pengguna tanpa divisi tidak dibatasi
+   * wilayah, sehingga ia melihat modul keuangan tanpa menjadi bagiannya.
+   */
+  readonly departments = signal<string[]>([]);
   readonly loaded = signal<boolean>(false);
 
   private pending: Promise<void> | null = null;
@@ -74,6 +84,7 @@ export class PermissionService {
       .then((res: any) => {
         this.permissions.set(res?.permissions ?? {});
         this.level.set(Number(res?.level) || 1);
+        this.departments.set(res?.departments ?? []);
         this.loaded.set(true);
       })
       .catch((err) => {
@@ -134,8 +145,21 @@ export class PermissionService {
   clear(): void {
     this.permissions.set({});
     this.level.set(1);
+    this.departments.set([]);
     this.loaded.set(false);
     this.pending = null;
+  }
+
+  /**
+   * Pengguna menangani salah satu divisi ini.
+   *
+   * Berbeda dari `can()`: yang ini menanyakan SIAPA dia, bukan apa yang
+   * boleh dilakukannya. Dipakai untuk hal yang memang milik satu bagian,
+   * bukan sekadar hal yang boleh dilihat.
+   */
+  inDepartment(...kode: string[]): boolean {
+    const punya = this.departments();
+    return kode.some((k) => punya.includes(k));
   }
 
   /** Apakah pengguna boleh melakukan aksi ini. */

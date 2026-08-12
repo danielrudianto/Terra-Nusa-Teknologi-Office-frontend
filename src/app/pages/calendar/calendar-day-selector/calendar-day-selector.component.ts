@@ -93,9 +93,68 @@ export class CalendarDaySelectorComponent {
 
   isLoading: boolean = false;
   bankAccountSummaries: BankAccountSummary[] = [];
-  selectedAccount: BankAccountSummary | null = null;
   selectedPayments: number[] = [];
-  rawData: any;
+
+  /*
+   * `payments` dan `interpayments` dihitung saat sumbernya berubah, bukan
+   * lewat getter.
+   *
+   * Sebagai getter, kedua `.filter()` berjalan ulang setiap kali templat
+   * membacanya, dan templat membacanya beberapa kali per putaran change
+   * detection — termasuk saat menggulir dan mengetik di halaman lain pada
+   * shell yang sama.
+   *
+   * Sumbernya dua: rekening yang dipilih dan data mentah hari itu. Keduanya
+   * dipasang lewat setter supaya turunannya mustahil tertinggal, tanpa kunci
+   * cache yang bisa basi.
+   */
+  private _selectedAccount: BankAccountSummary | null = null;
+  private _rawData: any;
+
+  payments: any[] = [];
+
+  /**
+   * Transfer antar rekening pada hari itu — masuk maupun keluar.
+   *
+   * Sebelumnya hanya yang keluar (`Origin`) yang disaring, sehingga dana
+   * masuk tidak pernah tampil padahal ikut menentukan saldo.
+   */
+  interpayments: any[] = [];
+
+  get selectedAccount(): BankAccountSummary | null {
+    return this._selectedAccount;
+  }
+
+  set selectedAccount(nilai: BankAccountSummary | null) {
+    this._selectedAccount = nilai;
+    this.hitungTurunan();
+  }
+
+  get rawData(): any {
+    return this._rawData;
+  }
+
+  set rawData(nilai: any) {
+    this._rawData = nilai;
+    this.hitungTurunan();
+  }
+
+  private hitungTurunan(): void {
+    const akun = this._selectedAccount;
+    if (akun == null) {
+      this.payments = [];
+      this.interpayments = [];
+      return;
+    }
+    this.payments = (this._rawData?.data ?? []).filter(
+      (payment: any) => payment.bankAccountID === akun.id,
+    );
+    this.interpayments = (this._rawData?.interpayments ?? []).filter(
+      (ip: any) =>
+        ip.bankAccountIDOrigin === akun.id ||
+        ip.bankAccountIDDestination === akun.id,
+    );
+  }
   selectedAmount: number = 0;
 
   ngOnInit(): void {
@@ -136,30 +195,6 @@ export class CalendarDaySelectorComponent {
   private isSameBank(origin?: string, destination?: string): boolean {
     if (!origin || !destination) return false;
     return origin.trim().toLowerCase() === destination.trim().toLowerCase();
-  }
-
-  get payments() {
-    // `selectAccount` adalah method, jadi perbandingannya tidak pernah null;
-    // yang dimaksud adalah rekening yang sedang dipilih.
-    if (this.selectedAccount == null) return [];
-    return (this.rawData?.data ?? []).filter(
-      (payment: any) => payment.bankAccountID === this.selectedAccount?.id,
-    );
-  }
-
-  /**
-   * Transfer antar rekening pada hari itu — masuk maupun keluar.
-   *
-   * Sebelumnya hanya yang keluar (`Origin`) yang disaring, sehingga dana
-   * masuk tidak pernah tampil padahal ikut menentukan saldo.
-   */
-  get interpayments() {
-    if (this.selectedAccount == null) return [];
-    const id = this.selectedAccount.id;
-    return (this.rawData?.interpayments ?? []).filter(
-      (ip: any) =>
-        ip.bankAccountIDOrigin === id || ip.bankAccountIDDestination === id,
-    );
   }
 
   /** Arah transfer terhadap rekening yang sedang dilihat. */

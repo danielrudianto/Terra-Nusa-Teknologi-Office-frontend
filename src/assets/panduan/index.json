@@ -255,6 +255,36 @@
         "source account",
         "destination account"
       ]
+    },
+    {
+      "id": "pinjaman",
+      "judul": {
+        "id": "Pinjaman",
+        "en": "Loans",
+        "zh": "借款"
+      },
+      "berkas": "pinjaman",
+      "modul": "loan",
+      "ringkas": {
+        "id": "Mencatat utang perusahaan, melunasinya bertahap, dan mana angka yang terkunci.",
+        "en": "Record company debt, repay it in stages, and which figures are locked.",
+        "zh": "记录公司借款、分期偿还，以及哪些数字已锁定。"
+      },
+      "kataKunci": [
+        "pinjaman",
+        "utang",
+        "kreditur",
+        "pelunasan",
+        "cicilan",
+        "provisi",
+        "dana diterima",
+        "sisa utang",
+        "loan",
+        "debt",
+        "creditor",
+        "repayment",
+        "remaining"
+      ]
     }
   ]
 }

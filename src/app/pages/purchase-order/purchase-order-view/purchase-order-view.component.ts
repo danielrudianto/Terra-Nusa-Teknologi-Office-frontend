@@ -39,7 +39,28 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
 })
 export class PurchaseOrderViewComponent {
   isLoading = true;
-  data: any = null;
+  /*
+   * `clauseSections` disusun sekali saat data tiba, bukan lewat getter.
+   *
+   * Penyusunannya menjalankan `buildXClauses(...)` yang merangkai puluhan
+   * kalimat perjanjian; sebagai getter itu berulang setiap kali templat
+   * membacanya, dua kali per putaran change detection.
+   *
+   * Dipasang lewat setter supaya penugasan `data` di mana pun tidak mungkin
+   * lupa memperbarui klausulnya.
+   */
+  private _data: any = null;
+
+  get data(): any {
+    return this._data;
+  }
+
+  set data(nilai: any) {
+    this._data = nilai;
+    this.clauseSections = this.susunKlausul();
+  }
+
+  clauseSections: ClauseSection[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public input: { id: number },
@@ -140,7 +161,7 @@ export class PurchaseOrderViewComponent {
     return this.data?.purchaseType;
   }
 
-  get clauseSections(): ClauseSection[] {
+  private susunKlausul(): ClauseSection[] {
     if (!this.data) return [];
     const custom = this.data.customData || {};
     const tambahan: string[] = custom.additionalClauses || [];
