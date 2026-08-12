@@ -1269,3 +1269,28 @@ app-wysiwyg {
   margin-top: 0.3rem;
   line-height: 1.5;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po651-preview__list > li,
+.po651-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po651-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po651-preview {
+  margin-bottom: 1.4rem;
+}
+.po651-cardhead + .po651-empty,
+.po651-cardhead + .po651-list {
+  margin-top: 0.6rem;
+}
+.po651-hint {
+  margin-bottom: 0.9rem;
+}

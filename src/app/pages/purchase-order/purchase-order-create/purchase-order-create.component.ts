@@ -143,9 +143,6 @@ export class PurchaseOrderCreateComponent {
       title: 'Insurance',
       description: 'Purchase orders used to create insurance document expense',
       link: '642',
-      // Formulirnya belum dibuat; ditandai agar tidak mengarah ke alamat
-      // yang tidak ada.
-      comingSoon: true,
     },
     {
       type: '6.5.1',
@@ -158,9 +155,6 @@ export class PurchaseOrderCreateComponent {
       title: 'Training',
       description: 'Purchase orders used to create training expense',
       link: '652',
-      // Formulirnya belum dibuat; ditandai agar tidak mengarah ke alamat
-      // yang tidak ada.
-      comingSoon: true,
     },
   ];
 

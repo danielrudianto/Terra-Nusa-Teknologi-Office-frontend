@@ -1558,7 +1558,11 @@
     "addPoint": "Tambah poin",
     "clauseAutoHint": "Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti isian di atas; tambahkan poin bila ada kesepakatan khusus.",
     "deliveryAddressFranco": "Alamat pengiriman",
-    "deliveryAddressLoco": "Alamat pengambilan"
+    "deliveryAddressLoco": "Alamat pengambilan",
+    "changeType": "Ganti jenis",
+    "changeTypeTitle": "Ganti jenis purchase order?",
+    "changeTypeBody": "Isian yang sudah diketik pada formulir ini akan hilang.",
+    "priceExclPpnHint": "Harga yang diisi di luar PPN. Bila dicentang, PPN 11% ditambahkan di atasnya."
   },
   "menu": {
     "editAsset": "Ubah aset",

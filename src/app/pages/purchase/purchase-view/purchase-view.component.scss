@@ -407,3 +407,25 @@
     color: var(--muted, #6b7280);
   }
 }
+
+/* Nomor purchase order yang dapat ditekan. */
+.pv-polink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: var(--brand, #154dec);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: right;
+}
+.pv-polink:hover {
+  text-decoration: underline;
+}
+
+/* Nomor yang dokumennya belum ada di sistem. */
+.pv-polink--missing {
+  color: var(--muted, #6b7280);
+  font-weight: 500;
+  cursor: help;
+}

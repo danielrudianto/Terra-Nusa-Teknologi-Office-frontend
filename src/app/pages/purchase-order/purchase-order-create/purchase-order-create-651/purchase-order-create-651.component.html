@@ -1,5 +1,9 @@
 <div class="po651">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="('poForm.poCodePrefix' | translate) + purchaseType"
@@ -103,7 +107,11 @@
 
           <mat-form-field appearance="outline">
             <mat-label>{{ "common.projectName" | translate }}</mat-label>
-            <input matInput formControlName="projectName" />
+            <!--
+            Selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
+            terbebankan ke kode proyek.
+          -->
+          <input matInput formControlName="projectName" readonly />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po651-span2">
@@ -234,7 +242,7 @@
 
         <div class="po651-foot">
           <mat-slide-toggle formControlName="includePPN" color="primary"
-            >Termasuk PPN 11%</mat-slide-toggle
+            >{{ "poForm.includePpn" | translate }}</mat-slide-toggle
           >
           <div class="po651-summary">
             <div class="po651-summary__row">
@@ -402,11 +410,11 @@
               @if (isSubList(p)) {
                 <ol class="po651-preview__sub">
                   @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
+                    <li><app-clause-line [value]="d" /></li>
                   }
                 </ol>
               } @else {
-                <li>{{ asText(p) }}</li>
+                <li><app-clause-line [value]="p" /></li>
               }
             }
           </ol>

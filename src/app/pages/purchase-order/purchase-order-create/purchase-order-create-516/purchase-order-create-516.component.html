@@ -1,5 +1,9 @@
 <div class="po516">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.title516' | translate"
@@ -28,11 +32,16 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <!--
-            Pengeluaran kantor selalu dibebankan ke PUSAT; nilainya dikunci
-            agar tidak terbebankan ke kode proyek.
-          -->
-          <input matInput formControlName="projectName" readonly />
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+            [placeholder]="'poField.exMicz' | translate"
+          />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "common.projectCodeError" | translate
+          }}</mat-error>
           <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
@@ -337,25 +346,14 @@
             @if (isSubList(p)) {
               <ol class="po516-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>
-      </div>
-
-      <div class="po516-actions">
-        <span class="po516-spacer"></span>
-        <button
-          type="submit"
-          class="po516-submit"
-          [disabled]="formGroup.invalid || isSubmitting"
-        >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
       </div>
 
       <!--
@@ -370,38 +368,45 @@
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
-      <p class="po516-clausenote">
+      <p class="po516-hint">
         Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
         menggantikannya.
       </p>
-      <div formArrayName="additionalClauses">
-        @for (c of additionalClauses.controls; track c; let i = $index) {
-          <div class="po516-clauserow">
-            <span class="po516-clausenum">{{ i + 1 }}.</span>
-            <mat-form-field appearance="outline" class="po516-clausefield">
-              <input
-                matInput
-                [formControlName]="i"
-                [placeholder]="
-                  'poField.contohBarangDikirimPalingLambat15' | translate
-                "
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="po516-clauseremove"
-              (click)="removeClause(i)"
-              aria-label="Hapus"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        }
-        @if (additionalClauses.length === 0) {
-          <div class="po516-clauseempty">
-            {{ "common.noExtraPoints" | translate }}
-          </div>
-        }
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po516-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po516-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po516-krow">
+              <span class="po516-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po516-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+      <div class="po516-actions">
+        <span class="po516-spacer"></span>
+        <button
+          type="submit"
+          class="po516-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
       </div>
     </div>
   </form>

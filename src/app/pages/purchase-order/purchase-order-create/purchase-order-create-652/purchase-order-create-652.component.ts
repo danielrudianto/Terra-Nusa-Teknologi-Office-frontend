@@ -1,0 +1,489 @@
+import { CommonModule } from '@angular/common';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { Component, inject } from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import moment from 'moment';
+
+import { ApiService } from 'src/app/services/api.service';
+import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
+import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
+import { buildTrainingClauses } from '../../../../constants/clause-templates';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+
+/**
+ * 6.5.2 Biaya pelatihan.
+ *
+ * Berbeda dari pemeriksaan peserta pada 6.5.1: yang dituju bukan keputusan
+ * atas seseorang, melainkan kemampuan beserta bukti resminya. Tiga hal
+ * menjadi pokok — kelulusan yang bisa gagal, sertifikat yang penerbitnya
+ * harus berwenang, dan masa berlaku yang bila lewat membuat orangnya tidak
+ * boleh bekerja.
+ */
+@Component({
+  selector: 'app-purchase-order-create-652',
+  standalone: true,
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
+  imports: [
+    ClauseLineComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+    HeaderTitleComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    NgxMaskDirective,
+  ],
+  templateUrl: './purchase-order-create-652.component.html',
+  styleUrl: './purchase-order-create-652.component.scss',
+})
+export class PurchaseOrderCreate652Component {
+  constructor(
+    private formBuilder: FormBuilder,
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+  ) {}
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
+
+  get typeCode(): string {
+    return '6.5.2';
+  }
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['6.5.2'] || 'Training Expense';
+  }
+
+  isSubmitting = false;
+  readonly purchaseType = '6.5.2';
+
+  /**
+   * Jenis pelatihan dibuat sebagai pilihan, bukan isian bebas.
+   *
+   * Penulisan bebas menghasilkan "SIO", "S.I.O", dan "Surat Izin Operator"
+   * untuk hal yang sama, sehingga sertifikat sulit ditelusuri kembali saat
+   * masa berlakunya perlu diperiksa.
+   */
+  trainingTypes: string[] = [
+    'SIO Operator Alat Berat',
+    'K3 Konstruksi',
+    'Ahli K3 Umum',
+    'SKK Konstruksi',
+    'Rigger / Juru Ikat Beban',
+    'P3K di Tempat Kerja',
+    'Perangkat Lunak',
+    'Lainnya',
+  ];
+
+  formGroup: FormGroup = new FormGroup({
+    date: new FormControl('', Validators.required),
+    purchaseType: new FormControl('6.5.2'),
+    supplierID: new FormControl('', Validators.required),
+    supplierName: new FormControl('', Validators.required),
+    supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
+    /*
+     * Pelatihan selalu dibebankan ke PUSAT, tidak pernah ke proyek.
+     *
+     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
+     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
+     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
+     * dibaca, ketika dokumennya sudah lama tersimpan.
+     */
+    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
+      Validators.required,
+    ]),
+
+    paymentTerm: new FormControl('', Validators.required),
+    creditTerm: new FormControl(0),
+    prepaidTerm: new FormControl(0),
+
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+
+    trainingVenue: new FormControl('penyedia'),
+    participantCancelDays: new FormControl(3, [Validators.min(0)]),
+    certificateDueDays: new FormControl(30, [Validators.min(0)]),
+    retakeCostBearer: new FormControl('kesepakatan'),
+
+    lines: new FormArray([]),
+    additionalClauses: new FormArray([]),
+    includePPN: new FormControl(false),
+  });
+
+  readonly retakeBearers = [
+    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
+    { value: 'kedua', label: 'PIHAK KEDUA (penyelenggara)' },
+    { value: 'kesepakatan', label: 'Disepakati kemudian' },
+  ];
+
+  ngOnInit(): void {
+    const routeType = this.route.snapshot.data['purchaseType'];
+    if (routeType) this.formGroup.patchValue({ purchaseType: routeType });
+    this.addLine();
+  }
+
+  // ---- rincian pelatihan ----
+  get t(): FormArray {
+    return this.formGroup.get('lines') as FormArray;
+  }
+  getFormGroupAt(i: number) {
+    return this.t.at(i) as FormGroup;
+  }
+
+  addLine() {
+    this.t.push(
+      this.formBuilder.group({
+        trainingType: ['', Validators.required],
+        customType: [''], // dipakai saat trainingType === 'Lainnya'
+        // Lembaga yang menerbitkan sertifikat, mis. "Kemnaker RI".
+        issuer: [''],
+        startDate: [''],
+        endDate: [''],
+        quantity: [1, [Validators.required, Validators.min(0.01)]],
+        unit: ['peserta', Validators.required],
+        price: [0, [Validators.required, Validators.min(0)]],
+      }),
+    );
+  }
+
+  removeLineAt(i: number) {
+    this.t.removeAt(i);
+  }
+
+  isOther(i: number): boolean {
+    return this.getFormGroupAt(i).value.trainingType === 'Lainnya';
+  }
+
+  /** Nama jenis yang benar-benar tersimpan pada kolom pekerjaan. */
+  private lineTask(i: number): string {
+    const v = this.getFormGroupAt(i).value;
+    return v.trainingType === 'Lainnya'
+      ? v.customType || 'Lainnya'
+      : v.trainingType || '';
+  }
+
+  /** Keterangan di bawah nama pelatihan: tanggal dan lembaga penerbit. */
+  private lineRemarks(i: number): string {
+    const x = this.getFormGroupAt(i).getRawValue();
+    const bagian: string[] = [];
+    const mulai = this.tanggalPanjang(x.startDate);
+    const selesai = this.tanggalPanjang(x.endDate);
+    if (mulai && selesai) bagian.push(`${mulai} s/d ${selesai}`);
+    else if (mulai) bagian.push(mulai);
+    if (x.issuer) bagian.push(String(x.issuer));
+    return bagian.join(' · ');
+  }
+
+  lineTotal(i: number): number {
+    const x = this.t.at(i).getRawValue();
+    return (Number(x.quantity) || 0) * (Number(x.price) || 0);
+  }
+
+  get subTotal(): number {
+    return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
+  }
+  get ppnAmount(): number {
+    return this.formGroup.get('includePPN')?.value ? this.subTotal * 0.11 : 0;
+  }
+  get grandTotal(): number {
+    return this.subTotal + this.ppnAmount;
+  }
+
+  /** Jumlah peserta seluruh baris, untuk keterangan di layar. */
+  get totalPeserta(): number {
+    return this.t.controls.reduce(
+      (acc, c) => acc + (Number(c.value.quantity) || 0),
+      0,
+    );
+  }
+
+  // ---- poin tambahan ----
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+  get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
+  // ---- termin ----
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) credit?.enable();
+    else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) prepaid?.enable();
+    else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  openSupplierSelector() {
+    this.dialog
+      .open(SupplierSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          supplierID: data.id,
+          supplierName: data.name,
+          supplierAddress: data.address,
+          supplierNpwp: data.npwp || '',
+        });
+      });
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
+
+  /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
+  private tanggalPanjang(nilai: any): string {
+    if (!nilai) return '';
+    const d = new Date(nilai);
+    return isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+  }
+
+  private toISO(d: any): string | null {
+    return d ? new Date(d).toISOString().split('T')[0] : null;
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      trainingVenue: v.trainingVenue,
+      participantCancelDays: v.participantCancelDays,
+      certificateDueDays: v.certificateDueDays,
+      retakeCostBearer: v.retakeCostBearer,
+      pphCode: v.pphCode,
+      pphTaxObject: v.pphTaxObject,
+      pphPercentage: v.pphPercentage,
+    };
+  }
+
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get previewSections() {
+    return buildTrainingClauses(
+      this.clauseContext() as any,
+      this.additionalClauseValues,
+    );
+  }
+
+  private formatData() {
+    const v = this.formGroup.getRawValue();
+    return {
+      date: moment(v.date).format('YYYY-MM-DD'),
+      supplierID: v.supplierID,
+      purchaseType: '6.5.2',
+      projectName: v.projectName,
+      dpp: this.subTotal,
+      ppn: v.includePPN ? 11 : 0,
+      pphCode: v.pphCode || null,
+      pphTaxObject: v.pphTaxObject || null,
+      pphPercentage: Number(v.pphPercentage) || 0,
+      payment_term: v.paymentTerm,
+      templateVersion: '1.0',
+      items: this.t.controls.map((c, i) => {
+        const x = c.getRawValue();
+        return {
+          task: this.lineTask(i),
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: this.toISO(x.startDate),
+          remarks_2: this.toISO(x.endDate),
+          remarks_3: x.issuer || null,
+        };
+      }),
+      customData: {
+        trainingVenue: v.trainingVenue,
+        participantCancelDays: v.participantCancelDays,
+        certificateDueDays: v.certificateDueDays,
+        retakeCostBearer: v.retakeCostBearer,
+        pphCode: v.pphCode,
+        pphTaxObject: v.pphTaxObject,
+        pphPercentage: v.pphPercentage,
+        paymentTerm: v.paymentTerm,
+        creditTerm: v.creditTerm,
+        prepaidTerm: v.prepaidTerm,
+        additionalClauses: this.additionalClauseValues,
+      },
+    };
+  }
+
+  /**
+   * Susun data cetak.
+   *
+   * Pelatihan adalah pemesanan jasa, sehingga dokumennya memakai tata letak
+   * Surat Perintah Kerja.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: '6.5.2',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
+      items: this.t.controls.map((c, i) => {
+        const x = c.getRawValue();
+        return {
+          name: this.lineTask(i),
+          remarks: this.lineRemarks(i),
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: '1.0',
+      sections: this.previewSections,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
+  onSubmit() {
+    this.isSubmitting = true;
+    this.apiService
+      .post('purchase-orders', this.formatData())
+      .subscribe({
+        next: (res: any) => {
+          this.snackBar.open(
+            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            'Close',
+            { duration: 3000 },
+          );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            printPurchaseOrderB(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+          this.router.navigate(['/Purchase-order']);
+        },
+        error: (error) => {
+          this.snackBar.open(
+            error?.error?.detail || 'Gagal membuat purchase order',
+            'Close',
+            { duration: 3000 },
+          );
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
+  }
+}

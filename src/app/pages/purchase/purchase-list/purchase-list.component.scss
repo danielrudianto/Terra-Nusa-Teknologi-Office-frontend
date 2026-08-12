@@ -428,3 +428,36 @@
   background: var(--brand, #154dec);
   opacity: 1;
 }
+
+/* Nomor purchase order yang dapat ditekan. */
+.pl-polink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: var(--brand, #154dec);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+.pl-polink:hover {
+  text-decoration: underline;
+}
+
+/* Nomor yang dokumennya belum ada di sistem.
+   Tetap dapat ditekan agar keterangannya jelas, tetapi tidak tampak seperti
+   tautan biasa — supaya tidak ditekan berulang dengan harapan terbuka. */
+.pl-polink--missing {
+  color: var(--muted, #6b7280);
+  font-weight: 500;
+  cursor: help;
+}
+.pl-polink__warn {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: var(--faint, #9aa0ab);
+}

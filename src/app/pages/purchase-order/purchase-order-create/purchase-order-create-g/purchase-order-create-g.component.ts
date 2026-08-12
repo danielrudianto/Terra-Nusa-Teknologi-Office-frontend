@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -36,6 +39,7 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   selector: 'app-purchase-order-create-g',
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -54,6 +58,22 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   styleUrl: './purchase-order-create-g.component.scss',
 })
 export class PurchaseOrderCreateGComponent {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return 'G';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['G'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,

@@ -1,0 +1,1315 @@
+/* token-based → dark-aware */
+$brand: var(--brand, #154dec);
+$ink: var(--ink, #16181d);
+$muted: var(--muted, #6b7280);
+$faint: var(--faint, #9aa0ab);
+$line: var(--line, #eef0f3);
+$surface: var(--surface, #ffffff);
+$surface2: var(--surface-2, #fafbfc);
+$border: var(--border, #e3e6eb);
+$brandSoft: var(--brand-soft, #e7ecfb);
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.po642 {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* card */
+.po642-card {
+  background: $surface;
+  border: 0.5px solid $border;
+  border-radius: 18px;
+  box-shadow: var(
+    --card-shadow,
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05)
+  );
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.po642-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.po642-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $faint;
+  margin-bottom: 0.9rem;
+  &--flush {
+    margin-bottom: 0;
+  }
+}
+
+/* grid */
+.po642-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.25rem;
+}
+.po642-span2 {
+  grid-column: 1 / -1;
+}
+:host ::ng-deep .po642-grid .mat-mdc-form-field {
+  width: 100%;
+}
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
+}
+
+/* add / calc buttons */
+.po642-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid var(--border, #d7deea);
+  background: $surface;
+  color: $brand;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
+}
+
+/* item rows (grid table) */
+.po642-items {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.po642-items__head,
+.po642-items__row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.6fr 0.9fr 0.9fr 1.2fr 1.1fr 40px;
+  gap: 0.5rem;
+  align-items: center;
+}
+.po642-items__head {
+  background: $surface2;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid $line;
+  span {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+}
+.po642-items__row {
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid $line;
+}
+.po642-items__row:last-child {
+  border-bottom: none;
+}
+.po642-r {
+  text-align: right;
+}
+:host ::ng-deep .po642-f {
+  width: 100%;
+}
+:host ::ng-deep .po642-f .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+:host ::ng-deep .po642-f .mat-mdc-text-field-wrapper {
+  background: transparent;
+}
+:host ::ng-deep .po642-f.po642-r input {
+  text-align: right;
+}
+.po642-linetotal {
+  text-align: right;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  padding-bottom: 1.25em;
+}
+.po642-items__empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: $faint;
+  font-size: 0.85rem;
+}
+
+/* items foot: PPN toggle + summary */
+.po642-items__foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.po642-summary {
+  min-width: 260px;
+  margin-left: auto;
+}
+.po642-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+  span:first-child {
+    color: $muted;
+  }
+  span:last-child {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  &--total {
+    border-top: 1px solid $line;
+    margin-top: 4px;
+    padding-top: 0.6rem;
+    span:first-child {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      color: $ink;
+    }
+    span:last-child {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: $brand;
+    }
+  }
+}
+
+/* info banner */
+.po642-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  background: $brandSoft;
+  border-radius: 10px;
+  color: var(--brand-strong, #0f3fd0);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+  }
+}
+
+/* actions */
+.po642-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $line;
+}
+.po642-spacer {
+  flex: 1;
+}
+.po642-submit {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.6rem;
+  cursor: pointer;
+  border: none;
+  background: $brand;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(21, 77, 236, 0.22);
+  transition: background 0.15s ease;
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+  &:disabled {
+    background: var(--line, #e6e9ee);
+    color: var(--faint, #9aa0ab);
+    box-shadow: none;
+    cursor: default;
+  }
+}
+
+@media (max-width: 860px) {
+  .po642-grid {
+    grid-template-columns: 1fr;
+  }
+  .po642-items__head {
+    display: none;
+  }
+  .po642-items__row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.75rem;
+  }
+  .po642-linetotal {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* ===== catalog item cards ===== */
+.po642-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: $faint;
+  font-size: 0.86rem;
+  border: 1px dashed $border;
+  border-radius: 14px;
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: $faint;
+  }
+}
+
+.po642-itemlist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.po642-itemcard {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+
+  &__id {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.75rem 0.9rem;
+    background: $surface2;
+    border-bottom: 1px solid $line;
+  }
+  &__inputs {
+    display: grid;
+    grid-template-columns: 0.8fr 1fr 1.2fr;
+    gap: 0.25rem 1rem;
+    padding: 0.9rem 0.9rem 0.2rem;
+    align-items: start;
+  }
+}
+
+.po642-itembadge {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: $brandSoft;
+  color: $brand;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+.po642-itemid__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.po642-itemdesc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po642-itemsku {
+  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $muted;
+}
+.po642-itemtotal {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .po642-itemcard__inputs .mat-mdc-form-field {
+  width: 100%;
+}
+.po642-itemremarks {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+  .po642-itemcard__inputs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .po642-itemremarks {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ===== shipment legs ===== */
+.po642-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.po642-leg {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+}
+.po642-leg__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0.9rem;
+  background: $surface2;
+  border-bottom: 1px solid $line;
+}
+.po642-leg__no {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: $brand;
+  background: $brandSoft;
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+.po642-leg__route {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $ink;
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $faint;
+    margin-top: 2px;
+  }
+}
+.po642-leg__loc {
+  flex: 1 1 0;
+  min-width: 0;
+  line-height: 1.3;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.po642-leg__amt {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.po642-leg__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+}
+:host ::ng-deep .po642-leg__grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* vehicle picker */
+.po642-vehlabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $faint;
+  padding: 0.3rem 0.9rem 0.5rem;
+}
+.po642-vehicles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 0.9rem 1rem;
+}
+.po642-veh {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  width: 78px;
+  padding: 0.6rem 0.4rem;
+  border-radius: 12px;
+  border: 1px solid $border;
+  background: $surface;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.13s ease;
+  &__ico svg {
+    width: 30px;
+    height: 30px;
+    display: block;
+  }
+  &__lbl {
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  &:hover {
+    border-color: var(--faint, #c2ccde);
+    background: var(--hover, #f6f8ff);
+    color: $ink;
+  }
+  &.is-on {
+    border-color: $brand;
+    background: $brandSoft;
+    color: $brand;
+    box-shadow: 0 3px 10px rgba(21, 77, 236, 0.18);
+    .po642-veh__lbl {
+      font-weight: 700;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .po642-leg__grid {
+    grid-template-columns: 1fr;
+  }
+  .po642-veh {
+    width: calc(25% - 6px);
+  }
+}
+
+.po642-nofleet {
+  font-size: 0.82rem;
+  color: var(--faint, #9aa0ab);
+  padding: 0.5rem 0.2rem;
+}
+
+/* dari/ke addresses: fixed 50% column, wrap long text */
+.po642-addr {
+  min-width: 0;
+}
+.po642-addr textarea {
+  resize: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* ===== transport mode segmented control ===== */
+.po642-modes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 0.9rem 0.9rem 0.2rem;
+}
+.po642-mode {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 0.55rem 0.3rem;
+  border-radius: 11px;
+  border: 1px solid $border;
+  background: $surface;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.13s ease;
+  &__ico svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+  &__lbl {
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  &:hover {
+    border-color: var(--faint, #c2ccde);
+    background: var(--hover, #f6f8ff);
+    color: $ink;
+  }
+  &.is-on {
+    border-color: $brand;
+    background: $brandSoft;
+    color: $brand;
+    box-shadow: 0 2px 8px rgba(21, 77, 236, 0.16);
+    .po642-mode__lbl {
+      font-weight: 700;
+    }
+  }
+}
+.po642-leg__grid--tail {
+  padding-top: 0.4rem;
+}
+
+@media (max-width: 560px) {
+  .po642-modes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* fleet info button in the "Jenis kendaraan" label */
+.po642-vehlabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.po642-veh-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 0.5px solid var(--border, #cdd7f7);
+  background: transparent;
+  color: var(--brand, #154dec);
+  border-radius: 8px;
+  padding: 3px 9px;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: background 0.14s ease;
+  &:hover {
+    background: var(--brand-soft, #eef2fe);
+    border-style: solid;
+  }
+}
+
+/* ===== rental item cards ===== */
+.po642-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.po642-rental {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+}
+.po642-rental__id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 0.9rem;
+  background: $surface2;
+  border-bottom: 1px solid $line;
+}
+.po642-rentbadge {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: $brandSoft;
+  color: $brand;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+.po642-rentid__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.po642-rentname {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po642-rentcap {
+  font-size: 0.75rem;
+  color: $muted;
+}
+.po642-rentcat {
+  font-weight: 600;
+}
+.po642-renttotal {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.po642-rental__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+}
+:host ::ng-deep .po642-rental__grid .mat-mdc-form-field {
+  width: 100%;
+}
+.po642-full {
+  width: 100%;
+}
+:host ::ng-deep .po642-full.mat-mdc-form-field {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .po642-rental__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .po642-rental__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* wysiwyg notes label */
+.po642-wyslabel {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  margin: 0.2rem 0 0.5rem;
+}
+app-wysiwyg {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+/* ===== manpower rows ===== */
+.po642-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.po642-worker {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+}
+.po642-worker__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0.9rem;
+  background: $surface2;
+  border-bottom: 1px solid $line;
+}
+.po642-worker__no {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: $brand;
+  background: $brandSoft;
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+.po642-worker__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po642-worker__who {
+  color: $muted;
+  font-weight: 500;
+}
+.po642-worker__amt {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.po642-worker__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+}
+:host ::ng-deep .po642-worker__grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* rich-text notes */
+app-wysiwyg {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 820px) {
+  .po642-worker__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .po642-worker__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== step 0: subtype chooser ===== */
+.po642-choose {
+  text-align: center;
+}
+.po642-choose__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $ink;
+}
+.po642-choose__sub {
+  font-size: 0.84rem;
+  color: $muted;
+  margin: 4px 0 1.4rem;
+}
+.po642-choose__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.po642-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 1.6rem 1.2rem;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid $border;
+  background: $surface;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.15s ease;
+  &__ico {
+    color: $brand;
+    svg {
+      width: 34px;
+      height: 34px;
+      display: block;
+    }
+  }
+  &__code {
+    margin-top: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: $brandSoft;
+    color: $brand;
+  }
+  &__name {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: $ink;
+  }
+  &__desc {
+    font-size: 0.78rem;
+    color: $muted;
+    line-height: 1.4;
+  }
+  &:hover {
+    border-color: $brand;
+    background: var(--hover, #f6f8ff);
+    box-shadow: 0 6px 18px rgba(21, 77, 236, 0.14);
+    transform: translateY(-2px);
+  }
+}
+
+/* subtype chip in the header */
+.po642-typechip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: $muted;
+  background: $surface2;
+  border: 0.5px solid $border;
+  border-radius: 999px;
+  padding: 4px 6px 4px 12px;
+  strong {
+    color: $brand;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+  }
+  &__btn {
+    border: none;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $brand;
+    background: $brandSoft;
+    border-radius: 999px;
+    padding: 3px 10px;
+    &:hover {
+      background: var(--brand, #154dec);
+      color: #fff;
+    }
+  }
+}
+
+/* ===== scope rows ===== */
+.po642-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.po642-scope {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+}
+.po642-scope__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0.9rem;
+  background: $surface2;
+  border-bottom: 1px solid $line;
+}
+.po642-scope__no {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: $brand;
+  background: $brandSoft;
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+.po642-scope__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po642-scope__amt {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.po642-scope__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+}
+.po642-span3 {
+  grid-column: span 3;
+}
+:host ::ng-deep .po642-scope__grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* ===== worker rows (H2) ===== */
+.po642-workers {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.po642-worker {
+  display: grid;
+  grid-template-columns: 34px 1.4fr 1fr 44px;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.2rem;
+  &__no {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: $surface2;
+    color: $muted;
+    font-size: 0.74rem;
+    font-weight: 700;
+  }
+}
+:host ::ng-deep .po642-worker .mat-mdc-form-field {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .po642-choose__grid {
+    grid-template-columns: 1fr;
+  }
+  .po642-scope__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .po642-span3 {
+    grid-column: span 2;
+  }
+  .po642-worker {
+    grid-template-columns: 28px 1fr 40px;
+  }
+}
+
+/* ===== mixed lines (jasa / barang) ===== */
+.po642-addgroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.po642-add--alt {
+  background: $surface2 !important;
+  color: $ink !important;
+  border-color: $border !important;
+  &:hover {
+    background: var(--hover, #f6f8ff) !important;
+    border-color: $brand !important;
+    color: $brand !important;
+  }
+}
+
+.po642-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.po642-line {
+  border: 0.5px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $surface;
+}
+.po642-line__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0.9rem;
+  background: $surface2;
+  border-bottom: 1px solid $line;
+}
+.po642-kind {
+  flex: 0 0 auto;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+  &.is-goods {
+    background: $brandSoft;
+    color: $brand;
+  }
+}
+.po642-line__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $ink;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.po642-sku {
+  margin-left: 7px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $muted;
+  background: $surface2;
+  border: 0.5px solid $border;
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+.po642-line__amt {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.po642-line__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 0.9rem 0.1rem;
+}
+.po642-note textarea {
+  resize: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+:host ::ng-deep .po642-line__grid .mat-mdc-form-field {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .po642-line__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .po642-span3 {
+    grid-column: span 2;
+  }
+}
+@media (max-width: 560px) {
+  .po642-line__grid {
+    grid-template-columns: 1fr;
+  }
+  .po642-span3 {
+    grid-column: span 1;
+  }
+}
+
+/* validity chip in the line header */
+.po642-validity {
+  margin-left: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+}
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A yang juga bersesi. */
+.po642-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.25rem 0 0.75rem;
+}
+
+/* Kelas yang sebelumnya dipakai di markup tanpa definisi gaya. */
+.po642-section__title--flush {
+  margin-bottom: 0;
+}
+.po642-line__no {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: $brand;
+  background: $brandSoft;
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+.po642-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 0.9rem 0.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--line, #eef0f4);
+}
+.po642-foot .po642-summary {
+  min-width: 240px;
+  margin-left: auto;
+}
+.po642-summary__row--total {
+  font-weight: 700;
+  border-top: 1px solid var(--line, #eef0f4);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+/* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
+.po642-preview {
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.po642-preview__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+  margin: 0.6rem 0 0.35rem;
+}
+.po642-preview__list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.po642-preview__sub {
+  padding-left: 1.2rem;
+  list-style: lower-alpha;
+}
+
+/* Baris poin tambahan. */
+.po642-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po642-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po642-krow__field {
+  flex: 1 1 auto;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po642-preview__list > li,
+.po642-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po642-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po642-preview {
+  margin-bottom: 1.4rem;
+}
+.po642-cardhead + .po642-empty,
+.po642-cardhead + .po642-list {
+  margin-top: 0.6rem;
+}
+.po642-hint {
+  margin-bottom: 0.9rem;
+}
+
+/* Baris premi yang dititipkan. */
+.po642-feerow {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 40px;
+  gap: 0.25rem 0.75rem;
+  align-items: start;
+}
+.po642-feerow__task {
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .po642-feerow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .po642-feerow__task {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Penanda jalur penutupan yang sedang dipakai. */
+.po642-modechip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.po642-modechip strong {
+  color: var(--brand, #154dec);
+  letter-spacing: 0.05em;
+}
+.po642-modechip__btn {
+  border: 0;
+  background: transparent;
+  color: var(--brand, #154dec);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 0 0 0.4rem;
+}
+
+/* Kartu pilihan jalur. */
+.po642-pick__ico {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  margin-bottom: 0.6rem;
+}
+.po642-pick__ico svg {
+  width: 20px;
+  height: 20px;
+}
+.po642-pick__code {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand, #154dec);
+}
+.po642-pick__name {
+  display: block;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+.po642-pick__desc {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { buildClauseLines } from '../../../../constants/clause-templates';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
@@ -46,6 +48,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     MatCheckboxModule,
     TranslatePipe,
     CommonModule,
@@ -66,6 +69,17 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './purchase-order-create-63.component.scss',
 })
 export class PurchaseOrderCreate63Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return this.purchaseType;
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -113,16 +127,9 @@ export class PurchaseOrderCreate63Component {
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
     supplierNpwp: new FormControl(''),
-    /*
-     * Pengeluaran kantor selalu dibebankan ke PUSAT, tidak pernah ke proyek.
-     *
-     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
-     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
-     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
-     * dibaca, ketika dokumennya sudah lama tersimpan.
-     */
-    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
+    projectName: new FormControl('', [
       Validators.required,
+      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
@@ -480,6 +487,40 @@ export class PurchaseOrderCreate63Component {
       clauseContext: this.clauseContext(),
       additionalClauses: this.additionalClauseValues,
     };
+  }
+
+  // ---- termin pembayaran ----
+  //
+  // Termin disimpan sebagai KODE, bukan teks bebas: `paymentSentence()`
+  // memilih kalimatnya berdasarkan kode, sehingga teks bebas jatuh ke
+  // cabang cadangan dan tercetak apa adanya tanpa kalimat yang benar.
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) credit?.enable();
+    else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) prepaid?.enable();
+    else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
   }
 
   openPphSelector() {

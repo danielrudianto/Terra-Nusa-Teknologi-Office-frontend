@@ -383,3 +383,38 @@
   background: var(--line, #eef0f4);
   margin: 1rem 0;
 }
+
+/* Pembayaran yang belum disetujui: ditampilkan, tetapi jelas berbeda. */
+.lv-pay--pending {
+  opacity: 0.72;
+}
+.lv-pay__tag {
+  margin-left: auto;
+  margin-right: 0.6rem;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--warn-bg, #fff8e6);
+  color: var(--warn-fg, #8a6516);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.lv-pending-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: var(--warn-bg, #fff8e6);
+  border: 0.5px solid var(--warn-border, #f3e2b3);
+  color: var(--warn-fg, #8a6516);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.lv-pending-note mat-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}

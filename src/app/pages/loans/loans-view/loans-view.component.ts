@@ -51,13 +51,25 @@ export class LoansViewComponent {
       .get('loans/payments/' + this.data.id, {})
       .subscribe({
         next: (data: any) => {
+          // Jawaban berhasil tetapi tanpa isi diperlakukan seperti gagal:
+          // menampilkannya menghasilkan halaman dengan nilai kosong dan
+          // persentase yang tidak sah, dan itu terbaca sebagai kerusakan.
+          if (!data?.loan?.id) {
+            this.snackBar.open('Data pinjaman tidak ditemukan', 'Close', {
+              duration: 3000,
+            });
+            this.dialogRef.close();
+            return;
+          }
           this.loan = data.loan;
           this.payments = data.payments || [];
         },
         error: (error) => {
-          this.snackBar.open('Gagal memuat data loan', 'Close', {
-            duration: 3000,
-          });
+          this.snackBar.open(
+            error?.error?.detail || 'Gagal memuat data loan',
+            'Close',
+            { duration: 3000 },
+          );
           this.dialogRef.close();
         },
       })
@@ -66,22 +78,63 @@ export class LoansViewComponent {
       });
   }
 
+  /** Pembayaran yang belum dihapus — termasuk yang belum disetujui. */
   get activePayments(): any[] {
     return this.payments.filter((p) => !p.isDelete);
   }
 
+  /**
+   * Pembayaran yang benar-benar mengurangi hutang.
+   *
+   * Hanya yang sudah disetujui. Pembayaran yang masih menunggu persetujuan
+   * belum tentu jadi — memasukkannya ke pelunasan membuat hutang terlihat
+   * lebih kecil daripada kenyataannya, dan itu jenis kekeliruan yang tidak
+   * terlihat karena angkanya tetap tampak wajar.
+   */
+  get approvedPayments(): any[] {
+    return this.activePayments.filter((p) => p.isApprove === true);
+  }
+
+  /** Pembayaran yang sudah diajukan tetapi belum disetujui. */
+  get pendingPayments(): any[] {
+    return this.activePayments.filter((p) => p.isApprove !== true);
+  }
+
+  get pendingAmount(): number {
+    return this.pendingPayments.reduce(
+      (a, b) => a + this.angka(b?.amount),
+      0,
+    );
+  }
+
+  /**
+   * Angka dari server dibaca lewat penjaga ini, bukan dipakai apa adanya.
+   *
+   * Nilai yang kosong atau bukan angka menghasilkan NaN begitu ikut
+   * berhitung, dan NaN menular: satu pembayaran tanpa nominal membuat total,
+   * sisa, dan persentasenya sekaligus tampil sebagai "NaN%". Yang terlihat
+   * pengguna bukan data yang kurang, melainkan halaman yang rusak.
+   */
+  private angka(nilai: any): number {
+    const n = Number(nilai);
+    return Number.isFinite(n) ? n : 0;
+  }
+
   get totalPaid(): number {
-    return this.activePayments.reduce((a, b) => a + b.amount, 0);
+    return this.approvedPayments.reduce((a, b) => a + this.angka(b?.amount), 0);
   }
 
   get remaining(): number {
     if (this.loan == null) return 0;
-    return this.loan.debt - this.totalPaid;
+    return this.angka(this.loan.debt) - this.totalPaid;
   }
 
   get progress(): number {
-    if (this.loan == null || this.loan.debt === 0) return 0;
-    return Math.min(100, Math.round((this.totalPaid / this.loan.debt) * 100));
+    const hutang = this.angka(this.loan?.debt);
+    // Tanpa nilai hutang, persentase tidak punya arti — 0 lebih jujur
+    // daripada angka hasil pembagian yang tidak sah.
+    if (hutang <= 0) return 0;
+    return Math.min(100, Math.max(0, Math.round((this.totalPaid / hutang) * 100)));
   }
 
   copyForWhatsApp() {

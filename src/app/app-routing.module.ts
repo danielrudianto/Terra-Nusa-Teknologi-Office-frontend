@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { authGuard } from './guards/auth.guard';
 import { permissionGuard } from './guards/permission.guard';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,6 +11,14 @@ export const routes: Routes = [
   },
   {
     path: '',
+    /*
+     * Seluruh halaman di dalam kerangka utama mensyaratkan sudah masuk.
+     *
+     * Dipasang di rute induk, bukan satu per satu: halaman baru otomatis
+     * ikut terlindungi, sehingga tidak ada yang terlewat karena lupa
+     * menambahkan penjaganya.
+     */
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/main/main.component').then((m) => m.MainComponent),
     children: [
@@ -239,6 +248,22 @@ export const routes: Routes = [
                 (m) => m.PurchaseOrderCreate63Component,
               ),
             data: { title: 'Purchase order', purchaseType: '6.3.2' },
+          },
+          {
+            path: 'Create/642',
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-642/purchase-order-create-642.component').then(
+                (m) => m.PurchaseOrderCreate642Component,
+              ),
+            data: { title: 'Purchase order', purchaseType: '6.4.2' },
+          },
+          {
+            path: 'Create/652',
+            loadComponent: () =>
+              import('./pages/purchase-order/purchase-order-create/purchase-order-create-652/purchase-order-create-652.component').then(
+                (m) => m.PurchaseOrderCreate652Component,
+              ),
+            data: { title: 'Purchase order', purchaseType: '6.5.2' },
           },
           {
             path: 'Create/651',

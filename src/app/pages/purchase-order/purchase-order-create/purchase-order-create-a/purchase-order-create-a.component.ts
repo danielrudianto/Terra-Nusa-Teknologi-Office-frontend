@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -52,6 +55,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     MatAutocompleteModule,
     MatSelectModule,
     TranslatePipe,
@@ -74,6 +78,22 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   styleUrl: './purchase-order-create-a.component.scss',
 })
 export class PurchaseOrderCreateAComponent {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return 'A';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['A'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -290,9 +310,27 @@ export class PurchaseOrderCreateAComponent {
   }
 
   // ----- summary -----
+  /**
+   * Nilai satu baris pengiriman: harga satuan dikali volumenya.
+   *
+   * Kolom "amount" berisi harga PER SATUAN, bukan jumlah barisnya. Sebelumnya
+   * nilainya dijumlahkan apa adanya sehingga volume 2 tetap dihitung sebagai
+   * satu — layar dan nilai yang tersimpan menjadi lebih kecil daripada
+   * dokumen yang tercetak, dan selisihnya baru terlihat saat keduanya
+   * dibandingkan.
+   *
+   * Satuan "Ls" (lump sum) selalu dihitung satu, sama seperti pada tabel
+   * dokumen.
+   */
+  lineTotal(x: any): number {
+    const harga = Number(String(x?.amount ?? '').replace(/[^\d.-]/g, '')) || 0;
+    const volume = x?.unit === 'Ls' ? 1 : Number(x?.quantity) || 1;
+    return harga * volume;
+  }
+
   get rawTotal(): number {
     return this.t.value.reduce(
-      (acc: number, x: any) => acc + (Number(x.amount) || 0),
+      (acc: number, x: any) => acc + this.lineTotal(x),
       0,
     );
   }

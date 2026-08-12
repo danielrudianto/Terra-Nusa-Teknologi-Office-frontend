@@ -286,3 +286,10 @@
   padding-left: 1.2rem;
   list-style: lower-alpha;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada. */
+.pov-clauses li,
+.pov-clauses__sub li {
+  white-space: pre-line;
+}

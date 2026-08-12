@@ -1,6 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -12,6 +13,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
+  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
@@ -49,6 +51,36 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './purchase-view.component.scss',
 })
 export class PurchaseViewComponent {
+
+  /** Id purchase order yang cocok; kosong bila dokumennya belum ada. */
+  purchaseOrderId: number | null = null;
+
+  private readonly matDialog = inject(MatDialog);
+  private readonly snack = inject(MatSnackBar);
+
+  /**
+   * Buka dokumen purchase order asal pembelian ini.
+   *
+   * Nomor PO tersimpan sebagai teks, sehingga dokumennya belum tentu ada —
+   * pembelian lama kerap mengacu pada nomor yang dicatat sebelum purchase
+   * order dibuat di sistem.
+   */
+  viewPurchaseOrder() {
+    if (!this.purchaseOrderId) {
+      this.snack.open(
+        'Dokumen purchase order belum tersedia di sistem',
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    this.matDialog.open(PurchaseOrderViewComponent, {
+      data: { id: this.purchaseOrderId },
+      width: '900px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
+  }
   constructor(
     private apiService: ApiService,
     private dialog: MatDialogRef<PurchaseViewComponent>,
@@ -148,6 +180,7 @@ export class PurchaseViewComponent {
         this.raw = data;
         this.createdBy = data.createdBy ?? null;
         this.createdByName = data.createdByName ?? '';
+        this.purchaseOrderId = data.purchase_order_id ?? null;
         this.metaFormGroup.patchValue({
           date: this.datePipe.transform(data.date, 'dd MMMM yyyy'),
           dueDate: this.datePipe.transform(data.dueDate, 'dd MMMM yyyy'),

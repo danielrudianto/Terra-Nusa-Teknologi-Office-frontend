@@ -1,0 +1,562 @@
+<div class="po642">
+  <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
+    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
+    [description]="typeLabel"
+  />
+
+  <!--
+    Jalur penutupan dipilih di layar, bukan lewat dialog: dialog yang ditutup
+    membuat pilihannya tetap kosong tanpa jalan kembali selain memuat ulang.
+  -->
+  @if (!channel) {
+    <div class="po642-card po642-choose">
+      <div class="po642-choose__title">Penutupan pertanggungan</div>
+      <div class="po642-choose__sub">
+        Ditutup lewat broker, atau langsung ke perusahaan asuransi?
+      </div>
+
+      <div class="po642-choose__grid">
+        <button type="button" class="po642-pick" (click)="chooseChannel('broker')">
+          <span class="po642-pick__ico">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </span>
+          <span class="po642-pick__code">Broker</span>
+          <span class="po642-pick__name">Lewat broker asuransi</span>
+          <span class="po642-pick__desc">
+            Ada imbalan jasa broker; premi dititipkan untuk diteruskan ke
+            penanggung.
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="po642-pick"
+          (click)="chooseChannel('langsung')"
+        >
+          <span class="po642-pick__ico">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </span>
+          <span class="po642-pick__code">Langsung</span>
+          <span class="po642-pick__name">Langsung ke penanggung</span>
+          <span class="po642-pick__desc">
+            Tanpa imbalan jasa terpisah; yang ditagihkan hanya preminya.
+          </span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (channel) {
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <!-- ===== Informasi PO ===== -->
+      <div class="po642-card">
+        <div class="po642-cardhead">
+          <div class="po642-section__title po642-section__title--flush">
+            {{ "common.poInfo" | translate }}
+          </div>
+          <span class="po642-modechip">
+            <strong>{{ lewatBroker ? "BROKER" : "LANGSUNG" }}</strong>
+            <button
+              type="button"
+              class="po642-modechip__btn"
+              (click)="resetChannel()"
+            >
+              {{ "common.change" | translate }}
+            </button>
+          </span>
+        </div>
+
+        <div class="po642-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poField.tanggalPo" | translate }}</mat-label>
+            <input matInput formControlName="date" [matDatepicker]="dp" />
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="dp"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="projectName"
+              maxlength="5"
+              (keyup)="toUpperCase()"
+              [placeholder]="'poField.exMicz' | translate"
+            />
+            <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+              "common.projectCodeError" | translate
+            }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="po642-span2">
+            <mat-label>{{ "poForm.vendor" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              readonly
+              (click)="openSupplierSelector()"
+              [placeholder]="'poField.pilihVendor' | translate"
+            />
+            <button
+              matSuffix
+              type="button"
+              mat-icon-button
+              (click)="openSupplierSelector()"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="po642-span2">
+            <mat-label>{{ "poField.alamatLengkap" | translate }}</mat-label>
+            <textarea
+              matInput
+              formControlName="supplierAddress"
+              rows="2"
+              style="resize: none"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ===== Rincian pertanggungan ===== -->
+      <div class="po642-card">
+        <div class="po642-cardhead">
+          <div class="po642-section__title po642-section__title--flush">
+            Rincian pertanggungan
+          </div>
+          <button type="button" class="po642-add" (click)="addLine()">
+            <mat-icon>add</mat-icon> {{ "poField.tambahBaris" | translate }}
+          </button>
+        </div>
+
+        <div formArrayName="lines">
+          @for (c of t.controls; track c; let i = $index) {
+            <div class="po642-line" [formGroupName]="i">
+              <div class="po642-line__head">
+                <span class="po642-line__no">#{{ i + 1 }}</span>
+                <span class="po642-line__amt"
+                  >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                >
+                @if (t.length > 1) {
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeLineAt(i)"
+                    aria-label="Hapus baris"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </div>
+
+              <div class="po642-grid">
+                <mat-form-field appearance="outline" class="po642-span2">
+                  <mat-label>Jenis pertanggungan</mat-label>
+                  <mat-select formControlName="insuranceType">
+                    @for (t of insuranceTypes; track t) {
+                      <mat-option [value]="t">{{ t }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                @if (isOther(i)) {
+                  <mat-form-field appearance="outline" class="po642-span2">
+                    <mat-label>Sebutkan jenisnya</mat-label>
+                    <input matInput formControlName="customType" />
+                  </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline" class="po642-span2">
+                  <mat-label>Objek yang dijamin</mat-label>
+                  <input
+                    matInput
+                    formControlName="object"
+                    placeholder="Ex. Excavator PC200 B 1234 XYZ"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nilai pertanggungan</mat-label>
+                  <input
+                    matInput
+                    formControlName="sumInsured"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                  />
+                  <span matPrefix>Rp&nbsp;</span>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Risiko sendiri (deductible)</mat-label>
+                  <input
+                    matInput
+                    formControlName="deductible"
+                    placeholder="Ex. 10% of claim, min Rp 5.000.000"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Mulai pertanggungan</mat-label>
+                  <input
+                    matInput
+                    formControlName="coverageStart"
+                    [matDatepicker]="dpS"
+                  />
+                  <mat-datepicker-toggle
+                    matIconPrefix
+                    [for]="dpS"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dpS></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Berakhir</mat-label>
+                  <input
+                    matInput
+                    formControlName="coverageEnd"
+                    [matDatepicker]="dpE"
+                  />
+                  <mat-datepicker-toggle
+                    matIconPrefix
+                    [for]="dpE"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dpE></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "common.quantity" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    type="number"
+                    [min]="0"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "common.unit" | translate }}</mat-label>
+                  <input matInput formControlName="unit" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="po642-span2">
+                  <mat-label>
+                    {{ lewatBroker ? "Imbalan jasa broker" : "Nilai jasa" }}
+                  </mat-label>
+                  <input
+                    matInput
+                    formControlName="price"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                  />
+                  <span matPrefix>Rp&nbsp;</span>
+                  <mat-hint>Di luar premi</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ===== Premi ===== -->
+      <div class="po642-card">
+        <div class="po642-cardhead">
+          <div class="po642-section__title po642-section__title--flush">
+            Premi (dititipkan)
+          </div>
+          <button type="button" class="po642-add" (click)="addPremium()">
+            <mat-icon>add</mat-icon> Tambah premi
+          </button>
+        </div>
+        <p class="po642-hint">
+          Premi diteruskan kepada perusahaan asuransi apa adanya, dan tidak
+          menjadi dasar pemotongan pajak. Kosongkan bila premi dibayarkan
+          langsung oleh PIHAK PERTAMA.
+        </p>
+
+        @if (premiums.controls.length === 0) {
+          <div class="po642-empty">
+            <mat-icon>receipt_long</mat-icon>
+            <span>Belum ada premi yang dititipkan.</span>
+          </div>
+        } @else {
+          <div formArrayName="premiums">
+            @for (c of premiums.controls; track c; let i = $index) {
+              <div class="po642-feerow" [formGroupName]="i">
+                <mat-form-field appearance="outline" class="po642-feerow__task">
+                  <mat-label>Uraian premi</mat-label>
+                  <input
+                    matInput
+                    formControlName="task"
+                    maxlength="100"
+                    placeholder="Ex. Premi CAR periode Sep–Des 2026"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poField.keterangan" | translate }}</mat-label>
+                  <input matInput formControlName="description" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{
+                    "poField.perkiraanJumlah" | translate
+                  }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="amount"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                  />
+                  <span matPrefix>Rp&nbsp;</span>
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removePremiumAt(i)"
+                  aria-label="Hapus premi"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="po642-foot">
+          <mat-slide-toggle formControlName="includePPN" color="primary">{{
+            "poForm.includePpn" | translate
+          }}</mat-slide-toggle>
+          <div class="po642-summary">
+            <div class="po642-summary__row">
+              <span>{{ "common.subtotalDpp" | translate }}</span
+              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            </div>
+            <div class="po642-summary__row">
+              <span>PPN</span
+              ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            </div>
+            @if (hasPremium) {
+              <div class="po642-summary__row">
+                <span>Premi (dititipkan)</span
+                ><span>Rp {{ premiumTotal | number: "1.0-0" }}</span>
+              </div>
+            }
+            <div class="po642-summary__row po642-summary__row--total">
+              <span>{{ "common.total" | translate }}</span
+              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Pembayaran ===== -->
+      <div class="po642-card">
+        <div class="po642-section__title">
+          {{ "poForm.paymentTitle" | translate }}
+        </div>
+        <div class="po642-grid">
+          <mat-form-field appearance="outline" class="po642-span2">
+            <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+            <mat-select
+              formControlName="paymentTerm"
+              (selectionChange)="onPaymentTermChange()"
+            >
+              <mat-option value="CASH">{{
+                "poForm.cash" | translate
+              }}</mat-option>
+              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+              <mat-option value="PPD">{{
+                "poForm.prepaidOpt" | translate
+              }}</mat-option>
+              <mat-option value="CR">{{
+                "poForm.credit" | translate
+              }}</mat-option>
+              <mat-option value="CRD">{{
+                "poForm.creditPrepaid" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="creditTerm"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>{{ "common.days" | translate }}</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="prepaidTerm"
+              type="number"
+              [min]="0"
+              [max]="100"
+            />
+            <span matSuffix>{{ "common.percent" | translate }}</span>
+          </mat-form-field>
+
+          <!--
+            Pemotongan hanya berlaku atas imbalan jasa broker; premi bukan
+            penghasilan PIHAK KEDUA sehingga tidak dipotong.
+          -->
+          @if (lewatBroker) {
+            <mat-form-field appearance="outline" class="po642-span2">
+              <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="pphCode"
+                readonly
+                (click)="openPphSelector()"
+                [placeholder]="'poField.pilihKodePph' | translate"
+              />
+              <button
+                matSuffix
+                type="button"
+                mat-icon-button
+                (click)="openPphSelector()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+              @if (formGroup.value.pphTaxObject) {
+                <mat-hint>
+                  {{ formGroup.value.pphPercentage }}% —
+                  {{ formGroup.value.pphTaxObject }}
+                </mat-hint>
+              }
+            </mat-form-field>
+          }
+        </div>
+      </div>
+
+      <!-- ===== Ketentuan ===== -->
+      <div class="po642-card">
+        <div class="po642-section__title">Ketentuan</div>
+        <div class="po642-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Penyerahan polis asli</mat-label>
+            <input
+              matInput
+              formControlName="policyDeliveryDays"
+              type="number"
+              [min]="0"
+            />
+            <span matSuffix>{{ "poField.hariKalender" | translate }}</span>
+            <mat-hint>Sejak premi dibayarkan</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ===== Catatan / Poin Perjanjian ===== -->
+      <div class="po642-card">
+        <div class="po642-section__title">
+          {{ "common.notesAndPoints" | translate }}
+        </div>
+        <p class="po642-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
+        <div class="po642-preview">
+          @for (sec of previewSections; track $index) {
+            @if (sec.title) {
+              <div class="po642-preview__title">{{ sec.title }}</div>
+            }
+            <ol class="po642-preview__list">
+              @for (p of sec.items; track $index) {
+                @if (isSubList(p)) {
+                  <ol class="po642-preview__sub">
+                    @for (d of asList(p); track d) {
+                      <li><app-clause-line [value]="d" /></li>
+                    }
+                  </ol>
+                } @else {
+                  <li><app-clause-line [value]="p" /></li>
+                }
+              }
+            </ol>
+          }
+        </div>
+
+        <div class="po642-cardhead">
+          <div class="po642-section__title po642-section__title--flush">
+            {{ "common.extraPoints" | translate }}
+          </div>
+          <button type="button" class="po642-add" (click)="addClause()">
+            <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
+          </button>
+        </div>
+
+        @if (additionalClauses.controls.length === 0) {
+          <div class="po642-empty">
+            <mat-icon>playlist_add</mat-icon>
+            <span>{{ "common.noExtraPoints" | translate }}</span>
+          </div>
+        } @else {
+          <div formArrayName="additionalClauses" class="po642-list">
+            @for (c of additionalClauses.controls; track c; let i = $index) {
+              <div class="po642-krow">
+                <span class="po642-krow__no">+{{ i + 1 }}</span>
+                <mat-form-field appearance="outline" class="po642-krow__field">
+                  <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                  <textarea matInput [formControlName]="i" rows="2"></textarea>
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeClause(i)"
+                  [attr.aria-label]="'poForm.removeClause' | translate"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="po642-actions">
+          <span class="po642-spacer"></span>
+          <button
+            type="submit"
+            class="po642-submit"
+            [disabled]="
+              formGroup.invalid || t.controls.length === 0 || isSubmitting
+            "
+          >
+            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>

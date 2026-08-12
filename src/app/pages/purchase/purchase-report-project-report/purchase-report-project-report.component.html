@@ -1,8 +1,46 @@
 <div class="prr">
+  <!--
+    Kode proyek dapat diganti dari sini, sama seperti jenis pada formulir
+    purchase order: membandingkan proyek adalah hal yang dilakukan berulang,
+    dan kembali ke daftar setiap kali membuatnya terasa jauh.
+  -->
   <app-header-title
-    title="Purchase Report"
-    description="Laporan pengeluaran per proyek"
+    [backLink]="'/Purchase'"
+    backLabel="Daftar Pembelian"
+    [title]="'Laporan Proyek'"
+    description="Pengeluaran, penerimaan, dan arus kas proyek"
+    [showChangeType]="true"
+    [typeCode]="projectName"
+    [typeName]="'Ganti proyek'"
+    (changeType)="gantiProyek()"
+    [actionButtonLabel]="data ? 'Unduh Excel' : null"
+    (onActionButtonClicked)="unduhExcel()"
   ></app-header-title>
+
+  <!--
+    Keadaan memuat dan gagal ditampilkan, bukan dibiarkan kosong.
+    Sebelumnya keduanya menghasilkan layar putih yang sama, sehingga tidak
+    ada cara membedakan data yang sedang datang dari data yang gagal.
+  -->
+  @if (isLoading) {
+    <div class="prr-state">
+      <mat-icon>hourglass_top</mat-icon>
+      <span>Memuat laporan…</span>
+    </div>
+  } @else if (errorMessage) {
+    <div class="prr-state prr-state--error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+      <button type="button" class="prr-retry" (click)="loadReport()">
+        Coba lagi
+      </button>
+    </div>
+  } @else if (!data) {
+    <div class="prr-state">
+      <mat-icon>inbox</mat-icon>
+      <span>Belum ada data untuk proyek ini.</span>
+    </div>
+  } @else {
 
   <!-- 3 kartu ringkasan -->
   <div class="prr-stats">
@@ -242,4 +280,5 @@
       </mat-tree>
     </div>
   </div>
+  }
 </div>

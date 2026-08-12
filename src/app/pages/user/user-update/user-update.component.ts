@@ -1,4 +1,5 @@
 import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormControl,
   FormGroup,
@@ -26,6 +27,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   styleUrl: './user-update.component.scss',
   standalone: true,
   imports: [
+    CommonModule,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,

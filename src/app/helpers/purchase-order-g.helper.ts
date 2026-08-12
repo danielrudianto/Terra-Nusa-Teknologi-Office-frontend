@@ -41,7 +41,7 @@ export interface IPurchaseOrderG {
    * kode templatenya berbeda — jadi keduanya memakai builder ini.
    */
   poType?: string;
-  purchaseOrderName: string; // 157-PO-TSKBP-G
+  purchaseOrderName: string; // 157-SPK-TSKBP-G
   date: Date | string; // tanggal PO
   projectName: string; // Tatar Surawisesa-KBP (TSKBP)
   supplierName: string;
@@ -221,7 +221,10 @@ export function printPurchaseOrderG(
 
       { text: 'Dengan hormat,', margin: [0, 12, 0, 4] as Margins },
       {
-        text: 'Berdasarkan permintaan kami, bersama ini kami bermaksud untuk melakukan sewa/pembelian barang-barang sebagai berikut:',
+        // Tata letak ini hanya dipakai untuk pembelian; sewa alat memakai
+        // dokumen tersendiri. Menyebut keduanya membuat dokumen pembelian
+        // terbaca seolah masih menawarkan pilihan.
+        text: 'Berdasarkan permintaan kami, bersama ini kami bermaksud untuk melakukan pembelian barang-barang sebagai berikut:',
         margin: [0, 0, 0, 4] as Margins,
       },
 

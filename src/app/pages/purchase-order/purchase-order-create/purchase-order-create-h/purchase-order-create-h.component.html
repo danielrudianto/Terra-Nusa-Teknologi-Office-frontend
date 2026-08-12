@@ -1,5 +1,9 @@
 <div class="poh">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.titleH' | translate"
@@ -638,7 +642,7 @@
           -->
           @if (isEntity) {
             <mat-slide-toggle formControlName="includePPN" color="primary"
-              >Termasuk PPN 11%</mat-slide-toggle
+              >{{ "poForm.includePpn" | translate }}</mat-slide-toggle
             >
           } @else {
             <span class="poh-rate__hint">
@@ -989,11 +993,11 @@
                 @if (isSubList(p)) {
                   <ol class="poh-preview__sub">
                     @for (d of asList(p); track d) {
-                      <li>{{ d }}</li>
+                      <li><app-clause-line [value]="d" /></li>
                     }
                   </ol>
                 } @else {
-                  <li>{{ asText(p) }}</li>
+                  <li><app-clause-line [value]="p" /></li>
                 }
               }
             </ol>
@@ -1010,7 +1014,10 @@
           <div class="poh-grid">
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.paymentTerm" | translate }}</mat-label>
-              <mat-select formControlName="paymentTerm">
+              <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
                 <mat-option value="CASH">{{
                   "poH.cash" | translate
                 }}</mat-option>
@@ -1207,11 +1214,11 @@
                   @if (isSubList(p)) {
                     <ol class="poh-preview__sub">
                       @for (d of asList(p); track d) {
-                        <li>{{ d }}</li>
+                        <li><app-clause-line [value]="d" /></li>
                       }
                     </ol>
                   } @else {
-                    <li>{{ asText(p) }}</li>
+                    <li><app-clause-line [value]="p" /></li>
                   }
                 }
               </ol>

@@ -1558,7 +1558,11 @@
     "addPoint": "Add point",
     "clauseAutoHint": "The standard terms below will be printed on the document. They follow the fields above; add points for any special agreement.",
     "deliveryAddressFranco": "Delivery address",
-    "deliveryAddressLoco": "Pickup address"
+    "deliveryAddressLoco": "Pickup address",
+    "changeType": "Change type",
+    "changeTypeTitle": "Change purchase order type?",
+    "changeTypeBody": "Anything already entered on this form will be lost.",
+    "priceExclPpnHint": "Prices are entered excluding VAT. When ticked, 11% VAT is added on top."
   },
   "menu": {
     "editAsset": "Edit asset",

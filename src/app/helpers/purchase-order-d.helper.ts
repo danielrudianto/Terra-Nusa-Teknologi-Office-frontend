@@ -18,6 +18,7 @@ import {
   formatDate,
   rupiah,
   vendorDisplayName,
+  workIntroSentence,
 } from './purchase-order-shared.helper';
 
 /** Satu komponen upah (gaji pokok, uang makan, insentif, dst). */
@@ -217,7 +218,8 @@ function buildDocDefinition(data: IPurchaseOrderD) {
       buildIdentityTable(data),
 
       {
-        text: 'Untuk melakukan pekerjaan dengan ketentuan-ketentuan sebagai berikut:',
+        // PO-D selalu pemesanan tenaga kerja; tidak ada bentuk lain.
+        text: workIntroSentence('D'),
         margin: [0, 0, 0, 4] as Margins,
       },
 

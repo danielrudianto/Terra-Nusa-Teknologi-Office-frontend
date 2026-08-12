@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -50,6 +53,7 @@ import { IPPh } from '../../../../utils/pph';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     MatAutocompleteModule,
     MatCheckboxModule,
     MatRadioModule,
@@ -71,6 +75,58 @@ import { IPPh } from '../../../../utils/pph';
   styleUrl: './purchase-order-create-h.component.scss',
 })
 export class PurchaseOrderCreateHComponent {
+
+  // ---- termin pembayaran ----
+  //
+  // Kolom kredit dan uang muka dikunci bila terminnya tidak memakainya:
+  // angka yang tertinggal di sana ikut tersimpan dan tercetak, padahal
+  // ketentuannya tidak menyebut tempo sama sekali.
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) credit?.enable();
+    else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) prepaid?.enable();
+    else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return 'H';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    // Tipe H tidak punya satu nama: bentuknya ditentukan jenis
+    // subkontraktornya, dan itulah yang berguna dilihat di kepala halaman.
+    return PURCHASE_TYPE_LABELS['H'] || 'Subcontracted work';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   readonly pphNoteOptions = MANDOR_PPH_NOTES;
   readonly toolingNoteOptions = MANDOR_TOOLING_NOTES;
 

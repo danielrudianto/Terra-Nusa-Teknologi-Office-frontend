@@ -16,6 +16,7 @@ import {
   formatDate,
   rupiah,
   vendorDisplayName,
+  workIntroSentence,
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderBItem {
@@ -24,6 +25,14 @@ export interface IPurchaseOrderBItem {
   quantity: number;
   unit: string;
   price: number;
+  /**
+   * Keterangan di bawah nama, dicetak lebih kecil.
+   *
+   * Pada sewa alat berisi periode dan lokasi penempatan — keduanya
+   * membedakan satu baris dari baris lain yang alatnya sama, dan tanpa itu
+   * dokumen tidak menyebutkan sampai kapan alatnya disewa.
+   */
+  remarks?: string;
 }
 
 export interface IPurchaseOrderB {
@@ -48,6 +57,13 @@ export interface IPurchaseOrderB {
   templateVersion?: string;
   clauseContext: ClauseContext;
   additionalClauses?: string[];
+  /**
+   * Poin perjanjian yang sudah terbagi seksi berjudul.
+   *
+   * Dikirim langsung oleh pemanggil untuk jenis PO yang klausulnya tidak
+   * terdaftar di CLAUSE_TEMPLATES. Bila diisi, seksi inilah yang dicetak.
+   */
+  sections?: { title?: string; items: (string | string[])[] }[];
   /**
    * Lampiran tata cara penagihan, dicetak di lembar terpisah.
    *
@@ -149,7 +165,15 @@ function buildItemTable(data: IPurchaseOrderB) {
     const amount = (Number(item.quantity) || 0) * (Number(item.price) || 0);
     return [
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
-      { text: item.name || '-', style: 'td' },
+      {
+        style: 'td',
+        text: item.remarks
+          ? [
+              item.name || '-',
+              { text: `\n${item.remarks}`, fontSize: 9, color: '#555555' },
+            ]
+          : item.name || '-',
+      },
       {
         text: rupiah(item.quantity),
         style: 'td',
@@ -238,6 +262,15 @@ function signatureColumns(data: IPurchaseOrderB) {
   };
 }
 
+/** Judul seksi pada poin perjanjian. */
+function pasalTitle(text: string) {
+  return {
+    text,
+    bold: true,
+    margin: [0, 10, 0, 4] as Margins,
+  };
+}
+
 export function printPurchaseOrderB(
   data: IPurchaseOrderB,
   output: PdfOutput = 'open',
@@ -249,6 +282,13 @@ export function printPurchaseOrderB(
     data.templateVersion,
     data.additionalClauses,
   );
+
+  /*
+   * Sebagian jenis PO merakit klausulnya sebagai seksi berjudul, bukan satu
+   * daftar rata — dan seksinya dikirim langsung oleh pemanggil karena tidak
+   * terdaftar di CLAUSE_TEMPLATES. Bila ada, seksi itulah yang dicetak.
+   */
+  const sections = data.sections;
 
   const dd = {
     ...DOCUMENT_PAGE,
@@ -272,7 +312,7 @@ export function printPurchaseOrderB(
       buildIdentityTable(data),
 
       {
-        text: 'Untuk melakukan pekerjaan dengan ketentuan-ketentuan sebagai berikut:',
+        text: workIntroSentence(data.poType),
         margin: [0, 0, 0, 4] as Margins,
       },
 
@@ -282,7 +322,12 @@ export function printPurchaseOrderB(
         text: 'Catatan dalam perjanjian adalah:',
         margin: [0, 2, 0, 4] as Margins,
       },
-      { ...clauseList(clauses), margin: [0, 0, 0, 12] as Margins },
+      ...(sections?.length
+        ? sections.flatMap((sec: any) => [
+            ...(sec.title ? [pasalTitle(sec.title)] : []),
+            { ...clauseList(sec.items || []), margin: [0, 0, 0, 8] as Margins },
+          ])
+        : [{ ...clauseList(clauses), margin: [0, 0, 0, 12] as Margins }]),
 
       {
         text: 'Demikian kami sampaikan, atas perhatiannya kami ucapkan terima kasih.',

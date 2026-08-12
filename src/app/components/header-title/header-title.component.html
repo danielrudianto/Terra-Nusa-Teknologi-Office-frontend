@@ -13,6 +13,23 @@
     <h1 class="mb-0">{{ title }}</h1>
     <p class="mt-0">{{ description }}</p>
   </div>
+  @if (showChangeType) {
+    <!--
+      Jenis PO ditampilkan sebagai pill yang dapat ditekan, mengikuti bentuk
+      penanda yang sudah dipakai di dalam formulir. Menampilkannya sebagai
+      keterangan saja membuat pengguna mengira jenisnya tidak dapat diubah.
+    -->
+    <button
+      type="button"
+      class="title__typepill"
+      (click)="changeType.emit()"
+      [attr.aria-label]="'poForm.changeType' | translate"
+    >
+      <strong>{{ typeCode }}</strong>
+      <span class="title__typepill__name">{{ typeName }}</span>
+      <mat-icon>swap_horiz</mat-icon>
+    </button>
+  }
   @if (actionButtonLabel != null) {
     <button class="header-button" (click)="actionButtonClicked()">
       <mat-icon>add</mat-icon>

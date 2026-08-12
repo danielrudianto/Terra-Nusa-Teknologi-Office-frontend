@@ -1,5 +1,9 @@
 <div class="pod">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.titleD' | translate"
@@ -520,8 +524,40 @@
       </div>
     }
 
-    <!-- ===== Poin Tambahan (custom, ditulis sendiri) ===== -->
+    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
     <div class="pod-card">
+      <div class="pod-section__title">
+        {{ "poForm.clauseTitle" | translate }}
+      </div>
+      <div class="pod-clausehint">
+        <mat-icon>lock</mat-icon>
+        <span>{{ "poForm.clausePreviewD" | translate }}</span>
+      </div>
+      <div class="pod-clausebox">
+        @for (sec of previewSections; track $index) {
+          <div class="pod-preview__title">{{ sec.title }}</div>
+          <ol class="pod-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="pod-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li><app-clause-line [value]="d" /></li>
+                  }
+                </ol>
+              } @else {
+                <li><app-clause-line [value]="p" /></li>
+              }
+            }
+          </ol>
+        }
+      </div>
+
+      <div class="pod-divider"></div>
+
+      <!--
+        Poin tambahan berada di bawah pratinjau, sama seperti form lain:
+        yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
+      -->
       <div class="pod-cardhead">
         <div class="pod-section__title">
           {{ "poForm.extraClauseTitle" | translate }}
@@ -557,35 +593,6 @@
           <div class="pod-clauseempty">
             {{ "poForm.noExtraClause" | translate }}
           </div>
-        }
-      </div>
-    </div>
-
-    <!-- ===== Poin Perjanjian (preview otomatis) ===== -->
-    <div class="pod-card">
-      <div class="pod-section__title">
-        {{ "poForm.clauseTitle" | translate }}
-      </div>
-      <div class="pod-clausehint">
-        <mat-icon>lock</mat-icon>
-        <span>{{ "poForm.clausePreviewD" | translate }}</span>
-      </div>
-      <div class="pod-clausebox">
-        @for (sec of previewSections; track $index) {
-          <div class="pod-preview__title">{{ sec.title }}</div>
-          <ol class="pod-preview__list">
-            @for (p of sec.items; track $index) {
-              @if (isSubList(p)) {
-                <ol class="pod-preview__sub">
-                  @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
-                  }
-                </ol>
-              } @else {
-                <li>{{ asText(p) }}</li>
-              }
-            }
-          </ol>
         }
       </div>
 

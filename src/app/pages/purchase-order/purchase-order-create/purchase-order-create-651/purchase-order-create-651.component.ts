@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -54,6 +56,7 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    ClauseLineComponent,
     CommonModule,
     ReactiveFormsModule,
     HeaderTitleComponent,
@@ -74,6 +77,17 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   styleUrl: './purchase-order-create-651.component.scss',
 })
 export class PurchaseOrderCreate651Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return '6.5.1';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private formBuilder: FormBuilder,
     private apiService: ApiService,
@@ -106,20 +120,17 @@ export class PurchaseOrderCreate651Component {
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
     supplierNpwp: new FormControl(''),
-    projectName: new FormControl('', Validators.required),
-
-    paymentTerm: new FormControl('', Validators.required),
-    creditTerm: new FormControl(0),
-    prepaidTerm: new FormControl(0),
-
-    pphCode: new FormControl(''),
-    pphTaxObject: new FormControl(''),
-    pphPercentage: new FormControl(0),
-
-    // Bentuk kuota
-    quotaValidUntil: new FormControl(''),
-    // Bentuk peserta
-    resultDueDays: new FormControl(3, [Validators.min(0)]),
+    /*
+     * Pengeluaran ini selalu dibebankan ke PUSAT, tidak pernah ke proyek.
+     *
+     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
+     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
+     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
+     * dibaca, ketika dokumennya sudah lama tersimpan.
+     */
+    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
+      Validators.required,
+    ]),
     participantCancelDays: new FormControl(1, [Validators.min(0)]),
 
     lines: new FormArray([]),

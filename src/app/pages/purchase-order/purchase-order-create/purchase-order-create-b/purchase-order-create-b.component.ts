@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -32,6 +35,7 @@ import {
   buildClauseHtml,
   buildClauseLines,
   buildEquipmentRentalBillingTerms,
+  buildTransportRentalBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
@@ -42,6 +46,7 @@ import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -62,6 +67,22 @@ import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
   styleUrl: './purchase-order-create-b.component.scss',
 })
 export class PurchaseOrderCreateBComponent {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return 'B';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['B'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -82,6 +103,23 @@ export class PurchaseOrderCreateBComponent {
      * penomoran dan judul dokumennya.
      */
     purchaseType: new FormControl('B'),
+    /*
+     * Jenis barang yang disewa.
+     *
+     * Menentukan istilah pada dokumen sekaligus ketentuan yang berlaku:
+     * SILO dan SIO hanya mengikat pesawat angkat dan angkut, sehingga tidak
+     * dicetak untuk kendaraan maupun perlengkapan biasa.
+     */
+    rentalCategory: new FormControl('alat-berat'),
+    /*
+     * Cakupan harga pengangkutan (upah operator, BBM, retribusi, dan akibat
+     * kelalaian pengemudi).
+     *
+     * Mengikuti jenis dokumennya: menyala saat diterbitkan sebagai tipe A,
+     * padam saat kembali ke B. Tetap dapat diubah tangan bila ada kesepakatan
+     * lain — yang otomatis hanyalah nilai awalnya, bukan penguncian.
+     */
+    includeTransportCoverage: new FormControl(false),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierPrefix: new FormControl(''),
@@ -220,6 +258,12 @@ export class PurchaseOrderCreateBComponent {
    * terpisah, agar klausul hourmeter tidak mungkin berbeda dari dasar
    * perhitungan yang ditagihkan.
    */
+  rentalCategories = [
+    { value: 'alat-berat', label: 'Alat berat (excavator, crane, bor)' },
+    { value: 'kendaraan', label: 'Kendaraan (mobil, motor, truk)' },
+    { value: 'umum', label: 'Perlengkapan lain (scaffolding, genset, dll)' },
+  ];
+
   riskBearers = [
     { value: 'kedua', label: 'PIHAK KEDUA (vendor pemilik alat)' },
     { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
@@ -256,6 +300,47 @@ export class PurchaseOrderCreateBComponent {
    * sendiri dan ketinggalan saat field baru ditambahkan, sehingga tempo
    * kredit tercetak 0 padahal sudah diisi.
    */
+  /** Keterangan periode dan lokasi untuk satu baris sewa. */
+  private periodeLokasi(x: any): string {
+    const bagian: string[] = [];
+    const mulai = this.tanggalPanjang(x.fromDate);
+    const selesai = this.tanggalPanjang(x.toDate);
+    if (mulai && selesai) bagian.push(`${mulai} s/d ${selesai}`);
+    else if (mulai) bagian.push(`Mulai ${mulai}`);
+    if (x.location) bagian.push(String(x.location));
+    return bagian.join(' · ');
+  }
+
+  /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
+  private tanggalPanjang(nilai: any): string {
+    if (!nilai) return '';
+    const d = new Date(nilai);
+    return isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+  }
+
+  /**
+   * Jenis dokumen berubah.
+   *
+   * Cakupan harga pengangkutan disetel mengikuti jenisnya, bukan dikunci:
+   * yang lazim boleh berbeda dari yang disepakati, dan penggunanya tetap
+   * dapat mengubahnya setelah itu.
+   */
+  onPurchaseTypeChange(): void {
+    this.formGroup
+      .get('includeTransportCoverage')
+      ?.setValue(this.formGroup.get('purchaseType')?.value === 'A');
+  }
+
+  get isTipeA(): boolean {
+    return this.formGroup.get('purchaseType')?.value === 'A';
+  }
+
   private clauseContext() {
     const v = this.formGroup.getRawValue();
     return {
@@ -263,6 +348,8 @@ export class PurchaseOrderCreateBComponent {
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,
       operatorByVendor: !!v.operatorByVendor,
+      rentalCategory: v.rentalCategory,
+      includeTransportCoverage: !!v.includeTransportCoverage,
       equipmentRiskBearer: v.equipmentRiskBearer,
       rentalByHour: this.rentalByHour,
       quotaPeriodDays: this.rentalByHour ? v.quotaPeriodDays : null,
@@ -371,6 +458,21 @@ export class PurchaseOrderCreateBComponent {
         };
       }),
       customData: {
+        /*
+         * Penanda bahwa dokumen ini berasal dari formulir sewa alat.
+         *
+         * PO-B dapat diterbitkan sebagai tipe A ketika alatnya dipakai untuk
+         * mengangkut. Yang tersimpan pada kolom `purchaseType` adalah 'A',
+         * sehingga saat dibuka kembali dokumennya dikira jasa transportasi
+         * dan klausulnya berganti — padahal isian, tabel, dan ketentuannya
+         * seluruhnya milik sewa alat.
+         *
+         * Penanda ini yang menentukan, bukan kode jenisnya.
+         */
+        formOrigin: 'B',
+        rentalCategory: this.formGroup.get('rentalCategory')?.value,
+        includeTransportCoverage:
+          this.formGroup.get('includeTransportCoverage')?.value ?? false,
         // Hanya data sumber. Poin perjanjian dirakit ulang dari
         // templateVersion + data ini, tidak disimpan sebagai teks.
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
@@ -411,9 +513,14 @@ export class PurchaseOrderCreateBComponent {
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
         return {
-          // nama alat dari katalog equipment; lokasi & periode sewa
-          // sudah tercermin pada klausul, jadi tidak diulang di tabel
           name: x.name,
+          // Periode dan lokasi dicetak di bawah nama alat.
+          //
+          // Sebelumnya keduanya tidak pernah sampai ke dokumen: klausul
+          // memang menyebut kewajiban selama masa sewa, tetapi tidak satu
+          // pun menyebut tanggalnya — sehingga dokumen yang terbit tidak
+          // menyatakan sampai kapan alat itu disewa.
+          remarks: this.periodeLokasi(x),
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
@@ -421,9 +528,17 @@ export class PurchaseOrderCreateBComponent {
       }),
       includePpn: !!v.includePPN,
       templateVersion: this.templateVersion,
-      billingTerms: buildEquipmentRentalBillingTerms(
-        isTempoTerm(v.paymentTerm),
-      ),
+      /*
+       * Lembar penagihan mengikuti bentuk pekerjaannya.
+       *
+       * Pada pengangkutan tidak ada periode pekan, hour meter, maupun
+       * Certificate of Payment — yang membuktikan pekerjaan adalah time sheet
+       * yang ditandatangani di lapangan. Memakai lembar sewa alat di situ
+       * membuat vendor diminta dokumen yang memang tidak pernah ada.
+       */
+      billingTerms: this.isTipeA
+        ? buildTransportRentalBillingTerms()
+        : buildEquipmentRentalBillingTerms(isTempoTerm(v.paymentTerm)),
       billingTitle: 'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEWAAN ALAT KERJA',
       clauseContext: this.clauseContext(),
       additionalClauses: this.additionalClauseValues,

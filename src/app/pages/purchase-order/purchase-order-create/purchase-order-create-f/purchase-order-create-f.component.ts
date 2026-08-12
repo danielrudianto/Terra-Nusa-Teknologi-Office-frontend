@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -39,6 +42,7 @@ import { MatRadioModule } from '@angular/material/radio';
   selector: 'app-purchase-order-create-f',
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     MatRadioModule,
     TranslatePipe,
     CommonModule,
@@ -59,6 +63,56 @@ import { MatRadioModule } from '@angular/material/radio';
   styleUrl: './purchase-order-create-f.component.scss',
 })
 export class PurchaseOrderCreateFComponent {
+
+  // ---- termin pembayaran ----
+  //
+  // Kolom kredit dan uang muka dikunci bila terminnya tidak memakainya:
+  // angka yang tertinggal di sana ikut tersimpan dan tercetak, padahal
+  // ketentuannya tidak menyebut tempo sama sekali.
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) credit?.enable();
+    else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) prepaid?.enable();
+    else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return 'F';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['F'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,

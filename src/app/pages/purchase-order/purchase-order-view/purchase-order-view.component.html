@@ -7,29 +7,11 @@
       </h2>
       <span class="pov-sub">{{ typeLabel(data?.purchaseType) }}</span>
     </div>
-
-    <mat-button-toggle-group
-      class="pov-toggle"
-      [value]="mode"
-      (change)="mode = $event.value"
-      hideSingleSelectionIndicator
-    >
-      <mat-button-toggle value="formatted">
-        <mat-icon>description</mat-icon>
-        {{ "purchaseOrder.viewFormatted" | translate }}
-      </mat-button-toggle>
-      <mat-button-toggle value="raw">
-        <mat-icon>data_object</mat-icon>
-        {{ "purchaseOrder.viewRaw" | translate }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
   </div>
 
   <mat-dialog-content class="pov-content">
     @if (isLoading) {
       <div class="pov-state"><mat-spinner diameter="34"></mat-spinner></div>
-    } @else if (mode === "raw") {
-      <pre class="pov-raw">{{ rawJson }}</pre>
     } @else {
       <!-- ===== ringkasan ===== -->
       <section class="pov-section">
@@ -116,11 +98,11 @@
                 @if (isSubList(p)) {
                   <ol class="pov-clauses__sub">
                     @for (d of asList(p); track d) {
-                      <li>{{ d }}</li>
+                      <li><app-clause-line [value]="d" /></li>
                     }
                   </ol>
                 } @else {
-                  <li>{{ asText(p) }}</li>
+                  <li><app-clause-line [value]="p" /></li>
                 }
               }
             </ol>
@@ -129,7 +111,7 @@
       </section>
     }
 
-    @if (mode !== "raw" && data?.id) {
+    @if (data?.id) {
       <div class="pov-divider"></div>
       <app-audit-trail
         entity="purchase_orders"
@@ -139,12 +121,6 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="pov-foot">
-    @if (mode === "raw" && !isLoading) {
-      <button type="button" class="pov-copy" (click)="copyRaw()">
-        <mat-icon>content_copy</mat-icon>
-        {{ "purchaseOrder.copyRaw" | translate }}
-      </button>
-    }
     <span class="pov-spacer"></span>
     <button type="button" class="pov-close" mat-dialog-close>
       {{ "common.close" | translate }}

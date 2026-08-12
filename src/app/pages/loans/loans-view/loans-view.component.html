@@ -40,6 +40,16 @@
             >Sisa: <strong>Rp {{ remaining | number: "1.0-0" }}</strong></span
           >
         </div>
+        @if (pendingPayments.length > 0) {
+          <p class="lv-pending-note">
+            <mat-icon>info</mat-icon>
+            <span>
+              {{ pendingPayments.length }} pembayaran senilai Rp
+              {{ pendingAmount | number: "1.0-0" }} menunggu persetujuan dan
+              belum dihitung sebagai pelunasan.
+            </span>
+          </p>
+        }
       </section>
 
       <!-- money breakdown -->
@@ -117,11 +127,28 @@
           <span class="lv-count">{{ activePayments.length }}</span>
         </div>
         <div class="lv-payments" *ngIf="activePayments.length > 0">
-          <div class="lv-pay" *ngFor="let p of activePayments">
-            <span class="lv-pay__icon"><mat-icon>payments</mat-icon></span>
+          <!--
+            Pembayaran yang belum disetujui ditandai, bukan disembunyikan:
+            keduanya sudah diajukan, tetapi hanya yang disetujui yang
+            mengurangi hutang. Tanpa penanda, daftarnya tampak tidak cocok
+            dengan angka pelunasan di atas.
+          -->
+          <div
+            class="lv-pay"
+            [class.lv-pay--pending]="p.isApprove !== true"
+            *ngFor="let p of activePayments"
+          >
+            <span class="lv-pay__icon">
+              <mat-icon>{{
+                p.isApprove === true ? "payments" : "hourglass_empty"
+              }}</mat-icon>
+            </span>
             <span class="lv-pay__date">{{
               p.date || p.paymentDate | date: "dd MMM yyyy"
             }}</span>
+            @if (p.isApprove !== true) {
+              <span class="lv-pay__tag">Menunggu persetujuan</span>
+            }
             <span class="lv-pay__amt">Rp {{ p.amount | number: "1.0-0" }}</span>
           </div>
         </div>

@@ -49,10 +49,29 @@
           ><span class="pv-value">{{ f["taxInvoiceName"].value || "—" }}</span>
         </div>
         <div class="pv-field">
-          <span class="pv-label">{{ "table.poNumber" | translate }}</span
-          ><span class="pv-value">{{
-            f["purchaseOrderName"].value || "—"
-          }}</span>
+          <span class="pv-label">{{ "table.poNumber" | translate }}</span>
+          <!--
+            Nomor PO dapat ditekan untuk membuka dokumennya. Nomor yang
+            dokumennya belum ada di sistem tetap dapat ditekan agar
+            keterangannya jelas.
+          -->
+          @if (f["purchaseOrderName"].value) {
+            <button
+              type="button"
+              class="pv-value pv-polink"
+              [class.pv-polink--missing]="!purchaseOrderId"
+              [title]="
+                purchaseOrderId
+                  ? 'Buka dokumen purchase order'
+                  : 'Dokumen belum tersedia'
+              "
+              (click)="viewPurchaseOrder()"
+            >
+              {{ f["purchaseOrderName"].value }}
+            </button>
+          } @else {
+            <span class="pv-value">—</span>
+          }
         </div>
         <div class="pv-field">
           <span class="pv-label">{{ "table.invoice" | translate }}</span

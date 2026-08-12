@@ -1558,7 +1558,11 @@
     "addPoint": "添加条款",
     "clauseAutoHint": "以下标准条款将打印在文件上，内容依据上方填写的信息；如有特别约定请另行添加条款。",
     "deliveryAddressFranco": "交货地址",
-    "deliveryAddressLoco": "自取地址"
+    "deliveryAddressLoco": "自取地址",
+    "changeType": "更改类型",
+    "changeTypeTitle": "更改采购单类型？",
+    "changeTypeBody": "本表单中已填写的内容将会丢失。",
+    "priceExclPpnHint": "填写的价格不含增值税；勾选后将在其上加收 11% 增值税。"
   },
   "menu": {
     "editAsset": "编辑资产",

@@ -1,6 +1,11 @@
-
 .po5112-wrap {
+  /* Lebar dan perataan disamakan dengan jenis PO lainnya (980px, terpusat).
+     Sebelumnya melebar mengikuti layar, sehingga halamannya terlihat
+     berbeda sendiri di antara formulir yang lain. */
   width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -15,6 +20,8 @@
   border-radius: 18px;
   padding: 1.25rem 1.4rem;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  /* Jarak antar kartu; tanpa ini seluruh bagian menempel menjadi satu blok. */
+  margin-bottom: 1.25rem;
 }
 
 .po5112-section__title {
@@ -87,25 +94,29 @@
 }
 .po5112-additem,
 .po5112-addclause {
+  /* Disamakan dengan PO-A: putih beroutline, bukan berlatar biru.
+     Tombol berlatar penuh terbaca sebagai tindakan utama, padahal menambah
+     poin hanyalah pelengkap di samping tombol simpan. */
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  border: none;
-  cursor: pointer;
-  background: var(--brand-soft, #e7ecfb);
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: var(--surface, #ffffff);
   color: var(--brand, #154dec);
-  font-weight: 700;
-  font-size: 0.8rem;
-  padding: 6px 12px;
   border-radius: 10px;
-  font-family: inherit;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
   }
   &:hover {
-    filter: brightness(0.97);
+    background: var(--hover, #f3f6ff);
   }
 }
 .po5112-itemrow {
@@ -325,4 +336,81 @@
 .po5112-preview__sub {
   padding-left: 1.2rem;
   list-style: lower-alpha;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po5112-preview__list > li,
+.po5112-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po5112-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po5112-preview {
+  margin-bottom: 1.4rem;
+}
+.po5112-cardhead + .po5112-empty,
+.po5112-cardhead + .po5112-list {
+  margin-top: 0.6rem;
+}
+.po5112-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.25rem 0 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.po5112-clauseempty {
+  /* Diberi sela agar tidak menempel pada keterangan di atasnya. */
+  padding: 0.85rem 0;
+}
+
+/* Keterangan di bawah pilihan PPN. */
+.po5112-ppnhint {
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  margin: 0.35rem 0 0.9rem;
+  line-height: 1.5;
+}
+
+/* Baris poin tambahan — disalin dari PO-A agar bentuknya sama persis. */
+.po5112-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.po5112-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po5112-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po5112-krow__field {
+  flex: 1 1 auto;
+}
+.po5112-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border, #e3e6eb);
+  color: var(--muted, #9aa1ad);
+  font-size: 0.85rem;
 }

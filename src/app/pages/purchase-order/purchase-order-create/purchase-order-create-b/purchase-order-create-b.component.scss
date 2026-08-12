@@ -909,3 +909,83 @@ app-wysiwyg {
   padding-top: 0.4rem;
   margin-top: 0.2rem;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.pob-preview__list > li,
+.pob-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .pob-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.pob-preview {
+  margin-bottom: 1.4rem;
+}
+.pob-cardhead + .pob-empty,
+.pob-cardhead + .pob-list {
+  margin-top: 0.6rem;
+}
+.pob-hint {
+  margin-bottom: 0.9rem;
+}
+.pob-clauseempty {
+  /* Diberi sela agar tidak menempel pada keterangan di atasnya. */
+  padding: 0.85rem 0;
+}
+
+/* Baris poin tambahan — disalin dari PO-A agar bentuknya sama persis. */
+.pob-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.pob-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.pob-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.pob-krow__field {
+  flex: 1 1 auto;
+}
+.pob-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border, #e3e6eb);
+  color: var(--muted, #9aa1ad);
+  font-size: 0.85rem;
+}
+.pob-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}

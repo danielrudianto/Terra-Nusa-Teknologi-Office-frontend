@@ -388,49 +388,132 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 
 /* ===== locked auto-clause preview (shares template with G) ===== */
 .po516-clausehint {
-  display: flex; align-items: flex-start; gap: 8px; margin-bottom: 0.75rem;
-  padding: 0.6rem 0.85rem; border-radius: 11px;
-  background: var(--surface-2, #fafbfc); border: 0.5px solid var(--border, #e3e6eb);
-  color: var(--muted, #6b7280); font-size: 0.78rem; line-height: 1.4;
-  mat-icon { font-size: 17px; width: 17px; height: 17px; flex: 0 0 auto; color: var(--faint, #9aa0ab); }
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 11px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    color: var(--faint, #9aa0ab);
+  }
 }
 .po516-clausebox {
-  border: 0.5px solid var(--border, #e3e6eb); border-radius: 13px;
-  background: var(--surface, #fff); padding: 0.4rem 1rem 0.4rem 0;
-  ::ng-deep ol { margin: 0; padding-left: 2.4rem; }
-  ::ng-deep li {
-    font-size: 0.85rem; line-height: 1.55; color: var(--ink, #16181d);
-    padding: 5px 0; border-bottom: 1px dashed var(--line, #eef0f3);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 13px;
+  background: var(--surface, #fff);
+  padding: 0.4rem 1rem 0.4rem 0;
+  ::ng-deep ol {
+    margin: 0;
+    padding-left: 2.4rem;
   }
-  ::ng-deep li:last-child { border-bottom: none; }
+  ::ng-deep li {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--ink, #16181d);
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--line, #eef0f3);
+  }
+  ::ng-deep li:last-child {
+    border-bottom: none;
+  }
 }
 
 /* ===== poin tambahan (custom) ===== */
 .po516-cardhead {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 .po516-addclause {
-  display: inline-flex; align-items: center; gap: 4px; border: none; cursor: pointer;
-  background: var(--brand-soft, #e7ecfb); color: var(--brand, #154dec);
-  font-weight: 700; font-size: 0.8rem; padding: 6px 12px; border-radius: 10px; font-family: inherit;
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { filter: brightness(0.97); }
+  /* Disamakan dengan PO-A: putih beroutline, bukan berlatar biru.
+     Tombol berlatar penuh terbaca sebagai tindakan utama, padahal menambah
+     poin hanyalah pelengkap di samping tombol simpan. */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
 }
-.po516-clausenote { margin: 0 0 0.75rem; font-size: 0.76rem; color: var(--muted, #6b7280); line-height: 1.45; }
-.po516-clauserow { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
+.po516-clausenote {
+  margin: 0 0 0.75rem;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.45;
+}
+.po516-clauserow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 2px;
+}
 .po516-clausenum {
-  flex: 0 0 auto; padding-top: 14px; font-size: 0.86rem; font-weight: 700;
-  color: var(--faint, #9aa0ab); min-width: 20px; text-align: right;
+  flex: 0 0 auto;
+  padding-top: 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--faint, #9aa0ab);
+  min-width: 20px;
+  text-align: right;
 }
-.po516-clausefield { flex: 1 1 auto; }
+.po516-clausefield {
+  flex: 1 1 auto;
+}
 .po516-clauseremove {
-  flex: 0 0 auto; margin-top: 8px; border: none; cursor: pointer; background: transparent;
-  color: var(--faint, #9aa0ab); border-radius: 8px; width: 32px; height: 32px;
-  display: grid; place-items: center;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-  &:hover { color: var(--bad-fg, #b3322f); background: var(--bad-bg, #fdecec); }
+  flex: 0 0 auto;
+  margin-top: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--faint, #9aa0ab);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover {
+    color: var(--bad-fg, #b3322f);
+    background: var(--bad-bg, #fdecec);
+  }
 }
-.po516-clauseempty { font-size: 0.8rem; color: var(--faint, #9aa0ab); font-style: italic; padding: 4px 0; }
+.po516-clauseempty {
+  font-size: 0.8rem;
+  color: var(--faint, #9aa0ab);
+  font-style: italic;
+  padding: 4px 0;
+}
 
 /* Pratinjau catatan perjanjian — mengikuti gaya PO-A. */
 .po516-preview {
@@ -448,4 +531,73 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .po516-preview__sub {
   padding-left: 1.2rem;
   list-style: lower-alpha;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po516-preview {
+  margin-bottom: 1.4rem;
+}
+.po516-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0.25rem 0 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.po516-clauseempty {
+  /* Diberi sela agar tidak menempel pada keterangan di atasnya. */
+  padding: 0.85rem 0;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada. */
+.po516-preview__list > li,
+.po516-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po516-clausebox li {
+  white-space: pre-line;
+}
+
+/* Kelas yang dipakai markup tanpa definisi gaya. */
+.po516-section__title--flush {
+  margin-bottom: 0;
+}
+
+/* Baris poin tambahan — disalin dari PO-A agar bentuknya sama persis. */
+.po516-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.po516-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po516-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po516-krow__field {
+  flex: 1 1 auto;
+}
+.po516-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border, #e3e6eb);
+  color: var(--muted, #9aa1ad);
+  font-size: 0.85rem;
 }

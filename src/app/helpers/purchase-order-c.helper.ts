@@ -208,7 +208,10 @@ export function printPurchaseOrderC(
 
       { text: 'Dengan hormat,', margin: [0, 12, 0, 4] as Margins },
       {
-        text: 'Berdasarkan permintaan kami, bersama ini kami bermaksud untuk melakukan sewa/pembelian barang-barang sebagai berikut:',
+        // Tata letak ini hanya dipakai untuk pembelian; sewa alat memakai
+        // dokumen tersendiri. Menyebut keduanya membuat dokumen pembelian
+        // terbaca seolah masih menawarkan pilihan.
+        text: 'Berdasarkan permintaan kami, bersama ini kami bermaksud untuk melakukan pembelian barang-barang sebagai berikut:',
         margin: [0, 0, 0, 4] as Margins,
       },
 

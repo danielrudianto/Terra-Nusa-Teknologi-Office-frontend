@@ -259,3 +259,84 @@
     background: #ef9f27;
   }
 }
+
+/* Keadaan memuat, gagal, dan kosong.
+   Sebelumnya ketiganya menghasilkan layar putih yang sama. */
+.prr-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 4rem 1.5rem;
+  border-radius: 16px;
+  border: 1px dashed var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-size: 0.9rem;
+  text-align: center;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--faint, #9aa0ab);
+  }
+
+  &--error {
+    border-style: solid;
+    border-color: var(--bad-border, #f3cdcb);
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+
+    mat-icon {
+      color: var(--bad-fg, #b3322f);
+    }
+  }
+}
+
+.prr-retry {
+  margin-top: 0.35rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 10px;
+  border: 0.5px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* Kartu rincian pajak dan tabelnya. */
+.prr-breakdown {
+  display: flex;
+  flex-direction: column;
+}
+.prr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th,
+  td {
+    padding: 0.55rem 0.4rem;
+    border-bottom: 1px solid var(--line, #eef0f3);
+    text-align: left;
+  }
+  th {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+.prr-table__num {
+  text-align: right;
+  /* Angka disejajarkan supaya besarannya dapat dibandingkan sekilas
+     tanpa membaca tiap digit. */
+  font-variant-numeric: tabular-nums;
+}

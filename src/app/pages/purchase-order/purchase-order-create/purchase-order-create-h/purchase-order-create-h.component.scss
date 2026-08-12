@@ -1174,7 +1174,7 @@ app-wysiwyg {
   -webkit-appearance: none;
   margin: 0;
 }
-:host ::ng-deep .poh-cutoff input[type='number'] {
+:host ::ng-deep .poh-cutoff input[type="number"] {
   -moz-appearance: textfield;
 }
 :host ::ng-deep .poh-cutoff__x {
@@ -1203,4 +1203,49 @@ app-wysiwyg {
   font-size: 0.75rem;
   color: var(--muted, #6b7280);
   margin: 0.3rem 0 0;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.poh-preview__list > li,
+.poh-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .poh-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.poh-preview {
+  margin-bottom: 1.4rem;
+}
+.poh-cardhead + .poh-empty,
+.poh-cardhead + .poh-list {
+  margin-top: 0.6rem;
+}
+.poh-hint {
+  margin-bottom: 0.9rem;
+}
+
+/* Kelas yang dipakai markup tanpa definisi gaya. */
+.poh-divider {
+  height: 1px;
+  background: var(--line, #eef0f4);
+  margin: 1.4rem 0 1.1rem;
+}
+.poh-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 0.9rem 0.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--line, #eef0f4);
+}
+.poh-section__title--flush {
+  margin-bottom: 0;
 }

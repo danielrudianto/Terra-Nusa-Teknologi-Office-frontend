@@ -1,5 +1,9 @@
 <div class="poa">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.titleA' | translate"
@@ -282,9 +286,16 @@
                     getFormGroupAt(i).value.to || "…"
                   }}</span>
                 </span>
+                <!--
+                  Nilai baris = harga satuan dikali volumenya, sama seperti
+                  kolom Jumlah pada dokumen. Menampilkan harga satuan di sini
+                  membuat angkanya tidak cocok dengan total di bawah.
+                -->
                 <span class="poa-leg__amt"
                   >Rp
-                  {{ getFormGroupAt(i).value.amount | number: "1.0-0" }}</span
+                  {{
+                    lineTotal(getFormGroupAt(i).value) | number: "1.0-0"
+                  }}</span
                 >
                 <button
                   mat-icon-button
@@ -700,6 +711,30 @@
       <div class="poa-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
+      <p class="poa-hint">
+        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
+        isian di atas.
+      </p>
+      <div class="poa-preview">
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="poa-preview__title">{{ sec.title }}</div>
+          }
+          <ol class="poa-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="poa-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li><app-clause-line [value]="d" /></li>
+                  }
+                </ol>
+              } @else {
+                <li><app-clause-line [value]="p" /></li>
+              }
+            }
+          </ol>
+        }
+      </div>
       <div class="poa-cardhead">
         <div class="poa-section__title poa-section__title--flush">
           {{ "common.extraPoints" | translate }}
@@ -736,37 +771,6 @@
           }
         </div>
       }
-
-      <div class="poa-divider"></div>
-      <div class="poa-section__title">
-        {{ "poH.previewAgreement" | translate }}
-      </div>
-      <p class="poa-hint">
-        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
-        isian di atas.
-      </p>
-      <div class="poa-preview">
-        @for (sec of previewSections; track $index) {
-          @if (sec.title) {
-            <div class="poa-preview__title">{{ sec.title }}</div>
-          }
-          <ol class="poa-preview__list">
-            @for (p of sec.items; track $index) {
-              @if (isSubList(p)) {
-                <ol class="poa-preview__sub">
-                  @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
-                  }
-                </ol>
-              } @else {
-                <li>{{ asText(p) }}</li>
-              }
-            }
-          </ol>
-        }
-      </div>
-
-      <div class="poa-divider"></div>
 
       <div class="poa-actions">
         <span class="poa-spacer"></span>

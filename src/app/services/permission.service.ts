@@ -38,6 +38,23 @@ export class PermissionService {
     if (this.loaded() && !force) return Promise.resolve();
     if (this.pending && !force) return this.pending;
 
+    /*
+     * Tanpa token, tidak ada gunanya bertanya.
+     *
+     * Keadaan ini muncul tepat setelah keluar: token sudah dihapus, tetapi
+     * perpindahan halaman ke Login masih memicu pemuatan izin. Permintaannya
+     * pasti ditolak, dan yang tertinggal hanyalah dua baris merah di konsol
+     * yang menyesatkan saat menelusuri masalah lain.
+     */
+    let token: string | null = null;
+    try {
+      token = localStorage.getItem('access_token');
+    } catch {}
+    if (!token) {
+      this.permissions.set({});
+      return Promise.resolve();
+    }
+
     this.pending = this.fetch()
       /*
        * Satu kali percobaan ulang, tetapi TIDAK untuk sesi yang berakhir.

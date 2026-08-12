@@ -1168,7 +1168,7 @@ app-wysiwyg {
 .po63-hint {
   font-size: 0.78rem;
   color: var(--muted, #6b7280);
-  margin: 0.3rem 0 0;
+  margin: 0.25rem 0 0.75rem;
 }
 .po63-section__title--flush {
   margin-bottom: 0;
@@ -1234,4 +1234,29 @@ app-wysiwyg {
 .po63-preview__sub {
   padding-left: 1.2rem;
   list-style: lower-alpha;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po63-preview__list > li,
+.po63-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po63-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po63-preview {
+  margin-bottom: 1.4rem;
+}
+.po63-cardhead + .po63-empty,
+.po63-cardhead + .po63-list {
+  margin-top: 0.6rem;
+}
+.po63-hint {
+  margin-bottom: 0.9rem;
 }

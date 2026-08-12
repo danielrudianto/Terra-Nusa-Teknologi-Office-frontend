@@ -34,6 +34,32 @@ const MONTHS = [
   'Desember',
 ];
 
+/**
+ * Kalimat pengantar sebelum tabel, mengikuti bentuk pekerjaannya.
+ *
+ * Sebelumnya seluruh dokumen berbunyi "untuk melakukan pekerjaan", termasuk
+ * yang isinya menyewa alat atau menutup pertanggungan — dan itu terbaca
+ * janggal karena yang dipesan bukan pekerjaan dalam arti itu.
+ */
+export function workIntroSentence(poType?: string): string {
+  const t = String(poType || '').toUpperCase();
+
+  if (t === 'B') {
+    return 'Untuk melakukan penyewaan alat kerja dengan ketentuan-ketentuan sebagai berikut:';
+  }
+  if (t === '6.4.2') {
+    return 'Untuk melakukan penutupan pertanggungan dengan ketentuan-ketentuan sebagai berikut:';
+  }
+  if (t === '6.5.2') {
+    return 'Untuk menyelenggarakan pelatihan dengan ketentuan-ketentuan sebagai berikut:';
+  }
+  if (t === '5.1.12') {
+    return 'Untuk melakukan pengadaan perangkat lunak dengan ketentuan-ketentuan sebagai berikut:';
+  }
+  // Sisanya memang pemesanan pekerjaan: jasa, tenaga kerja, subkontraktor.
+  return 'Untuk melakukan pekerjaan dengan ketentuan-ketentuan sebagai berikut:';
+}
+
 export function formatDate(value: Date | string): string {
   const d = value instanceof Date ? value : new Date(value);
   if (isNaN(d.getTime())) return '-';
@@ -246,11 +272,32 @@ export function clauseList(lines: (string | string[])[]): any {
   return {
     ol: (lines || []).map((x) =>
       Array.isArray(x)
-        ? { ol: x.map(clauseToPdf), type: 'lower-alpha' as any }
+        ? {
+            // Sub-poin dirapatkan: jaraknya cukup dari poin induknya, dan
+            // jeda penuh di sini membuat rinciannya tampak terpisah dari
+            // ketentuan yang menaunginya.
+            ol: x.map(subClauseToPdf),
+            type: 'lower-alpha' as any,
+            margin: [0, 0, 0, CLAUSE_GAP] as Margins,
+          }
         : clauseToPdf(x),
     ),
   };
 }
+
+/** Sub-poin: sama seperti poin biasa, tetapi jaraknya lebih rapat. */
+function subClauseToPdf(line: string): any {
+  return { ...clauseToPdf(line), margin: [0, 0, 0, 2] as Margins };
+}
+
+/**
+ * Jarak bawah tiap poin perjanjian, dalam satuan pt.
+ *
+ * Kira-kira setengah tinggi barisnya (teks 11pt), cukup untuk memisahkan
+ * poin tanpa membuat dokumen bertambah halaman. Tanpa jeda ini, poin yang
+ * panjang menyambung ke poin berikutnya dan sulit dibaca di lapangan.
+ */
+export const CLAUSE_GAP = 6;
 
 export function clauseToPdf(line: string): any {
   const match = /^\s*<s>([\s\S]*)<\/s>\s*$/i.exec(line || '');
@@ -259,9 +306,13 @@ export function clauseToPdf(line: string): any {
       text: stripHtmlTags(match[1]),
       decoration: 'lineThrough' as any,
       color: '#6b7280',
+      margin: [0, 0, 0, CLAUSE_GAP] as Margins,
     };
   }
-  return { text: stripHtmlTags(line) };
+  return {
+    text: stripHtmlTags(line),
+    margin: [0, 0, 0, CLAUSE_GAP] as Margins,
+  };
 }
 
 /** Buang sisa tag HTML sederhana agar tidak ikut tercetak. */

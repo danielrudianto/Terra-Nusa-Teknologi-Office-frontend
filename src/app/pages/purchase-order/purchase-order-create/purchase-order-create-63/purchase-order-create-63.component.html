@@ -1,5 +1,9 @@
 <div class="po63">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="('poForm.poCodePrefix' | translate) + purchaseType"
@@ -39,11 +43,16 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <!--
-            Pengeluaran kantor selalu dibebankan ke PUSAT; nilainya dikunci
-            agar tidak terbebankan ke kode proyek.
-          -->
-          <input matInput formControlName="projectName" readonly />
+          <input
+            matInput
+            formControlName="projectName"
+            maxlength="5"
+            (keyup)="toUpperCase()"
+            [placeholder]="'poField.exMicz' | translate"
+          />
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "common.projectCodeError" | translate
+          }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="po63-span2">
@@ -236,11 +245,25 @@
       <div class="po63-grid">
         <mat-form-field appearance="outline" class="po63-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
-          <input
-            matInput
+          <mat-select
             formControlName="paymentTerm"
-            [placeholder]="'poField.exDp50Tempo30Hari' | translate"
-          />
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
@@ -465,11 +488,11 @@
             @if (isSubList(p)) {
               <ol class="po63-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>
@@ -483,6 +506,11 @@
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
+
+      <p class="po63-hint">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+        menggantikannya.
+      </p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po63-empty">

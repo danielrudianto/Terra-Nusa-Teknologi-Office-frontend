@@ -1,5 +1,9 @@
 <div class="poc">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.headerTitleC' | translate"
@@ -379,11 +383,11 @@
             @if (isSubList(p)) {
               <ol class="poc-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>
@@ -401,37 +405,36 @@
           <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
         </button>
       </div>
-      <p class="poc-clausenote">
+      <p class="poc-hint">
         Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
         menggantikannya.
       </p>
-      <div formArrayName="additionalClauses">
-        @for (c of additionalClauses.controls; track c; let i = $index) {
-          <div class="poc-clauserow">
-            <span class="poc-clausenum">{{ i + 1 }}.</span>
-            <mat-form-field appearance="outline" class="poc-clausefield">
-              <input
-                matInput
-                [formControlName]="i"
-                [placeholder]="'poForm.clauseExample' | translate"
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="poc-clauseremove"
-              (click)="removeClause(i)"
-              [attr.aria-label]="'poForm.removeClause' | translate"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        }
-        @if (additionalClauses.length === 0) {
-          <div class="poc-clauseempty">
-            {{ "poForm.noExtraClause" | translate }}
-          </div>
-        }
-      </div>
+      @if (additionalClauses.controls.length === 0) {
+        <div class="poc-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="poc-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="poc-krow">
+              <span class="poc-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="poc-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
 
       <div class="poc-actions">
         <span class="poc-spacer"></span>

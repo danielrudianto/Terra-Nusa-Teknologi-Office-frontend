@@ -450,3 +450,28 @@ app-wysiwyg {
   padding-top: 0.4rem;
   margin-top: 0.2rem;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po511-preview__list > li,
+.po511-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po511-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po511-preview {
+  margin-bottom: 1.4rem;
+}
+.po511-cardhead + .po511-empty,
+.po511-cardhead + .po511-list {
+  margin-top: 0.6rem;
+}
+.po511-hint {
+  margin-bottom: 0.9rem;
+}

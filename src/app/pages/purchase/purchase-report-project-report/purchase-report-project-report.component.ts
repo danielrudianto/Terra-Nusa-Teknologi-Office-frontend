@@ -1,7 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { PurchaseReportProjectComponent } from '../purchase-list/purchase-report-project/purchase-report-project.component';
+import * as XLSX from 'xlsx';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -251,28 +254,222 @@ export class PurchaseReportProjectReportComponent implements OnInit {
     private snackBar: MatSnackBar,
   ) {}
 
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+
   ngOnInit(): void {
     this.loadReport();
   }
 
   data: any = null;
 
+  isLoading = true;
+  errorMessage = '';
+
+  /** Kode proyek dari alamat halaman; dipakai pada judul dan nama berkas. */
+  get projectName(): string {
+    return this.route.snapshot.params['projectName'] || '';
+  }
+
+  /**
+   * Ganti proyek tanpa keluar dari halaman.
+   *
+   * Sebelumnya satu-satunya jalan adalah kembali ke daftar pembelian, lalu
+   * masuk lagi lewat pemilih — tiga langkah untuk sesuatu yang dilakukan
+   * berulang kali saat membandingkan proyek.
+   */
+  gantiProyek(): void {
+    this.dialog
+      .open(PurchaseReportProjectComponent, {})
+      .afterClosed()
+      .subscribe((data: any) => {
+        if (!data?.projectName || data.projectName === this.projectName) return;
+        this.router.navigate(['/Purchase', 'Report', 'Project', data.projectName]);
+      });
+  }
+
+  private rupiahAngka(n: any): number {
+    return Number(n) || 0;
+  }
+
+  /** Nilai satu baris pembelian, termasuk pajak dan komponen lainnya. */
+  private nilaiPembelian(p: any): number {
+    const dpp = this.rupiahAngka(p.dpp);
+    return (
+      dpp +
+      (this.rupiahAngka(p.ppn) * dpp) / 100 +
+      this.rupiahAngka(p.pbbkb) +
+      this.rupiahAngka(p.otherValue)
+    );
+  }
+
+  /**
+   * Unduh laporan sebagai berkas Excel.
+   *
+   * Dibuat berlembar-lembar, bukan satu tabel besar: laporan ini menyatukan
+   * empat hal yang berbeda bentuknya — pembelian, reimbursement, draf, dan
+   * penjualan — dan memaksakannya ke satu tabel membuat kolomnya banyak yang
+   * kosong pada sebagian besar baris.
+   */
+  unduhExcel(): void {
+    if (!this.data) return;
+
+    const wb = XLSX.utils.book_new();
+    const rp = (n: any) => this.rupiahAngka(n);
+
+    const ringkasan = [
+      { Keterangan: 'Kode proyek', Nilai: this.projectName },
+      {
+        Keterangan: 'Jumlah pembelian',
+        Nilai: this.data.purchases.length,
+      },
+      {
+        Keterangan: 'Total pembelian',
+        Nilai: this.data.purchases.reduce(
+          (a: number, p: any) => a + this.nilaiPembelian(p),
+          0,
+        ),
+      },
+      {
+        Keterangan: 'Total reimbursement',
+        Nilai: this.data.reimbursements.reduce(
+          (a: number, r: any) => a + rp(r.amount ?? r.total),
+          0,
+        ),
+      },
+      {
+        Keterangan: 'Total draf pembelian',
+        Nilai: this.data.purchase_drafts.reduce(
+          (a: number, d: any) => a + rp(d.amount ?? d.total),
+          0,
+        ),
+      },
+      {
+        Keterangan: 'Total penjualan',
+        Nilai: this.data.sales_invoices.reduce(
+          (a: number, i: any) => a + rp(i.dpp ?? i.amount),
+          0,
+        ),
+      },
+      { Keterangan: 'Diunduh pada', Nilai: new Date().toLocaleString('id-ID') },
+    ];
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(ringkasan),
+      'Ringkasan',
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(
+        this.data.purchases.map((p: any) => ({
+          Tanggal: p.date,
+          Nomor: p.name || p.purchaseOrderName || '',
+          Jenis: p.purchaseType,
+          Supplier: p.supplierName || '',
+          DPP: rp(p.dpp),
+          'PPN (%)': rp(p.ppn),
+          PBBKB: rp(p.pbbkb),
+          Lainnya: rp(p.otherValue),
+          Total: this.nilaiPembelian(p),
+        })),
+      ),
+      'Pembelian',
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(
+        this.data.reimbursements.map((r: any) => ({
+          Tanggal: r.date,
+          Nomor: r.name || '',
+          Keterangan: r.description || r.remarks || '',
+          Jumlah: rp(r.amount ?? r.total),
+        })),
+      ),
+      'Reimbursement',
+    );
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(
+        this.data.purchase_drafts.map((d: any) => ({
+          Tanggal: d.date,
+          Nomor: d.name || '',
+          Keterangan: d.description || d.remarks || '',
+          Jumlah: rp(d.amount ?? d.total),
+        })),
+      ),
+      'Draf Pembelian',
+    );
+
+    if (this.data.sales_invoices.length) {
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.json_to_sheet(
+          this.data.sales_invoices.map((i: any) => ({
+            Tanggal: i.date,
+            Nomor: i.name || '',
+            Klien: i.clientName || '',
+            DPP: rp(i.dpp ?? i.amount),
+          })),
+        ),
+        'Penjualan',
+      );
+    }
+
+    const tanggal = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, `Laporan-${this.projectName}-${tanggal}.xlsx`);
+  }
+
   loadReport() {
     const projectName = this.route.snapshot.params['projectName'];
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.apiService
       .get(`purchases/report/project/${projectName}`, {})
       .subscribe({
         next: (data: any) => {
-          this.data = data;
-          this.loadPie();
-          this.buildTypeTree(); // 👈 add this
-          this.buildCashflow(); // cashflow per minggu
+          /*
+           * Bentuk data dirapikan sebelum dipakai.
+           *
+           * Perhitungan di bawah menelusuri keempat daftar ini secara
+           * langsung. Bila salah satu tidak dikirim server — misalnya proyek
+           * yang belum punya reimbursement sama sekali — penelusurannya
+           * gagal, seluruh halaman berhenti dirender, dan yang terlihat
+           * hanyalah layar putih tanpa keterangan apa pun.
+           *
+           * Menjaganya di satu tempat lebih aman daripada menambahkan
+           * pemeriksaan pada setiap pemakaian, karena yang terlewat satu saja
+           * sudah cukup untuk mengosongkan layar.
+           */
+          this.data = {
+            ...(data || {}),
+            purchases: data?.purchases ?? [],
+            reimbursements: data?.reimbursements ?? [],
+            purchase_drafts: data?.purchase_drafts ?? [],
+            sales_invoices: data?.sales_invoices ?? [],
+          };
+
+          try {
+            this.loadPie();
+            this.buildTypeTree();
+            this.buildCashflow();
+          } catch (e) {
+            // Grafik yang gagal dirakit tidak boleh menghilangkan angka
+            // ringkasannya: yang satu hiasan, yang lain isi laporannya.
+            console.error('Gagal merakit grafik laporan:', e);
+          }
+          this.isLoading = false;
         },
         error: (err) => {
-          console.error('Failed to load report', err);
-          this.snackBar.open('Failed to load project report', 'Close', {
-            duration: 3000,
-          });
+          console.error('Gagal memuat laporan proyek', err);
+          this.isLoading = false;
+          this.errorMessage =
+            err?.error?.detail || 'Laporan proyek tidak dapat dimuat.';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 4000 });
         },
       });
   }

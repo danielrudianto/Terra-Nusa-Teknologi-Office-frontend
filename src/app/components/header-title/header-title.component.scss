@@ -81,3 +81,48 @@ h1 {
     color: var(--brand, #154dec);
   }
 }
+
+/* Pill jenis purchase order — dapat ditekan untuk menggantinya.
+   Bentuknya mengikuti penanda mode yang sudah dipakai di dalam formulir. */
+.title__typepill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 5px 8px 5px 14px;
+  border-radius: 999px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.title__typepill:hover {
+  background: var(--brand-soft, #e7ecfb);
+  border-color: var(--brand, #154dec);
+}
+.title__typepill strong {
+  color: var(--brand, #154dec);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.title__typepill__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+}
+.title__typepill .mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--faint, #9aa0ab);
+}
+.title__typepill:hover .mat-icon {
+  color: var(--brand, #154dec);
+}

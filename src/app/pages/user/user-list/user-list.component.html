@@ -121,6 +121,19 @@
                 <mat-icon>edit</mat-icon
                 ><span>{{ "user.menuEdit" | translate }}</span>
               </button>
+              <!--
+                Divisi dan izin khusus diatur di satu tempat karena keduanya
+                disimpan bersama; memisahkannya membuat yang satu menghapus
+                yang lain saat disimpan.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'user:update'"
+                (click)="onManageAccess(element)"
+              >
+                <mat-icon>admin_panel_settings</mat-icon
+                ><span>Atur akses</span>
+              </button>
               <button
                 mat-menu-item
                 *appCan="'user:delete'"

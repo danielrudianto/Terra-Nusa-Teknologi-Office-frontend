@@ -1,0 +1,418 @@
+<div class="po652">
+  <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
+    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
+    [description]="typeLabel"
+  />
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!-- ===== Informasi PO ===== -->
+    <div class="po652-card">
+      <div class="po652-section__title">{{ "common.poInfo" | translate }}</div>
+      <div class="po652-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poField.tanggalPo" | translate }}</mat-label>
+          <input matInput formControlName="date" [matDatepicker]="dp" />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="dp"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
+          <!--
+            Pelatihan selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
+            terbebankan ke kode proyek.
+          -->
+          <input matInput formControlName="projectName" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po652-span2">
+          <mat-label>{{ "poForm.vendor" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="supplierName"
+            readonly
+            (click)="openSupplierSelector()"
+            [placeholder]="'poField.pilihVendor' | translate"
+          />
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            (click)="openSupplierSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po652-span2">
+          <mat-label>{{ "poField.alamatLengkap" | translate }}</mat-label>
+          <textarea
+            matInput
+            formControlName="supplierAddress"
+            rows="2"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Rincian pelatihan ===== -->
+    <div class="po652-card">
+      <div class="po652-cardhead">
+        <div class="po652-section__title po652-section__title--flush">
+          Rincian pelatihan
+        </div>
+        <button type="button" class="po652-add" (click)="addLine()">
+          <mat-icon>add</mat-icon> {{ "poField.tambahBaris" | translate }}
+        </button>
+      </div>
+
+      <div formArrayName="lines">
+        @for (c of t.controls; track c; let i = $index) {
+          <div class="po652-line" [formGroupName]="i">
+            <div class="po652-line__head">
+              <span class="po652-line__no">#{{ i + 1 }}</span>
+              <span class="po652-line__label">
+                {{ getFormGroupAt(i).value.trainingType || "Belum dipilih" }}
+              </span>
+              <span class="po652-line__amt"
+                >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+              >
+              @if (t.length > 1) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeLineAt(i)"
+                  aria-label="Hapus baris"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </div>
+
+            <div class="po652-grid">
+              <mat-form-field appearance="outline" class="po652-span2">
+                <mat-label>Jenis pelatihan</mat-label>
+                <mat-select formControlName="trainingType">
+                  @for (jenis of trainingTypes; track jenis) {
+                    <mat-option [value]="jenis">{{ jenis }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              @if (isOther(i)) {
+                <mat-form-field appearance="outline" class="po652-span2">
+                  <mat-label>Sebutkan pelatihannya</mat-label>
+                  <input matInput formControlName="customType" />
+                </mat-form-field>
+              }
+
+              <mat-form-field appearance="outline" class="po652-span2">
+                <mat-label>Lembaga penerbit sertifikat</mat-label>
+                <input
+                  matInput
+                  formControlName="issuer"
+                  placeholder="Ex. Kemnaker RI"
+                />
+                <mat-hint>
+                  Sertifikat dari lembaga yang tidak berwenang tidak berlaku di
+                  lapangan
+                </mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Mulai</mat-label>
+                <input
+                  matInput
+                  formControlName="startDate"
+                  [matDatepicker]="dpS"
+                />
+                <mat-datepicker-toggle
+                  matIconPrefix
+                  [for]="dpS"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #dpS></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Selesai</mat-label>
+                <input
+                  matInput
+                  formControlName="endDate"
+                  [matDatepicker]="dpE"
+                />
+                <mat-datepicker-toggle
+                  matIconPrefix
+                  [for]="dpE"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #dpE></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Jumlah peserta</mat-label>
+                <input
+                  matInput
+                  formControlName="quantity"
+                  type="number"
+                  [min]="0"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "common.unit" | translate }}</mat-label>
+                <input matInput formControlName="unit" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="po652-span2">
+                <mat-label>Biaya per peserta</mat-label>
+                <input
+                  matInput
+                  formControlName="price"
+                  thousandSeparator=" "
+                  mask="separator.2"
+                />
+                <span matPrefix>Rp&nbsp;</span>
+              </mat-form-field>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="po652-foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
+        <div class="po652-summary">
+          <div class="po652-summary__row">
+            <span>Total peserta</span><span>{{ totalPeserta }}</span>
+          </div>
+          <div class="po652-summary__row">
+            <span>{{ "common.subtotalDpp" | translate }}</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="po652-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="po652-summary__row po652-summary__row--total">
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Pembayaran ===== -->
+    <div class="po652-card">
+      <div class="po652-section__title">
+        {{ "poForm.paymentTitle" | translate }}
+      </div>
+      <div class="po652-grid">
+        <mat-form-field appearance="outline" class="po652-span2">
+          <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
+          <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
+            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <mat-option value="PPD">{{
+              "poForm.prepaidOpt" | translate
+            }}</mat-option>
+            <mat-option value="CR">{{
+              "poForm.credit" | translate
+            }}</mat-option>
+            <mat-option value="CRD">{{
+              "poForm.creditPrepaid" | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.creditTerm" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="creditTerm"
+            type="number"
+            [min]="0"
+          />
+          <span matSuffix>{{ "common.days" | translate }}</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "poForm.prepaidTerm" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="prepaidTerm"
+            type="number"
+            [min]="0"
+            [max]="100"
+          />
+          <span matSuffix>{{ "common.percent" | translate }}</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="po652-span2">
+          <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="pphCode"
+            readonly
+            (click)="openPphSelector()"
+            [placeholder]="'poField.pilihKodePph' | translate"
+          />
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            (click)="openPphSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          @if (formGroup.value.pphTaxObject) {
+            <mat-hint>
+              {{ formGroup.value.pphPercentage }}% —
+              {{ formGroup.value.pphTaxObject }}
+            </mat-hint>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Ketentuan ===== -->
+    <div class="po652-card">
+      <div class="po652-section__title">Ketentuan</div>
+      <div class="po652-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tempat pelaksanaan</mat-label>
+          <mat-select formControlName="trainingVenue">
+            <mat-option value="penyedia">Di tempat penyelenggara</mat-option>
+            <mat-option value="lokasi">Di lokasi AKN</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Batas pembatalan peserta</mat-label>
+          <input
+            matInput
+            formControlName="participantCancelDays"
+            type="number"
+            [min]="0"
+          />
+          <span matSuffix>hari</span>
+          <mat-hint>Lewat itu tetap ditagihkan</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Penyerahan sertifikat</mat-label>
+          <input
+            matInput
+            formControlName="certificateDueDays"
+            type="number"
+            [min]="0"
+          />
+          <span matSuffix>{{ "poField.hariKalender" | translate }}</span>
+          <mat-hint>Sejak pelatihan selesai</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Biaya ujian ulang</mat-label>
+          <mat-select formControlName="retakeCostBearer">
+            @for (r of retakeBearers; track r.value) {
+              <mat-option [value]="r.value">{{ r.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>Bila ada peserta yang tidak lulus</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== Catatan / Poin Perjanjian ===== -->
+    <div class="po652-card">
+      <div class="po652-section__title">
+        {{ "common.notesAndPoints" | translate }}
+      </div>
+      <p class="po652-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
+      <div class="po652-preview">
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="po652-preview__title">{{ sec.title }}</div>
+          }
+          <ol class="po652-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="po652-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li><app-clause-line [value]="d" /></li>
+                  }
+                </ol>
+              } @else {
+                <li><app-clause-line [value]="p" /></li>
+              }
+            }
+          </ol>
+        }
+      </div>
+
+      <div class="po652-cardhead">
+        <div class="po652-section__title po652-section__title--flush">
+          {{ "common.extraPoints" | translate }}
+        </div>
+        <button type="button" class="po652-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
+        </button>
+      </div>
+
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po652-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po652-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po652-krow">
+              <span class="po652-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po652-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po652-actions">
+        <span class="po652-spacer"></span>
+        <button
+          type="submit"
+          class="po652-submit"
+          [disabled]="
+            formGroup.invalid || t.controls.length === 0 || isSubmitting
+          "
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

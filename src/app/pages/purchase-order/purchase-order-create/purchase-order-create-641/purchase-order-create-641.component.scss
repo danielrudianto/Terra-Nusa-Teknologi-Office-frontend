@@ -1211,3 +1211,28 @@ app-wysiwyg {
 .po641-krow__field {
   flex: 1 1 auto;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.po641-preview__list > li,
+.po641-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .po641-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.po641-preview {
+  margin-bottom: 1.4rem;
+}
+.po641-cardhead + .po641-empty,
+.po641-cardhead + .po641-list {
+  margin-top: 0.6rem;
+}
+.po641-hint {
+  margin-bottom: 0.9rem;
+}

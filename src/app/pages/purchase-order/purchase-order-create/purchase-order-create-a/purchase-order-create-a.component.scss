@@ -690,3 +690,53 @@
   display: grid;
   place-items: center;
 }
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.poa-preview__list > li,
+.poa-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .poa-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.poa-preview {
+  margin-bottom: 1.4rem;
+}
+.poa-cardhead + .poa-empty,
+.poa-cardhead + .poa-list {
+  margin-top: 0.6rem;
+}
+.poa-hint {
+  margin-bottom: 0.9rem;
+}
+
+/* Kelas yang dipakai markup tanpa definisi gaya. */
+.poa-checkbox {
+  margin-top: 0.2rem;
+}
+.poa-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 0.9rem 0.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--line, #eef0f4);
+}
+.poa-ppn-rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+.poa-section__title--flush {
+  margin-bottom: 0;
+}

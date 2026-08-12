@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import {
   FormArray,
   FormBuilder,
@@ -59,6 +61,7 @@ import { IPPh } from '../../../../utils/pph';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -78,6 +81,17 @@ import { IPPh } from '../../../../utils/pph';
   styleUrl: './purchase-order-create-641.component.scss',
 })
 export class PurchaseOrderCreate641Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return '6.4.1';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,

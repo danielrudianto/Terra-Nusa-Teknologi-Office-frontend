@@ -793,25 +793,29 @@ app-wysiwyg {
 
 /* ===== klausul (seragam dengan PO G) ===== */
 .pod-addclause {
+  /* Disamakan dengan PO-A: putih beroutline, bukan berlatar biru.
+     Tombol berlatar penuh terbaca sebagai tindakan utama, padahal menambah
+     poin hanyalah pelengkap di samping tombol simpan. */
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  border: none;
-  cursor: pointer;
-  background: var(--brand-soft, #e7ecfb);
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: var(--surface, #ffffff);
   color: var(--brand, #154dec);
-  font-weight: 700;
-  font-size: 0.8rem;
-  padding: 6px 12px;
   border-radius: 10px;
-  font-family: inherit;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
   }
   &:hover {
-    filter: brightness(0.97);
+    background: var(--hover, #f3f6ff);
   }
 }
 .pod-clausenote {
@@ -1197,4 +1201,47 @@ app-wysiwyg {
 .pod-preview__sub {
   padding-left: 1.2rem;
   list-style: lower-alpha;
+}
+
+/* Alamat pada poin perjanjian ditulis beberapa baris; tanpa ini, baris
+   barunya hilang di layar sementara di dokumen tetap ada — dua tampilan
+   yang berbeda untuk teks yang sama. */
+.pod-preview__list > li,
+.pod-preview__sub > li {
+  white-space: pre-line;
+}
+:host ::ng-deep .pod-clausebox li {
+  white-space: pre-line;
+}
+
+/* Jarak antar bagian pada kartu poin perjanjian.
+   Pratinjau dan daftar poin tambahan sebelumnya menempel tanpa sela,
+   sehingga terbaca seolah satu blok yang sama. */
+.pod-preview {
+  margin-bottom: 1.4rem;
+}
+.pod-cardhead + .pod-empty,
+.pod-cardhead + .pod-list {
+  margin-top: 0.6rem;
+}
+.pod-hint {
+  margin-bottom: 0.9rem;
+}
+.pod-clauseempty {
+  /* Diberi sela agar tidak menempel pada keterangan di atasnya. */
+  padding: 0.85rem 0;
+}
+.pod-divider {
+  height: 1px;
+  background: var(--line, #eef0f4);
+  margin: 1.4rem 0 1.1rem;
+}
+.pod-section__title--flush {
+  margin-bottom: 0;
+}
+.pod-summary__row--total {
+  font-weight: 700;
+  border-top: 1px solid var(--line, #eef0f4);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
 }

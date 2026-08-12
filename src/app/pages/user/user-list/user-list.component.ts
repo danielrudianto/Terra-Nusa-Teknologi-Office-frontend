@@ -19,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { UserCreateComponent } from '../user-create/user-create.component';
 import { UserUpdateComponent } from '../user-update/user-update.component';
+import { UserAccessComponent } from '../user-access/user-access.component';
 import { UserViewComponent } from '../user-view/user-view.component';
 import { SettingsService } from '../../../services/setting.service';
 
@@ -142,6 +143,16 @@ export class UserListComponent {
       .subscribe((result) => {
         if (result) this.fetchUsers(this.page);
       });
+  }
+
+  /** Atur divisi dan izin khusus pengguna. */
+  onManageAccess(user: any) {
+    this.dialog.open(UserAccessComponent, {
+      data: { user },
+      width: '860px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
   }
 
   onDeleteUser(user: any) {

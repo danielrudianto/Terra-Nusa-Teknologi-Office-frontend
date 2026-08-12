@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -36,6 +39,7 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   selector: 'app-purchase-order-create-516',
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -54,6 +58,22 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   styleUrl: './purchase-order-create-516.component.scss',
 })
 export class PurchaseOrderCreate516Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return '5.1.6';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['5.1.6'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -99,16 +119,10 @@ export class PurchaseOrderCreate516Component {
     supplierNpwp: new FormControl(''),
     supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
-    /*
-     * Pengeluaran kantor selalu dibebankan ke PUSAT, tidak pernah ke proyek.
-     *
-     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
-     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
-     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
-     * dibaca, ketika dokumennya sudah lama tersimpan.
-     */
-    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
+    // 5.1.6 dapat dibebankan ke PUSAT maupun ke kode proyek.
+    projectName: new FormControl('', [
       Validators.required,
+      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     deliveryMethod: new FormControl('', Validators.required),
     deliveryAddress: new FormControl('', Validators.required),

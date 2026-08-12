@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../../utils/pph';
 import {
@@ -37,6 +41,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   selector: 'app-purchase-order-create-5112',
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -56,6 +61,22 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './purchase-order-create-5112.component.scss',
 })
 export class PurchaseOrderCreate5112Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return '5.1.12';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['5.1.12'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -91,9 +112,16 @@ export class PurchaseOrderCreate5112Component {
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
     supplierNpwp: new FormControl(''),
-    projectName: new FormControl('', [
+    /*
+     * Pengeluaran ini selalu dibebankan ke PUSAT, tidak pernah ke proyek.
+     *
+     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
+     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
+     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
+     * dibaca, ketika dokumennya sudah lama tersimpan.
+     */
+    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
       Validators.required,
-      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     // payment
     paymentTerm: new FormControl('', Validators.required),
@@ -441,6 +469,40 @@ export class PurchaseOrderCreate5112Component {
     };
   }
 
+  /**
+   * Susun data cetak.
+   *
+   * Perangkat lunak dan langganan adalah pemesanan layanan, bukan pembelian
+   * barang katalog — dokumennya memakai tata letak Surat Perintah Kerja,
+   * sama seperti jenis PO jasa lainnya.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: '5.1.12',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
+      items: this.t.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          name: x.description || '',
+          remarks: x.remarks,
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: '1.0',
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
   onSubmit() {
     if (this.formGroup.invalid) {
       this.formGroup.markAllAsTouched();
@@ -454,6 +516,15 @@ export class PurchaseOrderCreate5112Component {
           'Close',
           { duration: 3000 },
         );
+        // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+        try {
+          printPurchaseOrderB(
+            this.buildPrintData(res?.purchase_order_name ?? ''),
+          );
+        } catch (e) {
+          console.error('Gagal membuat PDF purchase order:', e);
+        }
+
         this.router.navigate(['/Purchase-order']);
       },
       error: (error) => {

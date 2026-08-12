@@ -34,6 +34,20 @@ export class MainComponent {
   label: string = '';
 
   ngOnInit(): void {
+    /*
+     * Izin dimuat sekali di sini, terpisah dari langganan di bawah.
+     *
+     * Pada pemuatan ulang halaman, navigasi pertama sudah SELESAI sebelum
+     * komponen ini sempat berlangganan `router.events`. Karena itu bukan
+     * aliran yang mengulang kejadian lamanya, `NavigationEnd` pertama tidak
+     * pernah diterima — dan izin tidak pernah diminta sama sekali.
+     *
+     * Gejalanya persis seperti izin ditolak: menu kosong. Bedanya, di tab
+     * jaringan tidak ada permintaan apa pun ke `permissions/me`, sehingga
+     * penyebabnya mudah tertukar dengan masalah token.
+     */
+    this.permissionService.load();
+
     this.label = this.route.snapshot.firstChild!.data['title'];
     this.router.events
       .pipe(

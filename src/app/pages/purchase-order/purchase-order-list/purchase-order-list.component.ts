@@ -37,7 +37,10 @@ import {
   buildGroutingClauses,
   buildMandorClauses,
   buildEquipmentRentalBillingTerms,
+  buildTransportRentalBillingTerms,
   buildLegalServiceBillingTerms,
+  buildInsuranceClauses,
+  buildTrainingClauses,
   buildLegalServiceClauses,
   buildMaintenanceBillingTerms,
   buildPasal5,
@@ -228,7 +231,9 @@ export class PurchaseOrderListComponent {
     '6.3.1',
     '6.3.2',
     '6.4.1',
+    '6.4.2',
     '6.5.1',
+    '6.5.2',
     'G',
     'C',
     'D',
@@ -238,8 +243,50 @@ export class PurchaseOrderListComponent {
     'H1',
     'H2',
     '5.1.1',
+    '5.1.12',
     '5.1.6',
   ];
+
+  /**
+   * Dokumen ini berasal dari formulir sewa alat (PO-B).
+   *
+   * PO-B dapat diterbitkan sebagai tipe A, sehingga kode jenisnya tidak bisa
+   * dipakai untuk menentukan bentuk dokumennya. Yang menentukan adalah
+   * penanda `formOrigin`; PO lama yang belum menyimpannya dikenali dari
+   * kolom sewa yang hanya ada pada formulir B.
+   */
+  private dariFormB(po: any, custom: any): boolean {
+    if (custom?.formOrigin) return custom.formOrigin === 'B';
+    if (po?.purchaseType === 'B') return true;
+    // PO-B lama: hanya formulir sewa yang menyimpan hal-hal ini.
+    return (
+      custom?.equipmentRiskBearer !== undefined ||
+      custom?.operatorByVendor !== undefined ||
+      custom?.quotaPeriodDays !== undefined
+    );
+  }
+
+  /** Keterangan tanggal dan lembaga penerbit untuk satu baris pelatihan. */
+  private periodeLembaga(it: any): string {
+    const bagian: string[] = [];
+    const mulai = this.tanggalPanjang(it.remarks_1);
+    const selesai = this.tanggalPanjang(it.remarks_2);
+    if (mulai && selesai) bagian.push(`${mulai} s/d ${selesai}`);
+    else if (mulai) bagian.push(mulai);
+    if (it.remarks_3) bagian.push(String(it.remarks_3));
+    return bagian.join(' · ');
+  }
+
+  /** Keterangan periode dan lokasi untuk satu baris sewa alat. */
+  private periodeLokasiSewa(it: any): string {
+    const bagian: string[] = [];
+    const mulai = this.tanggalPanjang(it.remarks_1);
+    const selesai = this.tanggalPanjang(it.remarks_2);
+    if (mulai && selesai) bagian.push(`${mulai} s/d ${selesai}`);
+    else if (mulai) bagian.push(`Mulai ${mulai}`);
+    if (it.remarks_3) bagian.push(String(it.remarks_3));
+    return bagian.join(' · ');
+  }
 
   /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
   private tanggalPanjang(nilai: any): string {
@@ -431,7 +478,13 @@ export class PurchaseOrderListComponent {
                       ? 'Demikian PERJANJIAN KERJA SAMA ini dibuat sesuai dengan kesepakatan bersama dan akan digunakan sebagai dasar pekerjaan dan penagihan.'
                       : undefined,
               });
-            } else if (po.purchaseType === 'A') {
+            } else if (po.purchaseType === 'A' && !this.dariFormB(po, custom)) {
+              // Dokumen tipe A yang benar-benar jasa transportasi.
+              //
+              // PO-B yang diterbitkan sebagai tipe A tidak masuk ke sini:
+              // isian, tabel, dan ketentuannya milik sewa alat, sehingga
+              // ditangani cabang sewa di bawah.
+              //
               // SPK jasa transportasi. Moda tidak disimpan sebagai kolom
               // sendiri: darat memakai fleet_id sungguhan, sedangkan udara
               // dan laut memakai id penanda (1000/1001).
@@ -593,6 +646,107 @@ export class PurchaseOrderListComponent {
               } else {
                 printPurchaseOrderB(data63);
               }
+            } else if (po.purchaseType === '5.1.12') {
+              // Perangkat lunak & langganan: pemesanan layanan, sehingga
+              // memakai tata letak Surat Perintah Kerja.
+              printPurchaseOrderB({
+                ...printData,
+                poType: '5.1.12',
+                items: (data.items || []).map((it: any) => ({
+                  name: it.task || '',
+                  remarks: it.remarks_1 || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                clauseContext: {
+                  ...printData.clauseContext,
+                  paymentTerm: custom.paymentTerm ?? data.payment_term,
+                  creditTerm: custom.creditTerm,
+                  prepaidTerm: custom.prepaidTerm,
+                  softwareIsSubscription: custom.isSubscription !== false,
+                  subscriptionStartDate: this.tanggalPanjang(
+                    custom.subscriptionStartDate,
+                  ),
+                  subscriptionDuration: custom.subscriptionDuration,
+                  subscriptionDurationUnit: custom.subscriptionDurationUnit,
+                  autoRenew: !!custom.autoRenew,
+                  licenseDelivery: custom.licenseDelivery,
+                  renewalNoticeDays: custom.renewalNoticeDays,
+                  dataRetrievalDays: custom.dataRetrievalDays,
+                  userSeatCount: custom.userSeatCount,
+                  supplierPICName: custom.supplierPICName,
+                  supplierPICPhoneNumber: custom.supplierPICPhoneNumber,
+                  officePICName: custom.officePICName,
+                  officePICPhoneNumber: custom.officePICPhoneNumber,
+                  pphCode: custom.pphCode,
+                  pphTaxObject: custom.pphTaxObject,
+                  pphPercentage: custom.pphPercentage,
+                },
+              });
+            } else if (po.purchaseType === '6.4.2') {
+              // Penutupan pertanggungan: pemesanan jasa, tata letak SPK.
+              printPurchaseOrderB({
+                ...printData,
+                poType: '6.4.2',
+                items: (data.items || []).map((it: any) => ({
+                  name: it.task || '',
+                  remarks: it.remarks_1 || '',
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                sections: buildInsuranceClauses(
+                  {
+                    ...printData.clauseContext,
+                    paymentTerm: custom.paymentTerm ?? data.payment_term,
+                    creditTerm: custom.creditTerm,
+                    prepaidTerm: custom.prepaidTerm,
+                    insuranceChannel: custom.insuranceChannel || 'broker',
+                    hasPremium: (custom.premiums || []).length > 0,
+                    policyDeliveryDays: custom.policyDeliveryDays,
+                    isSuretyBond: !!custom.isSuretyBond,
+                    pphCode: custom.pphCode,
+                    pphTaxObject: custom.pphTaxObject,
+                    pphPercentage: custom.pphPercentage,
+                  } as any,
+                  custom.additionalClauses || [],
+                ),
+              });
+            } else if (po.purchaseType === '6.5.2') {
+              // Pelatihan: pemesanan jasa, tata letak SPK.
+              printPurchaseOrderB({
+                ...printData,
+                poType: '6.5.2',
+                items: (data.items || []).map((it: any) => ({
+                  name: it.task || '',
+                  // Tanggal pelaksanaan dan lembaga penerbit dirangkai ulang
+                  // agar cetak ulang sama dengan dokumen aslinya.
+                  remarks: this.periodeLembaga(it),
+                  quantity: Number(it.quantity) || 0,
+                  unit: it.unit,
+                  price: Number(it.price) || 0,
+                })),
+                includePpn: Number(data.ppn) > 0,
+                sections: buildTrainingClauses(
+                  {
+                    ...printData.clauseContext,
+                    paymentTerm: custom.paymentTerm ?? data.payment_term,
+                    creditTerm: custom.creditTerm,
+                    prepaidTerm: custom.prepaidTerm,
+                    trainingVenue: custom.trainingVenue,
+                    participantCancelDays: custom.participantCancelDays,
+                    certificateDueDays: custom.certificateDueDays,
+                    retakeCostBearer: custom.retakeCostBearer,
+                    pphCode: custom.pphCode,
+                    pphTaxObject: custom.pphTaxObject,
+                    pphPercentage: custom.pphPercentage,
+                  } as any,
+                  custom.additionalClauses || [],
+                ),
+              });
             } else if (po.purchaseType === '6.5.1') {
               // Kuota adalah pembelian slot (tata letak surat pesanan);
               // pemeriksaan peserta adalah pemesanan jasa (tata letak SPK).
@@ -726,8 +880,10 @@ export class PurchaseOrderListComponent {
               } else {
                 printPurchaseOrderG(data512);
               }
-            } else if (po.purchaseType === 'B') {
-              // SPK sewa alat: nama alat dari katalog equipment
+            } else if (this.dariFormB(po, custom)) {
+              // SPK sewa alat: nama alat dari katalog equipment.
+              // Termasuk yang diterbitkan sebagai tipe A — bentuk dokumennya
+              // mengikuti formulir asalnya, bukan kode jenisnya.
               printPurchaseOrderB({
                 purchaseOrderName: data.name,
                 date: data.date,
@@ -740,18 +896,37 @@ export class PurchaseOrderListComponent {
                 items: (data.items || []).map((it: any) => ({
                   name:
                     it.equipment_name || it.item_description || it.task || '',
+                  // Periode sewa (remarks_1/2) dan lokasi (remarks_3)
+                  // dirangkai ulang agar cetak ulang sama dengan dokumen
+                  // yang keluar saat PO dibuat.
+                  remarks: this.periodeLokasiSewa(it),
                   quantity: Number(it.quantity) || 0,
                   unit: it.unit,
                   price: Number(it.price) || 0,
                 })),
                 includePpn: Number(data.ppn) > 0,
                 templateVersion: data.templateVersion,
-                billingTerms: buildEquipmentRentalBillingTerms(
-                  isTempoTerm(custom.paymentTerm),
-                ),
+                // Lembar penagihan mengikuti bentuk pekerjaannya: pada
+                // pengangkutan tidak ada periode pekan maupun CoP.
+                billingTerms:
+                  po.purchaseType === 'A'
+                    ? buildTransportRentalBillingTerms()
+                    : buildEquipmentRentalBillingTerms(
+                        isTempoTerm(custom.paymentTerm),
+                      ),
                 billingTitle:
                   'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEWAAN ALAT KERJA',
                 clauseContext: {
+                  // PO lama tidak menyimpan penanda ini; cakupan pengangkutan
+                  // disimpulkan dari jenis dokumennya agar cetak ulangnya
+                  // tetap sama dengan dokumen aslinya.
+                  includeTransportCoverage:
+                    custom.includeTransportCoverage ??
+                    String(po.purchaseType || '').startsWith('A'),
+                  // PO lama tidak menyimpan jenis sewanya; alat berat dipakai
+                  // sebagai anggapan agar dokumennya tercetak sama seperti
+                  // saat diterbitkan.
+                  rentalCategory: custom.rentalCategory || 'alat-berat',
                   // PO-B lama menyimpan termin sebagai teks bebas; keduanya
                   // dikirim agar yang lama tetap tercetak apa adanya.
                   paymentTerm: custom.paymentTerm,
@@ -902,7 +1077,9 @@ export class PurchaseOrderListComponent {
     '6.3.1': '631',
     '6.3.2': '632',
     '6.4.1': '641',
+    '6.4.2': '642',
     '6.5.1': '651',
+    '6.5.2': '652',
     // 6.4.2 (asuransi) dan 6.5.2 belum memiliki formulir; sengaja tidak
     // dicantumkan agar pemilihnya memberi pesan "belum tersedia" daripada
     // mengarahkan ke alamat yang tidak ada.

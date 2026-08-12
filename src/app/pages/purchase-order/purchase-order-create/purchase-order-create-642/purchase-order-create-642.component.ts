@@ -1,0 +1,562 @@
+import { CommonModule } from '@angular/common';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { Component, inject } from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslatePipe } from '@ngx-translate/core';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import moment from 'moment';
+
+import { ApiService } from 'src/app/services/api.service';
+import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
+import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../../utils/pph';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
+import { buildInsuranceClauses } from '../../../../constants/clause-templates';
+import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+
+/**
+ * 6.4.2 Penutupan pertanggungan (asuransi & surety bond).
+ *
+ * Dua hal yang membedakannya dari SPK jasa lain:
+ *
+ *   1. Yang dibeli adalah DOKUMEN. Begitu polis terbit, yang menanggung
+ *      risiko adalah polis itu — bukan PIHAK KEDUA.
+ *   2. Ada dua jenis uang. Premi hanya dititipkan untuk diteruskan kepada
+ *      penanggung, sedangkan imbalan jasa adalah penghasilan PIHAK KEDUA.
+ *      Keduanya dipisah mengikuti pola biaya resmi pada PO 6.4.1, sehingga
+ *      premi tidak ikut menjadi dasar pemotongan pajak.
+ */
+@Component({
+  selector: 'app-purchase-order-create-642',
+  standalone: true,
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
+  imports: [
+    ClauseLineComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+    HeaderTitleComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    NgxMaskDirective,
+  ],
+  templateUrl: './purchase-order-create-642.component.html',
+  styleUrl: './purchase-order-create-642.component.scss',
+})
+export class PurchaseOrderCreate642Component {
+  constructor(
+    private formBuilder: FormBuilder,
+    private apiService: ApiService,
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+  ) {}
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
+
+  get typeCode(): string {
+    return '6.4.2';
+  }
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['6.4.2'] || 'Insurances';
+  }
+
+  isSubmitting = false;
+  readonly purchaseType = '6.4.2';
+
+  /**
+   * null sampai jalur penutupan dipilih.
+   *
+   * Ditutup lewat broker atau langsung ke perusahaan asuransi menentukan
+   * ada tidaknya imbalan jasa dan pemotongan pajaknya — sehingga tidak dapat
+   * diwakili satu bentuk formulir.
+   */
+  channel: 'broker' | 'langsung' | null = null;
+
+  get lewatBroker(): boolean {
+    return this.channel === 'broker';
+  }
+
+  /**
+   * Jenis pertanggungan dibuat sebagai pilihan, bukan isian bebas.
+   *
+   * Penulisan bebas menghasilkan "CAR", "C.A.R.", dan "Contractor All Risk"
+   * untuk hal yang sama, dan itu menyulitkan penelusuran saat polis dicari
+   * kembali.
+   */
+  insuranceTypes: string[] = [
+    "Contractor's All Risk (CAR)",
+    'Erection All Risk (EAR)',
+    'Third Party Liability (TPL)',
+    "Contractor's Plant & Machinery (CPM)",
+    'Marine Cargo',
+    'Pengangkutan Alat Berat',
+    'Bid Bond (Jaminan Penawaran)',
+    'Performance Bond (Jaminan Pelaksanaan)',
+    'Advance Payment Bond (Jaminan Uang Muka)',
+    'Maintenance Bond (Jaminan Pemeliharaan)',
+    'Lainnya',
+  ];
+
+  /** Jenis yang berupa penjaminan, bukan pertanggungan. */
+  private readonly BOND_TYPES = [
+    'Bid Bond (Jaminan Penawaran)',
+    'Performance Bond (Jaminan Pelaksanaan)',
+    'Advance Payment Bond (Jaminan Uang Muka)',
+    'Maintenance Bond (Jaminan Pemeliharaan)',
+  ];
+
+  /** Ada baris berupa jaminan; klausul khusus jaminan ikut dicetak. */
+  get isSuretyBond(): boolean {
+    return this.t.controls.some((c) =>
+      this.BOND_TYPES.includes(c.value.insuranceType),
+    );
+  }
+
+  formGroup: FormGroup = new FormGroup({
+    date: new FormControl('', Validators.required),
+    purchaseType: new FormControl('6.4.2'),
+    supplierID: new FormControl('', Validators.required),
+    supplierName: new FormControl('', Validators.required),
+    supplierAddress: new FormControl('', Validators.required),
+    supplierNpwp: new FormControl(''),
+    // 6.4.2 dapat dibebankan ke proyek maupun pusat.
+    projectName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[A-Z0-9]{4,5}$/),
+    ]),
+
+    paymentTerm: new FormControl('', Validators.required),
+    creditTerm: new FormControl(0),
+    prepaidTerm: new FormControl(0),
+
+    // Hanya berlaku pada penutupan lewat broker.
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+
+    policyDeliveryDays: new FormControl(14, [Validators.min(0)]),
+
+    lines: new FormArray([]),
+    premiums: new FormArray([]),
+    additionalClauses: new FormArray([]),
+    includePPN: new FormControl(false),
+  });
+
+  ngOnInit(): void {
+    const routeType = this.route.snapshot.data['purchaseType'];
+    if (routeType) this.formGroup.patchValue({ purchaseType: routeType });
+  }
+
+  /**
+   * Jalur dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
+   * pilihannya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
+   */
+  chooseChannel(picked: 'broker' | 'langsung') {
+    if (picked === this.channel) return;
+    this.channel = picked;
+    this.t.clear();
+    this.addLine();
+    if (!this.lewatBroker) this.clearPph();
+  }
+
+  resetChannel() {
+    this.channel = null;
+    this.t.clear();
+  }
+
+  // ---- rincian pertanggungan ----
+  get t(): FormArray {
+    return this.formGroup.get('lines') as FormArray;
+  }
+  getFormGroupAt(i: number) {
+    return this.t.at(i) as FormGroup;
+  }
+
+  addLine() {
+    this.t.push(
+      this.formBuilder.group({
+        insuranceType: ['', Validators.required],
+        customType: [''], // dipakai saat insuranceType === 'Lainnya'
+        // Objek yang dijamin, mis. "Excavator PC200 B 1234 XYZ".
+        object: [''],
+        sumInsured: [0, [Validators.min(0)]],
+        deductible: [''],
+        coverageStart: [''],
+        coverageEnd: [''],
+        quantity: [1, [Validators.required, Validators.min(0.01)]],
+        unit: ['polis', Validators.required],
+        price: [0, [Validators.required, Validators.min(0)]],
+      }),
+    );
+  }
+
+  removeLineAt(i: number) {
+    this.t.removeAt(i);
+  }
+
+  isOther(i: number): boolean {
+    return this.getFormGroupAt(i).value.insuranceType === 'Lainnya';
+  }
+
+  /** Nama jenis yang benar-benar tersimpan pada kolom pekerjaan. */
+  private lineTask(i: number): string {
+    const v = this.getFormGroupAt(i).value;
+    return v.insuranceType === 'Lainnya'
+      ? v.customType || 'Lainnya'
+      : v.insuranceType || '';
+  }
+
+  lineTotal(i: number): number {
+    const x = this.t.at(i).getRawValue();
+    return (Number(x.quantity) || 0) * (Number(x.price) || 0);
+  }
+
+  // ---- premi (dititipkan, diteruskan ke penanggung) ----
+  get premiums(): FormArray {
+    return this.formGroup.get('premiums') as FormArray;
+  }
+  getPremiumGroupAt(i: number) {
+    return this.premiums.at(i) as FormGroup;
+  }
+  addPremium() {
+    this.premiums.push(
+      this.formBuilder.group({
+        task: ['', [Validators.required, Validators.maxLength(100)]],
+        description: [''],
+        amount: [0, [Validators.required, Validators.min(0)]],
+      }),
+    );
+  }
+  removePremiumAt(i: number) {
+    this.premiums.removeAt(i);
+  }
+  get hasPremium(): boolean {
+    return this.premiums.length > 0;
+  }
+  get premiumTotal(): number {
+    return this.premiums.controls.reduce(
+      (acc, c) => acc + (Number(c.value.amount) || 0),
+      0,
+    );
+  }
+
+  // ---- ringkasan ----
+  //
+  // Premi TIDAK masuk subtotal: yang menjadi dasar pajak hanya imbalan jasa.
+  get subTotal(): number {
+    return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
+  }
+  get ppnAmount(): number {
+    return this.formGroup.get('includePPN')?.value ? this.subTotal * 0.11 : 0;
+  }
+  get pphAmount(): number {
+    const pct = Number(this.formGroup.get('pphPercentage')?.value) || 0;
+    return (this.subTotal * pct) / 100;
+  }
+  get grandTotal(): number {
+    return this.subTotal + this.ppnAmount + this.premiumTotal;
+  }
+
+  // ---- poin tambahan ----
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+  get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
+  isSubList(x: string | string[]): boolean {
+    return Array.isArray(x);
+  }
+  asList(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+  asText(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
+  // ---- termin ----
+  private readonly CREDIT_TERMS = ['PPD', 'CR', 'CRD'];
+  private readonly PREPAID_TERMS = ['PPD', 'CRD'];
+
+  get creditEnabled(): boolean {
+    return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+  }
+  get prepaidEnabled(): boolean {
+    return this.PREPAID_TERMS.includes(
+      this.formGroup.get('paymentTerm')?.value,
+    );
+  }
+
+  onPaymentTermChange(): void {
+    const credit = this.formGroup.get('creditTerm');
+    const prepaid = this.formGroup.get('prepaidTerm');
+
+    if (this.creditEnabled) credit?.enable();
+    else {
+      credit?.setValue(0);
+      credit?.disable();
+    }
+
+    if (this.prepaidEnabled) prepaid?.enable();
+    else {
+      prepaid?.setValue(0);
+      prepaid?.disable();
+    }
+  }
+
+  openSupplierSelector() {
+    this.dialog
+      .open(SupplierSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          supplierID: data.id,
+          supplierName: data.name,
+          supplierAddress: data.address,
+          supplierNpwp: data.npwp || '',
+        });
+      });
+  }
+
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
+
+  toUpperCase() {
+    const v = this.formGroup.get('projectName')?.value;
+    if (v && v.toUpperCase() !== v) {
+      this.formGroup.patchValue({ projectName: v.toUpperCase() });
+    }
+  }
+
+  get f() {
+    return this.formGroup.controls as any;
+  }
+
+  /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */
+  private clauseContext() {
+    const v = this.formGroup.getRawValue();
+    return {
+      paymentTerm: v.paymentTerm,
+      creditTerm: v.creditTerm,
+      prepaidTerm: v.prepaidTerm,
+      insuranceChannel: this.channel ?? 'broker',
+      hasPremium: this.hasPremium,
+      policyDeliveryDays: v.policyDeliveryDays,
+      isSuretyBond: this.isSuretyBond,
+      pphCode: this.lewatBroker ? v.pphCode : '',
+      pphTaxObject: this.lewatBroker ? v.pphTaxObject : '',
+      pphPercentage: this.lewatBroker ? v.pphPercentage : 0,
+    };
+  }
+
+  /**
+   * Ketentuan baku yang akan tercetak, ditampilkan sejak awal.
+   *
+   * Dirakit dari template yang sama dengan pencetakan, sehingga yang terbaca
+   * di layar tidak mungkin berbeda dari yang keluar di dokumen.
+   */
+  get previewSections() {
+    return buildInsuranceClauses(
+      this.clauseContext() as any,
+      this.additionalClauseValues,
+    );
+  }
+
+  private toISO(d: any): string | null {
+    return d ? new Date(d).toISOString().split('T')[0] : null;
+  }
+
+  private formatData() {
+    const v = this.formGroup.getRawValue();
+    return {
+      date: moment(v.date).format('YYYY-MM-DD'),
+      supplierID: v.supplierID,
+      purchaseType: '6.4.2',
+      projectName: v.projectName,
+      // Premi tidak masuk DPP: yang menjadi dasar pajak hanya imbalan jasa.
+      dpp: this.subTotal,
+      otherValue: this.premiumTotal,
+      ppn: v.includePPN ? 11 : 0,
+      pphCode: this.lewatBroker ? v.pphCode || null : null,
+      pphTaxObject: this.lewatBroker ? v.pphTaxObject || null : null,
+      pphPercentage: this.lewatBroker ? Number(v.pphPercentage) || 0 : 0,
+      payment_term: v.paymentTerm,
+      templateVersion: '1.0',
+      items: this.t.controls.map((c, i) => {
+        const x = c.getRawValue();
+        return {
+          task: this.lineTask(i),
+          quantity: x.unit === 'LS' ? 1 : x.quantity,
+          price: x.price,
+          unit: x.unit,
+          remarks_1: x.object || null,
+        };
+      }),
+      customData: {
+        insuranceChannel: this.channel,
+        policyDeliveryDays: v.policyDeliveryDays,
+        isSuretyBond: this.isSuretyBond,
+        pphCode: this.lewatBroker ? v.pphCode : '',
+        pphTaxObject: this.lewatBroker ? v.pphTaxObject : '',
+        pphPercentage: this.lewatBroker ? v.pphPercentage : 0,
+        paymentTerm: v.paymentTerm,
+        creditTerm: v.creditTerm,
+        prepaidTerm: v.prepaidTerm,
+        // Rincian pertanggungan disimpan agar dapat dicetak ulang.
+        coverages: this.t.controls.map((c, i) => {
+          const x = c.getRawValue();
+          return {
+            type: this.lineTask(i),
+            object: x.object,
+            sumInsured: Number(x.sumInsured) || 0,
+            deductible: x.deductible,
+            coverageStart: this.toISO(x.coverageStart),
+            coverageEnd: this.toISO(x.coverageEnd),
+          };
+        }),
+        premiums: this.premiums.controls.map((c) => {
+          const x = c.getRawValue();
+          return {
+            task: x.task,
+            description: x.description,
+            amount: Number(x.amount) || 0,
+          };
+        }),
+        additionalClauses: this.additionalClauseValues,
+      },
+    };
+  }
+
+  /**
+   * Susun data cetak.
+   *
+   * Penutupan pertanggungan adalah pemesanan jasa, sehingga dokumennya
+   * memakai tata letak Surat Perintah Kerja.
+   */
+  private buildPrintData(purchaseOrderName: string) {
+    const v = this.formGroup.getRawValue();
+    return {
+      poType: '6.4.2',
+      purchaseOrderName,
+      date: v.date,
+      projectName: v.projectName,
+      supplierName: v.supplierName,
+      supplierAddress: v.supplierAddress,
+      supplierNpwp: v.supplierNpwp,
+      items: this.t.controls.map((c, i) => {
+        const x = c.getRawValue();
+        return {
+          name: this.lineTask(i),
+          remarks: x.object,
+          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+          unit: x.unit,
+          price: Number(x.price) || 0,
+        };
+      }),
+      includePpn: !!v.includePPN,
+      templateVersion: '1.0',
+      sections: this.previewSections,
+      clauseContext: this.clauseContext(),
+      additionalClauses: this.additionalClauseValues,
+    };
+  }
+
+  onSubmit() {
+    this.isSubmitting = true;
+    this.apiService
+      .post('purchase-orders', this.formatData())
+      .subscribe({
+        next: (res: any) => {
+          this.snackBar.open(
+            `Purchase order ${res?.purchase_order_name ?? ''} berhasil dibuat`,
+            'Close',
+            { duration: 3000 },
+          );
+          // Buka PDF-nya; gagal cetak tidak membatalkan PO yang tersimpan.
+          try {
+            printPurchaseOrderB(
+              this.buildPrintData(res?.purchase_order_name ?? ''),
+            );
+          } catch (e) {
+            console.error('Gagal membuat PDF purchase order:', e);
+          }
+          this.router.navigate(['/Purchase-order']);
+        },
+        error: (error) => {
+          this.snackBar.open(
+            error?.error?.detail || 'Gagal membuat purchase order',
+            'Close',
+            { duration: 3000 },
+          );
+        },
+      })
+      .add(() => {
+        this.isSubmitting = false;
+      });
+  }
+}

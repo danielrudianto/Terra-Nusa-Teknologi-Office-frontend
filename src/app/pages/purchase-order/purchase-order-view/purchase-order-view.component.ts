@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
+import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
 import { Component, Inject } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -9,7 +9,6 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.constant';
@@ -22,17 +21,16 @@ import {
 } from '../../../constants/clause-templates';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
-type ViewMode = 'formatted' | 'raw';
 
 @Component({
   selector: 'app-purchase-order-view',
   standalone: true,
   imports: [
+    ClauseLineComponent,
     AuditTrailComponent,
     CommonModule,
     MatDialogModule,
     MatIconModule,
-    MatButtonToggleModule,
     MatProgressSpinnerModule,
     TranslatePipe,
   ],
@@ -40,7 +38,6 @@ type ViewMode = 'formatted' | 'raw';
   styleUrl: './purchase-order-view.component.scss',
 })
 export class PurchaseOrderViewComponent {
-  mode: ViewMode = 'formatted';
   isLoading = true;
   data: any = null;
 
@@ -49,7 +46,6 @@ export class PurchaseOrderViewComponent {
     private dialogRef: MatDialogRef<PurchaseOrderViewComponent>,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
-    private clipboard: Clipboard,
     private translate: TranslateService,
   ) {
     this.fetch();
@@ -118,12 +114,38 @@ export class PurchaseOrderViewComponent {
    * buildClauseLines mengembalikan daftar kosong dan poinnya tidak pernah
    * tampil di halaman ini.
    */
+  /**
+   * Jenis yang menentukan bentuk ketentuannya.
+   *
+   * Tidak selalu sama dengan kolom `purchaseType`: PO-B dapat diterbitkan
+   * sebagai tipe A ketika alatnya dipakai mengangkut, dan yang tersimpan
+   * adalah 'A'. Membaca kolom itu apa adanya membuat dokumen sewa alat
+   * ditampilkan dengan ketentuan jasa transportasi — isian, tabel, dan
+   * ketentuannya jadi tidak saling cocok.
+   *
+   * PO lama yang belum menyimpan penanda dikenali dari kolom yang hanya ada
+   * pada formulir sewa.
+   */
+  get jenisEfektif(): string {
+    const custom = this.data?.customData || {};
+    if (custom.formOrigin) return custom.formOrigin;
+    if (
+      this.data?.purchaseType === 'A' &&
+      (custom.equipmentRiskBearer !== undefined ||
+        custom.operatorByVendor !== undefined ||
+        custom.quotaPeriodDays !== undefined)
+    ) {
+      return 'B';
+    }
+    return this.data?.purchaseType;
+  }
+
   get clauseSections(): ClauseSection[] {
     if (!this.data) return [];
     const custom = this.data.customData || {};
     const tambahan: string[] = custom.additionalClauses || [];
 
-    switch (this.data.purchaseType) {
+    switch (this.jenisEfektif) {
       case 'A':
         return buildTransportClauses(
           {
@@ -170,7 +192,8 @@ export class PurchaseOrderViewComponent {
     if (!this.data) return [];
     const custom = this.data.customData || {};
     return buildClauseLines(
-      this.data.purchaseType,
+      // Bukan kolom `purchaseType`: lihat keterangan pada `jenisEfektif`.
+      this.jenisEfektif,
       {
         paymentTerm: custom.paymentTerm ?? this.data.payment_term,
         creditTerm: custom.creditTerm,
@@ -192,18 +215,4 @@ export class PurchaseOrderViewComponent {
     );
   }
 
-  get rawJson(): string {
-    return JSON.stringify(this.data ?? {}, null, 2);
-  }
-
-  copyRaw() {
-    this.clipboard.copy(this.rawJson);
-    this.snackBar.open(
-      this.translate.instant('purchaseOrder.rawCopied'),
-      'Close',
-      {
-        duration: 2000,
-      },
-    );
-  }
 }

@@ -1,5 +1,9 @@
 <div class="po511">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.title511' | translate"
@@ -28,13 +32,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="projectName"
-            maxlength="5"
-            (keyup)="toUpperCase()"
-            placeholder="Ex. MICZ"
-          />
+          <!--
+            Selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
+            terbebankan ke kode proyek.
+          -->
+          <input matInput formControlName="projectName" readonly />
           <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
           <mat-error *ngIf="f['projectName'].hasError('pattern')"
             >Harus 4–5 karakter kapital.</mat-error
@@ -239,7 +241,10 @@
       <div class="po511-grid">
         <mat-form-field appearance="outline" class="po511-span2">
           <mat-label>{{ "poForm.paymentTerm" | translate }}</mat-label>
-          <mat-select formControlName="paymentTerm">
+          <mat-select
+            formControlName="paymentTerm"
+            (selectionChange)="onPaymentTermChange()"
+          >
             <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
             <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
             <mat-option value="PPD">{{
@@ -325,11 +330,11 @@
             @if (isSubList(p)) {
               <ol class="po511-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>

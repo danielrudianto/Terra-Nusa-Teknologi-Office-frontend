@@ -1,0 +1,226 @@
+.ua {
+  min-width: 0;
+}
+
+.ua-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0 0.25rem;
+}
+.ua-badge {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+.ua-head__text {
+  min-width: 0;
+}
+.ua-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+.ua-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.ua-content {
+  padding-top: 0.5rem;
+  max-height: 68vh;
+}
+
+.ua-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+  margin: 1.25rem 0 0.5rem;
+
+  &--flush {
+    margin: 0;
+  }
+}
+.ua-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.75rem 0 0.5rem;
+}
+.ua-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.5;
+  margin: 0 0 0.9rem;
+}
+
+/* Tombol tambah — mengikuti bentuk yang dipakai di formulir purchase order:
+   putih beroutline, bukan berlatar penuh. */
+.ua-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid #d7deea;
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: var(--hover, #f3f6ff);
+  }
+}
+
+.ua-divisi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ua-divisi__row {
+  padding: 0.35rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-2, #fafbfc);
+  }
+}
+
+.ua-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ua-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.6fr 40px;
+  gap: 0.25rem 0.6rem;
+  align-items: start;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+@media (max-width: 760px) {
+  .ua-row {
+    grid-template-columns: 1fr 1fr 40px;
+  }
+  .ua-row__note {
+    grid-column: 1 / -1;
+  }
+}
+
+.ua-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px dashed var(--border, #e3e6eb);
+  color: var(--muted, #9aa1ad);
+  font-size: 0.85rem;
+}
+
+.ua-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0.6rem 0 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 11px;
+  background: var(--surface-2, #fafbfc);
+  border: 0.5px solid var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  line-height: 1.45;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    color: var(--faint, #9aa0ab);
+  }
+
+  &--warn {
+    background: var(--warn-bg, #fff8e6);
+    border-color: var(--warn-border, #f3e2b3);
+    color: var(--warn-fg, #8a6516);
+
+    mat-icon {
+      color: var(--warn-fg, #8a6516);
+    }
+  }
+}
+
+.ua-loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 0.88rem;
+}
+
+.ua-foot {
+  padding: 0.75rem 0 0;
+  gap: 10px;
+}
+.ua-cancel {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: 0.5px solid var(--border, #d7deea);
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  border-radius: 11px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+.ua-submit {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.86rem;
+  border: none;
+  background: var(--brand, #154dec);
+  color: #fff;
+  border-radius: 11px;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+/* Penanda divisi yang belum punya modul. */
+.ua-divisi__soon {
+  margin-left: 0.5rem;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--faint, #9aa0ab);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

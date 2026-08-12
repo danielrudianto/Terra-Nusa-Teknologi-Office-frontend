@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -31,7 +34,6 @@ import {
   buildMaintenanceBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
-import { PurchaseOrder512ModeDialogComponent } from './purchase-order-512-mode-dialog/purchase-order-512-mode-dialog.component';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../../utils/pph';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
@@ -49,6 +51,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ClauseLineComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,
@@ -68,6 +71,22 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './purchase-order-create-512.component.scss',
 })
 export class PurchaseOrderCreate512Component {
+  /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  get typeCode(): string {
+    return '5.1.2';
+  }
+
+  /** Nama jenis PO, dipakai pada pill di kepala halaman. */
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['5.1.2'] || '';
+  }
+
+  private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
+
+  /** Buka pemilih jenis PO; isian yang sudah ada dikonfirmasi lebih dulu. */
+  onChangeType() {
+    this.typeSwitcher.open(this.formGroup?.dirty === true);
+  }
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -100,9 +119,16 @@ export class PurchaseOrderCreate512Component {
     supplierName: new FormControl('', Validators.required),
     supplierAddress: new FormControl('', Validators.required),
     supplierNpwp: new FormControl(''),
-    projectName: new FormControl('', [
+    /*
+     * Pengeluaran ini selalu dibebankan ke PUSAT, tidak pernah ke proyek.
+     *
+     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
+     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
+     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
+     * dibaca, ketika dokumennya sudah lama tersimpan.
+     */
+    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
       Validators.required,
-      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     paymentTerm: new FormControl('', Validators.required),
     creditTerm: new FormControl(0, Validators.required),
@@ -188,31 +214,28 @@ export class PurchaseOrderCreate512Component {
     });
   }
 
-  ngOnInit(): void {
-    this.askMode(true);
+  ngOnInit(): void {}
+
+  /**
+   * Bentuk dipilih di layar, bukan lewat dialog.
+   *
+   * Dialog yang ditutup membuat bentuknya tetap kosong: formulir tidak dapat
+   * dipakai maupun diganti, dan satu-satunya jalan keluar adalah memuat ulang
+   * halaman. Layar pemilih tidak bisa "tertutup", dan menggantinya cukup
+   * lewat tombol kembali.
+   */
+  chooseMode(picked: 'barang' | 'jasa') {
+    if (picked === this.mode) return;
+    this.mode = picked;
+    this.t.clear(); // bentuk baris berbeda per mode
+    this.setGoodsValidators();
+    if (picked === 'jasa') this.addService();
   }
 
-  /** `initial` = dismissing sends the user back to the PO hub */
-  askMode(initial: boolean = false) {
-    this.dialog
-      .open(PurchaseOrder512ModeDialogComponent, {
-        width: '600px',
-        maxWidth: '94vw',
-        autoFocus: false,
-        disableClose: initial,
-      })
-      .afterClosed()
-      .subscribe((picked) => {
-        if (!picked) {
-          if (initial) this.router.navigate(['/Purchase-order/Create']);
-          return;
-        }
-        if (picked === this.mode) return;
-        this.mode = picked;
-        this.t.clear(); // line shape differs per mode
-        this.setGoodsValidators();
-        if (picked === 'jasa') this.addService();
-      });
+  /** Kembali ke layar pemilih; baris dikosongkan karena bentuknya beda. */
+  resetMode() {
+    this.mode = null;
+    this.t.clear();
   }
 
   get isGoods(): boolean {

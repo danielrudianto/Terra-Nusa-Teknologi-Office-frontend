@@ -1,5 +1,9 @@
 <div class="po5112-wrap">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.title5112' | translate"
@@ -22,11 +26,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="projectName"
-            placeholder="Cth: PUSAT"
-          />
+          <!--
+            Selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
+            terbebankan ke kode proyek.
+          -->
+          <input matInput formControlName="projectName" readonly />
           <mat-hint>{{ "po5112.codeHint" | translate }}</mat-hint>
         </mat-form-field>
 
@@ -267,12 +271,19 @@
         }
       </div>
 
+      <!--
+        Harga yang diisi SELALU di luar PPN, sama seperti jenis PO lainnya.
+        Sebelumnya labelnya berbunyi "harga sudah termasuk PPN" padahal
+        kodenya menambahkan PPN di atas harga — yang mengikuti labelnya justru
+        salah mengisi, dan selisihnya baru ketahuan saat faktur masuk.
+      -->
       <mat-checkbox
         formControlName="includePPN"
         color="primary"
         class="po5112-ppn"
-        >{{ "po5112.priceIncludesVat" | translate }}</mat-checkbox
+        >{{ "poForm.includePpn" | translate }}</mat-checkbox
       >
+      <p class="po5112-ppnhint">{{ "poForm.priceExclPpnHint" | translate }}</p>
 
       <div class="po5112-summary">
         <div class="po5112-summary__row">
@@ -407,25 +418,14 @@
             @if (isSubList(p)) {
               <ol class="po5112-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>
-      </div>
-
-      <div class="po5112-actions">
-        <span class="po5112-spacer"></span>
-        <button
-          type="submit"
-          class="po5112-submit"
-          [disabled]="formGroup.invalid || isSubmitting"
-        >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-        </button>
       </div>
 
       <!--
@@ -440,38 +440,46 @@
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
-      <p class="po5112-clausenote">
+      <p class="po5112-hint">
         Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
         menggantikannya.
       </p>
-      <div formArrayName="additionalClauses">
-        @for (c of additionalClauses.controls; track c; let i = $index) {
-          <div class="po5112-clauserow">
-            <span class="po5112-clausenum">{{ i + 1 }}.</span>
-            <mat-form-field appearance="outline" class="po5112-clausefield">
-              <input
-                matInput
-                [formControlName]="i"
-                [placeholder]="
-                  'poField.cthTermasukPelatihanAdmin1Sesi' | translate
-                "
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="po5112-clauseremove"
-              (click)="removeClause(i)"
-              aria-label="Hapus"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        }
-        @if (additionalClauses.length === 0) {
-          <div class="po5112-clauseempty">
-            {{ "common.noExtraPoints" | translate }}
-          </div>
-        }
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po5112-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po5112-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po5112-krow">
+              <span class="po5112-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po5112-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="po5112-actions">
+        <span class="po5112-spacer"></span>
+        <button
+          type="submit"
+          class="po5112-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
       </div>
     </div>
   </form>

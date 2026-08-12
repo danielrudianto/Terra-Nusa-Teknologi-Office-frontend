@@ -1,5 +1,9 @@
 <div class="po641">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.title641' | translate"
@@ -413,36 +417,6 @@
     <!-- ===== Pratinjau catatan perjanjian ===== -->
     <div class="po641-card">
       <div class="po641-section__title">
-        {{ "poH.previewAgreement" | translate }}
-      </div>
-      <p class="po641-hint">
-        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
-        isian di atas.
-      </p>
-      <div class="po641-preview">
-        @for (sec of previewSections; track $index) {
-          @if (sec.title) {
-            <div class="po641-preview__title">{{ sec.title }}</div>
-          }
-          <ol class="po641-preview__list">
-            @for (p of sec.items; track $index) {
-              @if (isSubList(p)) {
-                <ol class="po641-preview__sub">
-                  @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
-                  }
-                </ol>
-              } @else {
-                <li>{{ asText(p) }}</li>
-              }
-            }
-          </ol>
-        }
-      </div>
-    </div>
-
-    <div class="po641-card">
-      <div class="po641-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
       <p class="po641-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
@@ -457,11 +431,11 @@
               @if (isSubList(p)) {
                 <ol class="po641-preview__sub">
                   @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
+                    <li><app-clause-line [value]="d" /></li>
                   }
                 </ol>
               } @else {
-                <li>{{ asText(p) }}</li>
+                <li><app-clause-line [value]="p" /></li>
               }
             }
           </ol>
@@ -476,6 +450,11 @@
           <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
         </button>
       </div>
+
+      <p class="po641-hint">
+        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+        menggantikannya.
+      </p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po641-empty">

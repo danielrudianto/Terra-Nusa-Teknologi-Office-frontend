@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
@@ -304,6 +305,32 @@ export class PurchaseListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  /**
+   * Buka dokumen purchase order asal pembelian ini.
+   *
+   * Nomor PO pada pembelian tersimpan sebagai teks, sehingga dokumennya
+   * belum tentu ada — pembelian lama kerap mengacu pada nomor yang dicatat
+   * manual sebelum purchase order dibuat di sistem. Nomornya tetap dapat
+   * ditekan agar keterangannya jelas; tanpa itu, teks yang tidak bereaksi
+   * terbaca seperti tombol yang rusak.
+   */
+  viewPurchaseOrder(id: number) {
+    if (!id) {
+      this.snackBar.open(
+        'Dokumen purchase order belum tersedia di sistem',
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    this.dialog.open(PurchaseOrderViewComponent, {
+      data: { id },
+      width: '900px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
   }
 
   openProjectSelector() {

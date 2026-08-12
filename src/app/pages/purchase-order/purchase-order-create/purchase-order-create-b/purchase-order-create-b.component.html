@@ -1,5 +1,9 @@
 <div class="pob">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     title="Purchase Order — Kode B"
@@ -14,7 +18,10 @@
         <!-- Sewa alat untuk transportasi diterbitkan sebagai dokumen tipe A. -->
         <mat-form-field appearance="outline">
           <mat-label>{{ "poB.documentType" | translate }}</mat-label>
-          <mat-select formControlName="purchaseType">
+          <mat-select
+            formControlName="purchaseType"
+            (selectionChange)="onPurchaseTypeChange()"
+          >
             <mat-option value="B">{{ "poB.typeB" | translate }}</mat-option>
             <mat-option value="A">{{ "poB.typeA" | translate }}</mat-option>
           </mat-select>
@@ -286,6 +293,22 @@
         acara, dengan pengecualian keausan wajar dan kelalaian vendor.
       -->
       <div class="pob-grid">
+        <!--
+          Jenis sewa menentukan istilah pada dokumen sekaligus ketentuan yang
+          dicetak: SILO dan SIO hanya mengikat pesawat angkat dan angkut.
+        -->
+        <mat-form-field appearance="outline" class="pob-span2">
+          <mat-label>Jenis barang yang disewa</mat-label>
+          <mat-select formControlName="rentalCategory">
+            <mat-option *ngFor="let c of rentalCategories" [value]="c.value">{{
+              c.label
+            }}</mat-option>
+          </mat-select>
+          <mat-hint>
+            SILO dan SIO hanya dicetak untuk alat berat
+          </mat-hint>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="pob-span2">
           <mat-label>{{
             "poField.penanggungKeamananDanKeselamatanAlat" | translate
@@ -300,6 +323,22 @@
           </mat-hint>
         </mat-form-field>
       </div>
+
+      <!--
+        Cakupan harga pengangkutan. Menyala sendiri saat dokumen diterbitkan
+        sebagai tipe A, tetapi tetap dapat diubah bila kesepakatannya lain.
+      -->
+      <mat-checkbox
+        formControlName="includeTransportCoverage"
+        class="pob-checkbox"
+      >
+        Harga sudah mencakup koordinasi pengangkutan
+      </mat-checkbox>
+      <p class="pob-hint">
+        Upah operator, BBM, bongkar muat, retribusi, pengawalan, pajak
+        kendaraan, serta akibat kelalaian pengemudi dan kecelakaan dalam
+        perjalanan. Menyala sendiri untuk dokumen tipe A.
+      </p>
 
       <mat-checkbox formControlName="operatorByVendor" class="pob-checkbox">
         Alat disewa lengkap dengan operator dari vendor
@@ -362,11 +401,11 @@
             @if (isSubList(p)) {
               <ol class="pob-preview__sub">
                 @for (d of asList(p); track d) {
-                  <li>{{ d }}</li>
+                  <li><app-clause-line [value]="d" /></li>
                 }
               </ol>
             } @else {
-              <li>{{ asText(p) }}</li>
+              <li><app-clause-line [value]="p" /></li>
             }
           }
         </ol>
@@ -379,41 +418,40 @@
       -->
       <div class="pob-cardhead">
         <div class="pob-section__title pob-section__title--flush">
-          {{ "poForm.extraClauseTitle" | translate }}
+          {{ "common.extraPoints" | translate }}
         </div>
-        <button type="button" class="pob-addclause" (click)="addClause()">
-          <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
+        <button type="button" class="pob-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
         </button>
       </div>
-      <p class="pob-clausenote">{{ "poForm.extraClauseNoteD" | translate }}</p>
+      <p class="pob-hint">{{ "poForm.extraClauseNoteD" | translate }}</p>
 
-      <div formArrayName="additionalClauses">
-        @for (c of additionalClauses.controls; track c; let i = $index) {
-          <div class="pob-clauserow">
-            <span class="pob-clausenum">+{{ i + 1 }}</span>
-            <mat-form-field appearance="outline" class="pob-clausefield">
-              <input
-                matInput
-                [formControlName]="i"
-                [placeholder]="'poForm.clauseExampleB' | translate"
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="pob-clauseremove"
-              (click)="removeClause(i)"
-              [attr.aria-label]="'poForm.removeClause' | translate"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        }
-        @if (additionalClauses.length === 0) {
-          <div class="pob-clauseempty">
-            {{ "poForm.noExtraClause" | translate }}
-          </div>
-        }
-      </div>
+      @if (additionalClauses.controls.length === 0) {
+        <div class="pob-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="pob-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="pob-krow">
+              <span class="pob-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="pob-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                aria-label="Hapus poin"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
 
       <div class="pob-actions">
         <span class="pob-spacer"></span>

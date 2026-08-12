@@ -1,10 +1,74 @@
 <div class="po512">
   <app-header-title
+    [showChangeType]="true"
+    [typeCode]="typeCode"
+    [typeName]="typeLabel"
+    (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
     [title]="'poForm.title512' | translate"
     [description]="'poForm.desc512' | translate"
   />
+
+  <!--
+    Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
+    bentuknya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
+  -->
+  @if (!mode) {
+    <div class="po512-card po512-choose">
+      <div class="po512-choose__title">Asset maintenance</div>
+      <div class="po512-choose__sub">
+        Mau beli barangnya, atau pesan jasanya?
+      </div>
+
+      <div class="po512-choose__grid">
+        <button type="button" class="po512-pick" (click)="chooseMode('barang')">
+          <span class="po512-pick__ico">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12" />
+            </svg>
+          </span>
+          <span class="po512-pick__code">Barang</span>
+          <span class="po512-pick__name">Beli barang</span>
+          <span class="po512-pick__desc">
+            Sparepart / material perawatan, diambil dari master item.
+          </span>
+        </button>
+
+        <button type="button" class="po512-pick" (click)="chooseMode('jasa')">
+          <span class="po512-pick__ico">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+              />
+            </svg>
+          </span>
+          <span class="po512-pick__code">Jasa</span>
+          <span class="po512-pick__name">Pesan jasa</span>
+          <span class="po512-pick__desc">
+            Jasa perbaikan / servis, uraian pekerjaan ditulis bebas.
+          </span>
+        </button>
+      </div>
+    </div>
+  }
 
   @if (mode) {
     <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
@@ -19,7 +83,7 @@
             <button
               type="button"
               class="po512-modechip__btn"
-              (click)="askMode()"
+              (click)="resetMode()"
             >
               {{ "common.change" | translate }}
             </button>
@@ -44,16 +108,11 @@
 
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="projectName"
-              maxlength="5"
-              (keyup)="toUpperCase()"
-              placeholder="Ex. MICZ"
-            />
-            <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
-              "common.projectCodeError" | translate
-            }}</mat-error>
+            <!--
+            Selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
+            terbebankan ke kode proyek.
+          -->
+            <input matInput formControlName="projectName" readonly />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po512-span2">
@@ -431,74 +490,55 @@
               @if (isSubList(p)) {
                 <ol class="po512-preview__sub">
                   @for (d of asList(p); track d) {
-                    <li>{{ d }}</li>
+                    <li><app-clause-line [value]="d" /></li>
                   }
                 </ol>
               } @else {
-                <li>{{ asText(p) }}</li>
+                <li><app-clause-line [value]="p" /></li>
               }
             }
           </ol>
         </div>
-
-        <div class="po512-actions">
-          <span class="po512-spacer"></span>
-          <button
-            type="submit"
-            class="po512-submit"
-            [disabled]="
-              formGroup.invalid || t.controls.length === 0 || isSubmitting
-            "
-          >
-            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
-          </button>
-        </div>
-      </div>
-
-      <!--
+        <!--
         Poin tambahan berada di bawah pratinjau, sama seperti form lain:
         yang dibaca lebih dulu adalah ketentuan yang sudah pasti.
       -->
-      <div class="po512-cardhead">
-        <div class="po512-section__title">
-          {{ "common.extraPoints" | translate }}
-        </div>
-        <button type="button" class="po512-addclause" (click)="addClause()">
-          <mat-icon>add</mat-icon> Tambah poin
-        </button>
-      </div>
-      <p class="po512-clausenote">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-        menggantikannya.
-      </p>
-      <div formArrayName="additionalClauses">
-        @for (c of additionalClauses.controls; track c; let i = $index) {
-          <div class="po512-clauserow">
-            <span class="po512-clausenum">{{ i + 1 }}.</span>
-            <mat-form-field appearance="outline" class="po512-clausefield">
-              <input
-                matInput
-                [formControlName]="i"
-                [placeholder]="
-                  isGoods
-                    ? 'Cth: Garansi part 3 bulan'
-                    : 'Cth: Garansi servis 30 hari'
-                "
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="po512-clauseremove"
-              (click)="removeClause(i)"
-              aria-label="Hapus"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
+        <div class="po512-cardhead">
+          <div class="po512-section__title">
+            {{ "common.extraPoints" | translate }}
           </div>
-        }
-        @if (additionalClauses.length === 0) {
-          <div class="po512-clauseempty">
-            {{ "common.noExtraPoints" | translate }}
+          <button type="button" class="po512-addclause" (click)="addClause()">
+            <mat-icon>add</mat-icon> Tambah poin
+          </button>
+        </div>
+        <p class="po512-hint">
+          Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
+          menggantikannya.
+        </p>
+        @if (additionalClauses.controls.length === 0) {
+          <div class="po512-empty">
+            <mat-icon>playlist_add</mat-icon>
+            <span>{{ "common.noExtraPoints" | translate }}</span>
+          </div>
+        } @else {
+          <div formArrayName="additionalClauses" class="po512-list">
+            @for (c of additionalClauses.controls; track c; let i = $index) {
+              <div class="po512-krow">
+                <span class="po512-krow__no">+{{ i + 1 }}</span>
+                <mat-form-field appearance="outline" class="po512-krow__field">
+                  <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                  <textarea matInput [formControlName]="i" rows="2"></textarea>
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  type="button"
+                  (click)="removeClause(i)"
+                  aria-label="Hapus poin"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
           </div>
         }
       </div>
