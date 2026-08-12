@@ -160,7 +160,9 @@
       (click)="simpan()"
       [disabled]="isLoading || isSubmitting"
     >
-      {{ isSubmitting ? ("user.saving" | translate) : ("user.save" | translate) }}
+      {{
+        isSubmitting ? ("user.saving" | translate) : ("user.save" | translate)
+      }}
     </button>
   </mat-dialog-actions>
 </div>

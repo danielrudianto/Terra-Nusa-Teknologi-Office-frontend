@@ -111,7 +111,7 @@
             Selalu dibebankan ke PUSAT; nilainya dikunci agar tidak
             terbebankan ke kode proyek.
           -->
-          <input matInput formControlName="projectName" readonly />
+            <input matInput formControlName="projectName" readonly />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po651-span2">
@@ -241,9 +241,9 @@
         </div>
 
         <div class="po651-foot">
-          <mat-slide-toggle formControlName="includePPN" color="primary"
-            >{{ "poForm.includePpn" | translate }}</mat-slide-toggle
-          >
+          <mat-slide-toggle formControlName="includePPN" color="primary">{{
+            "poForm.includePpn" | translate
+          }}</mat-slide-toggle>
           <div class="po651-summary">
             <div class="po651-summary__row">
               <span>Subtotal (DPP)</span
@@ -399,10 +399,8 @@
         <div class="po651-section__title">
           {{ "common.notesAndPoints" | translate }}
         </div>
-        <p class="po651-hint">
-          Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya
-          mengikuti isian di atas; tambahkan poin bila ada kesepakatan khusus.
-        </p>
+
+        <p class="po651-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
         <div class="po651-preview">
           <ol class="po651-preview__list">
@@ -428,6 +426,7 @@
             <mat-icon>add</mat-icon> Tambah poin
           </button>
         </div>
+        <p class="po651-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
         @if (additionalClauses.controls.length === 0) {
           <div class="po651-empty">

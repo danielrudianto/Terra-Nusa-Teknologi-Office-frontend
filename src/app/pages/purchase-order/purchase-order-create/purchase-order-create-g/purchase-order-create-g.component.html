@@ -323,6 +323,8 @@
         <mat-icon>lock</mat-icon>
         <span>{{ "poForm.clausePreviewG" | translate }}</span>
       </div>
+      <p class="pog-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
       <div class="pog-preview">
         <ol class="pog-preview__list">
           @for (p of clausePreview; track $index) {
@@ -347,14 +349,11 @@
         <div class="pog-section__title">
           {{ "poForm.extraClauseTitle" | translate }}
         </div>
-        <button type="button" class="pog-addclause" (click)="addClause()">
+        <button type="button" class="pog-add" (click)="addClause()">
           <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
         </button>
       </div>
-      <p class="pog-hint">
-        Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan), bukan
-        menggantikannya. Contoh: jadwal pengiriman, syarat khusus, dsb.
-      </p>
+      <p class="pog-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="pog-empty">

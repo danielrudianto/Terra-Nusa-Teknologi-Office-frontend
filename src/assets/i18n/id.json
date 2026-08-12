@@ -898,7 +898,8 @@
     "menuApprove": "Setujui",
     "menuReject": "Tolak",
     "menuViewDetail": "Lihat detail pembayaran",
-    "noData": "Tidak ada pembayaran."
+    "noData": "Tidak ada pembayaran.",
+    "selfApproveBlocked": "Pembayaran yang Anda buat sendiri perlu disetujui pengguna lain."
   },
   "employeeForm": {
     "updateSubtitle": "Ubah data karyawan",
@@ -1562,7 +1563,8 @@
     "changeType": "Ganti jenis",
     "changeTypeTitle": "Ganti jenis purchase order?",
     "changeTypeBody": "Isian yang sudah diketik pada formulir ini akan hilang.",
-    "priceExclPpnHint": "Harga yang diisi di luar PPN. Bila dicentang, PPN 11% ditambahkan di atasnya."
+    "priceExclPpnHint": "Harga yang diisi di luar PPN. Bila dicentang, PPN 11% ditambahkan di atasnya.",
+    "extraPointNote": "Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan), bukan menggantikannya. Contoh: jadwal pengiriman, syarat khusus, dsb."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -1603,11 +1605,11 @@
     "status": "Status",
     "active": "Aktif",
     "inactive": "Tidak Aktif",
-    "level1": "Level 1 — Staf",
-    "level2": "Level 2",
-    "level3": "Level 3",
-    "level4": "Level 4",
-    "level5": "Level 5 — Admin",
+    "level1": "Level 1 — Staff",
+    "level2": "Level 2 — Supervisor",
+    "level3": "Level 3 — Manager",
+    "level4": "Level 4 — General Manager",
+    "level5": "Level 5 — Directors & Owner",
     "createTitle": "Pengguna Baru",
     "createSubtitle": "Buat akun pengguna baru",
     "editTitle": "Edit Pengguna",
@@ -2643,6 +2645,25 @@
     "exPekerjaanBorePileD400": "Ex. Pekerjaan bore pile D-400, Pemasangan bekisting",
     "namaLengkap": "Nama lengkap",
     "16DigitNik": "16 digit NIK",
-    "ex2DuaMingguBulananPer": "Ex. 2 (dua) minggu, bulanan, per progres 25%"
+    "ex2DuaMingguBulananPer": "Ex. 2 (dua) minggu, bulanan, per progres 25%",
+    "jenisPertanggungan": "Jenis pertanggungan",
+    "sebutkanJenisnya": "Sebutkan jenisnya",
+    "objekYangDijamin": "Objek yang dijamin",
+    "nilaiPertanggungan": "Nilai pertanggungan",
+    "risikoSendiri": "Risiko sendiri (deductible)",
+    "mulaiPertanggungan": "Mulai pertanggungan",
+    "uraianPremi": "Uraian premi",
+    "penyerahanPolisAsli": "Penyerahan polis asli",
+    "jenisPelatihan": "Jenis pelatihan",
+    "sebutkanPelatihannya": "Sebutkan pelatihannya",
+    "lembagaPenerbitSertifikat": "Lembaga penerbit sertifikat",
+    "mulai": "Mulai",
+    "selesai": "Selesai",
+    "jumlahPeserta": "Jumlah peserta",
+    "biayaPerPeserta": "Biaya per peserta",
+    "tempatPelaksanaan": "Tempat pelaksanaan",
+    "penyerahanSertifikat": "Penyerahan sertifikat",
+    "biayaUjianUlang": "Biaya ujian ulang",
+    "jenisBarangYangDisewa": "Jenis barang yang disewa"
   }
 }

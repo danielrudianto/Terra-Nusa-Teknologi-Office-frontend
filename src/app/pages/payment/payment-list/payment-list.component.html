@@ -62,14 +62,31 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              <!--
+                Pembayaran buatan sendiri tidak dapat disetujui, kecuali oleh
+                pemilik usaha. Tombolnya dimatikan beserta alasannya, bukan
+                dibiarkan menawarkan sesuatu yang pasti ditolak server.
+              -->
               <button
                 mat-menu-item
                 *appCan="'payment_outgoing:approve'"
-                [disabled]="payment.isApprove || payment.isDelete"
+                [disabled]="
+                  payment.isApprove ||
+                  payment.isDelete ||
+                  tidakBolehSetujui(payment)
+                "
+                [title]="
+                  tidakBolehSetujui(payment)
+                    ? ('payment.selfApproveBlocked' | translate)
+                    : ''
+                "
                 (click)="approvePayment(payment.id)"
               >
                 <mat-icon>check</mat-icon>
                 <span>{{ "payment.menuApprove" | translate }}</span>
+                @if (tidakBolehSetujui(payment)) {
+                  <span class="pl-selftag">buatan sendiri</span>
+                }
               </button>
               <button
                 mat-menu-item

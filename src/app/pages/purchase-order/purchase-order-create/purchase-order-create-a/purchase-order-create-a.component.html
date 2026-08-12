@@ -245,14 +245,7 @@
           </mat-form-field>
         }
       </div>
-      <p class="poa-hint">
-        @if (isSewaAlat) {
-          Ketentuannya mengikuti SPK sewa alat (PO-B); kategorinya tetap A.
-        } @else {
-          Ketentuan jasa transportasi: asuransi, consignment note, dan titik
-          kirim.
-        }
-      </p>
+      <p class="poa-hint">{{ "poForm.extraPointNote" | translate }}</p>
     </div>
 
     <!-- ===== Daftar Pengiriman ===== -->
@@ -711,10 +704,8 @@
       <div class="poa-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
-      <p class="poa-hint">
-        Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
-        isian di atas.
-      </p>
+      <p class="poa-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
       <div class="poa-preview">
         @for (sec of previewSections; track $index) {
           @if (sec.title) {

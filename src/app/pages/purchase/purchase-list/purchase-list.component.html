@@ -390,12 +390,17 @@
                 <mat-icon>update</mat-icon
                 ><span>{{ "purchase.menuUpdateStatus" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="openPaymentDetail(purchase.id)">
+              <button
+                mat-menu-item
+                *appCan="'payment_outgoing:read'"
+                (click)="openPaymentDetail(purchase.id)"
+              >
                 <mat-icon>payments</mat-icon
                 ><span>{{ "salesInvoice.menuCreatePayment" | translate }}</span>
               </button>
               <button
                 mat-menu-item
+                *appCan="'purchase:update'"
                 [disabled]="purchase.isInternal == false"
                 (click)="openUpdateInternal(purchase.id)"
               >

@@ -200,7 +200,11 @@
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "assetView.title" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onEditAsset(element)">
+              <button
+                mat-menu-item
+                *appCan="'asset:update'"
+                (click)="onEditAsset(element)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "asset.menuEdit" | translate }}</span>
               </button>

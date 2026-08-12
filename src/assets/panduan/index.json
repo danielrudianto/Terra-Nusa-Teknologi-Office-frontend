@@ -1,0 +1,34 @@
+{
+  "versi": 1,
+  "topik": [
+    {
+      "id": "pembelian",
+      "judul": "Pembelian & Purchase Order",
+      "berkas": "pembelian.md",
+      "modul": "purchase_order",
+      "ringkas": "Memilih tipe PO, mengisi form, dan mencetak dokumen.",
+      "kataKunci": [
+        "PO",
+        "purchase order",
+        "pengadaan",
+        "supplier",
+        "vendor",
+        "PPN",
+        "termin",
+        "sewa alat"
+      ],
+      "bagian": [
+        { "anchor": "sekilas", "judul": "Sekilas" },
+        { "anchor": "memilih-tipe-po", "judul": "Memilih tipe PO" },
+        { "anchor": "membuat-po-baru", "judul": "Membuat PO baru" },
+        { "anchor": "syarat-pembayaran", "judul": "Syarat pembayaran" },
+        { "anchor": "ppn", "judul": "PPN" },
+        { "anchor": "setelah-po-dibuat", "judul": "Setelah PO dibuat" },
+        {
+          "anchor": "kalau-tombolnya-tidak-ada",
+          "judul": "Kalau tombolnya tidak ada"
+        }
+      ]
+    }
+  ]
+}

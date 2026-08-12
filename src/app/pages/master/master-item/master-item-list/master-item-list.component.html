@@ -181,11 +181,19 @@
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "masterItemView.title" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="editItem(item)">
+              <button
+                mat-menu-item
+                *appCan="'master_item:update'"
+                (click)="editItem(item)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "masterItem.menuEdit" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="deleteItem(item)">
+              <button
+                mat-menu-item
+                *appCan="'master_item:delete'"
+                (click)="deleteItem(item)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "masterItem.menuDelete" | translate }}</span>
               </button>

@@ -372,10 +372,7 @@
         </span>
       </div>
 
-      <p class="poc-hint">
-        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
-        isian di atas; tambahkan poin bila ada kesepakatan khusus.
-      </p>
+      <p class="poc-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
       <div class="poc-preview">
         <ol class="poc-preview__list">
@@ -401,14 +398,11 @@
         <div class="poc-section__title">
           {{ "poForm.extraClauseTitle" | translate }}
         </div>
-        <button type="button" class="poc-addclause" (click)="addClause()">
+        <button type="button" class="poc-add" (click)="addClause()">
           <mat-icon>add</mat-icon> {{ "poForm.addClauseBtn" | translate }}
         </button>
       </div>
-      <p class="poc-hint">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-        menggantikannya.
-      </p>
+      <p class="poc-hint">{{ "poForm.extraPointNote" | translate }}</p>
       @if (additionalClauses.controls.length === 0) {
         <div class="poc-empty">
           <mat-icon>playlist_add</mat-icon>

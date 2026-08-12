@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
@@ -33,6 +34,7 @@ import { SettingsService } from '../../../services/setting.service';
 @Component({
   selector: 'app-purchase-list',
   imports: [
+    CanDirective,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

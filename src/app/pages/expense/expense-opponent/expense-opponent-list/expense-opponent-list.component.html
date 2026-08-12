@@ -107,11 +107,19 @@
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "expenseOpponentView.title" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onEdit(element.id)">
+              <button
+                mat-menu-item
+                *appCan="'expense_opponent:update'"
+                (click)="onEdit(element.id)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "expenseOpponent.menuEdit" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onDeleteOpponent(element)">
+              <button
+                mat-menu-item
+                *appCan="'expense_opponent:delete'"
+                (click)="onDeleteOpponent(element)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "expenseOpponent.menuDelete" | translate }}</span>
               </button>

@@ -898,7 +898,8 @@
     "menuApprove": "Approve",
     "menuReject": "Reject",
     "menuViewDetail": "View payment detail",
-    "noData": "No payments found."
+    "noData": "No payments found.",
+    "selfApproveBlocked": "Payments you created yourself must be approved by someone else."
   },
   "employeeForm": {
     "updateSubtitle": "Update employee data",
@@ -1562,7 +1563,8 @@
     "changeType": "Change type",
     "changeTypeTitle": "Change purchase order type?",
     "changeTypeBody": "Anything already entered on this form will be lost.",
-    "priceExclPpnHint": "Prices are entered excluding VAT. When ticked, 11% VAT is added on top."
+    "priceExclPpnHint": "Prices are entered excluding VAT. When ticked, 11% VAT is added on top.",
+    "extraPointNote": "These points are appended after the standard ones (continuing the numbering), not replacing them. For example: delivery schedule, special terms, etc."
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -1604,10 +1606,10 @@
     "active": "Active",
     "inactive": "Inactive",
     "level1": "Level 1 — Staff",
-    "level2": "Level 2",
-    "level3": "Level 3",
-    "level4": "Level 4",
-    "level5": "Level 5 — Admin",
+    "level2": "Level 2 — Supervisor",
+    "level3": "Level 3 — Manager",
+    "level4": "Level 4 — General Manager",
+    "level5": "Level 5 — Directors & Owner",
     "createTitle": "New User",
     "createSubtitle": "Create a new user account",
     "editTitle": "Edit User",
@@ -2643,6 +2645,25 @@
     "exPekerjaanBorePileD400": "e.g. D-400 bore pile works, formwork installation",
     "namaLengkap": "Full name",
     "16DigitNik": "16-digit ID number",
-    "ex2DuaMingguBulananPer": "e.g. Every two weeks, monthly, per 25% progress"
+    "ex2DuaMingguBulananPer": "e.g. Every two weeks, monthly, per 25% progress",
+    "jenisPertanggungan": "Coverage type",
+    "sebutkanJenisnya": "Specify the type",
+    "objekYangDijamin": "Insured object",
+    "nilaiPertanggungan": "Sum insured",
+    "risikoSendiri": "Deductible / own risk",
+    "mulaiPertanggungan": "Coverage starts",
+    "uraianPremi": "Premium description",
+    "penyerahanPolisAsli": "Original policy delivery",
+    "jenisPelatihan": "Training type",
+    "sebutkanPelatihannya": "Specify the training",
+    "lembagaPenerbitSertifikat": "Certifying body",
+    "mulai": "Starts",
+    "selesai": "Ends",
+    "jumlahPeserta": "Number of participants",
+    "biayaPerPeserta": "Cost per participant",
+    "tempatPelaksanaan": "Venue",
+    "penyerahanSertifikat": "Certificate delivery",
+    "biayaUjianUlang": "Re-examination cost",
+    "jenisBarangYangDisewa": "Type of rented item"
   }
 }

@@ -22,7 +22,11 @@
       </div>
 
       <div class="po642-choose__grid">
-        <button type="button" class="po642-pick" (click)="chooseChannel('broker')">
+        <button
+          type="button"
+          class="po642-pick"
+          (click)="chooseChannel('broker')"
+        >
           <span class="po642-pick__ico">
             <svg
               viewBox="0 0 24 24"
@@ -181,7 +185,9 @@
 
               <div class="po642-grid">
                 <mat-form-field appearance="outline" class="po642-span2">
-                  <mat-label>Jenis pertanggungan</mat-label>
+                  <mat-label>{{
+                    "poField.jenisPertanggungan" | translate
+                  }}</mat-label>
                   <mat-select formControlName="insuranceType">
                     @for (t of insuranceTypes; track t) {
                       <mat-option [value]="t">{{ t }}</mat-option>
@@ -191,13 +197,17 @@
 
                 @if (isOther(i)) {
                   <mat-form-field appearance="outline" class="po642-span2">
-                    <mat-label>Sebutkan jenisnya</mat-label>
+                    <mat-label>{{
+                      "poField.sebutkanJenisnya" | translate
+                    }}</mat-label>
                     <input matInput formControlName="customType" />
                   </mat-form-field>
                 }
 
                 <mat-form-field appearance="outline" class="po642-span2">
-                  <mat-label>Objek yang dijamin</mat-label>
+                  <mat-label>{{
+                    "poField.objekYangDijamin" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="object"
@@ -206,7 +216,9 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Nilai pertanggungan</mat-label>
+                  <mat-label>{{
+                    "poField.nilaiPertanggungan" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="sumInsured"
@@ -217,7 +229,9 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Risiko sendiri (deductible)</mat-label>
+                  <mat-label>{{
+                    "poField.risikoSendiri" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="deductible"
@@ -226,7 +240,9 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Mulai pertanggungan</mat-label>
+                  <mat-label>{{
+                    "poField.mulaiPertanggungan" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="coverageStart"
@@ -240,7 +256,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Berakhir</mat-label>
+                  <mat-label>{{ "poField.berakhir" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="coverageEnd"
@@ -313,7 +329,7 @@
             @for (c of premiums.controls; track c; let i = $index) {
               <div class="po642-feerow" [formGroupName]="i">
                 <mat-form-field appearance="outline" class="po642-feerow__task">
-                  <mat-label>Uraian premi</mat-label>
+                  <mat-label>{{ "poField.uraianPremi" | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="task"
@@ -360,8 +376,7 @@
               ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
             <div class="po642-summary__row">
-              <span>PPN</span
-              ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
             </div>
             @if (hasPremium) {
               <div class="po642-summary__row">
@@ -392,8 +407,12 @@
               <mat-option value="CASH">{{
                 "poForm.cash" | translate
               }}</mat-option>
-              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
-              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+              <mat-option value="COD">{{
+                "poForm.cod" | translate
+              }}</mat-option>
+              <mat-option value="CBD">{{
+                "poForm.cbd" | translate
+              }}</mat-option>
               <mat-option value="PPD">{{
                 "poForm.prepaidOpt" | translate
               }}</mat-option>
@@ -467,7 +486,9 @@
         <div class="po642-section__title">Ketentuan</div>
         <div class="po642-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Penyerahan polis asli</mat-label>
+            <mat-label>{{
+              "poField.penyerahanPolisAsli" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="policyDeliveryDays"
@@ -516,6 +537,7 @@
             <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
           </button>
         </div>
+        <p class="po642-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
         @if (additionalClauses.controls.length === 0) {
           <div class="po642-empty">

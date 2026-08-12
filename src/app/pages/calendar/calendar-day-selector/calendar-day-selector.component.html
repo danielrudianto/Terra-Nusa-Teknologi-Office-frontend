@@ -180,7 +180,11 @@
 
               <mat-menu #contextMenu [overlapTrigger]="false">
                 <ng-template matMenuContent let-id="id">
-                  <button mat-menu-item (click)="moveDate(id)">
+                  <button
+                    mat-menu-item
+                    *appCan="'payment_outgoing:update'"
+                    (click)="moveDate(id)"
+                  >
                     <mat-icon>move_up</mat-icon
                     ><span>{{
                       "calendarDay.movePaymentDate" | translate

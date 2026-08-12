@@ -278,3 +278,15 @@
     min-width: 0;
   }
 }
+
+/* Penanda pada tombol setujui bila pembayarannya buatan sendiri. */
+.pl-selftag {
+  margin-left: 0.5rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--faint, #9aa0ab);
+  font-size: 0.66rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

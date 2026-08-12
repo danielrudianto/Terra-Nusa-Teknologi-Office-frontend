@@ -898,7 +898,8 @@
     "menuApprove": "批准",
     "menuReject": "拒绝",
     "menuViewDetail": "查看付款详情",
-    "noData": "未找到付款。"
+    "noData": "未找到付款。",
+    "selfApproveBlocked": "您自己创建的付款需由他人审批。"
   },
   "employeeForm": {
     "updateSubtitle": "更新员工数据",
@@ -1562,7 +1563,8 @@
     "changeType": "更改类型",
     "changeTypeTitle": "更改采购单类型？",
     "changeTypeBody": "本表单中已填写的内容将会丢失。",
-    "priceExclPpnHint": "填写的价格不含增值税；勾选后将在其上加收 11% 增值税。"
+    "priceExclPpnHint": "填写的价格不含增值税；勾选后将在其上加收 11% 增值税。",
+    "extraPointNote": "此处的条款将接在标准条款之后（编号顺延），而非取代标准条款。例如：交货时间、特别约定等。"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -1603,11 +1605,11 @@
     "status": "状态",
     "active": "启用",
     "inactive": "停用",
-    "level1": "级别 1 — 员工",
-    "level2": "级别 2",
-    "level3": "级别 3",
-    "level4": "级别 4",
-    "level5": "级别 5 — 管理员",
+    "level1": "一级 — 员工",
+    "level2": "二级 — 主管",
+    "level3": "三级 — 经理",
+    "level4": "四级 — 总经理",
+    "level5": "五级 — 董事及股东",
     "createTitle": "新用户",
     "createSubtitle": "创建新用户账户",
     "editTitle": "编辑用户",
@@ -2643,6 +2645,25 @@
     "exPekerjaanBorePileD400": "例：D-400 钻孔桩工程、模板安装",
     "namaLengkap": "全名",
     "16DigitNik": "16 位身份证号",
-    "ex2DuaMingguBulananPer": "例：每两周、每月、每完成 25%"
+    "ex2DuaMingguBulananPer": "例：每两周、每月、每完成 25%",
+    "jenisPertanggungan": "承保类别",
+    "sebutkanJenisnya": "请说明类别",
+    "objekYangDijamin": "承保标的",
+    "nilaiPertanggungan": "保险金额",
+    "risikoSendiri": "免赔额",
+    "mulaiPertanggungan": "承保起始",
+    "uraianPremi": "保费说明",
+    "penyerahanPolisAsli": "保单原件交付",
+    "jenisPelatihan": "培训类别",
+    "sebutkanPelatihannya": "请说明培训内容",
+    "lembagaPenerbitSertifikat": "证书颁发机构",
+    "mulai": "开始",
+    "selesai": "结束",
+    "jumlahPeserta": "参加人数",
+    "biayaPerPeserta": "每人费用",
+    "tempatPelaksanaan": "举办地点",
+    "penyerahanSertifikat": "证书交付",
+    "biayaUjianUlang": "补考费用",
+    "jenisBarangYangDisewa": "租赁物品类别"
   }
 }

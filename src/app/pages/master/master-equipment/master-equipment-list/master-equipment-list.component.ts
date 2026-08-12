@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CanDirective } from '../../../../directives/can.directive';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,6 +25,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-master-equipment-list',
   standalone: true,
   imports: [
+    CanDirective,
     TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule,

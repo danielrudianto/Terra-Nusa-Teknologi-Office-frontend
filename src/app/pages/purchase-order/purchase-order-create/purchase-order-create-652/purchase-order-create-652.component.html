@@ -101,7 +101,9 @@
 
             <div class="po652-grid">
               <mat-form-field appearance="outline" class="po652-span2">
-                <mat-label>Jenis pelatihan</mat-label>
+                <mat-label>{{
+                  "poField.jenisPelatihan" | translate
+                }}</mat-label>
                 <mat-select formControlName="trainingType">
                   @for (jenis of trainingTypes; track jenis) {
                     <mat-option [value]="jenis">{{ jenis }}</mat-option>
@@ -111,13 +113,17 @@
 
               @if (isOther(i)) {
                 <mat-form-field appearance="outline" class="po652-span2">
-                  <mat-label>Sebutkan pelatihannya</mat-label>
+                  <mat-label>{{
+                    "poField.sebutkanPelatihannya" | translate
+                  }}</mat-label>
                   <input matInput formControlName="customType" />
                 </mat-form-field>
               }
 
               <mat-form-field appearance="outline" class="po652-span2">
-                <mat-label>Lembaga penerbit sertifikat</mat-label>
+                <mat-label>{{
+                  "poField.lembagaPenerbitSertifikat" | translate
+                }}</mat-label>
                 <input
                   matInput
                   formControlName="issuer"
@@ -130,7 +136,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Mulai</mat-label>
+                <mat-label>{{ "poField.mulai" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="startDate"
@@ -144,7 +150,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Selesai</mat-label>
+                <mat-label>{{ "poField.selesai" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="endDate"
@@ -158,7 +164,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Jumlah peserta</mat-label>
+                <mat-label>{{ "poField.jumlahPeserta" | translate }}</mat-label>
                 <input
                   matInput
                   formControlName="quantity"
@@ -173,7 +179,9 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="po652-span2">
-                <mat-label>Biaya per peserta</mat-label>
+                <mat-label>{{
+                  "poField.biayaPerPeserta" | translate
+                }}</mat-label>
                 <input
                   matInput
                   formControlName="price"
@@ -294,7 +302,7 @@
       <div class="po652-section__title">Ketentuan</div>
       <div class="po652-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Tempat pelaksanaan</mat-label>
+          <mat-label>{{ "poField.tempatPelaksanaan" | translate }}</mat-label>
           <mat-select formControlName="trainingVenue">
             <mat-option value="penyedia">Di tempat penyelenggara</mat-option>
             <mat-option value="lokasi">Di lokasi AKN</mat-option>
@@ -302,7 +310,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Batas pembatalan peserta</mat-label>
+          <mat-label>{{
+            "poField.batasPembatalanPeserta" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="participantCancelDays"
@@ -314,7 +324,9 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Penyerahan sertifikat</mat-label>
+          <mat-label>{{
+            "poField.penyerahanSertifikat" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="certificateDueDays"
@@ -326,7 +338,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Biaya ujian ulang</mat-label>
+          <mat-label>{{ "poField.biayaUjianUlang" | translate }}</mat-label>
           <mat-select formControlName="retakeCostBearer">
             @for (r of retakeBearers; track r.value) {
               <mat-option [value]="r.value">{{ r.label }}</mat-option>
@@ -373,6 +385,7 @@
           <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
         </button>
       </div>
+      <p class="po652-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po652-empty">

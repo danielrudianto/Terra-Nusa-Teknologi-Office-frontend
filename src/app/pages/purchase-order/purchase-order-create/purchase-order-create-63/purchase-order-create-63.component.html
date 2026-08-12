@@ -322,9 +322,7 @@
         <mat-checkbox formControlName="latePenaltyRequired" color="primary">
           Berlakukan denda keterlambatan penyerahan
         </mat-checkbox>
-        <p class="po63-hint">
-          Bila dimatikan, poin denda tidak dicetak sama sekali.
-        </p>
+        <p class="po63-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
         <div class="po63-grid">
           <mat-form-field appearance="outline">
@@ -477,10 +475,8 @@
       <div class="po63-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
-      <p class="po63-hint">
-        Ketentuan baku di bawah ini akan tercetak pada dokumen. Angka mengikuti
-        isian di atas; tambahkan poin bila ada kesepakatan khusus.
-      </p>
+
+      <p class="po63-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
       <div class="po63-preview">
         <ol class="po63-preview__list">
@@ -506,11 +502,6 @@
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
-
-      <p class="po63-hint">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-        menggantikannya.
-      </p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po63-empty">

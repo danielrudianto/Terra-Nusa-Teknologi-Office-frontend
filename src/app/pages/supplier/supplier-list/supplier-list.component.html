@@ -125,11 +125,19 @@
                 <mat-icon>view_array</mat-icon
                 ><span>{{ "supplier.menuView" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onUpdateSupplier(element.id)">
+              <button
+                mat-menu-item
+                *appCan="'supplier:update'"
+                (click)="onUpdateSupplier(element.id)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "supplier.menuUpdate" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="openBlacklist(element)">
+              <button
+                mat-menu-item
+                *appCan="'supplier:update'"
+                (click)="openBlacklist(element)"
+              >
                 <mat-icon>{{
                   element.isBlacklist ? "check_circle" : "block"
                 }}</mat-icon>

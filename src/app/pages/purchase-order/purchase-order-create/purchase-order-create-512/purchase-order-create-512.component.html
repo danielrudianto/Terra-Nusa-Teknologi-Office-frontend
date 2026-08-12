@@ -484,6 +484,8 @@
             Teks inilah yang tersimpan.</span
           >
         </div>
+        <p class="po512-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
         <div class="po512-preview">
           <ol class="po512-preview__list">
             @for (p of clausePreview; track $index) {
@@ -507,14 +509,11 @@
           <div class="po512-section__title">
             {{ "common.extraPoints" | translate }}
           </div>
-          <button type="button" class="po512-addclause" (click)="addClause()">
+          <button type="button" class="po512-add" (click)="addClause()">
             <mat-icon>add</mat-icon> Tambah poin
           </button>
         </div>
-        <p class="po512-hint">
-          Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-          menggantikannya.
-        </p>
+        <p class="po512-hint">{{ "poForm.extraPointNote" | translate }}</p>
         @if (additionalClauses.controls.length === 0) {
           <div class="po512-empty">
             <mat-icon>playlist_add</mat-icon>

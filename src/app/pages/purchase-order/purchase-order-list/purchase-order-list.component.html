@@ -201,6 +201,7 @@
             <mat-menu #menu="matMenu">
               <button
                 mat-menu-item
+                *appCan="'purchase_order:approve'"
                 (click)="approve(po)"
                 [disabled]="po.isApproved || po.status === 'cancelled'"
               >

@@ -152,7 +152,11 @@
                 <mat-icon>format_list_bulleted</mat-icon
                 ><span>{{ "bank.menuViewMutation" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onEdit(bank.id)">
+              <button
+                mat-menu-item
+                *appCan="'bank:update'"
+                (click)="onEdit(bank.id)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "bank.menuEdit" | translate }}</span>
               </button>

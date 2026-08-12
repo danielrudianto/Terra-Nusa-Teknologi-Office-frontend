@@ -297,11 +297,7 @@
     <!-- ===== Perkiraan biaya resmi ===== -->
     <div class="po641-card">
       <div class="po641-section__title">Perkiraan biaya resmi</div>
-      <p class="po641-hint">
-        PNBP, retribusi, atau iuran lembaga yang disetorkan atas nama AKN. Bukan
-        pendapatan vendor — tidak dikenakan PPN maupun potongan PPh, dan tidak
-        masuk nilai jasa. Ditagihkan sesuai bukti setor.
-      </p>
+      <p class="po641-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       @for (fee of fees.controls; track fee; let i = $index) {
         <div class="po641-line" [formGroup]="getFeeGroupAt(i)">
@@ -450,11 +446,6 @@
           <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
         </button>
       </div>
-
-      <p class="po641-hint">
-        Poin ini ditambahkan setelah poin baku (nomor lanjutan), bukan
-        menggantikannya.
-      </p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po641-empty">

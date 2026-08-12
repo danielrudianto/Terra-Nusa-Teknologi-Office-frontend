@@ -150,3 +150,23 @@
     color: var(--faint, #9aa0ab);
   }
 }
+
+/* Penanda persetujuan atas dokumen sendiri. */
+.at-selfapproved {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0.35rem 0 0.5rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 9px;
+  background: var(--warn-bg, #fff8e6);
+  border: 0.5px solid var(--warn-border, #f3e2b3);
+  color: var(--warn-fg, #8a6516);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.at-selfapproved mat-icon {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+}

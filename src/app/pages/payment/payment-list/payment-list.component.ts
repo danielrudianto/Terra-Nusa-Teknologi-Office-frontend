@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { AccountService } from '../../../services/account.service';
 import { CanDirective } from '../../../directives/can.directive';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -47,6 +48,31 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dialog: MatDialog,
   ) {}
+
+  private readonly account = inject(AccountService);
+
+  /**
+   * Pembayaran ini dibuat oleh pengguna yang sedang masuk.
+   *
+   * Persetujuan atas dokumen sendiri ditolak server bagi yang bukan pemilik
+   * usaha. Diperiksa juga di sini supaya tombolnya tidak menawarkan sesuatu
+   * yang pasti gagal — penolakan setelah ditekan terbaca sebagai kerusakan,
+   * bukan sebagai aturan.
+   */
+  buatanSendiri(payment: any): boolean {
+    const saya = Number(this.account.user?.['id']) || 0;
+    return !!saya && Number(payment?.createdBy) === saya;
+  }
+
+  /** Pemilik usaha boleh menyetujui dokumen buatannya sendiri. */
+  get pemilikUsaha(): boolean {
+    return Number(this.account.user?.['authenticationLevel']) >= 5;
+  }
+
+  /** Tombol setujui tidak berlaku pada pembayaran ini. */
+  tidakBolehSetujui(payment: any): boolean {
+    return this.buatanSendiri(payment) && !this.pemilikUsaha;
+  }
 
   private destroy$ = new Subject<void>();
 

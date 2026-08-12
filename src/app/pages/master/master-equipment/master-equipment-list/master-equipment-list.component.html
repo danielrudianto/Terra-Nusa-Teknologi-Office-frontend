@@ -82,7 +82,11 @@
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "masterEquipment.menuView" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="deleteItem(it)">
+              <button
+                mat-menu-item
+                *appCan="'master_equipment:delete'"
+                (click)="deleteItem(it)"
+              >
                 <mat-icon>delete</mat-icon
                 ><span>{{ "masterEquipment.menuDelete" | translate }}</span>
               </button>

@@ -117,7 +117,11 @@
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "user.menuView" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="onEditUser(element.id)">
+              <button
+                mat-menu-item
+                *appCan="'user:update'"
+                (click)="onEditUser(element.id)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "user.menuEdit" | translate }}</span>
               </button>
@@ -131,8 +135,7 @@
                 *appCan="'user:update'"
                 (click)="onManageAccess(element)"
               >
-                <mat-icon>admin_panel_settings</mat-icon
-                ><span>Atur akses</span>
+                <mat-icon>admin_panel_settings</mat-icon><span>Atur akses</span>
               </button>
               <button
                 mat-menu-item

@@ -298,15 +298,15 @@
           dicetak: SILO dan SIO hanya mengikat pesawat angkat dan angkut.
         -->
         <mat-form-field appearance="outline" class="pob-span2">
-          <mat-label>Jenis barang yang disewa</mat-label>
+          <mat-label>{{
+            "poField.jenisBarangYangDisewa" | translate
+          }}</mat-label>
           <mat-select formControlName="rentalCategory">
             <mat-option *ngFor="let c of rentalCategories" [value]="c.value">{{
               c.label
             }}</mat-option>
           </mat-select>
-          <mat-hint>
-            SILO dan SIO hanya dicetak untuk alat berat
-          </mat-hint>
+          <mat-hint> SILO dan SIO hanya dicetak untuk alat berat </mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pob-span2">
@@ -334,11 +334,7 @@
       >
         Harga sudah mencakup koordinasi pengangkutan
       </mat-checkbox>
-      <p class="pob-hint">
-        Upah operator, BBM, bongkar muat, retribusi, pengawalan, pajak
-        kendaraan, serta akibat kelalaian pengemudi dan kecelakaan dalam
-        perjalanan. Menyala sendiri untuk dokumen tipe A.
-      </p>
+      <p class="pob-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       <mat-checkbox formControlName="operatorByVendor" class="pob-checkbox">
         Alat disewa lengkap dengan operator dari vendor
@@ -390,10 +386,8 @@
       <div class="pob-section__title">
         {{ "poForm.clauseTitle" | translate }}
       </div>
-      <p class="pob-hint">
-        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
-        isian di atas; tambahkan poin bila ada kesepakatan khusus.
-      </p>
+
+      <p class="pob-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
       <div class="pob-preview">
         <ol class="pob-preview__list">

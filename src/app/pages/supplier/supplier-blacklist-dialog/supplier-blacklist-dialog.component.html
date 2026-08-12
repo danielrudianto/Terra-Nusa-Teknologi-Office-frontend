@@ -1,8 +1,22 @@
 <div class="sbd">
-  <div class="sbd-head" mat-dialog-title [class.is-remove]="isCurrentlyBlacklisted">
+  <div
+    class="sbd-head"
+    mat-dialog-title
+    [class.is-remove]="isCurrentlyBlacklisted"
+  >
     <span class="sbd-badge">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="m4.9 4.9 14.2 14.2" />
       </svg>
     </span>
     <div class="sbd-head__text">
@@ -14,12 +28,19 @@
   </div>
 
   <mat-dialog-content class="sbd-content">
-    <mat-progress-bar *ngIf="isSubmitting" mode="indeterminate" class="sbd-progress"></mat-progress-bar>
+    <mat-progress-bar
+      *ngIf="isSubmitting"
+      mode="indeterminate"
+      class="sbd-progress"
+    ></mat-progress-bar>
 
     <ng-container *ngIf="isCurrentlyBlacklisted; else addBlock">
       <div class="sbd-info">
         <mat-icon>info</mat-icon>
-        <span>Supplier ini sedang di-blacklist. Mencabut blacklist akan menghapus peringatan di semua purchase &amp; purchase order.</span>
+        <span
+          >Supplier ini sedang di-blacklist. Mencabut blacklist akan menghapus
+          peringatan di semua purchase &amp; purchase order.</span
+        >
       </div>
       <div class="sbd-reasonbox" *ngIf="data?.blacklistReason">
         <span class="sbd-reasonbox__label">Alasan saat ini</span>
@@ -30,7 +51,11 @@
     <ng-template #addBlock>
       <div class="sbd-warn">
         <mat-icon>warning</mat-icon>
-        <span>Supplier tetap bisa dipilih, tapi akan muncul <strong>peringatan</strong> setiap kali dipakai di purchase atau purchase order.</span>
+        <span
+          >Supplier tetap bisa dipilih, tapi akan muncul
+          <strong>peringatan</strong> setiap kali dipakai di purchase atau
+          purchase order.</span
+        >
       </div>
       <form [formGroup]="formGroup">
         <mat-form-field appearance="outline" class="sbd-field">
@@ -42,7 +67,9 @@
             maxlength="500"
             placeholder="Ex. Sering telat kirim, barang tidak sesuai spek, dokumen bermasalah"
           ></textarea>
-          <mat-error *ngIf="formGroup.get('blacklistReason')?.hasError('required')">
+          <mat-error
+            *ngIf="formGroup.get('blacklistReason')?.hasError('required')"
+          >
             Alasan wajib diisi.
           </mat-error>
         </mat-form-field>
@@ -59,7 +86,13 @@
       [disabled]="isSubmitting"
       (click)="onSubmit()"
     >
-      {{ isSubmitting ? "Menyimpan..." : (isCurrentlyBlacklisted ? "Cabut Blacklist" : "Blacklist Supplier") }}
+      {{
+        isSubmitting
+          ? "Menyimpan..."
+          : isCurrentlyBlacklisted
+            ? "Cabut Blacklist"
+            : "Blacklist Supplier"
+      }}
     </button>
   </mat-dialog-actions>
 </div>

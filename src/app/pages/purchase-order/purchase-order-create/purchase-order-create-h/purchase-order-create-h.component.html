@@ -641,9 +641,9 @@
             nilainya sudah dimatikan saat jenis subkontraktor dipilih.
           -->
           @if (isEntity) {
-            <mat-slide-toggle formControlName="includePPN" color="primary"
-              >{{ "poForm.includePpn" | translate }}</mat-slide-toggle
-            >
+            <mat-slide-toggle formControlName="includePPN" color="primary">{{
+              "poForm.includePpn" | translate
+            }}</mat-slide-toggle>
           } @else {
             <span class="poh-rate__hint">
               Subkontraktor perorangan bukan PKP — tidak dikenakan PPN.
@@ -984,6 +984,8 @@
           </div>
 
           <!-- pratinjau: isian kosong tampil sebagai ______ -->
+          <p class="poh-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
           <div class="poh-preview">
             <div class="poh-preview__title">
               {{ "poH.previewArticle5" | translate }}
@@ -1015,9 +1017,9 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.paymentTerm" | translate }}</mat-label>
               <mat-select
-            formControlName="paymentTerm"
-            (selectionChange)="onPaymentTermChange()"
-          >
+                formControlName="paymentTerm"
+                (selectionChange)="onPaymentTermChange()"
+              >
                 <mat-option value="CASH">{{
                   "poH.cash" | translate
                 }}</mat-option>
@@ -1144,6 +1146,7 @@
             <mat-icon>add</mat-icon> Tambah poin
           </button>
         </div>
+        <p class="poh-hint">{{ "poForm.extraPointNote" | translate }}</p>
         <p class="poh-rate__hint">{{ "poA.extraPointHint" | translate }}</p>
 
         @if (additionalClauses.controls.length === 0) {
@@ -1199,10 +1202,7 @@
           <div class="poh-section__title">
             {{ "poH.previewAgreement" | translate }}
           </div>
-          <p class="poh-rate__hint">
-            Inilah yang akan tercetak pada dokumen; angka dan tanggal mengikuti
-            isian di atas.
-          </p>
+          <p class="poh-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
           <div class="poh-preview">
             @for (sec of previewSections; track $index) {

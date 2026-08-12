@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
@@ -21,6 +22,7 @@ import { MatChipsModule } from '@angular/material/chips';
 @Component({
   selector: 'app-employee-list',
   imports: [
+    CanDirective,
     MatChipsModule,
     TranslatePipe,
     CommonModule,

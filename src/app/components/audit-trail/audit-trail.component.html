@@ -45,6 +45,12 @@
             </div>
 
             @if (changeList(e).length) {
+              @if (disetujuiSendiri(e)) {
+                <div class="at-selfapproved">
+                  <mat-icon>info</mat-icon>
+                  <span>Disetujui oleh pembuatnya sendiri</span>
+                </div>
+              }
               <ul class="at-changes">
                 @for (c of changeList(e); track c.field) {
                   <li>

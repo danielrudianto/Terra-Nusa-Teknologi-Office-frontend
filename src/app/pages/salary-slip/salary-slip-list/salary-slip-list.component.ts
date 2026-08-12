@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ApiService } from '../../../services/api.service';
@@ -47,6 +48,7 @@ export const MY_FORMATS = {
   selector: 'app-salary-slip-list',
   providers: [provideMomentDateAdapter(MY_FORMATS)],
   imports: [
+    CanDirective,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

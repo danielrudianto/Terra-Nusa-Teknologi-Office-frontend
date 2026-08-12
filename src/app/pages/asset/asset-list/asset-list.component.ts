@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../services/api.service';
 import { MatTable, MatTableModule } from '@angular/material/table';
@@ -24,6 +25,7 @@ import { AssetViewComponent } from '../asset-view/asset-view.component';
 @Component({
   selector: 'app-asset-list',
   imports: [
+    CanDirective,
     TranslatePipe,
     CommonModule,
     FormsModule,

@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { CanDirective } from '../../../directives/can.directive';
 import {
   FormControl,
   FormGroup,
@@ -26,6 +27,7 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
 @Component({
   selector: 'app-purchase-draft-list',
   imports: [
+    CanDirective,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CanDirective } from '../../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ExpenseOpponentViewComponent } from '../expense-opponent-view/expense-opponent-view.component';
@@ -26,6 +27,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './expense-opponent-list.component.scss',
   standalone: true,
   imports: [
+    CanDirective,
     TranslatePipe,
     RouterModule,
     HeaderTitleComponent,

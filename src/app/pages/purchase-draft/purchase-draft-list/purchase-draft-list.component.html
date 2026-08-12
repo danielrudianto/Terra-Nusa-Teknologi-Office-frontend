@@ -230,7 +230,11 @@
                 <mat-icon>view_array</mat-icon
                 ><span>{{ "menu.viewDraft" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="convertPurchase(purchase.id)">
+              <button
+                mat-menu-item
+                *appCan="'purchase:create'"
+                (click)="convertPurchase(purchase.id)"
+              >
                 <mat-icon>swap_horiz</mat-icon
                 ><span>{{ "menu.convertDraft" | translate }}</span>
               </button>

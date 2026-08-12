@@ -319,10 +319,8 @@
       <div class="po511-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
-      <p class="po511-hint">
-        Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti
-        isian di atas; tambahkan poin bila ada kesepakatan khusus.
-      </p>
+
+      <p class="po511-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
       <div class="po511-preview">
         <ol class="po511-preview__list">
@@ -348,6 +346,7 @@
           <mat-icon>add</mat-icon> Tambah poin
         </button>
       </div>
+      <p class="po511-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       @if (additionalClauses.controls.length === 0) {
         <div class="po511-empty">

@@ -102,11 +102,26 @@ export class AuditTrailComponent implements OnChanges {
   /** Daftar kolom yang berubah, siap ditampilkan. */
   changeList(entry: AuditEntry): { field: string; from: string; to: string }[] {
     if (!entry.changes) return [];
-    return Object.entries(entry.changes).map(([field, v]) => ({
-      field,
-      from: this.asText(v?.from),
-      to: this.asText(v?.to),
-    }));
+    return Object.entries(entry.changes)
+      // Penanda bukan perubahan nilai; ditampilkan tersendiri, bukan sebagai
+      // baris "dari — ke —" yang tidak berarti apa pun.
+      .filter(([field]) => field !== 'selfApproved')
+      .map(([field, v]) => ({
+        field,
+        from: this.asText(v?.from),
+        to: this.asText(v?.to),
+      }));
+  }
+
+  /**
+   * Dokumen ini disetujui oleh orang yang membuatnya.
+   *
+   * Hanya mungkin dilakukan pemilik usaha dan memang diizinkan, tetapi harus
+   * terbaca sebagai keadaan yang berbeda saat riwayat ditelusuri — bukan
+   * tenggelam di antara persetujuan biasa.
+   */
+  disetujuiSendiri(entry: AuditEntry): boolean {
+    return (entry.changes as any)?.selfApproved === true;
   }
 
   private asText(value: unknown): string {

@@ -105,11 +105,19 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="openUpdateEmployee(element.id)">
+              <button
+                mat-menu-item
+                *appCan="'employees:update'"
+                (click)="openUpdateEmployee(element.id)"
+              >
                 <mat-icon>edit</mat-icon
                 ><span>{{ "menu.updateEmployee" | translate }}</span>
               </button>
-              <button mat-menu-item (click)="openSalaryCreate(element.id)">
+              <button
+                mat-menu-item
+                *appCan="'salary_slip:create'"
+                (click)="openSalaryCreate(element.id)"
+              >
                 <mat-icon>receipt</mat-icon
                 ><span>{{ "menu.createSalarySlip" | translate }}</span>
               </button>

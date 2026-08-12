@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { CanDirective } from '../../../../directives/can.directive';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +32,7 @@ import { SettingsService } from '../../../../services/setting.service';
   selector: 'app-master-item-list',
   standalone: true,
   imports: [
+    CanDirective,
     TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule,
