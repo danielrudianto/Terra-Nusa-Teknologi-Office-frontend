@@ -213,7 +213,10 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "common.unit" | translate }}</mat-label>
-                  <mat-select formControlName="unit">
+                  <mat-select
+                    formControlName="unit"
+                    (selectionChange)="onUnitChange(i)"
+                  >
                     @if (!isKuota) {
                       <mat-option value="peserta">peserta</mat-option>
                     }

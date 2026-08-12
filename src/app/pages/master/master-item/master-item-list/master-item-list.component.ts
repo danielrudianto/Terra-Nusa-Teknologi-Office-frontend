@@ -321,7 +321,8 @@ export class MasterItemListComponent {
       if (!confirmed) return;
       this.apiService.delete('master-items/' + item.id).subscribe({
         next: () => {
-          this.snackBar.open('Item dihapus', 'Close', { duration: 2000 });
+          this.snackBar.open(
+      this.translate.instant('notify.deleteSuccess'), 'Close', { duration: 2000 });
           this.fetchItems(this.page);
         },
         error: (err) => {

@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -36,6 +37,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ],
 })
 export class PurchaseDraftViewComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private dialog: MatDialogRef<PurchaseDraftViewComponent>,
@@ -92,7 +94,8 @@ export class PurchaseDraftViewComponent {
   deletePurchaseDraft() {
     this.apiService.delete(`purchase-draft/${this.data.id}`).subscribe({
       next: (data) => {
-        this.snackBar.open('Successfully deleted purchase draft', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
           duration: 3000,
         });
         this.dialog.close(true);

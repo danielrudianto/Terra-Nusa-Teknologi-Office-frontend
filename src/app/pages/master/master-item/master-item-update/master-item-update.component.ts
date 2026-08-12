@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -41,6 +42,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './master-item-update.component.scss',
 })
 export class MasterItemUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -144,7 +146,8 @@ export class MasterItemUpdateComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Master item berhasil diperbarui', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

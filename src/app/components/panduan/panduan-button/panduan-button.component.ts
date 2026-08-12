@@ -38,27 +38,32 @@ import { PanduanService } from '../../../services/panduan.service';
       .pd-tombol {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        border: 1px solid #d1d5db;
-        background: #fff;
-        color: #4b5563;
+        gap: 0.375rem;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
         border-radius: 999px;
-        min-width: 26px;
-        height: 26px;
-        padding: 0 8px;
+        min-width: 1.625rem;
+        height: 1.625rem;
+        padding: 0 0.5rem;
         font: inherit;
-        font-size: 13px;
+        font-size: 0.8rem;
         font-weight: 600;
         line-height: 1;
         cursor: pointer;
       }
       .pd-tombol:hover {
-        background: #f3f4f6;
-        color: #111827;
+        background: var(--hover);
+        color: var(--ink);
+        border-color: var(--brand);
+      }
+      .pd-tombol:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
       }
       .pd-tombol-teks {
         font-weight: 500;
-        font-size: 12.5px;
+        font-size: 0.76rem;
       }
     `,
   ],

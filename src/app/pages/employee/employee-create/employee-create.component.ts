@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -34,6 +35,7 @@ import { MatIconModule } from '@angular/material/icon';
   ],
 })
 export class EmployeeCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -90,7 +92,8 @@ export class EmployeeCreateComponent {
       })
       .subscribe({
         next: (_) => {
-          this.snackBar.open('Employee created successfully!', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.formGroup.reset();
@@ -98,7 +101,7 @@ export class EmployeeCreateComponent {
         error: (error) => {
           console.error('Error creating employee:', error);
           this.snackBar.open(
-            'Failed to create employee. Please try again.',
+      this.translate.instant('notify.createFailed'),
             'Close',
             {
               duration: 3000,

@@ -156,7 +156,10 @@
 
                     <mat-form-field appearance="outline" class="pod-wage__unit">
                       <mat-label>{{ "poForm.wageUnit" | translate }}</mat-label>
-                      <mat-select formControlName="unit">
+                      <mat-select
+                    formControlName="unit"
+                    (selectionChange)="onUnitChange(i)"
+                  >
                         @for (u of wageUnits; track u) {
                           <mat-option [value]="u">{{ u }}</mat-option>
                         }

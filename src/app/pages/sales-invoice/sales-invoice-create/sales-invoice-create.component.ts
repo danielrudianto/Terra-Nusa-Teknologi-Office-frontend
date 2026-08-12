@@ -1,4 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -55,6 +56,7 @@ pdfMake.vfs = pdfFonts.vfs;
   ],
 })
 export class SalesInvoiceCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -284,7 +286,8 @@ export class SalesInvoiceCreateComponent {
 
   checkExisting() {
     this.isSubmitting = true;
-    this.snackBar.open('Checking existing invoice', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.checkingInvoice'), 'Close', {
       duration: 3000,
     });
     return this.apiService
@@ -312,7 +315,7 @@ export class SalesInvoiceCreateComponent {
         catchError((error) => {
           console.error('Error checking existing invoice:', error);
           this.snackBar.open(
-            'Error checking existing invoice. Please try again.',
+      this.translate.instant('notify.loadFailed'),
             'Close',
             {
               duration: 5000,
@@ -367,7 +370,7 @@ export class SalesInvoiceCreateComponent {
               this.stepper.selectedIndex = 0;
 
               this.snackBar.open(
-                'Sales invoice created successfully',
+      this.translate.instant('notify.createSuccess'),
                 'Close',
                 {
                   duration: 3000,
@@ -376,7 +379,8 @@ export class SalesInvoiceCreateComponent {
             },
             error: (error) => {
               console.error('Error creating sales invoice:', error);
-              this.snackBar.open('Error creating sales invoice', 'Close', {
+              this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
                 duration: 3000,
               });
             },

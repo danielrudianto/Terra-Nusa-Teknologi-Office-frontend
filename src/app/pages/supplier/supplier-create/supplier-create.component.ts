@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -38,6 +39,7 @@ import { ApiService } from 'src/app/services/api.service';
   ],
 })
 export class SupplierCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -137,7 +139,8 @@ export class SupplierCreateComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Supplier created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           // close and signal the list to refresh

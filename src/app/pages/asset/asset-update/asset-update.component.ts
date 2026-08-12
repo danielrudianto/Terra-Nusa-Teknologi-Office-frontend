@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -43,6 +44,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class AssetUpdateComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -132,7 +134,8 @@ export class AssetUpdateComponent implements OnInit {
       .put(`assets/${this.data.id}`, payload)
       .subscribe({
         next: () => {
-          this.snackBar.open('Asset berhasil diperbarui', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

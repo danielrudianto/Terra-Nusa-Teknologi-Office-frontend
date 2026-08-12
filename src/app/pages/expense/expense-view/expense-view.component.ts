@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -45,6 +46,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './expense-view.component.scss',
 })
 export class ExpenseViewComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private datePipe: DatePipe,
@@ -207,7 +209,8 @@ export class ExpenseViewComponent {
   copyPphObject(): void {
     if (!this.pphLabel) return;
     this.clipboard.copy(this.pphLabel);
-    this.snackBar.open('Objek PPh disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   formatDate(value: string): string {
@@ -256,7 +259,8 @@ export class ExpenseViewComponent {
         : []),
     ];
     this.clipboard.copy(lines.join('\n'));
-    this.snackBar.open('Detail expense disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   close() {

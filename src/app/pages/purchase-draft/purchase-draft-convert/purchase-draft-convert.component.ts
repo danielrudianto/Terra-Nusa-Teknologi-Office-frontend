@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AbstractControl,
   FormControl,
@@ -105,6 +106,7 @@ function bankAccountIDRequired(): ValidatorFn {
   ],
 })
 export class PurchaseDraftConvertComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -477,7 +479,8 @@ export class PurchaseDraftConvertComponent {
                     bankAccountNumberOrigin: '',
                   });
 
-                  this.snackBar.open('Purchase created successfully', 'Close', {
+                  this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
                     duration: 3000,
                   });
 
@@ -562,7 +565,8 @@ export class PurchaseDraftConvertComponent {
               });
             }
 
-            this.snackBar.open('Purchase created successfully', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
               duration: 3000,
             });
 
@@ -634,7 +638,8 @@ export class PurchaseDraftConvertComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },

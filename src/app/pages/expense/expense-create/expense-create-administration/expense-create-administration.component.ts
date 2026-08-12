@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -44,6 +45,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './expense-create-administration.component.scss',
 })
 export class ExpenseCreateAdministrationComponent {
+  private readonly translate = inject(TranslateService);
   bankAccounts: any[] = [];
   isSubmitting: boolean = false;
 
@@ -166,7 +168,8 @@ export class ExpenseCreateAdministrationComponent {
             .post('outgoing-payments', paymentData)
             .subscribe({
               next: (_) => {
-                this.snackBar.open('Expense created successfully', 'Close', {
+                this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
                   duration: 3000,
                 });
                 this.dialog.close();

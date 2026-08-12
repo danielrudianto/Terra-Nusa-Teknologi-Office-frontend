@@ -1,6 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -46,6 +47,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './sales-invoice-view.component.scss',
 })
 export class SalesInvoiceViewComponent {
+  private readonly translate = inject(TranslateService);
   path: any;
   constructor(
     private apiService: ApiService,
@@ -135,7 +137,8 @@ export class SalesInvoiceViewComponent {
   copyPphObject(): void {
     if (!this.pphLabel) return;
     this.clipboard.copy(this.pphLabel);
-    this.snackBar.open('Objek PPh disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   formatDate(date: string): string {
@@ -185,7 +188,7 @@ export class SalesInvoiceViewComponent {
     ];
     this.clipboard.copy(lines.join('\n'));
     this.snackBar.open(
-      'Detail sales invoice disalin — siap di-paste ke WhatsApp',
+      this.translate.instant('notify.copied'),
       'Close',
       { duration: 3000 },
     );

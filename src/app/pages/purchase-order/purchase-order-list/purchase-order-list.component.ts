@@ -1017,7 +1017,8 @@ export class PurchaseOrderListComponent {
   approve(po: any) {
     this.apiService.post(`purchase-orders/${po.id}/approve`, {}).subscribe({
       next: () => {
-        this.snackBar.open('Purchase order disetujui', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.approveSuccess'), 'Close', {
           duration: 2000,
         });
         this.fetch(this.page);
@@ -1045,7 +1046,8 @@ export class PurchaseOrderListComponent {
         if (!confirmed) return;
         this.apiService.delete(`purchase-orders/${po.id}`).subscribe({
           next: () => {
-            this.snackBar.open('Purchase order dihapus', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.deleteSuccess'), 'Close', {
               duration: 2000,
             });
             this.fetch(this.page);

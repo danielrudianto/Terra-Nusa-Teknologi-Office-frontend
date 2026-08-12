@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,6 +31,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -50,12 +52,14 @@ import { SettingsService } from '../../../services/setting.service';
     HeaderTitleComponent,
     MatSnackBarModule,
     TranslatePipe,
+    PanduanButtonComponent,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],
   standalone: true,
 })
 export class PurchaseListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     public settings: SettingsService,
     private apiService: ApiService,
@@ -321,7 +325,7 @@ export class PurchaseListComponent {
   viewPurchaseOrder(id: number) {
     if (!id) {
       this.snackBar.open(
-        'Dokumen purchase order belum tersedia di sistem',
+        this.translate.instant('notify.poDocNotAvailable'),
         'Close',
         { duration: 3000 },
       );
@@ -371,7 +375,7 @@ export class PurchaseListComponent {
                 this.apiService.delete(`purchases/${id}`).subscribe({
                   next: () => {
                     this.snackBar.open(
-                      'Successfully deleted purchase data',
+                      this.translate.instant('notify.createSuccess'),
                       'Close',
                       {
                         duration: 3000,

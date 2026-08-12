@@ -29,10 +29,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-expense-list',
   imports: [
+    PanduanButtonComponent,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,

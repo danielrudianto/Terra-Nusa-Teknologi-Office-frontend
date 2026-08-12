@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,6 +22,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
 import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-sales-invoice-list',
@@ -39,12 +41,14 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatMenuModule,
     HeaderTitleComponent,
     TranslatePipe,
+    PanduanButtonComponent,
   ],
   templateUrl: './sales-invoice-list.component.html',
   styleUrl: './sales-invoice-list.component.scss',
   standalone: true,
 })
 export class SalesInvoiceListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -153,9 +157,13 @@ export class SalesInvoiceListComponent {
         },
         error: (error) => {
           console.error('Error fetching sales invoices:', error);
-          this.snackBar.open('Error fetching sales invoices', 'Close', {
-            duration: 3000,
-          });
+          this.snackBar.open(
+            this.translate.instant('notify.loadFailed'),
+            'Close',
+            {
+              duration: 3000,
+            },
+          );
         },
       })
       .add(() => {

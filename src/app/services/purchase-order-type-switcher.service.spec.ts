@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PurchaseOrderTypeSwitcherService } from './purchase-order-type-switcher.service';
+import { PurchaseOrderTypeSwitcher } from './purchase-order-type-switcher.service';
 
-describe('PurchaseOrderTypeSwitcherService', () => {
-  let service: PurchaseOrderTypeSwitcherService;
+describe('PurchaseOrderTypeSwitcher', () => {
+  let service: PurchaseOrderTypeSwitcher;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PurchaseOrderTypeSwitcherService);
+    service = TestBed.inject(PurchaseOrderTypeSwitcher);
   });
 
   it('should be created', () => {

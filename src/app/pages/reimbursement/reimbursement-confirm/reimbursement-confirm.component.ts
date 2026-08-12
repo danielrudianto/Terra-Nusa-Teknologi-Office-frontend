@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -38,6 +39,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './reimbursement-confirm.component.scss',
 })
 export class ReimbursementConfirmComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -76,7 +78,7 @@ export class ReimbursementConfirmComponent {
         next: (data: any) => {
           if (data.reimbursement.isApprove) {
             this.snackBar.open(
-              'Reimbursement has already been approved',
+      this.translate.instant('notify.alreadyApproved'),
               'Close',
               {
                 duration: 3000,
@@ -88,7 +90,7 @@ export class ReimbursementConfirmComponent {
 
           if (data.reimbursement.isDelete) {
             this.snackBar.open(
-              'Reimbursement has already been rejected',
+      this.translate.instant('notify.alreadyRejected'),
               'Close',
               {
                 duration: 3000,
@@ -148,7 +150,8 @@ export class ReimbursementConfirmComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open('Failed to fetch reimbursement data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
             duration: 3000,
           });
           console.error('Error fetching reimbursement data:', error);
@@ -165,7 +168,8 @@ export class ReimbursementConfirmComponent {
       .put('reimbursements/approve/' + this.data.id, {})
       .subscribe({
         next: (data: any) => {
-          this.snackBar.open('Reimbursement approved successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.approveSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close('approve');
@@ -181,7 +185,8 @@ export class ReimbursementConfirmComponent {
       .put('reimbursements/reject/' + this.data.id, {})
       .subscribe({
         next: (data: any) => {
-          this.snackBar.open('Reimbursement rejected successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close('reject');

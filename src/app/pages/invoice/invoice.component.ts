@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -76,6 +77,7 @@ const ROMAN = [
   styleUrl: './invoice.component.scss',
 })
 export class InvoiceComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -374,7 +376,8 @@ export class InvoiceComponent {
 
     const v = this.formGroup.getRawValue();
     if (!v.purchaseOrderName) {
-      this.snackBar.open('Nomor PO belum diisi', 'Close', { duration: 3000 });
+      this.snackBar.open(
+      this.translate.instant('notify.poNumberEmpty'), 'Close', { duration: 3000 });
       return;
     }
 
@@ -389,7 +392,7 @@ export class InvoiceComponent {
     }
     if (this.grandTotal <= 0) {
       this.snackBar.open(
-        'Nilai invoice masih nol — isi volume dan harga satuannya.',
+      this.translate.instant('notify.invoiceValueZero'),
         'Close',
         { duration: 3000 },
       );
@@ -480,7 +483,8 @@ export class InvoiceComponent {
       );
     } catch (e) {
       console.error('Gagal membuat dokumen invoice:', e);
-      this.snackBar.open('Gagal membuat dokumen invoice', 'Close', {
+      this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
         duration: 3000,
       });
     }
@@ -502,7 +506,8 @@ export class InvoiceComponent {
   private savePurchase() {
     const v = this.formGroup.getRawValue();
     if (!v.purchaseOrderName) {
-      this.snackBar.open('Nomor PO belum diisi', 'Close', { duration: 3000 });
+      this.snackBar.open(
+      this.translate.instant('notify.poNumberEmpty'), 'Close', { duration: 3000 });
       return;
     }
 
@@ -552,7 +557,8 @@ export class InvoiceComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Invoice dibuat dan pembelian tercatat', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           // Hanya direset bila pencatatan berhasil, agar data tidak hilang

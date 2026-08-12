@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { TranslateService } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -41,6 +42,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './reimbursement-view.component.scss',
 })
 export class ReimbursementViewComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -147,7 +149,8 @@ export class ReimbursementViewComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open('Failed to fetch reimbursement data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
             duration: 3000,
           });
           console.error('Error fetching reimbursement data:', error);
@@ -161,7 +164,8 @@ export class ReimbursementViewComponent {
 
   copyBankAccountNumber() {
     this.clipboard.copy(this.formGroup.get('bankAccountNumber')!.value);
-    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 3000,
     });
   }
@@ -208,7 +212,7 @@ export class ReimbursementViewComponent {
     ];
     this.clipboard.copy(lines.join('\n'));
     this.snackBar.open(
-      'Detail reimbursement disalin — siap di-paste ke WhatsApp',
+      this.translate.instant('notify.copied'),
       'Close',
       { duration: 3000 },
     );

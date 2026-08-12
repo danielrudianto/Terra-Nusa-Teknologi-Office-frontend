@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -45,6 +46,7 @@ import { ApiService } from 'src/app/services/api.service';
   standalone: true,
 })
 export class ReimbursementPaymentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -94,7 +96,8 @@ export class ReimbursementPaymentCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.dialog.close();
@@ -155,7 +158,8 @@ export class ReimbursementPaymentCreateComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open('Error fetching reimbursement data', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.isLoading = false;
@@ -206,13 +210,15 @@ export class ReimbursementPaymentCreateComponent {
           //     (x) => x.id === this.formGroup.value.bankAccountID
           //   )?.bankName,
           // });
-          this.snackBar.open('Payment created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close();
         },
         error: (error) => {
-          this.snackBar.open('Error creating payment', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
             duration: 3000,
           });
         },

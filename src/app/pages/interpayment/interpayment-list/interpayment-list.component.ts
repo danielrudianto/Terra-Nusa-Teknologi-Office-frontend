@@ -200,7 +200,7 @@ export class InterpaymentListComponent {
               );
               this.count--;
               this.snackBar.open(
-                'Interpayment deleted successfully.',
+      this.translate.instant('notify.deleteSuccess'),
                 'Close',
                 {
                   duration: 3000,

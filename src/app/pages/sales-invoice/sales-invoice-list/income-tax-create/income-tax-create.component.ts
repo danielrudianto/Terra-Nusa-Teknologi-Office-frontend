@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   MAT_DIALOG_DATA,
@@ -38,6 +39,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './income-tax-create.component.scss',
 })
 export class IncomeTaxCreateComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -87,7 +89,8 @@ export class IncomeTaxCreateComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Nomor bukti potong tersimpan', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.taxSlipSaved'), 'Close', {
             duration: 3000,
           });
           this.dialogRef.close(true);

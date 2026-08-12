@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -40,6 +41,7 @@ import { ApiService } from 'src/app/services/api.service';
   ],
 })
 export class ExpenseOpponentUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private dialog: MatDialogRef<ExpenseOpponentUpdateComponent>,
@@ -100,7 +102,8 @@ export class ExpenseOpponentUpdateComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Data successfully saved', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

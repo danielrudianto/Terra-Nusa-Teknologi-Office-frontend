@@ -1,6 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
+import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { TopNavigationComponent } from '../../components/top-navigation/top-navigation.component';
 import {
@@ -18,6 +19,7 @@ import { filter, map } from 'rxjs';
     TopNavigationComponent,
     SideNavComponent,
     RouterModule,
+    PanduanPanelComponent,
   ],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
@@ -33,7 +35,30 @@ export class MainComponent {
   isSidenavigationOpened: boolean = true;
   label: string = '';
 
+  /**
+   * Buka/tutup side navigation.
+   *
+   * Keadaannya ditulis sebagai atribut di <html> — sama polanya dengan
+   * `data-theme` dan `data-density` — supaya stylesheet lain bisa
+   * menyesuaikan diri. Panel panduan memakainya agar saat diperbesar
+   * tepinya berhenti persis di sisi sidenav, dan memenuhi layar saat
+   * sidenav ditutup.
+   */
+  ubahSidenav(): void {
+    this.isSidenavigationOpened = !this.isSidenavigationOpened;
+    this.tandaiSidenav();
+  }
+
+  private tandaiSidenav(): void {
+    document.documentElement.setAttribute(
+      'data-sidenav',
+      this.isSidenavigationOpened ? 'open' : 'closed',
+    );
+  }
+
   ngOnInit(): void {
+    this.tandaiSidenav();
+
     /*
      * Izin dimuat sekali di sini, terpisah dari langganan di bawah.
      *

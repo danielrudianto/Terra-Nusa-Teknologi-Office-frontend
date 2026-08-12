@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -33,6 +34,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './master-equipment-create.component.scss',
 })
 export class MasterEquipmentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -76,7 +78,8 @@ export class MasterEquipmentCreateComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Equipment berhasil dibuat', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

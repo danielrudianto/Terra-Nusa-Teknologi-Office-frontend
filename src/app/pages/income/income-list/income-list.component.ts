@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import {
   FormControl,
@@ -58,6 +59,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
 })
 export class IncomeListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -242,7 +244,8 @@ export class IncomeListComponent {
         if (!confirmed) return;
         this.apiService.delete('income/' + id).subscribe({
           next: () => {
-            this.snackBar.open('Income deleted', 'Close', { duration: 2000 });
+            this.snackBar.open(
+      this.translate.instant('notify.deleteSuccess'), 'Close', { duration: 2000 });
             this.fetchData(0);
           },
           error: (error) => {

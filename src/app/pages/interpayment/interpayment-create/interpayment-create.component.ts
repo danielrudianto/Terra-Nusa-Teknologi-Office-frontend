@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -68,6 +69,7 @@ function validateBankAccount(): ValidatorFn {
   styleUrl: './interpayment-create.component.scss',
 })
 export class InterpaymentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -104,7 +106,8 @@ export class InterpaymentCreateComponent {
       },
       error: (error) => {
         console.error('Error fetching bank accounts:', error);
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -135,7 +138,8 @@ export class InterpaymentCreateComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Interpayment created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           // close and signal the list to refresh
@@ -143,7 +147,8 @@ export class InterpaymentCreateComponent {
         },
         error: (error) => {
           console.error('Error creating interpayment:', error);
-          this.snackBar.open('Error on creating interpayment', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
             duration: 3000,
           });
         },

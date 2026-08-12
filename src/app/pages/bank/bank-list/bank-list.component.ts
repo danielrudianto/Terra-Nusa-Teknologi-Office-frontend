@@ -197,7 +197,7 @@ export class BankListComponent {
                 this.banks = this.banks.filter((bank) => bank.id !== id);
                 this.count--;
                 this.snackBar.open(
-                  'Bank account deleted successfully.',
+      this.translate.instant('notify.deleteSuccess'),
                   'Close',
                   {
                     duration: 3000,
@@ -207,7 +207,7 @@ export class BankListComponent {
               error: (b) => {
                 console.error('Error deleting bank account:', b);
                 this.snackBar.open(
-                  'Failed to delete bank account. Please try again later.',
+      this.translate.instant('notify.deleteFailed'),
                   'Close',
                   {
                     duration: 3000,

@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -58,6 +59,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class ExpenseCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -286,7 +288,8 @@ export class ExpenseCreateComponent {
               .post('outgoing-payments', paymentData)
               .subscribe({
                 next: (_) => {
-                  this.snackBar.open('Expense created successfully', 'Close', {
+                  this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
                     duration: 3000,
                   });
                   this.metaFormGroup.reset();
@@ -327,7 +330,8 @@ export class ExpenseCreateComponent {
         .post('expenses', expenseData)
         .subscribe({
           next: (_) => {
-            this.snackBar.open('Expense created successfully', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
               duration: 3000,
             });
             this.metaFormGroup.reset();
@@ -367,7 +371,8 @@ export class ExpenseCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },

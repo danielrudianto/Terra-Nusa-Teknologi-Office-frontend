@@ -25,10 +25,12 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-reimbursement-list',
   imports: [
+    PanduanButtonComponent,
     CanDirective,
     TranslatePipe,
     CommonModule,

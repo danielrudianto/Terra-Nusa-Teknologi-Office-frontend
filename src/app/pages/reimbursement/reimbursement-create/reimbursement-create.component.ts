@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormArray,
   FormBuilder,
@@ -54,6 +55,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   ],
 })
 export class ReimbursementCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -257,7 +259,8 @@ export class ReimbursementCreateComponent {
             }),
           });
 
-          this.snackBar.open('Reimbursement created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.formGroup.reset();
@@ -266,7 +269,7 @@ export class ReimbursementCreateComponent {
         error: (error) => {
           console.error('Error creating reimbursement:', error);
           this.snackBar.open(
-            'Failed to create reimbursement. Please try again.',
+      this.translate.instant('notify.createFailed'),
             'Close',
             {
               duration: 3000,
@@ -281,7 +284,8 @@ export class ReimbursementCreateComponent {
 
   copyBankAccountNumber() {
     this.clipboard.copy(this.formGroup.get('bankAccountNumber')!.value);
-    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 3000,
     });
   }

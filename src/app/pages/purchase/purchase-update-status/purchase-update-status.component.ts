@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -49,6 +50,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class PurchaseUpdateStatusComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private route: ActivatedRoute,
     private apiService: ApiService,
@@ -132,7 +134,8 @@ export class PurchaseUpdateStatusComponent {
       next: (response: any) => {
         const data = response.purchase;
         if (data.lastStatus == 'ready') {
-          this.snackBar.open('Data is already complete', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.dataAlreadyComplete'), 'Close', {
             duration: 3000,
           });
           this.router.navigate(['/Purchase']);
@@ -193,7 +196,8 @@ export class PurchaseUpdateStatusComponent {
       },
       error: (error) => {
         console.error(error);
-        this.snackBar.open('Error on fetching data', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.router.navigate(['/Purchase']);
@@ -230,7 +234,8 @@ export class PurchaseUpdateStatusComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Data updated successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
 
@@ -238,7 +243,8 @@ export class PurchaseUpdateStatusComponent {
         },
         error: (error) => {
           console.error(error);
-          this.snackBar.open('Error on updating data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateFailed'), 'Close', {
             duration: 3000,
           });
         },

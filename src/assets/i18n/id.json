@@ -114,7 +114,12 @@
     "valueAndTax": "Nilai & Pajak",
     "projectName": "Nama proyek",
     "invoice": "Faktur",
-    "itemListPo": "Daftar Item"
+    "itemListPo": "Daftar Item",
+    "date": "Tanggal",
+    "previous": "Sebelumnya",
+    "quantity": "Volume",
+    "supplier": "Supplier",
+    "unit": "Satuan"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -270,7 +275,8 @@
     "capacity": "Kapasitas",
     "accountNumber": "Nomor rekening",
     "accountName": "Nama rekening",
-    "paymentNumber": "Nomor pembayaran"
+    "paymentNumber": "Nomor pembayaran",
+    "bank": "Bank"
   },
   "purchase": {
     "title": "Pembelian",
@@ -1635,7 +1641,8 @@
     "deleted": "Pengguna berhasil dihapus",
     "createFailed": "Gagal membuat pengguna",
     "updateFailed": "Gagal memperbarui pengguna",
-    "deleteFailed": "Gagal menghapus pengguna"
+    "deleteFailed": "Gagal menghapus pengguna",
+    "level": "Level"
   },
   "bankMutation": {
     "period": "Periode",
@@ -2664,6 +2671,43 @@
     "tempatPelaksanaan": "Tempat pelaksanaan",
     "penyerahanSertifikat": "Penyerahan sertifikat",
     "biayaUjianUlang": "Biaya ujian ulang",
-    "jenisBarangYangDisewa": "Jenis barang yang disewa"
+    "jenisBarangYangDisewa": "Jenis barang yang disewa",
+    "exMicz": "Ex. MICZ",
+    "tambahBaris": "Tambah baris"
+  },
+  "userAccess": {
+    "divisi": "Divisi",
+    "izinKhusus": "Izin khusus",
+    "modul": "Modul",
+    "aksi": "Aksi",
+    "hasil": "Hasil",
+    "alasan": "Alasan"
+  },
+  "notify": {
+    "createSuccess": "Data berhasil dibuat",
+    "updateSuccess": "Data berhasil diperbarui",
+    "deleteSuccess": "Data berhasil dihapus",
+    "approveSuccess": "Data berhasil disetujui",
+    "loadFailed": "Gagal memuat data",
+    "createFailed": "Gagal membuat data",
+    "updateFailed": "Gagal memperbarui data",
+    "deleteFailed": "Gagal menghapus data",
+    "copied": "Berhasil disalin",
+    "alreadyInList": "Sudah ada di daftar",
+    "poNumberEmpty": "Nomor PO belum diisi",
+    "invoiceValueZero": "Nilai invoice masih nol — isi volume dan harga satuannya.",
+    "loanNotFound": "Data pinjaman tidak ditemukan",
+    "paymentRejected": "Pembayaran ditolak",
+    "poDocNotAvailable": "Dokumen purchase order belum tersedia di sistem",
+    "dataAlreadyComplete": "Data sudah lengkap",
+    "notInternalData": "Data ini bukan data internal",
+    "alreadyApproved": "Sudah disetujui sebelumnya",
+    "alreadyRejected": "Sudah ditolak sebelumnya",
+    "noDataProvided": "Tidak ada data yang dikirim",
+    "salarySlipSent": "Slip gaji berhasil dikirim",
+    "checkingInvoice": "Memeriksa invoice yang sudah ada…",
+    "taxSlipSaved": "Nomor bukti potong tersimpan",
+    "accessUpdated": "Akses pengguna diperbarui",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali."
   }
 }

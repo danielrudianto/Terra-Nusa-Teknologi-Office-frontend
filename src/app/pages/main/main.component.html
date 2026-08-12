@@ -9,10 +9,13 @@
   <mat-drawer-content class="dashboard__container__content">
     <app-top-navigation
       [label]="label"
-      (onBookmarkClicked)="isSidenavigationOpened = !isSidenavigationOpened"
+      (onBookmarkClicked)="ubahSidenav()"
     />
     <div class="dashboard__container__router">
       <router-outlet></router-outlet>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+<!-- Panel panduan: dipasang SEKALI di sini, bukan di tiap halaman. -->
+<app-panduan-panel />

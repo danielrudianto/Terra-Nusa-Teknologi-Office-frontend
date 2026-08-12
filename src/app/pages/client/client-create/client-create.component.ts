@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -35,6 +36,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './client-create.component.scss',
 })
 export class ClientCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -75,7 +77,8 @@ export class ClientCreateComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Client created successfully!', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.formGroup.reset();

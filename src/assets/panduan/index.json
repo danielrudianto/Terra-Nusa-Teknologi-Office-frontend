@@ -3,31 +3,116 @@
   "topik": [
     {
       "id": "pembelian",
-      "judul": "Pembelian & Purchase Order",
+      "judul": "Pembelian",
       "berkas": "pembelian.md",
-      "modul": "purchase_order",
-      "ringkas": "Memilih tipe PO, mengisi form, dan mencetak dokumen.",
+      "modul": "purchase",
+      "ringkas": "Mencatat faktur pembelian dari pemasok, dari meta sampai pembayaran.",
       "kataKunci": [
-        "PO",
-        "purchase order",
-        "pengadaan",
+        "pembelian",
+        "invoice",
+        "faktur",
+        "kwitansi",
+        "pemasok",
         "supplier",
-        "vendor",
+        "DPP",
         "PPN",
-        "termin",
-        "sewa alat"
-      ],
-      "bagian": [
-        { "anchor": "sekilas", "judul": "Sekilas" },
-        { "anchor": "memilih-tipe-po", "judul": "Memilih tipe PO" },
-        { "anchor": "membuat-po-baru", "judul": "Membuat PO baru" },
-        { "anchor": "syarat-pembayaran", "judul": "Syarat pembayaran" },
-        { "anchor": "ppn", "judul": "PPN" },
-        { "anchor": "setelah-po-dibuat", "judul": "Setelah PO dibuat" },
-        {
-          "anchor": "kalau-tombolnya-tidak-ada",
-          "judul": "Kalau tombolnya tidak ada"
-        }
+        "PPh",
+        "PBBKB",
+        "jatuh tempo",
+        "lampiran",
+        "internal",
+        "purchase order",
+        "proyek",
+        "status dokumen"
+      ]
+    },
+    {
+      "id": "draft-pembelian",
+      "judul": "Draft Pembelian",
+      "berkas": "draft-pembelian.md",
+      "modul": "purchase_draft",
+      "ringkas": "Menyiapkan data pembelian sebelum berkasnya lengkap, lalu mengkonversinya.",
+      "kataKunci": [
+        "draft",
+        "konversi",
+        "pemasok",
+        "purchase order",
+        "pembelian sementara"
+      ]
+    },
+    {
+      "id": "beban",
+      "judul": "Beban",
+      "berkas": "beban.md",
+      "modul": "expenses",
+      "ringkas": "Mencatat biaya operasional di luar pembelian barang proyek.",
+      "kataKunci": [
+        "beban",
+        "biaya",
+        "expense",
+        "operasional",
+        "tipe beban",
+        "sewa",
+        "utilitas",
+        "bahan bakar",
+        "denda",
+        "PPh",
+        "lawan transaksi"
+      ]
+    },
+    {
+      "id": "pendapatan-lain",
+      "judul": "Pendapatan Lain",
+      "berkas": "pendapatan-lain.md",
+      "modul": "income",
+      "ringkas": "Mencatat pemasukan di luar penagihan proyek: bunga, royalti, dividen.",
+      "kataKunci": [
+        "pendapatan",
+        "pemasukan",
+        "income",
+        "bunga",
+        "royalti",
+        "dividen",
+        "pembulatan",
+        "rekening",
+        "lawan transaksi"
+      ]
+    },
+    {
+      "id": "reimbursement",
+      "judul": "Reimbursement",
+      "berkas": "reimbursement.md",
+      "modul": "reimbursement",
+      "ringkas": "Mengajukan penggantian uang yang sudah ditalangi, dan alur persetujuannya.",
+      "kataKunci": [
+        "reimbursement",
+        "penggantian",
+        "talangan",
+        "struk",
+        "item",
+        "persetujuan",
+        "setujui",
+        "cetak ulang"
+      ]
+    },
+    {
+      "id": "faktur-penjualan",
+      "judul": "Faktur Penjualan",
+      "berkas": "faktur-penjualan.md",
+      "modul": "sales_invoice",
+      "ringkas": "Menagih pekerjaan proyek ke klien, konfirmasi faktur, dan bukti potong.",
+      "kataKunci": [
+        "faktur penjualan",
+        "sales invoice",
+        "tagihan",
+        "klien",
+        "NPWP",
+        "SPK",
+        "retensi",
+        "BPJS",
+        "bukti potong",
+        "konfirmasi",
+        "faktur pajak"
       ]
     }
   ]

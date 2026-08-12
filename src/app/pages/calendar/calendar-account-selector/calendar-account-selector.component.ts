@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
@@ -15,6 +16,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class CalendarAccountSelectorComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -40,7 +42,8 @@ export class CalendarAccountSelectorComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },

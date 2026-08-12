@@ -114,7 +114,12 @@
     "valueAndTax": "金额与税务",
     "projectName": "项目名称",
     "invoice": "发票",
-    "itemListPo": "项目清单"
+    "itemListPo": "项目清单",
+    "date": "日期",
+    "previous": "上一个",
+    "quantity": "数量",
+    "supplier": "供应商",
+    "unit": "单位"
   },
   "nav": {
     "pinned": "已固定",
@@ -270,7 +275,8 @@
     "capacity": "容量",
     "accountNumber": "账号",
     "accountName": "账户名称",
-    "paymentNumber": "付款编号"
+    "paymentNumber": "付款编号",
+    "bank": "银行"
   },
   "purchase": {
     "title": "采购",
@@ -1635,7 +1641,8 @@
     "deleted": "用户删除成功",
     "createFailed": "创建用户失败",
     "updateFailed": "更新用户失败",
-    "deleteFailed": "删除用户失败"
+    "deleteFailed": "删除用户失败",
+    "level": "级别"
   },
   "bankMutation": {
     "period": "期间",
@@ -2664,6 +2671,43 @@
     "tempatPelaksanaan": "举办地点",
     "penyerahanSertifikat": "证书交付",
     "biayaUjianUlang": "补考费用",
-    "jenisBarangYangDisewa": "租赁物品类别"
+    "jenisBarangYangDisewa": "租赁物品类别",
+    "exMicz": "例：MICZ",
+    "tambahBaris": "添加行"
+  },
+  "userAccess": {
+    "divisi": "部门",
+    "izinKhusus": "特别权限",
+    "modul": "模块",
+    "aksi": "操作",
+    "hasil": "结果",
+    "alasan": "原因"
+  },
+  "notify": {
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功",
+    "deleteSuccess": "删除成功",
+    "approveSuccess": "审批成功",
+    "loadFailed": "数据加载失败",
+    "createFailed": "创建失败",
+    "updateFailed": "更新失败",
+    "deleteFailed": "删除失败",
+    "copied": "已复制",
+    "alreadyInList": "已在列表中",
+    "poNumberEmpty": "采购单编号未填写",
+    "invoiceValueZero": "发票金额为零 — 请填写数量与单价。",
+    "loanNotFound": "未找到贷款数据",
+    "paymentRejected": "付款已拒绝",
+    "poDocNotAvailable": "系统中尚无该采购单文件",
+    "dataAlreadyComplete": "数据已完整",
+    "notInternalData": "此项非内部数据",
+    "alreadyApproved": "此前已审批",
+    "alreadyRejected": "此前已拒绝",
+    "noDataProvided": "未提供任何数据",
+    "salarySlipSent": "工资单发送成功",
+    "checkingInvoice": "正在检查已有发票…",
+    "taxSlipSaved": "扣缴凭证号已保存",
+    "accessUpdated": "用户权限已更新",
+    "sessionExpired": "您的登录已过期，请重新登录。"
   }
 }

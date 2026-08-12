@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -36,6 +37,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   standalone: true,
 })
 export class BankCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -75,7 +77,8 @@ export class BankCreateComponent {
       .post('banks', this.bankFormGroup.value)
       .subscribe({
         next: (_) => {
-          this.snackBar.open('Bank account created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           // close and signal the list to refresh

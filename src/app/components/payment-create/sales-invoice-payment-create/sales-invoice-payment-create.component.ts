@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
 import {
   MAT_DIALOG_DATA,
@@ -45,6 +46,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class SalesInvoicePaymentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -104,7 +106,8 @@ export class SalesInvoicePaymentCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.dialogRef.close();
@@ -166,7 +169,8 @@ export class SalesInvoicePaymentCreateComponent {
       .subscribe({
         next: () => {
           this.dialogRef.close('paid');
-          this.snackBar.open('Successfully created incoming payment', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
         },

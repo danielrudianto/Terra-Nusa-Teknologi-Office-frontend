@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -36,6 +37,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrl: './employee-update.component.scss',
 })
 export class EmployeeUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -104,7 +106,7 @@ export class EmployeeUpdateComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            'Failed to update employee data. Please check your input.',
+      this.translate.instant('notify.updateFailed'),
             'Close',
             {
               duration: 3000,

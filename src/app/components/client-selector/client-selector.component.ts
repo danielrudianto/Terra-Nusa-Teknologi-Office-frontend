@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -30,6 +31,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class ClientSelectorComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialogRef<ClientSelectorComponent>,
     private apiService: ApiService,
@@ -75,7 +77,7 @@ export class ClientSelectorComponent {
         error: (error) => {
           console.error('Error fetching clients:', error);
           this.snackBar.open(
-            'Error fetching clients: ' + error.detail,
+      this.translate.instant('notify.loadFailed') + error.detail,
             'Close',
             {},
           );

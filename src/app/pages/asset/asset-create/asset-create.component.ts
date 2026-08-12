@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -38,6 +39,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class AssetCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -71,7 +73,8 @@ export class AssetCreateComponent {
       .subscribe({
         next: (data) => {
           this.assetFormGroup.reset();
-          this.snackBar.open('Asset created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

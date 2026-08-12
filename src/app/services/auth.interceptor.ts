@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   HttpEvent,
   HttpHandler,
@@ -15,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  private readonly translate = inject(TranslateService);
   // single-flight refresh: only ONE refresh runs at a time; other 401s wait for it
   private isRefreshing = false;
   private refreshedToken$ = new BehaviorSubject<string | null>(null);
@@ -103,7 +105,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     this.dialog.closeAll();
     this.snackBar.open(
-      'Sesi Anda telah berakhir. Silakan masuk kembali.',
+      this.translate.instant('notify.sessionExpired'),
       'Close',
       { duration: 4000 },
     );

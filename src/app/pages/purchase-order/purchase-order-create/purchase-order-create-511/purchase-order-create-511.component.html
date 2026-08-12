@@ -136,7 +136,10 @@
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poForm.unit" | translate }}</mat-label>
-                  <mat-select formControlName="unit">
+                  <mat-select
+                    formControlName="unit"
+                    (selectionChange)="onUnitChange(i)"
+                  >
                     <mat-option *ngFor="let u of units" [value]="u">{{
                       u
                     }}</mat-option>

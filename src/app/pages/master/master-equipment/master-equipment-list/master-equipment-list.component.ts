@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../../directives/can.directive';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -45,6 +46,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrl: './master-equipment-list.component.scss',
 })
 export class MasterEquipmentListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -137,7 +139,8 @@ export class MasterEquipmentListComponent {
         if (!confirmed) return;
         this.apiService.delete('master-equipment/' + item.id).subscribe({
           next: () => {
-            this.snackBar.open('Equipment dihapus', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.deleteSuccess'), 'Close', {
               duration: 2000,
             });
             this.fetch(this.page);

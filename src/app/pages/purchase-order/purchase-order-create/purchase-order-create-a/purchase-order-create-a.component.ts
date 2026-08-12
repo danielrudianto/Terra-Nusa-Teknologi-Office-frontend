@@ -78,6 +78,25 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   styleUrl: './purchase-order-create-a.component.scss',
 })
 export class PurchaseOrderCreateAComponent {
+
+  /**
+   * Satuan berubah pada satu baris.
+   *
+   * Untuk satuan borongan (LS), volumenya dikunci pada 1. Nilainya memang
+   * selalu dihitung satu saat menjumlahkan, sehingga membiarkan kolomnya
+   * dapat diisi berarti menawarkan angka yang diabaikan diam-diam — dan yang
+   * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
+   */
+  onUnitChange(i: number): void {
+    const g = this.getFormGroupAt(i);
+    const qty = g.get('quantity');
+    if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
+      qty?.setValue(1);
+      qty?.disable();
+    } else {
+      qty?.enable();
+    }
+  }
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
   get typeCode(): string {
     return 'A';
@@ -154,7 +173,7 @@ export class PurchaseOrderCreateAComponent {
   }
 
   usesMode(mode: string): boolean {
-    return (this.t.value || []).some((x: any) => x.mode === mode);
+    return this.barisPengiriman.some((x: any) => x.mode === mode);
   }
 
   providerLabel(mode: string): string {
@@ -173,7 +192,7 @@ export class PurchaseOrderCreateAComponent {
    * Satuan yang lazim dipakai. Daftar ini hanya saran — kolomnya tetap bisa
    * diketik sendiri bila vendor memakai satuan lain.
    */
-  unitOptions: string[] = ['Ls', 'kg', 'rit', 'trip', 'unit', 'koli', 'm3'];
+  unitOptions: string[] = ['LS', 'kg', 'rit', 'trip', 'unit', 'koli', 'm3'];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -258,7 +277,10 @@ export class PurchaseOrderCreateAComponent {
       // Volume & satuan mengikuti bentuk tagihan vendor: jasa antar udara
       // kerap ditagih per kilogram, bukan lump sum.
       quantity: [1, [Validators.required, Validators.min(1)]],
-      unit: ['Ls', Validators.required],
+      // Penulisan disamakan dengan formulir lain ('LS'). Dokumen lama yang
+      // menyimpan 'Ls' tetap terbaca karena pembandingnya tidak peduli
+      // huruf besar-kecil.
+      unit: ['LS', Validators.required],
       // Jadwal melekat pada pengiriman, bukan pada kontrak: satu SPK bisa
       // memuat beberapa pengiriman dengan jadwal dan rute berbeda.
       unloadingDate: [''],
@@ -291,6 +313,10 @@ export class PurchaseOrderCreateAComponent {
 
   addShipment() {
     this.t.push(this.buildShipment());
+
+    // Baris baru memakai satuan borongan, sehingga volumenya langsung
+    // dikunci — tanpa ini kolomnya terbuka sampai satuannya disentuh.
+    this.onUnitChange(this.t.length - 1);
   }
 
   removeAt(i: number) {
@@ -324,12 +350,23 @@ export class PurchaseOrderCreateAComponent {
    */
   lineTotal(x: any): number {
     const harga = Number(String(x?.amount ?? '').replace(/[^\d.-]/g, '')) || 0;
-    const volume = x?.unit === 'Ls' ? 1 : Number(x?.quantity) || 1;
+    const volume = String(x?.unit || '').toUpperCase() === 'LS' ? 1 : Number(x?.quantity) || 1;
     return harga * volume;
   }
 
+  /**
+   * Isi seluruh baris pengiriman, termasuk kolom yang sedang dikunci.
+   *
+   * `this.t.value` tidak memuat kontrol yang di-disable — dan volume dikunci
+   * pada satuan borongan. Membacanya lewat sana membuat volumenya hilang saat
+   * disimpan, dan angkanya baru terlihat keliru setelah dokumennya terbit.
+   */
+  private get barisPengiriman(): any[] {
+    return this.t.getRawValue() || [];
+  }
+
   get rawTotal(): number {
-    return this.t.value.reduce(
+    return this.barisPengiriman.reduce(
       (acc: number, x: any) => acc + this.lineTotal(x),
       0,
     );
@@ -396,7 +433,7 @@ export class PurchaseOrderCreateAComponent {
       templateVersion: '1.0',
       billing_requirements: {},
       // structured items -> purchase_order_items table
-      items: this.t.value.map((x: any) => ({
+      items: this.barisPengiriman.map((x: any) => ({
         fleet_id: x.mode === 'darat' ? x.fleet_id : MODE_FLEET_ID[x.mode], // 1000 udara, 1001 laut
         remarks_1: x.from, // lokasi asal
         remarks_2: x.to, // lokasi tujuan
@@ -412,7 +449,7 @@ export class PurchaseOrderCreateAComponent {
         remarks_6: x.picPhone || null,
         // Moda tetap terbaca dari fleet_id, sehingga kolom unit bisa dipakai
         // sebagai satuan sungguhan (Ls, kg, rit, trip).
-        quantity: x.unit === 'Ls' ? 1 : Number(x.quantity) || 1,
+        quantity: String(x.unit || '').toUpperCase() === 'LS' ? 1 : Number(x.quantity) || 1,
         // Berasal dari kolom bertopeng, jadi berupa teks ("6 540 000").
         price: Number(String(x.amount ?? '').replace(/[^\d.-]/g, '')) || 0,
         unit: x.unit,
@@ -523,7 +560,7 @@ export class PurchaseOrderCreateAComponent {
       // saat PPN dimatikan, sehingga tarif yang dipilih tidak lagi terbaca.
       ppnRate: this.ppnRate,
       additionalClauses: this.additionalClauseValues,
-      shipmentSchedules: (this.t.value || []).map((x: any) => ({
+      shipmentSchedules: this.barisPengiriman.map((x: any) => ({
         mode: x.mode,
         from: x.from,
         to: x.to,
@@ -561,10 +598,10 @@ export class PurchaseOrderCreateAComponent {
       workKind: v.workKind,
       // Tidak dikirim bila belum ada baris pengiriman: moda ditentukan oleh
       // baris, dan tanpa itu klausul moda sebaiknya belum tampil sama sekali.
-      transportMode: (this.t.value || []).length ? v.transportMode : undefined,
+      transportMode: this.barisPengiriman.length ? v.transportMode : undefined,
       // Diambil dari baris yang benar-benar diisi, sehingga SPK campuran
       // memuat klausul kedua modanya.
-      transportModes: (this.t.value || [])
+      transportModes: this.barisPengiriman
         .map((x: any) => x.mode)
         .filter((m: string) => !!m),
       insuranceDays: v.insuranceDays,
@@ -575,7 +612,7 @@ export class PurchaseOrderCreateAComponent {
       airService: v.airService,
       // Satu blok jadwal untuk tiap pengiriman, apa pun modanya. Klausul
       // menyaringnya sendiri sesuai bagian moda yang sedang dicetak.
-      shipmentSchedules: (this.t.value || []).map((x: any) => ({
+      shipmentSchedules: this.barisPengiriman.map((x: any) => ({
         mode: x.mode,
         from: x.from,
         to: x.to,
@@ -668,7 +705,7 @@ export class PurchaseOrderCreateAComponent {
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
       supplierNpwp: v.supplierNpwp,
-      shipments: (this.t.value || []).map((x: any) => ({
+      shipments: this.barisPengiriman.map((x: any) => ({
         mode: x.mode,
         from: x.from,
         to: x.to,
@@ -680,7 +717,7 @@ export class PurchaseOrderCreateAComponent {
         picName: x.picName,
         picPhone: x.picPhone,
         // Satuan Ls selalu berjumlah satu, mengikuti aturan penyimpanan.
-        quantity: x.unit === 'Ls' ? 1 : Number(x.quantity) || 1,
+        quantity: String(x.unit || '').toUpperCase() === 'LS' ? 1 : Number(x.quantity) || 1,
         unit: x.unit,
         // Berasal dari kolom bertopeng, jadi berupa teks ("6 540 000").
         price: Number(String(x.amount ?? '').replace(/[^\d.-]/g, '')) || 0,

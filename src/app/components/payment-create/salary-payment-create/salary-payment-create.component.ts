@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -63,6 +64,7 @@ export const amountValidator: ValidatorFn = (
   ],
 })
 export class SalaryPaymentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -147,7 +149,8 @@ export class SalaryPaymentCreateComponent {
       },
       error: (error) => {
         console.error('Error fetching bank accounts:', error);
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -174,7 +177,8 @@ export class SalaryPaymentCreateComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Payment created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close('paid');

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
@@ -71,6 +72,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './purchase-order-create-512.component.scss',
 })
 export class PurchaseOrderCreate512Component {
+  private readonly translate = inject(TranslateService);
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
   get typeCode(): string {
     return '5.1.2';
@@ -273,6 +275,10 @@ export class PurchaseOrderCreate512Component {
   }
   addService() {
     this.t.push(this.buildServiceLine());
+
+    // Baris baru memakai satuan borongan, sehingga volumenya langsung
+    // dikunci — tanpa ini kolomnya terbuka sampai satuannya disentuh.
+    this.onUnitChange(this.t.length - 1);
   }
 
   // ---- barang lines ----
@@ -301,7 +307,8 @@ export class PurchaseOrderCreate512Component {
       .subscribe((item) => {
         if (!item) return;
         if (this.t.value.some((x: any) => x.item_id === item.id)) {
-          this.snackBar.open('Barang ini sudah ada di daftar', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.alreadyInList'), 'Close', {
             duration: 2500,
           });
           return;

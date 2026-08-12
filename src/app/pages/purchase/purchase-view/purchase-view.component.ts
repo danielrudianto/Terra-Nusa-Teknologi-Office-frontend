@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
@@ -51,6 +52,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './purchase-view.component.scss',
 })
 export class PurchaseViewComponent {
+  private readonly translate = inject(TranslateService);
 
   /** Id purchase order yang cocok; kosong bila dokumennya belum ada. */
   purchaseOrderId: number | null = null;
@@ -243,7 +245,8 @@ export class PurchaseViewComponent {
       error: (error) => {
         console.error('Error fetching purchase data:', error);
         this.isLoading = false;
-        this.snackBar.open('Error fetching purchase data', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -271,7 +274,8 @@ export class PurchaseViewComponent {
   copyPphObject(): void {
     if (!this.pphLabel) return;
     this.clipboard.copy(this.pphLabel);
-    this.snackBar.open('Objek PPh disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   private rp(n: number): string {
@@ -303,7 +307,7 @@ export class PurchaseViewComponent {
     ];
     this.clipboard.copy(lines.join('\n'));
     this.snackBar.open(
-      'Detail purchase disalin — siap di-paste ke WhatsApp',
+      this.translate.instant('notify.copied'),
       'Close',
       {
         duration: 3000,
@@ -317,7 +321,8 @@ export class PurchaseViewComponent {
 
   copyBankAccountNumber() {
     this.clipboard.copy(this.metaFormGroup.get('bankAccountNumber')!.value);
-    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 3000,
     });
   }

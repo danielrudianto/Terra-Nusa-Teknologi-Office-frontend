@@ -70,6 +70,25 @@ import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-t
   styleUrl: './purchase-order-create-652.component.scss',
 })
 export class PurchaseOrderCreate652Component {
+
+  /**
+   * Satuan berubah pada satu baris.
+   *
+   * Untuk satuan borongan (LS), volumenya dikunci pada 1. Nilainya memang
+   * selalu dihitung satu saat menjumlahkan, sehingga membiarkan kolomnya
+   * dapat diisi berarti menawarkan angka yang diabaikan diam-diam — dan yang
+   * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
+   */
+  onUnitChange(i: number): void {
+    const g = this.getFormGroupAt(i);
+    const qty = g.get('quantity');
+    if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
+      qty?.setValue(1);
+      qty?.disable();
+    } else {
+      qty?.enable();
+    }
+  }
   constructor(
     private formBuilder: FormBuilder,
     private apiService: ApiService,

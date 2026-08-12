@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
   MAT_DIALOG_DATA,
@@ -29,6 +30,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './loans-view.component.scss',
 })
 export class LoansViewComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -55,7 +57,8 @@ export class LoansViewComponent {
           // menampilkannya menghasilkan halaman dengan nilai kosong dan
           // persentase yang tidak sah, dan itu terbaca sebagai kerusakan.
           if (!data?.loan?.id) {
-            this.snackBar.open('Data pinjaman tidak ditemukan', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.loanNotFound'), 'Close', {
               duration: 3000,
             });
             this.dialogRef.close();
@@ -154,7 +157,8 @@ export class LoansViewComponent {
       `\nStatus: ${this.loan.isPaid ? 'Lunas' : 'Belum lunas'}`;
 
     this.clipboard.copy(text);
-    this.snackBar.open('Disalin untuk WhatsApp', 'Close', { duration: 2000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 2000 });
   }
 
   close() {

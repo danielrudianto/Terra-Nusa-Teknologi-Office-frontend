@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AbstractControl,
   FormArray,
@@ -70,6 +71,7 @@ const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   standalone: true,
 })
 export class SalarySlipCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -120,7 +122,8 @@ export class SalarySlipCreateComponent {
 
       this.dataTransferService.clearData();
     } else {
-      this.snackBar.open('No data provided', 'Close', {
+      this.snackBar.open(
+      this.translate.instant('notify.noDataProvided'), 'Close', {
         duration: 3000,
       });
       this.router.navigate(['/Master/Employee']);
@@ -431,7 +434,8 @@ export class SalarySlipCreateComponent {
       .subscribe({
         next: (_) => {
           this.generateSalarySlip(this.formGroup.value);
-          this.snackBar.open('Salary slip created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.router.navigate(['/Salary-slip']);
@@ -439,7 +443,7 @@ export class SalarySlipCreateComponent {
         error: (error) => {
           console.error('Error creating salary slip:', error);
           this.snackBar.open(
-            'Failed to create salary slip. Please try again later.',
+      this.translate.instant('notify.createFailed'),
             'Close',
             {
               duration: 3000,

@@ -761,6 +761,10 @@ export class PurchaseOrderCreateHComponent {
 
   addScope() {
     this.t.push(this.buildScope());
+
+    // Baris baru memakai satuan borongan, sehingga volumenya langsung
+    // dikunci — tanpa ini kolomnya terbuka sampai satuannya disentuh.
+    this.onUnitChange(this.t.length - 1);
   }
   removeScopeAt(i: number) {
     this.t.removeAt(i);

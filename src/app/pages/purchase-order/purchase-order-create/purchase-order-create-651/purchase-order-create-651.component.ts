@@ -77,6 +77,25 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
   styleUrl: './purchase-order-create-651.component.scss',
 })
 export class PurchaseOrderCreate651Component {
+
+  /**
+   * Satuan berubah pada satu baris.
+   *
+   * Untuk satuan borongan (LS), volumenya dikunci pada 1. Nilainya memang
+   * selalu dihitung satu saat menjumlahkan, sehingga membiarkan kolomnya
+   * dapat diisi berarti menawarkan angka yang diabaikan diam-diam — dan yang
+   * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
+   */
+  onUnitChange(i: number): void {
+    const g = this.getFormGroupAt(i);
+    const qty = g.get('quantity');
+    if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
+      qty?.setValue(1);
+      qty?.disable();
+    } else {
+      qty?.enable();
+    }
+  }
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
   get typeCode(): string {
     return '6.5.1';

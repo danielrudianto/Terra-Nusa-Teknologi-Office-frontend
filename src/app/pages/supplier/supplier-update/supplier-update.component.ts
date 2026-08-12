@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -46,6 +47,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class SupplierUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -148,7 +150,8 @@ export class SupplierUpdateComponent {
       .subscribe({
         next: (data) => {
           console.log('Success:', data);
-          this.snackBar.open('Supplier created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
 
@@ -229,12 +232,14 @@ export class SupplierUpdateComponent {
       `*Service areas:* ${this.areas.length ? this.areas.join(', ') : '-'}`,
     ];
     this.clipboard.copy(lines.join('\n'));
-    this.snackBar.open('Detail supplier disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   copyPhone(): void {
     this.clipboard.copy(this.supplierFormGroup.get('phoneNumber')!.value || '');
-    this.snackBar.open('Nomor telepon disalin', 'Close', { duration: 3000 });
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
   }
 
   close() {

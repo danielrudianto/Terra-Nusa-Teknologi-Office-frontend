@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -62,6 +63,7 @@ interface Pengecualian {
   styleUrl: './user-access.component.scss',
 })
 export class UserAccessComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -104,7 +106,8 @@ export class UserAccessComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.snackBar.open('Gagal memuat daftar modul', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -120,7 +123,8 @@ export class UserAccessComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.snackBar.open('Gagal memuat akses pengguna', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -183,7 +187,8 @@ export class UserAccessComponent {
       })
       .subscribe({
         next: () => {
-          this.snackBar.open('Akses pengguna diperbarui', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.accessUpdated'), 'Close', {
             duration: 3000,
           });
           this.dialogRef.close(true);

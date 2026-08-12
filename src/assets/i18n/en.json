@@ -114,7 +114,12 @@
     "valueAndTax": "Value & tax",
     "projectName": "Project name",
     "invoice": "Invoice",
-    "itemListPo": "Item list"
+    "itemListPo": "Item list",
+    "date": "Date",
+    "previous": "Previous",
+    "quantity": "Quantity",
+    "supplier": "Supplier",
+    "unit": "Unit"
   },
   "nav": {
     "pinned": "Pinned",
@@ -270,7 +275,8 @@
     "capacity": "Capacity",
     "accountNumber": "Account number",
     "accountName": "Account name",
-    "paymentNumber": "Payment number"
+    "paymentNumber": "Payment number",
+    "bank": "Bank"
   },
   "purchase": {
     "title": "Purchase",
@@ -1635,7 +1641,8 @@
     "deleted": "User deleted successfully",
     "createFailed": "Failed to create user",
     "updateFailed": "Failed to update user",
-    "deleteFailed": "Failed to delete user"
+    "deleteFailed": "Failed to delete user",
+    "level": "Level"
   },
   "bankMutation": {
     "period": "Period",
@@ -2664,6 +2671,43 @@
     "tempatPelaksanaan": "Venue",
     "penyerahanSertifikat": "Certificate delivery",
     "biayaUjianUlang": "Re-examination cost",
-    "jenisBarangYangDisewa": "Type of rented item"
+    "jenisBarangYangDisewa": "Type of rented item",
+    "exMicz": "e.g. MICZ",
+    "tambahBaris": "Add row"
+  },
+  "userAccess": {
+    "divisi": "Division",
+    "izinKhusus": "Special permissions",
+    "modul": "Module",
+    "aksi": "Action",
+    "hasil": "Result",
+    "alasan": "Reason"
+  },
+  "notify": {
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully",
+    "approveSuccess": "Approved successfully",
+    "loadFailed": "Failed to load data",
+    "createFailed": "Failed to create data",
+    "updateFailed": "Failed to update data",
+    "deleteFailed": "Failed to delete data",
+    "copied": "Copied to clipboard",
+    "alreadyInList": "Already in the list",
+    "poNumberEmpty": "PO number is empty",
+    "invoiceValueZero": "Invoice value is still zero — fill in the quantity and unit price.",
+    "loanNotFound": "Loan data not found",
+    "paymentRejected": "Payment rejected",
+    "poDocNotAvailable": "Purchase order document is not available yet",
+    "dataAlreadyComplete": "Data is already complete",
+    "notInternalData": "This is not internal data",
+    "alreadyApproved": "Already approved",
+    "alreadyRejected": "Already rejected",
+    "noDataProvided": "No data provided",
+    "salarySlipSent": "Salary slip sent successfully",
+    "checkingInvoice": "Checking existing invoice…",
+    "taxSlipSaved": "Withholding slip number saved",
+    "accessUpdated": "User access updated",
+    "sessionExpired": "Your session has ended. Please sign in again."
   }
 }

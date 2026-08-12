@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
@@ -54,6 +55,26 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './purchase-order-create-511.component.scss',
 })
 export class PurchaseOrderCreate511Component {
+  private readonly translate = inject(TranslateService);
+
+  /**
+   * Satuan berubah pada satu baris.
+   *
+   * Untuk satuan borongan (LS), volumenya dikunci pada 1. Nilainya memang
+   * selalu dihitung satu saat menjumlahkan, sehingga membiarkan kolomnya
+   * dapat diisi berarti menawarkan angka yang diabaikan diam-diam — dan yang
+   * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
+   */
+  onUnitChange(i: number): void {
+    const g = this.getFormGroupAt(i);
+    const qty = g.get('quantity');
+    if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
+      qty?.setValue(1);
+      qty?.disable();
+    } else {
+      qty?.enable();
+    }
+  }
 
   // ---- termin pembayaran ----
   //
@@ -218,7 +239,8 @@ export class PurchaseOrderCreate511Component {
         // prevent adding the exact same catalog item twice
         const exists = this.t.value.some((x: any) => x.item_id === item.id);
         if (exists) {
-          this.snackBar.open('Barang sudah ada di daftar', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.alreadyInList'), 'Close', {
             duration: 2500,
           });
           return;

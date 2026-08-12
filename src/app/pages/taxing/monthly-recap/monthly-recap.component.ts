@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   AbstractControl,
@@ -45,6 +46,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './monthly-recap.component.scss',
 })
 export class MonthlyRecapComponent {
+  private readonly translate = inject(TranslateService);
   // period passed from the tax hub (select month/year once, reused everywhere)
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
 
@@ -534,7 +536,8 @@ export class MonthlyRecapComponent {
           // save as the file
           downloadRecapExcel(sheets, `Rekap Bulanan ${periode}`).catch((e) => {
             console.error('Gagal membuat berkas Excel:', e);
-            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
               duration: 3000,
             });
           });

@@ -188,13 +188,15 @@ export class ExpenseOpponentListComponent {
     navigator.clipboard
       .writeText(paymentNumber)
       .then(() => {
-        this.snackBar.open('Payment number copied to clipboard', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
           duration: 3000,
         });
       })
       .catch((err) => {
         console.error('Failed to copy payment number: ', err);
-        this.snackBar.open('Failed to copy payment number', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
           duration: 3000,
         });
       });

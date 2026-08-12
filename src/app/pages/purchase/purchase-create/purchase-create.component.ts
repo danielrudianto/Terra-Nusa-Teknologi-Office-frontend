@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AbstractControl,
   FormControl,
@@ -109,6 +110,7 @@ function bankAccountIDRequired(): ValidatorFn {
   standalone: true,
 })
 export class PurchaseCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -524,7 +526,8 @@ export class PurchaseCreateComponent {
                   //   bankAccountNumberOrigin: '',
                   // });
 
-                  this.snackBar.open('Purchase created successfully', 'Close', {
+                  this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
                     duration: 3000,
                   });
 
@@ -609,7 +612,8 @@ export class PurchaseCreateComponent {
               });
             }
 
-            this.snackBar.open('Purchase created successfully', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
               duration: 3000,
             });
 
@@ -681,7 +685,8 @@ export class PurchaseCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -717,7 +722,8 @@ export class PurchaseCreateComponent {
 
   copyBankAccountNumber() {
     this.clipboard.copy(this.paymentFormGroup.get('bankAccountNumber')!.value);
-    this.snackBar.open('Bank account number copied to clipboard', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 3000,
     });
   }

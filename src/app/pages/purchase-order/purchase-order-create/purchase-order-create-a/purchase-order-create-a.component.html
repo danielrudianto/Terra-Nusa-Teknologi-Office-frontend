@@ -456,6 +456,7 @@
                   <input
                     matInput
                     formControlName="unit"
+                    (change)="onUnitChange(i)"
                     [matAutocomplete]="unitAuto"
                   />
                   <mat-autocomplete #unitAuto="matAutocomplete">

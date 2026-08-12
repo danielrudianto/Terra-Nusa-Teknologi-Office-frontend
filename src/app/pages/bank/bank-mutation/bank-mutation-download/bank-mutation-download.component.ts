@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -39,6 +40,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './bank-mutation-download.component.scss',
 })
 export class BankMutationDownloadComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private datePipe: DatePipe,
     @Inject(MAT_DIALOG_DATA)
@@ -145,7 +147,8 @@ export class BankMutationDownloadComponent {
             rekening ? `Mutasi ${rekening} ${periode}` : `Mutasi ${periode}`,
           ).catch((e) => {
             console.error('Gagal membuat berkas Excel:', e);
-            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
               duration: 3000,
             });
           });

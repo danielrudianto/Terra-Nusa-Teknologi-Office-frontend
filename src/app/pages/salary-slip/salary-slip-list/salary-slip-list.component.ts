@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -68,6 +69,7 @@ export const MY_FORMATS = {
   standalone: true,
 })
 export class SalarySlipListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     public settings: SettingsService,
     private apiService: ApiService,
@@ -281,7 +283,8 @@ export class SalarySlipListComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Salary slip sent successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.salarySlipSent'), 'Close', {
             duration: 3000,
           });
         },

@@ -242,7 +242,10 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="po5112-itemunit">
               <mat-label>{{ "poForm.unit" | translate }}</mat-label>
-              <mat-select formControlName="unit">
+              <mat-select
+                    formControlName="unit"
+                    (selectionChange)="onUnitChange(i)"
+                  >
                 @for (u of units; track u) {
                   <mat-option [value]="u">{{ u }}</mat-option>
                 }

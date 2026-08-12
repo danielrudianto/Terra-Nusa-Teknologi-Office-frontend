@@ -6,15 +6,22 @@
  *
  * Disengaja TIDAK disimpan di basis data:
  * - ikut riwayat git, ketahuan siapa mengubah apa
- * - panduan bisa diperbarui bersamaan dengan perubahan fitur di commit yang sama
+ * - panduan bisa diperbarui bersamaan dengan perubahan fitur di commit sama
  * - tidak perlu layar admin, CRUD, atau izin edit tersendiri
  */
 
-/** Satu bagian (heading) di dalam sebuah topik — dipakai untuk tautan langsung. */
+/**
+ * Satu bagian (heading `##`) di dalam topik.
+ *
+ * TIDAK ditulis tangan di index.json. Daftar ini disusun dari heading yang
+ * benar-benar ada di berkas markdown setelah dirender, sehingga daftar isi
+ * mustahil melenceng dari isinya. Versi lama menuliskannya manual dan
+ * anchor yang salah ketik hanya terlihat sebagai tautan yang diam.
+ */
 export interface PanduanBagian {
-  /** id heading di HTML hasil render, mis. `membuat-po`. */
+  /** id heading pada HTML hasil render, mis. `status-dokumen`. */
   anchor: string;
-  /** Judul yang tampil di daftar isi. */
+  /** Teks heading tanpa nomor urut. */
   judul: string;
 }
 
@@ -27,16 +34,16 @@ export interface PanduanTopik {
   berkas: string;
   /**
    * Modul izin (RBAC). Bila diisi, topik hanya tampil untuk pengguna yang
-   * punya izin baca modul tersebut. Kosongkan untuk topik umum.
+   * boleh membaca modul tersebut. Kosongkan untuk topik umum.
    *
-   * Nilainya harus sama persis dengan kunci di `constants/permission_matrix.py`.
+   * Nilainya harus sama persis dengan kunci di `permission_matrix.py`,
+   * mis. `purchase`, `purchase_order`, `salary_slip`.
    */
   modul?: string;
   /** Satu kalimat penjelas di daftar topik. */
   ringkas?: string;
-  /** Kata kunci tambahan untuk pencarian (istilah yang tidak muncul di judul). */
+  /** Kata kunci tambahan untuk pencarian (istilah yang tak ada di judul). */
   kataKunci?: string[];
-  bagian?: PanduanBagian[];
 }
 
 export interface PanduanIndeks {

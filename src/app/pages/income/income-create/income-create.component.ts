@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -47,6 +48,7 @@ import { ApiService } from '../../../services/api.service';
   styleUrl: './income-create.component.scss',
 })
 export class IncomeCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -100,7 +102,8 @@ export class IncomeCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
       },
@@ -123,7 +126,8 @@ export class IncomeCreateComponent {
       })
       .subscribe({
         next: (_) => {
-          this.snackBar.open('Income successfully created', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.formGroup.reset();

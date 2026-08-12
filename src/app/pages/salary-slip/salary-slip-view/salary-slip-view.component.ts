@@ -247,7 +247,7 @@ export class SalarySlipViewComponent {
             .subscribe({
               next: () => {
                 this.snackBar.open(
-                  'Salary slip deleted successfully',
+      this.translate.instant('notify.deleteSuccess'),
                   'Close',
                   {
                     duration: 3000,

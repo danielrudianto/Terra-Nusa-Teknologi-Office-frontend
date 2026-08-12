@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -48,6 +49,7 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
   standalone: true,
 })
 export class SupplierListComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -153,7 +155,8 @@ export class SupplierListComponent {
         if (data == true) {
           this.apiService.delete(`suppliers/${id}`).subscribe({
             next: () => {
-              this.snackBar.open('Supplier deleted successfully', 'Close', {
+              this.snackBar.open(
+      this.translate.instant('notify.deleteSuccess'), 'Close', {
                 duration: 3000,
               });
               const index = this.suppliers.findIndex((x) => x.id == id);

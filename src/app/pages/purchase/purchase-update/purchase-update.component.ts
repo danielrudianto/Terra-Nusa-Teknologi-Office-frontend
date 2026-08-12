@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -64,6 +65,7 @@ function bankAccountIDRequired(): ValidatorFn {
   ],
 })
 export class PurchaseUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -164,7 +166,8 @@ export class PurchaseUpdateComponent {
     this.apiService.get('purchases/' + id, {}).subscribe({
       next: (data: any) => {
         if (data.isInternal == false) {
-          this.snackBar.open('Data is not internal data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.notInternalData'), 'Close', {
             duration: 3000,
           });
         }
@@ -226,7 +229,8 @@ export class PurchaseUpdateComponent {
       },
       error: (error) => {
         console.error(error);
-        this.snackBar.open('Error on fetching data', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.dialog.close();
@@ -306,7 +310,8 @@ export class PurchaseUpdateComponent {
       })
       .subscribe({
         next: (data) => {
-          this.snackBar.open('Data updated successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
 
@@ -314,7 +319,8 @@ export class PurchaseUpdateComponent {
         },
         error: (error) => {
           console.error(error);
-          this.snackBar.open('Error on updating data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateFailed'), 'Close', {
             duration: 3000,
           });
         },

@@ -1,4 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   Component,
@@ -6,8 +7,7 @@ import {
   Input,
   Output,
   SimpleChange,
-  SimpleChanges,
-} from '@angular/core';
+  SimpleChanges, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -34,6 +34,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   standalone: true,
 })
 export class CalendarTableComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -126,7 +127,7 @@ export class CalendarTableComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            'Failed to load calendar data. Please try again later.',
+      this.translate.instant('notify.loadFailed'),
             'Close',
             {
               duration: 3000,

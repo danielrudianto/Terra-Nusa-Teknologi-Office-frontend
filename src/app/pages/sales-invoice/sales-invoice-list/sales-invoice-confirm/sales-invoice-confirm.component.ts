@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -38,6 +39,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './sales-invoice-confirm.component.scss',
 })
 export class SalesInvoiceConfirmComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private clipboard: Clipboard,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -153,7 +155,7 @@ export class SalesInvoiceConfirmComponent {
               next: () => {
                 this.dialogRef.close('approve');
                 this.snackBar.open(
-                  'Successfully confirmed sales invoice',
+      this.translate.instant('notify.approveSuccess'),
                   'Close',
                   {
                     duration: 3000,
@@ -191,7 +193,7 @@ export class SalesInvoiceConfirmComponent {
               next: () => {
                 this.dialogRef.close('deleted');
                 this.snackBar.open(
-                  'Successfully confirmed sales invoice',
+      this.translate.instant('notify.approveSuccess'),
                   'Close',
                   {
                     duration: 3000,

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -52,6 +53,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   styleUrl: './loans-update.component.scss',
 })
 export class LoansUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -111,7 +113,8 @@ export class LoansUpdateComponent {
       .put(`loans/${this.data?.loan?.id}`, this.formGroup.getRawValue())
       .subscribe({
         next: (_) => {
-          this.snackBar.open('Data pinjaman berhasil diperbarui', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close(true);

@@ -5,7 +5,7 @@
 }
 
 .dashboard__container__side {
-  width: 250px;
+  width: var(--sidenav-lebar, 250px);
 }
 
 /* Body watermark: a soft brand glow in the top-right + a faint dot grid,

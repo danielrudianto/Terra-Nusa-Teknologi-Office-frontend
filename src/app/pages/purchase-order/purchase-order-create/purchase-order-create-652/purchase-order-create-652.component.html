@@ -175,7 +175,11 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>{{ "common.unit" | translate }}</mat-label>
-                <input matInput formControlName="unit" />
+                <input
+                  matInput
+                  formControlName="unit"
+                  (change)="onUnitChange(i)"
+                />
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="po652-span2">

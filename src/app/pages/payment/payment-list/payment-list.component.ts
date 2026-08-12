@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { AccountService } from '../../../services/account.service';
 import { CanDirective } from '../../../directives/can.directive';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
@@ -41,6 +42,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
   standalone: true,
 })
 export class PaymentListComponent implements OnInit, OnDestroy {
+  private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -190,7 +192,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error(error);
-          this.snackBar.open('Error fetching payments', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
             duration: 3000,
           });
         },
@@ -227,7 +230,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
             .put(`outgoing-payments/approve/${paymentID}`, {})
             .subscribe({
               next: (data: any) => {
-                this.snackBar.open('Payment has been approved', 'Close', {
+                this.snackBar.open(
+      this.translate.instant('notify.approveSuccess'), 'Close', {
                   duration: 3000,
                 });
 
@@ -261,7 +265,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
             .put(`outgoing-payments/reject/${paymentID}`, {})
             .subscribe({
               next: (data: any) => {
-                this.snackBar.open('Payment has been rejected', 'Close', {
+                this.snackBar.open(
+      this.translate.instant('notify.paymentRejected'), 'Close', {
                   duration: 3000,
                 });
 

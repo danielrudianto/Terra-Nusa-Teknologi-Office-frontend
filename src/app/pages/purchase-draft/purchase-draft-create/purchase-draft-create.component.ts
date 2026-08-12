@@ -1,5 +1,6 @@
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -44,6 +45,7 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
 })
 export class PurchaseDraftCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -169,7 +171,8 @@ export class PurchaseDraftCreateComponent {
       .post('purchase-draft', purchaseData)
       .subscribe({
         next: () => {
-          this.snackBar.open('Successfully created draft purchase', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.metaFormGroup.reset();

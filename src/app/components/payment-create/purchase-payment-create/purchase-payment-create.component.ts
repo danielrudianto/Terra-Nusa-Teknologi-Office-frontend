@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -42,6 +43,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class PurchasePaymentCreateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -102,7 +104,8 @@ export class PurchasePaymentCreateComponent {
         this.bankAccounts = data;
       },
       error: (error) => {
-        this.snackBar.open('Error fetching bank accounts', 'Close', {
+        this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
           duration: 3000,
         });
         this.dialog.close();
@@ -240,7 +243,8 @@ export class PurchasePaymentCreateComponent {
         },
         error: (error) => {
           console.error('Error fetching purchase data:', error);
-          this.snackBar.open('Error fetching purchase data', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
             duration: 3000,
           });
           this.dialog.close();
@@ -324,13 +328,15 @@ export class PurchasePaymentCreateComponent {
           //   )?.bankName,
           //   total: this.valueFormGroup.value.total,
           // });
-          this.snackBar.open('Payment created successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,
           });
           this.dialog.close();
         },
         error: (error) => {
-          this.snackBar.open('Error creating payment', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
             duration: 3000,
           });
         },

@@ -1,4 +1,5 @@
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
   FormGroup,
@@ -37,6 +38,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class BankUpdateComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -79,7 +81,8 @@ export class BankUpdateComponent {
           this.filteredOptions = this.options.slice();
         },
         error: (error) => {
-          this.snackBar.open('Error fetching bank account', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.loadFailed'), 'Close', {
             duration: 2000,
           });
           this.dialog.close();
@@ -109,13 +112,15 @@ export class BankUpdateComponent {
       .put('banks/' + this.data.id, this.formGroup.value)
       .subscribe({
         next: (_) => {
-          this.snackBar.open('Bank account updated successfully', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateSuccess'), 'Close', {
             duration: 2000,
           });
           this.dialog.close();
         },
         error: (err) => {
-          this.snackBar.open('Error updating bank account', 'Close', {
+          this.snackBar.open(
+      this.translate.instant('notify.updateFailed'), 'Close', {
             duration: 2000,
           });
         },

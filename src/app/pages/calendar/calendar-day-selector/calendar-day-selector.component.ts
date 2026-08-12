@@ -1,4 +1,5 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
@@ -70,6 +71,7 @@ interface BankAccountSummary {
   standalone: true,
 })
 export class CalendarDaySelectorComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -506,7 +508,8 @@ export class CalendarDaySelectorComponent {
     this.clipboard.copy(textToCopy);
 
     // Optional: Show success message
-    this.snackBar.open('Payment text copied to clipboard!', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 2000,
     });
   }
@@ -535,7 +538,7 @@ export class CalendarDaySelectorComponent {
             .subscribe({
               next: (_) => {
                 this.snackBar.open(
-                  'Payment has been approved successfully.',
+      this.translate.instant('notify.approveSuccess'),
                   'Close',
                   {
                     duration: 3000,
@@ -576,7 +579,7 @@ export class CalendarDaySelectorComponent {
             .subscribe({
               next: (_) => {
                 this.snackBar.open(
-                  'Payment has been approved successfully.',
+      this.translate.instant('notify.approveSuccess'),
                   'Close',
                   {
                     duration: 3000,

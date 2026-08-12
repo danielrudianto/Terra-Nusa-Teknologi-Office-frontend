@@ -1,7 +1,8 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -29,6 +30,7 @@ import { AvatarComponent } from '../../../components/avatar/avatar.component';
   styleUrl: './interpayment-view.component.scss',
 })
 export class InterpaymentViewComponent {
+  private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -124,7 +126,8 @@ export class InterpaymentViewComponent {
         : []),
     ];
     this.clipboard.copy(lines.join('\n'));
-    this.snackBar.open('Detail interpayment disalin', 'Close', {
+    this.snackBar.open(
+      this.translate.instant('notify.copied'), 'Close', {
       duration: 3000,
     });
   }

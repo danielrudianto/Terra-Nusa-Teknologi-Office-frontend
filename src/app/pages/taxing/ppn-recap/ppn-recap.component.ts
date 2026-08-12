@@ -1,4 +1,5 @@
 import { DatePipe, CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
@@ -38,6 +39,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class PpnRecapComponent {
+  private readonly translate = inject(TranslateService);
   // period passed from the tax hub (select month/year once, reused everywhere)
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
 
@@ -150,7 +152,8 @@ export class PpnRecapComponent {
             ],
           }).catch((e) => {
             console.error('Gagal membuat berkas Excel:', e);
-            this.snackBar.open('Gagal membuat berkas Excel', 'Close', {
+            this.snackBar.open(
+      this.translate.instant('notify.createFailed'), 'Close', {
               duration: 3000,
             });
           });
