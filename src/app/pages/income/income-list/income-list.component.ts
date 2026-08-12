@@ -32,6 +32,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { IncomeCreateComponent } from '../income-create/income-create.component';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { RouterModule } from '@angular/router';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-income-list',
@@ -52,6 +53,7 @@ import { RouterModule } from '@angular/router';
     TranslatePipe,
     MatDatepickerModule,
     MatSlideToggleModule,
+    PanduanButtonComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './income-list.component.html',
@@ -245,7 +247,10 @@ export class IncomeListComponent {
         this.apiService.delete('income/' + id).subscribe({
           next: () => {
             this.snackBar.open(
-      this.translate.instant('notify.deleteSuccess'), 'Close', { duration: 2000 });
+              this.translate.instant('notify.deleteSuccess'),
+              'Close',
+              { duration: 2000 },
+            );
             this.fetchData(0);
           },
           error: (error) => {

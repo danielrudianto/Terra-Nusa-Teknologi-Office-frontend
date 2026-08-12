@@ -24,7 +24,7 @@ $hover: var(--hover, #f6f8ff);
 .eqs-title { font-size: 1.05rem; font-weight: 700; margin: 0; }
 .eqs-sub { font-size: 0.76rem; color: $muted; }
 
-.eqs-content { padding: 1.25rem 1.5rem !important; overflow-x: hidden; min-width: 460px; max-width: 560px; }
+.eqs-content { padding: 1.25rem 1.5rem !important; overflow-x: hidden; min-width: min(460px, 92vw); max-width: 560px; }
 .eqs-search { width: 100%; }
 :host ::ng-deep .eqs-search { --mdc-outlined-text-field-container-shape: 12px; --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec); }
 .eqs-progress { margin: 2px 0 8px; }

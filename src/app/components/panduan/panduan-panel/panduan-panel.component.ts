@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { PanduanService } from '../../../services/panduan.service';
 
@@ -23,7 +24,7 @@ import { PanduanService } from '../../../services/panduan.service';
  */
 @Component({
   selector: 'app-panduan-panel',
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   /*
    * WAJIB None.
@@ -48,7 +49,7 @@ import { PanduanService } from '../../../services/panduan.service';
         [class.pd-panel--lebar]="svc.lebar() === 'lebar'"
         role="dialog"
         aria-modal="true"
-        aria-label="Panduan penggunaan"
+        [attr.aria-label]="'panduan.ariaPanel' | translate"
       >
         <header class="pd-kepala">
           @if (svc.topikAktif()) {
@@ -56,23 +57,29 @@ import { PanduanService } from '../../../services/panduan.service';
               type="button"
               class="pd-ikon"
               (click)="svc.kembaliKeDaftar()"
-              aria-label="Kembali ke daftar panduan"
-              title="Kembali"
+              [attr.aria-label]="'panduan.ariaBack' | translate"
+              [title]="'panduan.back' | translate"
             >
               <mat-icon>arrow_back</mat-icon>
             </button>
           }
 
-          <h2 class="pd-judul">{{ svc.topikAktif()?.judul ?? 'Panduan' }}</h2>
+          <h2 class="pd-judul">{{ svc.judulAktif() ?? ('panduan.title' | translate) }}</h2>
 
           <button
             type="button"
             class="pd-ikon"
             (click)="svc.ubahLebar()"
             [attr.aria-label]="
-              svc.lebar() === 'lebar' ? 'Perkecil panduan' : 'Perbesar panduan'
+              (svc.lebar() === 'lebar'
+                ? 'panduan.ariaShrink'
+                : 'panduan.ariaEnlarge'
+              ) | translate
             "
-            [title]="svc.lebar() === 'lebar' ? 'Perkecil' : 'Perbesar'"
+            [title]="
+              (svc.lebar() === 'lebar' ? 'panduan.shrink' : 'panduan.enlarge')
+                | translate
+            "
           >
             <mat-icon>{{
               svc.lebar() === 'lebar' ? 'close_fullscreen' : 'open_in_full'
@@ -83,8 +90,8 @@ import { PanduanService } from '../../../services/panduan.service';
             type="button"
             class="pd-ikon"
             (click)="svc.tutup()"
-            aria-label="Tutup panduan"
-            title="Tutup"
+            [attr.aria-label]="'panduan.ariaClose' | translate"
+            [title]="'panduan.close' | translate"
           >
             <mat-icon>close</mat-icon>
           </button>
@@ -97,7 +104,7 @@ import { PanduanService } from '../../../services/panduan.service';
             }
 
             @if (svc.memuat()) {
-              <p class="pd-samar">Memuat&hellip;</p>
+              <p class="pd-samar">{{ 'panduan.loading' | translate }}</p>
             }
 
             <!-- ---------- Daftar topik ---------- -->
@@ -105,14 +112,14 @@ import { PanduanService } from '../../../services/panduan.service';
               <input
                 type="search"
                 class="pd-cari"
-                placeholder="Cari panduan…"
+                [placeholder]="'panduan.search' | translate"
                 [value]="svc.cari()"
                 (input)="onCari($event)"
-                aria-label="Cari panduan"
+                [attr.aria-label]="'panduan.searchAria' | translate"
               />
 
               @if (svc.daftarTersaring().length === 0) {
-                <p class="pd-samar">Tidak ada panduan yang cocok.</p>
+                <p class="pd-samar">{{ 'panduan.noResult' | translate }}</p>
               }
 
               <ul class="pd-daftar">
@@ -131,9 +138,15 @@ import { PanduanService } from '../../../services/panduan.service';
 
             <!-- ---------- Isi topik ---------- -->
             @if (svc.topikAktif()) {
+              @if (svc.pakaiCadangan()) {
+                <p class="pd-cadangan">
+                  {{ 'panduan.fallbackNotice' | translate }}
+                </p>
+              }
+
               @if (svc.daftarIsi().length) {
-                <nav class="pd-toc" aria-label="Daftar isi">
-                  <p class="pd-toc-judul">Daftar isi</p>
+                <nav class="pd-toc" [attr.aria-label]="'panduan.tableOfContents' | translate">
+                  <p class="pd-toc-judul">{{ 'panduan.tableOfContents' | translate }}</p>
                   @for (b of svc.daftarIsi(); track b.anchor) {
                     <a
                       [href]="'#' + b.anchor"
@@ -150,8 +163,8 @@ import { PanduanService } from '../../../services/panduan.service';
 
           <!-- Rel daftar isi: hanya tampil saat panel diperbesar. -->
           @if (svc.topikAktif() && svc.daftarIsi().length) {
-            <nav class="pd-rel" aria-label="Bagian di halaman ini">
-              <p class="pd-rel-judul">Di halaman ini</p>
+            <nav class="pd-rel" [attr.aria-label]="'panduan.onThisPage' | translate">
+              <p class="pd-rel-judul">{{ 'panduan.onThisPage' | translate }}</p>
               @for (b of svc.daftarIsi(); track b.anchor) {
                 <a
                   [href]="'#' + b.anchor"
@@ -437,6 +450,17 @@ import { PanduanService } from '../../../services/panduan.service';
         font-size: 0.76rem;
         line-height: 1.5;
         margin-top: 0.2rem;
+      }
+
+      .pd-cadangan {
+        margin: 0 0 1.25rem;
+        padding: 0.6rem 0.8rem;
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+        border-left: 3px solid var(--warn-fg);
+        border-radius: 0 0.375rem 0.375rem 0;
+        font-size: 0.76rem;
+        line-height: 1.5;
       }
 
       /* ---- prosa ---- */

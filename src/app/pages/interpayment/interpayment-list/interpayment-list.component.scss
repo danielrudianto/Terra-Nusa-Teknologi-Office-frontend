@@ -110,7 +110,7 @@
   gap: 0.75rem;
   margin: 0 0 1rem;
 }
-@media (min-width: 768px) {
+@media (min-width: min(768px, 92vw)) {
   .ip-toolbar {
     flex-direction: row;
     align-items: center;
@@ -182,7 +182,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 460px;
+  width: min(460px, 92vw);
   height: 100%;
   pointer-events: none;
   z-index: 0;

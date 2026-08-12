@@ -2709,5 +2709,27 @@
     "taxSlipSaved": "扣缴凭证号已保存",
     "accessUpdated": "用户权限已更新",
     "sessionExpired": "您的登录已过期，请重新登录。"
+  },
+  "panduan": {
+    "title": "指南",
+    "search": "搜索指南…",
+    "searchAria": "搜索指南",
+    "loading": "加载中…",
+    "noResult": "没有匹配的指南。",
+    "tableOfContents": "目录",
+    "onThisPage": "本页内容",
+    "back": "返回",
+    "close": "关闭",
+    "enlarge": "放大",
+    "shrink": "缩小",
+    "ariaPanel": "使用指南",
+    "ariaBack": "返回指南列表",
+    "ariaClose": "关闭指南",
+    "ariaEnlarge": "放大指南",
+    "ariaShrink": "缩小指南",
+    "errIndex": "指南列表加载失败。",
+    "errContent": "指南内容加载失败。",
+    "errNotAvailable": "该部分尚无可用指南。",
+    "fallbackNotice": "本指南尚未翻译，显示的是印尼语版本。"
   }
 }

@@ -38,11 +38,13 @@ import {
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { MatRadioModule } from '@angular/material/radio';
+import { PanduanButtonComponent } from '../../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-purchase-order-create-f',
   providers: [provideNgxMask()],
   imports: [
+    PanduanButtonComponent,
     ClauseLineComponent,
     MatRadioModule,
     TranslatePipe,

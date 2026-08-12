@@ -24,7 +24,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
  * ke bawah dan menyisakan lubang pada awal bulan.
  */
 .cal-board {
-  min-width: 900px;
+  min-width: min(900px, 92vw);
   border: 1px solid $border;
   border-radius: 16px;
   overflow: hidden;

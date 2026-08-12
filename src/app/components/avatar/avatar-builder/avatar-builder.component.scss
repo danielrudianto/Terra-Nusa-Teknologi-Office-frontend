@@ -55,7 +55,7 @@
 .ab-content {
   padding: 1.25rem 1.5rem !important;
   background: var(--surface, #fff);
-  width: 420px;
+  width: min(420px, 92vw);
   max-width: 100%;
 }
 

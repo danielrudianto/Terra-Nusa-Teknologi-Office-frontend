@@ -79,7 +79,7 @@ $surface: var(--surface, #ffffff);
 /* ---------- isi ---------- */
 .ec-content {
   padding: 1.15rem 1.5rem 0.5rem !important;
-  width: 560px;
+  width: min(560px, 92vw);
   max-width: 100%;
 }
 

@@ -2709,5 +2709,27 @@
     "taxSlipSaved": "Nomor bukti potong tersimpan",
     "accessUpdated": "Akses pengguna diperbarui",
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali."
+  },
+  "panduan": {
+    "title": "Panduan",
+    "search": "Cari panduan…",
+    "searchAria": "Cari panduan",
+    "loading": "Memuat…",
+    "noResult": "Tidak ada panduan yang cocok.",
+    "tableOfContents": "Daftar isi",
+    "onThisPage": "Di halaman ini",
+    "back": "Kembali",
+    "close": "Tutup",
+    "enlarge": "Perbesar",
+    "shrink": "Perkecil",
+    "ariaPanel": "Panduan penggunaan",
+    "ariaBack": "Kembali ke daftar panduan",
+    "ariaClose": "Tutup panduan",
+    "ariaEnlarge": "Perbesar panduan",
+    "ariaShrink": "Perkecil panduan",
+    "errIndex": "Daftar panduan gagal dimuat.",
+    "errContent": "Isi panduan gagal dimuat.",
+    "errNotAvailable": "Panduan untuk bagian ini belum tersedia.",
+    "fallbackNotice": "Panduan ini belum diterjemahkan. Yang ditampilkan versi Bahasa Indonesia."
   }
 }

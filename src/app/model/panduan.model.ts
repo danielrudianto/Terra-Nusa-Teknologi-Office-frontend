@@ -25,12 +25,23 @@ export interface PanduanBagian {
   judul: string;
 }
 
-/** Satu topik panduan = satu berkas markdown. */
+/**
+ * Teks pendek berbahasa, mis. `{ "id": "Pembelian", "en": "Purchases" }`.
+ *
+ * Bahasa yang belum diisi mundur ke bahasa cadangan — sama seperti isi
+ * markdownnya. Kunci `id` wajib ada karena itulah cadangannya.
+ */
+export type TeksLokal = Record<string, string>;
+
+/** Satu topik panduan = satu berkas markdown per bahasa. */
 export interface PanduanTopik {
   /** Pengenal unik, dipakai di `<app-panduan-button topik="...">`. */
   id: string;
-  judul: string;
-  /** Nama berkas markdown relatif terhadap `assets/panduan/`. */
+  judul: TeksLokal;
+  /**
+   * Nama dasar berkas, TANPA bahasa dan ekstensi.
+   * `"pembelian"` dimuat sebagai `pembelian.<bahasa>.md`.
+   */
   berkas: string;
   /**
    * Modul izin (RBAC). Bila diisi, topik hanya tampil untuk pengguna yang
@@ -41,9 +52,16 @@ export interface PanduanTopik {
    */
   modul?: string;
   /** Satu kalimat penjelas di daftar topik. */
-  ringkas?: string;
+  ringkas?: TeksLokal;
   /** Kata kunci tambahan untuk pencarian (istilah yang tak ada di judul). */
   kataKunci?: string[];
+}
+
+/** Topik yang judul dan ringkasnya sudah diselesaikan ke satu bahasa. */
+export interface PanduanTopikTampil {
+  id: string;
+  judul: string;
+  ringkas?: string;
 }
 
 export interface PanduanIndeks {

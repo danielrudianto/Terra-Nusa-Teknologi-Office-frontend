@@ -278,7 +278,7 @@
 }
 
 /* ---------- responsive ---------- */
-@media (min-width: 900px) {
+@media (min-width: min(900px, 92vw)) {
   /* Berbaris pada layar lebar seperti halaman Pembelian: chip di kiri,
      kolom pencarian di kanan. Tanpa aturan ini toolbar terkunci bertumpuk
      dan pencarian turun ke bawah chip. */

@@ -131,7 +131,7 @@ $hover: var(--hover, #f6f8ff);
 .bm-table {
   width: 100%;
   background: transparent;
-  min-width: 720px;
+  min-width: min(720px, 92vw);
 }
 :host ::ng-deep .bm-table .mat-mdc-header-row {
   background: $surface2;

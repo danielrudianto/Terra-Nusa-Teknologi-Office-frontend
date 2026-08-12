@@ -341,7 +341,7 @@
 }
 
 /* ---------- responsive ---------- */
-@media (min-width: 900px) {
+@media (min-width: min(900px, 92vw)) {
   .pl-toolbar {
     flex-direction: row;
     align-items: center;

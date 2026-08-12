@@ -56,7 +56,7 @@
 .lpc-content {
   padding: 1.25rem 1.5rem 0.5rem !important;
   background: var(--surface, #fff);
-  width: 460px;
+  width: min(460px, 92vw);
   max-width: 100%;
 }
 

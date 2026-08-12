@@ -28,6 +28,7 @@ import { InterpaymentCreateComponent } from '../interpayment-create/interpayment
 import { InterpaymentViewComponent } from '../interpayment-view/interpayment-view.component';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
+import { PanduanButtonComponent } from '../../../components/panduan/panduan-button/panduan-button.component';
 
 @Component({
   selector: 'app-interpayment-list',
@@ -44,6 +45,7 @@ import { SettingsService } from '../../../services/setting.service';
     MatPaginatorModule,
     MatButtonModule,
     TranslatePipe,
+    PanduanButtonComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './interpayment-list.component.html',

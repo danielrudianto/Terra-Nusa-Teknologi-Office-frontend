@@ -92,7 +92,7 @@
   gap: 0.75rem;
   margin: 0.5rem 0 1rem;
 }
-@media (min-width: 768px) {
+@media (min-width: min(768px, 92vw)) {
   .pdl-toolbar {
     flex-direction: row;
     align-items: center;
@@ -347,7 +347,7 @@
 }
 
 /* ---------- responsive ---------- */
-@media (min-width: 900px) {
+@media (min-width: min(900px, 92vw)) {
   /* Berbaris pada layar lebar seperti halaman Pembelian: chip di kiri,
      kolom pencarian di kanan. Tanpa aturan ini toolbar terkunci bertumpuk
      dan pencarian turun ke bawah chip. */

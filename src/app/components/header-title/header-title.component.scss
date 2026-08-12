@@ -126,3 +126,38 @@ h1 {
 .title__typepill:hover .mat-icon {
   color: var(--brand, #154dec);
 }
+
+/* Layar sempit.
+   Judul, pill jenis, dan tombol tindakan tidak muat berdampingan pada lebar
+   ponsel — pill terdorong keluar dan judulnya terpotong. Disusun menurun,
+   dengan pill kembali ke kiri agar sejajar dengan judulnya. */
+@media (max-width: 640px) {
+  .title__wrapper {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .title__wrapper-text {
+    flex: 1 1 100%;
+    min-width: 0;
+    order: 1;
+  }
+  .title__back {
+    order: 0;
+  }
+  .title__typepill {
+    margin-left: 0;
+    order: 2;
+    max-width: 100%;
+  }
+  .title__typepill__name {
+    max-width: 46vw;
+  }
+  .header-button {
+    order: 3;
+  }
+  h1 {
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+}

@@ -69,7 +69,7 @@ $hover: var(--hover, #f6f8ff);
 .mis-content {
   padding: 1.25rem 1.5rem !important;
   overflow-x: hidden;
-  min-width: 460px;
+  min-width: min(460px, 92vw);
   max-width: 560px;
 }
 .mis-search {

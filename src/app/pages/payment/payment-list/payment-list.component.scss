@@ -38,7 +38,7 @@
 }
 :host ::ng-deep .mat-mdc-table {
   width: 100%;
-  min-width: 1100px;
+  min-width: min(1100px, 92vw);
   background: transparent;
   --mat-table-background-color: transparent;
   font-family: "Montserrat", sans-serif;
@@ -260,7 +260,7 @@
 }
 
 /* ---------- responsive ---------- */
-@media (min-width: 900px) {
+@media (min-width: min(900px, 92vw)) {
   /* Berbaris pada layar lebar seperti halaman Pembelian: chip di kiri,
      kolom pencarian di kanan. Tanpa aturan ini toolbar terkunci bertumpuk
      dan pencarian turun ke bawah chip. */

@@ -4,10 +4,27 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { marked } from 'marked';
 
-import { PanduanBagian, PanduanIndeks, PanduanTopik } from '../model/panduan.model';
+import {
+  PanduanBagian,
+  PanduanIndeks,
+  PanduanTopik,
+  PanduanTopikTampil,
+  TeksLokal,
+} from '../model/panduan.model';
 import { PermissionService } from './permission.service';
+import { AppLang, LanguageService } from './language.service';
+import { TranslateService } from '@ngx-translate/core';
 
 const BASIS = 'assets/panduan';
+
+/**
+ * Bahasa cadangan.
+ *
+ * Panduan yang belum diterjemahkan ditampilkan dalam bahasa ini, bukan
+ * dikosongkan: halaman kosong lebih merugikan daripada halaman berbahasa
+ * lain yang isinya benar.
+ */
+const BAHASA_CADANGAN: AppLang = 'id';
 const LEBAR_KEY = 'panduan_lebar';
 
 /** Lebar panel. `lebar` memunculkan rel daftar isi di sisi kanan. */
@@ -26,11 +43,14 @@ export class PanduanService {
   private readonly http = inject(HttpClient);
   private readonly izin = inject(PermissionService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly bahasa = inject(LanguageService);
+  private readonly translate = inject(TranslateService);
 
   /** Cache hasil render per topik supaya berkas tidak diambil ulang. */
+  /** Kunci cache menyertakan bahasa: `pembelian:id`. */
   private readonly cache = new Map<
     string,
-    { html: string; bagian: PanduanBagian[] }
+    { html: string; bagian: PanduanBagian[]; cadangan: boolean }
   >();
 
   private readonly _indeks = signal<PanduanTopik[]>([]);
@@ -46,6 +66,15 @@ export class PanduanService {
   private readonly _anchorTertunda = signal<string | null>(null);
   private readonly _cari = signal('');
   private readonly _lebar = signal<PanduanLebar>(bacaLebar());
+  /** true bila isi yang tampil bukan bahasa yang sedang dipilih. */
+  private readonly _pakaiCadangan = signal(false);
+  /*
+   * Bahasa aktif disimpan sebagai sinyal, bukan dibaca langsung dari
+   * LanguageService. `computed` hanya menghitung ulang bila sinyal yang
+   * dibacanya berubah — tanpa ini, judul dan ringkas topik tidak pernah
+   * ikut berganti bahasa.
+   */
+  private readonly _lang = signal<AppLang>(this.bahasa.current);
 
   readonly terbuka = this._terbuka.asReadonly();
   readonly topikAktif = this._topikAktif.asReadonly();
@@ -55,6 +84,7 @@ export class PanduanService {
   readonly anchorTertunda = this._anchorTertunda.asReadonly();
   readonly cari = this._cari.asReadonly();
   readonly lebar = this._lebar.asReadonly();
+  readonly pakaiCadangan = this._pakaiCadangan.asReadonly();
 
   /**
    * Isi mentah. Dipakai panel untuk tahu kapan isi berganti — objek SafeHtml
@@ -83,16 +113,58 @@ export class PanduanService {
     this._indeks().filter((t) => this.bolehLihat(t)),
   );
 
-  readonly daftarTersaring = computed(() => {
-    const q = this._cari().trim().toLowerCase();
-    if (!q) return this.daftar();
-    return this.daftar().filter((t) =>
-      [t.judul, t.ringkas ?? '', ...(t.kataKunci ?? [])]
-        .join(' ')
-        .toLowerCase()
-        .includes(q),
-    );
+  /** Judul topik yang sedang dibuka, sudah diselesaikan ke bahasa aktif. */
+  readonly judulAktif = computed(() => {
+    const t = this._topikAktif();
+    return t ? this.teks(t.judul) : null;
   });
+
+  readonly daftarTersaring = computed<PanduanTopikTampil[]>(() => {
+    const q = this._cari().trim().toLowerCase();
+
+    return this.daftar()
+      .map((t) => ({
+        id: t.id,
+        judul: this.teks(t.judul),
+        ringkas: t.ringkas ? this.teks(t.ringkas) : undefined,
+        // Kata kunci ikut dicari tetapi tidak ditampilkan.
+        _cari: [
+          this.teks(t.judul),
+          t.ringkas ? this.teks(t.ringkas) : '',
+          ...(t.kataKunci ?? []),
+        ]
+          .join(' ')
+          .toLowerCase(),
+      }))
+      .filter((t) => !q || t._cari.includes(q))
+      .map(({ _cari, ...sisa }) => sisa);
+  });
+
+  /**
+   * Ambil teks sesuai bahasa aktif, mundur ke bahasa cadangan.
+   *
+   * Membaca `_lang()` supaya computed yang memanggilnya ikut dihitung ulang
+   * ketika bahasa berganti.
+   */
+  private teks(t: TeksLokal): string {
+    const lang = this._lang();
+    return t?.[lang] ?? t?.[BAHASA_CADANGAN] ?? '';
+  }
+
+  constructor() {
+    /*
+     * Ganti bahasa memuat ulang topik yang sedang dibuka.
+     *
+     * Tanpa ini panel tetap menampilkan bahasa sebelumnya sampai ditutup
+     * dan dibuka lagi — terlihat seperti pilihan bahasanya tidak berfungsi.
+     * Cache berkunci bahasa, jadi bolak-balik tidak menembak server ulang.
+     */
+    this.translate.onLangChange.subscribe(() => {
+      this._lang.set(this.bahasa.current);
+      const topik = this._topikAktif();
+      if (topik) void this.bukaTopik(topik.id);
+    });
+  }
 
   /** Aksinya `read`, sesuai `data.permission` di berkas rute. */
   private bolehLihat(t: PanduanTopik): boolean {
@@ -118,7 +190,7 @@ export class PanduanService {
         `[Panduan] Gagal memuat ${BASIS}/index.json (status ${err?.status ?? '?'}).`,
         err,
       );
-      this._galat.set('Daftar panduan gagal dimuat.');
+      this._galat.set(this.translate.instant('panduan.errIndex'));
     }
   }
 
@@ -139,7 +211,7 @@ export class PanduanService {
       // Tidak ada ATAU tidak berizin — diperlakukan sama supaya keberadaan
       // topik yang tidak boleh dilihat tidak bocor.
       this.bersihkanIsi();
-      this._galat.set('Panduan untuk bagian ini belum tersedia.');
+      this._galat.set(this.translate.instant('panduan.errNotAvailable'));
       return;
     }
 
@@ -147,22 +219,25 @@ export class PanduanService {
     this._anchorTertunda.set(anchor ?? null);
     this._galat.set(null);
 
-    const tersimpan = this.cache.get(topik.id);
+    const lang = this.bahasa.current;
+    const kunci = `${topik.id}:${lang}`;
+
+    const tersimpan = this.cache.get(kunci);
     if (tersimpan) {
       this._html.set(tersimpan.html);
       this._daftarIsi.set(tersimpan.bagian);
+      this._pakaiCadangan.set(tersimpan.cadangan);
       return;
     }
 
     this._memuat.set(true);
     try {
-      const md = await firstValueFrom(
-        this.http.get(`${BASIS}/${topik.berkas}`, { responseType: 'text' }),
-      );
-      const hasil = this.perkaya(await marked.parse(md));
-      this.cache.set(topik.id, hasil);
+      const { md, cadangan } = await this.ambilMarkdown(topik.berkas, lang);
+      const hasil = { ...this.perkaya(await marked.parse(md)), cadangan };
+      this.cache.set(kunci, hasil);
       this._html.set(hasil.html);
       this._daftarIsi.set(hasil.bagian);
+      this._pakaiCadangan.set(cadangan);
     } catch (err: any) {
       /*
        * Penyebab paling sering: `berkas` di index.json tidak sama persis
@@ -170,13 +245,15 @@ export class PanduanService {
        * Windows memaafkan, server Linux membalas 404.
        */
       console.error(
-        `[Panduan] Gagal memuat ${BASIS}/${topik.berkas} (status ${err?.status ?? '?'}). ` +
-          'Periksa nama berkas di assets/panduan, termasuk besar-kecil hurufnya.',
+        `[Panduan] Gagal memuat ${BASIS}/${topik.berkas}.*.md ` +
+          `(status ${err?.status ?? '?'}). Minimal ${topik.berkas}.${BAHASA_CADANGAN}.md ` +
+          'harus ada. Periksa nama berkas di assets/panduan, termasuk besar-kecil hurufnya.',
         err,
       );
       this._html.set('');
       this._daftarIsi.set([]);
-      this._galat.set('Isi panduan gagal dimuat.');
+      this._pakaiCadangan.set(false);
+      this._galat.set(this.translate.instant('panduan.errContent'));
     } finally {
       this._memuat.set(false);
     }
@@ -215,6 +292,39 @@ export class PanduanService {
     this._topikAktif.set(null);
     this._html.set('');
     this._daftarIsi.set([]);
+    this._pakaiCadangan.set(false);
+  }
+
+  /**
+   * Ambil markdown untuk bahasa yang diminta, mundur ke bahasa cadangan
+   * bila belum diterjemahkan.
+   *
+   * Mundurnya per topik, bukan seluruhnya — sehingga penerjemahan bisa
+   * dicicil satu berkas demi satu tanpa mematikan yang lain.
+   */
+  private async ambilMarkdown(
+    basis: string,
+    lang: AppLang,
+  ): Promise<{ md: string; cadangan: boolean }> {
+    const ambil = (l: AppLang) =>
+      firstValueFrom(
+        this.http.get(`${BASIS}/${basis}.${l}.md`, { responseType: 'text' }),
+      );
+
+    if (lang === BAHASA_CADANGAN) {
+      return { md: await ambil(BAHASA_CADANGAN), cadangan: false };
+    }
+
+    try {
+      return { md: await ambil(lang), cadangan: false };
+    } catch {
+      // Belum diterjemahkan. Keadaan wajar, bukan galat — dicatat supaya
+      // terlihat berkas mana yang masih perlu dikerjakan.
+      console.info(
+        `[Panduan] ${basis}.${lang}.md belum ada; menampilkan versi ${BAHASA_CADANGAN}.`,
+      );
+      return { md: await ambil(BAHASA_CADANGAN), cadangan: true };
+    }
   }
 
   // ---- Pengayaan HTML ---------------------------------------------------

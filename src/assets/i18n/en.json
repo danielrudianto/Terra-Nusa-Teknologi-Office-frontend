@@ -2709,5 +2709,27 @@
     "taxSlipSaved": "Withholding slip number saved",
     "accessUpdated": "User access updated",
     "sessionExpired": "Your session has ended. Please sign in again."
+  },
+  "panduan": {
+    "title": "Guide",
+    "search": "Search guides…",
+    "searchAria": "Search guides",
+    "loading": "Loading…",
+    "noResult": "No matching guide.",
+    "tableOfContents": "Contents",
+    "onThisPage": "On this page",
+    "back": "Back",
+    "close": "Close",
+    "enlarge": "Enlarge",
+    "shrink": "Shrink",
+    "ariaPanel": "User guide",
+    "ariaBack": "Back to guide list",
+    "ariaClose": "Close guide",
+    "ariaEnlarge": "Enlarge guide",
+    "ariaShrink": "Shrink guide",
+    "errIndex": "Failed to load the guide list.",
+    "errContent": "Failed to load the guide content.",
+    "errNotAvailable": "No guide is available for this section yet.",
+    "fallbackNotice": "This guide has not been translated. Showing the Indonesian version."
   }
 }

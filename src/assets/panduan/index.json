@@ -3,116 +3,257 @@
   "topik": [
     {
       "id": "pembelian",
-      "judul": "Pembelian",
-      "berkas": "pembelian.md",
+      "judul": {
+        "id": "Pembelian",
+        "en": "Purchases",
+        "zh": "采购记录"
+      },
+      "berkas": "pembelian",
       "modul": "purchase",
-      "ringkas": "Mencatat faktur pembelian dari pemasok, dari meta sampai pembayaran.",
+      "ringkas": {
+        "id": "Mencatat faktur pembelian dari pemasok, dari meta sampai pembayaran.",
+        "en": "Record supplier invoices, from document details through to payment.",
+        "zh": "记录供应商发票，从基本信息到付款。"
+      },
       "kataKunci": [
-        "pembelian",
-        "invoice",
-        "faktur",
-        "kwitansi",
-        "pemasok",
-        "supplier",
         "DPP",
+        "PBBKB",
         "PPN",
         "PPh",
-        "PBBKB",
-        "jatuh tempo",
-        "lampiran",
+        "attachment",
+        "due date",
+        "faktur",
         "internal",
-        "purchase order",
+        "invoice",
+        "jatuh tempo",
+        "kwitansi",
+        "lampiran",
+        "pemasok",
+        "pembelian",
         "proyek",
-        "status dokumen"
+        "purchase",
+        "purchase order",
+        "status dokumen",
+        "supplier",
+        "supplier invoice",
+        "tax invoice"
       ]
     },
     {
       "id": "draft-pembelian",
-      "judul": "Draft Pembelian",
-      "berkas": "draft-pembelian.md",
+      "judul": {
+        "id": "Draft Pembelian",
+        "en": "Purchase Drafts",
+        "zh": "采购草稿"
+      },
+      "berkas": "draft-pembelian",
       "modul": "purchase_draft",
-      "ringkas": "Menyiapkan data pembelian sebelum berkasnya lengkap, lalu mengkonversinya.",
+      "ringkas": {
+        "id": "Menyiapkan data pembelian sebelum berkasnya lengkap, lalu mengkonversinya.",
+        "en": "Capture a purchase before the paperwork is complete, then convert it.",
+        "zh": "在单据齐全前先记录采购，之后再转换。"
+      },
       "kataKunci": [
+        "convert",
         "draft",
         "konversi",
         "pemasok",
+        "pembelian sementara",
         "purchase order",
-        "pembelian sementara"
+        "supplier"
       ]
     },
     {
       "id": "beban",
-      "judul": "Beban",
-      "berkas": "beban.md",
+      "judul": {
+        "id": "Beban",
+        "en": "Expenses",
+        "zh": "费用"
+      },
+      "berkas": "beban",
       "modul": "expenses",
-      "ringkas": "Mencatat biaya operasional di luar pembelian barang proyek.",
+      "ringkas": {
+        "id": "Mencatat biaya operasional di luar pembelian barang proyek.",
+        "en": "Record operating costs that are not project material purchases.",
+        "zh": "记录项目采购以外的运营费用。"
+      },
       "kataKunci": [
+        "PPh",
+        "bahan bakar",
         "beban",
         "biaya",
-        "expense",
-        "operasional",
-        "tipe beban",
-        "sewa",
-        "utilitas",
-        "bahan bakar",
+        "counterparty",
         "denda",
-        "PPh",
-        "lawan transaksi"
+        "expense",
+        "expense type",
+        "lawan transaksi",
+        "operasional",
+        "operating cost",
+        "sewa",
+        "tipe beban",
+        "utilitas"
       ]
     },
     {
       "id": "pendapatan-lain",
-      "judul": "Pendapatan Lain",
-      "berkas": "pendapatan-lain.md",
+      "judul": {
+        "id": "Pendapatan Lain",
+        "en": "Other Income",
+        "zh": "其他收入"
+      },
+      "berkas": "pendapatan-lain",
       "modul": "income",
-      "ringkas": "Mencatat pemasukan di luar penagihan proyek: bunga, royalti, dividen.",
+      "ringkas": {
+        "id": "Mencatat pemasukan di luar penagihan proyek: bunga, royalti, dividen.",
+        "en": "Record income outside project billing: interest, royalties, dividends.",
+        "zh": "记录项目开票以外的收入：利息、特许权使用费、股息。"
+      },
       "kataKunci": [
-        "pendapatan",
-        "pemasukan",
-        "income",
         "bunga",
-        "royalti",
         "dividen",
+        "dividend",
+        "income",
+        "interest",
+        "lawan transaksi",
+        "pemasukan",
         "pembulatan",
+        "pendapatan",
         "rekening",
-        "lawan transaksi"
+        "rounding",
+        "royalti",
+        "royalty"
       ]
     },
     {
       "id": "reimbursement",
-      "judul": "Reimbursement",
-      "berkas": "reimbursement.md",
+      "judul": {
+        "id": "Reimbursement",
+        "en": "Reimbursement",
+        "zh": "报销"
+      },
+      "berkas": "reimbursement",
       "modul": "reimbursement",
-      "ringkas": "Mengajukan penggantian uang yang sudah ditalangi, dan alur persetujuannya.",
+      "ringkas": {
+        "id": "Mengajukan penggantian uang yang sudah ditalangi, dan alur persetujuannya.",
+        "en": "Claim money paid out of pocket, and the approval flow that follows.",
+        "zh": "申请垫付款项的报销及其审批流程。"
+      },
       "kataKunci": [
-        "reimbursement",
-        "penggantian",
-        "talangan",
-        "struk",
+        "approval",
+        "cetak ulang",
+        "claim",
         "item",
+        "penggantian",
         "persetujuan",
+        "receipt",
+        "reimbursement",
         "setujui",
-        "cetak ulang"
+        "struk",
+        "talangan"
       ]
     },
     {
       "id": "faktur-penjualan",
-      "judul": "Faktur Penjualan",
-      "berkas": "faktur-penjualan.md",
+      "judul": {
+        "id": "Faktur Penjualan",
+        "en": "Sales Invoices",
+        "zh": "销售发票"
+      },
+      "berkas": "faktur-penjualan",
       "modul": "sales_invoice",
-      "ringkas": "Menagih pekerjaan proyek ke klien, konfirmasi faktur, dan bukti potong.",
+      "ringkas": {
+        "id": "Menagih pekerjaan proyek ke klien, konfirmasi faktur, dan bukti potong.",
+        "en": "Bill clients for project work, confirm invoices, and log withholding slips.",
+        "zh": "向客户开具项目账单、确认发票并登记扣缴凭证。"
+      },
       "kataKunci": [
-        "faktur penjualan",
-        "sales invoice",
-        "tagihan",
-        "klien",
+        "BPJS",
         "NPWP",
         "SPK",
-        "retensi",
-        "BPJS",
+        "billing",
         "bukti potong",
+        "client",
+        "faktur pajak",
+        "faktur penjualan",
+        "klien",
         "konfirmasi",
-        "faktur pajak"
+        "retensi",
+        "retention",
+        "sales invoice",
+        "tagihan",
+        "withholding"
+      ]
+    },
+    {
+      "id": "purchase-order",
+      "judul": {
+        "id": "Purchase Order",
+        "en": "Purchase Orders",
+        "zh": "采购订单"
+      },
+      "berkas": "purchase-order",
+      "modul": "purchase_order",
+      "ringkas": {
+        "id": "Memesan barang ke pemasok. Baru mencakup jenis C, F, G, 5.1.1, dan 5.1.6.",
+        "en": "Order goods from suppliers. Covers types C, F, G, 5.1.1 and 5.1.6 so far.",
+        "zh": "向供应商订货。目前涵盖 C、F、G、5.1.1 和 5.1.6 类型。"
+      },
+      "kataKunci": [
+        "CBD",
+        "COD",
+        "CR",
+        "CRD",
+        "PBBKB",
+        "PO",
+        "PPD",
+        "PPh 22",
+        "SPK",
+        "alat tulis",
+        "aset",
+        "bahan bakar",
+        "besi",
+        "beton",
+        "concrete",
+        "franco",
+        "fuel",
+        "loco",
+        "material",
+        "payment term",
+        "pemasok",
+        "pemesanan",
+        "purchase order",
+        "steel",
+        "termin",
+        "uji mutu"
+      ]
+    },
+    {
+      "id": "transfer-antar-rekening",
+      "judul": {
+        "id": "Transfer Antar Rekening",
+        "en": "Internal Transfers",
+        "zh": "内部转账"
+      },
+      "berkas": "transfer-antar-rekening",
+      "modul": "interpayment",
+      "ringkas": {
+        "id": "Memindahkan dana antar rekening perusahaan, dan batas waktu penghapusannya.",
+        "en": "Move funds between company accounts, and when a record can still be deleted.",
+        "zh": "在公司账户之间划转资金，以及记录可删除的时限。"
+      },
+      "kataKunci": [
+        "transfer",
+        "interpayment",
+        "antar rekening",
+        "mutasi",
+        "rekening asal",
+        "rekening tujuan",
+        "setoran",
+        "kas operasional",
+        "internal transfer",
+        "between accounts",
+        "source account",
+        "destination account"
       ]
     }
   ]
