@@ -33,7 +33,7 @@
               matInput
               formControlName="date"
               [matDatepicker]="picker"
-              placeholder="Tanggal PO"
+              [placeholder]="'poField.tanggalPo' | translate"
             />
             <mat-datepicker-toggle
               matIconPrefix
@@ -64,7 +64,7 @@
               matInput
               formControlName="supplierName"
               readonly
-              placeholder="Pilih vendor"
+              [placeholder]="'poField.pilihVendor' | translate"
             />
             <button
               mat-icon-button
@@ -153,7 +153,9 @@
                         matInput
                         formControlName="task"
                         maxlength="100"
-                        placeholder="Ex. Servis genset 250 kVA, Perbaikan hidrolik excavator"
+                        [placeholder]="
+                          'poField.exServisGenset250KvaPerbaikan' | translate
+                        "
                       />
                     </mat-form-field>
                   }
@@ -165,7 +167,9 @@
                     <input
                       matInput
                       formControlName="asset"
-                      placeholder="Ex. Excavator PC200 / Genset 250 kVA / Kendaraan B 1234 XYZ"
+                      [placeholder]="
+                        'poField.exExcavatorPc200Genset250Kva' | translate
+                      "
                     />
                   </mat-form-field>
 
@@ -321,7 +325,7 @@
                 formControlName="pphCode"
                 readonly
                 (click)="openPphSelector()"
-                placeholder="Pilih kode PPh"
+                [placeholder]="'poField.pilihKodePph' | translate"
               />
               <button
                 matSuffix
@@ -361,12 +365,19 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
-              <input
+              <mat-label>{{
+                (formGroup.value.deliveryMethod === 1
+                  ? "poForm.deliveryAddressLoco"
+                  : "poForm.deliveryAddressFranco"
+                ) | translate
+              }}</mat-label>
+              <textarea
                 matInput
                 formControlName="deliveryAddress"
-                placeholder="Alamat lengkap"
-              />
+                rows="2"
+                style="resize: none"
+                [placeholder]="'poField.alamatLengkap' | translate"
+              ></textarea>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>{{

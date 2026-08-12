@@ -28,7 +28,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poField.tanggalPo' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -52,7 +52,7 @@
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih vendor"
+            [placeholder]="'poField.pilihVendor' | translate"
           />
           <button
             mat-icon-button
@@ -135,7 +135,9 @@
                       matInput
                       formControlName="task"
                       maxlength="100"
-                      placeholder="Ex. Shooting video profil, Foto produk, Desain company profile"
+                      [placeholder]="
+                        'poField.exShootingVideoProfilFotoProduk' | translate
+                      "
                     />
                   </mat-form-field>
                 }
@@ -197,7 +199,7 @@
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="2"
                     cdkAutosizeMaxRows="5"
-                    placeholder="Ex. Sablon logo 1 warna, mug putih 11oz"
+                    [placeholder]="'poField.exSablonLogo1WarnaMug' | translate"
                   ></textarea>
                 </mat-form-field>
               </div>
@@ -237,7 +239,7 @@
           <input
             matInput
             formControlName="paymentTerm"
-            placeholder="Ex. DP 50% / Tempo 30 hari"
+            [placeholder]="'poField.exDp50Tempo30Hari' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -268,7 +270,7 @@
               formControlName="pphCode"
               readonly
               (click)="openPphSelector()"
-              placeholder="Pilih kode PPh"
+              [placeholder]="'poField.pilihKodePph' | translate"
             />
             <button
               matSuffix
@@ -303,7 +305,9 @@
 
         <div class="po63-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Berkas dapat diunduh</mat-label>
+            <mat-label>{{
+              "poField.berkasDapatDiunduh" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="fileRetentionDays"
@@ -315,7 +319,9 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Revisi termasuk harga</mat-label>
+            <mat-label>{{
+              "poField.revisiTermasukHarga" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="revisionCount"
@@ -327,7 +333,9 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Denda keterlambatan</mat-label>
+            <mat-label>{{
+              "poField.dendaKeterlambatan" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="latePenaltyPermil"
@@ -338,7 +346,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Denda maksimum</mat-label>
+            <mat-label>{{ "poField.dendaMaksimum" | translate }}</mat-label>
             <input
               matInput
               formControlName="latePenaltyCapPercent"
@@ -375,23 +383,32 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="po63-span2">
-            <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
+            <mat-label>{{
+              (formGroup.value.deliveryMethod === 1
+                ? "poForm.deliveryAddressLoco"
+                : "poForm.deliveryAddressFranco"
+              ) | translate
+            }}</mat-label>
             <textarea
               matInput
               formControlName="deliveryAddress"
               rows="2"
               style="resize: none"
-              placeholder="Alamat pengiriman / pengambilan barang"
+              [placeholder]="
+                'poField.alamatPengirimanPengambilanBarang' | translate
+              "
             ></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>PIC vendor</mat-label>
+            <mat-label>{{ "poField.picVendor" | translate }}</mat-label>
             <input matInput formControlName="supplierPICName" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>No. telepon PIC vendor</mat-label>
+            <mat-label>{{
+              "poField.noTeleponPicVendor" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="supplierPICPhoneNumber"
@@ -400,12 +417,14 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>PIC kantor</mat-label>
+            <mat-label>{{ "poField.picKantor" | translate }}</mat-label>
             <input matInput formControlName="officePICName" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>No. telepon PIC kantor</mat-label>
+            <mat-label>{{
+              "poField.noTeleponPicKantor" | translate
+            }}</mat-label>
             <input
               matInput
               formControlName="officePICPhoneNumber"

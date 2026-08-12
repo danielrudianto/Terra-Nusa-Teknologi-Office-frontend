@@ -26,7 +26,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poField.tanggalPo' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -53,7 +53,7 @@
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih vendor"
+            [placeholder]="'poField.pilihVendor' | translate"
           />
           <button
             mat-icon-button
@@ -164,7 +164,7 @@
                     matInput
                     formControlName="fromDate"
                     [matDatepicker]="dp1"
-                    placeholder="Mulai sewa"
+                    [placeholder]="'poField.mulaiSewa' | translate"
                   />
                   <mat-datepicker-toggle
                     matIconPrefix
@@ -178,7 +178,7 @@
                     matInput
                     formControlName="toDate"
                     [matDatepicker]="dp2"
-                    placeholder="Selesai sewa"
+                    [placeholder]="'poField.selesaiSewa' | translate"
                   />
                   <mat-datepicker-toggle
                     matIconPrefix
@@ -191,7 +191,9 @@
                   <input
                     matInput
                     formControlName="location"
-                    placeholder="Lokasi penempatan equipment"
+                    [placeholder]="
+                      'poField.lokasiPenempatanEquipment' | translate
+                    "
                   />
                 </mat-form-field>
               </div>
@@ -285,7 +287,9 @@
       -->
       <div class="pob-grid">
         <mat-form-field appearance="outline" class="pob-span2">
-          <mat-label>Penanggung keamanan &amp; keselamatan alat</mat-label>
+          <mat-label>{{
+            "poField.penanggungKeamananDanKeselamatanAlat" | translate
+          }}</mat-label>
           <mat-select formControlName="equipmentRiskBearer">
             <mat-option *ngFor="let r of riskBearers" [value]="r.value">{{
               r.label
@@ -313,21 +317,21 @@
       @if (rentalByHour) {
         <div class="pob-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Periode kuota</mat-label>
+            <mat-label>{{ "poField.periodeKuota" | translate }}</mat-label>
             <input
               matInput
               formControlName="quotaPeriodDays"
               type="number"
               [min]="1"
             />
-            <span matSuffix>hari kalender</span>
+            <span matSuffix>{{ "poField.hariKalender" | translate }}</span>
             <mat-hint
               >Kuota jamnya mengikuti volume pada tabel di atas</mat-hint
             >
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Tarif kelebihan jam</mat-label>
+            <mat-label>{{ "poField.tarifKelebihanJam" | translate }}</mat-label>
             <input
               matInput
               formControlName="excessHourRate"

@@ -16,7 +16,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poField.tanggalPo' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -38,7 +38,7 @@
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih vendor"
+            [placeholder]="'poField.pilihVendor' | translate"
           />
           <button
             mat-icon-button
@@ -97,7 +97,9 @@
               </div>
               <div class="po641-line__grid">
                 <mat-form-field appearance="outline">
-                  <mat-label>Jenis pengurusan</mat-label>
+                  <mat-label>{{
+                    "poField.jenisPengurusan" | translate
+                  }}</mat-label>
                   <mat-select
                     formControlName="serviceType"
                     (selectionChange)="onServiceTypeChange(i)"
@@ -110,12 +112,16 @@
 
                 @if (isOther(i)) {
                   <mat-form-field appearance="outline">
-                    <mat-label>Sebutkan pengurusannya</mat-label>
+                    <mat-label>{{
+                      "poField.sebutkanPengurusannya" | translate
+                    }}</mat-label>
                     <input
                       matInput
                       formControlName="customType"
                       maxlength="100"
-                      placeholder="Tulis jenis pengurusannya"
+                      [placeholder]="
+                        'poField.tulisJenisPengurusannya' | translate
+                      "
                     />
                   </mat-form-field>
                 }
@@ -125,17 +131,23 @@
                   hasil pengurusan, belum ada saat SPK dibuat.
                 -->
                 <mat-form-field appearance="outline">
-                  <mat-label>Objek yang diurus</mat-label>
+                  <mat-label>{{
+                    "poField.objekYangDiurus" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="description"
                     maxlength="150"
-                    placeholder="Ex. SBU BS004 Bangunan Gedung"
+                    [placeholder]="
+                      'poField.exSbuBs004BangunanGedung' | translate
+                    "
                   />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Target selesai</mat-label>
+                  <mat-label>{{
+                    "poField.targetSelesai" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="targetDays"
@@ -143,7 +155,7 @@
                     [min]="0"
                     placeholder="Ex. 30"
                   />
-                  <span matSuffix>hari kerja</span>
+                  <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
                   <mat-hint>Dihitung sejak berkas dinyatakan lengkap</mat-hint>
                 </mat-form-field>
 
@@ -258,7 +270,7 @@
             formControlName="pphCode"
             readonly
             (click)="openPphSelector()"
-            placeholder="Pilih kode PPh"
+            [placeholder]="'poField.pilihKodePph' | translate"
           />
           <button
             matSuffix
@@ -308,20 +320,22 @@
           </div>
           <div class="po641-line__grid">
             <mat-form-field appearance="outline">
-              <mat-label>Uraian biaya resmi</mat-label>
+              <mat-label>{{
+                "poField.uraianBiayaResmi" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="task"
                 maxlength="100"
-                placeholder="Ex. PNBP pengesahan akta"
+                [placeholder]="'poField.exPnbpPengesahanAkta' | translate"
               />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Keterangan</mat-label>
+              <mat-label>{{ "poField.keterangan" | translate }}</mat-label>
               <input matInput formControlName="description" maxlength="150" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Perkiraan jumlah</mat-label>
+              <mat-label>{{ "poField.perkiraanJumlah" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="amount"
@@ -353,7 +367,9 @@
       <div class="po641-grid">
         @if (hasOfficialFee) {
           <mat-form-field appearance="outline" class="po641-span2">
-            <mat-label>Bila ditolak di luar kelalaian vendor</mat-label>
+            <mat-label>{{
+              "poField.bilaDitolakDiLuarKelalaianVendor" | translate
+            }}</mat-label>
             <mat-select formControlName="rejectionCostBearer">
               <mat-option
                 *ngFor="let r of rejectionBearers"
@@ -369,18 +385,20 @@
         }
 
         <mat-form-field appearance="outline">
-          <mat-label>Pengembalian dokumen asli</mat-label>
+          <mat-label>{{
+            "poField.pengembalianDokumenAsli" | translate
+          }}</mat-label>
           <input
             matInput
             formControlName="documentReturnDays"
             type="number"
             [min]="0"
           />
-          <span matSuffix>hari kerja</span>
+          <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Interval pelaporan</mat-label>
+          <mat-label>{{ "poField.intervalPelaporan" | translate }}</mat-label>
           <input
             matInput
             formControlName="reportingIntervalDays"
@@ -427,11 +445,64 @@
       <div class="po641-section__title">
         {{ "common.notesAndPoints" | translate }}
       </div>
-      <app-wysiwyg
-        formControlName="notes"
-        [minHeight]="200"
-        placeholder="Poin perjanjian, ketentuan, dll"
-      ></app-wysiwyg>
+      <p class="po641-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+
+      <div class="po641-preview">
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="po641-preview__title">{{ sec.title }}</div>
+          }
+          <ol class="po641-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="po641-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li>{{ d }}</li>
+                  }
+                </ol>
+              } @else {
+                <li>{{ asText(p) }}</li>
+              }
+            }
+          </ol>
+        }
+      </div>
+
+      <div class="po641-cardhead">
+        <div class="po641-section__title po641-section__title--flush">
+          {{ "common.extraPoints" | translate }}
+        </div>
+        <button type="button" class="po641-add" (click)="addClause()">
+          <mat-icon>add</mat-icon> {{ "poForm.addPoint" | translate }}
+        </button>
+      </div>
+
+      @if (additionalClauses.controls.length === 0) {
+        <div class="po641-empty">
+          <mat-icon>playlist_add</mat-icon>
+          <span>{{ "common.noExtraPoints" | translate }}</span>
+        </div>
+      } @else {
+        <div formArrayName="additionalClauses" class="po641-list">
+          @for (c of additionalClauses.controls; track c; let i = $index) {
+            <div class="po641-krow">
+              <span class="po641-krow__no">+{{ i + 1 }}</span>
+              <mat-form-field appearance="outline" class="po641-krow__field">
+                <mat-label>{{ "poH.extraPoints" | translate }}</mat-label>
+                <textarea matInput [formControlName]="i" rows="2"></textarea>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeClause(i)"
+                [attr.aria-label]="'poForm.removeClause' | translate"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
       <div class="po641-actions">
         <span class="po641-spacer"></span>
         <button

@@ -37,7 +37,7 @@
             formControlName="supplierName"
             readonly
             (click)="openSupplierSelector()"
-            placeholder="Pilih supplier"
+            [placeholder]="'poField.pilihSupplier' | translate"
           />
           <button
             matSuffix
@@ -55,7 +55,7 @@
             matInput
             formControlName="supplierAddress"
             readonly
-            placeholder="Otomatis dari supplier"
+            [placeholder]="'poField.otomatisDariSupplier' | translate"
           />
         </mat-form-field>
       </div>
@@ -131,7 +131,9 @@
           -->
           @if (formGroup.value.autoRenew) {
             <mat-form-field appearance="outline">
-              <mat-label>Pemberitahuan perpanjangan</mat-label>
+              <mat-label>{{
+                "poField.pemberitahuanPerpanjangan" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="renewalNoticeDays"
@@ -144,7 +146,7 @@
           }
 
           <mat-form-field appearance="outline">
-            <mat-label>Pengambilan data</mat-label>
+            <mat-label>{{ "poField.pengambilanData" | translate }}</mat-label>
             <input
               matInput
               formControlName="dataRetrievalDays"
@@ -159,7 +161,7 @@
 
       <div class="po5112-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Jumlah pengguna</mat-label>
+          <mat-label>{{ "poField.jumlahPengguna" | translate }}</mat-label>
           <input
             matInput
             formControlName="userSeatCount"
@@ -181,7 +183,7 @@
             formControlName="pphCode"
             readonly
             (click)="openPphSelector()"
-            placeholder="Pilih kode PPh"
+            [placeholder]="'poField.pilihKodePph' | translate"
           />
           <button
             matSuffix
@@ -220,7 +222,9 @@
               <input
                 matInput
                 formControlName="description"
-                placeholder="Cth: Google Workspace Business Standard"
+                [placeholder]="
+                  'poField.cthGoogleWorkspaceBusinessStandard' | translate
+                "
               />
             </mat-form-field>
             <mat-form-field appearance="outline" class="po5112-itemqty">
@@ -448,7 +452,9 @@
               <input
                 matInput
                 [formControlName]="i"
-                placeholder="Cth: Termasuk pelatihan admin 1 sesi"
+                [placeholder]="
+                  'poField.cthTermasukPelatihanAdmin1Sesi' | translate
+                "
               />
             </mat-form-field>
             <button

@@ -25,6 +25,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
 
 import { ApiService } from 'src/app/services/api.service';
+import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
@@ -87,6 +88,10 @@ export class PurchaseOrderCreate651Component {
 
   /** null sampai bentuknya dipilih — dokumen dan klausulnya berbeda. */
   mode: 'kuota' | 'peserta' | null = null;
+
+  get typeLabel(): string {
+    return PURCHASE_TYPE_LABELS['6.5.1'] || 'Recruitment Expense';
+  }
 
   get isKuota(): boolean {
     return this.mode === 'kuota';

@@ -23,6 +23,9 @@
           <span class="poc-tile__body">
             <span class="poc-tile__title">{{ tile.title }}</span>
             <span class="poc-tile__desc">{{ tile.description }}</span>
+            @if (tile.comingSoon) {
+              <span class="poc-tile__soon">Belum tersedia</span>
+            }
           </span>
           <span class="poc-tile__arrow">
             <svg
@@ -53,7 +56,16 @@
     </div>
     <div class="poc-grid">
       @for (tile of officeTiles; track tile) {
-        <a class="poc-tile" [routerLink]="tile.link">
+        <!--
+          Jenis yang formulirnya belum dibuat ditampilkan tanpa tautan:
+          mengarahkannya ke alamat yang tidak ada membuat halaman kosong
+          tanpa keterangan apa pun.
+        -->
+        <a
+          class="poc-tile"
+          [class.poc-tile--soon]="tile.comingSoon"
+          [routerLink]="tile.comingSoon ? null : tile.link"
+        >
           <span class="poc-tile__badge poc-tile__badge--num">{{
             tile.type
           }}</span>

@@ -23,7 +23,6 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
-import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -74,7 +73,6 @@ import { IPPh } from '../../../../utils/pph';
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
-    WysiwygComponent,
   ],
   templateUrl: './purchase-order-create-641.component.html',
   styleUrl: './purchase-order-create-641.component.scss',
@@ -157,6 +155,24 @@ export class PurchaseOrderCreate641Component {
     }
   }
 
+  get additionalClauses(): FormArray {
+    return this.formGroup.get('additionalClauses') as FormArray;
+  }
+
+  get additionalClauseValues(): string[] {
+    return (this.additionalClauses.value as string[])
+      .map((x) => (x || '').trim())
+      .filter((x) => x.length > 0);
+  }
+
+  addClause() {
+    this.additionalClauses.push(new FormControl(''));
+  }
+
+  removeClause(i: number) {
+    this.additionalClauses.removeAt(i);
+  }
+
   openPphSelector() {
     this.dialog
       .open(PphSelectorComponent, {})
@@ -220,7 +236,10 @@ export class PurchaseOrderCreate641Component {
       Validators.min(0),
       Validators.max(100),
     ]),
-    notes: new FormControl(''),
+    // Poin tambahan bebas, dicetak sebagai seksi "Catatan Tambahan".
+    // Disimpan sebagai daftar agar tiap poin dapat dinomori dan dirakit
+    // ulang saat dokumennya dicetak.
+    additionalClauses: new FormArray([]),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
     pphPercentage: new FormControl(0),
@@ -405,7 +424,7 @@ export class PurchaseOrderCreate641Component {
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
         creditTerm: this.formGroup.get('creditTerm')?.value,
         prepaidTerm: this.formGroup.get('prepaidTerm')?.value,
-        notes: this.formGroup.get('notes')?.value,
+        additionalClauses: this.additionalClauseValues,
         pphCode: this.formGroup.get('pphCode')?.value,
         pphTaxObject: this.formGroup.get('pphTaxObject')?.value,
         pphPercentage: this.formGroup.get('pphPercentage')?.value,
@@ -453,7 +472,10 @@ export class PurchaseOrderCreate641Component {
 
   /** Pratinjau catatan perjanjian, terbagi seksi seperti dokumennya. */
   get previewSections() {
-    return buildLegalServiceClauses(this.clauseContext() as any);
+    return buildLegalServiceClauses(
+      this.clauseContext() as any,
+      this.additionalClauseValues,
+    );
   }
 
   isSubList(x: string | string[]): boolean {

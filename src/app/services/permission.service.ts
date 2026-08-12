@@ -40,14 +40,20 @@ export class PermissionService {
 
     this.pending = this.fetch()
       /*
-       * Satu kali percobaan ulang bila gagal.
+       * Satu kali percobaan ulang, tetapi TIDAK untuk sesi yang berakhir.
        *
-       * Permintaan pertama setelah lama menganggur kerap ditolak karena token
-       * sudah kedaluwarsa. Penyegaran token berjalan sendiri di interceptor,
-       * tetapi permintaan ini sudah terlanjur gagal — tanpa percobaan ulang,
-       * menu baru muncul setelah halaman dimuat ulang.
+       * Permintaan pertama setelah lama menganggur kerap ditolak karena
+       * access token kedaluwarsa; penyegaran berjalan sendiri di interceptor,
+       * sehingga percobaan kedua biasanya berhasil.
+       *
+       * Bila yang gagal adalah penyegarannya (401), mencoba lagi hanya
+       * mengulang kegagalan yang sama dan menambah satu permintaan gagal di
+       * konsol — pengguna memang harus masuk kembali.
        */
-      .catch(() => this.fetch())
+      .catch((err) => {
+        if (this.sesiBerakhir(err)) throw err;
+        return this.fetch();
+      })
       .then((res: any) => {
         this.permissions.set(res?.permissions ?? {});
         this.level.set(Number(res?.level) || 1);
@@ -68,6 +74,14 @@ export class PermissionService {
          * dianggap "sudah dimuat" dalam keadaan kosong. Seluruh menu hilang
          * sampai halaman dimuat ulang.
          */
+        if (this.sesiBerakhir(err)) {
+          // Sesi berakhir: interceptor sudah menangani pengalihan ke halaman
+          // masuk. Peta izin dibiarkan apa adanya agar menu tidak lenyap
+          // mendahului pesannya.
+          console.warn('[Izin] Sesi berakhir; menunggu masuk kembali.');
+          return;
+        }
+
         console.error(
           '[Izin] Gagal memuat permissions/me — menu disembunyikan sementara ' +
             'dan akan dicoba lagi.',
@@ -84,6 +98,19 @@ export class PermissionService {
 
   private fetch(): Promise<any> {
     return firstValueFrom(this.api.get('permissions/me', {}));
+  }
+
+  /**
+   * Apakah kegagalan disebabkan sesi yang sudah berakhir.
+   *
+   * Bila ya, penyegaran token pun sudah gagal dan pengguna sedang diarahkan
+   * ke halaman masuk oleh interceptor. Peta izin tidak perlu dikosongkan:
+   * mengosongkannya membuat menu lenyap lebih dulu, sementara pesan sesi
+   * berakhir baru muncul beberapa saat kemudian — dan yang terlihat oleh
+   * pengguna hanyalah menu yang tiba-tiba hilang tanpa sebab.
+   */
+  private sesiBerakhir(err: any): boolean {
+    return err?.status === 401 || err?.status === 403;
   }
 
   /** Bersihkan saat keluar agar pengguna berikutnya tidak mewarisi izin. */

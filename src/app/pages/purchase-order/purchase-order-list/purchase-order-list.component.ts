@@ -903,7 +903,9 @@ export class PurchaseOrderListComponent {
     '6.3.2': '632',
     '6.4.1': '641',
     '6.5.1': '651',
-    '6.5.2': '652',
+    // 6.4.2 (asuransi) dan 6.5.2 belum memiliki formulir; sengaja tidak
+    // dicantumkan agar pemilihnya memberi pesan "belum tersedia" daripada
+    // mengarahkan ke alamat yang tidak ada.
   };
 
   /**

@@ -338,17 +338,17 @@
       <div class="pod-section__title">Informasi umum</div>
       <div class="pod-grid">
         <mat-form-field appearance="outline" class="pod-span2">
-          <mat-label>Lokasi kerja</mat-label>
+          <mat-label>{{ "poField.lokasiKerja" | translate }}</mat-label>
           <input
             matInput
             formControlName="workLocation"
-            placeholder="Ex. Proyek Tol Cisumdawu STA 12+400"
+            [placeholder]="'poField.exProyekTolCisumdawuSta12' | translate"
           />
           <mat-hint>Bila dikosongkan, dokumen memakai nama proyek</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Mulai berlaku</mat-label>
+          <mat-label>{{ "poField.mulaiBerlaku" | translate }}</mat-label>
           <input
             matInput
             formControlName="contractStart"
@@ -362,7 +362,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Berakhir</mat-label>
+          <mat-label>{{ "poField.berakhir" | translate }}</mat-label>
           <input
             matInput
             formControlName="contractEnd"

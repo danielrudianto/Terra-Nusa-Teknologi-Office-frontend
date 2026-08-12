@@ -84,7 +84,7 @@
               matInput
               formControlName="date"
               [matDatepicker]="picker"
-              placeholder="Tanggal PO"
+              [placeholder]="'poField.tanggalPo' | translate"
             />
             <mat-datepicker-toggle
               matIconPrefix
@@ -115,7 +115,7 @@
               matInput
               formControlName="supplierName"
               readonly
-              placeholder="Pilih vendor"
+              [placeholder]="'poField.pilihVendor' | translate"
             />
             <button
               mat-icon-button
@@ -185,7 +185,7 @@
                   formControlName="pphCode"
                   readonly
                   (click)="openPphSelector()"
-                  placeholder="Pilih kode PPh"
+                  [placeholder]="'poField.pilihKodePph' | translate"
                 />
                 <button
                   matSuffix
@@ -323,7 +323,9 @@
                   class="poh-cutoffs__term"
                   subscriptSizing="dynamic"
                 >
-                  <mat-label>Termin pembayaran</mat-label>
+                  <mat-label>{{
+                    "poField.terminPembayaran" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="billingTermDays"
@@ -413,7 +415,9 @@
                   class="poh-cutoffs__term"
                   subscriptSizing="dynamic"
                 >
-                  <mat-label>Termin pembayaran</mat-label>
+                  <mat-label>{{
+                    "poField.terminPembayaran" | translate
+                  }}</mat-label>
                   <input
                     matInput
                     formControlName="billingTermDays"
@@ -441,7 +445,7 @@
             <input
               matInput
               formControlName="workLocation"
-              placeholder="Ex. R501 Kota Baru Parahyangan"
+              [placeholder]="'poField.exR501KotaBaruParahyangan' | translate"
             />
           </mat-form-field>
 
@@ -450,7 +454,9 @@
             <input
               matInput
               formControlName="jobType"
-              placeholder="Ex. Pekerjaan bore pile diameter 600mm"
+              [placeholder]="
+                'poField.exPekerjaanBorePileDiameter600mm' | translate
+              "
             />
           </mat-form-field>
 
@@ -571,7 +577,9 @@
                       matInput
                       formControlName="task"
                       maxlength="100"
-                      placeholder="Ex. Pekerjaan bore pile D-400, Pemasangan bekisting"
+                      [placeholder]="
+                        'poField.exPekerjaanBorePileD400' | translate
+                      "
                     />
                   </mat-form-field>
 
@@ -680,7 +688,7 @@
                     <input
                       matInput
                       formControlName="name"
-                      placeholder="Nama lengkap"
+                      [placeholder]="'poField.namaLengkap' | translate"
                     />
                   </mat-form-field>
                   <mat-form-field appearance="outline">
@@ -688,7 +696,7 @@
                     <input
                       matInput
                       formControlName="idCard"
-                      placeholder="16 digit NIK"
+                      [placeholder]="'poField.16DigitNik' | translate"
                       maxlength="16"
                     />
                   </mat-form-field>
@@ -830,7 +838,7 @@
                 <input
                   matInput
                   formControlName="billingPeriod"
-                  placeholder="Ex. 2 (dua) minggu, bulanan, per progres 25%"
+                  [placeholder]="'poField.ex2DuaMingguBulananPer' | translate"
                 />
               </mat-form-field>
             }

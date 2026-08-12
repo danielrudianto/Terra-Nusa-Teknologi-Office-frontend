@@ -19,7 +19,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poField.tanggalPo' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -49,7 +49,7 @@
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih supplier"
+            [placeholder]="'poField.pilihSupplier' | translate"
           />
           <button
             mat-icon-button
@@ -156,7 +156,7 @@
                     <input
                       matInput
                       formControlName="remarks"
-                      placeholder="Catatan (opsional)"
+                      [placeholder]="'poField.catatanOpsional' | translate"
                     />
                   </mat-form-field>
                 </div>
@@ -276,7 +276,9 @@
         @if (formGroup.value.concreteTestRequired) {
           <div class="pof-grid">
             <mat-form-field appearance="outline">
-              <mat-label>Biaya uji laboratorium independen</mat-label>
+              <mat-label>{{
+                "poField.biayaUjiLaboratoriumIndependen" | translate
+              }}</mat-label>
               <mat-select formControlName="concreteTestCostBearer">
                 <mat-option value="pembeli"
                   >Ditanggung pembeli (AKN)</mat-option
@@ -335,7 +337,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pof-span2">
-          <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
+          <mat-label>{{
+            (formGroup.value.deliveryMethod === 1
+              ? "poForm.deliveryAddressLoco"
+              : "poForm.deliveryAddressFranco"
+            ) | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="deliveryAddress"
@@ -401,7 +408,7 @@
           <input
             matInput
             formControlName="supplierPICName"
-            placeholder="Nama PIC supplier"
+            [placeholder]="'poField.namaPicSupplier' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -417,7 +424,7 @@
           <input
             matInput
             formControlName="officePICName"
-            placeholder="Nama PIC kantor"
+            [placeholder]="'poField.namaPicKantor' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -521,7 +528,9 @@
                 <input
                   matInput
                   [formControlName]="i"
-                  placeholder="Contoh: Barang dikirim paling lambat 15 Agustus 2026"
+                  [placeholder]="
+                    'poField.contohBarangDikirimPalingLambat15' | translate
+                  "
                 />
               </mat-form-field>
               <button

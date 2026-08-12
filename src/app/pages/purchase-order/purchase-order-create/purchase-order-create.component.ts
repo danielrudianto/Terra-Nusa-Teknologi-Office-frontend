@@ -11,6 +11,16 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
 
+/** Satu kartu pilihan jenis PO. */
+interface PoTile {
+  type: string;
+  title: string;
+  description: string;
+  link?: string;
+  /** Formulirnya belum dibuat; kartunya ditampilkan tanpa tautan. */
+  comingSoon?: boolean;
+}
+
 @Component({
   selector: 'app-purchase-order-create',
   imports: [
@@ -35,7 +45,7 @@ export class PurchaseOrderCreateComponent {
     private route: ActivatedRoute,
   ) {}
 
-  projectTiles = [
+  projectTiles: PoTile[] = [
     {
       type: 'A',
       title: 'Transportation',
@@ -84,7 +94,7 @@ export class PurchaseOrderCreateComponent {
     },
   ];
 
-  officeTiles = [
+  officeTiles: PoTile[] = [
     {
       type: '5.1.1',
       title: 'Asset acquisition',
@@ -133,6 +143,9 @@ export class PurchaseOrderCreateComponent {
       title: 'Insurance',
       description: 'Purchase orders used to create insurance document expense',
       link: '642',
+      // Formulirnya belum dibuat; ditandai agar tidak mengarah ke alamat
+      // yang tidak ada.
+      comingSoon: true,
     },
     {
       type: '6.5.1',
@@ -145,6 +158,9 @@ export class PurchaseOrderCreateComponent {
       title: 'Training',
       description: 'Purchase orders used to create training expense',
       link: '652',
+      // Formulirnya belum dibuat; ditandai agar tidak mengarah ke alamat
+      // yang tidak ada.
+      comingSoon: true,
     },
   ];
 

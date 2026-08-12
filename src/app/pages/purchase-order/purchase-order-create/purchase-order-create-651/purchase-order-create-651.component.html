@@ -1,7 +1,10 @@
 <div class="po651">
   <app-header-title
-    [title]="'Purchase Order 6.5.1 — Biaya Rekrutmen'"
-  ></app-header-title>
+    [backLink]="'/Purchase-order'"
+    backLabel="Daftar Purchase Order"
+    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
+    [description]="typeLabel"
+  />
 
   <!--
     Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
@@ -110,7 +113,7 @@
               formControlName="supplierName"
               readonly
               (click)="openSupplierSelector()"
-              placeholder="Pilih vendor"
+              [placeholder]="'poField.pilihVendor' | translate"
             />
             <button
               matSuffix
@@ -186,7 +189,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="po651-span2">
-                  <mat-label>Keterangan</mat-label>
+                  <mat-label>{{ "poField.keterangan" | translate }}</mat-label>
                   <input matInput formControlName="note" maxlength="150" />
                 </mat-form-field>
 
@@ -312,7 +315,7 @@
               formControlName="pphCode"
               readonly
               (click)="openPphSelector()"
-              placeholder="Pilih kode PPh"
+              [placeholder]="'poField.pilihKodePph' | translate"
             />
             <button
               matSuffix
@@ -338,7 +341,9 @@
         <div class="po651-grid">
           @if (isKuota) {
             <mat-form-field appearance="outline">
-              <mat-label>Kuota berlaku sampai</mat-label>
+              <mat-label>{{
+                "poField.kuotaBerlakuSampai" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="quotaValidUntil"
@@ -353,19 +358,21 @@
             </mat-form-field>
           } @else {
             <mat-form-field appearance="outline">
-              <mat-label>Penyerahan hasil</mat-label>
+              <mat-label>{{ "poField.penyerahanHasil" | translate }}</mat-label>
               <input
                 matInput
                 formControlName="resultDueDays"
                 type="number"
                 [min]="0"
               />
-              <span matSuffix>hari kerja</span>
+              <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
               <mat-hint>Sejak pelaksanaan pemeriksaan</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Batas pembatalan peserta</mat-label>
+              <mat-label>{{
+                "poField.batasPembatalanPeserta" | translate
+              }}</mat-label>
               <input
                 matInput
                 formControlName="participantCancelDays"

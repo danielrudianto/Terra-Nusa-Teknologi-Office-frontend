@@ -111,12 +111,12 @@ export const OFFICE_TILES: PurchaseTypeTile[] = [
     type: '6.5.1',
     title: 'Recruitment',
     description: 'Purchase orders used to create recruitment expense',
-    link: '6.5.1',
+    link: '651',
   },
   {
     type: '6.5.2',
     title: 'Training',
     description: 'Purchase orders used to create training expense',
-    link: '6.5.2',
+    link: '652',
   },
 ];

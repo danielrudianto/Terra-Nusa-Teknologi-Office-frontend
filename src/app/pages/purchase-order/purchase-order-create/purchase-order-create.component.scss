@@ -144,3 +144,19 @@ $brandSoft: var(--brand-soft, #e7ecfb);
       color 0.14s ease;
   }
 }
+
+/* Jenis PO yang formulirnya belum dibuat. */
+.poc-tile--soon {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+}
+.poc-tile__soon {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}

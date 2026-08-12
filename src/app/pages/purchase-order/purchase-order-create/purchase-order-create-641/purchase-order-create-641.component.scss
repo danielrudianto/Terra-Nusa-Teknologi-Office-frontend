@@ -1190,3 +1190,24 @@ app-wysiwyg {
   padding-left: 1.2rem;
   list-style: lower-alpha;
 }
+
+/* Baris poin tambahan. */
+.po641-krow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem 0;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
+}
+.po641-krow__no {
+  min-width: 40px;
+  padding-top: 0.95rem;
+  color: var(--brand, #154dec);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.po641-krow__field {
+  flex: 1 1 auto;
+}

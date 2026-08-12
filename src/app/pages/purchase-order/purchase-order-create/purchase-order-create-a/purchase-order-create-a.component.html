@@ -17,7 +17,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal PO"
+            [placeholder]="'poField.tanggalPo' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -46,7 +46,7 @@
             matInput
             formControlName="supplierName"
             readonly
-            placeholder="Pilih vendor"
+            [placeholder]="'poField.pilihVendor' | translate"
           />
           <button
             mat-icon-button
@@ -81,7 +81,7 @@
             formControlName="pphCode"
             readonly
             (click)="openPphSelector()"
-            placeholder="Pilih kode PPh"
+            [placeholder]="'poField.pilihKodePph' | translate"
           />
           <button
             matSuffix
@@ -369,7 +369,7 @@
                     matInput
                     formControlName="deliveryDate"
                     [matDatepicker]="dp"
-                    placeholder="Tanggal"
+                    [placeholder]="'poField.tanggal' | translate"
                   />
                   <mat-datepicker-toggle
                     matIconPrefix
@@ -478,7 +478,7 @@
                   <textarea
                     matInput
                     formControlName="from"
-                    placeholder="Lokasi asal"
+                    [placeholder]="'poField.lokasiAsal' | translate"
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="1"
                     cdkAutosizeMaxRows="4"
@@ -490,7 +490,7 @@
                   <textarea
                     matInput
                     formControlName="to"
-                    placeholder="Lokasi tujuan"
+                    [placeholder]="'poField.lokasiTujuan' | translate"
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="1"
                     cdkAutosizeMaxRows="4"
@@ -574,7 +574,7 @@
                     <textarea
                       matInput
                       formControlName="driver"
-                      placeholder="Nama lengkap & NIK supir"
+                      [placeholder]="'poField.namaLengkapNikSupir' | translate"
                       cdkTextareaAutosize
                       cdkAutosizeMinRows="2"
                       cdkAutosizeMaxRows="4"
@@ -603,7 +603,7 @@
                     <input
                       matInput
                       formControlName="provider"
-                      placeholder="Nama penyedia"
+                      [placeholder]="'poField.namaPenyedia' | translate"
                     />
                   </mat-form-field>
                   <mat-form-field appearance="outline">
@@ -613,7 +613,7 @@
                     <input
                       matInput
                       formControlName="refNumber"
-                      placeholder="Nomor referensi"
+                      [placeholder]="'poField.nomorReferensi' | translate"
                     />
                   </mat-form-field>
                 </div>

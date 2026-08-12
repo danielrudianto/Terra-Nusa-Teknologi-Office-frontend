@@ -205,7 +205,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pog-span2">
-          <mat-label>{{ "poForm.deliveryAddress" | translate }}</mat-label>
+          <mat-label>{{
+            (formGroup.value.deliveryMethod === 1
+              ? "poForm.deliveryAddressLoco"
+              : "poForm.deliveryAddressFranco"
+            ) | translate
+          }}</mat-label>
           <textarea
             matInput
             formControlName="deliveryAddress"
@@ -355,7 +360,9 @@
               <input
                 matInput
                 [formControlName]="i"
-                placeholder="Contoh: Barang dikirim paling lambat 15 Agustus 2026"
+                [placeholder]="
+                  'poField.contohBarangDikirimPalingLambat15' | translate
+                "
               />
             </mat-form-field>
             <button

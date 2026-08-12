@@ -263,6 +263,21 @@ function isLoco(ctx: ClauseContext): boolean {
   return String(ctx.deliveryMethod) === '1';
 }
 
+/**
+ * Kalimat alamat, mengikuti moda pengirimannya.
+ *
+ * Sebelumnya selalu berbunyi "alamat pengiriman/pengambilan" untuk keduanya.
+ * Pada Franco yang berlaku hanya pengiriman, pada Loco hanya pengambilan —
+ * menyebut keduanya membuat pembaca harus menebak mana yang dimaksud, dan
+ * pada dokumen yang mengikat, menebak adalah celah.
+ */
+function deliveryAddressSentence(ctx: ClauseContext): string {
+  const alamat = ctx.deliveryAddress || '—';
+  return isLoco(ctx)
+    ? `Alamat pengambilan barang adalah: ${alamat}.`
+    : `Alamat pengiriman barang adalah: ${alamat}.`;
+}
+
 function joinContact(name?: string, phone?: string): string {
   return [name, phone].filter(Boolean).join(' - ') || '—';
 }
@@ -285,7 +300,7 @@ const G_CLAUSES: ClauseTemplate[] = [
       return [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
-        `Alamat pengiriman/pengambilan barang adalah: ${ctx.deliveryAddress || '—'}.`,
+        deliveryAddressSentence(ctx),
         // Sebelumnya memakai istilah pengambil/pengirim/penerima yang mudah
         // tertukar; cukup sebut pemilik kontaknya saja.
         `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
@@ -309,7 +324,7 @@ const C_CLAUSES: ClauseTemplate[] = [
       const points: string[] = [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
-        `Alamat pengiriman / pengambilan barang: ${ctx.deliveryAddress || '—'}.`,
+        deliveryAddressSentence(ctx),
         `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
         `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
         // 6 & 7 are a linked pair: toggling 6 off strikes both through.
@@ -1135,7 +1150,7 @@ const F_CLAUSES: ClauseTemplate[] = [
       const lines: string[] = [
         paymentSentence(ctx),
         `Termin pengiriman adalah ${loco ? 'Loco (diambil sendiri)' : 'Franco (dikirim ke lokasi)'}.`,
-        `Alamat pengiriman/pengambilan barang adalah: ${ctx.deliveryAddress || '—'}.`,
+        deliveryAddressSentence(ctx),
         `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
         `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
       ];
