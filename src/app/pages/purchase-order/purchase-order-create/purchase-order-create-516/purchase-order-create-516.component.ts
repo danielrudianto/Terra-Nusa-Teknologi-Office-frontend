@@ -99,9 +99,16 @@ export class PurchaseOrderCreate516Component {
     supplierNpwp: new FormControl(''),
     supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
-    projectName: new FormControl('', [
+    /*
+     * Pengeluaran kantor selalu dibebankan ke PUSAT, tidak pernah ke proyek.
+     *
+     * Nilainya dikunci, bukan sekadar diisikan sebagai bawaan: bila masih
+     * dapat diubah, cepat atau lambat ada yang membebankannya ke kode proyek
+     * — dan biaya yang salah pos baru ketahuan saat laporan per proyek
+     * dibaca, ketika dokumennya sudah lama tersimpan.
+     */
+    projectName: new FormControl({ value: 'PUSAT', disabled: true }, [
       Validators.required,
-      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     deliveryMethod: new FormControl('', Validators.required),
     deliveryAddress: new FormControl('', Validators.required),

@@ -39,16 +39,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="projectName"
-            maxlength="5"
-            (keyup)="toUpperCase()"
-            placeholder="Ex. MICZ"
-          />
-          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
-            "common.projectCodeError" | translate
-          }}</mat-error>
+          <!--
+            Pengeluaran kantor selalu dibebankan ke PUSAT; nilainya dikunci
+            agar tidak terbebankan ke kode proyek.
+          -->
+          <input matInput formControlName="projectName" readonly />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="po63-span2">
