@@ -13,11 +13,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-create-new-pile',
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,

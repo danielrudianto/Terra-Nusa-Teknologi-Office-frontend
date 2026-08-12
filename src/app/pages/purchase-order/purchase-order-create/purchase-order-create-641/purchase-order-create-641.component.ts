@@ -393,11 +393,7 @@ export class PurchaseOrderCreate641Component {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v)
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-  }
+
 
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;

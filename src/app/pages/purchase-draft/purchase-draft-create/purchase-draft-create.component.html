@@ -104,16 +104,10 @@
           >
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "purchaseDraftCreate.project" | translate }}</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="projectName"
-            [placeholder]="'purchaseDraftCreate.projectPlaceholder' | translate"
-            readonly
-          />
-        </mat-form-field>
+        <app-project-selector
+        formControlName="projectName"
+        [label]="'purchaseDraftCreate.project' | translate"
+      />
 
         <mat-form-field appearance="outline">
           <mat-label>{{

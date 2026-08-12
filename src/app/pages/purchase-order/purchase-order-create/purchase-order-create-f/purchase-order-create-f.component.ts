@@ -38,11 +38,13 @@ import {
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { MatRadioModule } from '@angular/material/radio';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-f',
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     MatRadioModule,
     TranslatePipe,
@@ -581,10 +583,4 @@ export class PurchaseOrderCreateFComponent {
       });
   }
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
-    }
-  }
 }

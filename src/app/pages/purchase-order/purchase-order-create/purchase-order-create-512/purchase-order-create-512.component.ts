@@ -366,11 +366,7 @@ export class PurchaseOrderCreate512Component {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v)
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-  }
+
 
   // --- poin perjanjian tambahan (custom) ---
   get additionalClauses(): FormArray {

@@ -477,10 +477,4 @@ export class PurchaseOrderCreate511Component {
       });
   }
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
-    }
-  }
 }

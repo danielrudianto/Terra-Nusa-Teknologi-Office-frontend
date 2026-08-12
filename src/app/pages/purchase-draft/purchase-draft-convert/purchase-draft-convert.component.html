@@ -89,15 +89,10 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "draftConvert.project" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="projectName"
-              placeholder="Project name"
-            />
-          </mat-form-field>
+          <app-project-selector
+        formControlName="projectName"
+        [label]="'draftConvert.project' | translate"
+      />
         </div>
       </div>
 

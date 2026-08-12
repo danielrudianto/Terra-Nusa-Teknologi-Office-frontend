@@ -2810,6 +2810,8 @@
       "berjalan": "Berjalan",
       "selesai": "Selesai",
       "batal": "Batal"
-    }
+    },
+    "selectorPlaceholder": "Ketik kode atau nama proyek",
+    "unknownCode": "Kode ini belum terdaftar sebagai proyek."
   }
 }

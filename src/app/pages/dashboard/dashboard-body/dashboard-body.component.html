@@ -128,11 +128,16 @@
         <app-today-payment></app-today-payment>
       </div>
 
-      <!-- Right column: agenda + reimbursements -->
-      <div class="col-6 mt-3">
+      <!--
+        Kolom kanan: agenda di atas, reimbursement mengisi sisa ruang.
+        Disusun sebagai kolom fleks agar tingginya berakhir sama dengan
+        kartu di sebelah kiri — sebelumnya keduanya berdiri sendiri dan
+        salah satunya selalu tampak menggantung.
+      -->
+      <div class="col-6 mt-3 db-rightcol">
         <app-agenda></app-agenda>
 
-        <div style="margin-top: 20px" *appCan="'reimbursement:read'">
+        <div class="db-rightcol__rest" *appCan="'reimbursement:read'">
           <app-dashboard-reimbursement></app-dashboard-reimbursement>
         </div>
       </div>

@@ -2810,6 +2810,8 @@
       "berjalan": "Running",
       "selesai": "Finished",
       "batal": "Cancelled"
-    }
+    },
+    "selectorPlaceholder": "Type a project code or name",
+    "unknownCode": "This code is not registered as a project yet."
   }
 }

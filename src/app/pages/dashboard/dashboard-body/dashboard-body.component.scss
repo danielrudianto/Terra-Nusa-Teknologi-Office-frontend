@@ -195,3 +195,32 @@ $faint: var(--faint, #9aa0ab);
     margin-bottom: 1rem;
   }
 }
+
+/* Kolom kanan dashboard.
+   Agenda tingginya tetap, reimbursement mengisi sisa — sehingga kolom ini
+   berakhir setinggi kartu di sebelah kiri, bukan lebih panjang atau lebih
+   pendek sendiri. */
+.db-rightcol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.db-rightcol__rest {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Layar sempit: dua kolom berdampingan membuat angka terpotong.
+   `col-6` dipakai tanpa breakpoint, sehingga penyesuaiannya dilakukan di
+   sini agar tidak perlu mengubah kelas di markup. */
+@media (max-width: 860px) {
+  .db-rightcol,
+  .db-rightcol + .col-6,
+  .row > .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .db-rightcol {
+    gap: 1rem;
+  }
+}

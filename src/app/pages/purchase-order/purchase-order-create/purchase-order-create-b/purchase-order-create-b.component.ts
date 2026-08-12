@@ -40,12 +40,14 @@ import {
 } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-b',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     TranslatePipe,
     CommonModule,
@@ -417,11 +419,7 @@ export class PurchaseOrderCreateBComponent {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v)
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-  }
+
 
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;

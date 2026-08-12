@@ -49,12 +49,14 @@ import { IPPh } from '../../../../utils/pph';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-a',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     MatAutocompleteModule,
     MatSelectModule,
@@ -408,12 +410,6 @@ export class PurchaseOrderCreateAComponent {
       });
   }
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
-    }
-  }
 
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;

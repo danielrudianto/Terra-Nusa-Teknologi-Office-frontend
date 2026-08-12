@@ -30,6 +30,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-reimbursement-create',
@@ -38,6 +39,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     HeaderTitleComponent,
     CommonModule,
     ReactiveFormsModule,
@@ -68,14 +70,7 @@ export class ReimbursementCreateComponent {
 
   ngOnInit(): void {}
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({
-        projectName: value.toUpperCase(),
-      });
-    }
-  }
+
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   isSubmitting: boolean = false;

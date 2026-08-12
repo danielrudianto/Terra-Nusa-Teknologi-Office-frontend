@@ -33,6 +33,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -87,6 +88,7 @@ function bankAccountIDRequired(): ValidatorFn {
   templateUrl: './purchase-draft-convert.component.html',
   styleUrl: './purchase-draft-convert.component.scss',
   imports: [
+    ProjectSelectorComponent,
     TranslatePipe,
     RouterModule,
     MatTooltipModule,

@@ -100,15 +100,10 @@
           </mat-form-field>
         </div>
         <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseCreate.project" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="projectName"
-              [placeholder]="'purchaseCreate.projectPlaceholder' | translate"
-            />
-          </mat-form-field>
+          <app-project-selector
+        formControlName="projectName"
+        [label]="'purchaseCreate.project' | translate"
+      />
         </div>
       </div>
 

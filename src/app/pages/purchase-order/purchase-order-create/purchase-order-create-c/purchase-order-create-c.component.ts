@@ -36,11 +36,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { printPurchaseOrderC } from '../../../../helpers/purchase-order-c.helper';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-g',
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     TranslatePipe,
     CommonModule,
@@ -511,10 +513,4 @@ export class PurchaseOrderCreateCComponent {
       });
   }
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({ projectName: value.toUpperCase() });
-    }
-  }
 }

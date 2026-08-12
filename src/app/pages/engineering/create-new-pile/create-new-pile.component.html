@@ -5,10 +5,9 @@
       Add a new pile data here. You can add bulk data as well using the import
       feature.
     </p>
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Project name</mat-label>
-      <input matInput formControlName="projectName" />
-    </mat-form-field>
+    <app-project-selector
+        formControlName="projectName"
+      />
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Pile name</mat-label>
       <input matInput formControlName="pileName" />

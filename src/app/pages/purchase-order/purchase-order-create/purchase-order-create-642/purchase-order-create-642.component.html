@@ -107,19 +107,10 @@
             <mat-datepicker #dp></mat-datepicker>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="projectName"
-              maxlength="5"
-              (keyup)="toUpperCase()"
-              [placeholder]="'poField.exMicz' | translate"
-            />
-            <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
-              "common.projectCodeError" | translate
-            }}</mat-error>
-          </mat-form-field>
+          <app-project-selector
+        formControlName="projectName"
+        [label]="'poForm.projectCode' | translate"
+      />
 
           <mat-form-field appearance="outline" class="po642-span2">
             <mat-label>{{ "poForm.vendor" | translate }}</mat-label>

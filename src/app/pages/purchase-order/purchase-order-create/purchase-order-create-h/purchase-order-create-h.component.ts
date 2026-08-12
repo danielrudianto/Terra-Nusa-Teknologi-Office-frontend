@@ -47,12 +47,14 @@ import { printPurchaseOrderH } from '../../../../helpers/purchase-order-h.helper
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../../utils/pph';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-h',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     MatAutocompleteModule,
     MatCheckboxModule,
@@ -840,12 +842,7 @@ export class PurchaseOrderCreateHComponent {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) {
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-    }
-  }
+
 
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;

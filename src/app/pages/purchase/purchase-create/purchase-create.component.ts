@@ -35,6 +35,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -87,6 +88,7 @@ function bankAccountIDRequired(): ValidatorFn {
   selector: 'app-purchase-create',
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     MatTooltipModule,
     CommonModule,
     FormsModule,

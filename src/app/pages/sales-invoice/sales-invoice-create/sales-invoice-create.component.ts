@@ -29,6 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -39,6 +40,7 @@ pdfMake.vfs = pdfFonts.vfs;
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
   imports: [
+    ProjectSelectorComponent,
     NgxMaskDirective,
     TranslatePipe,
     RouterModule,

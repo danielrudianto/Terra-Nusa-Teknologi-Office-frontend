@@ -36,6 +36,7 @@ import { HeaderTitleComponent } from '../../../../components/header-title/header
 import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 /**
  * Marketing purchase orders:
@@ -49,6 +50,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     MatCheckboxModule,
     TranslatePipe,
@@ -358,12 +360,7 @@ export class PurchaseOrderCreate63Component {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) {
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-    }
-  }
+
 
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;

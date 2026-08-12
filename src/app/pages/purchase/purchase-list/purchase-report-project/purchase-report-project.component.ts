@@ -24,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -33,6 +34,7 @@ pdfMake.vfs = pdfFonts.vfs;
   styleUrl: './purchase-report-project.component.scss',
   standalone: true,
   imports: [
+    ProjectSelectorComponent,
     TranslatePipe,
     CommonModule,
     MatFormFieldModule,
@@ -66,14 +68,7 @@ export class PurchaseReportProjectComponent {
     this.dialog.close(this.formGroup.value);
   }
 
-  toUpperCase() {
-    const value = this.formGroup.get('projectName')?.value;
-    if (value && value.toUpperCase() !== value) {
-      this.formGroup.patchValue({
-        projectName: value.toUpperCase(),
-      });
-    }
-  }
+
 
   generatePDF(data: any, projectName: string) {
     // First calculate the total for each purchaseType

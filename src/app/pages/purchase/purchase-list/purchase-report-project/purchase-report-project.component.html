@@ -13,18 +13,10 @@
 
   <form [formGroup]="formGroup">
     <mat-dialog-content class="prp-content">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseReport.projectCode" | translate }}</mat-label>
-        <input
-          matInput
-          [placeholder]="'purchaseReport.projectCodePlaceholder' | translate"
-          formControlName="projectName"
-          (keyup)="toUpperCase()"
-          maxlength="5"
-          autocomplete="off"
-        />
-        <mat-hint>4–5 karakter, huruf kapital / angka</mat-hint>
-      </mat-form-field>
+      <app-project-selector
+        formControlName="projectName"
+        [label]="'purchaseReport.projectCode' | translate"
+      />
 
       <div class="prp-note">
         <mat-icon>info</mat-icon>

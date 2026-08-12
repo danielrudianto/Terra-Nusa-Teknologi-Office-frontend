@@ -90,16 +90,10 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseUpdate.project" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="projectName"
-              placeholder="Project name"
-              readonly
-            />
-          </mat-form-field>
+          <app-project-selector
+        formControlName="projectName"
+        [label]="'purchaseUpdate.project' | translate"
+      />
 
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>{{

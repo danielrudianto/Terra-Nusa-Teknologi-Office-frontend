@@ -23,11 +23,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
+import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-draft-create',
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     CommonModule,
     MatButtonModule,
     ReactiveFormsModule,

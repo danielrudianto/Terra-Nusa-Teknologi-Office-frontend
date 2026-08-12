@@ -34,6 +34,7 @@ import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.
 import { buildInsuranceClauses } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 /**
  * 6.4.2 Penutupan pertanggungan (asuransi & surety bond).
@@ -52,6 +53,7 @@ import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-t
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     CommonModule,
     ReactiveFormsModule,
@@ -405,12 +407,7 @@ export class PurchaseOrderCreate642Component {
     });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) {
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-    }
-  }
+
 
   get f() {
     return this.formGroup.controls as any;

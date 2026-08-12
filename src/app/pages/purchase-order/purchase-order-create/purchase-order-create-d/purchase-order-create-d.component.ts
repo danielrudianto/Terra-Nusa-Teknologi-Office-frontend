@@ -34,12 +34,14 @@ import {
 } from '../../../../constants/clause-templates';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { printPurchaseOrderD } from '../../../../helpers/purchase-order-d.helper';
+import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 
 @Component({
   selector: 'app-purchase-order-create-d',
   standalone: true,
   providers: [provideNgxMask()],
   imports: [
+    ProjectSelectorComponent,
     ClauseLineComponent,
     MatTooltipModule,
     TranslatePipe,
@@ -349,12 +351,7 @@ export class PurchaseOrderCreateDComponent {
       });
   }
 
-  toUpperCase() {
-    const v = this.formGroup.get('projectName')?.value;
-    if (v && v.toUpperCase() !== v) {
-      this.formGroup.patchValue({ projectName: v.toUpperCase() });
-    }
-  }
+
 
   private toISO(d: any): string | null {
     return d ? new Date(d).toISOString().split('T')[0] : null;

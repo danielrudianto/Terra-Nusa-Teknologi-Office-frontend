@@ -30,20 +30,10 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "poForm.projectCode" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="projectName"
-            maxlength="5"
-            (keyup)="toUpperCase()"
-            [placeholder]="'poForm.projectCodePlaceholder' | translate"
-          />
-          <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
-          <mat-error *ngIf="f['projectName'].hasError('pattern')"
-            >Harus 4–5 karakter kapital.</mat-error
-          >
-        </mat-form-field>
+        <app-project-selector
+        formControlName="projectName"
+        [label]="'poForm.projectCode' | translate"
+      />
 
         <mat-form-field appearance="outline" class="pog-span2">
           <mat-label>{{ "poForm.supplier" | translate }}</mat-label>

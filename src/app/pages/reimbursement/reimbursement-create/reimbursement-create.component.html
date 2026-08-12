@@ -56,19 +56,10 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{
-            "reimbursementCreate.projectName" | translate
-          }}</mat-label>
-          <input
-            matInput
-            type="text"
-            id="projectName"
-            formControlName="projectName"
-            [placeholder]="'reimbursementCreate.projectPlaceholder' | translate"
-            (keyup)="toUpperCase()"
-          />
-        </mat-form-field>
+        <app-project-selector
+        formControlName="projectName"
+        [label]="'reimbursementCreate.projectName' | translate"
+      />
       </div>
     </section>
 
