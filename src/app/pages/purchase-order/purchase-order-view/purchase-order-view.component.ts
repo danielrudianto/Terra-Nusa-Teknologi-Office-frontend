@@ -20,12 +20,14 @@ import {
   buildTransportClauses,
 } from '../../../constants/clause-templates';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-purchase-order-view',
   standalone: true,
   imports: [
+    FormsModule,
     ClauseLineComponent,
     AuditTrailComponent,
     CommonModule,
@@ -62,14 +64,61 @@ export class PurchaseOrderViewComponent {
 
   clauseSections: ClauseSection[] = [];
 
+  /**
+   * Menyatakan sudah membaca; hanya berarti pada mode pratinjau.
+   */
+  dibaca = false;
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public input: { id: number },
+    @Inject(MAT_DIALOG_DATA)
+    public input: {
+      /** Membuka PO tersimpan; datanya diambil dari server. */
+      id?: number;
+      /**
+       * Menampilkan data yang BELUM tersimpan — dipakai sebagai pratinjau
+       * pada layar pembuatan PO. Bentuknya sama dengan jawaban server.
+       */
+      data?: any;
+      /**
+       * Menampilkan pernyataan "sudah membaca" dan tombol terbitkan.
+       * Dialog menutup dengan `true` bila pembuatnya melanjutkan.
+       */
+      konfirmasi?: boolean;
+    },
     private dialogRef: MatDialogRef<PurchaseOrderViewComponent>,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
   ) {
-    this.fetch();
+    /*
+     * Data yang diberikan langsung tidak diambil ulang dari server.
+     *
+     * Pada pratinjau, PO-nya memang belum ada di server — mengambilnya
+     * hanya menghasilkan 404, dan dialognya tertutup sendiri sebelum
+     * sempat terbaca.
+     */
+    if (this.input?.data) {
+      this.data = this.input.data;
+      this.isLoading = false;
+    } else {
+      this.fetch();
+    }
+  }
+
+  /** Mode pratinjau: dokumen belum terbit. */
+  get isPratinjau(): boolean {
+    return !!this.input?.data;
+  }
+
+  tutup(): void {
+    this.dialogRef.close(false);
+  }
+
+  lanjut(): void {
+    // Penjaga kedua: tombolnya memang sudah dinonaktifkan, tetapi keadaan
+    // tombol bukan tempat menaruh aturan.
+    if (!this.dibaca) return;
+    this.dialogRef.close(true);
   }
 
   private fetch() {

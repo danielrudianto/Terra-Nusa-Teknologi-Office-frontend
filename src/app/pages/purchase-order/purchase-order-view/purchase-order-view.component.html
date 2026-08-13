@@ -120,10 +120,40 @@
     }
   </mat-dialog-content>
 
+  <!--
+    Pernyataan sudah membaca; hanya pada pratinjau sebelum penerbitan.
+
+    SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit — nomornya
+    sudah terpakai dan salinannya sudah beredar.
+  -->
+  @if (isPratinjau && input.konfirmasi) {
+    <div class="pov-konfirmasi">
+      <label class="pov-cek">
+        <input type="checkbox" [(ngModel)]="dibaca" />
+        <span>{{ "poForm.confirmRead" | translate }}</span>
+      </label>
+      <p class="pov-ket">{{ "poForm.confirmReadHint" | translate }}</p>
+    </div>
+  }
+
   <mat-dialog-actions class="pov-foot">
     <span class="pov-spacer"></span>
-    <button type="button" class="pov-close" mat-dialog-close>
-      {{ "common.close" | translate }}
-    </button>
+    @if (isPratinjau && input.konfirmasi) {
+      <button type="button" class="pov-close" (click)="tutup()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="pov-terbit"
+        [disabled]="!dibaca"
+        (click)="lanjut()"
+      >
+        {{ "poForm.confirmCreate" | translate }}
+      </button>
+    } @else {
+      <button type="button" class="pov-close" mat-dialog-close>
+        {{ "common.close" | translate }}
+      </button>
+    }
   </mat-dialog-actions>
 </div>

@@ -293,3 +293,49 @@
 .pov-clauses__sub li {
   white-space: pre-line;
 }
+
+/* ---- pratinjau: pernyataan sudah membaca ---- */
+.pov-konfirmasi {
+  padding: 0.85rem 1.5rem 0.35rem;
+  border-top: 1px solid var(--line);
+}
+.pov-cek {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+}
+.pov-cek input {
+  margin-top: 0.15rem;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.pov-ket {
+  margin: 0.35rem 0 0 1.6rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pov-terbit {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.4rem;
+  margin-left: 0.6rem;
+  background: var(--brand);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.pov-terbit:hover:not(:disabled) {
+  background: var(--brand-strong, #0f3fd0);
+}
+.pov-terbit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

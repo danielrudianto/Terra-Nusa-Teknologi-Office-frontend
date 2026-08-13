@@ -150,14 +150,14 @@
     "searchMenu": "Cari menu...",
     "darkMode": "Mode gelap",
     "lightMode": "Mode terang",
+    "profile": "Profil",
     "bank": "Bank",
     "general": "Umum",
     "user": "Pengguna",
     "clear": "Bersihkan",
     "activity": "Aktivitas",
     "project": "Proyek",
-    "projectReport": "Laporan Proyek",
-    "agenda": "Agenda"
+    "projectReport": "Laporan Proyek"
   },
   "status": {
     "paid": "Lunas",
@@ -1598,17 +1598,7 @@
     "changeTypeTitle": "Ganti jenis purchase order?",
     "changeTypeBody": "Isian yang sudah diketik pada formulir ini akan hilang.",
     "priceExclPpnHint": "Harga yang diisi di luar PPN. Bila dicentang, PPN 11% ditambahkan di atasnya.",
-    "extraPointNote": "Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan), bukan menggantikannya. Contoh: jadwal pengiriman, syarat khusus, dsb.",
-    "schedSemiMonthly": "Dua kali sebulan (tgl X & akhir bulan)",
-    "cutoffFirst": "Cut-off pertama",
-    "cutoffSecondFixed": "Cut-off kedua: akhir bulan",
-    "payNextWeekHint": "Dibayarkan pada hari ini di pekan berikutnya setelah tiap cut-off.",
-    "cutoffEndOfMonth": "Akhir bulan",
-    "preview": "Pratinjau",
-    "previewTitle": "Pratinjau Purchase Order",
-    "confirmRead": "Saya telah membaca dan memeriksa seluruh isi dokumen ini",
-    "confirmReadHint": "Setelah diterbitkan, nomor SPK sudah terpakai dan isinya tidak dapat diubah. Perbaikan hanya mungkin dengan membatalkan dan menerbitkan ulang.",
-    "confirmCreate": "Terbitkan Purchase Order"
+    "extraPointNote": "Poin ini akan ditambahkan setelah poin baku (jadi nomor lanjutan), bukan menggantikannya. Contoh: jadwal pengiriman, syarat khusus, dsb."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -2582,14 +2572,7 @@
     "browse": "telusuri",
     "releaseToUpload": "Lepas untuk upload",
     "multiFileSupport": "Mendukung banyak file PDF sekaligus",
-    "willProcess": "File PDF-mu akan langsung diproses",
-    "overwrite": "Tutup teks",
-    "overwriteHint": "Teks pengganti (kosongkan untuk menutup saja)",
-    "note": "Catatan",
-    "noteHint": "Tulis catatan di sini",
-    "clickToPlace": "Klik pada halaman untuk menempatkan",
-    "pendingChanges": "Ada perubahan yang belum disimpan",
-    "rotate": "Putar halaman"
+    "willProcess": "File PDF-mu akan langsung diproses"
   },
   "reimbursementPayment": {
     "createPayment": "Buat pembayaran reimbursement",
@@ -2908,13 +2891,7 @@
     "weeklyFlow": "Biaya dan tagihan per minggu",
     "weeklyHint": "Minggu dihitung mulai Senin. Minggu tanpa transaksi tetap ditampilkan agar jeda pekerjaan terlihat.",
     "busiestWeek": "Minggu terberat",
-    "cumulative": "Biaya kumulatif terhadap kontrak",
-    "tabTable": "Tabel kerja",
-    "colCode": "Kode",
-    "colCategory": "Kategori",
-    "colValue": "Nilai",
-    "colSuppliers": "Pemasok",
-    "totalCost": "Total biaya"
+    "cumulative": "Biaya kumulatif terhadap kontrak"
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",
@@ -2970,14 +2947,10 @@
     "submit": "Pindahkan",
     "moved": "Tanggal pembayaran dipindahkan."
   },
-  "agendaPage": {
-    "title": "Agenda",
-    "description": "Ulang tahun rekan dan pengingat, per tanggal",
-    "newReminder": "Buat pengingat",
-    "today": "Hari ini",
-    "addHere": "Tambah di tanggal ini",
-    "noEvent": "Tidak ada agenda pada tanggal ini.",
-    "birthdayOf": "Ulang tahun ke-{{age}}",
-    "openCalendar": "Buka kalender agenda"
+  "poF": {
+    "sectionSample": "Penyerahan Benda Uji",
+    "labAddress": "Alamat laboratorium",
+    "labAddressPlaceholder": "Alamat lengkap tempat benda uji diserahkan",
+    "labAddressHint": "Benda uji diantar oleh PIHAK PERTAMA ke alamat ini."
   }
 }

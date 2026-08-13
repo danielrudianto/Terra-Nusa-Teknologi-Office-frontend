@@ -320,35 +320,66 @@
         </div>
       }
 
-      <div class="pof-section__title">
-        {{ "poForm.sectionDelivery" | translate }}
-      </div>
-      <div class="pof-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
-          <mat-select formControlName="deliveryMethod">
-            <mat-option [value]="0">{{
-              "poForm.franco" | translate
-            }}</mat-option>
-            <mat-option [value]="1">{{ "poForm.loco" | translate }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <!--
+        Pada jasa pengujian, franco/loco tidak berlaku.
 
-        <mat-form-field appearance="outline" class="pof-span2">
-          <mat-label>{{
-            (formGroup.value.deliveryMethod === 1
-              ? "poForm.deliveryAddressLoco"
-              : "poForm.deliveryAddressFranco"
-            ) | translate
-          }}</mat-label>
-          <textarea
-            matInput
-            formControlName="deliveryAddress"
-            rows="2"
-            style="resize: none"
-          ></textarea>
-        </mat-form-field>
+        Franco dan loco menentukan siapa yang menanggung ongkos kirim barang
+        yang dibeli. Di sini tidak ada barang yang dibeli: benda ujinya milik
+        PIHAK PERTAMA sendiri, diantar ke laboratorium, diuji, lalu yang
+        diterima kembali adalah laporannya. Menampilkan pilihan itu memaksa
+        penggunanya menjawab pertanyaan yang tidak punya jawaban benar.
+      -->
+      <div class="pof-section__title">
+        {{
+          (isTestService ? "poF.sectionSample" : "poForm.sectionDelivery")
+            | translate
+        }}
       </div>
+
+      @if (isTestService) {
+        <div class="pof-grid">
+          <mat-form-field appearance="outline" class="pof-span2">
+            <mat-label>{{ "poF.labAddress" | translate }}</mat-label>
+            <textarea
+              matInput
+              formControlName="deliveryAddress"
+              rows="2"
+              style="resize: none"
+              [placeholder]="'poF.labAddressPlaceholder' | translate"
+            ></textarea>
+            <mat-hint>{{ "poF.labAddressHint" | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
+      } @else {
+        <div class="pof-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
+            <mat-select formControlName="deliveryMethod">
+              <mat-option [value]="0">{{
+                "poForm.franco" | translate
+              }}</mat-option>
+              <mat-option [value]="1">{{
+                "poForm.loco" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="pof-span2">
+            <mat-label>{{
+              (formGroup.value.deliveryMethod === 1
+                ? "poForm.deliveryAddressLoco"
+                : "poForm.deliveryAddressFranco"
+              ) | translate
+            }}</mat-label>
+            <textarea
+              matInput
+              formControlName="deliveryAddress"
+              rows="2"
+              style="resize: none"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      }
       <div class="pof-note">
         <mat-icon>info</mat-icon>
         <span
@@ -547,14 +578,6 @@
 
       <div class="pof-actions">
         <span class="pof-spacer"></span>
-        <button
-          type="button"
-          class="pof-previewbtn"
-          [disabled]="isSubmitting"
-          (click)="pratinjau()"
-        >
-          {{ "poForm.preview" | translate }}
-        </button>
         <button
           type="submit"
           class="pof-submit"
