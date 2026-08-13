@@ -27,16 +27,11 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="eca-full">
-        <mat-label>{{ "expenseAdmin.bankOrigin" | translate }}</mat-label>
-        <mat-select formControlName="bankAccountID">
-          @for (option of bankAccounts; track option) {
-            <mat-option [value]="option.id">
-              {{ option.bankAccountNumber }} - {{ option.bankAccountName }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <app-bank-account-selector
+        formControlName="bankAccountID"
+        [label]="'expenseAdmin.bankOrigin' | translate"
+        class="eca-full"
+      />
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="eca-foot">

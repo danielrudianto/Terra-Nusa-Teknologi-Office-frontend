@@ -147,6 +147,15 @@ export class PurchaseOrderCreateBComponent {
     // Sewa tanpa operator adalah pola yang selama ini dipakai, jadi itu
     // yang menjadi bawaan.
     operatorByVendor: new FormControl(false),
+    /*
+     * Sewa berdurasi singkat — biasanya satu shift.
+     *
+     * Menyesuaikan lima ketentuan yang hanya berlaku pada penyewaan
+     * berhari-hari: pelaporan BBM, mekanik yang didatangkan, tenggat
+     * perbaikan dua hari, berita acara serah terima, dan koordinasi
+     * bongkar-muat.
+     */
+    shortTermRental: new FormControl(false),
     // Hasil negosiasi per vendor; bawaannya penyedia alat.
     equipmentRiskBearer: new FormControl('kedua', Validators.required),
     // Hanya dipakai bila ada baris sewa bersatuan jam.
@@ -261,11 +270,25 @@ export class PurchaseOrderCreateBComponent {
    * terpisah, agar klausul hourmeter tidak mungkin berbeda dari dasar
    * perhitungan yang ditagihkan.
    */
-  rentalCategories = [
+  private readonly SEMUA_KATEGORI = [
     { value: 'alat-berat', label: 'Alat berat (excavator, crane, bor)' },
     { value: 'kendaraan', label: 'Kendaraan (mobil, motor, truk)' },
     { value: 'umum', label: 'Perlengkapan lain (scaffolding, genset, dll)' },
   ];
+
+  /**
+   * Jenis barang yang boleh dipilih.
+   *
+   * Ketika SPK ini terbit sebagai tipe A, yang disewa adalah alat yang
+   * mengangkat atau memindahkan — forklift, crane, excavator. Scaffolding
+   * dan genset tidak pernah disewa lewat jalur itu, dan menampilkannya
+   * hanya membuka kemungkinan dokumen terbit dengan jenis yang keliru.
+   */
+  get rentalCategories() {
+    return this.isTipeA
+      ? this.SEMUA_KATEGORI.filter((c) => c.value === 'alat-berat')
+      : this.SEMUA_KATEGORI;
+  }
 
   riskBearers = [
     { value: 'kedua', label: 'PIHAK KEDUA (vendor pemilik alat)' },
@@ -335,9 +358,29 @@ export class PurchaseOrderCreateBComponent {
    * dapat mengubahnya setelah itu.
    */
   onPurchaseTypeChange(): void {
-    this.formGroup
-      .get('includeTransportCoverage')
-      ?.setValue(this.formGroup.get('purchaseType')?.value === 'A');
+    const tipeA = this.formGroup.get('purchaseType')?.value === 'A';
+    this.formGroup.get('includeTransportCoverage')?.setValue(tipeA);
+
+    if (!tipeA) return;
+
+    /*
+     * Jenis barang dibetulkan bila tidak lagi tersedia.
+     *
+     * Berpindah ke tipe A setelah memilih scaffolding menyisakan nilai yang
+     * tidak ada pada daftarnya — kolomnya tampak kosong, tetapi yang
+     * tersimpan masih pilihan lama dan klausulnya ikut yang lama.
+     */
+    const kategori = this.formGroup.get('rentalCategory');
+    if (kategori?.value !== 'alat-berat') kategori?.setValue('alat-berat');
+
+    /*
+     * Operator dari vendor dinyalakan sendiri.
+     *
+     * Forklift atau crane yang disewa untuk memuat barang selalu datang
+     * bersama operatornya — AKN tidak menyediakan operator alat berat.
+     * Tetap dapat dimatikan bila memang alatnya saja yang disewa.
+     */
+    this.formGroup.get('operatorByVendor')?.setValue(true);
   }
 
   get isTipeA(): boolean {
@@ -347,6 +390,8 @@ export class PurchaseOrderCreateBComponent {
   private clauseContext() {
     const v = this.formGroup.getRawValue();
     return {
+      // Hanya berarti saat terbit sebagai tipe A.
+      shortTermRental: v.purchaseType === 'A' && !!v.shortTermRental,
       paymentTerm: v.paymentTerm,
       creditTerm: v.creditTerm,
       prepaidTerm: v.prepaidTerm,

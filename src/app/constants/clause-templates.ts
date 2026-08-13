@@ -276,7 +276,17 @@ function paymentSentence(ctx: ClauseContext): string {
       return `Termin pembayaran adalah uang muka sebesar ${prepaid}% di muka, ${tempo}.`;
     }
     case 'CR':
-      return `Termin pembayaran adalah kredit dalam ${credit} hari.`;
+      // "Tempo", bukan "kredit".
+      //
+      // Di lingkungan konstruksi, tempo adalah istilah yang dipakai
+      // sehari-hari untuk pembayaran mundur; kredit lebih sering dipahami
+      // sebagai pinjaman berbunga, dan pada dokumen perjanjian perbedaan
+      // itu bukan soal selera.
+      //
+      // Cabang PPD/CRD di atas sudah memakai "tempo" sejak awal — hanya
+      // cabang ini yang tertinggal, sehingga satu dokumen bisa menyebut
+      // dua istilah untuk hal yang sama.
+      return `Termin pembayaran adalah tempo dalam ${credit} hari.`;
     default:
       // PO lama menyimpan termin sebagai teks bebas ("Tempo 30 hari"), yang
       // tidak cocok dengan satu pun kode di atas. Mencetak teksnya apa adanya
@@ -984,7 +994,9 @@ const B_CLAUSES: ClauseTemplate[] = [
           ? [
               'Harga tersebut di atas sudah mencakup koordinasi lain-lain termasuk namun tidak terbatas pada:',
               [
-                'upah operator;',
+                // Upah operator hanya disebut bila vendor memang mengirim
+                // operatornya. Genset dan bar cutter dioperasikan sendiri.
+                ...(ctx.operatorByVendor ? ['upah operator;'] : []),
                 'bahan bakar minyak (BBM);',
                 'biaya koordinasi bongkar dan muat;',
                 'retribusi perjalanan;',
@@ -996,8 +1008,20 @@ const B_CLAUSES: ClauseTemplate[] = [
             ]
           : []),
         'Tata cara penagihan dan pembayaran terlampir di lembar terpisah dan menjadi kesatuan dengan Surat Perintah Kerja ini.',
-        `PIHAK KEDUA wajib memberikan daftar ${barang} dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
-        `Hanya ${barang} dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`,
+        /*
+         * Tenaga kerja hanya disebut bila vendor memang mengirim orang.
+         *
+         * Genset dan bar cutter disewa tanpa operator — menyebut "tenaga
+         * kerja" pada dokumennya menimbulkan kewajiban mendaftarkan orang
+         * yang tidak pernah datang, dan ketentuan yang tidak pernah
+         * dijalankan melemahkan seluruh dokumennya.
+         */
+        ctx.operatorByVendor
+          ? `PIHAK KEDUA wajib memberikan daftar ${barang} dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`
+          : `PIHAK KEDUA wajib memberikan daftar ${barang} yang akan berada di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
+        ctx.operatorByVendor
+          ? `Hanya ${barang} dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`
+          : `Hanya ${barang} yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`,
         `PIHAK KEDUA wajib menyewakan ${barang} sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA.`,
         // SILO hanya mengikat pesawat angkat dan angkut. Memintanya untuk
         // scaffolding atau kendaraan berarti meminta dokumen yang memang
@@ -1060,7 +1084,7 @@ const B_CLAUSES: ClauseTemplate[] = [
         // Batas nilai selalu disebut agar bila terjadi klaim, angkanya
         // mengacu pada berita acara — bukan ditentukan sepihak setelah
         // kejadian, saat posisi tawar sudah timpang.
-        `Keamanan dan keselamatan ${barang} selama berada di lokasi kerja menjadi tanggung jawab ${
+        `Keamanan dan keselamatan ${barang} selama berada di area proyek/kerja menjadi tanggung jawab ${
           ctx.equipmentRiskBearer === 'pertama'
             ? 'PIHAK PERTAMA'
             : 'PIHAK KEDUA'

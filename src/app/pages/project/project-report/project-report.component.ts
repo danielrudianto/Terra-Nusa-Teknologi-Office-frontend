@@ -63,6 +63,57 @@ function namaPemasok(p: any): string {
  * sebenarnya nomor dokumen — sehingga rinciannya berisi deretan nomor dan
  * tidak menjawab pertanyaan "uangnya ke siapa".
  */
+/*
+ * Nilai satu dokumen biaya.
+ *
+ * Rumusnya BERBEDA per sumber dan bedanya disengaja: pembelian memuat PBBKB
+ * dan nilai lain, draft belum, reimbursement hanya nominal pengajuan.
+ * Menyamakannya membuat PPN terhitung dua kali pada sebagian baris dan
+ * hilang pada sebagian lain.
+ *
+ * Disimpan di satu tempat karena dipakai dua kali — pengelompokan menurut
+ * kategori dan arus per minggu. Bila ditulis terpisah, cepat atau lambat
+ * salah satunya diubah sendirian dan kedua tampilan berbeda totalnya.
+ */
+function nilaiPembelian(p: any): number {
+  return (
+    Number(p.dpp || 0) +
+    (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
+    Number(p.pbbkb || 0) +
+    Number(p.otherValue || 0)
+  );
+}
+
+function nilaiDraft(p: any): number {
+  return (
+    Number(p.dpp || 0) +
+    (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
+    Number(p.pbbkb || 0)
+  );
+}
+
+function nilaiFaktur(f: any): number {
+  return Number(f.dpp || 0) + (Number(f.ppn || 0) * Number(f.dpp || 0)) / 100;
+}
+
+/**
+ * Senin pada minggu tanggal tersebut, sebagai teks `YYYY-MM-DD`.
+ *
+ * Minggu dimulai Senin, bukan Minggu: pekerjaan lapangan dan penagihan
+ * mengikuti minggu kerja, dan memotong di hari Minggu membelah satu minggu
+ * kerja menjadi dua batang.
+ */
+function awalMinggu(tanggal: any): string | null {
+  if (!tanggal) return null;
+  const t = new Date(tanggal);
+  if (isNaN(t.getTime())) return null;
+  // getDay(): 0 = Minggu. Digeser agar Senin menjadi awal.
+  const geser = (t.getDay() + 6) % 7;
+  t.setDate(t.getDate() - geser);
+  const dua = (n: number) => String(n).padStart(2, '0');
+  return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
+}
+
 function namaPenerima(r: any): string {
   return (
     r?.bankAccountName?.trim() ||
@@ -70,6 +121,16 @@ function namaPenerima(r: any): string {
     r?.name?.trim() ||
     '(penerima tidak tercatat)'
   );
+}
+
+interface Minggu {
+  /** Senin minggu tersebut, `YYYY-MM-DD`. */
+  mulai: string;
+  label: string;
+  biaya: number;
+  tagihan: number;
+  /** Biaya sejak awal proyek sampai akhir minggu ini. */
+  biayaKumulatif: number;
 }
 
 interface Kategori {
@@ -116,9 +177,8 @@ export class ProjectReportComponent implements OnInit {
   readonly memuat = signal(false);
   readonly galat = signal<string | null>(null);
   readonly kode = signal('');
-  readonly tampilan = signal<'ikhtisar' | 'tabel'>('ikhtisar');
+  readonly tampilan = signal<'ikhtisar' | 'arus'>('ikhtisar');
   readonly kategoriTerbuka = signal<string | null>(null);
-  readonly barisTerbuka = signal<Set<string>>(new Set());
 
   /**
    * Sertakan pembelian bertanda internal.
@@ -177,7 +237,6 @@ export class ProjectReportComponent implements OnInit {
     this.galat.set(null);
     this.kode.set(kode);
     this.kategoriTerbuka.set(null);
-    this.barisTerbuka.set(new Set());
 
     this.api
       .get(`purchases/report/project/${kode}`, {})
@@ -246,19 +305,10 @@ export class ProjectReportComponent implements OnInit {
       : d.purchases.filter((p: any) => !p.isInternal);
 
     for (const p of pembelian) {
-      const n =
-        Number(p.dpp || 0) +
-        (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
-        Number(p.pbbkb || 0) +
-        Number(p.otherValue || 0);
-      catat(p.purchaseType, namaPemasok(p), n);
+      catat(p.purchaseType, namaPemasok(p), nilaiPembelian(p));
     }
     for (const p of d.purchase_drafts) {
-      const n =
-        Number(p.dpp || 0) +
-        (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
-        Number(p.pbbkb || 0);
-      catat(p.purchaseType, namaPemasok(p), n);
+      catat(p.purchaseType, namaPemasok(p), nilaiDraft(p));
     }
     for (const r of d.reimbursements) {
       catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
@@ -277,6 +327,80 @@ export class ProjectReportComponent implements OnInit {
       });
     }
     return hasil.sort((a, b) => b.nilai - a.nilai);
+  });
+
+  /**
+   * Arus per minggu: biaya keluar dan tagihan terbit.
+   *
+   * Mingguan, bukan bulanan, karena proyek di sini relatif pendek —
+   * bulanan hanya menghasilkan tiga sampai empat batang dan tidak
+   * menunjukkan apa pun tentang temponya.
+   *
+   * Minggu yang KOSONG tetap ditampilkan. Melompatinya membuat jeda dua
+   * bulan terlihat sama rapatnya dengan dua minggu berturut-turut, dan
+   * justru jeda itulah yang biasanya menandakan pekerjaan berhenti.
+   */
+  readonly mingguan = computed<Minggu[]>(() => {
+    const d = this._data();
+    if (!d) return [];
+
+    const biaya = new Map<string, number>();
+    const tagihan = new Map<string, number>();
+    const tambah = (peta: Map<string, number>, kunci: string | null, n: number) => {
+      if (!kunci) return;
+      peta.set(kunci, (peta.get(kunci) ?? 0) + n);
+    };
+
+    const pembelian = this.sertakanInternal()
+      ? d.purchases
+      : d.purchases.filter((p: any) => !p.isInternal);
+
+    for (const p of pembelian)
+      tambah(biaya, awalMinggu(p.date), nilaiPembelian(p));
+    for (const p of d.purchase_drafts)
+      tambah(biaya, awalMinggu(p.date), nilaiDraft(p));
+    for (const r of d.reimbursements)
+      tambah(biaya, awalMinggu(r.date), Number(r.amount || 0));
+    for (const f of d.sales_invoices)
+      tambah(tagihan, awalMinggu(f.date), nilaiFaktur(f));
+
+    const semua = [...new Set([...biaya.keys(), ...tagihan.keys()])].sort();
+    if (semua.length === 0) return [];
+
+    const hasil: Minggu[] = [];
+    let kumulatif = 0;
+    const kursor = new Date(semua[0]);
+    const akhir = new Date(semua[semua.length - 1]);
+
+    while (kursor <= akhir) {
+      const dua = (n: number) => String(n).padStart(2, '0');
+      const kunci = `${kursor.getFullYear()}-${dua(kursor.getMonth() + 1)}-${dua(kursor.getDate())}`;
+      const b = biaya.get(kunci) ?? 0;
+      kumulatif += b;
+      hasil.push({
+        mulai: kunci,
+        label: `${dua(kursor.getDate())}/${dua(kursor.getMonth() + 1)}`,
+        biaya: b,
+        tagihan: tagihan.get(kunci) ?? 0,
+        biayaKumulatif: kumulatif,
+      });
+      kursor.setDate(kursor.getDate() + 7);
+    }
+    return hasil;
+  });
+
+  /** Nilai terbesar di antara biaya dan tagihan; untuk menskalakan batang. */
+  get maksMingguan(): number {
+    const m = this.mingguan();
+    if (!m.length) return 0;
+    return Math.max(...m.map((x) => Math.max(x.biaya, x.tagihan)));
+  }
+
+  /** Minggu paling boros — yang biasanya pertama ditanyakan. */
+  readonly mingguTerberat = computed<Minggu | null>(() => {
+    const m = this.mingguan();
+    if (!m.length) return null;
+    return m.reduce((a, b) => (b.biaya > a.biaya ? b : a));
   });
 
   readonly totalBiaya = computed(() =>
@@ -304,6 +428,7 @@ export class ProjectReportComponent implements OnInit {
    */
   lacakKategori = (_: number, k: Kategori) => k.kode;
   lacakPemasok = (_: number, s: BarisPemasok) => s.nama;
+  lacakMinggu = (_: number, w: Minggu) => w.mulai;
 
   /**
    * Penanda sesaat bahwa angka baru saja dihitung ulang.
@@ -318,7 +443,6 @@ export class ProjectReportComponent implements OnInit {
   toggleInternal(): void {
     this.sertakanInternal.set(!this.sertakanInternal());
     this.kategoriTerbuka.set(null);
-    this.barisTerbuka.set(new Set());
 
     clearTimeout(this.jedaBerubah);
     this.baruBerubah.set(true);
@@ -365,13 +489,8 @@ export class ProjectReportComponent implements OnInit {
     this.kategoriTerbuka.set(this.kategoriTerbuka() === kode ? null : kode);
   }
 
-  toggleBaris(kode: string): void {
-    const s = new Set(this.barisTerbuka());
-    s.has(kode) ? s.delete(kode) : s.add(kode);
-    this.barisTerbuka.set(s);
-  }
 
-  pilihTampilan(t: 'ikhtisar' | 'tabel'): void {
+  pilihTampilan(t: 'ikhtisar' | 'arus'): void {
     if (t === this.tampilan()) return;
     this.tampilan.set(t);
     this.kategoriTerbuka.set(null);

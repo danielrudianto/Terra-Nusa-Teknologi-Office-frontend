@@ -260,3 +260,54 @@
     justify-content: center;
   }
 }
+
+/* Tombol kirim semua: bentuknya sekunder terhadap tombol buat, karena ini
+   menyelesaikan pekerjaan yang sudah ada — bukan memulai yang baru. */
+.ssl-send {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 1.05rem;
+  border: 1px solid var(--border, #dfe3ea);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--brand, #154dec);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--hover, #f6f8ff);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Tombol buat tidak lagi perlu mendorong dirinya sendiri: yang mendorong
+   sudah tombol kirim di sebelah kirinya. */
+.ssl-add {
+  margin-left: 0.6rem;
+}
+
+@media (max-width: 640px) {
+  .ssl-send {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+  .ssl-add {
+    margin-left: 0;
+  }
+}

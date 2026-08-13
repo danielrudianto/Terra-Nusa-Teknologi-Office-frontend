@@ -112,18 +112,11 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="lc-span2">
-          <mat-label>{{ "loansCreate.receiverAccount" | translate }}</mat-label>
-          <mat-select formControlName="bankAccountID">
-            <mat-option *ngFor="let acc of bankAccounts" [value]="acc.id">
-              {{ acc.bankName }} - {{ acc.bankAccountNumber }}
-              <span *ngIf="acc.bankAccountName">
-                ({{ acc.bankAccountName }})</span
-              >
-            </mat-option>
-          </mat-select>
-          <mat-hint>{{ "loans.companyAccount" | translate }}</mat-hint>
-        </mat-form-field>
+        <app-bank-account-selector
+          formControlName="bankAccountID"
+          [label]="'loansCreate.receiverAccount' | translate"
+          class="lc-span2"
+        />
       </div>
 
       <div class="lc-section__title lc-section__title--mt">

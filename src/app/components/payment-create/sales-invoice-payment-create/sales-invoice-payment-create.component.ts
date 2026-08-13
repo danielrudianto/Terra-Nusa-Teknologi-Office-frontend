@@ -26,6 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-sales-invoice-payment-create',
@@ -34,6 +35,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   templateUrl: './sales-invoice-payment-create.component.html',
   styleUrl: './sales-invoice-payment-create.component.scss',
   imports: [
+    BankAccountSelectorComponent,
     NgxMaskDirective,
     MatInputModule,
     MatDialogModule,

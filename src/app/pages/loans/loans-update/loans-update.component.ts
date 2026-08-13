@@ -21,6 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 /**
  * Ubah data pinjaman.
@@ -38,6 +39,7 @@ import { banks, IBank } from 'src/app/utils/bank';
   selector: 'app-loans-update',
   standalone: true,
   imports: [
+    BankAccountSelectorComponent,
     TranslatePipe,
     CommonModule,
     ReactiveFormsModule,

@@ -29,9 +29,30 @@
     </mat-form-field>
 
     <!--
+      Kirim seluruh slip yang sedang tampil.
+
+      Diletakkan sebelum tombol buat: yang satu menyelesaikan pekerjaan yang
+      sudah ada, yang lain memulai yang baru.
+    -->
+    <button
+      type="button"
+      class="ssl-send"
+      *appCan="'salary_slip:create'"
+      [disabled]="isSendingBulk || !slipDapatDikirim.length"
+      (click)="kirimSemua()"
+    >
+      <mat-icon>forward_to_inbox</mat-icon>
+      <span>
+        {{
+          isSendingBulk
+            ? ("salarySlip.sending" | translate)
+            : ("salarySlip.sendAll" | translate)
+        }}
+      </span>
+    </button>
+
+    <!--
       Buat slip langsung dari sini, tanpa lewat Data Master → Karyawan.
-      Diletakkan di ujung kanan: dua kolom di kirinya menyaring yang sudah
-      ada, sedangkan tombol ini membuat yang baru.
     -->
     <button
       type="button"

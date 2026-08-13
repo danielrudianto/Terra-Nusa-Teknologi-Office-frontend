@@ -24,10 +24,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-loan-payment-create',
   imports: [
+    BankAccountSelectorComponent,
     CommonModule,
     MatIconModule,
     FormsModule,

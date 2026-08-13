@@ -22,6 +22,7 @@ import { PaymentSlipHelper } from 'src/app/helpers/payment-slip.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-expense-payment-create',
@@ -30,6 +31,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './expense-payment-create.component.scss',
   standalone: true,
   imports: [
+    BankAccountSelectorComponent,
     NgxMaskDirective,
     FormsModule,
     ReactiveFormsModule,

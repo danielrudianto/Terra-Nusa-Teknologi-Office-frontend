@@ -138,14 +138,10 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "income.bankAccount" | translate }}</mat-label>
-          <mat-select formControlName="bankAccountID">
-            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id">
-              {{ bank.bankAccountNumber }} — {{ bank.bankAccountName }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <app-bank-account-selector
+          formControlName="bankAccountID"
+          [label]="'income.bankAccount' | translate"
+        />
       </div>
     </mat-dialog-content>
 

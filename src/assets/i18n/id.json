@@ -398,7 +398,9 @@
     "searchType": "Cari jenis atau kode PO",
     "projectExpenses": "Pengeluaran proyek",
     "officeExpenses": "Pengeluaran kantor",
-    "noTypeMatch": "Tidak ada jenis PO yang cocok."
+    "noTypeMatch": "Tidak ada jenis PO yang cocok.",
+    "menuReject": "Tolak PO",
+    "rejectTitle": "Tolak Purchase Order"
   },
   "income": {
     "title": "Pendapatan Lain",
@@ -1072,7 +1074,10 @@
     "menuViewMutation": "Lihat mutasi",
     "menuEdit": "Ubah rekening",
     "menuDelete": "Hapus rekening",
-    "createAccount": "Buat rekening"
+    "createAccount": "Buat rekening",
+    "selectorPlaceholder": "Ketik nomor, nama, atau bank",
+    "noMatch": "Tidak ada rekening yang cocok",
+    "mustPick": "Pilih rekening dari daftar"
   },
   "expenseOpponent": {
     "title": "Lawan Transaksi",
@@ -2148,8 +2153,8 @@
     "cityPlaceholder": "Ex. Bandung",
     "saving": "Menyimpan...",
     "selectBank": "Pilih bank",
-    "proxyPayment": "Sekalian catat sebagai pembelian",
-    "proxyPaymentHint": "Pembelian dicatat dengan nomor invoice yang sama, sehingga tagihannya langsung masuk antrean pembayaran."
+    "proxyPayment": "Sertakan Surat Pengalihan Pembayaran",
+    "proxyPaymentHint": "Suratnya ikut tercetak di berkas yang sama, sesudah invoice dan SPK. Dipakai bila pembayaran dialihkan ke rekening lain."
   },
   "poType": {
     "t5_1_1": "Pembelian aset",
@@ -2231,7 +2236,8 @@
     "prompt": "Yakin mau melanjutkan?",
     "deleteTitle": "Hapus data",
     "deletePrompt": "Yakin mau menghapus data ini? Tindakan ini tidak bisa dibatalkan.",
-    "deleteNamed": "Yakin mau menghapus \"{{name}}\"?"
+    "deleteNamed": "Yakin mau menghapus \"{{name}}\"?",
+    "rejectNamed": "Tolak {{name}}? Statusnya tidak dapat dikembalikan lewat layar ini."
   },
   "purchaseView": {
     "createdOn": "Dokumen dibuat pada"
@@ -2753,7 +2759,8 @@
     "accessUpdated": "Akses pengguna diperbarui",
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
     "saveFailed": "Gagal menyimpan data",
-    "actionFailed": "Tindakan gagal dijalankan"
+    "actionFailed": "Tindakan gagal dijalankan",
+    "rejectSuccess": "Purchase order ditolak"
   },
   "panduan": {
     "title": "Panduan",
@@ -2865,18 +2872,17 @@
     "noContractHint": "Margin tidak dapat dihitung sebelum dokumen kontrak dimasukkan.",
     "openProject": "Buka proyek",
     "tabOverview": "Ikhtisar",
-    "tabTable": "Tabel kerja",
-    "colCode": "Kode",
-    "colCategory": "Kategori",
-    "colValue": "Nilai",
-    "colSuppliers": "Pemasok",
-    "totalCost": "Total biaya",
     "contractDppHint": "DPP, di luar PPN",
     "grossValue": "nominal",
     "composition": "Komposisi biaya",
     "includeInternal": "Sertakan pembelian internal",
     "internalCount": "pembelian internal · draft & reimbursement selalu ikut",
-    "overBudget": "Biaya melampaui kontrak"
+    "overBudget": "Biaya melampaui kontrak",
+    "tabFlow": "Arus per minggu",
+    "weeklyFlow": "Biaya dan tagihan per minggu",
+    "weeklyHint": "Minggu dihitung mulai Senin. Minggu tanpa transaksi tetap ditampilkan agar jeda pekerjaan terlihat.",
+    "busiestWeek": "Minggu terberat",
+    "cumulative": "Biaya kumulatif terhadap kontrak"
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { SalarySlipEmployeePickerComponent } from '../salary-slip-employee-picker/salary-slip-employee-picker.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -312,6 +313,99 @@ export class SalarySlipListComponent {
             duration: 3000,
           });
         },
+      });
+  }
+
+  isSendingBulk = false;
+
+  /**
+   * Slip pada halaman ini yang dapat dikirim.
+   *
+   * Alamat surel diperiksa bila memang ikut terkirim dari server. Bila
+   * kolomnya tidak ada sama sekali — misalnya pada versi backend yang belum
+   * menyertakannya — seluruh slip dianggap dapat dikirim, dan server yang
+   * memutuskan mana yang gagal.
+   *
+   * Menonaktifkan tombol karena kolom yang tidak ada berarti fitur ini mati
+   * tanpa satu pun penjelasan, dan itu lebih membingungkan daripada
+   * kegagalan yang disebutkan.
+   */
+  get slipDapatDikirim(): any[] {
+    const data = this.dataSource || [];
+    const adaKolomEmail = data.some((x) => x?.email !== undefined);
+    return adaKolomEmail ? data.filter((x) => !!x?.email) : data;
+  }
+
+  /**
+   * Kirim seluruh slip pada halaman ini.
+   *
+   * Dikonfirmasi lebih dulu karena surel tidak dapat ditarik kembali —
+   * dan yang dikirim adalah dokumen gaji, yang keliru alamat berarti orang
+   * lain membaca gaji seseorang.
+   *
+   * Yang dikirim hanya slip pada halaman yang sedang tampil, mengikuti
+   * penyaring bulan dan pencarian. Dengan begitu "kirim semua" selalu
+   * berarti "kirim yang terlihat", bukan sesuatu yang lebih luas dari yang
+   * sedang dilihat.
+   */
+  kirimSemua(): void {
+    const slip = this.slipDapatDikirim;
+    if (!slip.length) {
+      this.snackBar.open(
+        this.translate.instant('salarySlip.noneToSend'),
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('salarySlip.sendAllTitle'),
+          prompt: this.translate.instant('salarySlip.sendAllPrompt', {
+            count: slip.length,
+          }),
+          confirmLabel: this.translate.instant('salarySlip.sendAllConfirm'),
+          isDestructive: false,
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (!setuju) return;
+        this.isSendingBulk = true;
+
+        this.apiService
+          .post('salary-slips/send-bulk', { ids: slip.map((x) => x.id) })
+          .subscribe({
+            next: (r: any) => {
+              const terkirim = r?.sent ?? 0;
+              const gagal = r?.failed ?? 0;
+
+              // Kegagalan disebut jumlahnya, bukan disembunyikan: yang
+              // mengirim perlu tahu ada yang harus diulang.
+              this.snackBar.open(
+                gagal
+                  ? this.translate.instant('salarySlip.sendAllPartial', {
+                      sent: terkirim,
+                      failed: gagal,
+                    })
+                  : this.translate.instant('salarySlip.sendAllDone', {
+                      sent: terkirim,
+                    }),
+                'Close',
+                { duration: gagal ? 6000 : 4000 },
+              );
+
+              if (gagal) console.warn('[Slip gaji] gagal dikirim:', r?.failures);
+            },
+            error: (e) => {
+              this.snackBar.open(this.serverMessage.terjemahkan(e), 'Close', {
+                duration: 4000,
+              });
+            },
+          })
+          .add(() => (this.isSendingBulk = false));
       });
   }
 

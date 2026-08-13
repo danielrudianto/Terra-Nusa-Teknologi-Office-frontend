@@ -90,10 +90,10 @@
         </button>
         <button
           type="button"
-          [class.on]="tampilan() === 'tabel'"
-          (click)="pilihTampilan('tabel')"
+          [class.on]="tampilan() === 'arus'"
+          (click)="pilihTampilan('arus')"
         >
-          {{ "projectReport.tabTable" | translate }}
+          {{ "projectReport.tabFlow" | translate }}
         </button>
       </div>
 
@@ -123,33 +123,59 @@
       <div class="prp-label" *ngIf="nilaiKontrak() > 0">
         {{ "projectReport.contractUsed" | translate }}
       </div>
+      <!--
+        Di dalam batang hanya PERSENTASE; keterangannya di legenda bawah.
+
+        Sebelumnya nama segmen ditulis di dalam batang, dan pada proyek yang
+        biayanya baru sedikit segmennya terlalu sempit untuk memuat teks —
+        tulisannya terpotong atau hilang sama sekali. Angka persen jauh lebih
+        pendek, jadi tetap terbaca pada segmen yang sempit sekalipun.
+      -->
       <div class="prp-mbar" *ngIf="nilaiKontrak() > 0">
-        <!-- Biaya masih di bawah kontrak: sisanya margin. -->
         <ng-container *ngIf="margin() >= 0">
           <div
             class="prp-mbar__biaya"
             [style.width.%]="persenKontrak(totalBiaya())"
           >
-            {{ "projectReport.cost" | translate }}
+            <span *ngIf="persenKontrak(totalBiaya()) >= 8">
+              {{ persenKontrak(totalBiaya()) | number: "1.0-0" }}%
+            </span>
           </div>
           <div class="prp-mbar__margin" [style.width.%]="persenKontrak(margin())">
-            {{ "projectReport.margin" | translate }}
+            <span *ngIf="persenKontrak(margin()) >= 8">
+              {{ persenKontrak(margin()) | number: "1.0-0" }}%
+            </span>
           </div>
         </ng-container>
 
         <!--
-          Biaya melampaui kontrak.
-
-          Batangnya tidak lagi menggambarkan pembagian, jadi yang ditunjukkan
-          adalah seberapa jauh terlampaui. Membiarkannya sebagai satu blok
-          penuh tanpa keterangan membuat pembacanya mengira grafiknya rusak.
+          Biaya melampaui kontrak: batangnya tidak lagi menggambarkan
+          pembagian, jadi yang ditunjukkan seberapa jauh terlampaui.
         -->
         <ng-container *ngIf="margin() < 0">
           <div class="prp-mbar__biaya prp-mbar__biaya--penuh" [style.width.%]="100">
-            {{ "projectReport.overBudget" | translate }}
-            {{ persenKontrak(-margin()) | number: "1.0-0" }}%
+            <span>+{{ persenKontrak(-margin()) | number: "1.0-0" }}%</span>
           </div>
         </ng-container>
+      </div>
+
+      <!-- Legenda: nama segmen dan nilainya, di luar batang. -->
+      <div class="prp-mbar-legenda" *ngIf="nilaiKontrak() > 0">
+        <span>
+          <i class="prp-kotak prp-kotak--biaya-kontrak"></i>
+          {{ "projectReport.cost" | translate }}
+          <b>{{ totalBiaya() | number: "1.0-0" }}</b>
+        </span>
+        <span *ngIf="margin() >= 0">
+          <i class="prp-kotak prp-kotak--margin"></i>
+          {{ "projectReport.margin" | translate }}
+          <b>{{ margin() | number: "1.0-0" }}</b>
+        </span>
+        <span *ngIf="margin() < 0" class="prp-mbar-legenda--lewat">
+          <i class="prp-kotak prp-kotak--lewat"></i>
+          {{ "projectReport.overBudget" | translate }}
+          <b>{{ -margin() | number: "1.0-0" }}</b>
+        </span>
       </div>
 
       <div class="prp-label prp-label--sela">
@@ -216,59 +242,69 @@
       </ng-container>
     </div>
 
-    <!-- ===== C. TABEL KERJA ===== -->
-    <div class="prp-kartu" *ngIf="tampilan() === 'tabel' && kategori().length">
-      <div class="prp-tabel-bungkus">
-        <table class="prp-tabel">
-          <thead>
-            <tr>
-              <th>{{ "projectReport.colCode" | translate }}</th>
-              <th>{{ "projectReport.colCategory" | translate }}</th>
-              <th class="num">{{ "projectReport.colValue" | translate }}</th>
-              <th class="num">{{ "projectReport.colSuppliers" | translate }}</th>
-              <th class="num">%</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let k of kategori(); trackBy: lacakKategori">
-              <tr
-                class="induk"
-                [class.buka]="barisTerbuka().has(k.kode)"
-                (click)="toggleBaris(k.kode)"
-              >
-                <td><span class="prp-panah">&#9656;</span> <b>{{ k.kode }}</b></td>
-                <td>{{ k.nama }}</td>
-                <td class="num">
-                  <span class="prp-mini">
-                    <span [style.width.%]="maksKategori ? (k.nilai / maksKategori) * 100 : 0"></span>
-                  </span>
-                  {{ k.nilai | number: "1.0-0" }}
-                </td>
-                <td class="num">{{ k.pemasok.length }}</td>
-                <td class="num">{{ persen(k.nilai) | number: "1.1-1" }}%</td>
-              </tr>
-              <tr class="anak" *ngFor="let s of k.pemasok; trackBy: lacakPemasok" [hidden]="!barisTerbuka().has(k.kode)">
-                <td></td>
-                <td>{{ s.nama }}</td>
-                <td class="num">{{ s.nilai | number: "1.0-0" }}</td>
-                <td class="num"></td>
-                <td class="num">
-                  {{ (k.nilai ? (s.nilai / k.nilai) * 100 : 0) | number: "1.1-1" }}%
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td></td>
-              <td>{{ "projectReport.totalCost" | translate }}</td>
-              <td class="num">{{ totalBiaya() | number: "1.0-0" }}</td>
-              <td class="num"></td>
-              <td class="num">100%</td>
-            </tr>
-          </tfoot>
-        </table>
+    <!-- ===== ARUS PER MINGGU ===== -->
+    <div class="prp-kartu" *ngIf="tampilan() === 'arus' && mingguan().length">
+      <div class="prp-label">{{ "projectReport.weeklyFlow" | translate }}</div>
+      <p class="prp-ket-blok">{{ "projectReport.weeklyHint" | translate }}</p>
+
+      <div class="prp-ringkas" *ngIf="mingguTerberat() as w">
+        <span>{{ "projectReport.busiestWeek" | translate }}</span>
+        <b>{{ w.label }}</b>
+        <span class="prp-ringkas__nilai">{{ w.biaya | number: "1.0-0" }}</span>
       </div>
+
+      <!-- Batang biaya & tagihan berdampingan per minggu -->
+      <div class="prp-arus">
+        <div class="prp-arus__baris" *ngFor="let w of mingguan(); trackBy: lacakMinggu">
+          <span class="prp-arus__label">{{ w.label }}</span>
+
+          <span class="prp-arus__bar">
+            <span
+              class="prp-arus__biaya"
+              [style.width.%]="maksMingguan ? (w.biaya / maksMingguan) * 100 : 0"
+              [attr.title]="'projectReport.cost' | translate"
+            ></span>
+            <span
+              class="prp-arus__tagihan"
+              [style.width.%]="maksMingguan ? (w.tagihan / maksMingguan) * 100 : 0"
+              [attr.title]="'projectReport.billed' | translate"
+            ></span>
+          </span>
+
+          <span class="prp-arus__nilai">{{ w.biaya | number: "1.0-0" }}</span>
+        </div>
+      </div>
+
+      <div class="prp-legenda prp-legenda--arus">
+        <span><i class="prp-kotak prp-kotak--biaya"></i>{{ "projectReport.cost" | translate }}</span>
+        <span><i class="prp-kotak prp-kotak--tagihan"></i>{{ "projectReport.billed" | translate }}</span>
+      </div>
+
+      <!-- Kumulatif terhadap nilai kontrak: yang menunjukkan apakah
+           anggaran akan terlampaui sebelum pekerjaannya selesai. -->
+      <ng-container *ngIf="nilaiKontrak() > 0">
+        <div class="prp-label prp-label--sela">
+          {{ "projectReport.cumulative" | translate }}
+        </div>
+        <div class="prp-kum">
+          <div class="prp-kum__baris" *ngFor="let w of mingguan(); trackBy: lacakMinggu">
+            <span class="prp-kum__label">{{ w.label }}</span>
+            <span class="prp-kum__bar">
+              <span
+                [class.lewat]="w.biayaKumulatif > nilaiKontrak()"
+                [style.width.%]="
+                  persenKontrak(w.biayaKumulatif) > 100
+                    ? 100
+                    : persenKontrak(w.biayaKumulatif)
+                "
+              ></span>
+            </span>
+            <span class="prp-kum__pct">
+              {{ persenKontrak(w.biayaKumulatif) | number: "1.0-0" }}%
+            </span>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </ng-container>
 </div>

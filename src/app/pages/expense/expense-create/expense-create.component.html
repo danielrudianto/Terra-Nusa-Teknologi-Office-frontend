@@ -488,20 +488,10 @@
               />
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.bankAccountOrigin" | translate
-              }}</mat-label>
-              <mat-select formControlName="bankAccountID">
-                <mat-option
-                  *ngFor="let option of bankAccounts"
-                  [value]="option.id"
-                >
-                  {{ option.bankName }} · {{ option.bankAccountName }} ·
-                  {{ option.bankAccountNumber }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <app-bank-account-selector
+              formControlName="bankAccountID"
+              [label]="'expenseForm.bankAccountOrigin' | translate"
+            />
 
             <mat-form-field appearance="outline" class="exc-span2 exc-total">
               <mat-label>{{ "expenseForm.total" | translate }}</mat-label>

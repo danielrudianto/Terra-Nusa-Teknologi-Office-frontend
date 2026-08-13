@@ -24,11 +24,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-reimbursement-payment-create',
   providers: [provideNgxMask()],
   imports: [
+    BankAccountSelectorComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

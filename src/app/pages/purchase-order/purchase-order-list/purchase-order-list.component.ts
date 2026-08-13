@@ -53,6 +53,7 @@ import { printPurchaseOrderA } from '../../../helpers/purchase-order-a.helper';
 import { printPurchaseOrder641 } from '../../../helpers/purchase-order-641.helper';
 import { FLEET_ID_MODE, FLEET_OPTIONS } from '../../../constants/fleet';
 import { SettingsService } from '../../../services/setting.service';
+import { ServerMessageService } from '../../../services/server-message.service';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -116,6 +117,7 @@ export class PurchaseOrderListComponent {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
+    private serverMessage: ServerMessageService,
   ) {}
 
   isLoading: boolean = false;
@@ -1014,21 +1016,66 @@ export class PurchaseOrderListComponent {
       });
   }
 
+  /**
+   * Ubah status purchase order.
+   *
+   * Memakai `PATCH /purchase-orders/{id}/status`, satu-satunya rute yang
+   * disediakan server. Sebelumnya layar menembak `POST .../approve` — jalur
+   * yang tidak pernah ada, sehingga jawabannya selalu 404 dan tombolnya
+   * tidak pernah bekerja.
+   *
+   * `status` dikirim sebagai parameter kueri, bukan badan permintaan: pada
+   * rute itu ia dideklarasikan sebagai enum biasa, dan FastAPI membacanya
+   * dari kueri.
+   */
+  private ubahStatus(po: any, status: 'approved' | 'cancelled', kunciSukses: string) {
+    this.apiService
+      .patch(`purchase-orders/${po.id}/status?status=${status}`, {})
+      .subscribe({
+        next: () => {
+          this.snackBar.open(this.translate.instant(kunciSukses), 'Close', {
+            duration: 2000,
+          });
+          this.fetch(this.page);
+        },
+        error: (err) => {
+          /*
+           * Pesan diterjemahkan lewat layanan bersama, bukan dibaca mentah
+           * dari `detail`.
+           *
+           * Galat berkode dari controller memang dapat diterjemahkan, tetapi
+           * galat yang datang dari kerangka kerja — 404 karena rutenya tidak
+           * ada, misalnya — tidak berkode sama sekali. Menampilkan `detail`
+           * apa adanya membuat pengguna membaca "Not Found".
+           */
+          this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+            duration: 4000,
+          });
+        },
+      });
+  }
+
   approve(po: any) {
-    this.apiService.post(`purchase-orders/${po.id}/approve`, {}).subscribe({
-      next: () => {
-        this.snackBar.open(
-      this.translate.instant('notify.approveSuccess'), 'Close', {
-          duration: 2000,
-        });
-        this.fetch(this.page);
-      },
-      error: (err) => {
-        this.snackBar.open(err?.error?.detail || 'Gagal menyetujui', 'Close', {
-          duration: 3000,
-        });
-      },
-    });
+    this.ubahStatus(po, 'approved', 'notify.approveSuccess');
+  }
+
+  reject(po: any) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('purchaseOrder.rejectTitle'),
+          prompt: this.translate.instant('confirm.rejectNamed', {
+            name: po.name,
+          }),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        // Penolakan dikonfirmasi lebih dulu: statusnya tidak dapat
+        // dikembalikan lewat layar ini, dan PO yang terlanjur dibatalkan
+        // harus dibuat ulang.
+        if (setuju) this.ubahStatus(po, 'cancelled', 'notify.rejectSuccess');
+      });
   }
 
   deleteOrder(po: any) {

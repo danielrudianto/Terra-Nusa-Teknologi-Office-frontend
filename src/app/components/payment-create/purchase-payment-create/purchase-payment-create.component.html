@@ -192,15 +192,10 @@
           <mat-datepicker #paymentDatePicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "common.payerAccount" | translate }}</mat-label>
-          <mat-select formControlName="bankAccountID">
-            <mat-option *ngFor="let bank of bankAccounts" [value]="bank.id"
-              >{{ bank.bankAccountNumber }} —
-              {{ bank.bankAccountName }}</mat-option
-            >
-          </mat-select>
-        </mat-form-field>
+        <app-bank-account-selector
+          formControlName="bankAccountID"
+          [label]="'common.payerAccount' | translate"
+        />
 
         <mat-form-field appearance="outline" class="ppc-span2">
           <mat-label>{{ "common.paymentAmount" | translate }}</mat-label>

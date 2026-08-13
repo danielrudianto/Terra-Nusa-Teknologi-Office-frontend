@@ -398,7 +398,9 @@
     "searchType": "Search type or PO code",
     "projectExpenses": "Project expenses",
     "officeExpenses": "Office expenses",
-    "noTypeMatch": "No matching PO type."
+    "noTypeMatch": "No matching PO type.",
+    "menuReject": "Reject PO",
+    "rejectTitle": "Reject Purchase Order"
   },
   "income": {
     "title": "Other income",
@@ -1072,7 +1074,10 @@
     "menuViewMutation": "View mutation",
     "menuEdit": "Edit account",
     "menuDelete": "Delete account",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "selectorPlaceholder": "Type a number, name, or bank",
+    "noMatch": "No matching account",
+    "mustPick": "Pick an account from the list"
   },
   "expenseOpponent": {
     "title": "Expense Opponent",
@@ -2148,8 +2153,8 @@
     "cityPlaceholder": "e.g. Bandung",
     "saving": "Saving...",
     "selectBank": "Select bank",
-    "proxyPayment": "Also record as a purchase",
-    "proxyPaymentHint": "The purchase is recorded under the same invoice number, so the bill enters the payment queue right away."
+    "proxyPayment": "Include Payment Transfer Letter",
+    "proxyPaymentHint": "The letter is printed in the same file, after the invoice and SPK. Use it when payment is redirected to another account."
   },
   "poType": {
     "t5_1_1": "Asset purchase",
@@ -2231,7 +2236,8 @@
     "prompt": "Are you sure you want to continue?",
     "deleteTitle": "Delete data",
     "deletePrompt": "Are you sure you want to delete this data? This action cannot be undone.",
-    "deleteNamed": "Are you sure you want to delete \"{{name}}\"?"
+    "deleteNamed": "Are you sure you want to delete \"{{name}}\"?",
+    "rejectNamed": "Reject {{name}}? The status cannot be reverted from this screen."
   },
   "purchaseView": {
     "createdOn": "Document created on"
@@ -2753,7 +2759,8 @@
     "accessUpdated": "User access updated",
     "sessionExpired": "Your session has ended. Please sign in again.",
     "saveFailed": "Failed to save data",
-    "actionFailed": "The action could not be completed"
+    "actionFailed": "The action could not be completed",
+    "rejectSuccess": "Purchase order rejected"
   },
   "panduan": {
     "title": "Guide",
@@ -2865,18 +2872,17 @@
     "noContractHint": "Margin cannot be calculated until a contract document is added.",
     "openProject": "Open project",
     "tabOverview": "Overview",
-    "tabTable": "Working table",
-    "colCode": "Code",
-    "colCategory": "Category",
-    "colValue": "Value",
-    "colSuppliers": "Suppliers",
-    "totalCost": "Total cost",
     "contractDppHint": "Tax base, excluding VAT",
     "grossValue": "gross",
     "composition": "Cost composition",
     "includeInternal": "Include internal purchases",
     "internalCount": "internal purchases · drafts & reimbursements always counted",
-    "overBudget": "Cost exceeds contract by"
+    "overBudget": "Cost exceeds contract by",
+    "tabFlow": "Weekly flow",
+    "weeklyFlow": "Cost and billing per week",
+    "weeklyHint": "Weeks start on Monday. Weeks without transactions are still shown so gaps in work remain visible.",
+    "busiestWeek": "Busiest week",
+    "cumulative": "Cumulative cost against contract"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",

@@ -23,12 +23,14 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-loans-create',
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    BankAccountSelectorComponent,
     TranslatePipe,
     CommonModule,
     ReactiveFormsModule,

@@ -22,6 +22,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-purchase-payment-create',
@@ -30,6 +31,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrls: ['./purchase-payment-create.component.scss'],
   standalone: true,
   imports: [
+    BankAccountSelectorComponent,
     TranslatePipe,
     NgxMaskDirective,
     FormsModule,

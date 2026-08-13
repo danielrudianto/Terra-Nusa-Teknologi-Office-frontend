@@ -24,11 +24,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { BankAccountSelectorComponent } from '../../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-expense-create-administration',
   providers: [provideNgxMask()],
   imports: [
+    BankAccountSelectorComponent,
     MatIconModule,
     TranslatePipe,
     CommonModule,

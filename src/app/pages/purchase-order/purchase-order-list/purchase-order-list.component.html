@@ -208,6 +208,15 @@
                 <mat-icon>check_circle</mat-icon
                 ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
               </button>
+              <button
+                mat-menu-item
+                *appCan="'purchase_order:approve'"
+                (click)="reject(po)"
+                [disabled]="po.isApproved || po.status === 'cancelled'"
+              >
+                <mat-icon>cancel</mat-icon
+                ><span>{{ "purchaseOrder.menuReject" | translate }}</span>
+              </button>
               <button mat-menu-item (click)="viewOrder(po)">
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "purchaseOrder.menuView" | translate }}</span>

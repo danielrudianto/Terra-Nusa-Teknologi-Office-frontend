@@ -142,14 +142,6 @@
               </button>
               <button
                 mat-menu-item
-                *appCan="'salary_slip:create'"
-                (click)="openSalaryCreate(element.id)"
-              >
-                <mat-icon>receipt</mat-icon
-                ><span>{{ "menu.createSalarySlip" | translate }}</span>
-              </button>
-              <button
-                mat-menu-item
                 *appCan="'employees:update'"
                 (click)="openStatus(element)"
               >

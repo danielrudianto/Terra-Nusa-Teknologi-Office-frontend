@@ -32,10 +32,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ExpenseCreateAdministrationComponent } from './expense-create-administration/expense-create-administration.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-expense-create',
   imports: [
+    BankAccountSelectorComponent,
     TranslatePipe,
     CommonModule,
     FormsModule,

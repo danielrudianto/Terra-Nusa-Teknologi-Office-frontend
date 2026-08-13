@@ -451,7 +451,12 @@ export class PurchaseOrderCreate5112Component {
         const x = c.getRawValue();
         return {
           item_id: null,
-          task: x.description,
+          // Nama barang tidak disalin: sudah tersimpan di
+          // master_item dan diambil lewat item_id saat dibaca.
+          // Menyalinnya berarti dokumen menyimpan nama yang bisa
+          // berbeda dari katalognya, dan nama panjang melampaui
+          // batas kolomnya.
+          task: null,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,

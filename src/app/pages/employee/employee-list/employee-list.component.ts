@@ -4,7 +4,6 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
 import { EmployeeUpdateComponent } from '../employee-update/employee-update.component';
-import { EmployeeSalarySlipSelectorCreateComponent } from './employee-salary-slip-selector-create/employee-salary-slip-selector-create.component';
 import { debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -94,14 +93,6 @@ export class EmployeeListComponent {
       })
       .afterClosed()
       .subscribe((result) => {});
-  }
-
-  openSalaryCreate(id: number) {
-    this.dialog.open(EmployeeSalarySlipSelectorCreateComponent, {
-      data: {
-        id: id,
-      },
-    });
   }
 
   fetchEmployees(targetPage: number = 1) {

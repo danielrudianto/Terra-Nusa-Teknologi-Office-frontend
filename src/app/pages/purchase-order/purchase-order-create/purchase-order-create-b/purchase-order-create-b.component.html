@@ -289,6 +289,27 @@
           Jenis sewa menentukan istilah pada dokumen sekaligus ketentuan yang
           dicetak: SILO dan SIO hanya mengikat pesawat angkat dan angkut.
         -->
+        <!--
+          Banner, bukan keterangan kecil di bawah kolom.
+
+          Yang disampaikan mengubah isi dokumen — jenis barang yang tersedia
+          menyempit dan sebagian ketentuan tidak lagi tercantum. Pada ukuran
+          keterangan biasa, hal itu terlewat.
+        -->
+        @if (isTipeA) {
+          <div class="pob-banner pob-span2">
+            <mat-icon>engineering</mat-icon>
+            <div>
+              <strong>Terbit sebagai SPK tipe A</strong>
+              <span>
+                Hanya alat angkat/angkut yang dapat dipilih, dan operator dari
+                vendor dinyalakan sendiri. Scaffolding serta perlengkapan lain
+                tidak terbit lewat jalur ini.
+              </span>
+            </div>
+          </div>
+        }
+
         <mat-form-field appearance="outline" class="pob-span2">
           <mat-label>{{
             "poField.jenisBarangYangDisewa" | translate
@@ -320,21 +341,47 @@
         Cakupan harga pengangkutan. Menyala sendiri saat dokumen diterbitkan
         sebagai tipe A, tetapi tetap dapat diubah bila kesepakatannya lain.
       -->
-      <mat-checkbox
+      <mat-slide-toggle
         formControlName="includeTransportCoverage"
-        class="pob-checkbox"
+        color="primary"
+        class="pob-toggle"
       >
         Harga sudah mencakup koordinasi pengangkutan
-      </mat-checkbox>
+      </mat-slide-toggle>
       <p class="pob-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
-      <mat-checkbox formControlName="operatorByVendor" class="pob-checkbox">
+      <mat-slide-toggle
+        formControlName="operatorByVendor"
+        color="primary"
+        class="pob-toggle"
+      >
         Alat disewa lengkap dengan operator dari vendor
-      </mat-checkbox>
+      </mat-slide-toggle>
       <p class="pob-hint">
-        Bila dicentang, dokumen memuat kewajiban vendor menyediakan operator
-        ber-SIO beserta ketentuan penggantiannya.
+        Bila dinyalakan, dokumen memuat kewajiban vendor menyediakan operator
+        ber-SIO beserta ketentuan penggantiannya. Bila dimatikan, seluruh
+        penyebutan tenaga kerja dihapus dari dokumen.
       </p>
+
+      <!--
+        Sewa singkat hanya berarti pada SPK tipe A: yang disewa beberapa jam
+        untuk satu pekerjaan, bukan berhari-hari di lokasi.
+      -->
+      @if (isTipeA) {
+        <mat-slide-toggle
+          formControlName="shortTermRental"
+          color="primary"
+          class="pob-toggle"
+        >
+          Sewa singkat (satu shift)
+        </mat-slide-toggle>
+        <p class="pob-hint">
+          Menghilangkan ketentuan yang hanya berlaku pada penyewaan
+          berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan
+          2×24 jam, berita acara serah terima, dan koordinasi bongkar-muat.
+          Unit yang tidak dapat beroperasi wajib diganti pada hari yang sama.
+        </p>
+      }
 
       <!--
         Sewa per jam selalu diikat pada periode: kuota jamnya ada di kolom

@@ -26,12 +26,14 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
 import { ApiService } from '../../../services/api.service';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 @Component({
   selector: 'app-income-create',
   standalone: true,
   providers: [provideNgxMask(), provideNativeDateAdapter()],
   imports: [
+    BankAccountSelectorComponent,
     TranslatePipe,
     CommonModule,
     ReactiveFormsModule,

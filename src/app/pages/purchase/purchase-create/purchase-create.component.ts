@@ -37,6 +37,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -89,6 +90,7 @@ function bankAccountIDRequired(): ValidatorFn {
   selector: 'app-purchase-create',
   providers: [provideNgxMask()],
   imports: [
+    BankAccountSelectorComponent,
     ProjectSelectorComponent,
     MatTooltipModule,
     CommonModule,

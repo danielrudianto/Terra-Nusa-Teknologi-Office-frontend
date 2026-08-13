@@ -989,3 +989,51 @@ app-wysiwyg {
   padding: 0.45rem 0.9rem;
   cursor: pointer;
 }
+
+/* ---------------------------------------------------------------------------
+   Banner keterangan tipe A.
+
+   Menggantikan keterangan kecil di bawah kolom: yang disampaikan mengubah
+   isi dokumen — pilihan barang menyempit dan sebagian ketentuan tidak lagi
+   tercantum — dan pada ukuran hint hal itu terlewat.
+   --------------------------------------------------------------------------- */
+.pob-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  strong {
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  span {
+    font-size: 0.81rem;
+    line-height: 1.5;
+  }
+}
+
+/* Sakelar geser: sasaran sentuhnya lebih besar daripada kotak centang, dan
+   keadaan nyala/mati terbaca tanpa perlu mendekat. */
+.pob-toggle {
+  display: block;
+  margin-top: 0.75rem;
+}
