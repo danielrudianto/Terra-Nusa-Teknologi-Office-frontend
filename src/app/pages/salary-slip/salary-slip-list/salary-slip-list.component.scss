@@ -216,3 +216,47 @@
   cursor: pointer;
   user-select: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Tombol buat slip.
+
+   `margin-left: auto` mendorongnya ke ujung kanan toolbar. Dua kolom di
+   kirinya berlebar tetap, sehingga sisa ruang seluruhnya jatuh ke kiri
+   tombol ini.
+   --------------------------------------------------------------------------- */
+.ssl-add {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+  &:hover {
+    filter: brightness(1.05);
+  }
+}
+
+@media (max-width: 640px) {
+  .ssl-add {
+    /* Pada satu kolom, dorongan ke kanan tidak lagi berarti. */
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}

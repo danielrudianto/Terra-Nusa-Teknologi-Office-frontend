@@ -502,7 +502,16 @@
     "k0": "Kawin; 0 tanggungan (K/0)",
     "k1": "Kawin; 1 tanggungan (K/1)",
     "k2": "Kawin; 2 tanggungan (K/2)",
-    "k3": "Kawin; 3 tanggungan (K/3)"
+    "k3": "Kawin; 3 tanggungan (K/3)",
+    "createButton": "Buat slip gaji",
+    "createTitle": "Buat slip gaji",
+    "createSub": "Pilih karyawan dan periodenya",
+    "employeePlaceholder": "Cari nama atau NIK",
+    "employeeNotChosen": "Pilih karyawan dari daftar",
+    "month": "Bulan",
+    "year": "Tahun",
+    "periodHint": "Bawaannya bulan lalu, karena gaji dibayarkan untuk periode yang sudah berjalan. Dapat diubah bila perlu.",
+    "continue": "Lanjutkan"
   },
   "employee": {
     "title": "Karyawan",

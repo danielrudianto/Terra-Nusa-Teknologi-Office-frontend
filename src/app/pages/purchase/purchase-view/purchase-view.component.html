@@ -134,7 +134,7 @@
           <span>{{ "purchase.viewPphDeducted" | translate }}</span
           ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
-        <div class="pv-pph" *ngIf="vPph && pphLabel">
+        <div class="pv-pph" *ngIf="pphLabel">
           <div class="pv-pph__text">
             <span class="pv-pph__code">{{ f["pphCode"].value || "-" }}</span>
             <span class="pv-pph__name">{{ f["pphTaxObject"].value }}</span>

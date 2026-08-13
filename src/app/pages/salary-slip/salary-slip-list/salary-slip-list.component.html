@@ -27,6 +27,21 @@
         panelClass="example-month-picker"
       ></mat-datepicker>
     </mat-form-field>
+
+    <!--
+      Buat slip langsung dari sini, tanpa lewat Data Master → Karyawan.
+      Diletakkan di ujung kanan: dua kolom di kirinya menyaring yang sudah
+      ada, sedangkan tombol ini membuat yang baru.
+    -->
+    <button
+      type="button"
+      class="ssl-add"
+      *appCan="'salary_slip:create'"
+      (click)="buatSlip()"
+    >
+      <mat-icon>add</mat-icon>
+      <span>{{ "salarySlip.createButton" | translate }}</span>
+    </button>
   </div>
 
   <div class="ssl-card">

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { SalarySlipEmployeePickerComponent } from '../salary-slip-employee-picker/salary-slip-employee-picker.component';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -70,6 +71,20 @@ export const MY_FORMATS = {
 })
 export class SalarySlipListComponent {
   private readonly translate = inject(TranslateService);
+  /**
+   * Buka pemilih karyawan dan periode.
+   *
+   * Dialognya mengarahkan sendiri ke halaman pembuatan slip bila periodenya
+   * belum terpakai; di sini tidak ada yang perlu dikerjakan setelahnya.
+   */
+  buatSlip(): void {
+    this.dialog.open(SalarySlipEmployeePickerComponent, {
+      width: '520px',
+      maxWidth: '94vw',
+      autoFocus: false,
+    });
+  }
+
   constructor(
     public settings: SettingsService,
     private apiService: ApiService,

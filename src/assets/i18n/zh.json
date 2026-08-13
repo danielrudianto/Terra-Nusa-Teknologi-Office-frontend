@@ -502,7 +502,16 @@
     "k0": "已婚；0名受抚养人（K/0）",
     "k1": "已婚；1名受抚养人（K/1）",
     "k2": "已婚；2名受抚养人（K/2）",
-    "k3": "已婚；3名受抚养人（K/3）"
+    "k3": "已婚；3名受抚养人（K/3）",
+    "createButton": "新建工资单",
+    "createTitle": "新建工资单",
+    "createSub": "选择员工与期间",
+    "employeePlaceholder": "按姓名或工号搜索",
+    "employeeNotChosen": "请从列表中选择员工",
+    "month": "月份",
+    "year": "年份",
+    "periodHint": "默认上个月，因为工资针对已完成的期间发放。如需可更改。",
+    "continue": "继续"
   },
   "employee": {
     "title": "员工",

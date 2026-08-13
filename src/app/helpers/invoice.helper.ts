@@ -300,7 +300,7 @@ export function printInvoiceDocument(
       {
         // nominal ditonjolkan seperti kuitansi cetak pada umumnya
         table: {
-          widths: ['auto'],
+          widths: ['*'],
           body: [[{ text: `Rp ${rupiah(total)}`, bold: true, fontSize: 15 }]],
         },
         layout: {

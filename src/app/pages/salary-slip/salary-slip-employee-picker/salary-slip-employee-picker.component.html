@@ -1,0 +1,78 @@
+<div class="ssp">
+  <div class="ssp__head" mat-dialog-title>
+    <span class="ssp__head-icon"><mat-icon>receipt_long</mat-icon></span>
+    <div class="ssp__head-text">
+      <h2 class="ssp__title">{{ "salarySlip.createTitle" | translate }}</h2>
+      <span class="ssp__sub">{{ "salarySlip.createSub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="ssp__content">
+    <form [formGroup]="formGroup">
+      <mat-form-field appearance="outline" class="ssp__full">
+        <mat-label>{{ "salarySlip.employee" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="employee"
+          [matAutocomplete]="auto"
+          [placeholder]="'salarySlip.employeePlaceholder' | translate"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayKaryawan">
+          <mat-option *ngFor="let k of tersaring" [value]="k">
+            {{ k.name }}
+            <ng-container *ngIf="k.nik"> &middot; {{ k.nik }}</ng-container>
+          </mat-option>
+        </mat-autocomplete>
+        @if (isLoading) {
+          <mat-hint>{{ "common.loading" | translate }}</mat-hint>
+        }
+      </mat-form-field>
+
+      <div class="ssp__grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "salarySlip.month" | translate }}</mat-label>
+          <mat-select formControlName="month">
+            @for (m of months; track m.value) {
+              <mat-option [value]="m.value">{{ m.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "salarySlip.year" | translate }}</mat-label>
+          <mat-select formControlName="year">
+            @for (y of years; track y) {
+              <mat-option [value]="y">{{ y }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!--
+        Bawaannya bulan lalu: gaji dibayarkan tanggal 10 sementara datanya
+        disiapkan tanggal 5, sehingga yang hampir selalu dimaksud adalah
+        periode sebelumnya.
+      -->
+      <p class="ssp__ket">{{ "salarySlip.periodHint" | translate }}</p>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="ssp__foot">
+    <button type="button" class="ssp__cancel" (click)="batal()">
+      {{ "user.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="ssp__submit"
+      (click)="onSubmit()"
+      [disabled]="formGroup.invalid || isSubmitting"
+    >
+      {{
+        isSubmitting
+          ? ("user.saving" | translate)
+          : ("salarySlip.continue" | translate)
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

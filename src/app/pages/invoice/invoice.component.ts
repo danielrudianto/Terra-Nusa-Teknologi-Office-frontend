@@ -1,4 +1,6 @@
 import { CommonModule } from '@angular/common';
+import { vendorDisplayName } from 'src/app/helpers/purchase-order-shared.helper';
+import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import {
@@ -105,6 +107,8 @@ export class InvoiceComponent {
     createPurchase: new FormControl(false),
     // Cukup diisi angka urutnya; nomor lengkapnya dirakit otomatis.
     purchaseOrderNumber: new FormControl(null, [Validators.min(1)]),
+    // Surat pengalihan pembayaran; hanya berlaku bila pembeliannya dicatat.
+    proxyPayment: new FormControl(false),
     // Kode & objek pajak diisi lewat pemilih PPh, sama seperti halaman
     // pembelian — supaya data yang tercatat seragam dan rekap PPh lengkap.
     pphCode: new FormControl(''),
@@ -173,9 +177,16 @@ export class InvoiceComponent {
         if (!data) return;
         this.formGroup.patchValue({
           supplierID: data.id,
-          // Cukup nama orangnya. Prefix supplier (mis. "Pribadi") bukan
-          // bagian dari nama dan janggal bila ikut tercetak di tanda tangan.
-          supplierName: data.name,
+          /*
+           * Nama disusun helper yang sama dengan seluruh dokumen lain.
+           *
+           * Dua hal ditangani sekaligus: prefix badan usaha (PT., CV., UD.)
+           * ikut ditulis karena bagian dari nama resminya, sedangkan
+           * "Pribadi" dan "Lainnya" tidak — keduanya penanda jenis supplier
+           * di sistem, bukan nama. Nama yang sudah terlanjur membawa
+           * ", Pribadi" dari pemilih juga dibersihkan di sana.
+           */
+          supplierName: vendorDisplayName(data.name, data.prefix),
         });
         this.applyFrequentBank(data.id);
       });
@@ -210,8 +221,20 @@ export class InvoiceComponent {
   readonly bankOptions: IBank[] = banks;
   filteredBanks: IBank[] = banks;
 
-  filterBanks(): void {
-    const keyword = String(this.formGroup.get('bankName')?.value ?? '')
+  /**
+   * Saring daftar bank.
+   *
+   * Kata kuncinya dibaca dari elemen masukan, BUKAN dari nilai formulir.
+   * Autocomplete di sini memakai `requireSelection`, yang menahan nilai
+   * formulir sampai ada pilihan yang benar-benar dipilih — sehingga selama
+   * pengguna mengetik, nilai formulirnya masih yang lama dan daftarnya
+   * tidak pernah menyaring apa pun.
+   */
+  filterBanks(event?: Event): void {
+    const dariElemen = (event?.target as HTMLInputElement | undefined)?.value;
+    const keyword = String(
+      dariElemen ?? this.formGroup.get('bankName')?.value ?? '',
+    )
       .toLowerCase()
       .trim();
 
@@ -333,6 +356,29 @@ export class InvoiceComponent {
    *
    * Contoh: 1 + proyek MICZ  ->  001-SPK-MICZ-D
    */
+  /**
+   * Terbitkan surat pengalihan pembayaran.
+   *
+   * Memakai helper yang sama dengan halaman pembelian, sehingga bentuk
+   * suratnya sama dari mana pun diterbitkan.
+   */
+  private terbitkanSuratPengalihan(): void {
+    const v = this.formGroup.getRawValue();
+    ProxyPaymentHelper.createProxyPaymentPDF({
+      invoiceName: this.invoiceNumber,
+      // Invoice tenaga kerja tidak menerbitkan faktur pajak.
+      taxInvoiceName: '',
+      supplierName: String(v.supplierName ?? ''),
+      bankName: String(v.bankName ?? ''),
+      bankAccountNumber: String(v.bankAccountNumber ?? ''),
+      bankAccountName: String(v.bankAccountName ?? ''),
+      // Yang dialihkan adalah jumlah yang benar-benar dibayarkan, sesudah
+      // PPh dipotong — bukan nilai brutonya.
+      totalPayment: this.netTotal,
+      date: v.date ? new Date(v.date) : new Date(),
+    });
+  }
+
   get purchaseOrderName(): string {
     const v = this.formGroup.getRawValue();
     const n = Number(v.purchaseOrderNumber) || 0;
@@ -375,9 +421,20 @@ export class InvoiceComponent {
     if (!this.readyToPrint()) return;
 
     const v = this.formGroup.getRawValue();
-    if (!v.purchaseOrderName) {
+    /*
+     * Diperiksa lewat getter, bukan lewat nilai formulir.
+     *
+     * Kontrolnya bernama `purchaseOrderNumber` (angka urut); nomor
+     * lengkapnya disusun getter `purchaseOrderName`. Membaca
+     * `v.purchaseOrderName` selalu menghasilkan undefined, sehingga
+     * peringatan "No. PO belum diisi" muncul meski nomornya sudah diketik.
+     */
+    if (!this.purchaseOrderName) {
       this.snackBar.open(
-      this.translate.instant('notify.poNumberEmpty'), 'Close', { duration: 3000 });
+        this.translate.instant('notify.poNumberEmpty'),
+        'Close',
+        { duration: 3000 },
+      );
       return;
     }
 
@@ -505,9 +562,20 @@ export class InvoiceComponent {
 
   private savePurchase() {
     const v = this.formGroup.getRawValue();
-    if (!v.purchaseOrderName) {
+    /*
+     * Diperiksa lewat getter, bukan lewat nilai formulir.
+     *
+     * Kontrolnya bernama `purchaseOrderNumber` (angka urut); nomor
+     * lengkapnya disusun getter `purchaseOrderName`. Membaca
+     * `v.purchaseOrderName` selalu menghasilkan undefined, sehingga
+     * peringatan "No. PO belum diisi" muncul meski nomornya sudah diketik.
+     */
+    if (!this.purchaseOrderName) {
       this.snackBar.open(
-      this.translate.instant('notify.poNumberEmpty'), 'Close', { duration: 3000 });
+        this.translate.instant('notify.poNumberEmpty'),
+        'Close',
+        { duration: 3000 },
+      );
       return;
     }
 
@@ -527,7 +595,7 @@ export class InvoiceComponent {
         supplierAddress: '',
         date: toISO(v.date),
         dueDate: toISO(v.date),
-        purchaseOrderName: v.purchaseOrderName,
+        purchaseOrderName: this.purchaseOrderName,
         projectName: v.projectCode,
         purchaseType: 'D',
         isInternal: false,
@@ -557,6 +625,17 @@ export class InvoiceComponent {
       })
       .subscribe({
         next: () => {
+          /*
+           * Surat pengalihan diterbitkan SETELAH pembeliannya tersimpan.
+           *
+           * Bila urutannya dibalik, surat bisa terlanjur tercetak untuk
+           * pembelian yang ternyata gagal disimpan — dan yang memegang surat
+           * itu tidak punya cara mengetahuinya.
+           */
+          if (v.proxyPayment) {
+            this.terbitkanSuratPengalihan();
+          }
+
           this.snackBar.open(
       this.translate.instant('notify.createSuccess'), 'Close', {
             duration: 3000,

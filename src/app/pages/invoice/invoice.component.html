@@ -188,6 +188,23 @@
           </div>
         }
 
+        <!--
+          Surat pengalihan pembayaran.
+
+          Dipakai ketika uangnya ditransfer ke rekening selain milik penerima
+          pekerjaan — surat ini yang menjadi dasarnya. Ditawarkan di sini
+          karena seluruh keterangan yang dibutuhkan sudah terisi: nomor
+          invoice, nama penerima, dan rekening tujuannya.
+        -->
+        <mat-checkbox
+          formControlName="proxyPayment"
+          color="primary"
+          class="inv-proxy"
+        >
+          {{ "invoiceGen.proxyPayment" | translate }}
+        </mat-checkbox>
+        <p class="inv-hint">{{ "invoiceGen.proxyPaymentHint" | translate }}</p>
+
         <div class="inv-summary">
           <div class="inv-summary__row">
             <span>{{ "invoiceGen.dpp" | translate }}</span>
@@ -225,7 +242,7 @@
             type="text"
             formControlName="bankName"
             [matAutocomplete]="bankAuto"
-            (input)="filterBanks()"
+            (input)="filterBanks($event)"
             (focus)="filterBanks()"
             [placeholder]="'invoiceGen.selectBank' | translate"
           />

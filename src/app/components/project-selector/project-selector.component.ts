@@ -167,6 +167,26 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
   /** Hanya baca: dipakai bila kodenya diturunkan dari nomor dokumen. */
   readonly readonly = input(false);
 
+  /**
+   * Batasi SARAN hanya ke proyek yang berjalan.
+   *
+   * Dipasang pada formulir yang membuat dokumen BARU: menagih atau membeli
+   * atas nama proyek yang sudah selesai atau dibatalkan hampir selalu salah
+   * ketik, dan kekeliruannya baru ketahuan saat laporan proyek yang sudah
+   * ditutup tiba-tiba bergerak lagi.
+   *
+   * TIDAK dipasang pada layar ubah, konversi, dan laporan. Di sana proyek
+   * yang sudah tutup memang harus tetap terlihat — dokumen lama perlu bisa
+   * dibuka dan dikoreksi, dan laporan justru paling bermakna setelah
+   * proyeknya selesai.
+   *
+   * Bawaannya `false` supaya perilaku lama tidak berubah diam-diam: layar
+   * yang belum disentuh tetap menampilkan semuanya. Kelewat memasangnya
+   * pada formulir baru hanya berarti saran yang terlalu longgar; kelewat
+   * pada layar ubah berarti dokumen lama tidak bisa disimpan.
+   */
+  readonly hanyaAktif = input(false);
+
   readonly teks = signal('');
   readonly nonaktif = signal(false);
 
@@ -179,7 +199,25 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
 
   /** Saran yang tampil: disaring, dan yang batal ditaruh paling belakang. */
   saran(): ProyekRingkas[] {
-    const daftar = this.lookup.saring(this.teks());
+    let daftar = this.lookup.saring(this.teks());
+
+    /*
+     * Penyaringan mengenai SARAN saja, bukan nilai yang sudah terisi.
+     *
+     * Dokumen lama bisa menunjuk proyek yang kini sudah tutup. Bila
+     * penyaringan ini juga menyembunyikannya dari pencocokan, kolomnya akan
+     * menandai kode itu sebagai tidak terdaftar — padahal proyeknya ada,
+     * hanya sudah selesai. Yang terisi tetap dikenali; yang disembunyikan
+     * hanya daftar pilihannya.
+     */
+    if (this.hanyaAktif()) {
+      const terpilih = this.teks().trim().toUpperCase();
+      daftar = daftar.filter(
+        (p) =>
+          (p.isActive && !p.isCancelled) || p.code.toUpperCase() === terpilih,
+      );
+    }
+
     return [...daftar].sort((a, b) => {
       const bobot = (p: ProyekRingkas) =>
         p.isCancelled ? 2 : p.isActive ? 0 : 1;
