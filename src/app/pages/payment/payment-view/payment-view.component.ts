@@ -1,4 +1,5 @@
 import { Component, Inject } from '@angular/core';
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -22,6 +23,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   selector: 'app-payment-view',
   providers: [provideNgxMask()],
   imports: [
+    AuditTrailComponent,
     MatDialogModule,
     FormsModule,
     ReactiveFormsModule,

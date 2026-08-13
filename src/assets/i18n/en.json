@@ -1330,9 +1330,9 @@
   },
   "calendarPayment": {
     "confirmTitle": "Payment Approval Confirmation",
-    "confirmPrompt": "Are you sure to confirm {count} payment(s)?",
+    "confirmPrompt": "Are you sure to confirm {{count}} payment(s)?",
     "rejectTitle": "Payment Rejection Confirmation",
-    "rejectPrompt": "Are you sure to reject {count} payment(s)?",
+    "rejectPrompt": "Are you sure to reject {{count}} payment(s)?",
     "attention": "Attention:",
     "warningConfirm": "Please ensure you have selected the correct transaction from the correct bank account before confirming.",
     "warningReject": "Please ensure you have selected the correct transaction before rejecting. This action cannot be undone.",

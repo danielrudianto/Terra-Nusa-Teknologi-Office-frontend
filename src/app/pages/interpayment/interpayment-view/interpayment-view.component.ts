@@ -1,4 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -18,6 +19,7 @@ import { AvatarComponent } from '../../../components/avatar/avatar.component';
   selector: 'app-interpayment-view',
   standalone: true,
   imports: [
+    AuditTrailComponent,
     AvatarComponent,
     TranslatePipe,
     CommonModule,

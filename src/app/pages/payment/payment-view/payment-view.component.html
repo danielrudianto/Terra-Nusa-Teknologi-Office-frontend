@@ -57,6 +57,19 @@
         }}</span>
       </div>
     </div>
+    <!--
+      Riwayat perubahan, seperti pada dokumen lain.
+
+      Jejaknya sudah dicatat sejak awal dengan entity `payment_outgoing`;
+      yang belum ada hanyalah tempat membacanya. Untuk pembayaran, "siapa
+      yang menyetujui dan kapan" justru pertanyaan yang paling sering
+      diajukan.
+    -->
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="payment_outgoing"
+      [entityId]="data.id"
+    ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="pv-foot">

@@ -1330,9 +1330,9 @@
   },
   "calendarPayment": {
     "confirmTitle": "付款审批确认",
-    "confirmPrompt": "确定要批准 {count} 笔付款吗？",
+    "confirmPrompt": "确定要批准 {{count}} 笔付款吗？",
     "rejectTitle": "付款拒绝确认",
-    "rejectPrompt": "确定要拒绝 {count} 笔付款吗？",
+    "rejectPrompt": "确定要拒绝 {{count}} 笔付款吗？",
     "attention": "注意：",
     "warningConfirm": "请确保在批准前已从正确的银行账户中选择了正确的交易。",
     "warningReject": "请确保在拒绝前已选择正确的交易。此操作无法撤销。",

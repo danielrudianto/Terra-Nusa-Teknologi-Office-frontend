@@ -374,3 +374,17 @@ html[data-density="compact"] {
     --mat-paginator-container-size: 44px;
   }
 }
+
+/* ===== Pemisah sebelum riwayat perubahan =====
+ * Dipakai dua belas dialog detail, tetapi tidak pernah didefinisikan di
+ * satu pun komponen — sehingga riwayat menempel langsung pada isi dokumen
+ * tanpa jeda, dan terbaca seolah bagian dari datanya.
+ *
+ * Ditaruh di sini, bukan disalin ke tiap komponen: satu-satunya alasan
+ * kelas ini ada adalah agar tampilannya sama di mana pun ia dipakai.
+ */
+.audit-divider {
+  height: 1px;
+  background: var(--line, #eef0f4);
+  margin: 1.5rem 0 1.25rem;
+}

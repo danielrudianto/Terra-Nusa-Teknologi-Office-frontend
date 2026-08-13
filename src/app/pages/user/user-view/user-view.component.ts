@@ -1,4 +1,5 @@
 import { Component, Inject } from '@angular/core';
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -10,7 +11,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   templateUrl: './user-view.component.html',
   styleUrl: './user-view.component.scss',
   standalone: true,
-  imports: [MatDialogModule, MatIconModule, CommonModule, TranslatePipe],
+  imports: [
+    MatDialogModule,
+    MatIconModule,
+    CommonModule,
+    TranslatePipe,
+    AuditTrailComponent,
+  ],
 })
 export class UserViewComponent {
   constructor(

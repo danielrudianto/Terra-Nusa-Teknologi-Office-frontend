@@ -1330,9 +1330,9 @@
   },
   "calendarPayment": {
     "confirmTitle": "Konfirmasi Persetujuan Pembayaran",
-    "confirmPrompt": "Yakin mau menyetujui {count} pembayaran?",
+    "confirmPrompt": "Yakin mau menyetujui {{count}} pembayaran?",
     "rejectTitle": "Konfirmasi Penolakan Pembayaran",
-    "rejectPrompt": "Yakin mau menolak {count} pembayaran?",
+    "rejectPrompt": "Yakin mau menolak {{count}} pembayaran?",
     "attention": "Perhatian:",
     "warningConfirm": "Pastikan Anda sudah memilih transaksi yang benar dari rekening yang benar sebelum menyetujui.",
     "warningReject": "Pastikan Anda sudah memilih transaksi yang benar sebelum menolak. Tindakan ini tidak dapat dibatalkan.",

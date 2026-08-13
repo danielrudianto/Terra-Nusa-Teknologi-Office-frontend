@@ -47,8 +47,35 @@ h1 {
   max-width: 100%;
 }
 
+
+/* ---------------------------------------------------------------------------
+   Jarak tepi.
+
+   Angka-angka di bawah disalin dari `user-create`, yang polanya diikuti
+   dialog lain. Sebelumnya isi dialog ini ditulis `padding: 0 ... !important`
+   — bukan hanya tidak menambah jarak, tetapi menimpa jarak bawaan Material
+   sehingga tulisannya menempel ke tepi kotak.
+   --------------------------------------------------------------------------- */
+:host {
+  display: block;
+  max-width: 100%;
+}
+
+h1[mat-dialog-title] {
+  padding: 1.25rem 1.5rem 0 !important;
+  margin: 0 0 0.25rem !important;
+}
+
 mat-dialog-content {
+  padding: 0.5rem 1.5rem 1rem !important;
+  /* Isi yang panjang digulung di dalam dialog, bukan mendorong tombolnya
+     keluar layar. */
   max-height: 62vh;
   overflow-y: auto;
-  padding: 0 0 0.25rem !important;
+}
+
+mat-dialog-actions {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  margin: 0 !important;
 }
