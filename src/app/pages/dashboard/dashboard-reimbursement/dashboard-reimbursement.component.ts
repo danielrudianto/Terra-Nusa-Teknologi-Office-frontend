@@ -26,7 +26,8 @@ export class DashboardReimbursementComponent implements OnInit {
   isLoading = false;
   errorMsg = '';
 
-  readonly maxVisible = 3;
+  // Selaras dengan kartu pembayaran di sebelahnya.
+  readonly maxVisible = 5;
   readonly skeletonRows = [1, 2, 3];
 
   constructor(

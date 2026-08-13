@@ -113,3 +113,28 @@
     width: 100%;
   }
 }
+
+/*
+ * Bentuk dialog diseragamkan dengan dialog lain.
+ *
+ * Lebar dan tinggi dibatasi di sini juga, bukan hanya saat dibuka: dialog
+ * ini dapat dipanggil dari lebih dari satu tempat, dan yang lupa menyebut
+ * ukurannya akan menghasilkan kotak yang melar mengikuti isinya.
+ */
+:host {
+  display: block;
+  max-width: 100%;
+}
+
+mat-dialog-content {
+  /* Isi yang panjang digulung di dalam dialog, bukan mendorong tombolnya
+     keluar layar. */
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: 0 0 0.25rem !important;
+}
+
+.cpc-prompt,
+.cpc-warning p {
+  overflow-wrap: anywhere;
+}

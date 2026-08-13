@@ -69,7 +69,7 @@ export const routes: Routes = [
           import('./pages/invoice/invoice.component').then(
             (m) => m.InvoiceComponent,
           ),
-        data: { title: 'Invoice Generator', permission: 'sales_invoice:read' },
+        data: { title: 'Invoice Generator', permission: 'sales_invoice:read' , panduan: 'generator-invoice' },
       },
       {
         path: 'Purchase',
@@ -158,7 +158,7 @@ export const routes: Routes = [
           import('./pages/activity/activity.component').then(
             (m) => m.ActivityComponent,
           ),
-        data: { title: 'Activity', permission: 'audit_log:read' },
+        data: { title: 'Activity', permission: 'audit_log:read' , panduan: 'aktivitas' },
       },
       {
         path: 'Purchase-order',
@@ -583,7 +583,7 @@ export const routes: Routes = [
           import('./pages/calendar/calendar.component').then(
             (m) => m.CalendarComponent,
           ),
-        data: { title: 'Calendar', permission: 'payment_outgoing:read' },
+        data: { title: 'Calendar', permission: 'payment_outgoing:read' , panduan: 'kalender' },
       },
       {
         path: 'Interpayment',
@@ -680,7 +680,7 @@ export const routes: Routes = [
           import('./pages/project/project.component').then(
             (m) => m.ProjectComponent,
           ),
-        data: { title: 'Project', permission: 'project:read' },
+        data: { title: 'Project', permission: 'project:read' , panduan: 'proyek' },
         children: [
           {
             path: '',

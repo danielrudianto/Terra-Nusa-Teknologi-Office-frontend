@@ -68,30 +68,6 @@ $negative: var(--bad-fg, #ca2929);
     min-height: 0;
   }
 
-  /*
-   * Blok "lihat semua" didorong ke dasar kartu.
-   *
-   * Sebelumnya ia mengikuti baris terakhir, sehingga pada kartu yang
-   * tingginya menyesuaikan kolom sebelah, seluruh isinya menumpuk di atas
-   * dan menyisakan ruang kosong besar di bawahnya — kartunya sejajar,
-   * isinya menggantung.
-   */
-  &__more {
-    margin-top: auto;
-    padding-top: 0.5rem;
-  }
-
-  /*
-   * Baris dibagi rata pada sisa ruang.
-   *
-   * Dengan begitu daftar pendek tidak menyisakan lubang di tengah kartu,
-   * dan daftar panjang tetap rapat seperti sebelumnya karena pembagiannya
-   * hanya menambah, tidak pernah mengurangi.
-   */
-  &__row {
-    flex: 0 1 auto;
-  }
-
   &__row {
     display: flex;
     align-items: center;
@@ -164,14 +140,29 @@ $negative: var(--bad-fg, #ca2929);
     white-space: nowrap;
   }
 
+  /*
+   * Blok intip + tombol "lihat semua".
+   *
+   * Mengisi sisa ruang, tetapi yang benar-benar didorong ke dasar hanyalah
+   * tombolnya. Mendorong seluruh blok membuat baris intip ikut turun,
+   * sehingga muncul lubang antara baris terakhir dan baris intip — padahal
+   * baris intip justru harus menempel pada daftarnya, karena ia
+   * memperlihatkan baris berikutnya.
+   */
   &__more {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   &__showmore {
     display: block;
     width: 100%;
-    margin-top: 0.5rem;
+    /* Ke dasar kartu, apa pun panjang daftarnya. */
+    margin-top: auto;
+    padding-top: 0.5rem;
     border: none;
     background: var(--surface-2, #f3f5f9);
     color: $brand;

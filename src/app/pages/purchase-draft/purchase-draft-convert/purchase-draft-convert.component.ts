@@ -556,8 +556,17 @@ export class PurchaseDraftConvertComponent {
           this.isSubmitting = false;
         });
     } else {
+      /*
+       * Konversi memakai endpoint yang SAMA dengan cabang berpembayaran.
+       *
+       * Sebelumnya cabang ini menembak `POST purchases` langsung, sehingga
+       * pembeliannya jadi tetapi draftnya tidak pernah ditutup — draft yang
+       * sama tetap duduk di daftar tertunda dan bisa dikonversi lagi menjadi
+       * pembelian kedua. `PUT purchase-draft` membuat pembelian dan menutup
+       * draftnya dalam satu langkah.
+       */
       this.apiService
-        .post('purchases', purchaseData)
+        .put('purchase-draft', purchaseData)
         .subscribe({
           next: (_) => {
             if (proxyPayment) {

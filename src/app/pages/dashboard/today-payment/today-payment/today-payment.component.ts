@@ -22,7 +22,11 @@ export class TodayPaymentComponent implements OnInit {
   isLoading = false;
   errorMsg = '';
 
-  readonly maxVisible = 3;
+  /*
+   * Tiga baris menyisakan ruang kosong besar pada kartu setinggi kolom
+   * sebelah. Lima mengisinya tanpa membuat daftar terasa panjang.
+   */
+  readonly maxVisible = 5;
   readonly skeletonRows = [1, 2, 3];
 
   private banks = new Map<number, any>();

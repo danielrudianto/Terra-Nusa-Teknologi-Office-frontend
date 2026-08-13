@@ -39,3 +39,16 @@ h1 {
     }
   }
 }
+
+/* Bentuk disamakan dengan dialog persetujuan; keduanya dipanggil dari
+   tempat yang sama dan isinya sebentuk. */
+:host {
+  display: block;
+  max-width: 100%;
+}
+
+mat-dialog-content {
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: 0 0 0.25rem !important;
+}

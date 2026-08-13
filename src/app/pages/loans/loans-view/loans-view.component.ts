@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
   MAT_DIALOG_DATA,
@@ -29,7 +29,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   templateUrl: './loans-view.component.html',
   styleUrl: './loans-view.component.scss',
 })
-export class LoansViewComponent {
+export class LoansViewComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -41,6 +41,46 @@ export class LoansViewComponent {
 
   isLoading: boolean = true;
   loan: any = null;
+
+  ngOnInit(): void {
+    this.fetchData();
+  }
+
+  fetchData() {
+    this.isLoading = true;
+    this.apiService
+      .get('loans/payments/' + this.data.id, {})
+      .subscribe({
+        next: (data: any) => {
+          // Jawaban berhasil tetapi tanpa isi diperlakukan seperti gagal:
+          // menampilkannya menghasilkan halaman dengan nilai kosong dan
+          // persentase yang tidak sah, dan itu terbaca sebagai kerusakan.
+          if (!data?.loan?.id) {
+            this.snackBar.open(
+              this.translate.instant('notify.loanNotFound'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.dialogRef.close();
+            return;
+          }
+          this.loan = data.loan;
+          this.payments = data.payments || [];
+        },
+        error: (error) => {
+          this.snackBar.open(
+            error?.error?.detail || 'Gagal memuat data loan',
+            'Close',
+            { duration: 3000 },
+          );
+          this.dialogRef.close();
+        },
+      })
+      .add(() => {
+        this.isLoading = false;
+      });
+  }
+
   /*
    * Daftar turunan dihitung sekali saat `payments` diisi, bukan lewat getter.
    *

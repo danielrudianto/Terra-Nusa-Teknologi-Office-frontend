@@ -559,6 +559,12 @@ export class CalendarDaySelectorComponent {
           bankAccount: this.selectedAccount,
           payments: this.selectedPayments,
         },
+        // Tanpa lebar, dialog melar mengikuti isinya dan meluber pada
+        // layar sempit; tanpa maxHeight, isinya mendorong tombol keluar
+        // layar ketika pembayaran yang dipilih banyak.
+        width: '460px',
+        maxWidth: '94vw',
+        autoFocus: false,
       })
       .afterClosed()
       .subscribe((result) => {
@@ -600,6 +606,11 @@ export class CalendarDaySelectorComponent {
           bankAccount: this.selectedAccount,
           payments: this.selectedPayments,
         },
+        // Ukuran disamakan dengan dialog persetujuan: keduanya dipanggil
+        // dari tempat yang sama dan isinya sebentuk.
+        width: '460px',
+        maxWidth: '94vw',
+        autoFocus: false,
       })
       .afterClosed()
       .subscribe((result) => {

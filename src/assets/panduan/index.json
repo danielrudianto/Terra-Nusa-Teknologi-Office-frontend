@@ -485,6 +485,118 @@
         "equipment",
         "counterparty"
       ]
+    },
+    {
+      "id": "kalender",
+      "judul": {
+        "id": "Kalender Pembayaran",
+        "en": "Payment Calendar",
+        "zh": "付款日历"
+      },
+      "berkas": "kalender",
+      "modul": "payment_outgoing",
+      "ringkas": {
+        "id": "Jadwal pembayaran per hari, kecukupan saldo, dan persetujuan borongan.",
+        "en": "Daily payment schedule, balance sufficiency, and batch approval.",
+        "zh": "每日付款计划、余额充足性与批量审批。"
+      },
+      "kataKunci": [
+        "kalender",
+        "jadwal",
+        "saldo",
+        "biaya transfer",
+        "setujui",
+        "kurang",
+        "tanggal bayar",
+        "calendar",
+        "balance",
+        "transfer fee",
+        "approve"
+      ]
+    },
+    {
+      "id": "proyek",
+      "judul": {
+        "id": "Proyek",
+        "en": "Projects",
+        "zh": "项目"
+      },
+      "berkas": "proyek",
+      "modul": "project",
+      "ringkas": {
+        "id": "Kode, klien, jadwal, dan nilai kontrak beserta adendumnya.",
+        "en": "Code, client, schedule, and contract value with addenda.",
+        "zh": "代号、客户、日程及合同金额与补充协议。"
+      },
+      "kataKunci": [
+        "proyek",
+        "kode proyek",
+        "kontrak",
+        "adendum",
+        "SPK",
+        "DPP",
+        "margin",
+        "batal",
+        "selesai",
+        "project",
+        "contract",
+        "addendum"
+      ]
+    },
+    {
+      "id": "aktivitas",
+      "judul": {
+        "id": "Aktivitas",
+        "en": "Activity",
+        "zh": "活动记录"
+      },
+      "berkas": "aktivitas",
+      "modul": "audit_log",
+      "ringkas": {
+        "id": "Catatan siapa mengubah apa, kapan, dan dari mana.",
+        "en": "A record of who changed what, when, and from where.",
+        "zh": "记录谁在何时何地做了哪些更改。"
+      },
+      "kataKunci": [
+        "aktivitas",
+        "audit",
+        "riwayat",
+        "jejak",
+        "siapa mengubah",
+        "IP",
+        "activity",
+        "audit trail",
+        "history",
+        "log"
+      ]
+    },
+    {
+      "id": "generator-invoice",
+      "judul": {
+        "id": "Generator Invoice",
+        "en": "Invoice Generator",
+        "zh": "发票生成器"
+      },
+      "berkas": "generator-invoice",
+      "modul": "sales_invoice",
+      "ringkas": {
+        "id": "Membuatkan invoice dan kuitansi untuk pemasok tenaga kerja.",
+        "en": "Produce invoices and receipts for individual labour suppliers.",
+        "zh": "为个人劳务供应商生成发票与收据。"
+      },
+      "kataKunci": [
+        "invoice",
+        "generator",
+        "kuitansi",
+        "tenaga kerja",
+        "mandor",
+        "cut-off",
+        "PPh",
+        "pembelian",
+        "receipt",
+        "labour",
+        "withholding"
+      ]
     }
   ]
 }
