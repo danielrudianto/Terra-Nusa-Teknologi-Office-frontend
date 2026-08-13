@@ -1,20 +1,79 @@
-<mat-dialog-content>
-  <mat-calendar
-    style="width: 300px"
-    [selected]="selectedDate"
-    [minDate]="data.minimumDate"
-    [maxDate]="data.maximumDate"
-    (selectedChange)="onSelectedChanged($event)"
-  ></mat-calendar>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button
-    matButton="outlined"
-    color="primary"
-    style="letter-spacing: 0"
-    (click)="onSubmit()"
-    [disabled]="isSubmitting"
-  >
-    {{ "common.submit" | translate }}
-  </button>
-</mat-dialog-actions>
+<div class="ds">
+  <div class="ds__head" mat-dialog-title>
+    <span class="ds__head-icon"><mat-icon>event_repeat</mat-icon></span>
+    <div class="ds__head-text">
+      <h2 class="ds__title">{{ "movePayment.title" | translate }}</h2>
+      <span class="ds__sub">{{ "movePayment.subtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="ds__content">
+    <!--
+      Tanggal semula ditampilkan berdampingan dengan yang dipilih.
+      Tanpa pembanding, yang memindahkan tidak dapat memastikan berapa lama
+      pembayaran itu benar-benar tertunda.
+    -->
+    <div class="ds__banding">
+      <div class="ds__banding-sisi">
+        <span class="ds__banding-label">{{ "movePayment.from" | translate }}</span>
+        <span class="ds__banding-nilai">{{ data.date | date: "d MMM yyyy" }}</span>
+      </div>
+      <mat-icon class="ds__banding-panah">arrow_forward</mat-icon>
+      <div class="ds__banding-sisi ds__banding-sisi--baru">
+        <span class="ds__banding-label">{{ "movePayment.to" | translate }}</span>
+        <span class="ds__banding-nilai">{{ selectedDate | date: "d MMM yyyy" }}</span>
+      </div>
+    </div>
+
+    @if (selisihHari > 0) {
+      <p class="ds__selisih">
+        {{ "movePayment.delayed" | translate: { days: selisihHari } }}
+      </p>
+    }
+
+    <mat-calendar
+      class="ds__kalender"
+      [selected]="selectedDate"
+      [minDate]="data.minimumDate"
+      [maxDate]="data.maximumDate"
+      (selectedChange)="onSelectedChanged($event)"
+    ></mat-calendar>
+
+    <!--
+      Alasan wajib diisi.
+
+      Memindahkan tanggal berarti menunda uang keluar; pada saat audit,
+      "mengapa dibayar mundur seminggu" harus dapat dijawab dokumen.
+    -->
+    <mat-form-field appearance="outline" class="ds__alasan">
+      <mat-label>{{ "movePayment.reason" | translate }}</mat-label>
+      <textarea
+        matInput
+        [formControl]="reasonControl"
+        rows="2"
+        maxlength="200"
+        [placeholder]="'movePayment.reasonPlaceholder' | translate"
+        style="resize: none"
+      ></textarea>
+      <mat-hint>{{ "movePayment.reasonHint" | translate }}</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="ds__foot">
+    <button type="button" class="ds__cancel" mat-dialog-close>
+      {{ "user.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="ds__submit"
+      (click)="onSubmit()"
+      [disabled]="isSubmitting || reasonControl.invalid || !adaPerubahan"
+    >
+      {{
+        isSubmitting
+          ? ("user.saving" | translate)
+          : ("movePayment.submit" | translate)
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

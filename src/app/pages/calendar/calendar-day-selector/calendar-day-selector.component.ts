@@ -587,6 +587,15 @@ export class CalendarDaySelectorComponent {
                     duration: 3000,
                   },
                 );
+                /*
+                 * Ringkasan dimuat ulang.
+                 *
+                 * Menyetujui atau menolak mengubah saldo dan jumlah
+                 * pembayaran hari itu. Tanpa pemuatan ulang, angkanya
+                 * tetap seperti sebelum tindakan — dan yang membacanya
+                 * mengira tindakannya tidak berhasil.
+                 */
+                this.fetchDailyData();
               },
               error: (error) => {
                 this.snackBar.open(
@@ -634,6 +643,15 @@ export class CalendarDaySelectorComponent {
                     duration: 3000,
                   },
                 );
+                /*
+                 * Ringkasan dimuat ulang.
+                 *
+                 * Menyetujui atau menolak mengubah saldo dan jumlah
+                 * pembayaran hari itu. Tanpa pemuatan ulang, angkanya
+                 * tetap seperti sebelum tindakan — dan yang membacanya
+                 * mengira tindakannya tidak berhasil.
+                 */
+                this.fetchDailyData();
               },
               error: (error) => {
                 this.snackBar.open(
@@ -668,10 +686,15 @@ export class CalendarDaySelectorComponent {
         })
         .afterClosed()
         .subscribe((data) => {
-          if (data == 'moved') {
-            // remove
-            this.rawData.data.splice(index, 1);
-          }
+          if (data !== 'moved') return;
+          /*
+           * Dimuat ulang, bukan sekadar membuang barisnya.
+           *
+           * Memindahkan pembayaran mengubah total hari itu; membuang baris
+           * dari daftar tanpa menghitung ulang membuat daftarnya benar
+           * tetapi ringkasannya tidak.
+           */
+          this.fetchDailyData();
         });
     }
   }

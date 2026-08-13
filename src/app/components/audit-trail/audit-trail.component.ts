@@ -92,6 +92,8 @@ export class AuditTrailComponent implements OnChanges {
         return 'note_add';
       case 'contract_update':
         return 'edit_note';
+      case 'move_date':
+        return 'event_repeat';
       case 'update_status':
       case 'update_payment_status':
         return 'sync_alt';
