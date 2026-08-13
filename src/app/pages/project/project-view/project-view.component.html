@@ -154,7 +154,15 @@
       <span>{{ "project.noContractYet" | translate }}</span>
     </div>
 
-    <div class="prv-baris" *ngFor="let k of contracts">
+    <!--
+      Baris dapat ditekan untuk membuka rinciannya. Tombol hapus dipindah ke
+      dalam dialog: berjejer di daftar, ia terlalu dekat dengan baris lain.
+    -->
+    <div
+      class="prv-baris prv-baris--klik"
+      *ngFor="let k of contracts"
+      (click)="lihatKontrak(k)"
+    >
       <span class="prv-jenis" [ngClass]="'prv-jenis--' + k.documentType">
         {{ ("project.doc" + (k.documentType === "spk" ? "Spk" : "Adendum")) | translate }}
       </span>
@@ -168,17 +176,10 @@
           <span *ngIf="k.description"> &middot; {{ k.description }}</span>
         </div>
       </div>
-      <span class="prv-baris__nilai" [class.negatif]="k.value < 0">
-        {{ k.value | number: "1.0-0" }}
+      <span class="prv-baris__nilai" [class.negatif]="nilaiKontrak(k) < 0">
+        {{ nilaiKontrak(k) | number: "1.0-0" }}
       </span>
-      <button
-        mat-icon-button
-        *appCan="'project:delete'"
-        (click)="hapusKontrak(k)"
-        [attr.aria-label]="'project.deleteContract' | translate"
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
+      <mat-icon class="prv-baris__chev">chevron_right</mat-icon>
     </div>
 
     <div class="prv-total" *ngIf="contracts.length > 0">
@@ -186,6 +187,7 @@
       <span class="prv-total__nilai">{{ totalKontrak | number: "1.0-0" }}</span>
     </div>
   </div>
+
 </div>
 
 <div class="prv-memuat" *ngIf="isLoading">

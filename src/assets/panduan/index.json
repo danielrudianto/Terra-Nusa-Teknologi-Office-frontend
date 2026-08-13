@@ -285,6 +285,206 @@
         "repayment",
         "remaining"
       ]
+    },
+    {
+      "id": "aset",
+      "judul": {
+        "id": "Aset",
+        "en": "Assets",
+        "zh": "资产"
+      },
+      "berkas": "aset",
+      "modul": "asset",
+      "ringkas": {
+        "id": "Mendaftarkan aset perusahaan, kelompok penyusutan, dan penjualannya.",
+        "en": "Register company assets, depreciation groups, and disposals.",
+        "zh": "登记公司资产、折旧分组及处置。"
+      },
+      "kataKunci": [
+        "aset",
+        "asset",
+        "penyusutan",
+        "depresiasi",
+        "kelompok",
+        "masa manfaat",
+        "perolehan",
+        "dijual",
+        "depreciation",
+        "disposal",
+        "acquisition"
+      ]
+    },
+    {
+      "id": "pengguna",
+      "judul": {
+        "id": "Pengguna",
+        "en": "Users",
+        "zh": "用户"
+      },
+      "berkas": "pengguna",
+      "modul": "user",
+      "ringkas": {
+        "id": "Akun, level akses, divisi, dan izin khusus.",
+        "en": "Accounts, access levels, divisions, and per-user overrides.",
+        "zh": "账户、访问级别、部门与个别权限。"
+      },
+      "kataKunci": [
+        "pengguna",
+        "user",
+        "akun",
+        "level",
+        "akses",
+        "divisi",
+        "izin",
+        "hak akses",
+        "nonaktif",
+        "account",
+        "permission",
+        "department",
+        "access level"
+      ]
+    },
+    {
+      "id": "perpajakan",
+      "judul": {
+        "id": "Perpajakan",
+        "en": "Tax",
+        "zh": "税务"
+      },
+      "berkas": "perpajakan",
+      "modul": "tax",
+      "ringkas": {
+        "id": "Menarik rekap PPN, PPh, dan laporan bulanan dari data yang tercatat.",
+        "en": "Pull VAT, withholding, and monthly recaps from recorded data.",
+        "zh": "从已录入数据生成增值税、预扣税及月度汇总。"
+      },
+      "kataKunci": [
+        "pajak",
+        "perpajakan",
+        "PPN",
+        "PPh",
+        "rekap",
+        "bukti potong",
+        "faktur pajak",
+        "laporan bulanan",
+        "tax",
+        "VAT",
+        "withholding",
+        "recap"
+      ]
+    },
+    {
+      "id": "bank",
+      "judul": {
+        "id": "Rekening Bank",
+        "en": "Bank Accounts",
+        "zh": "银行账户"
+      },
+      "berkas": "bank",
+      "modul": "bank",
+      "ringkas": {
+        "id": "Mendaftarkan rekening perusahaan dan menelusuri mutasinya.",
+        "en": "Register company accounts and trace their movements.",
+        "zh": "登记公司账户并查询流水。"
+      },
+      "kataKunci": [
+        "bank",
+        "rekening",
+        "mutasi",
+        "saldo",
+        "rekening koran",
+        "unduh",
+        "account",
+        "mutation",
+        "balance"
+      ]
+    },
+    {
+      "id": "slip-gaji",
+      "judul": {
+        "id": "Slip Gaji",
+        "en": "Salary Slips",
+        "zh": "工资单"
+      },
+      "berkas": "slip-gaji",
+      "modul": "salary_slip",
+      "ringkas": {
+        "id": "Menyusun slip gaji bulanan, tunjangan, potongan, dan PPh 21.",
+        "en": "Build monthly slips: allowances, deductions, and withholding.",
+        "zh": "编制月度工资单：津贴、扣款与预扣税。"
+      },
+      "kataKunci": [
+        "gaji",
+        "slip",
+        "tunjangan",
+        "potongan",
+        "PPh 21",
+        "PTKP",
+        "lembur",
+        "uang makan",
+        "BPJS",
+        "salary",
+        "allowance",
+        "deduction",
+        "overtime"
+      ]
+    },
+    {
+      "id": "pembayaran",
+      "judul": {
+        "id": "Pembayaran",
+        "en": "Payments",
+        "zh": "付款"
+      },
+      "berkas": "pembayaran",
+      "modul": "payment_outgoing",
+      "ringkas": {
+        "id": "Menyetujui pembayaran keluar dan menelusuri riwayatnya.",
+        "en": "Approve outgoing payments and trace their history.",
+        "zh": "审批付款并查询历史记录。"
+      },
+      "kataKunci": [
+        "pembayaran",
+        "setujui",
+        "tolak",
+        "riwayat",
+        "kalender",
+        "payment",
+        "approve",
+        "reject",
+        "history"
+      ]
+    },
+    {
+      "id": "master-data",
+      "judul": {
+        "id": "Master Data",
+        "en": "Master Data",
+        "zh": "主数据"
+      },
+      "berkas": "master-data",
+      "modul": "master_item",
+      "ringkas": {
+        "id": "Pemasok, klien, karyawan, item, peralatan, dan lawan transaksi.",
+        "en": "Suppliers, clients, employees, items, equipment, counterparties.",
+        "zh": "供应商、客户、员工、物料、设备与交易对方。"
+      },
+      "kataKunci": [
+        "master",
+        "pemasok",
+        "klien",
+        "karyawan",
+        "item",
+        "peralatan",
+        "lawan transaksi",
+        "katalog",
+        "duplikat",
+        "supplier",
+        "client",
+        "employee",
+        "equipment",
+        "counterparty"
+      ]
     }
   ]
 }

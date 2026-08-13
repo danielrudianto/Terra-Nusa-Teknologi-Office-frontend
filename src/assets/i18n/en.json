@@ -2755,7 +2755,8 @@
     "errIndex": "Failed to load the guide list.",
     "errContent": "Failed to load the guide content.",
     "errNotAvailable": "No guide is available for this section yet.",
-    "fallbackNotice": "This guide has not been translated. Showing the Indonesian version."
+    "fallbackNotice": "This guide has not been translated. Showing the Indonesian version.",
+    "browseAll": "Guide book"
   },
   "project": {
     "title": "Projects",

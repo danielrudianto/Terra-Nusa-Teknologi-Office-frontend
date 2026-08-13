@@ -2755,7 +2755,8 @@
     "errIndex": "指南列表加载失败。",
     "errContent": "指南内容加载失败。",
     "errNotAvailable": "该部分尚无可用指南。",
-    "fallbackNotice": "本指南尚未翻译，显示的是印尼语版本。"
+    "fallbackNotice": "本指南尚未翻译，显示的是印尼语版本。",
+    "browseAll": "指南手册"
   },
   "project": {
     "title": "项目",

@@ -1,0 +1,96 @@
+<div class="cv">
+  <div class="cv__head" mat-dialog-title>
+    <span class="cv__head-icon" [class.cv__head-icon--adendum]="isAdendum">
+      <mat-icon>{{ isAdendum ? "note_add" : "description" }}</mat-icon>
+    </span>
+    <div class="cv__head-text">
+      <h2 class="cv__title">{{ k.documentNumber || "—" }}</h2>
+      <span class="cv__sub">
+        {{
+          ("project.doc" + (isAdendum ? "Adendum" : "Spk")) | translate
+        }}
+        <ng-container *ngIf="data?.projectName">
+          &middot; {{ data.projectName }}
+        </ng-container>
+      </span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="cv__content">
+    <!-- ===== nilai ===== -->
+    <div class="cv__nilai">
+      <span class="cv__nilai-label">{{ "project.docValue" | translate }}</span>
+      <span class="cv__nilai-angka" [class.negatif]="nilai < 0">
+        {{ nilai | number: "1.0-0" }}
+      </span>
+    </div>
+
+    <div class="cv__rincian">
+      <div class="cv__baris">
+        <span>DPP</span>
+        <span>{{ k.dpp | number: "1.0-0" }}</span>
+      </div>
+      <div class="cv__baris" *ngIf="k.ppn">
+        <span>PPN {{ k.ppn }}%</span>
+        <span>{{ nilaiPpn | number: "1.0-0" }}</span>
+      </div>
+      <!--
+        PPh ditampilkan terpisah dan tidak ikut dijumlahkan: yang berkurang
+        adalah jumlah yang dibayarkan, bukan nilai yang diperjanjikan.
+      -->
+      <div class="cv__baris cv__baris--pph" *ngIf="k.pphCode">
+        <span>
+          PPh {{ k.pphPercentage }}%
+          <span class="cv__kode">{{ k.pphCode }}</span>
+        </span>
+        <span>&minus;{{ nilaiPph | number: "1.0-0" }}</span>
+      </div>
+    </div>
+
+    <!-- ===== keterangan ===== -->
+    <div class="cv__meta">
+      <div class="cv__meta-baris">
+        <span class="cv__meta-label">{{ "project.docDate" | translate }}</span>
+        <span>{{ k.date }}</span>
+      </div>
+      <div class="cv__meta-baris" *ngIf="k.pphTaxObject">
+        <span class="cv__meta-label">{{ "poH.pphCode" | translate }}</span>
+        <span>{{ k.pphTaxObject }}</span>
+      </div>
+      <div class="cv__meta-baris" *ngIf="k.description">
+        <span class="cv__meta-label">{{
+          "project.description" | translate
+        }}</span>
+        <span>{{ k.description }}</span>
+      </div>
+    </div>
+
+    <!-- ===== riwayat ===== -->
+    <div class="cv__divider"></div>
+    <app-audit-trail
+      entity="project_contracts"
+      [entityId]="k.id"
+    ></app-audit-trail>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cv__foot">
+    <!--
+      Tombol hapus di sini, bukan pada barisnya.
+      Pada daftar, tombol hapus berjejer sedekat itu dengan baris lain —
+      dan yang salah tekan baru menyadarinya setelah dokumennya hilang.
+    -->
+    <button
+      type="button"
+      class="cv__hapus"
+      *appCan="'project:delete'"
+      (click)="hapus()"
+    >
+      <mat-icon>delete_outline</mat-icon>
+      {{ "project.deleteContract" | translate }}
+    </button>
+    <span class="cv__spacer"></span>
+    <button type="button" class="cv__tutup" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

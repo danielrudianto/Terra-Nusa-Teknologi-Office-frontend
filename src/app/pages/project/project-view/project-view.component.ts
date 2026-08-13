@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ContractViewComponent } from '../contract-view/contract-view.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -173,8 +174,43 @@ export class ProjectViewComponent implements OnInit {
    * adendum, layar harus segera menunjukkan hasilnya tanpa menunggu
    * pengambilan ulang — dan keduanya harus selalu sama.
    */
+  /**
+   * Nilai satu dokumen: DPP ditambah PPN-nya.
+   *
+   * Kolom `value` sudah tidak ada — nilainya dihitung dari komponennya agar
+   * angka yang tersimpan tidak mungkin berbeda dari penjumlahannya. Membaca
+   * `value` yang tidak ada menghasilkan 0 tanpa satu pun galat, dan nilai
+   * kontrak tampil nol meski dokumennya ada.
+   */
+  nilaiKontrak(k: any): number {
+    const dpp = Number(k?.dpp ?? 0);
+    const ppn = Number(k?.ppn ?? 0);
+    return dpp + (dpp * ppn) / 100;
+  }
+
+  /**
+   * Buka rincian satu kontrak.
+   *
+   * Rinciannya dipisah ke dialog karena satu proyek dapat memuat banyak
+   * dokumen; menampilkan seluruhnya di daftar membuatnya tidak lagi dapat
+   * dibaca sekilas.
+   */
+  lihatKontrak(k: any): void {
+    this.dialog
+      .open(ContractViewComponent, {
+        data: { contract: k, projectName: this.project?.name },
+        width: '560px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil) => {
+        if (hasil?.hapus) this.hapusKontrak(hasil.contract);
+      });
+  }
+
   get totalKontrak(): number {
-    return this.contracts.reduce((a, b) => a + Number(b.value ?? 0), 0);
+    return this.contracts.reduce((a, b) => a + this.nilaiKontrak(b), 0);
   }
 
   get adaAdendum(): boolean {

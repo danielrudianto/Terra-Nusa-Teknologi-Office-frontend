@@ -73,11 +73,25 @@
   }
 }
 
+/*
+ * Daftar mengisi sisa ruang, blok "lihat semua" didorong ke dasar kartu.
+ *
+ * Perlakuan yang sama seperti kartu pembayaran: tanpa ini, isi kartu
+ * menumpuk di atas dan menyisakan lubang di bawahnya ketika tingginya
+ * mengikuti kolom sebelah.
+ */
 .dr__list {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.dr__more {
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 .dr__row {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 12px;

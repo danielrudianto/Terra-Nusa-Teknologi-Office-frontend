@@ -33,10 +33,14 @@ import { SettingsService } from '../../../services/setting.service';
         type="button"
         class="pf"
         (click)="buka()"
-        [attr.aria-label]="'panduan.title' | translate"
+        [attr.aria-label]="
+          (adaTopik() ? 'panduan.title' : 'panduan.browseAll') | translate
+        "
       >
         <mat-icon>help_outline</mat-icon>
-        <span class="pf__teks">{{ 'panduan.title' | translate }}</span>
+        <span class="pf__teks">{{
+          (adaTopik() ? 'panduan.title' : 'panduan.browseAll') | translate
+        }}</span>
       </button>
     }
   `,
@@ -140,14 +144,27 @@ export class PanduanFabComponent {
   private readonly svc = inject(PanduanService);
   private readonly settings = inject(SettingsService);
 
+  /*
+   * Tampil di SETIAP halaman, bukan hanya yang punya panduan.
+   *
+   * Sebelumnya tombol ini disembunyikan ketika halamannya belum punya
+   * panduan — dan itu berlaku pada sepuluh dari dua puluh satu halaman
+   * modul. Akibatnya di Bank, Kalender, Slip Gaji, dan lainnya tidak ada
+   * satu pun jalan untuk membuka panduan, bahkan untuk membaca modul yang
+   * memang sudah ada panduannya.
+   *
+   * Sekarang: ada panduannya -> langsung ke topiknya; belum ada -> membuka
+   * daftar seluruh topik.
+   */
   readonly tampil = computed(
-    () =>
-      this.settings.guideFab() && !!this.svc.topikRute() && !this.svc.terbuka(),
+    () => this.settings.guideFab() && !this.svc.terbuka(),
   );
+
+  /** Halaman ini punya panduannya sendiri. */
+  readonly adaTopik = computed(() => !!this.svc.topikRute());
 
   buka(): void {
     const topik = this.svc.topikRute();
-    if (!topik) return;
-    void this.svc.buka(topik, this.svc.bagianRute() ?? undefined);
+    void this.svc.buka(topik ?? undefined, this.svc.bagianRute() ?? undefined);
   }
 }

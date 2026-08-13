@@ -2755,7 +2755,8 @@
     "errIndex": "Daftar panduan gagal dimuat.",
     "errContent": "Isi panduan gagal dimuat.",
     "errNotAvailable": "Panduan untuk bagian ini belum tersedia.",
-    "fallbackNotice": "Panduan ini belum diterjemahkan. Yang ditampilkan versi Bahasa Indonesia."
+    "fallbackNotice": "Panduan ini belum diterjemahkan. Yang ditampilkan versi Bahasa Indonesia.",
+    "browseAll": "Buku panduan"
   },
   "project": {
     "title": "Proyek",

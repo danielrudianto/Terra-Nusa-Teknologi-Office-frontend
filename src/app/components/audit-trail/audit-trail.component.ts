@@ -86,7 +86,12 @@ export class AuditTrailComponent implements OnChanges {
       case 'reject':
         return 'cancel';
       case 'delete':
+      case 'contract_delete':
         return 'delete_outline';
+      case 'contract_create':
+        return 'note_add';
+      case 'contract_update':
+        return 'edit_note';
       case 'update_status':
       case 'update_payment_status':
         return 'sync_alt';

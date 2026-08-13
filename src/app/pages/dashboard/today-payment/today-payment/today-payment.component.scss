@@ -68,6 +68,30 @@ $negative: var(--bad-fg, #ca2929);
     min-height: 0;
   }
 
+  /*
+   * Blok "lihat semua" didorong ke dasar kartu.
+   *
+   * Sebelumnya ia mengikuti baris terakhir, sehingga pada kartu yang
+   * tingginya menyesuaikan kolom sebelah, seluruh isinya menumpuk di atas
+   * dan menyisakan ruang kosong besar di bawahnya — kartunya sejajar,
+   * isinya menggantung.
+   */
+  &__more {
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+
+  /*
+   * Baris dibagi rata pada sisa ruang.
+   *
+   * Dengan begitu daftar pendek tidak menyisakan lubang di tengah kartu,
+   * dan daftar panjang tetap rapat seperti sebelumnya karena pembagiannya
+   * hanya menambah, tidak pernah mengurangi.
+   */
+  &__row {
+    flex: 0 1 auto;
+  }
+
   &__row {
     display: flex;
     align-items: center;

@@ -152,6 +152,27 @@ export class PurchaseOrderCreate651Component {
     ]),
     participantCancelDays: new FormControl(1, [Validators.min(0)]),
 
+    /*
+     * Termin, pajak, dan tenggat.
+     *
+     * Delapan kontrol berikut sempat hilang dari formGroup sementara
+     * markup dan kodenya tetap memakainya — Angular melempar "Cannot find
+     * control with name" untuk masing-masing, dan formulirnya tidak dapat
+     * dibuka sama sekali.
+     */
+    paymentTerm: new FormControl('', Validators.required),
+    creditTerm: new FormControl(0),
+    prepaidTerm: new FormControl(0),
+
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+
+    // Masa berlaku kuota; hanya dipakai pada mode kuota.
+    quotaValidUntil: new FormControl(''),
+    // Tenggat penyerahan hasil pemeriksaan peserta.
+    resultDueDays: new FormControl(7, [Validators.min(0)]),
+
     lines: new FormArray([]),
     additionalClauses: new FormArray([]),
     includePPN: new FormControl(true),

@@ -356,7 +356,7 @@ export const routes: Routes = [
         canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/bank/bank.component').then((m) => m.BankComponent),
-        data: { title: 'Bank', permission: 'bank:read' },
+        data: { title: 'Bank', permission: 'bank:read' , panduan: 'bank' },
         children: [
           {
             path: '',
@@ -389,7 +389,7 @@ export const routes: Routes = [
         canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/asset/asset.component').then((m) => m.AssetComponent),
-        data: { title: 'Asset', permission: 'asset:read' },
+        data: { title: 'Asset', permission: 'asset:read' , panduan: 'aset' },
         children: [
           {
             path: '',
@@ -533,7 +533,7 @@ export const routes: Routes = [
         canActivate: [permissionGuard],
         loadComponent: () =>
           import('./pages/user/user.component').then((m) => m.UserComponent),
-        data: { title: 'User', permission: 'user:read' },
+        data: { title: 'User', permission: 'user:read' , panduan: 'pengguna' },
         children: [
           {
             path: '',
@@ -551,7 +551,7 @@ export const routes: Routes = [
           import('./pages/salary-slip/salary-slip.component').then(
             (m) => m.SalarySlipComponent,
           ),
-        data: { title: 'Salary slip', permission: 'salary_slip:read' },
+        data: { title: 'Salary slip', permission: 'salary_slip:read' , panduan: 'slip-gaji' },
         children: [
           {
             path: '',
@@ -617,7 +617,7 @@ export const routes: Routes = [
           import('./pages/payment/payment.component').then(
             (m) => m.PaymentComponent,
           ),
-        data: { title: 'Payment', permission: 'payment_outgoing:read' },
+        data: { title: 'Payment', permission: 'payment_outgoing:read' , panduan: 'pembayaran' },
         children: [
           {
             path: '',
@@ -648,7 +648,7 @@ export const routes: Routes = [
           import('./pages/taxing/taxing.component').then(
             (m) => m.TaxingComponent,
           ),
-        data: { title: 'Taxing', permission: 'tax:read' },
+        data: { title: 'Taxing', permission: 'tax:read' , panduan: 'perpajakan' },
         children: [
           {
             path: '',
@@ -724,7 +724,7 @@ export const routes: Routes = [
           import('./pages/master/master.component').then(
             (m) => m.MasterComponent,
           ),
-        data: { title: 'Master Data', permission: 'master_item:read' },
+        data: { title: 'Master Data', permission: 'master_item:read' , panduan: 'master-data' },
         children: [
           {
             path: '',
@@ -741,7 +741,7 @@ export const routes: Routes = [
               import('./pages/master/master-equipment/master-equipment-list/master-equipment-list.component').then(
                 (m) => m.MasterEquipmentListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'peralatan' },
           },
           {
             path: 'Item',
@@ -749,7 +749,7 @@ export const routes: Routes = [
               import('./pages/master/master-item/master-item-list/master-item-list.component').then(
                 (m) => m.MasterItemListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'item' },
           },
           {
             path: 'Expense-opponent',
@@ -757,7 +757,7 @@ export const routes: Routes = [
               import('./pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component').then(
                 (m) => m.ExpenseOpponentListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'lawan-transaksi' },
           },
           {
             path: 'Supplier',
@@ -765,7 +765,7 @@ export const routes: Routes = [
               import('./pages/supplier/supplier-list/supplier-list.component').then(
                 (m) => m.SupplierListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'pemasok' },
           },
           {
             path: 'Client',
@@ -773,7 +773,7 @@ export const routes: Routes = [
               import('./pages/client/client-list/client-list.component').then(
                 (m) => m.ClientListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'klien' },
           },
           {
             path: 'Employee',
@@ -781,7 +781,7 @@ export const routes: Routes = [
               import('./pages/employee/employee-list/employee-list.component').then(
                 (m) => m.EmployeeListComponent,
               ),
-            data: { title: 'Master Data' },
+            data: { title: 'Master Data', panduanBagian: 'karyawan' },
           },
         ],
       },
