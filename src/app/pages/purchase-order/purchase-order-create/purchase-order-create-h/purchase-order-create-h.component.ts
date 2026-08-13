@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
-import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -26,7 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { ApiService } from '../../../../services/api.service';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatRadioModule } from '@angular/material/radio';
 import {
   buildBuangLumpurClauses,
@@ -80,6 +80,8 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
   styleUrl: './purchase-order-create-h.component.scss',
 })
 export class PurchaseOrderCreateHComponent {
+  private readonly translateSvc = inject(TranslateService);
+
 
   // ---- termin pembayaran ----
   //
@@ -123,7 +125,7 @@ export class PurchaseOrderCreateHComponent {
   get typeLabel(): string {
     // Tipe H tidak punya satu nama: bentuknya ditentukan jenis
     // subkontraktornya, dan itulah yang berguna dilihat di kepala halaman.
-    return PURCHASE_TYPE_LABELS['H'] || 'Subcontracted work';
+    return purchaseTypeLabel(this.translateSvc, 'H');
   }
 
   private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
@@ -1080,8 +1082,43 @@ export class PurchaseOrderCreateHComponent {
    */
   private dataPratinjau(): any {
     const v = this.formGroup.getRawValue();
+    const dasar = this.formatData();
+
+    /*
+     * Nama barang dilengkapi khusus untuk pratinjau.
+     *
+     * `formatData()` sengaja TIDAK menyalin nama barang: yang tersimpan
+     * hanya `item_id`, dan namanya diambil dari master_item saat PO dibaca
+     * kembali dari server. Pratinjau tidak lewat server, sehingga tanpa ini
+     * seluruh baris barang tampil sebagai "—".
+     *
+     * Diambil dari formulir, bukan dikarang: nilainya berasal dari katalog
+     * yang sama saat barangnya dipilih.
+     */
+    const baris = Array.isArray((dasar as any).items) ? (dasar as any).items : [];
+    /*
+     * Baris formulir diambil lewat `this.t`, bukan `v.items`.
+     *
+     * Nama FormArray-nya berbeda-beda antar varian — `purchase_order`,
+     * `lines`, `shipments`, `rentals`, `workers`, `scopes`. Menebak satu
+     * nama membuat lima belas varian lainnya diam-diam tidak mendapat nama
+     * barang, dan tidak ada galat yang muncul.
+     */
+    const asal = this.t?.controls?.map((c: any) => c.getRawValue()) ?? [];
+    const items = baris.map((it: any, i: number) => ({
+      ...it,
+      item_description:
+        it.item_description ??
+        asal[i]?.description ??
+        asal[i]?.name ??
+        it.task ??
+        asal[i]?.sku ??
+        null,
+    }));
+
     return {
-      ...this.formatData(),
+      ...dasar,
+      items,
       name: '(DRAF — BELUM TERBIT)',
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,

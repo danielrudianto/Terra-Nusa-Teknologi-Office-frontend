@@ -77,6 +77,29 @@ export const MASTER_ITEM_PURCHASE_TYPES: string[] = [
  * Titik pada kode (mis. "5.1.1") tidak bisa dipakai langsung sebagai kunci
  * i18n karena dianggap pemisah tingkat, sehingga diganti garis bawah.
  */
+/**
+ * Nama jenis PO menurut bahasa aplikasi.
+ *
+ * Ini yang seharusnya dipakai di layar. `PURCHASE_TYPE_LABELS` berisi teks
+ * INGGRIS dan hanya cocok untuk tempat yang memang berbahasa Inggris —
+ * memakainya di layar membuat aplikasi berbahasa Indonesia menampilkan
+ * "Project supporting equipment and supplies".
+ *
+ * Konstanta tetap dipakai sebagai cadangan: bila suatu kode jenis belum
+ * punya terjemahan, yang muncul teks Inggrisnya, bukan kunci mentah
+ * seperti "poType.tG".
+ *
+ * @param t  TranslateService milik pemanggilnya
+ */
+export function purchaseTypeLabel(t: { instant(k: string): string }, code: string): string {
+  if (!code) return '—';
+  const kunci = purchaseTypeKey(code);
+  const teks = t.instant(kunci);
+  // `instant` mengembalikan kuncinya sendiri bila tidak ditemukan.
+  if (teks && teks !== kunci) return teks;
+  return PURCHASE_TYPE_LABELS[code] || code;
+}
+
 export function purchaseTypeKey(code: string): string {
   return `poType.t${String(code || '').replace(/\./g, '_')}`;
 }

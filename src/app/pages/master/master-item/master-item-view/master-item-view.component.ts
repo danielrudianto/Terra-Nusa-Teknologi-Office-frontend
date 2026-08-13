@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -8,8 +8,8 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslatePipe } from '@ngx-translate/core';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
 
 @Component({
@@ -28,6 +28,8 @@ import { AuditTrailComponent } from '../../../../components/audit-trail/audit-tr
   styleUrl: './master-item-view.component.scss',
 })
 export class MasterItemViewComponent {
+  private readonly translateSvc = inject(TranslateService);
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { item: any },
     private dialog: MatDialogRef<MasterItemViewComponent>,
@@ -48,7 +50,7 @@ export class MasterItemViewComponent {
   }
 
   typeLabel(code: string): string {
-    return PURCHASE_TYPE_LABELS[code] || code;
+    return purchaseTypeLabel(this.translateSvc, code);
   }
 
   onEdit(): void {

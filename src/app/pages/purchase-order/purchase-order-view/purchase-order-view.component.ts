@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
-import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.constant';
+import { purchaseTypeKey, purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
 import {
   ClauseSection,
   buildClauseLines,
@@ -144,8 +144,23 @@ export class PurchaseOrderViewComponent {
       });
   }
 
+  /**
+   * Nama jenis PO, mengikuti bahasa aplikasi.
+   *
+   * `PURCHASE_TYPE_LABELS` berisi teks Inggris dan dipakai di tempat yang
+   * memang berbahasa Inggris. Di layar ini ia membuat SPK berbahasa
+   * Indonesia menampilkan "Project supporting equipment and supplies".
+   *
+   * Kunci i18n dipakai lebih dulu; konstanta hanya menjadi cadangan bila
+   * kode jenisnya belum punya terjemahan.
+   */
   typeLabel(code: string): string {
-    return PURCHASE_TYPE_LABELS[code] || code || '—';
+    if (!code) return '—';
+    const kunci = purchaseTypeKey(code);
+    const teks = this.translate.instant(kunci);
+    // `instant` mengembalikan kuncinya sendiri bila tidak ditemukan.
+    if (teks && teks !== kunci) return teks;
+    return purchaseTypeLabel(this.translate, code);
   }
 
   get items(): any[] {

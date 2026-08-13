@@ -30,9 +30,11 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
+        <!-- Tipe G melekat pada proyek; PUSAT tidak berlaku di sini. -->
         <app-project-selector
         formControlName="projectName"
         [hanyaAktif]="true"
+        [tanpaPusat]="true"
         [label]="'poForm.projectCode' | translate"
       />
 

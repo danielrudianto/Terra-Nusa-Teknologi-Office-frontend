@@ -18,10 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
-import {
-  PURCHASE_TYPE_LABELS,
-  MASTER_ITEM_PURCHASE_TYPES,
-} from 'src/app/constants/purchase-type-label.constant';
+import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -77,7 +74,7 @@ export class MasterItemUpdateComponent {
   purchaseTypes: { code: string; label: string }[] =
     MASTER_ITEM_PURCHASE_TYPES.map((code) => ({
       code,
-      label: PURCHASE_TYPE_LABELS[code] || code,
+      label: purchaseTypeLabel(this.translate, code),
     }));
   selectedTypes: string[] = [];
 

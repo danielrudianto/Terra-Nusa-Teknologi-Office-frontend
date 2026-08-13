@@ -12,7 +12,7 @@ import { ApiService } from '../../../services/api.service';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { ProjectLookupService } from '../../../services/project-lookup.service';
-import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
 
 interface BarisPemasok {
   nama: string;
@@ -321,7 +321,7 @@ export class ProjectReportComponent implements OnInit {
         .sort((a, b) => b.nilai - a.nilai);
       hasil.push({
         kode,
-        nama: PURCHASE_TYPE_LABELS[kode] ?? kode,
+        nama: purchaseTypeLabel(this.translate, kode) ?? kode,
         nilai: pemasok.reduce((a, b) => a + b.nilai, 0),
         pemasok,
       });

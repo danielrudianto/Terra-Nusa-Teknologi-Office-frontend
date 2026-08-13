@@ -19,10 +19,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
-import {
-  PURCHASE_TYPE_LABELS,
-  purchaseTypeKey,
-} from '../../../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { printPurchaseOrderG } from '../../../helpers/purchase-order-g.helper';
 import { printPurchaseOrderC } from '../../../helpers/purchase-order-c.helper';
@@ -207,11 +204,12 @@ export class PurchaseOrderListComponent {
   /**
    * Nama jenis PO diambil dari berkas terjemahan; peta lama dipakai sebagai
    * cadangan bila kodenya belum punya terjemahan.
+   *
+   * Seluruh logikanya ada di `purchaseTypeLabel` — termasuk pemeriksaan
+   * "kunci tidak ditemukan" yang sebelumnya ditulis ulang di sini.
    */
   typeLabel(code: string): string {
-    const key = purchaseTypeKey(code);
-    const label = this.translate.instant(key);
-    return label === key ? PURCHASE_TYPE_LABELS[code] || code : label;
+    return purchaseTypeLabel(this.translate, code);
   }
 
   total(po: any): number {

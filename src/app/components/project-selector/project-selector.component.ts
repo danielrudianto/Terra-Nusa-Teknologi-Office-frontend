@@ -187,6 +187,19 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
    */
   readonly hanyaAktif = input(false);
 
+  /**
+   * Sembunyikan PUSAT dari daftar pilihan.
+   *
+   * PUSAT bukan proyek; ia menandai beban kantor. Sebagian jenis PO memang
+   * tidak boleh dibebankan ke sana — alat bantu dan perlengkapan proyek
+   * (tipe G), misalnya, selalu melekat pada proyek tertentu.
+   *
+   * Seperti `hanyaAktif`, penyaringan ini hanya mengenai SARAN. Dokumen
+   * lama yang terlanjur berkode PUSAT tetap dikenali saat dibuka, sehingga
+   * tidak berubah menjadi "kode tidak terdaftar".
+   */
+  readonly tanpaPusat = input(false);
+
   readonly teks = signal('');
   readonly nonaktif = signal(false);
 
@@ -210,11 +223,18 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
      * hanya sudah selesai. Yang terisi tetap dikenali; yang disembunyikan
      * hanya daftar pilihannya.
      */
+    const terpilih = this.teks().trim().toUpperCase();
+
     if (this.hanyaAktif()) {
-      const terpilih = this.teks().trim().toUpperCase();
       daftar = daftar.filter(
         (p) =>
           (p.isActive && !p.isCancelled) || p.code.toUpperCase() === terpilih,
+      );
+    }
+
+    if (this.tanpaPusat()) {
+      daftar = daftar.filter(
+        (p) => p.code.toUpperCase() !== 'PUSAT' || terpilih === 'PUSAT',
       );
     }
 

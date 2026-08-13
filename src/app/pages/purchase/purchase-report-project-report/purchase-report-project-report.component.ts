@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PurchaseReportProjectComponent } from '../purchase-list/purchase-report-project/purchase-report-project.component';
 import * as XLSX from 'xlsx';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
@@ -29,7 +29,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   MatTreeFlatDataSource,
@@ -77,6 +77,8 @@ Chart.register(...registerables);
   styleUrls: ['./purchase-report-project-report.component.scss'],
 })
 export class PurchaseReportProjectReportComponent implements OnInit {
+  private readonly translateSvc = inject(TranslateService);
+
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   public pieChartOptions: ChartConfiguration['options'] = {
@@ -524,7 +526,7 @@ export class PurchaseReportProjectReportComponent implements OnInit {
 
     // Convert codes to human-readable labels
     const finalItems = majorItems.map((item) => ({
-      label: PURCHASE_TYPE_LABELS[item.code] || item.code, // fallback to code if missing
+      label: purchaseTypeLabel(this.translateSvc, item.code), // fallback to code if missing
       value: item.value,
     }));
 
@@ -626,7 +628,7 @@ export class PurchaseReportProjectReportComponent implements OnInit {
 
     // Build tree nodes
     for (const [pType, supplierMap] of typeMap.entries()) {
-      const headerLabel = PURCHASE_TYPE_LABELS[pType] || pType; // e.g., "Material"
+      const headerLabel = purchaseTypeLabel(this.translateSvc, pType); // e.g., "Material"
       const supplierNodes: TreeNode[] = [];
 
       let typeTotal = 0;

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
-import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../../utils/pph';
 import {
@@ -35,7 +35,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
@@ -64,6 +64,8 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
   styleUrl: './purchase-order-create-5112.component.scss',
 })
 export class PurchaseOrderCreate5112Component {
+  private readonly translateSvc = inject(TranslateService);
+
 
   /**
    * Satuan berubah pada satu baris.
@@ -90,7 +92,7 @@ export class PurchaseOrderCreate5112Component {
 
   /** Nama jenis PO, dipakai pada pill di kepala halaman. */
   get typeLabel(): string {
-    return PURCHASE_TYPE_LABELS['5.1.12'] || '';
+    return purchaseTypeLabel(this.translateSvc, '5.1.12');
   }
 
   private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
@@ -554,8 +556,43 @@ export class PurchaseOrderCreate5112Component {
    */
   private dataPratinjau(): any {
     const v = this.formGroup.getRawValue();
+    const dasar = this.formatData();
+
+    /*
+     * Nama barang dilengkapi khusus untuk pratinjau.
+     *
+     * `formatData()` sengaja TIDAK menyalin nama barang: yang tersimpan
+     * hanya `item_id`, dan namanya diambil dari master_item saat PO dibaca
+     * kembali dari server. Pratinjau tidak lewat server, sehingga tanpa ini
+     * seluruh baris barang tampil sebagai "—".
+     *
+     * Diambil dari formulir, bukan dikarang: nilainya berasal dari katalog
+     * yang sama saat barangnya dipilih.
+     */
+    const baris = Array.isArray((dasar as any).items) ? (dasar as any).items : [];
+    /*
+     * Baris formulir diambil lewat `this.t`, bukan `v.items`.
+     *
+     * Nama FormArray-nya berbeda-beda antar varian — `purchase_order`,
+     * `lines`, `shipments`, `rentals`, `workers`, `scopes`. Menebak satu
+     * nama membuat lima belas varian lainnya diam-diam tidak mendapat nama
+     * barang, dan tidak ada galat yang muncul.
+     */
+    const asal = this.t?.controls?.map((c: any) => c.getRawValue()) ?? [];
+    const items = baris.map((it: any, i: number) => ({
+      ...it,
+      item_description:
+        it.item_description ??
+        asal[i]?.description ??
+        asal[i]?.name ??
+        it.task ??
+        asal[i]?.sku ??
+        null,
+    }));
+
     return {
-      ...this.formatData(),
+      ...dasar,
+      items,
       name: '(DRAF — BELUM TERBIT)',
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,

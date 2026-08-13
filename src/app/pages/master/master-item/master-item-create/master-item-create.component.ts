@@ -16,10 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 
 import { TranslatePipe } from '@ngx-translate/core';
-import {
-  PURCHASE_TYPE_LABELS,
-  MASTER_ITEM_PURCHASE_TYPES,
-} from 'src/app/constants/purchase-type-label.constant';
+import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 
 @Component({
   selector: 'app-master-item-create',
@@ -74,7 +71,7 @@ export class MasterItemCreateComponent {
   purchaseTypes: { code: string; label: string }[] =
     MASTER_ITEM_PURCHASE_TYPES.map((code) => ({
       code,
-      label: PURCHASE_TYPE_LABELS[code] || code,
+      label: purchaseTypeLabel(this.translate, code),
     }));
   selectedTypes: string[] = ['G'];
 

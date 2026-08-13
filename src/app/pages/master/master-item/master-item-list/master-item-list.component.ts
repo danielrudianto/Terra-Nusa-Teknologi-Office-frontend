@@ -22,7 +22,7 @@ import { MasterItemUpdateComponent } from '../master-item-update/master-item-upd
 import { MasterItemViewComponent } from '../master-item-view/master-item-view.component';
 import { MasterItemFilterComponent } from './master-item-filter/master-item-filter.component';
 import { ApiService } from 'src/app/services/api.service';
-import { PURCHASE_TYPE_LABELS } from 'src/app/constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateService } from '@ngx-translate/core';
@@ -230,7 +230,7 @@ export class MasterItemListComponent {
   }
 
   typeLabel(code: string): string {
-    return PURCHASE_TYPE_LABELS[code] || code;
+    return purchaseTypeLabel(this.translate, code);
   }
 
   // ---- CSV import ----

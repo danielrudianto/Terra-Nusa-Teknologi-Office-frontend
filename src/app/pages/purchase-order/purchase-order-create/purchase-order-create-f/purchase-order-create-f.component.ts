@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
-import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
 import {
   FormArray,
   FormBuilder,
@@ -130,7 +130,7 @@ export class PurchaseOrderCreateFComponent {
 
   /** Nama jenis PO, dipakai pada pill di kepala halaman. */
   get typeLabel(): string {
-    return PURCHASE_TYPE_LABELS['F'] || '';
+    return purchaseTypeLabel(this.translate, 'F');
   }
 
   private readonly typeSwitcher = inject(PurchaseOrderTypeSwitcher);
@@ -576,8 +576,43 @@ export class PurchaseOrderCreateFComponent {
    */
   private dataPratinjau(): any {
     const v = this.formGroup.getRawValue();
+    const dasar = this.formatData();
+
+    /*
+     * Nama barang dilengkapi khusus untuk pratinjau.
+     *
+     * `formatData()` sengaja TIDAK menyalin nama barang: yang tersimpan
+     * hanya `item_id`, dan namanya diambil dari master_item saat PO dibaca
+     * kembali dari server. Pratinjau tidak lewat server, sehingga tanpa ini
+     * seluruh baris barang tampil sebagai "—".
+     *
+     * Diambil dari formulir, bukan dikarang: nilainya berasal dari katalog
+     * yang sama saat barangnya dipilih.
+     */
+    const baris = Array.isArray((dasar as any).items) ? (dasar as any).items : [];
+    /*
+     * Baris formulir diambil lewat `this.t`, bukan `v.items`.
+     *
+     * Nama FormArray-nya berbeda-beda antar varian — `purchase_order`,
+     * `lines`, `shipments`, `rentals`, `workers`, `scopes`. Menebak satu
+     * nama membuat lima belas varian lainnya diam-diam tidak mendapat nama
+     * barang, dan tidak ada galat yang muncul.
+     */
+    const asal = this.t?.controls?.map((c: any) => c.getRawValue()) ?? [];
+    const items = baris.map((it: any, i: number) => ({
+      ...it,
+      item_description:
+        it.item_description ??
+        asal[i]?.description ??
+        asal[i]?.name ??
+        it.task ??
+        asal[i]?.sku ??
+        null,
+    }));
+
     return {
-      ...this.formatData(),
+      ...dasar,
+      items,
       name: '(DRAF — BELUM TERBIT)',
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
