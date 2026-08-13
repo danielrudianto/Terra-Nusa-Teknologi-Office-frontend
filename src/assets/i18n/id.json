@@ -285,10 +285,8 @@
     "description": "Kelola data pembelian di sini",
     "createNew": "Buat pembelian baru",
     "searchPlaceholder": "Faktur, kwitansi, PO, pemasok, atau faktur pajak",
-    "projectReport": "Laporan proyek",
     "monthlyReport": "Laporan bulanan",
     "update": "Ubah",
-    "menuMonthlyReport": "Laporan bulanan",
     "menuUpdateStatus": "Ubah status",
     "menuUpdateInternal": "Ubah internal",
     "noData": "Tidak ada pembelian yang cocok dengan filter.",
@@ -2730,7 +2728,8 @@
     "checkingInvoice": "Memeriksa invoice yang sudah ada…",
     "taxSlipSaved": "Nomor bukti potong tersimpan",
     "accessUpdated": "Akses pengguna diperbarui",
-    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali."
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
+    "saveFailed": "Gagal menyimpan data"
   },
   "panduan": {
     "title": "Panduan",
@@ -2819,7 +2818,8 @@
     "docPphValue": "PPh dipotong",
     "docReceived": "Diterima setelah PPh",
     "noPph": "Tanpa potongan PPh",
-    "choosePph": "Pilih PPh"
+    "choosePph": "Pilih PPh",
+    "description": "Keterangan"
   },
   "projectReport": {
     "title": "Laporan Proyek",

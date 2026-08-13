@@ -13,7 +13,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
-import { PurchaseReportProjectComponent } from './purchase-report-project/purchase-report-project.component';
 import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { PurchaseUpdateComponent } from '../purchase-update/purchase-update.component';
@@ -335,19 +334,6 @@ export class PurchaseListComponent {
       maxWidth: '94vw',
       autoFocus: false,
     });
-  }
-
-  openProjectSelector() {
-    this.dialog
-      .open(PurchaseReportProjectComponent, {})
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          this.router.navigate(['Project', data.projectName], {
-            relativeTo: this.route,
-          });
-        }
-      });
   }
 
   viewPurchase(id: number) {

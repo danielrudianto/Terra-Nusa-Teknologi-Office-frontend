@@ -285,10 +285,8 @@
     "description": "Manage your purchase data here",
     "createNew": "Create new purchase",
     "searchPlaceholder": "Invoice, receipt, PO, supplier, or tax invoice",
-    "projectReport": "Project report",
     "monthlyReport": "Monthly report",
     "update": "Update",
-    "menuMonthlyReport": "Monthly report",
     "menuUpdateStatus": "Update status",
     "menuUpdateInternal": "Update internal",
     "noData": "No purchases match your filters.",
@@ -2730,7 +2728,8 @@
     "checkingInvoice": "Checking existing invoice…",
     "taxSlipSaved": "Withholding slip number saved",
     "accessUpdated": "User access updated",
-    "sessionExpired": "Your session has ended. Please sign in again."
+    "sessionExpired": "Your session has ended. Please sign in again.",
+    "saveFailed": "Failed to save data"
   },
   "panduan": {
     "title": "Guide",
@@ -2819,7 +2818,8 @@
     "docPphValue": "Withholding tax",
     "docReceived": "Received after withholding",
     "noPph": "No withholding tax",
-    "choosePph": "Choose withholding tax"
+    "choosePph": "Choose withholding tax",
+    "description": "Description"
   },
   "projectReport": {
     "title": "Project Report",

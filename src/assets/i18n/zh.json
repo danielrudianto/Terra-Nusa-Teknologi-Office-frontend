@@ -285,10 +285,8 @@
     "description": "在此管理您的采购数据",
     "createNew": "创建新采购",
     "searchPlaceholder": "发票、收据、采购订单、供应商或税务发票",
-    "projectReport": "项目报告",
     "monthlyReport": "月度报告",
     "update": "更新",
-    "menuMonthlyReport": "月度报告",
     "menuUpdateStatus": "更新状态",
     "menuUpdateInternal": "更新内部",
     "noData": "没有符合筛选条件的采购。",
@@ -2730,7 +2728,8 @@
     "checkingInvoice": "正在检查已有发票…",
     "taxSlipSaved": "扣缴凭证号已保存",
     "accessUpdated": "用户权限已更新",
-    "sessionExpired": "您的登录已过期，请重新登录。"
+    "sessionExpired": "您的登录已过期，请重新登录。",
+    "saveFailed": "保存失败"
   },
   "panduan": {
     "title": "指南",
@@ -2819,7 +2818,8 @@
     "docPphValue": "预扣税",
     "docReceived": "扣税后收款",
     "noPph": "无预扣税",
-    "choosePph": "选择预扣税"
+    "choosePph": "选择预扣税",
+    "description": "说明"
   },
   "projectReport": {
     "title": "项目报表",

@@ -61,27 +61,15 @@
         [placeholder]="'purchase.searchPlaceholder' | translate"
         [formControl]="searchControl"
       />
-      <button
-        type="button"
-        [matMenuTriggerFor]="menu"
-        mat-icon-button
-        matSuffix
-        aria-label="More options"
-      >
-        <mat-icon>more_vert</mat-icon>
-      </button>
-    </mat-form-field>
+      <!--
+        Menu di ujung kolom pencarian dibuang.
 
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="openProjectSelector()">
-        <mat-icon>workspaces</mat-icon>
-        <span>{{ "purchase.projectReport" | translate }}</span>
-      </button>
-      <button mat-menu-item>
-        <mat-icon>calendar_month</mat-icon>
-        <span>{{ "purchase.menuMonthlyReport" | translate }}</span>
-      </button>
-    </mat-menu>
+        Laporan proyek kini punya halamannya sendiri, dan laporan bulanan
+        tempatnya di Perpajakan — keduanya tidak lagi perlu pintu masuk dari
+        sini. Menu berisi dua jalan pintas ke halaman lain membuat kolom
+        pencarian tampak punya pengaturan, padahal tidak.
+      -->
+    </mat-form-field>
   </div>
 
   <!-- Table card -->
