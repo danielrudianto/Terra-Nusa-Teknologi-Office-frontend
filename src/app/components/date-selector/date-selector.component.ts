@@ -1,4 +1,5 @@
-import { Component, Inject, model } from '@angular/core';
+import { Component, Inject, model, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -25,6 +26,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './date-selector.component.scss',
 })
 export class DateSelectorComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   isSubmitting: boolean = false;
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -52,7 +54,8 @@ export class DateSelectorComponent {
           this.dialog.close('moved');
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

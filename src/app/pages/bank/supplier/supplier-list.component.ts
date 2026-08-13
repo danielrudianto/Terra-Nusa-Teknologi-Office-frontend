@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -49,6 +50,7 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
   standalone: true,
 })
 export class SupplierListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -103,7 +105,8 @@ export class SupplierListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          this.snackBar.open(err.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(err), 'Close', {
             duration: 3000,
           });
         },

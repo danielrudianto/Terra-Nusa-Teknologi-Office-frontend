@@ -1,4 +1,5 @@
 import { Component, Inject, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
@@ -45,6 +46,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './expense-create-administration.component.scss',
 })
 export class ExpenseCreateAdministrationComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   bankAccounts: any[] = [];
   isSubmitting: boolean = false;
@@ -175,7 +177,8 @@ export class ExpenseCreateAdministrationComponent {
                 this.dialog.close();
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },

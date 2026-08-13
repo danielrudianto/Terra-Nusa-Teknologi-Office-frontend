@@ -90,6 +90,33 @@
         </ng-container>
 
         <!-- Action -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.status" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              class="el-chip"
+              [ngClass]="element.endDate ? 'el-chip--inactive' : 'el-chip--active'"
+            >
+              {{
+                (element.endDate ? "employee.inactive" : "employee.active")
+                  | translate
+              }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.endDate" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="element.endDate">{{ element.endDate }}</span>
+            <span class="el-kosong" *ngIf="!element.endDate">&mdash;</span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
           <td
@@ -120,6 +147,21 @@
               >
                 <mat-icon>receipt</mat-icon
                 ><span>{{ "menu.createSalarySlip" | translate }}</span>
+              </button>
+              <button
+                mat-menu-item
+                *appCan="'employees:update'"
+                (click)="openStatus(element)"
+              >
+                <mat-icon>{{
+                  element.endDate ? "person_add" : "person_off"
+                }}</mat-icon>
+                <span>{{
+                  (element.endDate
+                    ? "employeeStatus.reactivate"
+                    : "employeeStatus.deactivate"
+                  ) | translate
+                }}</span>
               </button>
             </mat-menu>
           </td>

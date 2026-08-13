@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import {
   FormControl,
   FormGroup,
@@ -43,6 +44,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './bank-mutation.component.scss',
 })
 export class BankMutationComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
@@ -98,7 +100,8 @@ export class BankMutationComponent {
         this.bankAccount = data;
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 1000,
         });
       },
@@ -122,7 +125,8 @@ export class BankMutationComponent {
           this.dataCount = data.count;
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 1000,
           });
         },

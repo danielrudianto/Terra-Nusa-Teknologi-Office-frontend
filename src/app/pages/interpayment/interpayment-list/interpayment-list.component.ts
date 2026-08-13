@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { Component, ViewChild, OnInit, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -51,6 +52,7 @@ import { SettingsService } from '../../../services/setting.service';
   standalone: true,
 })
 export class InterpaymentListComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     public settings: SettingsService,
     private translate: TranslateService,
@@ -222,7 +224,8 @@ export class InterpaymentListComponent implements OnInit {
             },
             error: (error) => {
               console.error('Error deleting interpayment:', error);
-              this.snackBar.open(error.error.detail, 'Close', {
+              this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                 duration: 3000,
               });
             },

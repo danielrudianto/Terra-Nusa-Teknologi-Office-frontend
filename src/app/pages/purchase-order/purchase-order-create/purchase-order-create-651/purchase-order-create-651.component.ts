@@ -35,6 +35,7 @@ import { IPPh } from '../../../../utils/pph';
 import { buildClauseLines } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * 6.5.1 Biaya rekrutmen.
@@ -419,7 +420,7 @@ export class PurchaseOrderCreate651Component {
         // Tanggal disimpan dalam bentuk ISO; kalimatnya dirakit ulang saat
         // dokumen dicetak.
         quotaValidUntil: v.quotaValidUntil
-          ? new Date(v.quotaValidUntil).toISOString().split('T')[0]
+          ? tanggalLokal(v.quotaValidUntil)
           : null,
         resultDueDays: v.resultDueDays,
         participantCancelDays: v.participantCancelDays,

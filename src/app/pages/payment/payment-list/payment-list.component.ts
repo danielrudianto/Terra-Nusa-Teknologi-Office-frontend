@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountService } from '../../../services/account.service';
 import { CanDirective } from '../../../directives/can.directive';
@@ -42,6 +43,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
   standalone: true,
 })
 export class PaymentListComponent implements OnInit, OnDestroy {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -244,7 +246,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
                 }
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },
@@ -279,7 +282,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
                 }
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },

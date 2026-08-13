@@ -1,0 +1,93 @@
+<div class="es">
+  <h2 class="es__title">
+    {{
+      (sudahNonaktif ? "employeeStatus.reactivateTitle" : "employeeStatus.title")
+        | translate
+    }}
+  </h2>
+
+  <div class="es__orang">
+    <span class="es__nama">{{ karyawan.name }}</span>
+    <span class="es__nik">{{ karyawan.nik }}</span>
+    <span class="es__jabatan" *ngIf="karyawan.position">
+      {{ karyawan.position }}
+    </span>
+  </div>
+
+  <!-- ===== sudah nonaktif: tawarkan aktifkan kembali ===== -->
+  <ng-container *ngIf="sudahNonaktif">
+    <div class="es__info">
+      <mat-icon>info</mat-icon>
+      <span>
+        {{ "employeeStatus.currentlyInactive" | translate }}
+        <b>{{ karyawan.endDate }}</b>
+      </span>
+    </div>
+
+    <p class="es__ket">{{ "employeeStatus.reactivateHint" | translate }}</p>
+
+    <div class="es__foot">
+      <button mat-stroked-button type="button" (click)="batal()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting"
+        (click)="aktifkanLagi()"
+      >
+        {{ "employeeStatus.reactivate" | translate }}
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- ===== masih aktif: minta tanggal terakhir ===== -->
+  <ng-container *ngIf="!sudahNonaktif">
+    <p class="es__ket">{{ "employeeStatus.hint" | translate }}</p>
+
+    <form [formGroup]="formGroup">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{ "employeeStatus.endDate" | translate }}</mat-label>
+        <input matInput [matDatepicker]="tgl" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="tgl"></mat-datepicker-toggle>
+        <mat-datepicker #tgl></mat-datepicker>
+        <mat-hint *ngIf="karyawan.startDate">
+          {{ "employeeStatus.startedOn" | translate }} {{ karyawan.startDate }}
+        </mat-hint>
+      </mat-form-field>
+    </form>
+
+    <p class="es__err" *ngIf="tanggalTerbalik">
+      {{ "employeeStatus.dateBeforeStart" | translate }}
+    </p>
+
+    <div class="es__peringatan" *ngIf="tanggalDiMasaDepan && !tanggalTerbalik">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ "employeeStatus.futureDate" | translate }}</span>
+    </div>
+
+    <div class="es__info es__info--kuning">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ "employeeStatus.consequence" | translate }}</span>
+    </div>
+
+    <div class="es__foot">
+      <button mat-stroked-button type="button" (click)="batal()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        mat-flat-button
+        color="warn"
+        type="button"
+        [disabled]="formGroup.invalid || tanggalTerbalik || isSubmitting"
+        (click)="nonaktifkan()"
+      >
+        {{
+          (isSubmitting ? "employeeStatus.saving" : "employeeStatus.deactivate")
+            | translate
+        }}
+      </button>
+    </div>
+  </ng-container>
+</div>

@@ -50,6 +50,7 @@ import { PphSelectorComponent } from '../../../../components/pph-selector/pph-se
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 @Component({
   selector: 'app-purchase-order-create-a',
@@ -417,7 +418,7 @@ export class PurchaseOrderCreateAComponent {
     const ppn = includePPN ? this.ppnRate : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      date: tanggalLokal(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: 'A',
       projectName: projectCode,
@@ -450,7 +451,7 @@ export class PurchaseOrderCreateAComponent {
         price: Number(String(x.amount ?? '').replace(/[^\d.-]/g, '')) || 0,
         unit: x.unit,
         task: x.deliveryDate
-          ? new Date(x.deliveryDate).toISOString().split('T')[0]
+          ? tanggalLokal(x.deliveryDate)
           : null,
       })),
       // Penanggung jawab kini melekat pada tiap baris pengiriman, sehingga
@@ -531,7 +532,7 @@ export class PurchaseOrderCreateAComponent {
   private clauseSourceData() {
     const v = this.formGroup.getRawValue();
     const iso = (d: any) =>
-      d ? new Date(d).toISOString().split('T')[0] : null;
+      d ? tanggalLokal(d) : null;
 
     return {
       workKind: v.workKind,

@@ -1,4 +1,5 @@
 import { Component, Inject, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -39,6 +40,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './sales-invoice-confirm.component.scss',
 })
 export class SalesInvoiceConfirmComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private clipboard: Clipboard,
@@ -106,7 +108,8 @@ export class SalesInvoiceConfirmComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
 
@@ -163,7 +166,8 @@ export class SalesInvoiceConfirmComponent {
                 );
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },
@@ -201,7 +205,8 @@ export class SalesInvoiceConfirmComponent {
                 );
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },

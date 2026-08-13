@@ -39,6 +39,7 @@ import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { MatRadioModule } from '@angular/material/radio';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 @Component({
   selector: 'app-purchase-order-create-f',
@@ -472,7 +473,7 @@ export class PurchaseOrderCreateFComponent {
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      date: tanggalLokal(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: this.formGroup.get('purchaseType')?.value,
       projectName: projectCode,

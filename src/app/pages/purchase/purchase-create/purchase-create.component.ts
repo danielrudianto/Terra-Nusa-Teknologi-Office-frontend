@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AbstractControl,
@@ -112,6 +113,7 @@ function bankAccountIDRequired(): ValidatorFn {
   standalone: true,
 })
 export class PurchaseCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -408,7 +410,8 @@ export class PurchaseCreateComponent {
       .subscribe({
         next: (data) => {},
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },
@@ -584,7 +587,8 @@ export class PurchaseCreateComponent {
                   this.stepper!.selectedIndex = 0;
                 },
                 error: (error) => {
-                  this.snackBar.open(error.error.detail, 'Close', {
+                  this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                     duration: 3000,
                   });
                 },
@@ -594,7 +598,8 @@ export class PurchaseCreateComponent {
               });
           },
           error: (error) => {
-            this.snackBar.open(error.error.detail, 'Close', {
+            this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
               duration: 3000,
             });
           },
@@ -670,7 +675,8 @@ export class PurchaseCreateComponent {
             this.stepper!.selectedIndex = 0;
           },
           error: (error) => {
-            this.snackBar.open(error.error.detail, 'Close', {
+            this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
               duration: 3000,
             });
           },

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from '../../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -43,6 +44,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class ExpenseOpponentListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -175,8 +177,7 @@ export class ExpenseOpponentListComponent {
           },
           error: (err) =>
             this.snackBar.open(
-              err?.error?.detail ||
-                this.translate.instant('expenseOpponent.deleteFailed'),
+              this.serverMessage.terjemahkan(err, 'expenseOpponent.deleteFailed'),
               'Close',
               { duration: 3000 },
             ),

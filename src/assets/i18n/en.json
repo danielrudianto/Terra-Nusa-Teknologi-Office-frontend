@@ -301,7 +301,8 @@
     "viewCopyWhatsapp": "Copy for WhatsApp",
     "viewDelete": "Delete",
     "viewCopyPphObject": "Copy PPh object",
-    "viewCopyAccount": "Copy account number"
+    "viewCopyAccount": "Copy account number",
+    "deleteHasPayments": "This purchase already has payments. Cancel the payments first, or ask a higher-level user for help."
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -511,7 +512,8 @@
     "month": "Month",
     "year": "Year",
     "periodHint": "Defaults to last month, since salaries are paid for the period already worked. Change it if needed.",
-    "continue": "Continue"
+    "continue": "Continue",
+    "noEmployee": "No matching employee."
   },
   "employee": {
     "title": "Employees",
@@ -531,7 +533,11 @@
     "position": "Position",
     "startDate": "Start date",
     "taxCategory": "Tax category",
-    "createSub": "Complete the new employee data"
+    "createSub": "Complete the new employee data",
+    "status": "Status",
+    "endDate": "Last day",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "taxing": {
     "title": "Tax Center",
@@ -2141,7 +2147,9 @@
     "selectPph": "Select PPh code",
     "cityPlaceholder": "e.g. Bandung",
     "saving": "Saving...",
-    "selectBank": "Select bank"
+    "selectBank": "Select bank",
+    "proxyPayment": "Also record as a purchase",
+    "proxyPaymentHint": "The purchase is recorded under the same invoice number, so the bill enters the payment queue right away."
   },
   "poType": {
     "t5_1_1": "Asset purchase",
@@ -2866,5 +2874,22 @@
     "includeInternal": "Include internal purchases",
     "internalCount": "internal purchases · drafts & reimbursements always counted",
     "overBudget": "Cost exceeds contract by"
+  },
+  "employeeStatus": {
+    "title": "Deactivate Employee",
+    "hint": "Enter this employee's last working day. That date is what marks their status, not just a note.",
+    "endDate": "Last working day",
+    "startedOn": "Started on",
+    "dateBeforeStart": "The last day cannot come before the start date.",
+    "futureDate": "This date is in the future. Make sure that is intended.",
+    "consequence": "Inactive employees no longer appear when creating salary slips. Their data stays, and past slips are unchanged.",
+    "deactivate": "Deactivate",
+    "saving": "Saving...",
+    "deactivated": "Employee deactivated.",
+    "reactivateTitle": "Reactivate",
+    "currentlyInactive": "Inactive since",
+    "reactivateHint": "Reactivating clears the last working day, and this employee appears again when creating salary slips.",
+    "reactivate": "Reactivate",
+    "reactivated": "Employee reactivated."
   }
 }

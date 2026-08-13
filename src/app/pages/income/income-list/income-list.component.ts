@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
 import {
@@ -59,6 +60,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
 })
 export class IncomeListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -200,7 +202,8 @@ export class IncomeListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          this.snackBar.open(err.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(err), 'Close', {
             duration: 3000,
           });
         },

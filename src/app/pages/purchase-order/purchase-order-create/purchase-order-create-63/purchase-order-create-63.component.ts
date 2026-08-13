@@ -37,6 +37,7 @@ import { ApiService } from '../../../../services/api.service';
 import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * Marketing purchase orders:
@@ -363,7 +364,7 @@ export class PurchaseOrderCreate63Component {
 
 
   private toISO(d: any): string | null {
-    return d ? new Date(d).toISOString().split('T')[0] : null;
+    return d ? tanggalLokal(d) : null;
   }
 
   formatData() {

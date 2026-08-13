@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
@@ -46,6 +47,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './monthly-recap.component.scss',
 })
 export class MonthlyRecapComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   // period passed from the tax hub (select month/year once, reused everywhere)
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
@@ -543,7 +545,8 @@ export class MonthlyRecapComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

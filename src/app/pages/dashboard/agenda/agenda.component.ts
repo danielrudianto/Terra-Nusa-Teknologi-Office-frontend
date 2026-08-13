@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -50,6 +51,7 @@ interface BarisAgenda {
   styleUrl: './agenda.component.scss',
 })
 export class AgendaComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly agenda = inject(AgendaService);
   private readonly dialog = inject(MatDialog);
   private readonly account = inject(AccountService);
@@ -124,7 +126,7 @@ export class AgendaComponent {
            */
           this.baris = [];
           this.galat =
-            e?.error?.detail || this.translate.instant('notify.loadFailed');
+            this.serverMessage.terjemahkan(e, 'notify.loadFailed');
         },
       })
       .add(() => (this.isLoading = false));
@@ -194,7 +196,7 @@ export class AgendaComponent {
       },
       error: (e) =>
         this.snackBar.open(
-          e?.error?.detail || this.translate.instant('notify.deleteFailed'),
+          this.serverMessage.terjemahkan(e, 'notify.deleteFailed'),
           'Close',
           { duration: 4000 },
         ),

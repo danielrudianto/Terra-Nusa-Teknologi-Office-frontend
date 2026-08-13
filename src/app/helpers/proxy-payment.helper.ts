@@ -7,6 +7,7 @@ import {
   PageSize,
 } from 'pdfmake/interfaces';
 import { v4 } from 'uuid';
+import { tanggalLokal } from '../utils/tanggal';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -38,7 +39,7 @@ export class ProxyPaymentHelper {
     const dd = ProxyPaymentHelper.buildDocDefinition(data);
     const pdf = pdfMake.createPdf(dd);
     if (aksi === 'download') {
-      const tanggal = new Date(data.date).toISOString().split('T')[0];
+      const tanggal = tanggalLokal(data.date);
       return pdf.download(
         `Surat Pengalihan Pembayaran - ${data.supplierName} - ${tanggal}.pdf`,
       );

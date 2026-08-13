@@ -301,7 +301,8 @@
     "viewCopyWhatsapp": "复制到WhatsApp",
     "viewDelete": "删除",
     "viewCopyPphObject": "复制所得税对象",
-    "viewCopyAccount": "复制账号"
+    "viewCopyAccount": "复制账号",
+    "deleteHasPayments": "该采购已有付款记录。请先取消付款，或请更高权限的用户处理。"
   },
   "purchaseDraft": {
     "title": "采购草稿",
@@ -511,7 +512,8 @@
     "month": "月份",
     "year": "年份",
     "periodHint": "默认上个月，因为工资针对已完成的期间发放。如需可更改。",
-    "continue": "继续"
+    "continue": "继续",
+    "noEmployee": "没有匹配的员工。"
   },
   "employee": {
     "title": "员工",
@@ -531,7 +533,11 @@
     "position": "职位",
     "startDate": "入职日期",
     "taxCategory": "税务类别",
-    "createSub": "请完善新员工资料"
+    "createSub": "请完善新员工资料",
+    "status": "状态",
+    "endDate": "最后工作日",
+    "active": "在职",
+    "inactive": "离职"
   },
   "taxing": {
     "title": "税务中心",
@@ -2141,7 +2147,9 @@
     "selectPph": "选择所得税代码",
     "cityPlaceholder": "例如：万隆",
     "saving": "保存中...",
-    "selectBank": "选择银行"
+    "selectBank": "选择银行",
+    "proxyPayment": "同时记录为采购",
+    "proxyPaymentHint": "采购将以相同的发票编号记录，账单会立即进入付款队列。"
   },
   "poType": {
     "t5_1_1": "资产采购",
@@ -2866,5 +2874,22 @@
     "includeInternal": "包含内部采购",
     "internalCount": "笔内部采购 · 草稿与报销始终计入",
     "overBudget": "成本超出合同"
+  },
+  "employeeStatus": {
+    "title": "停用员工",
+    "hint": "请填写该员工的最后工作日。该日期即为状态标记，并非仅作备注。",
+    "endDate": "最后工作日",
+    "startedOn": "入职于",
+    "dateBeforeStart": "最后工作日不能早于入职日期。",
+    "futureDate": "该日期在未来。请确认这是有意为之。",
+    "consequence": "离职员工在生成工资单时不再出现。其资料仍保留，历史工资单不受影响。",
+    "deactivate": "停用",
+    "saving": "保存中...",
+    "deactivated": "员工已停用。",
+    "reactivateTitle": "恢复在职",
+    "currentlyInactive": "离职自",
+    "reactivateHint": "恢复在职将清除最后工作日，该员工将重新出现在工资单生成中。",
+    "reactivate": "恢复在职",
+    "reactivated": "员工已恢复在职。"
   }
 }

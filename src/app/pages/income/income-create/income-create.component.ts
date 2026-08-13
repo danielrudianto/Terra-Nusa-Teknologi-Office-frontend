@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
@@ -48,6 +49,7 @@ import { ApiService } from '../../../services/api.service';
   styleUrl: './income-create.component.scss',
 })
 export class IncomeCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
@@ -135,7 +137,8 @@ export class IncomeCreateComponent {
           this.dialogRef.close(true);
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

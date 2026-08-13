@@ -40,6 +40,7 @@ import { IPPh } from '../../../../utils/pph';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { TranslatePipe } from '@ngx-translate/core';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * 5.1.2 Asset maintenance.
@@ -456,7 +457,7 @@ export class PurchaseOrderCreate512Component {
   }
 
   private toISO(d: any): string | null {
-    return d ? new Date(d).toISOString().split('T')[0] : null;
+    return d ? tanggalLokal(d) : null;
   }
 
   formatData() {

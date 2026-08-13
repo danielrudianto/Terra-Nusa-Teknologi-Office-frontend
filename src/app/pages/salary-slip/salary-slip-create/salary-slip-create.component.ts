@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AbstractControl,
@@ -71,6 +72,7 @@ const lastDateRequiredIfLastDay: ValidatorFn = (control: AbstractControl) => {
   standalone: true,
 })
 export class SalarySlipCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private route: ActivatedRoute,
@@ -316,7 +318,8 @@ export class SalarySlipCreateComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
       },

@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatChipsModule } from '@angular/material/chips';
+import { EmployeeStatusComponent } from '../employee-status/employee-status.component';
 
 @Component({
   selector: 'app-employee-list',
@@ -60,6 +61,8 @@ export class EmployeeListComponent {
     'nik',
     'taxCategory',
     'position',
+    'status',
+    'endDate',
     'action',
   ];
 
@@ -122,6 +125,23 @@ export class EmployeeListComponent {
       })
       .add(() => {
         this.isLoading = false;
+      });
+  }
+
+  /**
+   * Buka dialog status kepegawaian.
+   *
+   * Seluruh baris dikirim, bukan hanya id: endpoint pembaruan menerima objek
+   * karyawan utuh dan menimpa semua kolomnya, jadi dialognya perlu data yang
+   * lengkap untuk dikirim kembali.
+   */
+  openStatus(element: any) {
+    this.dialog
+      .open(EmployeeStatusComponent, { data: element, autoFocus: false })
+      .afterClosed()
+      .subscribe((berubah) => {
+        // `page` di komponen ini sudah 1-based; jangan ditambah lagi.
+        if (berubah) this.fetchEmployees(this.page);
       });
   }
 

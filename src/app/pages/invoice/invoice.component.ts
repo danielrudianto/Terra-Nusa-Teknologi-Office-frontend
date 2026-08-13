@@ -32,6 +32,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { tanggalLokal } from '../../utils/tanggal';
 
 /**
  * Kode PPh yang berlaku untuk invoice tenaga kerja.
@@ -588,7 +589,7 @@ export class InvoiceComponent {
     }
 
     const toISO = (d: any) =>
-      d ? new Date(d).toISOString().split('T')[0] : null;
+      d ? tanggalLokal(d) : null;
 
     this.isSubmitting = true;
     this.apiService

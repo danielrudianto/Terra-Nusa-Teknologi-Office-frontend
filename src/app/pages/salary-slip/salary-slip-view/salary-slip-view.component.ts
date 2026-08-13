@@ -1,4 +1,5 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -39,6 +40,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   ],
 })
 export class SalarySlipViewComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -188,7 +190,8 @@ export class SalarySlipViewComponent {
         });
       },
       error: (err) => {
-        this.snackBar.open(err.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(err), 'Close', {
           duration: 3000,
         });
         this.dialogRef.close();
@@ -257,7 +260,8 @@ export class SalarySlipViewComponent {
                 this.dialogRef.close('deleted');
               },
               error: (error) => {
-                this.snackBar.open(error.error.detail, 'Close', {
+                this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                   duration: 3000,
                 });
               },

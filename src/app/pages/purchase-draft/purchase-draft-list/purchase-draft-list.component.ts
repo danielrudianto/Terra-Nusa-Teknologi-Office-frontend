@@ -1,4 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from '../../../directives/can.directive';
 import {
   FormControl,
@@ -49,6 +50,7 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
   standalone: true,
 })
 export class PurchaseDraftListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -105,7 +107,8 @@ export class PurchaseDraftListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          this.snackBar.open(err.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(err), 'Close', {
             duration: 3000,
           });
         },

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { Component, inject } from '@angular/core';
 import {
@@ -66,6 +67,7 @@ interface KaryawanRingkas {
   styleUrl: './salary-slip-employee-picker.component.scss',
 })
 export class SalarySlipEmployeePickerComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -281,9 +283,7 @@ export class SalarySlipEmployeePickerComponent {
         error: (e) => {
           this.isSubmitting = false;
           this.snackBar.open(
-            e?.error?.detail ||
-              e?.error?.message ||
-              this.translate.instant('notify.createFailed'),
+            this.serverMessage.terjemahkan(e, 'notify.createFailed'),
             'Close',
             { duration: 4000 },
           );

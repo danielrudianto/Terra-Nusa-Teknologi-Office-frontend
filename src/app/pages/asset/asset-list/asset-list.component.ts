@@ -1,4 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CanDirective } from '../../../directives/can.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../../services/api.service';
@@ -44,6 +45,7 @@ import { AssetViewComponent } from '../asset-view/asset-view.component';
   standalone: true,
 })
 export class AssetListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -179,7 +181,8 @@ export class AssetListComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

@@ -1,4 +1,5 @@
 import { TranslatePipe } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import {
@@ -47,6 +48,7 @@ import { ProjectSelectorComponent } from '../../../components/project-selector/p
   standalone: true,
 })
 export class PurchaseDraftCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
@@ -182,7 +184,8 @@ export class PurchaseDraftCreateComponent {
           this.dialogRef.close(true);
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

@@ -301,7 +301,8 @@
     "viewCopyWhatsapp": "Copy untuk WhatsApp",
     "viewDelete": "Hapus",
     "viewCopyPphObject": "Salin objek PPh",
-    "viewCopyAccount": "Salin nomor rekening"
+    "viewCopyAccount": "Salin nomor rekening",
+    "deleteHasPayments": "Pembelian ini sudah punya pembayaran. Batalkan dulu pembayarannya, atau minta bantuan pengguna dengan akses lebih tinggi."
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -511,7 +512,8 @@
     "month": "Bulan",
     "year": "Tahun",
     "periodHint": "Bawaannya bulan lalu, karena gaji dibayarkan untuk periode yang sudah berjalan. Dapat diubah bila perlu.",
-    "continue": "Lanjutkan"
+    "continue": "Lanjutkan",
+    "noEmployee": "Tidak ada karyawan yang cocok."
   },
   "employee": {
     "title": "Karyawan",
@@ -531,7 +533,11 @@
     "position": "Jabatan",
     "startDate": "Tanggal mulai",
     "taxCategory": "Kategori pajak",
-    "createSub": "Lengkapi data karyawan baru"
+    "createSub": "Lengkapi data karyawan baru",
+    "status": "Status",
+    "endDate": "Tanggal terakhir",
+    "active": "Aktif",
+    "inactive": "Nonaktif"
   },
   "taxing": {
     "title": "Pusat Pajak",
@@ -2141,7 +2147,9 @@
     "selectPph": "Pilih kode PPh",
     "cityPlaceholder": "Ex. Bandung",
     "saving": "Menyimpan...",
-    "selectBank": "Pilih bank"
+    "selectBank": "Pilih bank",
+    "proxyPayment": "Sekalian catat sebagai pembelian",
+    "proxyPaymentHint": "Pembelian dicatat dengan nomor invoice yang sama, sehingga tagihannya langsung masuk antrean pembayaran."
   },
   "poType": {
     "t5_1_1": "Pembelian aset",
@@ -2866,5 +2874,22 @@
     "includeInternal": "Sertakan pembelian internal",
     "internalCount": "pembelian internal · draft & reimbursement selalu ikut",
     "overBudget": "Biaya melampaui kontrak"
+  },
+  "employeeStatus": {
+    "title": "Nonaktifkan Karyawan",
+    "hint": "Isi tanggal terakhir karyawan ini bekerja. Tanggal itu yang menandai statusnya, bukan sekadar keterangan.",
+    "endDate": "Tanggal terakhir bekerja",
+    "startedOn": "Masuk sejak",
+    "dateBeforeStart": "Tanggal terakhir tidak boleh mendahului tanggal masuk.",
+    "futureDate": "Tanggal ini masih di masa depan. Pastikan memang direncanakan.",
+    "consequence": "Karyawan nonaktif tidak lagi muncul saat membuat slip gaji. Datanya tetap tersimpan dan slip gaji lamanya tidak berubah.",
+    "deactivate": "Nonaktifkan",
+    "saving": "Menyimpan...",
+    "deactivated": "Karyawan dinonaktifkan.",
+    "reactivateTitle": "Aktifkan Kembali",
+    "currentlyInactive": "Nonaktif sejak",
+    "reactivateHint": "Mengaktifkan kembali akan mengosongkan tanggal terakhirnya, dan karyawan ini muncul lagi saat membuat slip gaji.",
+    "reactivate": "Aktifkan kembali",
+    "reactivated": "Karyawan diaktifkan kembali."
   }
 }

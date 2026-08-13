@@ -1,4 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import {
   FormControl,
   FormGroup,
@@ -56,6 +57,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   styleUrl: './expense-list.component.scss',
 })
 export class ExpenseListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   /** map kode expense type -> i18n key. */
   private static readonly EXPENSE_TYPE_MAP: { [k: string]: string } = {
     '5.1.1': '5_1_1',
@@ -278,7 +280,8 @@ export class ExpenseListComponent {
           this.count = res.count;
         },
         error: (err) => {
-          this.snackBar.open(err.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(err), 'Close', {
             duration: 3000,
           });
         },

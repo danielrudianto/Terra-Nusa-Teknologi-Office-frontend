@@ -35,6 +35,7 @@ import { buildInsuranceClauses } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * 6.4.2 Penutupan pertanggungan (asuransi & surety bond).
@@ -444,7 +445,7 @@ export class PurchaseOrderCreate642Component {
   }
 
   private toISO(d: any): string | null {
-    return d ? new Date(d).toISOString().split('T')[0] : null;
+    return d ? tanggalLokal(d) : null;
   }
 
   private formatData() {

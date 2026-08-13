@@ -296,3 +296,25 @@
     min-width: 0;
   }
 }
+
+/* ---- status kepegawaian ---- */
+.el-chip {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.el-chip--active {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+.el-chip--inactive {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.el-kosong {
+  color: var(--faint);
+}

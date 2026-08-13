@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
+import { tanggalLokal } from '../../utils/tanggal';
 
 pdfjslib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -520,10 +521,12 @@ export class PdfMainComponent implements OnInit {
   }
 
   private generateFileName(prefix: string): string {
-    const timestamp = new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace(/[:]/g, '-');
+    // Waktu lokal: dengan toISOString(), berkas yang dibuat sebelum pukul
+    // tujuh pagi WIB bernama tanggal kemarin.
+    const n = new Date();
+    const dua = (x: number) => String(x).padStart(2, '0');
+    const timestamp =
+      `${tanggalLokal(n)}T${dua(n.getHours())}-${dua(n.getMinutes())}-${dua(n.getSeconds())}`;
     return `${prefix}-${timestamp}.pdf`;
   }
 

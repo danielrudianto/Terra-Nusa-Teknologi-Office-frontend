@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
 import {
@@ -64,6 +65,7 @@ export const amountValidator: ValidatorFn = (
   ],
 })
 export class SalaryPaymentCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -131,7 +133,8 @@ export class SalaryPaymentCreateComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
 
@@ -184,7 +187,8 @@ export class SalaryPaymentCreateComponent {
           this.dialog.close('paid');
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

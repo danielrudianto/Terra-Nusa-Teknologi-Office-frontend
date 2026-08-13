@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -34,6 +35,7 @@ import { DataTransferService } from 'src/app/services/data-transfer.service';
   styleUrl: './employee-salary-slip-selector-create.component.scss',
 })
 export class EmployeeSalarySlipSelectorCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -108,7 +110,8 @@ export class EmployeeSalarySlipSelectorCreateComponent {
         },
         error: (error) => {
           console.error('Error checking salary slip:', error);
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

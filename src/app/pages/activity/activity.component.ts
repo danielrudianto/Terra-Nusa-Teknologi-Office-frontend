@@ -20,6 +20,7 @@ import { ActivityDetailComponent } from './activity-detail/activity-detail.compo
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { tanggalLokal } from '../../utils/tanggal';
 
 interface ActivityEntry {
   id: number;
@@ -129,12 +130,9 @@ export class ActivityComponent implements OnInit {
     });
   }
 
+  /** Diteruskan ke fungsi bersama; logikanya sama dan tidak perlu dua salinan. */
   private asDateParam(value: Date | null): string | null {
-    if (!value) return null;
-    const d = new Date(value);
-    const bulan = String(d.getMonth() + 1).padStart(2, '0');
-    const hari = String(d.getDate()).padStart(2, '0');
-    return `${d.getFullYear()}-${bulan}-${hari}`;
+    return tanggalLokal(value);
   }
 
   /** Kosongkan seluruh penyaring sekaligus. */

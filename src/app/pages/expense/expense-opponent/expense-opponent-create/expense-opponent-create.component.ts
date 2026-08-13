@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -37,6 +38,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   ],
 })
 export class ExpenseOpponentCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -72,7 +74,8 @@ export class ExpenseOpponentCreateComponent {
           this.dialogRef.close(true);
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

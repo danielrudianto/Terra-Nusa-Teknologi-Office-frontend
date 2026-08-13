@@ -36,6 +36,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 @Component({
   selector: 'app-purchase-order-create-516',
@@ -373,7 +374,7 @@ export class PurchaseOrderCreate516Component {
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      date: tanggalLokal(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: this.formGroup.get('purchaseType')?.value,
       projectName: projectCode,

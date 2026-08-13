@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Component, Inject, inject } from '@angular/core';
@@ -47,6 +48,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
   styleUrl: './sales-invoice-view.component.scss',
 })
 export class SalesInvoiceViewComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   path: any;
   constructor(
@@ -243,7 +245,8 @@ export class SalesInvoiceViewComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
         this.dialog.close();

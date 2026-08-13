@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { SalarySlipEmployeePickerComponent } from '../salary-slip-employee-picker/salary-slip-employee-picker.component';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
@@ -70,6 +71,7 @@ export const MY_FORMATS = {
   standalone: true,
 })
 export class SalarySlipListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   /**
    * Buka pemilih karyawan dan periode.
@@ -284,7 +286,8 @@ export class SalarySlipListComponent {
         SalarySlipHelper.createProxyPaymentPDF(data as any);
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
       },
@@ -304,7 +307,8 @@ export class SalarySlipListComponent {
           });
         },
         error: (error) => {
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

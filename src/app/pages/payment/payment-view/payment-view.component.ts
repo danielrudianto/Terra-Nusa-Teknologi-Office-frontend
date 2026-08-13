@@ -1,4 +1,5 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { ApiService } from '../../../services/api.service';
@@ -38,6 +39,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   styleUrl: './payment-view.component.scss',
 })
 export class PaymentViewComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -81,7 +83,8 @@ export class PaymentViewComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
       },

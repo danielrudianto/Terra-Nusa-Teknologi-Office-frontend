@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
@@ -39,6 +40,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   ],
 })
 export class AssetCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -81,7 +83,8 @@ export class AssetCreateComponent {
         },
         error: (error) => {
           console.error(`Error: ${error.error.detail}`);
-          this.snackBar.open(error.error.detail, 'Close', {
+          this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
             duration: 3000,
           });
         },

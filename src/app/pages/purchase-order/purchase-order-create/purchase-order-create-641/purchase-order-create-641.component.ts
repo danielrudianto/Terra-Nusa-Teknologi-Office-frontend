@@ -38,6 +38,7 @@ import {
 } from '../../../../helpers/purchase-order-641.helper';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../../utils/pph';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * 6.4.1 Jasa pengurusan legalitas & perizinan (akta, SBU, izin).
@@ -396,7 +397,7 @@ export class PurchaseOrderCreate641Component {
 
 
   private toISO(d: any): string | null {
-    return d ? new Date(d).toISOString().split('T')[0] : null;
+    return d ? tanggalLokal(d) : null;
   }
 
   formatData() {

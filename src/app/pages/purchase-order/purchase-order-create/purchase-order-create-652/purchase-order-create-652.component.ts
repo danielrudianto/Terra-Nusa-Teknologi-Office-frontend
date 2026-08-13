@@ -34,6 +34,7 @@ import { PURCHASE_TYPE_LABELS } from '../../../../constants/purchase-type-label.
 import { buildTrainingClauses } from '../../../../constants/clause-templates';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 /**
  * 6.5.2 Biaya pelatihan.
@@ -363,7 +364,7 @@ export class PurchaseOrderCreate652Component {
   }
 
   private toISO(d: any): string | null {
-    return d ? new Date(d).toISOString().split('T')[0] : null;
+    return d ? tanggalLokal(d) : null;
   }
 
   /** Data sumber klausul; dipakai bersama pratinjau dan pencetakan. */

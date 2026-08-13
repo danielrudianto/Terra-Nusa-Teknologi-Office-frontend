@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import {
   FormBuilder,
@@ -62,6 +63,7 @@ import { PermissionService } from '../../../services/permission.service';
   styleUrl: './reminder-create.component.scss',
 })
 export class ReminderCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly fb = inject(FormBuilder);
   private readonly agenda = inject(AgendaService);
   private readonly api = inject(ApiService);
@@ -170,7 +172,7 @@ export class ReminderCreateComponent {
         },
         error: (e) => {
           this.snackBar.open(
-            e?.error?.detail || this.translate.instant('notify.createFailed'),
+            this.serverMessage.terjemahkan(e, 'notify.createFailed'),
             'Close',
             { duration: 4000 },
           );

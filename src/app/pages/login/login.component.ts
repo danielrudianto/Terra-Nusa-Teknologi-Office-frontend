@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { PermissionService } from '../../services/permission.service';
 import {
   FormControl,
@@ -44,6 +45,7 @@ import {
   standalone: true,
 })
 export class LoginComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   constructor(
     private permissionService: PermissionService,
     private apiService: ApiService,
@@ -109,7 +111,8 @@ export class LoginComponent {
         });
       },
       error: (error) => {
-        this.snackBar.open(error.error.detail, 'Close', {
+        this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
           duration: 3000,
         });
       },

@@ -36,6 +36,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { tanggalLokal } from '../../../../utils/tanggal';
 
 @Component({
   selector: 'app-purchase-order-create-5112',
@@ -434,7 +435,7 @@ export class PurchaseOrderCreate5112Component {
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
-      date: this.formGroup.get('date')?.value.toISOString().split('T')[0],
+      date: tanggalLokal(this.formGroup.get('date')?.value),
       supplierID: this.formGroup.get('supplierID')?.value,
       purchaseType: this.formGroup.get('purchaseType')?.value,
       projectName: projectCode,
@@ -463,7 +464,7 @@ export class PurchaseOrderCreate5112Component {
         prepaidTerm: v.prepaidTerm,
         isSubscription: v.isSubscription,
         subscriptionStartDate: v.subscriptionStartDate
-          ? new Date(v.subscriptionStartDate).toISOString().split('T')[0]
+          ? tanggalLokal(v.subscriptionStartDate)
           : null,
         subscriptionDuration: v.subscriptionDuration,
         subscriptionDurationUnit: v.subscriptionDurationUnit,

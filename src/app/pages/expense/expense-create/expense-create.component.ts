@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
   FormControl,
@@ -59,6 +60,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class ExpenseCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -312,7 +314,8 @@ export class ExpenseCreateComponent {
                   });
                 },
                 error: (error) => {
-                  this.snackBar.open(error.error.detail, 'Close', {
+                  this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
                     duration: 3000,
                   });
                 },
@@ -354,7 +357,8 @@ export class ExpenseCreateComponent {
             });
           },
           error: (error) => {
-            this.snackBar.open(error.error.detail, 'Close', {
+            this.snackBar.open(
+          this.serverMessage.terjemahkan(error), 'Close', {
               duration: 3000,
             });
           },

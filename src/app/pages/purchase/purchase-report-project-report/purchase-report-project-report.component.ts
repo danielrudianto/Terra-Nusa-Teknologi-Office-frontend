@@ -35,6 +35,7 @@ import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
 } from '@angular/material/tree';
+import { tanggalLokal } from '../../../utils/tanggal';
 
 interface TreeNode {
   label: string;
@@ -419,7 +420,9 @@ export class PurchaseReportProjectReportComponent implements OnInit {
       );
     }
 
-    const tanggal = new Date().toISOString().split('T')[0];
+    // Tanggal lokal: dengan toISOString(), berkas yang diunduh sebelum
+    // pukul tujuh pagi WIB bernama tanggal kemarin.
+    const tanggal = tanggalLokal(new Date());
     XLSX.writeFile(wb, `Laporan-${this.projectName}-${tanggal}.xlsx`);
   }
 
