@@ -2410,7 +2410,9 @@
     "containerInsuranceHint": "Fill 0 to omit this clause",
     "ppnRate": "VAT rate",
     "ppnRate11": "11% — general transport service",
-    "ppnRate11Percent": "1.1% — freight forwarding (other tax base)"
+    "ppnRate11Percent": "1.1% — freight forwarding (other tax base)",
+    "shortTermRental": "Short-term rental (single shift)",
+    "shortTermRentalHint": "Adjusts terms that only apply to multi-day rentals: fuel reporting, on-site mechanics, repair deadlines, handover minutes, and loading coordination."
   },
   "salaryAllowance": {
     "perfBonus": "Performance bonus",

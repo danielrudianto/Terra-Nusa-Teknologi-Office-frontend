@@ -192,6 +192,17 @@ export interface ClauseContext {
    * biasa, hal-hal tersebut belum tentu menjadi tanggungan penyedianya.
    */
   includeTransportCoverage?: boolean;
+
+  /**
+   * Sewa alat berat berdurasi singkat — biasanya satu shift.
+   *
+   * Beberapa ketentuan pada SPK sewa disusun untuk penyewaan berhari-hari:
+   * pelaporan BBM, mekanik yang didatangkan, tenggat perbaikan dua hari,
+   * berita acara serah terima, dan koordinasi bongkar-muat. Untuk forklift
+   * atau crane yang dipakai beberapa jam, ketentuan itu tidak berlaku —
+   * unit yang rusak langsung diganti, dan tidak ada yang dibongkar-muat.
+   */
+  shortTermRental?: boolean;
   /**
    * Jenis barang yang disewa.
    *
@@ -1009,16 +1020,37 @@ const B_CLAUSES: ClauseTemplate[] = [
             ]
           : []),
         // Bahan bakar hanya ada pada barang bermesin.
-        ...(bermesin
+        //
+        // Pada sewa singkat, BBM sudah tercakup pada ketentuan harga di
+        // atas — pelaporan terpisah hanya menambah kewajiban yang tidak
+        // pernah dijalankan untuk pemakaian beberapa jam.
+        ...(bermesin && !ctx.shortTermRental
           ? [
               `Seluruh pengambilan dan pengisian Bahan Bakar Minyak (BBM) untuk operasional ${barang} wajib didokumentasikan oleh PIHAK KEDUA dan dilaporkan kepada perwakilan PIHAK PERTAMA.`,
             ]
           : []),
         `PIHAK KEDUA wajib memastikan ${barang} laik untuk digunakan sebelum proses mobilisasi dilaksanakan.`,
         `PIHAK KEDUA wajib melakukan pemeriksaan kondisi ${barang} secara berkala selama perjanjian ini berlangsung.`,
-        `Tim mekanik yang cakap dan handal wajib disediakan oleh PIHAK KEDUA bilamana adanya kerusakan/kendala pada ${barang} tersebut.`,
+        // Mekanik didatangkan hanya pada sewa berdurasi panjang. Pada sewa
+        // singkat, unit yang bermasalah diganti — bukan diperbaiki di
+        // tempat.
+        ...(ctx.shortTermRental
+          ? []
+          : [
+              `Tim mekanik yang cakap dan handal wajib disediakan oleh PIHAK KEDUA bilamana adanya kerusakan/kendala pada ${barang} tersebut.`,
+            ]),
         'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah hari kerja maksimum pada periode tersebut, sejumlah hari perbaikan terhitung dari laporan kerusakan alat kerja.',
-        'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
+        /*
+         * Tenggat perbaikan berbeda menurut lama sewanya.
+         *
+         * Pada sewa berhari-hari, memperbaiki di tempat masih masuk akal
+         * dan dua hari adalah tenggat yang wajar. Pada sewa singkat,
+         * menunggu perbaikan berarti kehilangan seluruh masa sewanya —
+         * sehingga yang diminta adalah unit pengganti, bukan perbaikan.
+         */
+        ctx.shortTermRental
+          ? `Apabila ${barang} tidak dapat beroperasi, PIHAK KEDUA wajib mengirimkan unit pengganti yang laik pada hari yang sama. Seluruh biaya mobilisasi unit pengganti ditanggung PIHAK KEDUA, dan masa sewa selama unit tidak dapat beroperasi tidak diperhitungkan.`
+          : 'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
         'Seluruh peralatan, perlengkapan dan material yang dibutuhkan selama perbaikan merupakan tanggung jawab PIHAK KEDUA.',
         // Risiko mengikuti kendali: alat yang dioperasikan personel PIHAK
         // KEDUA tetap menjadi tanggung jawab mereka. Bila dioperasikan
@@ -1046,9 +1078,22 @@ const B_CLAUSES: ClauseTemplate[] = [
                 // kesalahan pengoperasian tidak dapat dibebankan ke pemilik.
                 'Tanggung jawab sebagaimana dimaksud tidak mencakup kerusakan yang disebabkan oleh kesalahan pengoperasian personel PIHAK PERTAMA, di luar keausan wajar akibat pemakaian normal, cacat bawaan, serta kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian.',
               ]),
-        'Serah terima alat kerja dituangkan dalam Berita Acara Serah Terima Alat yang memuat kondisi alat beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat mobilisasi dan demobilisasi. Kondisi yang tidak tercatat pada saat mobilisasi tidak dapat ditagihkan pada saat demobilisasi.',
+        // Berita acara dua arah dibuat untuk penyewaan yang menginap di
+        // lokasi. Untuk pemakaian beberapa jam, unitnya tidak pernah lepas
+        // dari pengawasan pemiliknya.
+        ...(ctx.shortTermRental
+          ? []
+          : [
+              'Serah terima alat kerja dituangkan dalam Berita Acara Serah Terima Alat yang memuat kondisi alat beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat mobilisasi dan demobilisasi. Kondisi yang tidak tercatat pada saat mobilisasi tidak dapat ditagihkan pada saat demobilisasi.',
+            ]),
         'PIHAK KEDUA wajib mengasuransikan alat kerja miliknya dan menyerahkan salinan polis yang masih berlaku kepada PIHAK PERTAMA sebelum mobilisasi dilaksanakan.',
-        'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
+        // Tidak ada bongkar-muat pada sewa alat singkat: alatnya yang
+        // mengangkat, bukan yang diangkat.
+        ...(ctx.shortTermRental
+          ? []
+          : [
+              'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
+            ]),
         'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
         'Barang yang disewakan adalah milik PIHAK KEDUA. PIHAK PERTAMA tidak diizinkan untuk memperjualbelikan, menjadikan jaminan, memindahtangankan, dan/atau memindahkan barang ke lokasi lain tanpa persetujuan dari PIHAK KEDUA.',
         'PIHAK KEDUA tidak bertanggung jawab atas permasalahan PIHAK PERTAMA dengan pihak-pihak lainnya diluar kontrak kerja ini.',

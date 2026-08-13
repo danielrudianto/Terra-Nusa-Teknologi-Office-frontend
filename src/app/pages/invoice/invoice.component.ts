@@ -388,7 +388,7 @@ export class InvoiceComponent {
 
   print(output: 'open' | 'download' = 'open') {
     if (!this.readyToPrint()) return;
-    this.generateDocument(output);
+    this.generateDocument(output).subscribe();
   }
 
   /**
@@ -416,8 +416,15 @@ export class InvoiceComponent {
       return;
     }
 
-    this.generateDocument('open');
-    this.savePurchase();
+    /*
+     * Pencatatan menunggu dokumennya selesai dirakit.
+     *
+     * `savePurchase()` mengosongkan formulir begitu server menjawab. Bila
+     * dijalankan berbarengan, jawaban server bisa datang lebih dulu
+     * daripada pengambilan data SPK — formulir sudah nol saat dokumennya
+     * dirakit, dan seluruh baris tercetak 0.
+     */
+    this.generateDocument('open').subscribe(() => this.savePurchase());
   }
 
   private readyToPrint(): boolean {
@@ -466,19 +473,32 @@ export class InvoiceComponent {
     };
   }
 
-  private generateDocument(output: 'open' | 'print' | 'download') {
+  /**
+   * Merakit dokumen, lalu memberi tahu bahwa perakitannya SELESAI.
+   *
+   * Mengembalikan Observable, bukan void, karena pemanggilnya perlu tahu
+   * kapan dokumennya benar-benar jadi. `save()` mencatat pembelian dan
+   * mengosongkan formulir sesudah berhasil — bila keduanya berjalan
+   * berbarengan, formulir bisa terkosongkan lebih dulu dan dokumen dirakit
+   * dari isian yang sudah nol.
+   */
+  private generateDocument(
+    output: 'open' | 'print' | 'download',
+  ): Observable<void> {
     this.isFetchingPo = true;
-    this.fetchPurchaseOrder().subscribe((po) => {
-      this.isFetchingPo = false;
-      if (this.purchaseOrderName && !po) {
-        this.snackBar.open(
-          `SPK ${this.purchaseOrderName} tidak ditemukan — invoice dicetak tanpa lampiran.`,
-          'Close',
-          { duration: 4000 },
-        );
-      }
-      this.renderDocument(output, po);
-    });
+    return this.fetchPurchaseOrder().pipe(
+      map((po) => {
+        this.isFetchingPo = false;
+        if (this.purchaseOrderName && !po) {
+          this.snackBar.open(
+            `SPK ${this.purchaseOrderName} tidak ditemukan — invoice dicetak tanpa lampiran.`,
+            'Close',
+            { duration: 4000 },
+          );
+        }
+        this.renderDocument(output, po);
+      }),
+    );
   }
 
   isFetchingPo = false;

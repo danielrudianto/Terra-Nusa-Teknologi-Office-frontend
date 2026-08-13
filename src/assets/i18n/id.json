@@ -2410,7 +2410,9 @@
     "containerInsuranceHint": "Isi 0 untuk menghilangkan klausul ini",
     "ppnRate": "Tarif PPN",
     "ppnRate11": "11% — jasa angkutan umum",
-    "ppnRate11Percent": "1,1% — jasa pengurusan transportasi (DPP nilai lain)"
+    "ppnRate11Percent": "1,1% — jasa pengurusan transportasi (DPP nilai lain)",
+    "shortTermRental": "Sewa singkat (satu shift)",
+    "shortTermRentalHint": "Menyesuaikan ketentuan yang hanya berlaku pada penyewaan berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan, berita acara, dan bongkar-muat."
   },
   "salaryAllowance": {
     "perfBonus": "Bonus kinerja",

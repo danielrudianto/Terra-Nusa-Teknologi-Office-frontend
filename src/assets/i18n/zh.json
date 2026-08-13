@@ -2410,7 +2410,9 @@
     "containerInsuranceHint": "填 0 则不打印该条款",
     "ppnRate": "增值税率",
     "ppnRate11": "11% — 一般运输服务",
-    "ppnRate11Percent": "1.1% — 货运代理（其他计税依据）"
+    "ppnRate11Percent": "1.1% — 货运代理（其他计税依据）",
+    "shortTermRental": "短期租赁（单班）",
+    "shortTermRentalHint": "调整仅适用于多日租赁的条款：燃油报备、现场机修、维修时限、交接记录与装卸协调。"
   },
   "salaryAllowance": {
     "perfBonus": "绩效奖金",

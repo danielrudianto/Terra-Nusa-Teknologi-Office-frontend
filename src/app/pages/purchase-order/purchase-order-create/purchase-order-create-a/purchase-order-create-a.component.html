@@ -96,6 +96,23 @@
         </mat-form-field>
 
         @if (isSewaAlat) {
+          <!--
+            Sewa singkat.
+
+            Lima ketentuan pada SPK sewa disusun untuk penyewaan
+            berhari-hari: pelaporan BBM, mekanik yang didatangkan, tenggat
+            perbaikan dua hari, berita acara serah terima, dan koordinasi
+            bongkar-muat. Untuk forklift atau crane yang dipakai beberapa
+            jam, ketentuan itu tidak pernah dijalankan — dan yang tercantum
+            tetapi tidak dijalankan justru melemahkan seluruh dokumennya.
+          -->
+          <div class="poa-span2">
+            <mat-checkbox formControlName="shortTermRental" color="primary">
+              {{ "poA.shortTermRental" | translate }}
+            </mat-checkbox>
+            <p class="poa-hint">{{ "poA.shortTermRentalHint" | translate }}</p>
+          </div>
+
           <mat-form-field appearance="outline">
             <mat-label>{{ "poA.shiftQuota" | translate }}</mat-label>
             <input

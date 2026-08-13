@@ -203,6 +203,9 @@ export class PurchaseOrderCreateAComponent {
     // Jenis pekerjaan menentukan template klausul: pengiriman memakai
     // template transportasi, sewa alat memakai template PO-B.
     workKind: new FormControl('pengiriman', Validators.required),
+    // Sewa berdurasi singkat; menyesuaikan lima ketentuan yang hanya
+    // berlaku pada penyewaan berhari-hari.
+    shortTermRental: new FormControl(false),
     transportMode: new FormControl('darat'),
     insuranceDays: new FormControl(3, [Validators.min(0)]),
     consignmentDays: new FormControl(3, [Validators.min(0)]),
@@ -536,6 +539,8 @@ export class PurchaseOrderCreateAComponent {
 
     return {
       workKind: v.workKind,
+      // Hanya berarti pada sewa alat; diabaikan pada moda angkutan.
+      shortTermRental: v.workKind === 'sewa-alat' && !!v.shortTermRental,
       insuranceDays: v.insuranceDays,
       consignmentDays: v.consignmentDays,
       cargoListDays: v.cargoListDays,
@@ -593,6 +598,8 @@ export class PurchaseOrderCreateAComponent {
       pphTaxObject: v.pphTaxObject,
       pphPercentage: v.pphPercentage,
       workKind: v.workKind,
+      // Hanya berarti pada sewa alat; diabaikan pada moda angkutan.
+      shortTermRental: v.workKind === 'sewa-alat' && !!v.shortTermRental,
       // Tidak dikirim bila belum ada baris pengiriman: moda ditentukan oleh
       // baris, dan tanpa itu klausul moda sebaiknya belum tampil sama sekali.
       transportMode: this.barisPengiriman.length ? v.transportMode : undefined,

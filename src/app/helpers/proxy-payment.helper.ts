@@ -22,6 +22,18 @@ export interface IProxyPayment {
   date: Date;
 }
 
+/*
+ * Gaya surat pengalihan.
+ *
+ * Disimpan sebagai konstanta karena dipakai di dua tempat: dokumen mandiri
+ * dan blok pembungkus saat ditempelkan ke dokumen lain. Bila keduanya
+ * ditulis terpisah, cepat atau lambat salah satunya diubah sendirian dan
+ * suratnya tampil berbeda tergantung dari mana dicetak.
+ */
+const PROXY_FONT = 'Roboto';
+const PROXY_FONT_SIZE = 12;
+const PROXY_LINE_HEIGHT = 1;
+
 export class ProxyPaymentHelper {
   /**
    * @param aksi  `open` membuka di tab baru, `download` mengunduh berkasnya.
@@ -48,8 +60,33 @@ export class ProxyPaymentHelper {
   }
 
   /** Isi surat saja — dipakai bila suratnya menumpang dokumen lain. */
+  /**
+   * Isi surat, dibungkus agar tampil SAMA di mana pun dipakai.
+   *
+   * Ketika suratnya berdiri sendiri, gaya bawaan pdfMake yang berlaku:
+   * Roboto 12pt. Ketika ditempelkan ke dokumen lain, yang berlaku adalah
+   * `defaultStyle` dokumen induk — pada invoice itu Calibri 11pt. Hurufnya
+   * jadi lebih kecil dan bentuknya berbeda, padahal suratnya sama.
+   *
+   * Gaya bernama juga tidak ikut berpindah: `style: 'header'` menunjuk ke
+   * kamus `styles` milik dokumen induk, bukan milik surat ini. Bila induknya
+   * tidak punya nama itu, judulnya kehilangan ukuran dan ketebalannya tanpa
+   * galat apa pun.
+   *
+   * Karena itu isinya dibungkus dalam satu blok yang menyatakan font dan
+   * ukurannya sendiri — nilai itu menurun ke seluruh isinya dan menimpa
+   * bawaan dokumen induk.
+   */
   static buildContent(data: IProxyPayment): any[] {
-    return ProxyPaymentHelper.buildDocDefinition(data).content as any[];
+    const isi = ProxyPaymentHelper.buildDocDefinition(data).content as any[];
+    return [
+      {
+        stack: isi,
+        font: PROXY_FONT,
+        fontSize: PROXY_FONT_SIZE,
+        lineHeight: PROXY_LINE_HEIGHT,
+      },
+    ];
   }
 
   private static buildDocDefinition(data: IProxyPayment) {
@@ -57,11 +94,25 @@ export class ProxyPaymentHelper {
       pageSize: 'A4' as PageSize,
       pageOrientatation: 'portrait' as PageOrientation,
       pageMargins: [40, 20, 40, 20] as Margins,
-      fontSize: 12,
+      // `defaultStyle`, bukan `fontSize` di akar: pdfMake mengabaikan
+      // properti ukuran di tingkat dokumen.
+      defaultStyle: {
+        font: PROXY_FONT,
+        fontSize: PROXY_FONT_SIZE,
+        lineHeight: PROXY_LINE_HEIGHT,
+      },
       content: [
         {
           text: 'Surat Pengalihan Pembayaran',
-          style: 'header',
+          // Gaya ditulis langsung, bukan lewat nama.
+          //
+          // `style: 'header'` mencari kamus `styles` milik dokumen yang
+          // sedang dicetak. Saat surat ini ditempelkan ke invoice, kamus itu
+          // milik invoice — bila nama 'header' tidak ada di sana, judulnya
+          // kehilangan ukuran dan ketebalan tanpa galat apa pun.
+          fontSize: 16,
+          bold: true,
+          margin: [0, 0, 0, 5] as Margins,
           alignment: 'center' as Alignment,
         },
         // add a divider
