@@ -2750,7 +2750,8 @@
     "taxSlipSaved": "Nomor bukti potong tersimpan",
     "accessUpdated": "Akses pengguna diperbarui",
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
-    "saveFailed": "Gagal menyimpan data"
+    "saveFailed": "Gagal menyimpan data",
+    "actionFailed": "Tindakan gagal dijalankan"
   },
   "panduan": {
     "title": "Panduan",

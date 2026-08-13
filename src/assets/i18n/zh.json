@@ -2750,7 +2750,8 @@
     "taxSlipSaved": "扣缴凭证号已保存",
     "accessUpdated": "用户权限已更新",
     "sessionExpired": "您的登录已过期，请重新登录。",
-    "saveFailed": "保存失败"
+    "saveFailed": "保存失败",
+    "actionFailed": "操作未能完成"
   },
   "panduan": {
     "title": "指南",

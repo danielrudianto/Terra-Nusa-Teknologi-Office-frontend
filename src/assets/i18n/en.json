@@ -2750,7 +2750,8 @@
     "taxSlipSaved": "Withholding slip number saved",
     "accessUpdated": "User access updated",
     "sessionExpired": "Your session has ended. Please sign in again.",
-    "saveFailed": "Failed to save data"
+    "saveFailed": "Failed to save data",
+    "actionFailed": "The action could not be completed"
   },
   "panduan": {
     "title": "Guide",
