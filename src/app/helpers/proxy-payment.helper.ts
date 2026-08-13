@@ -22,8 +22,37 @@ export interface IProxyPayment {
 }
 
 export class ProxyPaymentHelper {
-  static createProxyPaymentPDF(data: IProxyPayment) {
-    var dd = {
+  /**
+   * @param aksi  `open` membuka di tab baru, `download` mengunduh berkasnya.
+   *
+   * Unduhan diperlukan ketika surat ini terbit SETELAH permintaan ke server
+   * selesai: pada saat itu peramban sudah tidak menganggapnya hasil
+   * penekanan tombol, dan tab baru diblokir sebagai popup — tanpa satu pun
+   * pesan. Terlebih bila sebuah dokumen lain sudah dibuka lebih dulu pada
+   * penekanan yang sama.
+   */
+  static createProxyPaymentPDF(
+    data: IProxyPayment,
+    aksi: 'open' | 'download' = 'open',
+  ) {
+    const dd = ProxyPaymentHelper.buildDocDefinition(data);
+    const pdf = pdfMake.createPdf(dd);
+    if (aksi === 'download') {
+      const tanggal = new Date(data.date).toISOString().split('T')[0];
+      return pdf.download(
+        `Surat Pengalihan Pembayaran - ${data.supplierName} - ${tanggal}.pdf`,
+      );
+    }
+    return pdf.open();
+  }
+
+  /** Isi surat saja — dipakai bila suratnya menumpang dokumen lain. */
+  static buildContent(data: IProxyPayment): any[] {
+    return ProxyPaymentHelper.buildDocDefinition(data).content as any[];
+  }
+
+  private static buildDocDefinition(data: IProxyPayment) {
+    const dd = {
       pageSize: 'A4' as PageSize,
       pageOrientatation: 'portrait' as PageOrientation,
       pageMargins: [40, 20, 40, 20] as Margins,
@@ -217,6 +246,18 @@ export class ProxyPaymentHelper {
         },
       },
     };
-    return pdfMake.createPdf(dd).open();
+    return dd;
   }
+}
+
+/**
+ * Isi surat pengalihan saja, tanpa membungkusnya jadi berkas.
+ *
+ * Dipakai ketika suratnya ikut dicetak bersama dokumen lain — invoice,
+ * misalnya — sehingga yang keluar satu berkas, bukan dua. Menghasilkan dua
+ * berkas terpisah menyulitkan: keduanya harus disimpan, dikirim, dan
+ * diarsipkan sendiri-sendiri padahal selalu dipakai bersama.
+ */
+export function proxyPaymentContent(data: IProxyPayment): any[] {
+  return ProxyPaymentHelper.buildContent(data);
 }

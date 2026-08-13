@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { vendorDisplayName } from 'src/app/helpers/purchase-order-shared.helper';
-import { ProxyPaymentHelper } from 'src/app/helpers/proxy-payment.helper';
+import { proxyPaymentContent } from 'src/app/helpers/proxy-payment.helper';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import {
@@ -356,29 +356,6 @@ export class InvoiceComponent {
    *
    * Contoh: 1 + proyek MICZ  ->  001-SPK-MICZ-D
    */
-  /**
-   * Terbitkan surat pengalihan pembayaran.
-   *
-   * Memakai helper yang sama dengan halaman pembelian, sehingga bentuk
-   * suratnya sama dari mana pun diterbitkan.
-   */
-  private terbitkanSuratPengalihan(): void {
-    const v = this.formGroup.getRawValue();
-    ProxyPaymentHelper.createProxyPaymentPDF({
-      invoiceName: this.invoiceNumber,
-      // Invoice tenaga kerja tidak menerbitkan faktur pajak.
-      taxInvoiceName: '',
-      supplierName: String(v.supplierName ?? ''),
-      bankName: String(v.bankName ?? ''),
-      bankAccountNumber: String(v.bankAccountNumber ?? ''),
-      bankAccountName: String(v.bankAccountName ?? ''),
-      // Yang dialihkan adalah jumlah yang benar-benar dibayarkan, sesudah
-      // PPh dipotong — bukan nilai brutonya.
-      totalPayment: this.netTotal,
-      date: v.date ? new Date(v.date) : new Date(),
-    });
-  }
-
   get purchaseOrderName(): string {
     const v = this.formGroup.getRawValue();
     const n = Number(v.purchaseOrderNumber) || 0;
@@ -518,9 +495,40 @@ export class InvoiceComponent {
           date: v.date,
           supplierName: v.supplierName,
           // baris tanpa nilai tidak perlu ikut tercetak
-          attachment: po
-            ? buildPurchaseOrderDContent(this.toPrintData(po))
-            : undefined,
+          /*
+           * Lampiran: SPK, lalu surat pengalihan bila diminta.
+           *
+           * Keduanya menumpang berkas yang sama, bukan terbit sendiri-
+           * sendiri. Dua berkas terpisah harus disimpan, dikirim, dan
+           * diarsipkan masing-masing padahal selalu dipakai bersama — dan
+           * berkas kedua kerap diblokir peramban karena bukan hasil
+           * penekanan tombol secara langsung.
+           */
+          attachment: [
+            ...(po ? buildPurchaseOrderDContent(this.toPrintData(po)) : []),
+            ...(v.proxyPayment
+              ? [
+                  // Surat mulai di halaman sendiri; tanpa ini ia menempel
+                  // pada halaman terakhir SPK.
+                  { text: '', pageBreak: 'before' as any },
+                ]
+              : []),
+            ...(v.proxyPayment
+              ? proxyPaymentContent({
+                  invoiceName: this.invoiceNumber,
+                  // Invoice tenaga kerja tidak menerbitkan faktur pajak.
+                  taxInvoiceName: '',
+                  supplierName: String(v.supplierName ?? ''),
+                  bankName: String(v.bankName ?? ''),
+                  bankAccountNumber: String(v.bankAccountNumber ?? ''),
+                  bankAccountName: String(v.bankAccountName ?? ''),
+                  // Yang dialihkan adalah jumlah yang benar-benar
+                  // dibayarkan, sesudah PPh dipotong.
+                  totalPayment: this.netTotal,
+                  date: v.date ? new Date(v.date) : new Date(),
+                })
+              : []),
+          ],
           items: this.items.controls
             .map((c) => c.getRawValue())
             .filter((x) => (Number(x.quantity) || 0) > 0)
@@ -625,16 +633,6 @@ export class InvoiceComponent {
       })
       .subscribe({
         next: () => {
-          /*
-           * Surat pengalihan diterbitkan SETELAH pembeliannya tersimpan.
-           *
-           * Bila urutannya dibalik, surat bisa terlanjur tercetak untuk
-           * pembelian yang ternyata gagal disimpan — dan yang memegang surat
-           * itu tidak punya cara mengetahuinya.
-           */
-          if (v.proxyPayment) {
-            this.terbitkanSuratPengalihan();
-          }
 
           this.snackBar.open(
       this.translate.instant('notify.createSuccess'), 'Close', {

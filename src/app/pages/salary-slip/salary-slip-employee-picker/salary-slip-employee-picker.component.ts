@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { Component, inject } from '@angular/core';
 import {
   FormControl,
@@ -23,6 +24,9 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
+
+/** Paling banyak lima saran ditampilkan sekaligus. */
+const MAKS_SARAN = 5;
 
 interface KaryawanRingkas {
   id: number;
@@ -134,9 +138,21 @@ export class SalarySlipEmployeePickerComponent {
 
     // Selama yang diketik masih berupa teks, daftar disaring. Begitu sebuah
     // opsi dipilih, nilainya menjadi objek dan daftar dikembalikan utuh.
-    this.formGroup.controls.employee.valueChanges.subscribe((v) =>
-      this.saring(typeof v === 'string' ? v : ''),
-    );
+    /*
+     * Ditunda 500 ms.
+     *
+     * Menyaring pada setiap ketukan berarti daftar disusun ulang belasan
+     * kali untuk satu nama. Jeda ini menunggu sampai pengetikan berhenti
+     * sejenak — dan `distinctUntilChanged` mencegah penyusunan ulang ketika
+     * teksnya sebenarnya tidak berubah.
+     */
+    this.formGroup.controls.employee.valueChanges
+      .pipe(
+        map((v) => (typeof v === 'string' ? v : '')),
+        debounceTime(500),
+        distinctUntilChanged(),
+      )
+      .subscribe((kata) => this.saring(kata));
   }
 
   /** Yang tampil di kolom setelah dipilih. */
@@ -149,15 +165,17 @@ export class SalarySlipEmployeePickerComponent {
 
   private muatKaryawan(): void {
     /*
-     * Penyaringan keaktifan diserahkan ke server.
+     * `status=active` sengaja TIDAK dipakai.
      *
-     * Endpoint ini sudah menerima `status=active`, yang menyaring karyawan
-     * bertanggal berakhir. Memakainya berarti daftar yang datang sudah
-     * benar, dan layar tidak perlu menebak arti kolom yang belum tentu
-     * ikut terkirim.
+     * Di server, nilai itu berarti `endDate IS NULL` — sedangkan karyawan
+     * AKN umumnya punya tanggal berakhir kontrak yang terisi meski masih
+     * bekerja. Memakainya menyaring habis seluruh daftar.
+     *
+     * Keaktifan ditentukan di sini: belum dihapus, dan tanggal berakhirnya
+     * belum lewat.
      */
     this.api
-      .get('employees', { page: 1, pageSize: 500, status: 'active' })
+      .get('employees', { page: 1, pageSize: 500 })
       .subscribe({
         next: (r: any) => {
           // Bentuk balikan diterima apa adanya: {data: []}, {employees: []},
@@ -167,15 +185,24 @@ export class SalarySlipEmployeePickerComponent {
             ? r
             : (r?.data ?? r?.employees ?? []);
 
+          const hariIni = new Date();
+          hariIni.setHours(0, 0, 0, 0);
+          const masihBekerja = (e: any): boolean => {
+            if (e?.isDelete || e?.isDeleted) return false;
+            if (!e?.endDate) return true;
+            const akhir = new Date(e.endDate);
+            return isNaN(akhir.getTime()) ? true : akhir >= hariIni;
+          };
+
           this.karyawan = data
-            .filter((e: any) => !e?.isDelete && !e?.isDeleted)
+            .filter(masihBekerja)
             .map((e: any) => ({
               id: e.id,
               name: e.name,
               nik: e.nik ?? null,
               position: e.position ?? null,
             }));
-          this.tersaring = this.karyawan;
+          this.tersaring = this.karyawan.slice(0, MAKS_SARAN);
           this.kosong = this.karyawan.length === 0;
         },
         error: () => {
@@ -207,14 +234,19 @@ export class SalarySlipEmployeePickerComponent {
       .filter(Boolean);
 
     if (!kataKunci.length) {
-      this.tersaring = this.karyawan;
+      this.tersaring = this.karyawan.slice(0, MAKS_SARAN);
       return;
     }
 
-    this.tersaring = this.karyawan.filter((k) => {
-      const sasaran = `${k.name} ${k.nik ?? ''}`.toLowerCase();
-      return kataKunci.every((q) => sasaran.includes(q));
-    });
+    this.tersaring = this.karyawan
+      .filter((k) => {
+        const sasaran = `${k.name} ${k.nik ?? ''}`.toLowerCase();
+        return kataKunci.every((q) => sasaran.includes(q));
+      })
+      // Paling banyak lima. Daftar panjang di dalam kotak kecil tidak
+      // membantu: yang dicari hampir selalu ada di baris teratas, dan
+      // sisanya hanya menambah yang harus dibaca.
+      .slice(0, MAKS_SARAN);
   }
 
   onSubmit(): void {
