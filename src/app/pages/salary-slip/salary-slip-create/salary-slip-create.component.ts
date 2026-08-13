@@ -94,19 +94,30 @@ export class SalarySlipCreateComponent {
   options: IBank[] = banks;
   bankAccounts: any[] = [];
 
-  months: { value: number; label: string }[] = [
-    { value: 0, label: 'January' },
-    { value: 1, label: 'February' },
-    { value: 2, label: 'March' },
-    { value: 3, label: 'April' },
-    { value: 4, label: 'May' },
-    { value: 5, label: 'June' },
-    { value: 6, label: 'July' },
-    { value: 7, label: 'August' },
-    { value: 8, label: 'September' },
-    { value: 9, label: 'October' },
-    { value: 10, label: 'November' },
-    { value: 11, label: 'December' },
+  /*
+   * Bulan punya DUA sebutan, dan keduanya diperlukan.
+   *
+   * `key`  — untuk yang tampil di layar; ikut bahasa aplikasi.
+   * `nama` — nama Indonesia tetap, dipakai pada dokumen yang dicetak.
+   *
+   * Slip gaji seluruhnya berbahasa Indonesia ("SLIP GAJI", "Periode"),
+   * sehingga bulannya harus Indonesia berapa pun bahasa aplikasinya.
+   * Sebelumnya kolom ini berisi teks Inggris, dan slip yang tercetak
+   * berbunyi "Periode January 2026".
+   */
+  months: { value: number; key: string; nama: string }[] = [
+    { value: 0, key: 'common.january', nama: 'Januari' },
+    { value: 1, key: 'common.february', nama: 'Februari' },
+    { value: 2, key: 'common.march', nama: 'Maret' },
+    { value: 3, key: 'common.april', nama: 'April' },
+    { value: 4, key: 'common.may', nama: 'Mei' },
+    { value: 5, key: 'common.june', nama: 'Juni' },
+    { value: 6, key: 'common.july', nama: 'Juli' },
+    { value: 7, key: 'common.august', nama: 'Agustus' },
+    { value: 8, key: 'common.september', nama: 'September' },
+    { value: 9, key: 'common.october', nama: 'Oktober' },
+    { value: 10, key: 'common.november', nama: 'November' },
+    { value: 11, key: 'common.december', nama: 'Desember' },
   ];
 
   ngOnInit(): void {
@@ -115,7 +126,7 @@ export class SalarySlipCreateComponent {
       this.formGroup.patchValue({
         userID: data.userID,
         month: data.month + 1,
-        monthName: this.months[data.month].label,
+        monthName: this.months[data.month].nama,
         year: data.year,
         nik: data.nik,
       });

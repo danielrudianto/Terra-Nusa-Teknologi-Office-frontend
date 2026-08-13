@@ -5,7 +5,6 @@ import { CanDirective } from '../../../directives/can.directive';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ApiService } from 'src/app/services/api.service';
 import { TodayPaymentComponent } from '../today-payment/today-payment/today-payment.component';
 import { CashPositionComponent } from '../cash-position/cash-position.component';
 import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dashboard-reimbursement.component';
@@ -44,21 +43,18 @@ export class DashboardBodyComponent {
     if (!this.permission.can('sales_invoice', 'create')) return false;
     return this.permission.level() >= 4 || this.permission.inDepartment('fat');
   }
-  constructor(private apiService: ApiService) {}
-
-  paymentList: any[] = [];
-
-  isLoading: boolean = false;
-
-  ngOnInit(): void {}
-
-  fetchDashboardData() {
-    this.isLoading = true;
-    this.apiService.get('dashboard', {
-      payment: true,
-      agenda: true,
-      balance: true,
-      reimbursement: true,
-    });
-  }
+  /*
+   * Komponen ini TIDAK mengambil data apa pun.
+   *
+   * Sebelumnya ada `fetchDashboardData()` yang memanggil `GET /dashboard` —
+   * rute yang tidak pernah ada di server. Metode itu juga tidak pernah
+   * dipanggil dan tidak berlangganan hasilnya, sehingga permintaannya tidak
+   * pernah terkirim sama sekali.
+   *
+   * Setiap kartu mengambil datanya masing-masing: pembayaran hari ini dari
+   * `calendar/daily`, agenda dari `agenda`, posisi kas dari
+   * `dashboard/cash-position`, dan reimbursement dari `reimbursements`.
+   * Pembagian itu disengaja — satu kartu yang gagal tidak menjatuhkan
+   * seluruh halaman.
+   */
 }

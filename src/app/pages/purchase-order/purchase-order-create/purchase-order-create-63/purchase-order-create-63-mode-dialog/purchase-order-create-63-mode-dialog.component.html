@@ -18,7 +18,7 @@
     <div class="pmd-head__text">
       <h2 class="pmd-title">{{ data?.typeLabel || "Marketing" }}</h2>
       <span class="pmd-sub"
-        >PO ini isinya barang atau jasa? Satu PO tidak bisa campur.</span
+        >{{ "po63.poIniIsinyaBarangAtau" | translate }}</span
       >
     </div>
   </div>
@@ -39,10 +39,9 @@
             <path d="M3 8v8l9 5 9-5V8M12 13v8" />
           </svg>
         </span>
-        <span class="pmd-pick__name">Barang</span>
+        <span class="pmd-pick__name">{{ "po512.barang" | translate }}</span>
         <span class="pmd-pick__desc"
-          >Merchandise seperti mug, kaos, payung. Diambil dari master
-          item.</span
+          >{{ "po63.merchandiseSepertiMugKaosPayung" | translate }}</span
         >
       </button>
 
@@ -60,9 +59,9 @@
             <rect x="1" y="5" width="15" height="14" rx="2" />
           </svg>
         </span>
-        <span class="pmd-pick__name">Jasa</span>
+        <span class="pmd-pick__name">{{ "po512.jasa" | translate }}</span>
         <span class="pmd-pick__desc"
-          >Shooting video, foto produk, desain company profile, dll.</span
+          >{{ "po63.shootingVideoFotoProdukDesain" | translate }}</span
         >
       </button>
     </div>

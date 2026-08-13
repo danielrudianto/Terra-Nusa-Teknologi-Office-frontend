@@ -145,7 +145,7 @@
                 [min]="0"
               />
               <span matSuffix>hari</span>
-              <mat-hint>Sebelum periode berjalan berakhir</mat-hint>
+              <mat-hint>{{ "po5112.sebelumPeriodeBerjalanBerakhir" | translate }}</mat-hint>
             </mat-form-field>
           }
 
@@ -158,7 +158,7 @@
               [min]="0"
             />
             <span matSuffix>hari</span>
-            <mat-hint>Setelah langganan berakhir</mat-hint>
+            <mat-hint>{{ "po5112.setelahLanggananBerakhir" | translate }}</mat-hint>
           </mat-form-field>
         </div>
       }
@@ -173,7 +173,7 @@
             [min]="1"
           />
           <span matSuffix>user</span>
-          <mat-hint>Kosongkan bila tidak dibatasi per-seat</mat-hint>
+          <mat-hint>{{ "po5112.kosongkanBilaTidakDibatasiPer" | translate }}</mat-hint>
         </mat-form-field>
 
         <!--
@@ -214,8 +214,7 @@
           {{ "po5112.softwareDetail" | translate }}
         </div>
         <button type="button" class="po5112-additem" (click)="addItem()">
-          <mat-icon>add</mat-icon> Tambah baris
-        </button>
+          <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}</button>
       </div>
 
       <div formArrayName="purchase_order">
@@ -266,7 +265,7 @@
               type="button"
               class="po5112-itemremove"
               (click)="removeAt(i)"
-              aria-label="Hapus"
+              [attr.aria-label]="'po5112.hapus' | translate"
             >
               <mat-icon>close</mat-icon>
             </button>
@@ -384,7 +383,7 @@
           <input
             matInput
             formControlName="supplierPICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'po511.08xxxxxxxxxx' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -396,7 +395,7 @@
           <input
             matInput
             formControlName="officePICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'po511.08xxxxxxxxxx' | translate"
           />
         </mat-form-field>
       </div>
@@ -410,9 +409,7 @@
       <div class="po5112-clausehint">
         <mat-icon>lock</mat-icon>
         <span
-          >Poin terisi otomatis dari form (termasuk tipe pembelian &amp; masa
-          langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang
-          tersimpan.</span
+          >{{ "po5112.poinTerisiOtomatisDariForm" | translate }}</span
         >
       </div>
       <p class="po5112-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
@@ -442,8 +439,7 @@
           {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="po5112-add" (click)="addClause()">
-          <mat-icon>add</mat-icon> Tambah poin
-        </button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
       </div>
       <p class="po5112-hint">{{ "poForm.extraPointNote" | translate }}</p>
       @if (additionalClauses.controls.length === 0) {
@@ -464,7 +460,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

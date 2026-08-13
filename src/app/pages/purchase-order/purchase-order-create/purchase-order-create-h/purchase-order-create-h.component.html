@@ -56,7 +56,7 @@
           <span class="poh-pick__code">H2</span>
           <span class="poh-pick__name">{{ "poH.nonEntity" | translate }}</span>
           <span class="poh-pick__desc"
-            >Mandor / perorangan. Wajib data pekerja.</span
+            >{{ "poH.mandorPeroranganWajibDataPekerja" | translate }}</span
           >
         </button>
       </div>
@@ -118,7 +118,7 @@
               matPrefix
               type="button"
               (click)="openSupplierSelector()"
-              aria-label="Pilih vendor"
+              [attr.aria-label]="'po512.pilihVendor' | translate"
             >
               <mat-icon>search</mat-icon>
             </button>
@@ -235,8 +235,7 @@
               -->
               @if (isEntity) {
                 <button type="button" class="poh-reset" (click)="clearPph()">
-                  <mat-icon>close</mat-icon> Hapus
-                </button>
+                  <mat-icon>close</mat-icon>{{ "po5112.hapus" | translate }}</button>
               }
             </div>
           }
@@ -260,10 +259,7 @@
                   <mat-option [value]="n">{{ n }}</mat-option>
                 }
               </mat-autocomplete>
-              <mat-hint>
-                Kode objek pajak menyesuaikan otomatis dengan tarif yang disebut
-                di sini.
-              </mat-hint>
+              <mat-hint>{{ "poH.kodeObjekPajakMenyesuaikanOtomatis" | translate }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="poh-span2">
@@ -294,13 +290,13 @@
               class="poh-rate"
             >
               <mat-radio-button value="cutoff-tanggal" color="primary"
-                >Per progres, tanggal cutoff</mat-radio-button
+                >{{ "poH.perProgresTanggalCutoff" | translate }}</mat-radio-button
               >
               <mat-radio-button value="periode-pekan" color="primary"
-                >Per progres, mingguan</mat-radio-button
+                >{{ "poH.perProgresMingguan" | translate }}</mat-radio-button
               >
               <mat-radio-button value="selesai-pekerjaan" color="primary"
-                >Saat pekerjaan selesai</mat-radio-button
+                >{{ "poH.saatPekerjaanSelesai" | translate }}</mat-radio-button
               >
             </mat-radio-group>
 
@@ -310,10 +306,7 @@
                 pekan, yang perlu hanya terminnya.
               -->
               <div class="poh-cutoffs">
-                <p class="poh-cutoffs__preview">
-                  Penagihan dilakukan satu kali setelah seluruh pekerjaan
-                  dinyatakan selesai dan diterima PIHAK PERTAMA.
-                </p>
+                <p class="poh-cutoffs__preview">{{ "poH.penagihanDilakukanSatuKaliSetelah" | translate }}</p>
                 <mat-form-field
                   appearance="outline"
                   class="poh-cutoffs__term"
@@ -330,9 +323,7 @@
                   />
                   <span matSuffix>&nbsp;hari</span>
                 </mat-form-field>
-                <p class="poh-cutoffs__hint">
-                  Dihitung sejak dokumen penagihan lengkap diterima
-                </p>
+                <p class="poh-cutoffs__hint">{{ "poH.dihitungSejakDokumenPenagihanLengk" | translate }}</p>
               </div>
             } @else if (formGroup.value.billingCycleMode === "periode-pekan") {
               <div class="poh-optrow__fields">
@@ -353,9 +344,7 @@
                 ada yang menyadari.
               -->
               <div class="poh-cutoffs">
-                <div class="poh-cutoffs__label">
-                  Tanggal cutoff dalam sebulan
-                </div>
+                <div class="poh-cutoffs__label">{{ "poH.tanggalCutoffDalamSebulan" | translate }}</div>
 
                 <div class="poh-cutoffs__row" formArrayName="cutoffDays">
                   @for (c of cutoffDays.controls; track c; let i = $index) {
@@ -370,7 +359,7 @@
                         type="number"
                         [min]="1"
                         [max]="31"
-                        placeholder="tgl"
+                        [placeholder]="'poH.tgl' | translate"
                       />
                       @if (cutoffDays.length > 1) {
                         <button
@@ -379,7 +368,7 @@
                           type="button"
                           class="poh-cutoff__x"
                           (click)="removeCutoff(i)"
-                          aria-label="Hapus tanggal cutoff"
+                          [attr.aria-label]="'poH.hapusTanggalCutoff' | translate"
                         >
                           <mat-icon>close</mat-icon>
                         </button>
@@ -394,8 +383,7 @@
                       class="poh-cutoffs__add"
                       (click)="addCutoff()"
                     >
-                      <mat-icon>add</mat-icon> Tambah
-                    </button>
+                      <mat-icon>add</mat-icon>{{ "poH.tambah" | translate }}</button>
                   }
                 </div>
 
@@ -422,9 +410,7 @@
                   />
                   <span matSuffix>&nbsp;hari</span>
                 </mat-form-field>
-                <p class="poh-cutoffs__hint">
-                  Dihitung sejak dokumen penagihan lengkap diterima
-                </p>
+                <p class="poh-cutoffs__hint">{{ "poH.dihitungSejakDokumenPenagihanLengk" | translate }}</p>
               </div>
             }
           </div>
@@ -531,8 +517,7 @@
             {{ "poH.workScope" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addScope()">
-            <mat-icon>add</mat-icon> Tambah pekerjaan
-          </button>
+            <mat-icon>add</mat-icon>{{ "po512.tambahPekerjaan" | translate }}</button>
         </div>
 
         @if (t.controls.length === 0) {
@@ -558,7 +543,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeScopeAt(i)"
-                    aria-label="Hapus"
+                    [attr.aria-label]="'po5112.hapus' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -601,7 +586,7 @@
                       }}</mat-option>
                     </mat-select>
                     <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
-                      >Lump sum — volume dikunci 1</mat-hint
+                      >{{ "poH.lumpSumVolumeDikunci1" | translate }}</mat-hint
                     >
                   </mat-form-field>
 
@@ -637,20 +622,18 @@
               "poForm.includePpn" | translate
             }}</mat-slide-toggle>
           } @else {
-            <span class="poh-rate__hint">
-              Subkontraktor perorangan bukan PKP — tidak dikenakan PPN.
-            </span>
+            <span class="poh-rate__hint">{{ "poH.subkontraktorPeroranganBukanPkpTid" | translate }}</span>
           }
           <div class="poh-summary">
             <div class="poh-summary__row">
-              <span>Subtotal (DPP)</span
+              <span>{{ "po511.subtotalDpp" | translate }}</span
               ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
             <div class="poh-summary__row">
               <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
             </div>
             <div class="poh-summary__row poh-summary__row--total">
-              <span>Total</span
+              <span>{{ "po651.total" | translate }}</span
               ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
             </div>
           </div>
@@ -665,8 +648,7 @@
               {{ "poH.workerData" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addWorker()">
-              <mat-icon>person_add</mat-icon> Tambah pekerja
-            </button>
+              <mat-icon>person_add</mat-icon>{{ "poH.tambahPekerja" | translate }}</button>
           </div>
 
           @if (w.controls.length === 0) {
@@ -700,7 +682,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeWorkerAt(i)"
-                    aria-label="Hapus pekerja"
+                    [attr.aria-label]="'poH.hapusPekerja' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -719,16 +701,11 @@
               {{ "poH.article3" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addKewajiban()">
-              <mat-icon>add</mat-icon> Tambah poin
-            </button>
+              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
             <button type="button" class="poh-reset" (click)="resetKewajiban()">
-              <mat-icon>restart_alt</mat-icon> Kembalikan
-            </button>
+              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
-          <p class="poh-rate__hint">
-            Sudah terisi dengan ketentuan baku; ubah, tambah, atau hapus poin
-            bila perlu.
-          </p>
+          <p class="poh-rate__hint">{{ "poH.sudahTerisiDenganKetentuanBaku" | translate }}</p>
 
           @if (kewajiban.controls.length === 0) {
             <div class="poh-empty">
@@ -754,7 +731,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeKewajiban(i)"
-                    aria-label="Hapus poin"
+                    [attr.aria-label]="'po511.hapusPoin' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -773,16 +750,11 @@
               {{ "poH.article4" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addKeterangan()">
-              <mat-icon>add</mat-icon> Tambah poin
-            </button>
+              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
             <button type="button" class="poh-reset" (click)="resetKeterangan()">
-              <mat-icon>restart_alt</mat-icon> Kembalikan
-            </button>
+              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
-          <p class="poh-rate__hint">
-            Sudah terisi dengan ketentuan baku; ubah, tambah, atau hapus poin
-            bila perlu.
-          </p>
+          <p class="poh-rate__hint">{{ "poH.sudahTerisiDenganKetentuanBaku" | translate }}</p>
 
           @if (keterangan.controls.length === 0) {
             <div class="poh-empty">
@@ -806,7 +778,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeKeterangan(i)"
-                    aria-label="Hapus poin"
+                    [attr.aria-label]="'po511.hapusPoin' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -944,15 +916,13 @@
               class="poh-add"
               (click)="addBillingDocument()"
             >
-              <mat-icon>add</mat-icon> Tambah dokumen
-            </button>
+              <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}</button>
             <button
               type="button"
               class="poh-reset"
               (click)="resetBillingDocuments()"
             >
-              <mat-icon>restart_alt</mat-icon> Kembalikan
-            </button>
+              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
 
           <div formArrayName="billingDocuments" class="poh-list">
@@ -967,7 +937,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeBillingDocument(i)"
-                  aria-label="Hapus dokumen"
+                  [attr.aria-label]="'poH.hapusDokumen' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -1098,7 +1068,7 @@
               <input
                 matInput
                 formControlName="officePICName"
-                placeholder="Ex. Stephanie"
+                [placeholder]="'poH.exStephanie' | translate"
               />
             </mat-form-field>
 
@@ -1107,7 +1077,7 @@
               <input
                 matInput
                 formControlName="officePICPhoneNumber"
-                placeholder="Ex. 0811 902 590"
+                [placeholder]="'poH.ex0811902590' | translate"
               />
             </mat-form-field>
 
@@ -1135,8 +1105,7 @@
             {{ "poH.extraPoints" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addClause()">
-            <mat-icon>add</mat-icon> Tambah poin
-          </button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
         <p class="poh-hint">{{ "poForm.extraPointNote" | translate }}</p>
         <p class="poh-rate__hint">{{ "poA.extraPointHint" | translate }}</p>
@@ -1159,7 +1128,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeClause(i)"
-                  aria-label="Hapus poin"
+                  [attr.aria-label]="'po511.hapusPoin' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>

@@ -41,7 +41,7 @@
           <mat-label>{{ "salarySlip.month" | translate }}</mat-label>
           <mat-select formControlName="month">
             @for (m of months; track m.value) {
-              <mat-option [value]="m.value">{{ m.label }}</mat-option>
+              <mat-option [value]="m.value">{{ m.key | translate }}</mat-option>
             }
           </mat-select>
         </mat-form-field>

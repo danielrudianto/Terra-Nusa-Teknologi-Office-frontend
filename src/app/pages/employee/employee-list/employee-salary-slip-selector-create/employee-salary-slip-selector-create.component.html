@@ -28,7 +28,7 @@
           <mat-label>Month</mat-label>
           <mat-select formControlName="month">
             <mat-option *ngFor="let m of months" [value]="m.value">{{
-              m.label
+              m.key | translate
             }}</mat-option>
           </mat-select>
         </mat-form-field>

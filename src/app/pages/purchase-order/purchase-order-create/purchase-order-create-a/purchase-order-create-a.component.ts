@@ -136,9 +136,9 @@ export class PurchaseOrderCreateAComponent {
 
   // transport modes (segmented control per leg)
   modes = [
-    { value: 'darat', label: 'Darat' },
-    { value: 'laut', label: 'Laut' },
-    { value: 'udara', label: 'Udara' },
+    { value: 'darat', key: 'poA.modeLand' },
+    { value: 'laut', key: 'poA.modeSea' },
+    { value: 'udara', key: 'poA.modeAir' },
   ];
 
   /** Apakah ada baris pengiriman dengan moda tersebut. */
@@ -792,7 +792,9 @@ export class PurchaseOrderCreateAComponent {
     return {
       ...dasar,
       items,
-      name: '(DRAF — BELUM TERBIT)',
+      // Penanda draf ikut bahasa aplikasi; nomor asli baru ada
+      // setelah server menerbitkannya.
+      name: this.translateSvc.instant('poForm.draftNotIssued'),
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
     };

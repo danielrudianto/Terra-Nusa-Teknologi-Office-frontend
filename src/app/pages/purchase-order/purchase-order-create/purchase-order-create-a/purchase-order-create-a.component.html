@@ -49,7 +49,7 @@
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih vendor"
+            [attr.aria-label]="'po512.pilihVendor' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -247,8 +247,7 @@
           {{ "common.deliveryList" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addShipment()">
-          <mat-icon>add</mat-icon> Tambah pengiriman
-        </button>
+          <mat-icon>add</mat-icon>{{ "poA.tambahPengiriman" | translate }}</button>
       </div>
 
       @if (t.controls.length === 0) {
@@ -286,7 +285,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeAt(i)"
-                  aria-label="Hapus pengiriman"
+                  [attr.aria-label]="'poA.hapusPengiriman' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -353,7 +352,7 @@
                         <path d="M3 8v8l9 5 9-5V8M12 13v8" />
                       </svg>
                     </span>
-                    <span class="poa-mode__lbl">{{ m.label }}</span>
+                    <span class="poa-mode__lbl">{{ m.key | translate }}</span>
                   </button>
                 }
               </div>
@@ -497,13 +496,11 @@
 
               <!-- mode-specific fields -->
               @if (getFormGroupAt(i).value.mode === "darat") {
-                <div class="poa-vehlabel">
-                  Jenis kendaraan
-                  <button
+                <div class="poa-vehlabel">{{ "poA.jenisKendaraan" | translate }}<button
                     type="button"
                     class="poa-veh-info"
                     (click)="openFleetInfo()"
-                    aria-label="Info jenis kendaraan"
+                    [attr.aria-label]="'poA.infoJenisKendaraan' | translate"
                   >
                     <svg
                       width="15"
@@ -517,9 +514,7 @@
                     >
                       <circle cx="12" cy="12" r="10" />
                       <path d="M12 16v-4M12 8h.01" />
-                    </svg>
-                    Lihat panduan
-                  </button>
+                    </svg>{{ "poA.lihatPanduan" | translate }}</button>
                 </div>
                 <div class="poa-vehicles">
                   @for (fleet of fleets; track fleet.id) {
@@ -557,7 +552,7 @@
                     <input
                       matInput
                       formControlName="nopol"
-                      placeholder="Ex. B 1234 XYZ"
+                      [placeholder]="'poA.exB1234Xyz' | translate"
                       style="text-transform: uppercase"
                     />
                   </mat-form-field>
@@ -641,7 +636,7 @@
         }
         <div class="poa-summary">
           <div class="poa-summary__row">
-            <span>Subtotal (DPP)</span
+            <span>{{ "po511.subtotalDpp" | translate }}</span
             ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
           </div>
           <div class="poa-summary__row">
@@ -724,8 +719,7 @@
           {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addClause()">
-          <mat-icon>add</mat-icon> Tambah poin
-        </button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
       </div>
       <p class="poa-hint">{{ "poA.extraPointHint" | translate }}</p>
 
@@ -747,7 +741,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

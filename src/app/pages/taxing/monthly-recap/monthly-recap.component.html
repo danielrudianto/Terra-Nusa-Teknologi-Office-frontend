@@ -73,7 +73,7 @@
           [class.is-active]="+formGroup.value.month === m.n"
           (click)="formGroup.patchValue({ month: m.n })"
         >
-          {{ m.label }}
+          {{ m.key | translate }}
         </button>
       </div>
 

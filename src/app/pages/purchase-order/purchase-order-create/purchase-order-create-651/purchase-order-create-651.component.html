@@ -16,10 +16,8 @@
   -->
   @if (!mode) {
     <div class="po651-card po651-choose">
-      <div class="po651-choose__title">Jenis biaya rekrutmen</div>
-      <div class="po651-choose__sub">
-        Pilih dahulu — bentuk baris dan poin perjanjiannya berbeda.
-      </div>
+      <div class="po651-choose__title">{{ "po651.jenisBiayaRekrutmen" | translate }}</div>
+      <div class="po651-choose__sub">{{ "po651.pilihDahuluBentukBarisDan" | translate }}</div>
 
       <div class="po651-choose__grid">
         <button type="button" class="po651-pick" (click)="chooseMode('kuota')">
@@ -36,12 +34,9 @@
               <path d="M7 9h10M7 13h6" />
             </svg>
           </span>
-          <span class="po651-pick__code">Kuota</span>
-          <span class="po651-pick__name">Slot lowongan &amp; iklan</span>
-          <span class="po651-pick__desc">
-            Kuota JobStreet, iklan kampus. Dibayar di muka lalu dipakai sampai
-            habis.
-          </span>
+          <span class="po651-pick__code">{{ "po651.kuota" | translate }}</span>
+          <span class="po651-pick__name">{{ "po651.slotLowonganIklan" | translate }}</span>
+          <span class="po651-pick__desc">{{ "po651.kuotaJobstreetIklanKampusDibayar" | translate }}</span>
         </button>
 
         <button
@@ -63,12 +58,9 @@
               <path d="M22 11h-6M19 8v6" />
             </svg>
           </span>
-          <span class="po651-pick__code">Peserta</span>
-          <span class="po651-pick__name">Psikotes &amp; tes kesehatan</span>
-          <span class="po651-pick__desc">
-            Dibayar atas peserta yang diperiksa. Dicetak sebagai Surat Perintah
-            Kerja.
-          </span>
+          <span class="po651-pick__code">{{ "po651.peserta" | translate }}</span>
+          <span class="po651-pick__name">{{ "po651.psikotesTesKesehatan" | translate }}</span>
+          <span class="po651-pick__desc">{{ "po651.dibayarAtasPesertaYangDiperiksa" | translate }}</span>
         </button>
       </div>
     </div>
@@ -152,8 +144,7 @@
             {{ isKuota ? "Rincian kuota" : "Rincian pemeriksaan" }}
           </div>
           <button type="button" class="po651-add" (click)="addLine()">
-            <mat-icon>add</mat-icon> Tambah baris
-          </button>
+            <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}</button>
         </div>
 
         <div formArrayName="lines">
@@ -172,7 +163,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeLineAt(i)"
-                    aria-label="Hapus baris"
+                    [attr.aria-label]="'po642.hapusBaris' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -236,7 +227,7 @@
                     thousandSeparator=" "
                     mask="separator.2"
                   />
-                  <span matPrefix>Rp&nbsp;</span>
+                  <span matPrefix>{{ "po641.rp" | translate }}</span>
                 </mat-form-field>
               </div>
             </div>
@@ -249,14 +240,14 @@
           }}</mat-slide-toggle>
           <div class="po651-summary">
             <div class="po651-summary__row">
-              <span>Subtotal (DPP)</span
+              <span>{{ "po511.subtotalDpp" | translate }}</span
               ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
             <div class="po651-summary__row">
               <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
             </div>
             <div class="po651-summary__row po651-summary__row--total">
-              <span>Total</span
+              <span>{{ "po651.total" | translate }}</span
               ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
             </div>
           </div>
@@ -348,7 +339,7 @@
 
       <!-- ===== Ketentuan ===== -->
       <div class="po651-card">
-        <div class="po651-section__title">Ketentuan</div>
+        <div class="po651-section__title">{{ "po642.ketentuan" | translate }}</div>
         <div class="po651-grid">
           @if (isKuota) {
             <mat-form-field appearance="outline">
@@ -365,7 +356,7 @@
                 [for]="dpQuota"
               ></mat-datepicker-toggle>
               <mat-datepicker #dpQuota></mat-datepicker>
-              <mat-hint>Kuota tidak terpakai setelahnya hangus</mat-hint>
+              <mat-hint>{{ "po651.kuotaTidakTerpakaiSetelahnyaHangus" | translate }}</mat-hint>
             </mat-form-field>
           } @else {
             <mat-form-field appearance="outline">
@@ -377,7 +368,7 @@
                 [min]="0"
               />
               <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
-              <mat-hint>Sejak pelaksanaan pemeriksaan</mat-hint>
+              <mat-hint>{{ "po651.sejakPelaksanaanPemeriksaan" | translate }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -391,7 +382,7 @@
                 [min]="0"
               />
               <span matSuffix>hari</span>
-              <mat-hint>Sebelum jadwal; lewat itu tetap ditagih</mat-hint>
+              <mat-hint>{{ "po651.sebelumJadwalLewatItuTetap" | translate }}</mat-hint>
             </mat-form-field>
           }
         </div>
@@ -426,8 +417,7 @@
             {{ "common.extraPoints" | translate }}
           </div>
           <button type="button" class="po651-add" (click)="addClause()">
-            <mat-icon>add</mat-icon> Tambah poin
-          </button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
         <p class="po651-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
@@ -449,7 +439,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeClause(i)"
-                  aria-label="Hapus poin"
+                  [attr.aria-label]="'po511.hapusPoin' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>

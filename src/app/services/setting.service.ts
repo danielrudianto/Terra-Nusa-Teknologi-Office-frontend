@@ -28,6 +28,27 @@ export type BrandColor =
   | 'slate';
 
 /** Palette: [base, soft tint] for each selectable brand colour. */
+/**
+ * Hitam atau putih — mana yang lebih terbaca di atas warna tertentu.
+ *
+ * Memakai luminansi relatif menurut WCAG, bukan sekadar "gelap atau terang":
+ * hijau dengan nilai RGB sedang tampak jauh lebih terang daripada biru
+ * dengan nilai yang sama, dan penilaian sederhana akan keliru pada keduanya.
+ */
+export function kontrasTeks(hex: string): string {
+  const h = hex.replace('#', '');
+  if (h.length !== 6) return '#fff';
+  const kanal = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  const lin = kanal.map((c) =>
+    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4),
+  );
+  const L = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  // Kontras terhadap putih vs terhadap hitam; ambil yang lebih besar.
+  const denganPutih = 1.05 / (L + 0.05);
+  const denganHitam = (L + 0.05) / 0.05;
+  return denganPutih >= denganHitam ? '#fff' : '#16181d';
+}
+
 export const BRAND_COLORS: Record<
   BrandColor,
   {
@@ -324,6 +345,20 @@ export class SettingsService {
     root.style.setProperty('--brand', base);
     root.style.setProperty('--brand-soft', soft);
     root.style.setProperty('--brand-strong', strong);
+
+    /*
+     * Warna teks/ikon di ATAS warna aksen.
+     *
+     * Tidak selalu putih. Pada tema gelap seluruh warna aksen sengaja
+     * dibuat terang agar terbaca di latar gelap — dan tanda centang putih
+     * di atas warna terang itu praktis tidak terlihat: rasio kontras
+     * terbaiknya hanya 2,8:1, di bawah 3:1 yang dianggap layak.
+     *
+     * Dihitung dari luminansinya, bukan ditebak dari nama tema, agar tetap
+     * benar bila kelak ada warna aksen baru yang lebih terang atau lebih
+     * gelap daripada yang ada sekarang.
+     */
+    root.style.setProperty('--on-brand', kontrasTeks(base));
 
     // Tombol/menu aktif (mis. item side navigation) memakai token sendiri,
     // tetapi maknanya turunan brand — ikut diganti agar seluruh aplikasi

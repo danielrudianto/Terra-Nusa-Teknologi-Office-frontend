@@ -6,7 +6,7 @@
     (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
-    title="Purchase Order — Kode B"
+    [title]="'poB.pageTitle' | translate"
     description="Equipment rental"
   />
 
@@ -59,7 +59,7 @@
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih vendor"
+            [attr.aria-label]="'poB.pickVendor' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -74,7 +74,7 @@
           {{ "poB.rentalList" | translate }}
         </div>
         <button type="button" class="pob-add" (click)="openEquipmentSelector()">
-          <mat-icon>add</mat-icon> Tambah equipment
+          <mat-icon>add</mat-icon> {{ "poB.addEquipment" | translate }}
         </button>
       </div>
 
@@ -82,8 +82,7 @@
         <div class="pob-empty">
           <mat-icon>precision_manufacturing</mat-icon>
           <span
-            >Belum ada equipment. Klik "Tambah equipment" untuk pilih dari
-            katalog.</span
+            >{{ "poB.noEquipment" | translate }}</span
           >
         </div>
       } @else {
@@ -114,7 +113,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeAt(i)"
-                  aria-label="Hapus"
+                  [attr.aria-label]="'common.delete' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -277,7 +276,7 @@
 
     <!-- ===== Ketentuan Alat ===== -->
     <div class="pob-card">
-      <div class="pob-section__title">Ketentuan alat</div>
+      <div class="pob-section__title">{{ "poB.equipmentTerms" | translate }}</div>
       <!--
         Menentukan siapa menanggung risiko atas alat: yang mengendalikan
         alat yang menanggung. Bila operatornya dari PIHAK PERTAMA,
@@ -300,12 +299,9 @@
           <div class="pob-banner pob-span2">
             <mat-icon>engineering</mat-icon>
             <div>
-              <strong>Terbit sebagai SPK tipe A</strong>
+              <strong>{{ "poB.asTypeATitle" | translate }}</strong>
               <span>
-                Yang dapat dipilih hanya alat angkat/angkut: alat berat atau
-                kendaraan. Untuk alat berat, operator dari vendor dinyalakan
-                sendiri. Scaffolding serta perlengkapan lain tidak terbit
-                lewat jalur ini.
+                {{ "poB.asTypeAHint" | translate }}
               </span>
             </div>
           </div>
@@ -317,10 +313,10 @@
           }}</mat-label>
           <mat-select formControlName="rentalCategory">
             <mat-option *ngFor="let c of rentalCategories" [value]="c.value">{{
-              c.label
+              c.key | translate
             }}</mat-option>
           </mat-select>
-          <mat-hint> SILO dan SIO hanya dicetak untuk alat berat </mat-hint>
+          <mat-hint>{{ "poB.siloHint" | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="pob-span2">
@@ -329,11 +325,11 @@
           }}</mat-label>
           <mat-select formControlName="equipmentRiskBearer">
             <mat-option *ngFor="let r of riskBearers" [value]="r.value">{{
-              r.label
+              r.key | translate
             }}</mat-option>
           </mat-select>
           <mat-hint>
-            Batas nilainya tetap mengacu pada Berita Acara Serah Terima Alat.
+            {{ "poB.riskHint" | translate }}
           </mat-hint>
         </mat-form-field>
       </div>
@@ -347,7 +343,7 @@
         color="primary"
         class="pob-toggle"
       >
-        Harga sudah mencakup koordinasi pengangkutan
+        {{ "poB.transportCoverage" | translate }}
       </mat-slide-toggle>
       <p class="pob-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
@@ -356,12 +352,10 @@
         color="primary"
         class="pob-toggle"
       >
-        Alat disewa lengkap dengan operator dari vendor
+        {{ "poB.operatorByVendor" | translate }}
       </mat-slide-toggle>
       <p class="pob-hint">
-        Bila dinyalakan, dokumen memuat kewajiban vendor menyediakan operator
-        ber-SIO beserta ketentuan penggantiannya. Bila dimatikan, seluruh
-        penyebutan tenaga kerja dihapus dari dokumen.
+        {{ "poB.operatorByVendorHint" | translate }}
       </p>
 
       <!--
@@ -374,14 +368,9 @@
           color="primary"
           class="pob-toggle"
         >
-          Sewa singkat (satu shift)
+          {{ "poB.shortTerm" | translate }}
         </mat-slide-toggle>
-        <p class="pob-hint">
-          Menghilangkan ketentuan yang hanya berlaku pada penyewaan
-          berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan
-          2×24 jam, berita acara serah terima, dan koordinasi bongkar-muat.
-          Unit yang tidak dapat beroperasi wajib diganti pada hari yang sama.
-        </p>
+        <p class="pob-hint">{{ "poB.shortTermHint" | translate }}</p>
       }
 
       <!--
@@ -401,7 +390,7 @@
             />
             <span matSuffix>{{ "poField.hariKalender" | translate }}</span>
             <mat-hint
-              >Kuota jamnya mengikuti volume pada tabel di atas</mat-hint
+              >{{ "poB.hourQuotaHint" | translate }}</mat-hint
             >
           </mat-form-field>
 
@@ -413,9 +402,9 @@
               thousandSeparator=" "
               mask="separator.2"
             />
-            <span matPrefix>Rp&nbsp;</span>
-            <span matSuffix>/ jam</span>
-            <mat-hint>Kosongkan bila tidak diatur</mat-hint>
+            <span matPrefix>{{ "po641.rp" | translate }}</span>
+            <span matSuffix>{{ "poB.perHour" | translate }}</span>
+            <mat-hint>{{ "poB.optionalHint" | translate }}</mat-hint>
           </mat-form-field>
         </div>
       }
@@ -478,7 +467,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'poB.removePoint' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

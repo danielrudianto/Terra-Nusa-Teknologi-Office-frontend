@@ -51,7 +51,7 @@
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih vendor"
+            [attr.aria-label]="'po512.pilihVendor' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -383,7 +383,7 @@
         selesainya pekerjaan — bukan tanpa batas — sehingga tidak perlu
         pilihan terpisah untuk menyatakannya.
       -->
-      <div class="pod-section__title">Informasi umum</div>
+      <div class="pod-section__title">{{ "poD.informasiUmum" | translate }}</div>
       <div class="pod-grid">
         <mat-form-field appearance="outline" class="pod-span2">
           <mat-label>{{ "poField.lokasiKerja" | translate }}</mat-label>
@@ -392,7 +392,7 @@
             formControlName="workLocation"
             [placeholder]="'poField.exProyekTolCisumdawuSta12' | translate"
           />
-          <mat-hint>Bila dikosongkan, dokumen memakai nama proyek</mat-hint>
+          <mat-hint>{{ "poD.bilaDikosongkanDokumenMemakaiNama" | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -421,7 +421,7 @@
             [for]="dpEnd"
           ></mat-datepicker-toggle>
           <mat-datepicker #dpEnd></mat-datepicker>
-          <mat-hint>Kosongkan bila sampai pekerjaan selesai</mat-hint>
+          <mat-hint>{{ "poD.kosongkanBilaSampaiPekerjaanSelesa" | translate }}</mat-hint>
         </mat-form-field>
       </div>
 
@@ -453,11 +453,9 @@
             color="primary"
             formControlName="includeTransportHome"
             class="pod-toggle"
-            >Tanggung biaya transportasi dari kampung halaman</mat-slide-toggle
+            >{{ "poD.tanggungBiayaTransportasiDariKampu" | translate }}</mat-slide-toggle
           >
-          <span class="pod-toggles__hint">
-            Untuk pekerja yang dimobilisasi dari luar kota.
-          </span>
+          <span class="pod-toggles__hint">{{ "poD.untukPekerjaYangDimobilisasiDari" | translate }}</span>
         </div>
 
         <div class="pod-toggles__row">
@@ -465,8 +463,7 @@
             color="primary"
             formControlName="includeHomeLeave"
             class="pod-toggle"
-            >Hak pulang ke kampung halaman setelah proyek
-            selesai</mat-slide-toggle
+            >{{ "poD.hakPulangKeKampungHalaman" | translate }}</mat-slide-toggle
           >
         </div>
 
@@ -475,8 +472,7 @@
             color="primary"
             formControlName="includeEquipmentEscort"
             class="pod-toggle"
-            >Wajib mendampingi alat saat mobilisasi &amp;
-            demobilisasi</mat-slide-toggle
+            >{{ "poD.wajibMendampingiAlatSaatMobilisasi" | translate }}</mat-slide-toggle
           >
         </div>
 
@@ -487,9 +483,7 @@
             class="pod-toggle"
             >{{ "poD.fieldStaff" | translate }}</mat-slide-toggle
           >
-          <span class="pod-toggles__hint">
-            Menambahkan seksi Laporan Lapangan dan Tata Cara Pembayaran bulanan.
-          </span>
+          <span class="pod-toggles__hint">{{ "poD.menambahkanSeksiLaporanLapanganDan" | translate }}</span>
         </div>
 
 
@@ -517,13 +511,9 @@
             {{ "poD.jobDesc" | translate }}
           </div>
           <button type="button" class="pod-add" (click)="addJobDescription()">
-            <mat-icon>add</mat-icon> Tambah tugas
-          </button>
+            <mat-icon>add</mat-icon>{{ "poD.tambahTugas" | translate }}</button>
         </div>
-        <p class="pod-clausenote">
-          Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan
-          bila tidak perlu.
-        </p>
+        <p class="pod-clausenote">{{ "poD.rincianPekerjaanStafTercetakSebaga" | translate }}</p>
 
         @if (jobDescriptions.controls.length === 0) {
           <div class="pod-empty">
@@ -543,7 +533,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeJobDescription(i)"
-                  aria-label="Hapus tugas"
+                  [attr.aria-label]="'poD.hapusTugas' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>

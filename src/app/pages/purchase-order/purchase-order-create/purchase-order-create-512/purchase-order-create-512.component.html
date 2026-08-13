@@ -16,10 +16,8 @@
   -->
   @if (!mode) {
     <div class="po512-card po512-choose">
-      <div class="po512-choose__title">Asset maintenance</div>
-      <div class="po512-choose__sub">
-        Mau beli barangnya, atau pesan jasanya?
-      </div>
+      <div class="po512-choose__title">{{ "poForm.assetMaintenance" | translate }}</div>
+      <div class="po512-choose__sub">{{ "poForm.mauBeliBarangnyaAtauPesan" | translate }}</div>
 
       <div class="po512-choose__grid">
         <button type="button" class="po512-pick" (click)="chooseMode('barang')">
@@ -38,11 +36,9 @@
               <path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12" />
             </svg>
           </span>
-          <span class="po512-pick__code">Barang</span>
-          <span class="po512-pick__name">Beli barang</span>
-          <span class="po512-pick__desc">
-            Sparepart / material perawatan, diambil dari master item.
-          </span>
+          <span class="po512-pick__code">{{ "po512.barang" | translate }}</span>
+          <span class="po512-pick__name">{{ "poForm.beliBarang" | translate }}</span>
+          <span class="po512-pick__desc">{{ "poForm.sparepartMaterialPerawatanDiambilD" | translate }}</span>
         </button>
 
         <button type="button" class="po512-pick" (click)="chooseMode('jasa')">
@@ -60,11 +56,9 @@
               />
             </svg>
           </span>
-          <span class="po512-pick__code">Jasa</span>
-          <span class="po512-pick__name">Pesan jasa</span>
-          <span class="po512-pick__desc">
-            Jasa perbaikan / servis, uraian pekerjaan ditulis bebas.
-          </span>
+          <span class="po512-pick__code">{{ "po512.jasa" | translate }}</span>
+          <span class="po512-pick__name">{{ "poForm.pesanJasa" | translate }}</span>
+          <span class="po512-pick__desc">{{ "poForm.jasaPerbaikanServisUraianPekerjaan" | translate }}</span>
         </button>
       </div>
     </div>
@@ -130,7 +124,7 @@
               matPrefix
               type="button"
               (click)="openSupplierSelector()"
-              aria-label="Pilih vendor"
+              [attr.aria-label]="'po512.pilihVendor' | translate"
             >
               <mat-icon>search</mat-icon>
             </button>
@@ -150,12 +144,10 @@
               class="po512-add"
               (click)="openItemSelector()"
             >
-              <mat-icon>inventory_2</mat-icon> Tambah barang
-            </button>
+              <mat-icon>inventory_2</mat-icon>{{ "po511.tambahBarang" | translate }}</button>
           } @else {
             <button type="button" class="po512-add" (click)="addService()">
-              <mat-icon>build</mat-icon> Tambah pekerjaan
-            </button>
+              <mat-icon>build</mat-icon>{{ "po512.tambahPekerjaan" | translate }}</button>
           }
         </div>
 
@@ -196,7 +188,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeAt(i)"
-                    aria-label="Hapus"
+                    [attr.aria-label]="'po5112.hapus' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -250,7 +242,7 @@
                         matInput
                         formControlName="unit"
                     (change)="onUnitChange(i)"
-                        placeholder="pcs"
+                        [placeholder]="'po512.pcs' | translate"
                       />
                     } @else {
                       <mat-select
@@ -450,7 +442,7 @@
               <input
                 matInput
                 formControlName="supplierPICPhoneNumber"
-                placeholder="08xxxxxxxxxx"
+                [placeholder]="'po511.08xxxxxxxxxx' | translate"
               />
             </mat-form-field>
             <mat-form-field appearance="outline">
@@ -464,7 +456,7 @@
               <input
                 matInput
                 formControlName="officePICPhoneNumber"
-                placeholder="08xxxxxxxxxx"
+                [placeholder]="'po511.08xxxxxxxxxx' | translate"
               />
             </mat-form-field>
           </div>
@@ -511,8 +503,7 @@
             {{ "common.extraPoints" | translate }}
           </div>
           <button type="button" class="po512-add" (click)="addClause()">
-            <mat-icon>add</mat-icon> Tambah poin
-          </button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
         <p class="po512-hint">{{ "poForm.extraPointNote" | translate }}</p>
         @if (additionalClauses.controls.length === 0) {
@@ -533,7 +524,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeClause(i)"
-                  aria-label="Hapus poin"
+                  [attr.aria-label]="'po511.hapusPoin' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>

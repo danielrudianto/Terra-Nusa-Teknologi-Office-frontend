@@ -19,10 +19,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-employee-salary-slip-selector-create',
   imports: [
+    TranslatePipe,
     MatDialogModule,
     MatInputModule,
     MatSelectModule,
@@ -45,19 +47,30 @@ export class EmployeeSalarySlipSelectorCreateComponent {
     private dataTransferService: DataTransferService
   ) {}
 
-  months: { value: number; label: string }[] = [
-    { value: 0, label: 'January' },
-    { value: 1, label: 'February' },
-    { value: 2, label: 'March' },
-    { value: 3, label: 'April' },
-    { value: 4, label: 'May' },
-    { value: 5, label: 'June' },
-    { value: 6, label: 'July' },
-    { value: 7, label: 'August' },
-    { value: 8, label: 'September' },
-    { value: 9, label: 'October' },
-    { value: 10, label: 'November' },
-    { value: 11, label: 'December' },
+  /*
+   * Bulan punya DUA sebutan, dan keduanya diperlukan.
+   *
+   * `key`  — untuk yang tampil di layar; ikut bahasa aplikasi.
+   * `nama` — nama Indonesia tetap, dipakai pada dokumen yang dicetak.
+   *
+   * Slip gaji seluruhnya berbahasa Indonesia ("SLIP GAJI", "Periode"),
+   * sehingga bulannya harus Indonesia berapa pun bahasa aplikasinya.
+   * Sebelumnya kolom ini berisi teks Inggris, dan slip yang tercetak
+   * berbunyi "Periode January 2026".
+   */
+  months: { value: number; key: string; nama: string }[] = [
+    { value: 0, key: 'common.january', nama: 'Januari' },
+    { value: 1, key: 'common.february', nama: 'Februari' },
+    { value: 2, key: 'common.march', nama: 'Maret' },
+    { value: 3, key: 'common.april', nama: 'April' },
+    { value: 4, key: 'common.may', nama: 'Mei' },
+    { value: 5, key: 'common.june', nama: 'Juni' },
+    { value: 6, key: 'common.july', nama: 'Juli' },
+    { value: 7, key: 'common.august', nama: 'Agustus' },
+    { value: 8, key: 'common.september', nama: 'September' },
+    { value: 9, key: 'common.october', nama: 'Oktober' },
+    { value: 10, key: 'common.november', nama: 'November' },
+    { value: 11, key: 'common.december', nama: 'Desember' },
   ];
   isSubmitting: boolean = false;
 

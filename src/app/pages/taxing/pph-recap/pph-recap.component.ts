@@ -43,19 +43,20 @@ export class PphRecapComponent {
   // period passed from the tax hub (select month/year once, reused everywhere)
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
 
-  months: { n: number; label: string }[] = [
-    { n: 1, label: 'Jan' },
-    { n: 2, label: 'Feb' },
-    { n: 3, label: 'Mar' },
-    { n: 4, label: 'Apr' },
-    { n: 5, label: 'Mei' },
-    { n: 6, label: 'Jun' },
-    { n: 7, label: 'Jul' },
-    { n: 8, label: 'Agu' },
-    { n: 9, label: 'Sep' },
-    { n: 10, label: 'Okt' },
-    { n: 11, label: 'Nov' },
-    { n: 12, label: 'Des' },
+  /** Label bulan singkat mengikuti bahasa aplikasi. */
+  months: { n: number; key: string }[] = [
+    { n: 1, key: 'common.janShort' },
+    { n: 2, key: 'common.febShort' },
+    { n: 3, key: 'common.marShort' },
+    { n: 4, key: 'common.aprShort' },
+    { n: 5, key: 'common.mayShort' },
+    { n: 6, key: 'common.junShort' },
+    { n: 7, key: 'common.julShort' },
+    { n: 8, key: 'common.augShort' },
+    { n: 9, key: 'common.sepShort' },
+    { n: 10, key: 'common.octShort' },
+    { n: 11, key: 'common.novShort' },
+    { n: 12, key: 'common.decShort' },
   ];
 
   ngOnInit(): void {

@@ -68,10 +68,20 @@ export class SettingsComponent implements OnInit {
   isLoading = false;
   userId: number | null = null;
 
-  textScales: { value: TextScale; label: string; sample: string }[] = [
-    { value: 'sm', label: 'Kecil', sample: 'Aa' },
-    { value: 'md', label: 'Normal', sample: 'Aa' },
-    { value: 'lg', label: 'Besar', sample: 'Aa' },
+  /*
+   * Label memakai kunci i18n; `value` tetap kode ukurannya.
+   *
+   * Sebelumnya labelnya ditulis langsung, sehingga "Kecil/Normal/Besar"
+   * tetap berbahasa Indonesia meski aplikasinya diganti ke bahasa lain —
+   * padahal pilihan ini berada di halaman yang sama dengan pemilih bahasa.
+   *
+   * `sample` tidak diterjemahkan: "Aa" adalah contoh bentuk huruf, bukan
+   * kata. Menerjemahkannya justru menghilangkan gunanya.
+   */
+  textScales: { value: TextScale; key: string; sample: string }[] = [
+    { value: 'sm', key: 'settings.textSm', sample: 'Aa' },
+    { value: 'md', key: 'settings.textMd', sample: 'Aa' },
+    { value: 'lg', key: 'settings.textLg', sample: 'Aa' },
   ];
 
   profileFormGroup: FormGroup = new FormGroup({

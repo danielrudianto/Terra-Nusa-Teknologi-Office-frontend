@@ -133,9 +133,9 @@ export class PurchaseOrderCreate641Component {
 
   /** Penanggung biaya resmi yang hangus bila pengajuan ditolak. */
   rejectionBearers = [
-    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
-    { value: 'kedua', label: 'PIHAK KEDUA (vendor)' },
-    { value: 'kesepakatan', label: 'Kesepakatan tertulis kedua pihak' },
+    { value: 'pertama', key: 'po641.bearerFirst' },
+    { value: 'kedua', key: 'po641.bearerSecond' },
+    { value: 'kesepakatan', key: 'po641.bearerAgreed' },
   ];
 
   /*
@@ -598,7 +598,9 @@ export class PurchaseOrderCreate641Component {
     return {
       ...dasar,
       items,
-      name: '(DRAF — BELUM TERBIT)',
+      // Penanda draf ikut bahasa aplikasi; nomor asli baru ada
+      // setelah server menerbitkannya.
+      name: this.translateSvc.instant('poForm.draftNotIssued'),
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
     };

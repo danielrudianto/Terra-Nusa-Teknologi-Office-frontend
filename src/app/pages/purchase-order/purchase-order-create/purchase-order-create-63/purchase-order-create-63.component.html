@@ -60,7 +60,7 @@
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih vendor"
+            [attr.aria-label]="'po512.pilihVendor' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -76,12 +76,10 @@
         </div>
         @if (isGoods) {
           <button type="button" class="po63-add" (click)="openItemSelector()">
-            <mat-icon>inventory_2</mat-icon> Tambah barang
-          </button>
+            <mat-icon>inventory_2</mat-icon>{{ "po511.tambahBarang" | translate }}</button>
         } @else {
           <button type="button" class="po63-add" (click)="addService()">
-            <mat-icon>design_services</mat-icon> Tambah jasa
-          </button>
+            <mat-icon>design_services</mat-icon>{{ "po63.tambahJasa" | translate }}</button>
         }
       </div>
 
@@ -120,7 +118,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeAt(i)"
-                  aria-label="Hapus"
+                  [attr.aria-label]="'po5112.hapus' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -157,7 +155,7 @@
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poForm.unit" | translate }}</mat-label>
                   @if (isGoods) {
-                    <input matInput formControlName="unit" placeholder="pcs" />
+                    <input matInput formControlName="unit" [placeholder]="'po512.pcs' | translate" />
                   } @else {
                     <mat-select
                       formControlName="unit"
@@ -309,11 +307,9 @@
     <!-- ===== Ketentuan pekerjaan ===== -->
     @if (!isGoods) {
       <div class="po63-card">
-        <div class="po63-section__title">Ketentuan pekerjaan</div>
+        <div class="po63-section__title">{{ "po63.ketentuanPekerjaan" | translate }}</div>
 
-        <mat-checkbox formControlName="latePenaltyRequired" color="primary">
-          Berlakukan denda keterlambatan penyerahan
-        </mat-checkbox>
+        <mat-checkbox formControlName="latePenaltyRequired" color="primary">{{ "po63.berlakukanDendaKeterlambatanPenyer" | translate }}</mat-checkbox>
         <p class="po63-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
         <div class="po63-grid">
@@ -328,7 +324,7 @@
               [min]="0"
             />
             <span matSuffix>hari</span>
-            <mat-hint>Masa berlaku tautan/media penyerahan</mat-hint>
+            <mat-hint>{{ "po63.masaBerlakuTautanMediaPenyerahan" | translate }}</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -342,7 +338,7 @@
               [min]="0"
             />
             <span matSuffix>kali</span>
-            <mat-hint>Revisi berikutnya jadi pekerjaan tambahan</mat-hint>
+            <mat-hint>{{ "po63.revisiBerikutnyaJadiPekerjaanTamba" | translate }}</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -355,7 +351,7 @@
               type="number"
               [min]="0"
             />
-            <span matSuffix>‰ / hari</span>
+            <span matSuffix>{{ "po63.hari" | translate }}</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -367,7 +363,7 @@
               [min]="0"
             />
             <span matSuffix>%</span>
-            <mat-hint>Batas atas dari nilai pekerjaan</mat-hint>
+            <mat-hint>{{ "po63.batasAtasDariNilaiPekerjaan" | translate }}</mat-hint>
           </mat-form-field>
         </div>
       </div>
@@ -381,7 +377,7 @@
         tetap tercetak tetapi berisi tanda hubung.
       -->
       <div class="po63-card">
-        <div class="po63-section__title">Pengiriman</div>
+        <div class="po63-section__title">{{ "po63.pengiriman" | translate }}</div>
         <div class="po63-grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
@@ -451,14 +447,9 @@
     <!-- ===== Ketentuan barang ===== -->
     @if (isGoods) {
       <div class="po63-card">
-        <div class="po63-section__title">Ketentuan barang</div>
-        <mat-checkbox formControlName="sampleApprovalRequired" color="primary">
-          Contoh barang disetujui sebelum produksi massal
-        </mat-checkbox>
-        <p class="po63-hint">
-          Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret —
-          sehingga terbaca sengaja tidak diberlakukan, bukan terlewat.
-        </p>
+        <div class="po63-section__title">{{ "po63.ketentuanBarang" | translate }}</div>
+        <mat-checkbox formControlName="sampleApprovalRequired" color="primary">{{ "po63.contohBarangDisetujuiSebelumProduk" | translate }}</mat-checkbox>
+        <p class="po63-hint">{{ "po63.bilaDimatikanPoinnyaTetapTercetak" | translate }}</p>
       </div>
     }
 
@@ -491,8 +482,7 @@
           {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="po63-add" (click)="addClause()">
-          <mat-icon>add</mat-icon> Tambah poin
-        </button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
       </div>
 
       @if (additionalClauses.controls.length === 0) {
@@ -513,7 +503,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

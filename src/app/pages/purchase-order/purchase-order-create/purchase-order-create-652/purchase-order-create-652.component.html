@@ -68,9 +68,7 @@
     <!-- ===== Rincian pelatihan ===== -->
     <div class="po652-card">
       <div class="po652-cardhead">
-        <div class="po652-section__title po652-section__title--flush">
-          Rincian pelatihan
-        </div>
+        <div class="po652-section__title po652-section__title--flush">{{ "po652.rincianPelatihan" | translate }}</div>
         <button type="button" class="po652-add" (click)="addLine()">
           <mat-icon>add</mat-icon> {{ "poField.tambahBaris" | translate }}
         </button>
@@ -92,7 +90,7 @@
                   mat-icon-button
                   type="button"
                   (click)="removeLineAt(i)"
-                  aria-label="Hapus baris"
+                  [attr.aria-label]="'po642.hapusBaris' | translate"
                 >
                   <mat-icon>close</mat-icon>
                 </button>
@@ -127,12 +125,9 @@
                 <input
                   matInput
                   formControlName="issuer"
-                  placeholder="Ex. Kemnaker RI"
+                  [placeholder]="'po652.exKemnakerRi' | translate"
                 />
-                <mat-hint>
-                  Sertifikat dari lembaga yang tidak berwenang tidak berlaku di
-                  lapangan
-                </mat-hint>
+                <mat-hint>{{ "po652.sertifikatDariLembagaYangTidak" | translate }}</mat-hint>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -192,7 +187,7 @@
                   thousandSeparator=" "
                   mask="separator.2"
                 />
-                <span matPrefix>Rp&nbsp;</span>
+                <span matPrefix>{{ "po641.rp" | translate }}</span>
               </mat-form-field>
             </div>
           </div>
@@ -205,7 +200,7 @@
         }}</mat-slide-toggle>
         <div class="po652-summary">
           <div class="po652-summary__row">
-            <span>Total peserta</span><span>{{ totalPeserta }}</span>
+            <span>{{ "po652.totalPeserta" | translate }}</span><span>{{ totalPeserta }}</span>
           </div>
           <div class="po652-summary__row">
             <span>{{ "common.subtotalDpp" | translate }}</span
@@ -303,13 +298,13 @@
 
     <!-- ===== Ketentuan ===== -->
     <div class="po652-card">
-      <div class="po652-section__title">Ketentuan</div>
+      <div class="po652-section__title">{{ "po642.ketentuan" | translate }}</div>
       <div class="po652-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poField.tempatPelaksanaan" | translate }}</mat-label>
           <mat-select formControlName="trainingVenue">
-            <mat-option value="penyedia">Di tempat penyelenggara</mat-option>
-            <mat-option value="lokasi">Di lokasi AKN</mat-option>
+            <mat-option value="penyedia">{{ "po652.diTempatPenyelenggara" | translate }}</mat-option>
+            <mat-option value="lokasi">{{ "po652.diLokasiAkn" | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -324,7 +319,7 @@
             [min]="0"
           />
           <span matSuffix>hari</span>
-          <mat-hint>Lewat itu tetap ditagihkan</mat-hint>
+          <mat-hint>{{ "po652.lewatItuTetapDitagihkan" | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -338,17 +333,17 @@
             [min]="0"
           />
           <span matSuffix>{{ "poField.hariKalender" | translate }}</span>
-          <mat-hint>Sejak pelatihan selesai</mat-hint>
+          <mat-hint>{{ "po652.sejakPelatihanSelesai" | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "poField.biayaUjianUlang" | translate }}</mat-label>
           <mat-select formControlName="retakeCostBearer">
             @for (r of retakeBearers; track r.value) {
-              <mat-option [value]="r.value">{{ r.label }}</mat-option>
+              <mat-option [value]="r.value">{{ r.key | translate }}</mat-option>
             }
           </mat-select>
-          <mat-hint>Bila ada peserta yang tidak lulus</mat-hint>
+          <mat-hint>{{ "po652.bilaAdaPesertaYangTidak" | translate }}</mat-hint>
         </mat-form-field>
       </div>
     </div>
@@ -409,7 +404,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

@@ -175,9 +175,9 @@ export class PurchaseOrderCreate652Component {
   });
 
   readonly retakeBearers = [
-    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
-    { value: 'kedua', label: 'PIHAK KEDUA (penyelenggara)' },
-    { value: 'kesepakatan', label: 'Disepakati kemudian' },
+    { value: 'pertama', key: 'po652.bearerFirst' },
+    { value: 'kedua', key: 'po652.bearerSecond' },
+    { value: 'kesepakatan', key: 'po652.bearerAgreed' },
   ];
 
   ngOnInit(): void {
@@ -538,7 +538,9 @@ export class PurchaseOrderCreate652Component {
     return {
       ...dasar,
       items,
-      name: '(DRAF — BELUM TERBIT)',
+      // Penanda draf ikut bahasa aplikasi; nomor asli baru ada
+      // setelah server menerbitkannya.
+      name: this.translateSvc.instant('poForm.draftNotIssued'),
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
     };

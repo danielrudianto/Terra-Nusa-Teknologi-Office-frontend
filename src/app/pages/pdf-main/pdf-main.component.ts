@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   CdkDrag,
@@ -14,8 +14,9 @@ import { FileDropComponent } from './file-drop/file-drop.component';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { tanggalLokal } from '../../utils/tanggal';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 pdfjslib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -86,9 +87,29 @@ interface PageData {
     MatIconModule,
     MatTooltipModule,
     TranslatePipe,
+    MatSnackBarModule,
   ],
 })
 export class PdfMainComponent implements OnInit {
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+
+  /**
+   * Pemberitahuan singkat, menggantikan `alert()`.
+   *
+   * `alert()` menghentikan seluruh halaman sampai ditutup, tampilannya
+   * berbeda di tiap peramban, tidak mengikuti tema, dan judulnya ditempeli
+   * nama domain. Untuk pesan yang hanya perlu dibaca sekilas — "pilih dulu
+   * dua halaman" — menghentikan segalanya jelas berlebihan.
+   *
+   * Galat diberi waktu baca lebih lama daripada peringatan biasa.
+   */
+  private beritahu(kunci: string, galat = false): void {
+    this.snackBar.open(this.translate.instant(kunci), 'Close', {
+      duration: galat ? 6000 : 4000,
+    });
+  }
+
   processedDocuments: PageData[] = [];
 
   /*
@@ -374,7 +395,7 @@ export class PdfMainComponent implements OnInit {
 
   async mergePdfs(): Promise<void> {
     if (this.processedDocuments.length < 2) {
-      alert('Please add at least 2 PDFs to merge.');
+      this.beritahu('pdf.needTwoDocs');
       return;
     }
 
@@ -413,7 +434,7 @@ export class PdfMainComponent implements OnInit {
       );
     } catch (error) {
       console.error('Error merging PDFs:', error);
-      alert('Error merging PDFs. Please try again.');
+      this.beritahu('pdf.mergeFailed', true);
     } finally {
       this.isProcessing = false;
       this.processingProgress = '';
@@ -644,7 +665,7 @@ export class PdfMainComponent implements OnInit {
     const selectedPages = this.selectedPages;
 
     if (selectedPages.length === 0) {
-      alert('Please select at least one page to save.');
+      this.beritahu('pdf.needOnePage');
       return;
     }
 
@@ -704,7 +725,7 @@ export class PdfMainComponent implements OnInit {
       );
     } catch (error) {
       console.error('Error creating PDF from selected pages:', error);
-      alert('Error creating PDF. Please try again.');
+      this.beritahu('pdf.createFailed', true);
     } finally {
       this.isProcessing = false;
       this.processingProgress = '';
@@ -715,7 +736,7 @@ export class PdfMainComponent implements OnInit {
     const selectedPages = this.selectedPages;
 
     if (selectedPages.length < 2) {
-      alert('Please select at least 2 pages to merge.');
+      this.beritahu('pdf.needTwoPages');
       return;
     }
 
@@ -744,7 +765,7 @@ export class PdfMainComponent implements OnInit {
       );
     } catch (error) {
       console.error('Error merging selected PDFs:', error);
-      alert('Error merging PDFs. Please try again.');
+      this.beritahu('pdf.mergeFailed', true);
     } finally {
       this.isProcessing = false;
       this.processingProgress = '';

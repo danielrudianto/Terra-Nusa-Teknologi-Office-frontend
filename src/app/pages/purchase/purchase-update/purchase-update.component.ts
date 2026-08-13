@@ -321,10 +321,23 @@ export class PurchaseUpdateComponent {
         },
         error: (error) => {
           console.error(error);
-          this.snackBar.open(
-      this.translate.instant('notify.updateFailed'), 'Close', {
-            duration: 3000,
-          });
+          /*
+           * Kode tetap dari server dipetakan ke kalimat.
+           *
+           * "Gagal memperbarui" tidak memberi tahu apa pun; yang menekannya
+           * akan mencoba lagi dengan hasil sama. Penolakan karena
+           * pembayaran sudah ada perlu disebut sebabnya, karena jalan
+           * keluarnya berbeda: minta yang berwenang, bukan ulangi.
+           */
+          const detail = error?.error?.detail;
+          const kode = typeof detail === 'string' ? detail : detail?.code;
+          const pesan =
+            kode === 'PURCHASE_HAS_PAYMENTS'
+              ? this.translate.instant('purchase.editHasPayments')
+              : (detail?.message ??
+                (typeof detail === 'string' ? detail : null) ??
+                this.translate.instant('notify.updateFailed'));
+          this.snackBar.open(pesan, 'Close', { duration: 6000 });
         },
       })
       .add(() => {

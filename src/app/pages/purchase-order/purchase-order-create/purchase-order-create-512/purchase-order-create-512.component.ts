@@ -622,7 +622,9 @@ export class PurchaseOrderCreate512Component {
     return {
       ...dasar,
       items,
-      name: '(DRAF — BELUM TERBIT)',
+      // Penanda draf ikut bahasa aplikasi; nomor asli baru ada
+      // setelah server menerbitkannya.
+      name: this.translate.instant('poForm.draftNotIssued'),
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
     };

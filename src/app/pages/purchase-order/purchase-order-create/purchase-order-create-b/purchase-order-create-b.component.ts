@@ -274,10 +274,20 @@ export class PurchaseOrderCreateBComponent {
    * terpisah, agar klausul hourmeter tidak mungkin berbeda dari dasar
    * perhitungan yang ditagihkan.
    */
+  /*
+   * Label memakai kunci i18n; yang disimpan tetap `value`.
+   *
+   * Pemisahan itu penting: klausul dokumen membaca `value` ('alat-berat'),
+   * bukan labelnya. Jadi menerjemahkan label TIDAK mengubah isi SPK — yang
+   * berubah hanya yang terbaca di layar.
+   *
+   * Berbeda dari nilai mat-option pada slip gaji, yang justru menyimpan
+   * teksnya sendiri dan karena itu tidak boleh diterjemahkan.
+   */
   private readonly SEMUA_KATEGORI = [
-    { value: 'alat-berat', label: 'Alat berat (excavator, crane, bor)' },
-    { value: 'kendaraan', label: 'Kendaraan (mobil, motor, truk)' },
-    { value: 'umum', label: 'Perlengkapan lain (scaffolding, genset, dll)' },
+    { value: 'alat-berat', key: 'poB.catHeavy' },
+    { value: 'kendaraan', key: 'poB.catVehicle' },
+    { value: 'umum', key: 'poB.catOther' },
   ];
 
   /**
@@ -303,9 +313,14 @@ export class PurchaseOrderCreateBComponent {
       : this.SEMUA_KATEGORI;
   }
 
+  /*
+   * Sama seperti kategori: klausul menyusun sendiri kalimat "PIHAK
+   * PERTAMA"/"PIHAK KEDUA" dari `value`, sehingga label di sini hanya
+   * dibaca pengguna dan aman mengikuti bahasa aplikasi.
+   */
   riskBearers = [
-    { value: 'kedua', label: 'PIHAK KEDUA (vendor pemilik alat)' },
-    { value: 'pertama', label: 'PIHAK PERTAMA (AKN)' },
+    { value: 'kedua', key: 'poB.riskSecond' },
+    { value: 'pertama', key: 'poB.riskFirst' },
   ];
 
   get rentalByHour(): boolean {
@@ -678,7 +693,9 @@ export class PurchaseOrderCreateBComponent {
     return {
       ...dasar,
       items,
-      name: '(DRAF — BELUM TERBIT)',
+      // Penanda draf ikut bahasa aplikasi; nomor asli baru ada
+      // setelah server menerbitkannya.
+      name: this.translateSvc.instant('poForm.draftNotIssued'),
       supplierName: v.supplierName,
       supplierAddress: v.supplierAddress,
     };

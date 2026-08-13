@@ -73,7 +73,7 @@
           [class.is-active]="m.n === month"
           (click)="selectMonth(m.n)"
         >
-          {{ m.label }}
+          {{ m.key | translate }}
         </button>
       }
     </div>

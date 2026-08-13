@@ -119,7 +119,19 @@
     "previous": "Sebelumnya",
     "quantity": "Volume",
     "supplier": "Supplier",
-    "unit": "Satuan"
+    "unit": "Satuan",
+    "janShort": "Jan",
+    "febShort": "Feb",
+    "marShort": "Mar",
+    "aprShort": "Apr",
+    "mayShort": "Mei",
+    "junShort": "Jun",
+    "julShort": "Jul",
+    "augShort": "Agu",
+    "sepShort": "Sep",
+    "octShort": "Okt",
+    "novShort": "Nov",
+    "decShort": "Des"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -303,7 +315,8 @@
     "viewDelete": "Hapus",
     "viewCopyPphObject": "Salin objek PPh",
     "viewCopyAccount": "Salin nomor rekening",
-    "deleteHasPayments": "Pembelian ini sudah punya pembayaran. Batalkan dulu pembayarannya, atau minta bantuan pengguna dengan akses lebih tinggi."
+    "deleteHasPayments": "Pembelian ini sudah punya pembayaran. Batalkan dulu pembayarannya, atau minta bantuan pengguna dengan akses lebih tinggi.",
+    "editHasPayments": "Nilai pembelian ini tidak dapat diubah karena pembayarannya sudah ada. Batalkan dulu pembayarannya, atau minta bantuan pengguna dengan akses lebih tinggi. Nomor faktur dan kelengkapan berkas tetap bisa diubah."
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -1223,7 +1236,9 @@
     "more": "lagi",
     "pdfSub": "Gabung, pisah, dan rapikan dokumen dalam hitungan detik.",
     "noReimbursement": "Tidak ada reimbursement tertunda.",
-    "tasksSub": "Rencanakan, prioritaskan, dan selesaikan tugas dengan mudah."
+    "tasksSub": "Rencanakan, prioritaskan, dan selesaikan tugas dengan mudah.",
+    "getStarted": "Mulai",
+    "create": "Buat"
   },
   "calendarDay": {
     "title": "Ringkasan Keuangan Harian",
@@ -1609,7 +1624,18 @@
     "previewTitle": "Pratinjau Purchase Order",
     "confirmRead": "Saya telah membaca dan memeriksa seluruh isi dokumen ini",
     "confirmReadHint": "Setelah diterbitkan, nomor SPK sudah terpakai dan isinya tidak dapat diubah. Perbaikan hanya mungkin dengan membatalkan dan menerbitkan ulang.",
-    "confirmCreate": "Terbitkan Purchase Order"
+    "confirmCreate": "Terbitkan Purchase Order",
+    "draftNotIssued": "(DRAF — BELUM TERBIT)",
+    "assetMaintenance": "Asset maintenance",
+    "mauBeliBarangnyaAtauPesan": "Mau beli barangnya, atau pesan jasanya?",
+    "beliBarang": "Beli barang",
+    "sparepartMaterialPerawatanDiambilD": "Sparepart / material perawatan, diambil dari master item.",
+    "pesanJasa": "Pesan jasa",
+    "jasaPerbaikanServisUraianPekerjaan": "Jasa perbaikan / servis, uraian pekerjaan ditulis bebas.",
+    "belumTersedia": "Belum tersedia",
+    "actions": "Actions",
+    "rowActions": "Row actions",
+    "changeTypeConfirm": "Ya, ganti jenis"
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -1818,7 +1844,10 @@
     "passwordChanged": "Kata sandi berhasil diganti.",
     "passwordWrong": "Kata sandi saat ini salah.",
     "passwordSame": "Kata sandi baru harus berbeda dari yang lama.",
-    "passwordFailed": "Kata sandi gagal diganti. Coba lagi."
+    "passwordFailed": "Kata sandi gagal diganti. Coba lagi.",
+    "textSm": "Kecil",
+    "textMd": "Normal",
+    "textLg": "Besar"
   },
   "allowanceForm": {
     "title": "Tambah Allowance",
@@ -2396,7 +2425,27 @@
     "article3": "Pasal 3 — Kewajiban",
     "article4": "Pasal 4 — Keterangan",
     "billingSinceStart": "Penagihan sejak pekerjaan dimulai",
-    "chooseFirst": "Pilih dulu supaya form-nya menyesuaikan."
+    "chooseFirst": "Pilih dulu supaya form-nya menyesuaikan.",
+    "mandorPeroranganWajibDataPekerja": "Mandor / perorangan. Wajib data pekerja.",
+    "kodeObjekPajakMenyesuaikanOtomatis": "Kode objek pajak menyesuaikan otomatis dengan tarif yang disebut di sini.",
+    "perProgresTanggalCutoff": "Per progres, tanggal cutoff",
+    "perProgresMingguan": "Per progres, mingguan",
+    "saatPekerjaanSelesai": "Saat pekerjaan selesai",
+    "penagihanDilakukanSatuKaliSetelah": "Penagihan dilakukan satu kali setelah seluruh pekerjaan dinyatakan selesai dan diterima PIHAK PERTAMA.",
+    "dihitungSejakDokumenPenagihanLengk": "Dihitung sejak dokumen penagihan lengkap diterima",
+    "tanggalCutoffDalamSebulan": "Tanggal cutoff dalam sebulan",
+    "tambah": "Tambah",
+    "lumpSumVolumeDikunci1": "Lump sum — volume dikunci 1",
+    "subkontraktorPeroranganBukanPkpTid": "Subkontraktor perorangan bukan PKP — tidak dikenakan PPN.",
+    "tambahPekerja": "Tambah pekerja",
+    "kembalikan": "Kembalikan",
+    "sudahTerisiDenganKetentuanBaku": "Sudah terisi dengan ketentuan baku; ubah, tambah, atau hapus poin bila perlu.",
+    "tgl": "tgl",
+    "exStephanie": "Ex. Stephanie",
+    "ex0811902590": "Ex. 0811 902 590",
+    "hapusTanggalCutoff": "Hapus tanggal cutoff",
+    "hapusPekerja": "Hapus pekerja",
+    "hapusDokumen": "Hapus dokumen"
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",
@@ -2438,7 +2487,16 @@
     "ppnRate11": "11% — jasa angkutan umum",
     "ppnRate11Percent": "1,1% — jasa pengurusan transportasi (DPP nilai lain)",
     "shortTermRental": "Sewa singkat (satu shift)",
-    "shortTermRentalHint": "Menyesuaikan ketentuan yang hanya berlaku pada penyewaan berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan, berita acara, dan bongkar-muat."
+    "shortTermRentalHint": "Menyesuaikan ketentuan yang hanya berlaku pada penyewaan berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan, berita acara, dan bongkar-muat.",
+    "modeLand": "Darat",
+    "modeSea": "Laut",
+    "modeAir": "Udara",
+    "tambahPengiriman": "Tambah pengiriman",
+    "jenisKendaraan": "Jenis kendaraan",
+    "lihatPanduan": "Lihat panduan",
+    "exB1234Xyz": "Ex. B 1234 XYZ",
+    "hapusPengiriman": "Hapus pengiriman",
+    "infoJenisKendaraan": "Info jenis kendaraan"
   },
   "salaryAllowance": {
     "perfBonus": "Bonus kinerja",
@@ -2476,7 +2534,30 @@
     "unitPrice": "Harga satuan",
     "documentType": "Tipe dokumen",
     "typeB": "B — sewa alat kerja",
-    "typeA": "A — sewa alat angkut"
+    "typeA": "A — sewa alat angkut",
+    "pageTitle": "Purchase Order — Kode B",
+    "pickVendor": "Pilih vendor",
+    "addEquipment": "Tambah equipment",
+    "noEquipment": "Belum ada equipment. Klik \"Tambah equipment\" untuk pilih dari katalog.",
+    "equipmentTerms": "Ketentuan alat",
+    "asTypeATitle": "Terbit sebagai SPK tipe A",
+    "asTypeAHint": "Yang dapat dipilih hanya alat angkat/angkut: alat berat atau kendaraan. Untuk alat berat, operator dari vendor dinyalakan sendiri. Scaffolding serta perlengkapan lain tidak terbit lewat jalur ini.",
+    "siloHint": "SILO dan SIO hanya dicetak untuk alat berat",
+    "riskHint": "Batas nilainya tetap mengacu pada Berita Acara Serah Terima Alat.",
+    "transportCoverage": "Harga sudah mencakup koordinasi pengangkutan",
+    "operatorByVendor": "Alat disewa lengkap dengan operator dari vendor",
+    "operatorByVendorHint": "Bila dinyalakan, dokumen memuat kewajiban vendor menyediakan operator ber-SIO beserta ketentuan penggantiannya. Bila dimatikan, seluruh penyebutan tenaga kerja dihapus dari dokumen.",
+    "shortTerm": "Sewa singkat (satu shift)",
+    "shortTermHint": "Menghilangkan ketentuan yang hanya berlaku pada penyewaan berhari-hari: pelaporan BBM, mekanik di tempat, tenggat perbaikan 2×24 jam, berita acara serah terima, dan koordinasi bongkar-muat. Unit yang tidak dapat beroperasi wajib diganti pada hari yang sama.",
+    "hourQuotaHint": "Kuota jamnya mengikuti volume pada tabel di atas",
+    "perHour": "/ jam",
+    "optionalHint": "Kosongkan bila tidak diatur",
+    "removePoint": "Hapus poin",
+    "catHeavy": "Alat berat (excavator, crane, bor)",
+    "catVehicle": "Kendaraan (mobil, motor, truk)",
+    "catOther": "Perlengkapan lain (scaffolding, genset, dll)",
+    "riskSecond": "PIHAK KEDUA (vendor pemilik alat)",
+    "riskFirst": "PIHAK PERTAMA (AKN)"
   },
   "poD": {
     "fieldStaff": "Staf lapangan (mis. staff engineer)",
@@ -2487,7 +2568,18 @@
     "cutOffMonthly": "Cut off setiap bulan",
     "jobDesc": "Uraian Tugas",
     "jobDescItem": "Uraian tugas",
-    "noJobDesc": "Belum ada uraian tugas."
+    "noJobDesc": "Belum ada uraian tugas.",
+    "informasiUmum": "Informasi umum",
+    "bilaDikosongkanDokumenMemakaiNama": "Bila dikosongkan, dokumen memakai nama proyek",
+    "kosongkanBilaSampaiPekerjaanSelesa": "Kosongkan bila sampai pekerjaan selesai",
+    "tanggungBiayaTransportasiDariKampu": "Tanggung biaya transportasi dari kampung halaman",
+    "untukPekerjaYangDimobilisasiDari": "Untuk pekerja yang dimobilisasi dari luar kota.",
+    "hakPulangKeKampungHalaman": "Hak pulang ke kampung halaman setelah proyek selesai",
+    "wajibMendampingiAlatSaatMobilisasi": "Wajib mendampingi alat saat mobilisasi & demobilisasi",
+    "menambahkanSeksiLaporanLapanganDan": "Menambahkan seksi Laporan Lapangan dan Tata Cara Pembayaran bulanan.",
+    "tambahTugas": "Tambah tugas",
+    "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
+    "hapusTugas": "Hapus tugas"
   },
   "salaryDeduction": {
     "bpjs": "BPJS Ketenagakerjaan",
@@ -2518,7 +2610,13 @@
     "autoRenew": "Perpanjang otomatis (auto-renew)",
     "priceIncludesVat": "Harga sudah termasuk PPN 11%",
     "vat11": "PPN 11%",
-    "codeHint": "4-5 huruf/angka kapital"
+    "codeHint": "4-5 huruf/angka kapital",
+    "sebelumPeriodeBerjalanBerakhir": "Sebelum periode berjalan berakhir",
+    "setelahLanggananBerakhir": "Setelah langganan berakhir",
+    "kosongkanBilaTidakDibatasiPer": "Kosongkan bila tidak dibatasi per-seat",
+    "tambahBaris": "Tambah baris",
+    "poinTerisiOtomatisDariForm": "Poin terisi otomatis dari form (termasuk tipe pembelian & masa langganan). Poin tambahan menyusul di bawahnya. Teks inilah yang tersimpan.",
+    "hapus": "Hapus"
   },
   "pph": {
     "selectTitle": "Pilih Kode PPh",
@@ -2553,7 +2651,12 @@
     "orderService": "Pesan jasa",
     "serviceHint": "Jasa perbaikan / servis, uraian pekerjaan ditulis bebas.",
     "assetMaintenance": "Perawatan aset",
-    "goodsHint": "Sparepart / material perawatan, diambil dari master item."
+    "goodsHint": "Sparepart / material perawatan, diambil dari master item.",
+    "barang": "Barang",
+    "jasa": "Jasa",
+    "tambahPekerjaan": "Tambah pekerjaan",
+    "pcs": "pcs",
+    "pilihVendor": "Pilih vendor"
   },
   "selector": {
     "chooseSupplier": "Pilih Supplier",
@@ -2590,7 +2693,12 @@
     "noteHint": "Tulis catatan di sini",
     "clickToPlace": "Klik pada halaman untuk menempatkan",
     "pendingChanges": "Ada perubahan yang belum disimpan",
-    "rotate": "Putar halaman"
+    "rotate": "Putar halaman",
+    "needTwoDocs": "Tambahkan minimal 2 berkas PDF untuk digabung.",
+    "needOnePage": "Pilih minimal satu halaman untuk disimpan.",
+    "needTwoPages": "Pilih minimal 2 halaman untuk digabung.",
+    "mergeFailed": "Gagal menggabungkan PDF. Silakan coba lagi.",
+    "createFailed": "Gagal membuat PDF. Silakan coba lagi."
   },
   "reimbursementPayment": {
     "createPayment": "Buat pembayaran reimbursement",
@@ -2631,14 +2739,29 @@
     "legalDocs": "Dokumen Legal",
     "noDocs": "Belum ada dokumen. Klik \"Tambah dokumen\".",
     "emptyIfNone": "Kosongkan bila tidak ada",
-    "emptyIfNoValidity": "Kosongkan kalau tidak ada masa berlaku"
+    "emptyIfNoValidity": "Kosongkan kalau tidak ada masa berlaku",
+    "bearerFirst": "PIHAK PERTAMA (AKN)",
+    "bearerSecond": "PIHAK KEDUA (vendor)",
+    "bearerAgreed": "Kesepakatan tertulis kedua pihak",
+    "tambahDokumen": "Tambah dokumen",
+    "dihitungSejakBerkasDinyatakanLengk": "Dihitung sejak berkas dinyatakan lengkap",
+    "perkiraanBiayaResmi": "Perkiraan biaya resmi",
+    "rp": "Rp ",
+    "tambahBiayaResmi": "Tambah biaya resmi",
+    "ketentuanPelaksanaan": "Ketentuan pelaksanaan",
+    "penanggungBiayaResmiYangSudah": "Penanggung biaya resmi yang sudah disetor dan tidak bisa ditarik kembali",
+    "ex30": "Ex. 30"
   },
   "fleet": {
     "vehicleGuide": "Panduan Jenis Kendaraan",
     "dimensionsHint": "Dimensi & kapasitas indikatif tiap armada"
   },
   "poC": {
-    "fuelSurcharge": "Nominal, ditambahkan ke total (khusus BBM)"
+    "fuelSurcharge": "Nominal, ditambahkan ke total (khusus BBM)",
+    "pbbkb": "PBBKB",
+    "pph22": "PPh 22",
+    "wajibkanFuelAnalysisReportSertifik": "Wajibkan Fuel Analysis Report & Sertifikat Kalibrasi (poin 6-7)",
+    "kalauDimatikanPoin67": "Kalau dimatikan, poin 6 & 7 tetap tampil tapi dicoret (tidak berlaku)."
   },
   "expensePayment": {
     "invoice": "Faktur",
@@ -2975,7 +3098,10 @@
     "sectionSample": "Penyerahan Benda Uji",
     "labAddress": "Alamat laboratorium",
     "labAddressPlaceholder": "Alamat lengkap tempat benda uji diserahkan",
-    "labAddressHint": "Benda uji diantar oleh PIHAK PERTAMA ke alamat ini."
+    "labAddressHint": "Benda uji diantar oleh PIHAK PERTAMA ke alamat ini.",
+    "berlakukanKetentuanUjiKuatTekan": "Berlakukan ketentuan uji kuat tekan beton",
+    "ditanggungPembeliAkn": "Ditanggung pembeli (AKN)",
+    "ditanggungPenjualBeton": "Ditanggung penjual beton"
   },
   "agendaPage": {
     "title": "Agenda",
@@ -2986,5 +3112,88 @@
     "noEvent": "Tidak ada agenda pada tanggal ini.",
     "birthdayOf": "Ulang tahun ke-{{age}}",
     "openCalendar": "Buka kalender agenda"
+  },
+  "po652": {
+    "bearerFirst": "PIHAK PERTAMA (AKN)",
+    "bearerSecond": "PIHAK KEDUA (penyelenggara)",
+    "bearerAgreed": "Disepakati kemudian",
+    "rincianPelatihan": "Rincian pelatihan",
+    "sertifikatDariLembagaYangTidak": "Sertifikat dari lembaga yang tidak berwenang tidak berlaku di lapangan",
+    "totalPeserta": "Total peserta",
+    "diTempatPenyelenggara": "Di tempat penyelenggara",
+    "diLokasiAkn": "Di lokasi AKN",
+    "lewatItuTetapDitagihkan": "Lewat itu tetap ditagihkan",
+    "sejakPelatihanSelesai": "Sejak pelatihan selesai",
+    "bilaAdaPesertaYangTidak": "Bila ada peserta yang tidak lulus",
+    "exKemnakerRi": "Ex. Kemnaker RI"
+  },
+  "po511": {
+    "harus45KarakterKapital": "Harus 4–5 karakter kapital.",
+    "tambahBarang": "Tambah barang",
+    "belumAdaBarangKlikTambah": "Belum ada barang. Klik \"Tambah barang\" untuk memilih dari katalog.",
+    "subtotalDpp": "Subtotal (DPP)",
+    "bilaPpnDipilihHargaDi": "Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib melampirkan faktur pajak saat penagihan.",
+    "bila": "Bila",
+    "tambahPoin": "Tambah poin",
+    "08xxxxxxxxxx": "08xxxxxxxxxx",
+    "pilihSupplier": "Pilih supplier",
+    "hapusBarang": "Hapus barang",
+    "hapusPoin": "Hapus poin"
+  },
+  "po516": {
+    "poin15TerisiOtomatis": "Poin 1-5 terisi otomatis dari form di atas, poin 6-9 sudah baku. Teks ini yang akan tersimpan."
+  },
+  "po63": {
+    "poIniIsinyaBarangAtau": "PO ini isinya barang atau jasa? Satu PO tidak bisa campur.",
+    "merchandiseSepertiMugKaosPayung": "Merchandise seperti mug, kaos, payung. Diambil dari master item.",
+    "shootingVideoFotoProdukDesain": "Shooting video, foto produk, desain company profile, dll.",
+    "tambahJasa": "Tambah jasa",
+    "ketentuanPekerjaan": "Ketentuan pekerjaan",
+    "berlakukanDendaKeterlambatanPenyer": "Berlakukan denda keterlambatan penyerahan",
+    "masaBerlakuTautanMediaPenyerahan": "Masa berlaku tautan/media penyerahan",
+    "revisiBerikutnyaJadiPekerjaanTamba": "Revisi berikutnya jadi pekerjaan tambahan",
+    "hari": "‰ / hari",
+    "batasAtasDariNilaiPekerjaan": "Batas atas dari nilai pekerjaan",
+    "pengiriman": "Pengiriman",
+    "ketentuanBarang": "Ketentuan barang",
+    "contohBarangDisetujuiSebelumProduk": "Contoh barang disetujui sebelum produksi massal",
+    "bilaDimatikanPoinnyaTetapTercetak": "Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret — sehingga terbaca sengaja tidak diberlakukan, bukan terlewat."
+  },
+  "po642": {
+    "penutupanPertanggungan": "Penutupan pertanggungan",
+    "ditutupLewatBrokerAtauLangsung": "Ditutup lewat broker, atau langsung ke perusahaan asuransi?",
+    "broker": "Broker",
+    "lewatBrokerAsuransi": "Lewat broker asuransi",
+    "adaImbalanJasaBrokerPremi": "Ada imbalan jasa broker; premi dititipkan untuk diteruskan ke penanggung.",
+    "langsung": "Langsung",
+    "langsungKePenanggung": "Langsung ke penanggung",
+    "tanpaImbalanJasaTerpisahYang": "Tanpa imbalan jasa terpisah; yang ditagihkan hanya preminya.",
+    "rincianPertanggungan": "Rincian pertanggungan",
+    "diLuarPremi": "Di luar premi",
+    "premiDititipkan": "Premi (dititipkan)",
+    "tambahPremi": "Tambah premi",
+    "premiDiteruskanKepadaPerusahaanAsu": "Premi diteruskan kepada perusahaan asuransi apa adanya, dan tidak menjadi dasar pemotongan pajak. Kosongkan bila premi dibayarkan langsung oleh PIHAK PERTAMA.",
+    "belumAdaPremiYangDititipkan": "Belum ada premi yang dititipkan.",
+    "ketentuan": "Ketentuan",
+    "sejakPremiDibayarkan": "Sejak premi dibayarkan",
+    "exExcavatorPc200B1234": "Ex. Excavator PC200 B 1234 XYZ",
+    "ex10OfClaimMin": "Ex. 10% of claim, min Rp 5.000.000",
+    "exPremiCarPeriodeSep": "Ex. Premi CAR periode Sep–Des 2026",
+    "hapusBaris": "Hapus baris",
+    "hapusPremi": "Hapus premi"
+  },
+  "po651": {
+    "jenisBiayaRekrutmen": "Jenis biaya rekrutmen",
+    "pilihDahuluBentukBarisDan": "Pilih dahulu — bentuk baris dan poin perjanjiannya berbeda.",
+    "kuota": "Kuota",
+    "slotLowonganIklan": "Slot lowongan & iklan",
+    "kuotaJobstreetIklanKampusDibayar": "Kuota JobStreet, iklan kampus. Dibayar di muka lalu dipakai sampai habis.",
+    "peserta": "Peserta",
+    "psikotesTesKesehatan": "Psikotes & tes kesehatan",
+    "dibayarAtasPesertaYangDiperiksa": "Dibayar atas peserta yang diperiksa. Dicetak sebagai Surat Perintah Kerja.",
+    "total": "Total",
+    "kuotaTidakTerpakaiSetelahnyaHangus": "Kuota tidak terpakai setelahnya hangus",
+    "sejakPelaksanaanPemeriksaan": "Sejak pelaksanaan pemeriksaan",
+    "sebelumJadwalLewatItuTetap": "Sebelum jadwal; lewat itu tetap ditagih"
   }
 }

@@ -204,11 +204,11 @@
           </div>
 
           <div class="poc-summary__row" *ngIf="pbbkbAmount > 0">
-            <span>PBBKB</span
+            <span>{{ "poC.pbbkb" | translate }}</span
             ><span>+ Rp {{ pbbkbAmount | number: "1.0-0" }}</span>
           </div>
           <div class="poc-summary__row" *ngIf="pph22Amount > 0">
-            <span>PPh 22</span
+            <span>{{ "poC.pph22" | translate }}</span
             ><span>+ Rp {{ pph22Amount | number: "1.0-0" }}</span>
           </div>
 
@@ -357,13 +357,8 @@
       </div>
 
       <div class="poc-fuel">
-        <mat-checkbox formControlName="fuelReportRequired" color="primary">
-          Wajibkan Fuel Analysis Report &amp; Sertifikat Kalibrasi (poin 6-7)
-        </mat-checkbox>
-        <span class="poc-fuel__hint">
-          Kalau dimatikan, poin 6 &amp; 7 tetap tampil tapi dicoret (tidak
-          berlaku).
-        </span>
+        <mat-checkbox formControlName="fuelReportRequired" color="primary">{{ "poC.wajibkanFuelAnalysisReportSertifik" | translate }}</mat-checkbox>
+        <span class="poc-fuel__hint">{{ "poC.kalauDimatikanPoin67" | translate }}</span>
       </div>
 
       <p class="poc-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
@@ -415,7 +410,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

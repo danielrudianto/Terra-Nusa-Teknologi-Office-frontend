@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PurchaseOrderTypeSelectorComponent } from '../pages/purchase-order/purchase-order-type-selector/purchase-order-type-selector.component';
+import { DeleteConfirmationComponent } from '../components/delete-confirmation/delete-confirmation.component';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Ganti jenis purchase order dari dalam formulirnya.
@@ -49,11 +51,35 @@ export class PurchaseOrderTypeSwitcher {
    * @param adaIsian bila benar, pengguna dikonfirmasi lebih dulu karena
    *                 isian yang sudah diketik akan hilang.
    */
-  open(adaIsian: boolean = false): void {
+  async open(adaIsian: boolean = false): Promise<void> {
     if (adaIsian) {
-      const judul = this.translate.instant('poForm.changeTypeTitle');
-      const isi = this.translate.instant('poForm.changeTypeBody');
-      if (!window.confirm(`${judul}\n\n${isi}`)) return;
+      /*
+       * Konfirmasi memakai dialog aplikasi, bukan `window.confirm`.
+       *
+       * Dialog bawaan peramban tidak dapat didandani sama sekali: tampilannya
+       * berbeda di tiap peramban, tidak mengikuti tema maupun warna aksen,
+       * dan judulnya selalu disertai nama domain. Di tengah aplikasi yang
+       * seluruhnya bergaya seragam, ia terlihat seperti galat.
+       *
+       * `destructive` disebut tegas: kalimatnya tidak memuat kata "hapus",
+       * sehingga penebakan dari teks akan menganggapnya tindakan biasa —
+       * padahal isian yang sudah diketik memang akan hilang.
+       */
+      const lanjut = await firstValueFrom(
+        this.dialog
+          .open(DeleteConfirmationComponent, {
+            data: {
+              title: this.translate.instant('poForm.changeTypeTitle'),
+              prompt: this.translate.instant('poForm.changeTypeBody'),
+              confirmLabel: this.translate.instant('poForm.changeTypeConfirm'),
+              destructive: true,
+            },
+            maxWidth: '94vw',
+            autoFocus: false,
+          })
+          .afterClosed(),
+      );
+      if (!lanjut) return;
     }
 
     this.dialog

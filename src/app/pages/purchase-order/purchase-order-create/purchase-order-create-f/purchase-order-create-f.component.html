@@ -51,7 +51,7 @@
             matPrefix
             type="button"
             (click)="openSupplierSelector()"
-            aria-label="Pilih supplier"
+            [attr.aria-label]="'po511.pilihSupplier' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -110,7 +110,7 @@
                     mat-icon-button
                     type="button"
                     (click)="removeAt(i)"
-                    aria-label="Hapus barang"
+                    [attr.aria-label]="'po511.hapusBarang' | translate"
                   >
                     <mat-icon>close</mat-icon>
                   </button>
@@ -169,7 +169,7 @@
           }}</mat-slide-toggle>
           <div class="pof-summary">
             <div class="pof-summary__row">
-              <span>Subtotal (DPP)</span
+              <span>{{ "po511.subtotalDpp" | translate }}</span
               ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
             </div>
             <div class="pof-summary__row">
@@ -263,13 +263,8 @@
       }
 
       @if (formGroup.get("materialType")?.value === "beton") {
-        <mat-checkbox formControlName="concreteTestRequired" color="primary">
-          Berlakukan ketentuan uji kuat tekan beton
-        </mat-checkbox>
-        <p class="pof-material__hint">
-          Bila dimatikan, poinnya tetap tercetak dalam keadaan tercoret —
-          sehingga terbaca sengaja tidak diberlakukan, bukan terlewat.
-        </p>
+        <mat-checkbox formControlName="concreteTestRequired" color="primary">{{ "poF.berlakukanKetentuanUjiKuatTekan" | translate }}</mat-checkbox>
+        <p class="pof-material__hint">{{ "po63.bilaDimatikanPoinnyaTetapTercetak" | translate }}</p>
 
         @if (formGroup.value.concreteTestRequired) {
           <div class="pof-grid">
@@ -279,10 +274,10 @@
               }}</mat-label>
               <mat-select formControlName="concreteTestCostBearer">
                 <mat-option value="pembeli"
-                  >Ditanggung pembeli (AKN)</mat-option
+                  >{{ "poF.ditanggungPembeliAkn" | translate }}</mat-option
                 >
                 <mat-option value="penjual"
-                  >Ditanggung penjual beton</mat-option
+                  >{{ "poF.ditanggungPenjualBeton" | translate }}</mat-option
                 >
               </mat-select>
             </mat-form-field>
@@ -383,7 +378,7 @@
       <div class="pof-note">
         <mat-icon>info</mat-icon>
         <span
-          >Bila <b>{{ "common.franco" | translate }}</b> dipilih, alamat di atas
+          >{{ "po511.bila" | translate }}<b>{{ "common.franco" | translate }}</b> dipilih, alamat di atas
           adalah alamat pengiriman.</span
         >
       </div>
@@ -448,7 +443,7 @@
           <input
             matInput
             formControlName="supplierPICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'po511.08xxxxxxxxxx' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -464,7 +459,7 @@
           <input
             matInput
             formControlName="officePICPhoneNumber"
-            placeholder="08xxxxxxxxxx"
+            [placeholder]="'po511.08xxxxxxxxxx' | translate"
           />
         </mat-form-field>
       </div>
@@ -567,7 +562,7 @@
                 mat-icon-button
                 type="button"
                 (click)="removeClause(i)"
-                aria-label="Hapus poin"
+                [attr.aria-label]="'po511.hapusPoin' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

@@ -47,6 +47,126 @@ html[data-theme="dark"] {
   @include mat.all-component-colors($dark-theme);
 }
 
+/* ===================================================================
+ * Komponen Material mengikuti warna aksen pilihan pengguna
+ * ===================================================================
+ *
+ * Tema Material dikunci ke `mat.$azure-palette` saat build, sehingga kotak
+ * centang, sakelar, dan tombol tetap biru meski penggunanya memilih hijau
+ * atau jingga. Paletnya tidak dapat dihitung ulang saat aplikasi berjalan —
+ * ia sudah menjadi CSS statis.
+ *
+ * Yang BISA diubah saat berjalan adalah token komponennya, karena Material 3
+ * memancarkannya sebagai CSS custom property. Token di sini diarahkan ke
+ * `--brand`, yang memang sudah disetel ulang oleh SettingsService setiap
+ * kali warna atau tema berganti.
+ *
+ * Nama tokennya memakai awalan `--mat-`, BUKAN `--mdc-`. Awalan `--mdc-`
+ * dipakai Material 17-18; sejak Material 20 seluruh token dipancarkan
+ * dengan `--mat-`. Nama-nama di bawah diambil langsung dari berkas
+ * `_m3-*.scss` pada paket @angular/material@20.2.10, bukan dari ingatan —
+ * token yang namanya keliru tidak menghasilkan galat apa pun, hanya diam
+ * tidak berlaku.
+ *
+ * Ditempatkan SESUDAH `all-component-themes` dan `all-component-colors`
+ * agar menang berdasarkan urutan sumber, bukan dengan menaikkan kekhususan
+ * pemilih — cara yang membuat penimpaan berikutnya sulit.
+ */
+html {
+  /* ---- kotak centang ---- */
+  --mat-checkbox-selected-icon-color: var(--brand);
+  --mat-checkbox-selected-hover-icon-color: var(--brand-strong);
+  --mat-checkbox-selected-focus-icon-color: var(--brand-strong);
+  --mat-checkbox-selected-pressed-icon-color: var(--brand-strong);
+  --mat-checkbox-selected-checkmark-color: var(--on-brand, #fff);
+  --mat-checkbox-selected-focus-state-layer-color: var(--brand);
+  --mat-checkbox-selected-hover-state-layer-color: var(--brand);
+  --mat-checkbox-selected-pressed-state-layer-color: var(--brand);
+
+  /* ---- sakelar geser ---- */
+  --mat-slide-toggle-selected-track-color: var(--brand);
+  --mat-slide-toggle-selected-hover-track-color: var(--brand-strong);
+  --mat-slide-toggle-selected-focus-track-color: var(--brand-strong);
+  --mat-slide-toggle-selected-pressed-track-color: var(--brand-strong);
+  --mat-slide-toggle-selected-track-outline-color: var(--brand);
+  --mat-slide-toggle-selected-handle-color: #fff;
+  --mat-slide-toggle-selected-hover-handle-color: #fff;
+  --mat-slide-toggle-selected-focus-handle-color: #fff;
+  --mat-slide-toggle-selected-pressed-handle-color: #fff;
+  --mat-slide-toggle-selected-icon-color: var(--brand);
+  --mat-slide-toggle-selected-focus-state-layer-color: var(--brand);
+  --mat-slide-toggle-selected-hover-state-layer-color: var(--brand);
+  --mat-slide-toggle-selected-pressed-state-layer-color: var(--brand);
+
+  /* ---- tombol radio ---- */
+  --mat-radio-selected-icon-color: var(--brand);
+  --mat-radio-selected-hover-icon-color: var(--brand-strong);
+  --mat-radio-selected-focus-icon-color: var(--brand-strong);
+  --mat-radio-selected-pressed-icon-color: var(--brand-strong);
+
+  /* ---- tombol ---- */
+  --mat-button-filled-container-color: var(--brand);
+  --mat-button-filled-label-text-color: var(--on-brand, #fff);
+  --mat-button-protected-container-color: var(--brand);
+  --mat-button-protected-label-text-color: var(--on-brand, #fff);
+  --mat-button-tonal-container-color: var(--brand-soft);
+  --mat-button-tonal-label-text-color: var(--brand);
+  --mat-button-text-label-text-color: var(--brand);
+  --mat-button-outlined-label-text-color: var(--brand);
+  --mat-button-toggle-selected-state-background-color: var(--brand-soft);
+  --mat-button-toggle-selected-state-text-color: var(--brand);
+
+  /* ---- kolom isian: garis & label saat difokus ---- */
+  --mat-form-field-outlined-focus-outline-color: var(--brand);
+  --mat-form-field-outlined-focus-label-text-color: var(--brand);
+  --mat-form-field-outlined-caret-color: var(--brand);
+  --mat-form-field-filled-focus-active-indicator-color: var(--brand);
+  --mat-form-field-filled-focus-label-text-color: var(--brand);
+  --mat-form-field-filled-caret-color: var(--brand);
+
+  /* ---- indikator kemajuan ---- */
+  --mat-progress-bar-active-indicator-color: var(--brand);
+  --mat-progress-spinner-active-indicator-color: var(--brand);
+
+  /* ---- tab ---- */
+  --mat-tab-active-indicator-color: var(--brand);
+  --mat-tab-active-label-text-color: var(--brand);
+  --mat-tab-active-focus-label-text-color: var(--brand);
+  --mat-tab-active-hover-label-text-color: var(--brand);
+  --mat-tab-active-focus-indicator-color: var(--brand);
+  --mat-tab-active-hover-indicator-color: var(--brand);
+  --mat-tab-active-ripple-color: var(--brand);
+
+  /* ---- penggeser ---- */
+  --mat-slider-active-track-color: var(--brand);
+  --mat-slider-handle-color: var(--brand);
+  --mat-slider-focus-handle-color: var(--brand-strong);
+  --mat-slider-hover-handle-color: var(--brand-strong);
+  --mat-slider-with-tick-marks-active-container-color: var(--on-brand, #fff);
+
+  /* ---- pemilih tanggal ---- */
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--brand);
+  --mat-datepicker-calendar-date-selected-state-text-color: var(--on-brand, #fff);
+  --mat-datepicker-calendar-date-today-selected-state-outline-color: var(--brand);
+  --mat-datepicker-toggle-active-state-icon-color: var(--brand);
+
+  /* ---- pilihan pada menu & daftar ---- */
+  --mat-option-selected-state-label-text-color: var(--brand);
+  --mat-option-selected-state-layer-color: var(--brand-soft);
+  --mat-pseudo-checkbox-full-selected-icon-color: var(--brand);
+  --mat-pseudo-checkbox-full-selected-checkmark-color: var(--on-brand, #fff);
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--brand);
+
+  /* ---- chip terpilih ---- */
+  --mat-chip-elevated-selected-container-color: var(--brand-soft);
+  --mat-chip-selected-label-text-color: var(--brand);
+  --mat-chip-with-icon-selected-icon-color: var(--brand);
+
+  /* ---- langkah (stepper) ---- */
+  --mat-stepper-header-selected-state-icon-background-color: var(--brand);
+  --mat-stepper-header-selected-state-icon-foreground-color: var(--on-brand, #fff);
+}
+
 /*
  * Warna snackbar.
  *
