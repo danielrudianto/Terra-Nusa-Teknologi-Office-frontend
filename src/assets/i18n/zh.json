@@ -2582,7 +2582,14 @@
     "browse": "浏览",
     "releaseToUpload": "松开以上传",
     "multiFileSupport": "支持一次多个 PDF 文件",
-    "willProcess": "您的 PDF 将立即处理"
+    "willProcess": "您的 PDF 将立即处理",
+    "overwrite": "遮盖文字",
+    "overwriteHint": "替换文字（留空则仅遮盖）",
+    "note": "备注",
+    "noteHint": "在此填写备注",
+    "clickToPlace": "点击页面以放置",
+    "pendingChanges": "有未保存的更改",
+    "rotate": "旋转页面"
   },
   "reimbursementPayment": {
     "createPayment": "创建报销付款",

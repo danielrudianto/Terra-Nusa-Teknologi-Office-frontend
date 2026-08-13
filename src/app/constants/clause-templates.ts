@@ -239,7 +239,6 @@ export interface ClauseContext {
    * Uraian tugas ditulis sendiri dan hanya tercetak bila diisi.
    */
   isFieldStaff?: boolean;
-  payoutDay?: number | string;
   jobDescriptions?: string[];
   /**
    * Sewa alat angkut (dicatat PO-A): mencantumkan poin koordinasi
@@ -2923,8 +2922,6 @@ export function buildEquipmentRentalBillingTerms(
  * dikembalikan sebagai seksi terpisah dan hanya dipakai bila ditandai.
  */
 export function buildStaffClauses(ctx: ClauseContext = {}): ClauseSection[] {
-  const tanggal = ctx.payoutDay ?? 10;
-
   const seksi: ClauseSection[] = [];
 
   if (ctx.jobDescriptions?.length) {
@@ -2947,7 +2944,17 @@ export function buildStaffClauses(ctx: ClauseContext = {}): ClauseSection[] {
     {
       title: 'TATA CARA PEMBAYARAN',
       items: [
-        `Pembayaran dilakukan setiap tanggal ${tanggal} dengan cut off setiap bulannya;`,
+        /*
+         * Kalimat "Pembayaran dilakukan setiap tanggal X dengan cut off
+         * setiap bulannya" DIBUANG.
+         *
+         * Jadwal pembayaran sudah dijabarkan lengkap per jenis upah pada
+         * poin di atas — termasuk periode cut-off-nya. Menyebutkan satu
+         * tanggal lagi di sini bukan sekadar mengulang: bila jadwal upah
+         * bulanan diisi tanggal 25 sementara isian ini masih 10, SPK yang
+         * sama memuat dua tanggal berbeda untuk hal yang sama. Itu cacat
+         * kontrak, bukan cacat tampilan.
+         */
         'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan;',
         'PIHAK PERTAMA berhak untuk memotong sebagian/seluruh hasil pekerjaan apabila ada hutang pekerja kepada PIHAK KETIGA yang belum diselesaikan;',
         'Apabila pekerja tidak menyelesaikan pekerjaannya, sisa perhitungan pekerjaan tidak dapat ditagihkan dan/atau dibayarkan.',

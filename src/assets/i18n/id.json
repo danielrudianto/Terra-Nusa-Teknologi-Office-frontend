@@ -2582,7 +2582,14 @@
     "browse": "telusuri",
     "releaseToUpload": "Lepas untuk upload",
     "multiFileSupport": "Mendukung banyak file PDF sekaligus",
-    "willProcess": "File PDF-mu akan langsung diproses"
+    "willProcess": "File PDF-mu akan langsung diproses",
+    "overwrite": "Tutup teks",
+    "overwriteHint": "Teks pengganti (kosongkan untuk menutup saja)",
+    "note": "Catatan",
+    "noteHint": "Tulis catatan di sini",
+    "clickToPlace": "Klik pada halaman untuk menempatkan",
+    "pendingChanges": "Ada perubahan yang belum disimpan",
+    "rotate": "Putar halaman"
   },
   "reimbursementPayment": {
     "createPayment": "Buat pembayaran reimbursement",

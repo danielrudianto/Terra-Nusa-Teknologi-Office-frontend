@@ -42,6 +42,8 @@ import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper
 import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 import { tanggalLokal } from '../../../../utils/tanggal';
+import { PoPreviewDialogComponent } from '../../../../components/po-preview-dialog/po-preview-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-purchase-order-create-b',
@@ -394,6 +396,27 @@ export class PurchaseOrderCreateBComponent {
     this.formGroup.get('operatorByVendor')?.setValue(true);
   }
 
+  /**
+   * Sebutan barang sewaan, mengikuti kategorinya.
+   *
+   * Dipakai pada judul lembar tata cara penagihan. Judul yang dipatok
+   * "ALAT KERJA" membuat dokumen sewa truk berjudul salah — dan judul itu
+   * yang dibaca lebih dulu oleh vendor maupun bagian keuangan.
+   *
+   * Sejalan dengan istilah yang dipakai klausulnya, sehingga judul dan isi
+   * dokumen tidak menyebut hal yang sama dengan dua nama berbeda.
+   */
+  get istilahBarang(): string {
+    switch (this.formGroup.get('rentalCategory')?.value) {
+      case 'kendaraan':
+        return 'kendaraan';
+      case 'umum':
+        return 'perlengkapan';
+      default:
+        return 'alat kerja';
+    }
+  }
+
   get isTipeA(): boolean {
     return this.formGroup.get('purchaseType')?.value === 'A';
   }
@@ -597,13 +620,69 @@ export class PurchaseOrderCreateBComponent {
       billingTerms: this.isTipeA
         ? buildTransportRentalBillingTerms()
         : buildEquipmentRentalBillingTerms(isTempoTerm(v.paymentTerm)),
-      billingTitle: 'TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEWAAN ALAT KERJA',
+      billingTitle: `TATA CARA PENAGIHAN DAN PEMBAYARAN\nPENYEWAAN ${this.istilahBarang.toUpperCase()}`,
       clauseContext: this.clauseContext(),
       additionalClauses: this.additionalClauseValues,
     };
   }
 
-  onSubmit() {
+  /**
+   * Buka pratinjau dokumen di dalam dialog, tanpa menyimpan apa pun.
+   *
+   * Memakai penyusun data dan helper cetak YANG SAMA dengan penyimpanan,
+   * sehingga yang dilihat benar-benar dokumen yang nanti terbit.
+   */
+  async pratinjau(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+    this.dialog.open(PoPreviewDialogComponent, {
+      data: { src },
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+  }
+
+  /** Susun dokumen sebagai data URL; nomor PO belum ada, jadi ditandai draf. */
+  private async dokumenPratinjau(): Promise<string | null> {
+    try {
+      return (await printPurchaseOrderB(
+        this.buildPrintData('(DRAF — BELUM TERBIT)'),
+        'dataurl',
+      )) as string;
+    } catch (e) {
+      console.error('Gagal menyusun pratinjau purchase order:', e);
+      this.snackBar.open('Gagal membuat pratinjau dokumen', 'Close', {
+        duration: 3000,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Tampilkan dokumennya lebih dulu, terbitkan setelah dinyatakan terbaca.
+   *
+   * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit. Gagal
+   * menyusun dokumen TIDAK meloloskan penerbitan.
+   */
+  async onSubmit(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(PoPreviewDialogComponent, {
+          data: { src, konfirmasi: true },
+          maxWidth: '96vw',
+          autoFocus: false,
+          disableClose: true,
+        })
+        .afterClosed(),
+    );
+    if (setuju) this.terbitkan();
+  }
+
+  /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
+  private terbitkan() {
     this.isSubmitting = true;
     this.apiService
       .post('purchase-orders', this.formatData())

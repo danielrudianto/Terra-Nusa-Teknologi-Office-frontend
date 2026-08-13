@@ -2582,7 +2582,14 @@
     "browse": "browse",
     "releaseToUpload": "Release to upload",
     "multiFileSupport": "Supports multiple PDF files at once",
-    "willProcess": "Your PDF will be processed right away"
+    "willProcess": "Your PDF will be processed right away",
+    "overwrite": "Cover text",
+    "overwriteHint": "Replacement text (leave empty to cover only)",
+    "note": "Note",
+    "noteHint": "Write your note here",
+    "clickToPlace": "Click on the page to place it",
+    "pendingChanges": "There are unsaved changes",
+    "rotate": "Rotate page"
   },
   "reimbursementPayment": {
     "createPayment": "Create reimbursement payment",
