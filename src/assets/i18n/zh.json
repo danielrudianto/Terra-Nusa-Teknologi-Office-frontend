@@ -398,7 +398,9 @@
     "searchType": "搜索类型或采购单代码",
     "projectExpenses": "项目支出",
     "officeExpenses": "办公支出",
-    "noTypeMatch": "没有匹配的采购单类型。"
+    "noTypeMatch": "没有匹配的采购单类型。",
+    "menuReject": "拒绝采购订单",
+    "rejectTitle": "拒绝采购订单"
   },
   "income": {
     "title": "其他收入",
@@ -513,7 +515,15 @@
     "year": "年份",
     "periodHint": "默认上个月，因为工资针对已完成的期间发放。如需可更改。",
     "continue": "继续",
-    "noEmployee": "没有匹配的员工。"
+    "noEmployee": "没有匹配的员工。",
+    "sendAll": "全部发送",
+    "sending": "发送中…",
+    "sendAllTitle": "发送全部工资单？",
+    "sendAllPrompt": "将向每位员工的邮箱发送 {{count}} 份工资单。已发送的邮件无法撤回。",
+    "sendAllConfirm": "立即发送",
+    "sendAllDone": "已发送 {{sent}} 份工资单。",
+    "sendAllPartial": "已发送 {{sent}} 份，{{failed}} 份失败。请检查失败者的邮箱地址。",
+    "noneToSend": "本页没有含邮箱地址的工资单。"
   },
   "employee": {
     "title": "员工",
@@ -1072,7 +1082,10 @@
     "menuViewMutation": "查看流水",
     "menuEdit": "编辑账户",
     "menuDelete": "删除账户",
-    "createAccount": "创建账户"
+    "createAccount": "创建账户",
+    "selectorPlaceholder": "输入账号、名称或银行",
+    "noMatch": "没有匹配的账户",
+    "mustPick": "请从列表中选择账户"
   },
   "expenseOpponent": {
     "title": "交易对方",
@@ -2148,8 +2161,8 @@
     "cityPlaceholder": "例如：万隆",
     "saving": "保存中...",
     "selectBank": "选择银行",
-    "proxyPayment": "同时记录为采购",
-    "proxyPaymentHint": "采购将以相同的发票编号记录，账单会立即进入付款队列。"
+    "proxyPayment": "附上付款转移函",
+    "proxyPaymentHint": "该函件与发票及 SPK 印在同一份文件中。当付款转至其他账户时使用。"
   },
   "poType": {
     "t5_1_1": "资产采购",
@@ -2231,7 +2244,8 @@
     "prompt": "确定要继续吗？",
     "deleteTitle": "删除数据",
     "deletePrompt": "确定要删除这条数据吗？此操作无法撤销。",
-    "deleteNamed": "确定要删除“{{name}}”吗？"
+    "deleteNamed": "确定要删除“{{name}}”吗？",
+    "rejectNamed": "确定拒绝 {{name}}？此状态无法从本页面恢复。"
   },
   "purchaseView": {
     "createdOn": "单据创建于"
@@ -2754,7 +2768,8 @@
     "accessUpdated": "用户权限已更新",
     "sessionExpired": "您的登录已过期，请重新登录。",
     "saveFailed": "保存失败",
-    "actionFailed": "操作未能完成"
+    "actionFailed": "操作未能完成",
+    "rejectSuccess": "采购订单已拒绝"
   },
   "panduan": {
     "title": "指南",
@@ -2866,18 +2881,17 @@
     "noContractHint": "在添加合同单据之前无法计算毛利。",
     "openProject": "打开项目",
     "tabOverview": "概览",
-    "tabTable": "明细表",
-    "colCode": "代号",
-    "colCategory": "类别",
-    "colValue": "金额",
-    "colSuppliers": "供应商",
-    "totalCost": "成本合计",
     "contractDppHint": "计税基础，不含增值税",
     "grossValue": "含税",
     "composition": "成本构成",
     "includeInternal": "包含内部采购",
     "internalCount": "笔内部采购 · 草稿与报销始终计入",
-    "overBudget": "成本超出合同"
+    "overBudget": "成本超出合同",
+    "tabFlow": "每周流水",
+    "weeklyFlow": "每周成本与开票",
+    "weeklyHint": "每周自周一起算。无交易的周份仍会显示，以便看出停工间隔。",
+    "busiestWeek": "最繁忙的一周",
+    "cumulative": "累计成本对比合同"
   },
   "employeeStatus": {
     "title": "停用员工",

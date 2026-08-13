@@ -15,13 +15,21 @@
     -->
     <div class="ds__banding">
       <div class="ds__banding-sisi">
-        <span class="ds__banding-label">{{ "movePayment.from" | translate }}</span>
-        <span class="ds__banding-nilai">{{ data.date | date: "d MMM yyyy" }}</span>
+        <span class="ds__banding-label">{{
+          "movePayment.from" | translate
+        }}</span>
+        <span class="ds__banding-nilai">{{
+          data.date | date: "d MMM yyyy"
+        }}</span>
       </div>
       <mat-icon class="ds__banding-panah">arrow_forward</mat-icon>
       <div class="ds__banding-sisi ds__banding-sisi--baru">
-        <span class="ds__banding-label">{{ "movePayment.to" | translate }}</span>
-        <span class="ds__banding-nilai">{{ selectedDate | date: "d MMM yyyy" }}</span>
+        <span class="ds__banding-label">{{
+          "movePayment.to" | translate
+        }}</span>
+        <span class="ds__banding-nilai">{{
+          selectedDate | date: "d MMM yyyy"
+        }}</span>
       </div>
     </div>
 

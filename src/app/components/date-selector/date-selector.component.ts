@@ -53,6 +53,8 @@ export class DateSelectorComponent {
 
   selectedDate: Date = this.data.date;
 
+  private readonly translate = inject(TranslateService);
+
   /**
    * Alasan pemindahan.
    *
@@ -65,8 +67,6 @@ export class DateSelectorComponent {
     Validators.minLength(4),
     Validators.maxLength(200),
   ]);
-
-  private readonly translate = inject(TranslateService);
 
   /** Berapa hari pembayaran tertunda dibanding tanggal semula. */
   get selisihHari(): number {
@@ -107,7 +107,7 @@ export class DateSelectorComponent {
           this.isSubmitting = false;
           this.snackBar.open(
           this.serverMessage.terjemahkan(error), 'Close', {
-            duration: 4000,
+            duration: 3000,
           });
         },
       });
