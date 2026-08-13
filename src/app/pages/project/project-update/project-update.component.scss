@@ -1,111 +1,218 @@
+/*
+ * Mengikuti bentuk dialog yang dipakai di seluruh aplikasi.
+ *
+ * Angka-angka di bawah disalin dari `user-create`, yang polanya diikuti
+ * tiga puluhan dialog lain — bukan pilihan baru.
+ */
 .pc {
-  padding: 1.25rem 1.5rem 1rem;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
   min-width: min(34rem, 84vw);
 }
+.pc * {
+  box-sizing: border-box;
+}
 
+/* ---- kepala ---- */
+.pc__head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+}
+.pc__head-icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.pc__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
 .pc__title {
-  margin: 0 0 0.15rem;
-  font-size: 1.05rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
-
 .pc__sub {
-  margin: 0 0 1.25rem;
-  font-size: 0.8rem;
-  color: var(--muted);
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
 }
 
+/* ---- isi ---- */
+.pc__form {
+  padding: 1.5rem;
+  background: var(--surface, #ffffff);
+}
 .pc__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 1rem;
+  gap: 0.25rem 1rem;
 }
-
-.w-100 {
+:host ::ng-deep .pc__grid .mat-mdc-form-field {
   width: 100%;
 }
-
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
+}
 .pc__err {
-  margin: -0.35rem 0 0.75rem;
-  font-size: 0.76rem;
-  color: var(--bad-fg);
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--bad-fg, #b3322f);
 }
 
+/* ---- kaki ---- */
 .pc__foot {
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;
-  padding-top: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line, #e6e9ee);
+}
+.pc__cancel {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+.pc__submit {
+  border: none;
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
 }
 
 @media (max-width: 640px) {
+  .pc {
+    min-width: 0;
+  }
   .pc__grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* ---- khusus ubah ---- */
+/* ---- kode proyek (terkunci) ----
+   Kode tidak dapat diubah setelah proyek dibuat: dokumen yang sudah terbit
+   mengacu padanya. Ditampilkan sebagai keterangan, bukan isian yang
+   dinonaktifkan — isian abu-abu terbaca seperti sesuatu yang sedang tidak
+   bisa diisi, padahal memang tidak akan pernah bisa. */
 .pc__kode {
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.6rem 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
   margin-bottom: 1rem;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  border: 0.5px solid var(--border, #e3e6eb);
 }
 .pc__kode-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--faint, #9aa0ab);
 }
 .pc__kode-nilai {
+  font-family: "SFMono-Regular", ui-monospace, Menlo, monospace;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--ink, #16181d);
 }
 .pc__kode-ket {
-  font-size: 0.72rem;
-  color: var(--muted);
-  margin-left: auto;
+  flex: 1 1 100%;
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
 }
 
+/* ---- pemilih keadaan ---- */
 .pc__keadaan {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 1rem;
-  flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 .pc__keadaan-label {
-  font-size: 0.8rem;
-  font-weight: 500;
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+  margin-bottom: 0.5rem;
 }
 .pc__seg {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 .pc__seg-opt {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.76rem;
-  padding: 0.4rem 0.85rem;
-  cursor: pointer;
-}
-.pc__seg-opt:hover {
-  background: var(--hover);
-  color: var(--ink);
-}
-.pc__seg-opt.is-active {
-  background: var(--brand);
-  color: #fff;
+  padding: 0.55rem 0.4rem;
+  border-radius: 11px;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #ffffff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.13s ease;
+
+  &:hover {
+    border-color: #c2ccde;
+    background: var(--hover, #f6f8ff);
+    color: var(--ink, #16181d);
+  }
+  &.is-active {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 480px) {
+  .pc__seg {
+    grid-template-columns: 1fr;
+  }
 }

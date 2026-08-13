@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ProjectLookupService, ProyekRingkas } from '../../services/project-lookup.service';
 
@@ -94,12 +94,23 @@ import { ProjectLookupService, ProyekRingkas } from '../../services/project-look
         }
       </mat-autocomplete>
 
-      @if (terpilih(); as p) {
-        <mat-hint class="ps-hint">{{ p.name }}</mat-hint>
-      } @else if (teks() && !lookup.dikenal(teks())) {
-        <mat-hint class="ps-hint ps-hint--asing">
-          <mat-icon>error_outline</mat-icon>
-          {{ 'project.unknownCode' | translate }}
+      <!--
+        SATU mat-hint saja, isinya yang berganti.
+
+        Versi sebelumnya memakai dua elemen terpisah lewat @if/@else if.
+        Secara logika keduanya tidak pernah tampil bersamaan, tetapi
+        MatFormField melacak hint lewat ContentChildren dan memvalidasi
+        ulang setiap kali daftarnya berubah — saat Angular membuat view
+        cabang yang baru sebelum membuang yang lama, sesaat keduanya
+        terdaftar dan validasinya melempar
+        "A hint was already declared for align=start".
+      -->
+      @if (pesanPetunjuk(); as pesan) {
+        <mat-hint class="ps-hint" [class.ps-hint--asing]="kodeAsing()">
+          @if (kodeAsing()) {
+            <mat-icon>error_outline</mat-icon>
+          }
+          {{ pesan }}
         </mat-hint>
       }
     </mat-form-field>
@@ -149,6 +160,7 @@ import { ProjectLookupService, ProyekRingkas } from '../../services/project-look
 })
 export class ProjectSelectorComponent implements ControlValueAccessor {
   readonly lookup = inject(ProjectLookupService);
+  private readonly translate = inject(TranslateService);
 
   /** Label kolom. Kosong berarti memakai label bawaan. */
   readonly label = input<string>('');
@@ -177,6 +189,22 @@ export class ProjectSelectorComponent implements ControlValueAccessor {
 
   terpilih(): ProyekRingkas | undefined {
     return this.lookup.cari(this.teks());
+  }
+
+  /** Ada isinya tetapi tidak terdaftar sebagai proyek. */
+  kodeAsing(): boolean {
+    return !!this.teks() && !this.lookup.dikenal(this.teks());
+  }
+
+  /**
+   * Teks petunjuk di bawah kolom: nama proyek bila dikenal, peringatan bila
+   * tidak, dan kosong bila kolomnya memang belum diisi.
+   */
+  pesanPetunjuk(): string {
+    const p = this.terpilih();
+    if (p) return p.name;
+    if (this.kodeAsing()) return this.translate.instant('project.unknownCode');
+    return '';
   }
 
   // ---- ControlValueAccessor --------------------------------------------

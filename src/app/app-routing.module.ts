@@ -692,6 +692,22 @@ export const routes: Routes = [
             data: { title: 'Project' },
           },
           {
+            path: 'Report',
+            loadComponent: () =>
+              import(
+                './pages/project/project-report/project-report.component'
+              ).then((m) => m.ProjectReportComponent),
+            data: { title: 'Project' },
+          },
+          {
+            path: 'Report/:code',
+            loadComponent: () =>
+              import(
+                './pages/project/project-report/project-report.component'
+              ).then((m) => m.ProjectReportComponent),
+            data: { title: 'Project' },
+          },
+          {
             path: ':id',
             loadComponent: () =>
               import('./pages/project/project-view/project-view.component').then(

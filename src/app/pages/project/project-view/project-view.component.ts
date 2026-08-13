@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -24,6 +25,8 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { CanDirective } from '../../../directives/can.directive';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { Project, ProjectContract, keadaanProyek } from '../project.model';
+import { PphSelectorComponent } from '../../../components/pph-selector/pph-selector.component';
+import { IPPh } from '../../../utils/pph';
 
 @Component({
   selector: 'app-project-view',
@@ -35,6 +38,7 @@ import { Project, ProjectContract, keadaanProyek } from '../project.model';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,
@@ -69,10 +73,67 @@ export class ProjectViewComponent implements OnInit {
       Validators.maxLength(100),
     ]),
     documentType: new FormControl<'spk' | 'adendum'>('spk', Validators.required),
-    value: new FormControl<number | null>(null, Validators.required),
+    dpp: new FormControl<number | null>(null, Validators.required),
+    ppn: new FormControl<number>(11, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(100),
+    ]),
+    pphCode: new FormControl<string | null>(null),
+    pphTaxObject: new FormControl<string | null>(null),
+    pphPercentage: new FormControl<number | null>(null),
     date: new FormControl<Date | null>(null, Validators.required),
     description: new FormControl('', Validators.maxLength(500)),
   });
+
+  /*
+   * Nilai dokumen dan potongan dihitung ulang di layar agar terlihat
+   * seketika. Server menghitungnya sendiri saat menyimpan — kalau angkanya
+   * boleh dikirim dari sini, nominal dokumen bisa tidak cocok dengan
+   * komponennya dan tidak ada yang tahu mana yang benar.
+   */
+  get nilaiDpp(): number {
+    return Number(this.formGroup.value.dpp ?? 0);
+  }
+
+  get nilaiPpn(): number {
+    return (this.nilaiDpp * Number(this.formGroup.value.ppn ?? 0)) / 100;
+  }
+
+  get nilaiDokumen(): number {
+    return this.nilaiDpp + this.nilaiPpn;
+  }
+
+  get nilaiPph(): number {
+    return (this.nilaiDpp * Number(this.formGroup.value.pphPercentage ?? 0)) / 100;
+  }
+
+  /** Yang benar-benar diterima setelah PPh dipotong. */
+  get nilaiDiterima(): number {
+    return this.nilaiDokumen - this.nilaiPph;
+  }
+
+  pilihPph(): void {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: IPPh) => {
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  hapusPph(): void {
+    this.formGroup.patchValue({
+      pphCode: null,
+      pphTaxObject: null,
+      pphPercentage: null,
+    });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((p) => this.fetch(Number(p['id'])));
@@ -124,6 +185,7 @@ export class ProjectViewComponent implements OnInit {
     this.sedangTambah = true;
     this.formGroup.reset({
       documentType: this.contracts.length === 0 ? 'spk' : 'adendum',
+      ppn: 11,
       date: new Date(),
     });
   }
@@ -136,7 +198,7 @@ export class ProjectViewComponent implements OnInit {
     if (!this.project || this.formGroup.invalid || this.isSubmitting) return;
 
     const v = this.formGroup.value;
-    if (!v.value || Number(v.value) === 0) {
+    if (!v.dpp || Number(v.dpp) === 0) {
       this.snackBar.open(
         this.translate.instant('project.contractZero'),
         'Close',
@@ -150,7 +212,11 @@ export class ProjectViewComponent implements OnInit {
       .post(`projects/${this.project.id}/contracts`, {
         documentNumber: v.documentNumber,
         documentType: v.documentType,
-        value: Number(v.value),
+        dpp: Number(v.dpp),
+        ppn: Number(v.ppn ?? 0),
+        pphCode: v.pphCode || null,
+        pphTaxObject: v.pphTaxObject || null,
+        pphPercentage: v.pphPercentage ?? null,
         date: moment(v.date).format('YYYY-MM-DD'),
         description: v.description || null,
       })

@@ -156,7 +156,8 @@
     "user": "用户",
     "clear": "清除",
     "activity": "活动记录",
-    "project": "项目"
+    "project": "项目",
+    "projectReport": "项目报表"
   },
   "status": {
     "paid": "已付款",
@@ -2755,7 +2756,6 @@
   },
   "project": {
     "title": "项目",
-    "description": "说明",
     "createNew": "新建项目",
     "searchPlaceholder": "代号、名称或说明",
     "code": "项目代号",
@@ -2796,8 +2796,6 @@
     "docType": "类型",
     "docSpk": "SPK",
     "docAdendum": "补充协议",
-    "docValue": "金额",
-    "docValueHint": "若补充协议减少工作范围，请填写负数。",
     "docDate": "日期",
     "docDescription": "说明",
     "menuView": "查看项目",
@@ -2812,6 +2810,43 @@
       "batal": "已取消"
     },
     "selectorPlaceholder": "输入项目代号或名称",
-    "unknownCode": "该代号尚未登记为项目。"
+    "unknownCode": "该代号尚未登记为项目。",
+    "docDpp": "计税基础 (DPP)",
+    "docDppHint": "若补充协议减少工作范围，请填写负数。",
+    "docPpn": "增值税",
+    "docPpnValue": "增值税金额",
+    "docTotal": "单据金额",
+    "docPphValue": "预扣税",
+    "docReceived": "扣税后收款",
+    "noPph": "无预扣税",
+    "choosePph": "选择预扣税"
+  },
+  "projectReport": {
+    "title": "项目报表",
+    "description": "各项目的合同金额、成本与毛利",
+    "selectProject": "选择项目",
+    "selectHint": "包含已完成和已取消的项目。",
+    "chooseFirst": "请选择项目以查看报表。",
+    "contract": "合同金额",
+    "cost": "已发生成本",
+    "margin": "毛利",
+    "billed": "已开票",
+    "ofContract": "占合同",
+    "billedHint": "来自销售发票",
+    "contractUsed": "合同使用情况",
+    "byCategory": "按类别的成本",
+    "noCost": "该项目尚无成本记录。",
+    "noContract": "尚未录入合同金额。",
+    "noContractHint": "在添加合同单据之前无法计算毛利。",
+    "openProject": "打开项目",
+    "tabOverview": "概览",
+    "tabTable": "明细表",
+    "colCode": "代号",
+    "colCategory": "类别",
+    "colValue": "金额",
+    "colSuppliers": "供应商",
+    "totalCost": "成本合计",
+    "contractDppHint": "计税基础，不含增值税",
+    "grossValue": "含税"
   }
 }

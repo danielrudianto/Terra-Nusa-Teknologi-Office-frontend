@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ProjectLookupService } from '../../../services/project-lookup.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -48,6 +49,7 @@ import { Project, keadaanProyek } from '../project.model';
   styleUrl: './project-list.component.scss',
 })
 export class ProjectListComponent implements OnInit {
+  private readonly lookup = inject(ProjectLookupService);
   constructor(
     public settings: SettingsService,
     private apiService: ApiService,
@@ -168,7 +170,13 @@ export class ProjectListComponent implements OnInit {
       .open(ProjectCreateComponent, { autoFocus: false })
       .afterClosed()
       .subscribe((berhasil) => {
-        if (berhasil) this.fetch(0);
+        if (berhasil) {
+          // Daftar pemilih proyek dimuat sekali per sesi; tanpa ditandai
+          // usang, proyek yang baru ditambahkan tidak akan muncul di
+          // formulir mana pun sampai halaman dimuat ulang.
+          this.lookup.segarkan();
+          this.fetch(0);
+        }
       });
   }
 
@@ -178,7 +186,12 @@ export class ProjectListComponent implements OnInit {
       .open(ProjectUpdateComponent, { data: p, autoFocus: false })
       .afterClosed()
       .subscribe((berhasil) => {
-        if (berhasil) this.fetch();
+        if (berhasil) {
+          // Kode proyek tidak dapat diubah, tetapi keadaannya bisa —
+          // dan pemilih menandai proyek yang selesai atau batal.
+          this.lookup.segarkan();
+          this.fetch();
+        }
       });
   }
 
@@ -205,6 +218,7 @@ export class ProjectListComponent implements OnInit {
               'Close',
               { duration: 3000 },
             );
+            this.lookup.segarkan();
             this.fetch();
           },
           error: () => {

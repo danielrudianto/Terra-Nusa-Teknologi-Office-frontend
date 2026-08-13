@@ -1,0 +1,208 @@
+<div class="prp">
+  <app-header-title
+    [title]="'projectReport.title' | translate"
+    [description]="'projectReport.description' | translate"
+  />
+
+  <!-- ===== pemilih proyek ===== -->
+  <div class="prp-pilih">
+    <app-project-selector
+      [formControl]="kodeControl"
+      [label]="'projectReport.selectProject' | translate"
+    />
+    <p class="prp-pilih__ket">{{ "projectReport.selectHint" | translate }}</p>
+  </div>
+
+  <p class="prp-kosong" *ngIf="!kode() && !memuat()">
+    <mat-icon>insights</mat-icon>
+    {{ "projectReport.chooseFirst" | translate }}
+  </p>
+
+  <p class="prp-memuat" *ngIf="memuat()">{{ "project.loading" | translate }}</p>
+
+  <p class="prp-galat" *ngIf="galat() && !memuat()">{{ galat() }}</p>
+
+  <ng-container *ngIf="kode() && adaData() && !memuat() && !galat()">
+    <!-- ===== ringkasan angka ===== -->
+    <div class="prp-kpi">
+      <div class="prp-sel">
+        <div class="prp-label">{{ "projectReport.contract" | translate }}</div>
+        <div class="prp-nilai">{{ nilaiKontrak() | number: "1.0-0" }}</div>
+        <div class="prp-ket">
+          {{ "projectReport.contractDppHint" | translate }}
+          <span *ngIf="nominalKontrak() !== nilaiKontrak()">
+            &middot; {{ "projectReport.grossValue" | translate }}
+            {{ nominalKontrak() | number: "1.0-0" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="prp-sel">
+        <div class="prp-label">{{ "projectReport.cost" | translate }}</div>
+        <div class="prp-nilai">{{ totalBiaya() | number: "1.0-0" }}</div>
+        <div class="prp-ket" *ngIf="nilaiKontrak() > 0">
+          {{ persenKontrak(totalBiaya()) | number: "1.1-1" }}%
+          {{ "projectReport.ofContract" | translate }}
+        </div>
+      </div>
+
+      <div
+        class="prp-sel prp-sel--utama"
+        [class.prp-sel--rugi]="margin() < 0"
+        *ngIf="!kontrakKosong()"
+      >
+        <div class="prp-label">{{ "projectReport.margin" | translate }}</div>
+        <div class="prp-nilai">{{ margin() | number: "1.0-0" }}</div>
+        <div class="prp-ket">
+          {{ persenKontrak(margin()) | number: "1.1-1" }}%
+          {{ "projectReport.ofContract" | translate }}
+        </div>
+      </div>
+
+      <div class="prp-sel">
+        <div class="prp-label">{{ "projectReport.billed" | translate }}</div>
+        <div class="prp-nilai">{{ tertagih() | number: "1.0-0" }}</div>
+        <div class="prp-ket">{{ "projectReport.billedHint" | translate }}</div>
+      </div>
+    </div>
+
+    <!-- kontrak belum diisi: margin tidak punya arti -->
+    <div class="prp-peringatan" *ngIf="kontrakKosong()">
+      <mat-icon>error_outline</mat-icon>
+      <div>
+        <strong>{{ "projectReport.noContract" | translate }}</strong>
+        <span>{{ "projectReport.noContractHint" | translate }}</span>
+      </div>
+      <button mat-stroked-button (click)="bukaProyek()">
+        {{ "projectReport.openProject" | translate }}
+      </button>
+    </div>
+
+    <!-- ===== pemilih tampilan ===== -->
+    <div class="prp-tab">
+      <button
+        type="button"
+        [class.on]="tampilan() === 'ikhtisar'"
+        (click)="pilihTampilan('ikhtisar')"
+      >
+        {{ "projectReport.tabOverview" | translate }}
+      </button>
+      <button
+        type="button"
+        [class.on]="tampilan() === 'tabel'"
+        (click)="pilihTampilan('tabel')"
+      >
+        {{ "projectReport.tabTable" | translate }}
+      </button>
+    </div>
+
+    <p class="prp-nihil" *ngIf="kategori().length === 0">
+      {{ "projectReport.noCost" | translate }}
+    </p>
+
+    <!-- ===== A. IKHTISAR ===== -->
+    <div class="prp-kartu" *ngIf="tampilan() === 'ikhtisar' && kategori().length">
+      <div class="prp-label" *ngIf="nilaiKontrak() > 0">
+        {{ "projectReport.contractUsed" | translate }}
+      </div>
+      <div class="prp-mbar" *ngIf="nilaiKontrak() > 0">
+        <div
+          class="prp-mbar__biaya"
+          [style.width.%]="
+            persenKontrak(totalBiaya()) > 100 ? 100 : persenKontrak(totalBiaya())
+          "
+        >
+          {{ "projectReport.cost" | translate }}
+        </div>
+        <div
+          class="prp-mbar__margin"
+          *ngIf="margin() > 0"
+          [style.width.%]="persenKontrak(margin())"
+        >
+          {{ "projectReport.margin" | translate }}
+        </div>
+      </div>
+
+      <div class="prp-label prp-label--sela">
+        {{ "projectReport.byCategory" | translate }}
+      </div>
+
+      <ng-container *ngFor="let k of kategori()">
+        <div class="prp-kat" (click)="toggleKategori(k.kode)">
+          <span class="prp-kat__kode">{{ k.kode }}</span>
+          <span class="prp-kat__nama">{{ k.nama }}</span>
+          <span class="prp-kat__rel">
+            <span [style.width.%]="maksKategori ? (k.nilai / maksKategori) * 100 : 0"></span>
+          </span>
+          <span class="prp-kat__pct">{{ persen(k.nilai) | number: "1.1-1" }}%</span>
+          <span class="prp-kat__nilai">{{ k.nilai | number: "1.0-0" }}</span>
+        </div>
+
+        <div class="prp-rinci" *ngIf="kategoriTerbuka() === k.kode">
+          <div class="prp-rinci__baris" *ngFor="let s of k.pemasok">
+            <span class="prp-rinci__nama">{{ s.nama }}</span>
+            <span class="prp-rinci__bar">
+              <span [style.width.%]="k.nilai ? (s.nilai / k.nilai) * 100 : 0"></span>
+            </span>
+            <span class="prp-rinci__nilai">{{ s.nilai | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ===== C. TABEL KERJA ===== -->
+    <div class="prp-kartu" *ngIf="tampilan() === 'tabel' && kategori().length">
+      <div class="prp-tabel-bungkus">
+        <table class="prp-tabel">
+          <thead>
+            <tr>
+              <th>{{ "projectReport.colCode" | translate }}</th>
+              <th>{{ "projectReport.colCategory" | translate }}</th>
+              <th class="num">{{ "projectReport.colValue" | translate }}</th>
+              <th class="num">{{ "projectReport.colSuppliers" | translate }}</th>
+              <th class="num">%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let k of kategori()">
+              <tr
+                class="induk"
+                [class.buka]="barisTerbuka().has(k.kode)"
+                (click)="toggleBaris(k.kode)"
+              >
+                <td><span class="prp-panah">&#9656;</span> <b>{{ k.kode }}</b></td>
+                <td>{{ k.nama }}</td>
+                <td class="num">
+                  <span class="prp-mini">
+                    <span [style.width.%]="maksKategori ? (k.nilai / maksKategori) * 100 : 0"></span>
+                  </span>
+                  {{ k.nilai | number: "1.0-0" }}
+                </td>
+                <td class="num">{{ k.pemasok.length }}</td>
+                <td class="num">{{ persen(k.nilai) | number: "1.1-1" }}%</td>
+              </tr>
+              <tr class="anak" *ngFor="let s of k.pemasok" [hidden]="!barisTerbuka().has(k.kode)">
+                <td></td>
+                <td>{{ s.nama }}</td>
+                <td class="num">{{ s.nilai | number: "1.0-0" }}</td>
+                <td class="num"></td>
+                <td class="num">
+                  {{ (k.nilai ? (s.nilai / k.nilai) * 100 : 0) | number: "1.1-1" }}%
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td>{{ "projectReport.totalCost" | translate }}</td>
+              <td class="num">{{ totalBiaya() | number: "1.0-0" }}</td>
+              <td class="num"></td>
+              <td class="num">100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

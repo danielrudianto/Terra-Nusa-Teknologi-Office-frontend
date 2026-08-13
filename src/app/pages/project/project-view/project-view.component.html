@@ -71,9 +71,15 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ "project.docValue" | translate }}</mat-label>
-          <input matInput type="number" formControlName="value" />
-          <mat-hint>{{ "project.docValueHint" | translate }}</mat-hint>
+          <mat-label>{{ "project.docDpp" | translate }}</mat-label>
+          <input matInput type="number" formControlName="dpp" />
+          <mat-hint>{{ "project.docDppHint" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "project.docPpn" | translate }}</mat-label>
+          <input matInput type="number" formControlName="ppn" min="0" max="100" />
+          <span matTextSuffix>%</span>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -82,6 +88,44 @@
           <mat-datepicker-toggle matIconSuffix [for]="tgl"></mat-datepicker-toggle>
           <mat-datepicker #tgl></mat-datepicker>
         </mat-form-field>
+      </div>
+
+      <!-- PPh: opsional, dipilih dari daftar resmi -->
+      <div class="prv-pph">
+        <div class="prv-pph__isi" *ngIf="formGroup.value.pphCode; else pphKosong">
+          <span class="prv-pph__kode">{{ formGroup.value.pphCode }}</span>
+          <span class="prv-pph__nama">{{ formGroup.value.pphTaxObject }}</span>
+          <span class="prv-pph__tarif">{{ formGroup.value.pphPercentage }}%</span>
+          <button mat-icon-button type="button" (click)="hapusPph()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <ng-template #pphKosong>
+          <span class="prv-pph__kosong">{{ "project.noPph" | translate }}</span>
+        </ng-template>
+        <button mat-stroked-button type="button" (click)="pilihPph()">
+          {{ "project.choosePph" | translate }}
+        </button>
+      </div>
+
+      <!-- Ringkasan hitungan, supaya angkanya terlihat sebelum disimpan -->
+      <div class="prv-hitung">
+        <div>
+          <span>{{ "project.docPpnValue" | translate }}</span>
+          <span>{{ nilaiPpn | number: "1.0-0" }}</span>
+        </div>
+        <div class="prv-hitung__utama">
+          <span>{{ "project.docTotal" | translate }}</span>
+          <span>{{ nilaiDokumen | number: "1.0-0" }}</span>
+        </div>
+        <div *ngIf="nilaiPph > 0">
+          <span>{{ "project.docPphValue" | translate }}</span>
+          <span>&minus;{{ nilaiPph | number: "1.0-0" }}</span>
+        </div>
+        <div *ngIf="nilaiPph > 0">
+          <span>{{ "project.docReceived" | translate }}</span>
+          <span>{{ nilaiDiterima | number: "1.0-0" }}</span>
+        </div>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -118,6 +162,9 @@
         <div class="prv-nomor">{{ k.documentNumber }}</div>
         <div class="prv-tanggal">
           {{ k.date }}
+          &middot; DPP {{ k.dpp | number: "1.0-0" }}
+          <span *ngIf="k.ppn"> &middot; PPN {{ k.ppn }}%</span>
+          <span *ngIf="k.pphCode"> &middot; {{ k.pphCode }}</span>
           <span *ngIf="k.description"> &middot; {{ k.description }}</span>
         </div>
       </div>

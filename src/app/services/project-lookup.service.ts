@@ -8,6 +8,11 @@ export interface ProyekRingkas {
   name: string;
   isActive: boolean;
   isCancelled: boolean;
+  /** Nominal dokumen (DPP + PPN). Untuk ditampilkan. */
+  contractValue: number;
+  /** Dasar pengenaan pajak. Inilah yang dipakai menghitung margin. */
+  contractDpp: number;
+  contractCount: number;
 }
 
 /**
@@ -89,6 +94,19 @@ export class ProjectLookupService {
 
   cari(kode: string | null | undefined): ProyekRingkas | undefined {
     return this.perKode().get((kode ?? '').trim().toUpperCase());
+  }
+
+  /**
+   * Tandai daftar sudah usang; pemuatan berikutnya mengambil ulang.
+   *
+   * Dipanggil setelah proyek dibuat, diubah, atau dihapus. Tanpa ini, daftar
+   * hanya dimuat sekali per sesi — proyek yang baru ditambahkan tidak pernah
+   * muncul di pemilih sampai halaman dimuat ulang, dan yang mengisi formulir
+   * mengira kodenya belum terdaftar.
+   */
+  segarkan(): void {
+    this._dimuat.set(false);
+    this.berjalan = null;
   }
 
   /** Daftar tersaring untuk autocomplete. */

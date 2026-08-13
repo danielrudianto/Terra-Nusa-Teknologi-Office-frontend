@@ -9,12 +9,14 @@ export interface Project {
   code: string;
   name: string;
   clientID?: number | null;
-  description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
   isActive: boolean;
   isCancelled: boolean;
+  /** Nominal dokumen (DPP + PPN), untuk ditampilkan. */
   contractValue: number;
+  /** Dasar pengenaan pajak, untuk menghitung margin. */
+  contractDpp: number;
   contractCount: number;
 }
 
@@ -24,6 +26,14 @@ export interface ProjectContract {
   projectID: number;
   documentNumber: string;
   documentType: 'spk' | 'adendum';
+  /** Dasar pengenaan pajak; inilah yang dipakai menghitung margin. */
+  dpp: number;
+  /** Persen. */
+  ppn: number;
+  pphCode?: string | null;
+  pphTaxObject?: string | null;
+  pphPercentage?: number | null;
+  /** Nominal dokumen: DPP + PPN. Dihitung server. */
   value: number;
   date: string;
   description?: string | null;

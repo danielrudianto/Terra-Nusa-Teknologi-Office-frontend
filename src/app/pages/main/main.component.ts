@@ -153,6 +153,11 @@ export class MainComponent {
           route: '/Project',
         },
         {
+          name: 'nav.projectReport',
+          icon: 'income.svg',
+          route: '/Project/Report',
+        },
+        {
           name: 'nav.masterData',
           icon: 'package.svg',
           route: '/Master',

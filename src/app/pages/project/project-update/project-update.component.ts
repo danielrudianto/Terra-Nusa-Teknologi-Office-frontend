@@ -55,7 +55,6 @@ export class ProjectUpdateComponent {
     this.formGroup.patchValue({
       name: data?.name ?? '',
       clientID: data?.clientID ?? null,
-      description: data?.description ?? '',
       startDate: data?.startDate ? new Date(data.startDate) : null,
       endDate: data?.endDate ? new Date(data.endDate) : null,
       isActive: !!data?.isActive,
@@ -76,7 +75,6 @@ export class ProjectUpdateComponent {
   formGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.maxLength(255)]),
     clientID: new FormControl<number | null>(null),
-    description: new FormControl('', Validators.maxLength(500)),
     startDate: new FormControl<Date | null>(null),
     endDate: new FormControl<Date | null>(null),
     isActive: new FormControl(true),
@@ -130,7 +128,6 @@ export class ProjectUpdateComponent {
       .put(`projects/${this.data.id}`, {
         name: v.name,
         clientID: v.clientID,
-        description: v.description || null,
         startDate: v.startDate ? moment(v.startDate).format('YYYY-MM-DD') : null,
         endDate: v.endDate ? moment(v.endDate).format('YYYY-MM-DD') : null,
         isActive: v.isActive,

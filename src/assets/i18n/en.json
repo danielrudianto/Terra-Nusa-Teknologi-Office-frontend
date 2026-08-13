@@ -156,7 +156,8 @@
     "user": "User",
     "clear": "Clear",
     "activity": "Activity",
-    "project": "Projects"
+    "project": "Projects",
+    "projectReport": "Project Report"
   },
   "status": {
     "paid": "Paid",
@@ -2755,7 +2756,6 @@
   },
   "project": {
     "title": "Projects",
-    "description": "Description",
     "createNew": "New project",
     "searchPlaceholder": "Code, name, or description",
     "code": "Project code",
@@ -2796,8 +2796,6 @@
     "docType": "Type",
     "docSpk": "SPK",
     "docAdendum": "Addendum",
-    "docValue": "Value",
-    "docValueHint": "Enter a negative amount if the addendum reduces the scope.",
     "docDate": "Date",
     "docDescription": "Description",
     "menuView": "View project",
@@ -2812,6 +2810,43 @@
       "batal": "Cancelled"
     },
     "selectorPlaceholder": "Type a project code or name",
-    "unknownCode": "This code is not registered as a project yet."
+    "unknownCode": "This code is not registered as a project yet.",
+    "docDpp": "Tax base (DPP)",
+    "docDppHint": "Enter a negative amount if the addendum reduces the scope.",
+    "docPpn": "VAT",
+    "docPpnValue": "VAT amount",
+    "docTotal": "Document value",
+    "docPphValue": "Withholding tax",
+    "docReceived": "Received after withholding",
+    "noPph": "No withholding tax",
+    "choosePph": "Choose withholding tax"
+  },
+  "projectReport": {
+    "title": "Project Report",
+    "description": "Contract value, cost, and margin per project",
+    "selectProject": "Select project",
+    "selectHint": "Includes finished and cancelled projects.",
+    "chooseFirst": "Pick a project to see its report.",
+    "contract": "Contract value",
+    "cost": "Cost incurred",
+    "margin": "Margin",
+    "billed": "Billed so far",
+    "ofContract": "of contract",
+    "billedHint": "from sales invoices",
+    "contractUsed": "Contract used",
+    "byCategory": "Cost by category",
+    "noCost": "No cost recorded for this project yet.",
+    "noContract": "Contract value has not been entered.",
+    "noContractHint": "Margin cannot be calculated until a contract document is added.",
+    "openProject": "Open project",
+    "tabOverview": "Overview",
+    "tabTable": "Working table",
+    "colCode": "Code",
+    "colCategory": "Category",
+    "colValue": "Value",
+    "colSuppliers": "Suppliers",
+    "totalCost": "Total cost",
+    "contractDppHint": "Tax base, excluding VAT",
+    "grossValue": "gross"
   }
 }

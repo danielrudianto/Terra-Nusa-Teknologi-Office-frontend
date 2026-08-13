@@ -156,7 +156,8 @@
     "user": "Pengguna",
     "clear": "Bersihkan",
     "activity": "Aktivitas",
-    "project": "Proyek"
+    "project": "Proyek",
+    "projectReport": "Laporan Proyek"
   },
   "status": {
     "paid": "Lunas",
@@ -2755,7 +2756,6 @@
   },
   "project": {
     "title": "Proyek",
-    "description": "Keterangan",
     "createNew": "Buat proyek baru",
     "searchPlaceholder": "Kode, nama, atau keterangan",
     "code": "Kode proyek",
@@ -2796,8 +2796,6 @@
     "docType": "Jenis",
     "docSpk": "SPK",
     "docAdendum": "Adendum",
-    "docValue": "Nilai",
-    "docValueHint": "Isi negatif bila adendum mengurangi lingkup kerja.",
     "docDate": "Tanggal",
     "docDescription": "Keterangan",
     "menuView": "Lihat proyek",
@@ -2812,6 +2810,43 @@
       "batal": "Batal"
     },
     "selectorPlaceholder": "Ketik kode atau nama proyek",
-    "unknownCode": "Kode ini belum terdaftar sebagai proyek."
+    "unknownCode": "Kode ini belum terdaftar sebagai proyek.",
+    "docDpp": "DPP",
+    "docDppHint": "Isi negatif bila adendum mengurangi lingkup kerja.",
+    "docPpn": "PPN",
+    "docPpnValue": "PPN (Rp.)",
+    "docTotal": "Nilai dokumen",
+    "docPphValue": "PPh dipotong",
+    "docReceived": "Diterima setelah PPh",
+    "noPph": "Tanpa potongan PPh",
+    "choosePph": "Pilih PPh"
+  },
+  "projectReport": {
+    "title": "Laporan Proyek",
+    "description": "Nilai kontrak, biaya, dan margin per proyek",
+    "selectProject": "Pilih proyek",
+    "selectHint": "Termasuk proyek yang sudah selesai dan yang dibatalkan.",
+    "chooseFirst": "Pilih proyek untuk melihat laporannya.",
+    "contract": "Nilai kontrak",
+    "cost": "Biaya terpakai",
+    "margin": "Margin",
+    "billed": "Sudah tertagih",
+    "ofContract": "dari kontrak",
+    "billedHint": "dari faktur penjualan",
+    "contractUsed": "Kontrak terpakai",
+    "byCategory": "Biaya menurut kategori",
+    "noCost": "Belum ada biaya tercatat untuk proyek ini.",
+    "noContract": "Nilai kontrak belum diisi.",
+    "noContractHint": "Margin tidak dapat dihitung sebelum dokumen kontrak dimasukkan.",
+    "openProject": "Buka proyek",
+    "tabOverview": "Ikhtisar",
+    "tabTable": "Tabel kerja",
+    "colCode": "Kode",
+    "colCategory": "Kategori",
+    "colValue": "Nilai",
+    "colSuppliers": "Pemasok",
+    "totalCost": "Total biaya",
+    "contractDppHint": "DPP, di luar PPN",
+    "grossValue": "nominal"
   }
 }

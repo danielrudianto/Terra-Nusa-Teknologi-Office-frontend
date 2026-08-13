@@ -68,7 +68,6 @@ export class ProjectCreateComponent {
     ]),
     name: new FormControl('', [Validators.required, Validators.maxLength(255)]),
     clientID: new FormControl<number | null>(null),
-    description: new FormControl('', Validators.maxLength(500)),
     startDate: new FormControl<Date | null>(null),
     endDate: new FormControl<Date | null>(null),
   });
@@ -117,7 +116,6 @@ export class ProjectCreateComponent {
         code: v.code,
         name: v.name,
         clientID: v.clientID,
-        description: v.description || null,
         startDate: v.startDate ? moment(v.startDate).format('YYYY-MM-DD') : null,
         endDate: v.endDate ? moment(v.endDate).format('YYYY-MM-DD') : null,
       })
