@@ -5,7 +5,7 @@
     [routerLink]="routerLink || null"
     [routerLinkActive]="'active'"
     [routerLinkActiveOptions]="
-      routerLink === '/' ? { exact: true } : { exact: false }
+      routerLink === '/' || hasChildRoutes ? { exact: true } : { exact: false }
     "
     (click)="onActivate()"
   >

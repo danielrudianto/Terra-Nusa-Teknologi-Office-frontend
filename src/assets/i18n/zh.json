@@ -2186,7 +2186,11 @@
     "t6_5_1Desc": "用于员工招聘费用的采购单。",
     "t6_5_2Desc": "用于员工培训与发展的采购单。",
     "tHDesc": "由第三方承担的工程，可按单价或包干计价。",
-    "tH": "分包工程"
+    "tH": "分包工程",
+    "tH1": "分包商（企业）",
+    "tH1Desc": "面向企业分包商的采购订单，按第23条预扣所得税。",
+    "tH2": "分包商（个人）",
+    "tH2Desc": "面向个人分包商的采购订单，按第21条预扣所得税。"
   },
   "masterNav": {
     "equipment": "设备",
@@ -2847,6 +2851,10 @@
     "colSuppliers": "供应商",
     "totalCost": "成本合计",
     "contractDppHint": "计税基础，不含增值税",
-    "grossValue": "含税"
+    "grossValue": "含税",
+    "composition": "成本构成",
+    "includeInternal": "包含内部采购",
+    "internalCount": "笔内部采购 · 草稿与报销始终计入",
+    "overBudget": "成本超出合同"
   }
 }

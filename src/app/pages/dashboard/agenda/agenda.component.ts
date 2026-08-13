@@ -57,6 +57,7 @@ export class AgendaComponent {
   private readonly translate = inject(TranslateService);
 
   isLoading = true;
+  galat: string | null = null;
   baris: BarisAgenda[] = [];
 
   private readonly BULAN = [
@@ -81,6 +82,7 @@ export class AgendaComponent {
 
   muat(): void {
     this.isLoading = true;
+    this.galat = null;
     this.agenda
       .load(7)
       .subscribe({
@@ -110,13 +112,19 @@ export class AgendaComponent {
                 (b.jenis === 'birthday' ? -1 : 1),
           );
         },
-        error: () => {
+        error: (e) => {
+          /*
+           * Kegagalan ditampilkan DI DALAM blok, bukan sebagai snackbar.
+           *
+           * Snackbar hilang setelah tiga detik dan tidak menyebut bagian
+           * mana yang gagal — yang membacanya hanya tahu "ada yang salah"
+           * pada halaman berisi enam blok. Di sini kegagalannya tetap
+           * terlihat, beserta tombol untuk mencoba lagi tanpa memuat ulang
+           * seluruh halaman.
+           */
           this.baris = [];
-          this.snackBar.open(
-            this.translate.instant('notify.loadFailed'),
-            'Close',
-            { duration: 3000 },
-          );
+          this.galat =
+            e?.error?.detail || this.translate.instant('notify.loadFailed');
         },
       })
       .add(() => (this.isLoading = false));

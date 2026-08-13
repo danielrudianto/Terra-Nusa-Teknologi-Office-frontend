@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
@@ -16,6 +17,59 @@ import { PURCHASE_TYPE_LABELS } from '../../../constants/purchase-type-label.con
 interface BarisPemasok {
   nama: string;
   nilai: number;
+}
+
+/**
+ * Awalan yang menandai badan usaha, bukan orang.
+ *
+ * "Pribadi" dan "Lainnya" adalah penanda jenis di basis data, bukan bagian
+ * dari nama. Menempelkannya menghasilkan "Pribadi Riski Riyansyah", yang
+ * bukan nama siapa pun.
+ */
+const AWALAN_BADAN = /^(PT|CV|UD|PD|Koperasi|Yayasan|Firma)\.?$/i;
+
+/**
+ * Nama pemasok pada pembelian dan draft.
+ *
+ * Server mengirim pemasok sebagai OBJEK BERSARANG (`supplier.name`,
+ * `supplier.prefix`), bukan kolom datar. Versi sebelumnya membaca
+ * `supplier_name` — nama alias di kueri repository — yang tidak pernah
+ * sampai ke muatan JSON, sehingga setiap baris jatuh ke teks cadangan dan
+ * seluruh rincian tampak kosong.
+ *
+ * Bentuk datar tetap dicoba sebagai cadangan, kalau-kalau ada endpoint lain
+ * yang mengirimkannya begitu.
+ */
+function namaPemasok(p: any): string {
+  const s = p?.supplier;
+  if (s?.name) {
+    const awalan = (s.prefix ?? '').trim();
+    return AWALAN_BADAN.test(awalan)
+      ? `${awalan} ${s.name}`.trim()
+      : String(s.name).trim();
+  }
+  const datar = [p?.supplier_prefix, p?.supplier_name]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  return datar || p?.supplierName || '(pemasok tidak tercatat)';
+}
+
+/**
+ * Penerima pada reimbursement.
+ *
+ * Reimbursement tidak punya pemasok: yang ditalangi adalah orang, dan
+ * namanya ada di `bankAccountName`. Sebelumnya yang dipakai `name`, yang
+ * sebenarnya nomor dokumen — sehingga rinciannya berisi deretan nomor dan
+ * tidak menjawab pertanyaan "uangnya ke siapa".
+ */
+function namaPenerima(r: any): string {
+  return (
+    r?.bankAccountName?.trim() ||
+    r?.employeeName?.trim() ||
+    r?.name?.trim() ||
+    '(penerima tidak tercatat)'
+  );
 }
 
 interface Kategori {
@@ -33,6 +87,7 @@ interface Kategori {
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     TranslatePipe,
     HeaderTitleComponent,
@@ -64,6 +119,39 @@ export class ProjectReportComponent implements OnInit {
   readonly tampilan = signal<'ikhtisar' | 'tabel'>('ikhtisar');
   readonly kategoriTerbuka = signal<string | null>(null);
   readonly barisTerbuka = signal<Set<string>>(new Set());
+
+  /**
+   * Sertakan pembelian bertanda internal.
+   *
+   * Bawaannya menyala agar angkanya sama dengan sebelum tombol ini ada —
+   * laporan yang diam-diam berubah nilainya lebih membingungkan daripada
+   * laporan yang butuh satu klik.
+   *
+   * Hanya PEMBELIAN yang punya penanda ini. Draft dan reimbursement tidak,
+   * jadi keduanya selalu ikut terhitung. Itu disebutkan di layar supaya
+   * tidak dikira menyaring semuanya.
+   */
+  readonly sertakanInternal = signal(true);
+
+  /*
+   * Warna komposisi. Sengaja tetap, bukan token tema: ini warna DATA, yang
+   * gunanya membedakan satu kategori dari kategori lain. Mengikutkannya ke
+   * tema membuat potongan yang bersebelahan bisa jatuh ke rona yang mirip.
+   */
+  private readonly PALET = [
+    '#154dec',
+    '#3f7ae0',
+    '#5aa9e6',
+    '#57c5b6',
+    '#f5a524',
+    '#e2725b',
+    '#9a8fb8',
+    '#7a8b99',
+  ];
+
+  warna(i: number): string {
+    return this.PALET[i % this.PALET.length];
+  }
 
   private readonly _data = signal<any>(null);
 
@@ -153,23 +241,27 @@ export class ProjectReportComponent implements OnInit {
       m.set(pemasok, (m.get(pemasok) ?? 0) + (Number(nilai) || 0));
     };
 
-    for (const p of d.purchases) {
+    const pembelian = this.sertakanInternal()
+      ? d.purchases
+      : d.purchases.filter((p: any) => !p.isInternal);
+
+    for (const p of pembelian) {
       const n =
         Number(p.dpp || 0) +
         (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
         Number(p.pbbkb || 0) +
         Number(p.otherValue || 0);
-      catat(p.purchaseType, p.supplierName || '—', n);
+      catat(p.purchaseType, namaPemasok(p), n);
     }
     for (const p of d.purchase_drafts) {
       const n =
         Number(p.dpp || 0) +
         (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
         Number(p.pbbkb || 0);
-      catat(p.purchaseType, p.supplierName || '—', n);
+      catat(p.purchaseType, namaPemasok(p), n);
     }
     for (const r of d.reimbursements) {
-      catat(r.purchaseType, r.name || r.supplierName || '—', Number(r.amount || 0));
+      catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
     }
 
     const hasil: Kategori[] = [];
@@ -190,6 +282,48 @@ export class ProjectReportComponent implements OnInit {
   readonly totalBiaya = computed(() =>
     this.kategori().reduce((a, b) => a + b.nilai, 0),
   );
+
+  /** Berapa pembelian internal yang ada, terpakai atau tidak. */
+  readonly jumlahInternal = computed(() => {
+    const d = this._data();
+    if (!d) return 0;
+    return d.purchases.filter((p: any) => p.isInternal).length;
+  });
+
+  /*
+   * trackBy WAJIB di sini.
+   *
+   * Tanpa ini Angular membuang seluruh elemen dan membangunnya kembali
+   * setiap kali daftarnya dihitung ulang — potongan batang yang lama
+   * dihapus lalu yang baru dipasang dengan lebar akhirnya langsung. Transisi
+   * CSS tidak pernah berjalan karena elemennya memang bukan elemen yang
+   * sama, dan perubahannya terlihat mengedip.
+   *
+   * Dengan kunci kode kategori, elemen yang sama dipakai ulang dan
+   * lebarnya beranimasi dari nilai lama ke nilai baru.
+   */
+  lacakKategori = (_: number, k: Kategori) => k.kode;
+  lacakPemasok = (_: number, s: BarisPemasok) => s.nama;
+
+  /**
+   * Penanda sesaat bahwa angka baru saja dihitung ulang.
+   *
+   * Tanpa ini, mengubah saringan hanya mengganti deretan angka begitu saja —
+   * dan yang sedang membaca sering tidak sadar totalnya sudah lain. Kedipan
+   * singkat lebih jujur daripada perubahan diam-diam.
+   */
+  readonly baruBerubah = signal(false);
+  private jedaBerubah?: ReturnType<typeof setTimeout>;
+
+  toggleInternal(): void {
+    this.sertakanInternal.set(!this.sertakanInternal());
+    this.kategoriTerbuka.set(null);
+    this.barisTerbuka.set(new Set());
+
+    clearTimeout(this.jedaBerubah);
+    this.baruBerubah.set(true);
+    this.jedaBerubah = setTimeout(() => this.baruBerubah.set(false), 600);
+  }
 
   readonly margin = computed(() => this.nilaiKontrak() - this.totalBiaya());
 

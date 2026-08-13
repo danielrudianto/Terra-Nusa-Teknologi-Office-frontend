@@ -2186,7 +2186,11 @@
     "t6_5_1Desc": "Purchase orders used to create recruitment expense",
     "t6_5_2Desc": "Purchase orders used to create training expense",
     "tHDesc": "Work carried out by a third party, priced per unit or lump sum.",
-    "tH": "Subcontracted work"
+    "tH": "Subcontracted work",
+    "tH1": "Subcontractor (company)",
+    "tH1Desc": "PO for a subcontractor that is a company. Withheld under PPh 23.",
+    "tH2": "Subcontractor (individual)",
+    "tH2Desc": "PO for an individual subcontractor. Withheld under PPh 21."
   },
   "masterNav": {
     "equipment": "Equipment",
@@ -2847,6 +2851,10 @@
     "colSuppliers": "Suppliers",
     "totalCost": "Total cost",
     "contractDppHint": "Tax base, excluding VAT",
-    "grossValue": "gross"
+    "grossValue": "gross",
+    "composition": "Cost composition",
+    "includeInternal": "Include internal purchases",
+    "internalCount": "internal purchases · drafts & reimbursements always counted",
+    "overBudget": "Cost exceeds contract by"
   }
 }

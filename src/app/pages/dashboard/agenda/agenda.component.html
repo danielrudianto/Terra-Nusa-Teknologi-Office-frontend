@@ -13,6 +13,12 @@
 
   @if (isLoading) {
     <div class="ag-state">Memuat…</div>
+  } @else if (galat) {
+    <div class="ag-state ag-state--galat">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ galat }}</span>
+      <button type="button" class="ag-retry" (click)="muat()">Coba lagi</button>
+    </div>
   } @else if (baris.length === 0) {
     <div class="db-panel__empty">
       <svg

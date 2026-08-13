@@ -45,6 +45,14 @@ export const PURCHASE_TYPE_LABELS: { [key: string]: string } = {
   E: 'Coordination; Consumption; and Accomodation',
   F: 'Material',
   G: 'Project supporting equipment and supplies',
+
+  // Subcontractor
+  //
+  // Dipisah menurut bentuk penyedianya karena perlakuan pajaknya berbeda:
+  // badan usaha dipotong PPh pasal 23, perorangan pasal 21. Menyatukannya
+  // membuat rekap pajak harus dipilah ulang secara manual.
+  H1: 'Subcontractor (company)',
+  H2: 'Subcontractor (individual)',
 };
 
 export const MASTER_ITEM_PURCHASE_TYPES: string[] = [

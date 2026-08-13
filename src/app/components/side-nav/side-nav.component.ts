@@ -23,6 +23,36 @@ import { LogoComponent } from '../logo/logo.component';
 export class SideNavComponent implements OnInit {
   @Input('items') items: any[] = [];
 
+  /**
+   * Rute yang menjadi awalan rute lain di menu ini.
+   *
+   * Dihitung dari daftarnya sendiri, bukan ditandai satu per satu: menu
+   * bersarang berikutnya otomatis ikut benar tanpa ada yang perlu ingat
+   * memasang bendera. `/Project` masuk daftar karena ada `/Project/Report`.
+   */
+  private _indukSrc: any[] | null = null;
+  private _induk = new Set<string>();
+
+  get ruteInduk(): Set<string> {
+    if (this._indukSrc !== this.items) {
+      this._indukSrc = this.items;
+      const semua: string[] = [];
+      for (const g of this.items || []) {
+        for (const i of g?.children || []) {
+          if (i?.route) semua.push(i.route);
+        }
+      }
+      this._induk = new Set(
+        semua.filter((a) => semua.some((b) => b !== a && b.startsWith(a + '/'))),
+      );
+    }
+    return this._induk;
+  }
+
+  punyaRuteAnak(route?: string): boolean {
+    return !!route && this.ruteInduk.has(route);
+  }
+
   constructor(
     private router: Router,
     private translate: TranslateService,

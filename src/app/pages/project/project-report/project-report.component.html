@@ -24,7 +24,7 @@
 
   <ng-container *ngIf="kode() && adaData() && !memuat() && !galat()">
     <!-- ===== ringkasan angka ===== -->
-    <div class="prp-kpi">
+    <div class="prp-kpi" [class.is-berubah]="baruBerubah()">
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.contract" | translate }}</div>
         <div class="prp-nilai">{{ nilaiKontrak() | number: "1.0-0" }}</div>
@@ -78,22 +78,40 @@
       </button>
     </div>
 
-    <!-- ===== pemilih tampilan ===== -->
-    <div class="prp-tab">
-      <button
-        type="button"
-        [class.on]="tampilan() === 'ikhtisar'"
-        (click)="pilihTampilan('ikhtisar')"
-      >
-        {{ "projectReport.tabOverview" | translate }}
-      </button>
-      <button
-        type="button"
-        [class.on]="tampilan() === 'tabel'"
-        (click)="pilihTampilan('tabel')"
-      >
-        {{ "projectReport.tabTable" | translate }}
-      </button>
+    <!-- ===== pemilih tampilan + saringan ===== -->
+    <div class="prp-kendali">
+      <div class="prp-tab">
+        <button
+          type="button"
+          [class.on]="tampilan() === 'ikhtisar'"
+          (click)="pilihTampilan('ikhtisar')"
+        >
+          {{ "projectReport.tabOverview" | translate }}
+        </button>
+        <button
+          type="button"
+          [class.on]="tampilan() === 'tabel'"
+          (click)="pilihTampilan('tabel')"
+        >
+          {{ "projectReport.tabTable" | translate }}
+        </button>
+      </div>
+
+      <div class="prp-internal" *ngIf="jumlahInternal() > 0">
+        <mat-slide-toggle
+          color="primary"
+          [checked]="sertakanInternal()"
+          (change)="toggleInternal()"
+        >
+          <span class="prp-internal__teks">
+            {{ "projectReport.includeInternal" | translate }}
+            <small>
+              {{ jumlahInternal() }}
+              {{ "projectReport.internalCount" | translate }}
+            </small>
+          </span>
+        </mat-slide-toggle>
+      </div>
     </div>
 
     <p class="prp-nihil" *ngIf="kategori().length === 0">
@@ -106,40 +124,88 @@
         {{ "projectReport.contractUsed" | translate }}
       </div>
       <div class="prp-mbar" *ngIf="nilaiKontrak() > 0">
-        <div
-          class="prp-mbar__biaya"
-          [style.width.%]="
-            persenKontrak(totalBiaya()) > 100 ? 100 : persenKontrak(totalBiaya())
-          "
+        <!-- Biaya masih di bawah kontrak: sisanya margin. -->
+        <ng-container *ngIf="margin() >= 0">
+          <div
+            class="prp-mbar__biaya"
+            [style.width.%]="persenKontrak(totalBiaya())"
+          >
+            {{ "projectReport.cost" | translate }}
+          </div>
+          <div class="prp-mbar__margin" [style.width.%]="persenKontrak(margin())">
+            {{ "projectReport.margin" | translate }}
+          </div>
+        </ng-container>
+
+        <!--
+          Biaya melampaui kontrak.
+
+          Batangnya tidak lagi menggambarkan pembagian, jadi yang ditunjukkan
+          adalah seberapa jauh terlampaui. Membiarkannya sebagai satu blok
+          penuh tanpa keterangan membuat pembacanya mengira grafiknya rusak.
+        -->
+        <ng-container *ngIf="margin() < 0">
+          <div class="prp-mbar__biaya prp-mbar__biaya--penuh" [style.width.%]="100">
+            {{ "projectReport.overBudget" | translate }}
+            {{ persenKontrak(-margin()) | number: "1.0-0" }}%
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="prp-label prp-label--sela">
+        {{ "projectReport.composition" | translate }}
+      </div>
+
+      <!-- Satu batang utuh dipecah proporsional: besarnya tiap kategori
+           terbaca tanpa perlu membaca angka. -->
+      <div class="prp-tumpuk">
+        <button
+          *ngFor="let k of kategori(); let i = index; trackBy: lacakKategori"
+          type="button"
+          [style.width.%]="persen(k.nilai)"
+          [style.background]="warna(i)"
+          [class.on]="kategoriTerbuka() === k.kode"
+          [title]="k.kode + ' — ' + k.nama"
+          (click)="toggleKategori(k.kode)"
         >
-          {{ "projectReport.cost" | translate }}
-        </div>
-        <div
-          class="prp-mbar__margin"
-          *ngIf="margin() > 0"
-          [style.width.%]="persenKontrak(margin())"
+          <span class="prp-tumpuk__teks" *ngIf="persen(k.nilai) > 7">
+            {{ persen(k.nilai) | number: "1.0-0" }}%
+          </span>
+        </button>
+      </div>
+
+      <div class="prp-legenda">
+        <button
+          *ngFor="let k of kategori(); let i = index; trackBy: lacakKategori"
+          type="button"
+          [class.on]="kategoriTerbuka() === k.kode"
+          (click)="toggleKategori(k.kode)"
         >
-          {{ "projectReport.margin" | translate }}
-        </div>
+          <i [style.background]="warna(i)"></i>
+          {{ k.nama }}
+        </button>
       </div>
 
       <div class="prp-label prp-label--sela">
         {{ "projectReport.byCategory" | translate }}
       </div>
 
-      <ng-container *ngFor="let k of kategori()">
+      <ng-container *ngFor="let k of kategori(); let i = index; trackBy: lacakKategori">
         <div class="prp-kat" (click)="toggleKategori(k.kode)">
           <span class="prp-kat__kode">{{ k.kode }}</span>
           <span class="prp-kat__nama">{{ k.nama }}</span>
           <span class="prp-kat__rel">
-            <span [style.width.%]="maksKategori ? (k.nilai / maksKategori) * 100 : 0"></span>
+            <span
+              [style.width.%]="maksKategori ? (k.nilai / maksKategori) * 100 : 0"
+              [style.background]="warna(i)"
+            ></span>
           </span>
           <span class="prp-kat__pct">{{ persen(k.nilai) | number: "1.1-1" }}%</span>
           <span class="prp-kat__nilai">{{ k.nilai | number: "1.0-0" }}</span>
         </div>
 
         <div class="prp-rinci" *ngIf="kategoriTerbuka() === k.kode">
-          <div class="prp-rinci__baris" *ngFor="let s of k.pemasok">
+          <div class="prp-rinci__baris" *ngFor="let s of k.pemasok; trackBy: lacakPemasok">
             <span class="prp-rinci__nama">{{ s.nama }}</span>
             <span class="prp-rinci__bar">
               <span [style.width.%]="k.nilai ? (s.nilai / k.nilai) * 100 : 0"></span>
@@ -164,7 +230,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngFor="let k of kategori()">
+            <ng-container *ngFor="let k of kategori(); trackBy: lacakKategori">
               <tr
                 class="induk"
                 [class.buka]="barisTerbuka().has(k.kode)"
@@ -181,7 +247,7 @@
                 <td class="num">{{ k.pemasok.length }}</td>
                 <td class="num">{{ persen(k.nilai) | number: "1.1-1" }}%</td>
               </tr>
-              <tr class="anak" *ngFor="let s of k.pemasok" [hidden]="!barisTerbuka().has(k.kode)">
+              <tr class="anak" *ngFor="let s of k.pemasok; trackBy: lacakPemasok" [hidden]="!barisTerbuka().has(k.kode)">
                 <td></td>
                 <td>{{ s.nama }}</td>
                 <td class="num">{{ s.nilai | number: "1.0-0" }}</td>

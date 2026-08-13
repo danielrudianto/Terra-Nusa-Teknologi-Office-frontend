@@ -77,6 +77,7 @@
             [routerLink]="i.route"
             [icon]="i.icon"
             [pinned]="true"
+            [hasChildRoutes]="punyaRuteAnak(i.route)"
             (pinToggle)="togglePin(i)"
           />
         </div>
@@ -120,6 +121,7 @@
                 [routerLink]="i.route"
                 [icon]="i.icon"
                 [pinned]="isPinned(i.route)"
+                [hasChildRoutes]="punyaRuteAnak(i.route)"
                 (pinToggle)="togglePin(i)"
               />
             </ng-container>

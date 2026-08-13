@@ -16,6 +16,16 @@ export class SideNavItemComponent {
   @Input('action') action?: () => void;
   @Input('pinned') pinned: boolean = false;
   @Input('showPin') showPin: boolean = true;
+
+  /**
+   * Rute lain yang bersarang di bawah rute ini.
+   *
+   * Dipakai untuk menentukan pencocokan `routerLinkActive`. Tanpa ini,
+   * `/Project` ikut menyala saat halaman `/Project/Report` dibuka, sehingga
+   * dua butir menu tampak aktif bersamaan dan pengguna tidak tahu ia sedang
+   * berada di mana.
+   */
+  @Input('hasChildRoutes') hasChildRoutes: boolean = false;
   @Output('pinToggle') pinToggle = new EventEmitter<void>();
 
   get iconSource(): string {

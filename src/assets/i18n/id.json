@@ -2186,7 +2186,11 @@
     "t6_5_1Desc": "PO untuk biaya rekrutmen karyawan.",
     "t6_5_2Desc": "PO untuk pelatihan dan pengembangan karyawan.",
     "tHDesc": "Pekerjaan yang dikerjakan pihak ketiga, dengan harga satuan atau borongan.",
-    "tH": "Pekerjaan subkontrak"
+    "tH": "Pekerjaan subkontrak",
+    "tH1": "Subkontraktor (badan usaha)",
+    "tH1Desc": "PO untuk subkontraktor berbentuk badan usaha. Dipotong PPh pasal 23.",
+    "tH2": "Subkontraktor (perorangan)",
+    "tH2Desc": "PO untuk subkontraktor perorangan. Dipotong PPh pasal 21."
   },
   "masterNav": {
     "equipment": "Alat",
@@ -2847,6 +2851,10 @@
     "colSuppliers": "Pemasok",
     "totalCost": "Total biaya",
     "contractDppHint": "DPP, di luar PPN",
-    "grossValue": "nominal"
+    "grossValue": "nominal",
+    "composition": "Komposisi biaya",
+    "includeInternal": "Sertakan pembelian internal",
+    "internalCount": "pembelian internal · draft & reimbursement selalu ikut",
+    "overBudget": "Biaya melampaui kontrak"
   }
 }

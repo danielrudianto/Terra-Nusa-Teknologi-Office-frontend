@@ -108,13 +108,38 @@
   gap: 0.15rem;
 }
 
+/* ---- kendali: tab + saringan ---- */
+.prp-kendali {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.prp-internal {
+  display: inline-flex;
+  align-items: center;
+}
+.prp-internal__teks {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.prp-internal__teks small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--faint);
+}
+
 /* ---- tab ---- */
 .prp-tab {
   display: inline-flex;
   border: 1px solid var(--border);
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 1rem;
 }
 .prp-tab button {
   border: 0;
@@ -176,6 +201,12 @@
 .prp-mbar__margin {
   background: var(--ok-bg);
   color: var(--ok-fg);
+}
+.prp-mbar__biaya--penuh {
+  background: var(--bad-bg);
+  color: var(--bad-fg);
+  font-weight: 700;
+  justify-content: center;
 }
 
 /* ---- daftar kategori ---- */
@@ -357,5 +388,146 @@
   .prp-tab button {
     animation: none;
     transition: none;
+  }
+}
+
+/* ---- batang komposisi ---- */
+.prp-tumpuk {
+  display: flex;
+  height: 3rem;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  margin: 0.6rem 0 0.9rem;
+}
+.prp-tumpuk > button {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  min-width: 2px;
+  transition:
+    width 0.5s cubic-bezier(0.2, 0.7, 0.3, 1),
+    filter 0.15s ease;
+}
+.prp-tumpuk > button:hover {
+  filter: brightness(1.12);
+}
+/* Potongan terpilih diberi garis dalam, bukan diubah warnanya — warnanya
+   adalah identitas kategori dan harus tetap sama di legenda. */
+.prp-tumpuk > button.on {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+.prp-tumpuk__teks {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.prp-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.prp-legenda button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  color: var(--muted);
+  padding: 0.15rem 0;
+}
+.prp-legenda button:hover {
+  color: var(--ink);
+}
+.prp-legenda button.on {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prp-legenda i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 0.2rem;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prp-tumpuk > button {
+    transition: none;
+  }
+}
+
+/* ---- gerak saat daftar berubah ----
+   Baris yang muncul dan hilang tidak melompat begitu saja: pembacanya perlu
+   sepersekian detik untuk menemukan lagi posisi angka yang sedang dilihat
+   setelah kategori disaring. */
+@keyframes prp-masuk-baris {
+  from {
+    opacity: 0;
+    transform: translateY(-0.3rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.prp-kat,
+.prp-rinci__baris,
+.prp-legenda button {
+  animation: prp-masuk-baris 0.24s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* Angka ikut berubah halus, bukan berkedip. */
+.prp-kat__nilai,
+.prp-kat__pct,
+.prp-nilai {
+  transition: color 0.2s ease;
+}
+
+/* Potongan yang menyusut sampai nol tidak boleh menyisakan garis tipis. */
+.prp-tumpuk > button[style*='width: 0'] {
+  min-width: 0;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prp-kat,
+  .prp-rinci__baris,
+  .prp-legenda button {
+    animation: none;
+  }
+}
+
+/* Kedipan singkat saat saringan diubah. Hanya sekali, tidak berulang —
+   penanda yang terus bergerak justru mengganggu pembacaan angka. */
+@keyframes prp-denyut {
+  0%   { transform: none; }
+  35%  { transform: translateY(-0.15rem); }
+  100% { transform: none; }
+}
+
+.prp-kpi.is-berubah .prp-sel {
+  animation: prp-denyut 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.prp-kpi.is-berubah .prp-sel:nth-child(2) { animation-delay: 0.04s; }
+.prp-kpi.is-berubah .prp-sel:nth-child(3) { animation-delay: 0.08s; }
+.prp-kpi.is-berubah .prp-sel:nth-child(4) { animation-delay: 0.12s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .prp-kpi.is-berubah .prp-sel {
+    animation: none;
   }
 }
