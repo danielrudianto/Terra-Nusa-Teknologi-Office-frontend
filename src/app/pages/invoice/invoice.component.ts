@@ -427,7 +427,7 @@ export class InvoiceComponent {
     }
     if (this.grandTotal <= 0) {
       this.snackBar.open(
-      this.translate.instant('notify.invoiceValueZero'),
+        this.translate.instant('notify.invoiceValueZero'),
         'Close',
         { duration: 3000 },
       );
@@ -508,13 +508,6 @@ export class InvoiceComponent {
           attachment: [
             ...(po ? buildPurchaseOrderDContent(this.toPrintData(po)) : []),
             ...(v.proxyPayment
-              ? [
-                  // Surat mulai di halaman sendiri; tanpa ini ia menempel
-                  // pada halaman terakhir SPK.
-                  { text: '', pageBreak: 'before' as any },
-                ]
-              : []),
-            ...(v.proxyPayment
               ? proxyPaymentContent({
                   invoiceName: this.invoiceNumber,
                   // Invoice tenaga kerja tidak menerbitkan faktur pajak.
@@ -550,9 +543,12 @@ export class InvoiceComponent {
     } catch (e) {
       console.error('Gagal membuat dokumen invoice:', e);
       this.snackBar.open(
-      this.translate.instant('notify.createFailed'), 'Close', {
-        duration: 3000,
-      });
+        this.translate.instant('notify.createFailed'),
+        'Close',
+        {
+          duration: 3000,
+        },
+      );
     }
   }
 
@@ -588,8 +584,7 @@ export class InvoiceComponent {
       return;
     }
 
-    const toISO = (d: any) =>
-      d ? tanggalLokal(d) : null;
+    const toISO = (d: any) => (d ? tanggalLokal(d) : null);
 
     this.isSubmitting = true;
     this.apiService
@@ -634,11 +629,13 @@ export class InvoiceComponent {
       })
       .subscribe({
         next: () => {
-
           this.snackBar.open(
-      this.translate.instant('notify.createSuccess'), 'Close', {
-            duration: 3000,
-          });
+            this.translate.instant('notify.createSuccess'),
+            'Close',
+            {
+              duration: 3000,
+            },
+          );
           // Hanya direset bila pencatatan berhasil, agar data tidak hilang
           // saat penyimpanan gagal dan perlu dicoba lagi.
           this.resetForm();

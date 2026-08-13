@@ -2892,5 +2892,30 @@
     "reactivateHint": "Mengaktifkan kembali akan mengosongkan tanggal terakhirnya, dan karyawan ini muncul lagi saat membuat slip gaji.",
     "reactivate": "Aktifkan kembali",
     "reactivated": "Karyawan diaktifkan kembali."
+  },
+  "serverError": {
+    "SALARY_SLIP_EXISTS": "Slip gaji untuk karyawan dan periode ini sudah pernah dibuat.",
+    "REMINDER_NOT_FOUND": "Pengingat tidak ditemukan.",
+    "REMINDER_NOT_OWNER": "Hanya pembuatnya yang dapat mengubah pengingat ini.",
+    "REMINDER_SHARED_FORBIDDEN": "Pengingat untuk seluruh pengguna hanya dapat dibuat oleh akses 4 ke atas. Tandai rekan yang bersangkutan bila hanya sebagian yang perlu tahu.",
+    "PAYMENT_NOT_FOUND": "Pembayaran tidak ditemukan.",
+    "PAYMENT_LOCKED": "Pembayaran yang sudah disetujui atau dihapus tidak dapat diubah.",
+    "SELF_APPROVAL_FORBIDDEN": "Pembayaran tidak dapat disetujui oleh pembuatnya sendiri. Mintakan persetujuan kepada pengguna lain.",
+    "PROJECT_NOT_FOUND": "Proyek tidak ditemukan.",
+    "PROJECT_CODE_IN_USE": "Kode tidak dapat diubah: sudah dipakai pada {{count}} dokumen.",
+    "CONTRACT_NOT_FOUND": "Kontrak tidak ditemukan.",
+    "CURRENT_PASSWORD_INVALID": "Kata sandi lama tidak cocok.",
+    "PASSWORD_UNSET": "Akun ini belum memiliki kata sandi tersimpan. Hubungi administrator.",
+    "SAME_PASSWORD": "Kata sandi baru tidak boleh sama dengan yang lama.",
+    "TOO_MANY_ATTEMPTS": "Terlalu banyak percobaan masuk. Coba lagi beberapa saat lagi.",
+    "SESSION_EXPIRED": "Sesi Anda berakhir. Silakan masuk kembali.",
+    "BANK_ACCOUNT_EXISTS": "Nomor rekening ini sudah terdaftar.",
+    "EMPLOYEE_DELETED": "Karyawan ini sudah dihapus.",
+    "BLACKLIST_REASON_REQUIRED": "Alasan pemblokiran harus diisi.",
+    "DRAFT_ALREADY_CONVERTED": "Draf ini sudah pernah dijadikan pembelian.",
+    "NOT_FOUND": "Data tidak ditemukan.",
+    "FORBIDDEN": "Anda tidak memiliki akses untuk tindakan ini.",
+    "VALIDATION": "Ada isian yang belum benar. Periksa kembali formulirnya.",
+    "INTERNAL": "Terjadi kesalahan di server. Coba lagi beberapa saat lagi."
   }
 }

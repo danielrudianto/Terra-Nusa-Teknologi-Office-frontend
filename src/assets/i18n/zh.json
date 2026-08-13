@@ -2892,5 +2892,30 @@
     "reactivateHint": "恢复在职将清除最后工作日，该员工将重新出现在工资单生成中。",
     "reactivate": "恢复在职",
     "reactivated": "员工已恢复在职。"
+  },
+  "serverError": {
+    "SALARY_SLIP_EXISTS": "该员工与期间的工资单已存在。",
+    "REMINDER_NOT_FOUND": "未找到提醒。",
+    "REMINDER_NOT_OWNER": "只有创建者可以修改此提醒。",
+    "REMINDER_SHARED_FORBIDDEN": "面向全体的提醒需要访问级别4及以上。若仅部分人需知晓，请改为标记相关同事。",
+    "PAYMENT_NOT_FOUND": "未找到付款。",
+    "PAYMENT_LOCKED": "已批准或已删除的付款无法修改。",
+    "SELF_APPROVAL_FORBIDDEN": "付款不能由创建者本人批准，请由他人批准。",
+    "PROJECT_NOT_FOUND": "未找到项目。",
+    "PROJECT_CODE_IN_USE": "编码无法修改：已用于 {{count}} 份单据。",
+    "CONTRACT_NOT_FOUND": "未找到合同。",
+    "CURRENT_PASSWORD_INVALID": "当前密码不正确。",
+    "PASSWORD_UNSET": "该账户尚未设置密码，请联系管理员。",
+    "SAME_PASSWORD": "新密码不能与旧密码相同。",
+    "TOO_MANY_ATTEMPTS": "登录尝试过多，请稍后再试。",
+    "SESSION_EXPIRED": "会话已结束，请重新登录。",
+    "BANK_ACCOUNT_EXISTS": "该账号已登记。",
+    "EMPLOYEE_DELETED": "该员工已被删除。",
+    "BLACKLIST_REASON_REQUIRED": "必须填写拉黑原因。",
+    "DRAFT_ALREADY_CONVERTED": "该草稿已转为采购。",
+    "NOT_FOUND": "未找到数据。",
+    "FORBIDDEN": "您没有执行此操作的权限。",
+    "VALIDATION": "部分字段无效，请检查表单。",
+    "INTERNAL": "服务器发生错误，请稍后重试。"
   }
 }

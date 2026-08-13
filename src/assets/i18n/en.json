@@ -2892,5 +2892,30 @@
     "reactivateHint": "Reactivating clears the last working day, and this employee appears again when creating salary slips.",
     "reactivate": "Reactivate",
     "reactivated": "Employee reactivated."
+  },
+  "serverError": {
+    "SALARY_SLIP_EXISTS": "A salary slip already exists for this employee and period.",
+    "REMINDER_NOT_FOUND": "Reminder not found.",
+    "REMINDER_NOT_OWNER": "Only the author can change this reminder.",
+    "REMINDER_SHARED_FORBIDDEN": "Shared reminders require access level 4 or above. Tag specific colleagues instead if only some need to know.",
+    "PAYMENT_NOT_FOUND": "Payment not found.",
+    "PAYMENT_LOCKED": "An approved or deleted payment can no longer be changed.",
+    "SELF_APPROVAL_FORBIDDEN": "A payment cannot be approved by the person who created it. Ask someone else to approve.",
+    "PROJECT_NOT_FOUND": "Project not found.",
+    "PROJECT_CODE_IN_USE": "The code cannot be changed: it is already used on {{count}} documents.",
+    "CONTRACT_NOT_FOUND": "Contract not found.",
+    "CURRENT_PASSWORD_INVALID": "The current password is incorrect.",
+    "PASSWORD_UNSET": "This account has no stored password. Contact an administrator.",
+    "SAME_PASSWORD": "The new password must differ from the current one.",
+    "TOO_MANY_ATTEMPTS": "Too many sign-in attempts. Please try again shortly.",
+    "SESSION_EXPIRED": "Your session has ended. Please sign in again.",
+    "BANK_ACCOUNT_EXISTS": "This account number is already registered.",
+    "EMPLOYEE_DELETED": "This employee has been deleted.",
+    "BLACKLIST_REASON_REQUIRED": "A blacklist reason is required.",
+    "DRAFT_ALREADY_CONVERTED": "This draft has already been converted into a purchase.",
+    "NOT_FOUND": "Not found.",
+    "FORBIDDEN": "You do not have access for this action.",
+    "VALIDATION": "Some fields are invalid. Please review the form.",
+    "INTERNAL": "A server error occurred. Please try again shortly."
   }
 }
