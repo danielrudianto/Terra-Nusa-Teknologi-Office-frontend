@@ -36,6 +36,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { printPurchaseOrderD } from '../../../../helpers/purchase-order-d.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 import { tanggalLokal } from '../../../../utils/tanggal';
+import { PoPreviewDialogComponent } from '../../../../components/po-preview-dialog/po-preview-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-purchase-order-create-d',
@@ -165,7 +167,6 @@ export class PurchaseOrderCreateDComponent {
     includePlacementClause: new FormControl(true),
     // Staf lapangan: penagihan bulanan + uraian tugas
     isFieldStaff: new FormControl(false),
-    payoutDay: new FormControl(10, [Validators.min(1), Validators.max(31)]),
     jobDescriptions: new FormArray([]),
     // Shift maksimal 24 jam — lebih dari itu tidak masuk akal untuk 1 hari.
     shiftHours: new FormControl(8, [
@@ -199,14 +200,19 @@ export class PurchaseOrderCreateDComponent {
       label: ['Upah harian', Validators.required],
       amount: [0, [Validators.required, Validators.min(0)]],
       unit: ['hari', Validators.required],
-      // weekly    = tiap pekan pada hari X
-      // sameMonth = tiap bulan pada tanggal X di bulan yang sama
-      // nextMonth = tiap bulan pada tanggal X di bulan berikutnya
+      // weekly      = tiap pekan pada hari X
+      // sameMonth   = tiap bulan pada tanggal X di bulan yang sama
+      // nextMonth   = tiap bulan pada tanggal X di bulan berikutnya
+      // semiMonthly = dua kali sebulan; cut-off tanggal X dan akhir bulan,
+      //               dibayar pada hari tertentu di pekan berikutnya
       scheduleType: ['weekly', Validators.required],
-      payDay: ['Sabtu'], // weekly
+      payDay: ['Sabtu'], // weekly & semiMonthly
       payDate: [10], // sameMonth / nextMonth
       cutoffDay: ['Rabu'], // weekly — periode mulai otomatis hari berikutnya
       cutoffDate: [15], // sameMonth — periode mulai otomatis tanggal berikutnya
+      // semiMonthly: cut-off pertama; yang kedua selalu akhir bulan, karena
+      // itulah yang membedakannya dari jadwal bulanan biasa.
+      cutoffFirst: [15],
     });
   }
 
@@ -229,6 +235,21 @@ export class PurchaseOrderCreateDComponent {
   readonly wageUnits = ['hari', 'bulan', 'jam', "m'", 'titik', 'lot'];
   /** Tanggal 1–28 saja: 29–31 tidak ada di semua bulan. */
   readonly payDates = Array.from({ length: 28 }, (_, i) => i + 1);
+
+  /**
+   * Pilihan cut-off: tanggal 1–28, ditambah "akhir bulan".
+   *
+   * "Akhir bulan" bukan tanggal 28. Bulan yang panjangnya berbeda-beda
+   * membuat tanggal tetap selalu meleset — memilih 28 pada bulan Maret
+   * menyisakan tiga hari kerja yang jatuh ke periode berikutnya, dan itu
+   * persis yang dipersoalkan pekerja saat upahnya kurang.
+   */
+  readonly AKHIR_BULAN = 'end';
+  readonly cutoffDates: (number | string)[] = [
+    ...Array.from({ length: 28 }, (_, i) => i + 1),
+    'end',
+  ];
+
   /**
    * value = yang disimpan & masuk kalimat klausul (SPK berbahasa Indonesia),
    * key   = label yang ditampilkan, ikut bahasa aplikasi.
@@ -261,6 +282,16 @@ export class PurchaseOrderCreateDComponent {
 
     switch (w.scheduleType) {
       case 'sameMonth': {
+        // "Akhir bulan" tidak punya angka tetap; kalimatnya menyebutnya
+        // apa adanya dan periodenya dimulai tanggal 1.
+        if (w.cutoffDate === 'end') {
+          return [
+            `${ref} akan dibayarkan setiap bulan pada tanggal ${
+              w.payDate || 10
+            } pada bulan yang sama.`,
+            `Periode perhitungan ${label.toLowerCase()} dimulai tanggal 1 dan berakhir (cut-off) pada akhir bulan.`,
+          ];
+        }
         const cut = Number(w.cutoffDate) || 15;
         const start = cut >= 28 ? 1 : cut + 1;
         return [
@@ -268,6 +299,28 @@ export class PurchaseOrderCreateDComponent {
             w.payDate || 10
           } pada bulan yang sama.`,
           `Periode perhitungan ${label.toLowerCase()} dimulai tanggal ${start} dan berakhir (cut-off) pada tanggal ${cut}.`,
+        ];
+      }
+      case 'semiMonthly': {
+        /*
+         * Dua kali sebulan: cut-off tanggal X dan akhir bulan, dibayar pada
+         * hari tertentu di pekan berikutnya.
+         *
+         * Pola ini dipakai antara lain untuk operator alat. Tidak dapat
+         * dinyatakan dengan `sameMonth` maupun `weekly`: yang pertama hanya
+         * mengenal satu cut-off per bulan, yang kedua tidak mengenal tanggal
+         * sama sekali.
+         *
+         * Tanggal bayarnya sengaja TIDAK ditetapkan sebagai angka. Jatuhnya
+         * bergantung pada hari apa cut-off itu jatuh tiap bulan, dan
+         * menuliskan satu tanggal tetap di SPK akan meleset hampir setiap
+         * bulan.
+         */
+        const c1 = w.cutoffFirst ?? 15;
+        const hari = w.payDay || 'Jumat';
+        return [
+          `${ref} dihitung dua kali dalam sebulan, dengan cut-off pada tanggal ${c1} dan pada akhir bulan.`,
+          `Pembayaran ${label.toLowerCase()} dilakukan pada hari ${hari} di pekan berikutnya setelah masing-masing cut-off.`,
         ];
       }
       case 'nextMonth':
@@ -422,7 +475,6 @@ export class PurchaseOrderCreateDComponent {
         includePlacementClause: !!this.formGroup.get('includePlacementClause')
           ?.value,
         isFieldStaff: this.isFieldStaff,
-        payoutDay: Number(this.formGroup.get('payoutDay')?.value) || 10,
         // Jangka waktu perjanjian: tanggal, atau terikat selesainya proyek.
         workLocation: this.formGroup.get('workLocation')?.value,
         contractStart: this.toISO(this.formGroup.get('contractStart')?.value),
@@ -474,7 +526,86 @@ export class PurchaseOrderCreateDComponent {
     };
   }
 
-  onSubmit() {
+  /**
+   * Buka pratinjau dokumen tanpa menyimpan apa pun.
+   *
+   * Memakai penyusun data dan helper cetak YANG SAMA dengan penyimpanan,
+   * sehingga yang dilihat di layar benar-benar dokumen yang nanti terbit —
+   * bukan tiruan yang bisa menyimpang sendiri.
+   *
+   * Nomor PO belum ada karena diberikan server saat penyimpanan; sebagai
+   * gantinya dokumen ditandai sebagai draf, supaya tidak ada yang menyimpan
+   * berkas ini lalu mengiranya SPK yang sah.
+   */
+  /**
+   * Buka pratinjau dokumen di dalam dialog, tanpa menyimpan apa pun.
+   *
+   * Memakai penyusun data dan helper cetak YANG SAMA dengan penyimpanan,
+   * sehingga yang dilihat benar-benar dokumen yang nanti terbit — bukan
+   * tiruan yang bisa menyimpang sendiri.
+   */
+  async pratinjau(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+    this.dialog.open(PoPreviewDialogComponent, {
+      data: { src },
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+  }
+
+  /**
+   * Susun dokumen sebagai data URL.
+   *
+   * Nomor PO belum ada karena diberikan server saat penyimpanan; sebagai
+   * gantinya dokumen ditandai draf, supaya tidak ada yang menyimpan berkas
+   * ini lalu mengiranya SPK yang sah.
+   */
+  private async dokumenPratinjau(): Promise<string | null> {
+    try {
+      return (await printPurchaseOrderD(
+        this.buildPrintData('(DRAF — BELUM TERBIT)'),
+        'dataurl',
+      )) as string;
+    } catch (e) {
+      console.error('Gagal menyusun pratinjau purchase order:', e);
+      this.snackBar.open('Gagal membuat pratinjau dokumen', 'Close', {
+        duration: 3000,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Tampilkan dokumennya lebih dulu, terbitkan setelah dinyatakan terbaca.
+   *
+   * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit —
+   * nomornya sudah terpakai dan salinannya sudah beredar. Menampilkan
+   * dokumen jadi pada langkah terakhir memindahkan koreksi ke saat masih
+   * murah: sebelum dokumennya ada.
+   *
+   * Gagal menyusun dokumen TIDAK meloloskan penerbitan. Melewatinya berarti
+   * PO terbit tanpa seorang pun pernah melihat isinya.
+   */
+  async onSubmit(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(PoPreviewDialogComponent, {
+          data: { src, konfirmasi: true },
+          maxWidth: '96vw',
+          autoFocus: false,
+          disableClose: true,
+        })
+        .afterClosed(),
+    );
+    if (setuju) this.terbitkan();
+  }
+
+  /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
+  private terbitkan() {
     this.isSubmitting = true;
     this.apiService
       .post('purchase-orders', this.formatData())
@@ -550,7 +681,6 @@ export class PurchaseOrderCreateDComponent {
   get staffSections(): { title?: string; items: (string | string[])[] }[] {
     if (!this.isFieldStaff) return [];
     return buildStaffClauses({
-      payoutDay: this.formGroup.get('payoutDay')?.value,
       jobDescriptions: this.jobDescriptionValues,
     });
   }
@@ -559,7 +689,6 @@ export class PurchaseOrderCreateDComponent {
     const v = this.formGroup.getRawValue();
     return {
       isFieldStaff: this.isFieldStaff,
-      payoutDay: this.formGroup.get('payoutDay')?.value,
       jobDescriptions: this.jobDescriptionValues,
       includeShiftClause: !!this.formGroup.get('includeShiftClause')?.value,
       includePlacementClause: !!this.formGroup.get('includePlacementClause')

@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -7,7 +8,7 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
 import * as pdfjslib from 'pdfjs-dist';
 import { FileDropComponent } from './file-drop/file-drop.component';
 import { CommonModule } from '@angular/common';
@@ -19,6 +20,29 @@ import { tanggalLokal } from '../../utils/tanggal';
 pdfjslib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+/**
+ * Satu coretan pada halaman.
+ *
+ * Letaknya disimpan sebagai pecahan lebar dan tinggi halaman (0–1), bukan
+ * piksel: ukuran pratinjau di layar berbeda dari ukuran halaman
+ * sebenarnya, dan piksel yang benar di satu ukuran akan meleset di ukuran
+ * lain.
+ */
+interface Anotasi {
+  /** `tutup` menutupi teks lama; `catatan` menambahkan tulisan di atasnya. */
+  jenis: 'tutup' | 'catatan';
+  /** Kiri, dari tepi kiri halaman (0–1). */
+  x: number;
+  /** Atas, dari tepi atas halaman (0–1). */
+  y: number;
+  /** Lebar kotak penutup (0–1); tidak dipakai pada catatan. */
+  lebar?: number;
+  /** Tinggi kotak penutup (0–1); tidak dipakai pada catatan. */
+  tinggi?: number;
+  /** Tulisan yang ditumpangkan; boleh kosong pada penutup polos. */
+  teks?: string;
+}
+
 interface PageData {
   pdf: string;
   thumbnail: string;
@@ -26,6 +50,24 @@ interface PageData {
   fileName: string;
   originalFile?: string; // Track original file name
   selected?: boolean;
+
+  /**
+   * Coretan pada halaman: penutup teks dan catatan.
+   *
+   * Disimpan pada data, bukan langsung ditulis ke berkasnya, sehingga masih
+   * dapat digeser atau dibatalkan sebelum disimpan.
+   */
+  anotasi?: Anotasi[];
+
+  /**
+   * Sudut putar halaman, kelipatan 90 derajat.
+   *
+   * Disimpan pada data, bukan langsung diterapkan ke berkasnya: memutar
+   * berarti membaca dan menulis ulang seluruh PDF, dan pada dokumen puluhan
+   * halaman itu terasa setiap kali tombolnya ditekan. Rotasi baru
+   * benar-benar diterapkan saat berkasnya disimpan.
+   */
+  rotation?: number;
 }
 
 @Component({
@@ -34,6 +76,7 @@ interface PageData {
   styleUrls: ['./pdf-main.component.scss'],
   standalone: true,
   imports: [
+    FormsModule,
     CdkDragPreview,
     CdkDragPlaceholder,
     CommonModule,
@@ -428,6 +471,175 @@ export class PdfMainComponent implements OnInit {
       this.selectedCount === this.processedDocuments.length;
   }
 
+  /**
+   * Alat yang sedang dipakai saat menekan halaman.
+   *
+   * `null` berarti menekan halaman memilihnya seperti biasa — perilaku
+   * lama tidak berubah selama alat coretan tidak dinyalakan.
+   */
+  alatAktif: 'tutup' | 'catatan' | null = null;
+
+  pilihAlat(alat: 'tutup' | 'catatan'): void {
+    this.alatAktif = this.alatAktif === alat ? null : alat;
+  }
+
+  /**
+   * Tambahkan coretan pada titik yang ditekan.
+   *
+   * Koordinatnya dihitung sebagai pecahan dari kotak pratinjau, sehingga
+   * tetap benar berapa pun ukuran layarnya.
+   */
+  tambahAnotasi(page: PageData, ev: MouseEvent): void {
+    if (!this.alatAktif) return;
+    ev.stopPropagation();
+
+    const kotak = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = (ev.clientX - kotak.left) / kotak.width;
+    const y = (ev.clientY - kotak.top) / kotak.height;
+
+    page.anotasi = page.anotasi || [];
+
+    if (this.alatAktif === 'tutup') {
+      /*
+       * Ukuran bawaan kotak penutup.
+       *
+       * Sekitar sebaris teks: cukup untuk menutup satu nilai yang keliru
+       * tanpa menghapus baris di sekitarnya. Dapat diubah setelah dibuat.
+       */
+      page.anotasi.push({
+        jenis: 'tutup',
+        x: Math.max(0, x - 0.12),
+        y: Math.max(0, y - 0.012),
+        lebar: 0.24,
+        tinggi: 0.024,
+        teks: '',
+      });
+    } else {
+      page.anotasi.push({ jenis: 'catatan', x, y, teks: '' });
+    }
+
+    this.alatAktif = null;
+  }
+
+  /**
+   * Gambar satu coretan pada halaman PDF.
+   *
+   * Dua sistem koordinat bertemu di sini: layar menghitung dari kiri-ATAS,
+   * PDF dari kiri-BAWAH. Pembalikan sumbu Y dilakukan di satu tempat ini
+   * saja, agar tidak tersebar dan tidak mungkin terlewat separuh.
+   */
+  private gambarAnotasi(
+    page: any,
+    a: Anotasi,
+    putar: number,
+    font: any,
+  ): void {
+    const { width: W, height: H } = page.getSize();
+
+    /*
+     * Letak dipetakan balik menurut sudut putar tampilannya.
+     *
+     * Pengguna meletakkan coretan di atas pratinjau yang sudah berputar;
+     * halaman aslinya tidak. Tanpa pemetaan ini, coretan pada halaman yang
+     * diputar 90° akan muncul pada sisi yang keliru.
+     */
+    const petakan = (x: number, y: number): [number, number] => {
+      /*
+       * Diturunkan dari arah putarnya, bukan ditebak.
+       *
+       * Pada putaran 90° searah jarum jam, titik (x, y) halaman asli tampil
+       * di (1 - y, x). Yang dibutuhkan di sini kebalikannya: dari letak
+       * pada tampilan, kembali ke letak pada halaman asli.
+       *
+       *   tampilan (X, Y)  ->  asli (Y, 1 - X)      pada 90°
+       *   tampilan (X, Y)  ->  asli (1 - X, 1 - Y)  pada 180°
+       *   tampilan (X, Y)  ->  asli (1 - Y, X)      pada 270°
+       */
+      switch (((putar % 360) + 360) % 360) {
+        case 90:
+          return [y, 1 - x];
+        case 180:
+          return [1 - x, 1 - y];
+        case 270:
+          return [1 - y, x];
+        default:
+          return [x, y];
+      }
+    };
+
+    const [fx, fy] = petakan(a.x, a.y);
+
+    if (a.jenis === 'tutup') {
+      const w = (a.lebar ?? 0.24) * W;
+      const h = (a.tinggi ?? 0.024) * H;
+      page.drawRectangle({
+        x: fx * W,
+        // Sumbu Y dibalik, lalu dikurangi tinggi kotaknya: pada PDF titik
+        // acuan persegi adalah sudut kiri-BAWAH.
+        y: H - fy * H - h,
+        width: w,
+        height: h,
+        color: rgb(1, 1, 1),
+      });
+
+      if (a.teks) {
+        page.drawText(a.teks, {
+          x: fx * W + 2,
+          y: H - fy * H - h + 3,
+          size: Math.min(11, h * 0.75),
+          font,
+          color: rgb(0, 0, 0),
+        });
+      }
+      return;
+    }
+
+    // Catatan: tulisan saja, tanpa menutupi apa pun di bawahnya.
+    if (!a.teks) return;
+    page.drawText(a.teks, {
+      x: fx * W,
+      y: H - fy * H,
+      size: 10,
+      font,
+      color: rgb(0.72, 0.11, 0.11),
+    });
+  }
+
+  hapusAnotasi(page: PageData, i: number): void {
+    page.anotasi?.splice(i, 1);
+  }
+
+  /** Ada coretan yang belum tersimpan pada berkas mana pun. */
+  get adaAnotasi(): boolean {
+    return this.processedDocuments.some((p) => (p.anotasi?.length ?? 0) > 0);
+  }
+
+  /**
+   * Putar satu halaman 90 derajat searah jarum jam.
+   *
+   * Dokumen dari luar — scan tagihan vendor, faktur pajak, surat jalan —
+   * kerap masuk dalam keadaan terbaring atau terbalik. Tanpa ini, satu
+   * halaman miring memaksa seluruh berkas diproses ulang di aplikasi lain.
+   */
+  putarHalaman(page: PageData, arah: 1 | -1 = 1): void {
+    const sekarang = page.rotation ?? 0;
+    // Dijaga pada 0/90/180/270: nilai negatif atau di atas 360 membingungkan
+    // saat dibaca, dan pdf-lib menolaknya.
+    page.rotation = (((sekarang + arah * 90) % 360) + 360) % 360;
+  }
+
+  /** Putar seluruh halaman yang sedang terpilih. */
+  putarTerpilih(arah: 1 | -1 = 1): void {
+    const terpilih = this.processedDocuments.filter((p) => p.selected);
+    const sasaran = terpilih.length ? terpilih : this.processedDocuments;
+    sasaran.forEach((p) => this.putarHalaman(p, arah));
+  }
+
+  /** Ada halaman yang sudah diputar dan belum disimpan. */
+  get adaRotasi(): boolean {
+    return this.processedDocuments.some((p) => (p.rotation ?? 0) !== 0);
+  }
+
   async saveSelectedPages(): Promise<void> {
     const selectedPages = this.selectedPages;
 
@@ -442,12 +654,40 @@ export class PdfMainComponent implements OnInit {
     try {
       const newPdf = await PDFDocument.create();
 
+      // Font disiapkan sekali untuk seluruh halaman: menyematkannya
+      // berulang membuat berkas hasilnya membesar tanpa guna.
+      const font = await newPdf.embedFont(StandardFonts.Helvetica);
+
       for (const pageData of selectedPages) {
         const pdfBytes = Uint8Array.from(atob(pageData.pdf), (c) =>
           c.charCodeAt(0),
         );
         const pagePdf = await PDFDocument.load(pdfBytes);
         const [copiedPage] = await newPdf.copyPages(pagePdf, [0]);
+
+        // Rotasi ditambahkan pada sudut yang sudah ada di berkas asalnya,
+        // bukan menggantikannya: halaman scan sering sudah membawa sudut
+        // putar sendiri, dan menimpanya membuat yang tadinya benar jadi
+        // ikut miring.
+        const putar = pageData.rotation ?? 0;
+        if (putar) {
+          const asal = copiedPage.getRotation().angle ?? 0;
+          copiedPage.setRotation(degrees((asal + putar) % 360));
+        }
+
+        /*
+         * Coretan digambar SEBELUM halaman diputar tampil.
+         *
+         * Koordinat pada pdf-lib mengacu pada halaman dalam keadaan
+         * aslinya, sedangkan yang dilihat pengguna sudah berputar. Karena
+         * coretan ditempatkan di atas pratinjau yang berputar, letaknya
+         * dipetakan balik ke sumbu asli — tanpa itu, catatan yang
+         * diletakkan di pojok kanan atas muncul di pojok lain.
+         */
+        for (const a of pageData.anotasi || []) {
+          this.gambarAnotasi(copiedPage, a, putar, font);
+        }
+
         newPdf.addPage(copiedPage);
       }
 

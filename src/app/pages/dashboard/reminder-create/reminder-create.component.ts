@@ -73,7 +73,8 @@ export class ReminderCreateComponent {
 
   constructor(
     private dialogRef: MatDialogRef<ReminderCreateComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { reminder?: Reminder } | null,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { reminder?: Reminder; tanggalAwal?: string } | null,
   ) {}
 
   isSubmitting = false;
@@ -135,6 +136,11 @@ export class ReminderCreateComponent {
         isShared: r.isShared,
         targets: (r.targets ?? []).map((t) => t.id),
       });
+    } else if (this.data?.tanggalAwal) {
+      // Dibuka dari sel tanggal di kalender: tanggalnya sudah diketahui,
+      // dan meminta pengguna memilihnya lagi hanya menambah satu langkah
+      // yang mudah salah.
+      this.formGroup.patchValue({ date: this.data.tanggalAwal });
     }
   }
 

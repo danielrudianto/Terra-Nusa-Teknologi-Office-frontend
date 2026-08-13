@@ -379,6 +379,14 @@
       <div class="pog-actions">
         <span class="pog-spacer"></span>
         <button
+          type="button"
+          class="pog-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
           type="submit"
           class="pog-submit"
           [disabled]="formGroup.invalid || isSubmitting"

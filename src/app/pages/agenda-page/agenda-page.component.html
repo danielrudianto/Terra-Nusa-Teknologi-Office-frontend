@@ -1,0 +1,88 @@
+<div class="ag">
+  <app-header-title
+    [title]="'agendaPage.title' | translate"
+    [description]="'agendaPage.description' | translate"
+    [actionButtonLabel]="'agendaPage.newReminder' | translate"
+    (onActionButtonClicked)="buat()"
+  />
+
+  <div class="ag-toolbar">
+    <div class="ag-nav">
+      <button mat-icon-button (click)="geserBulan(-1)" [disabled]="memuat()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="ag-bulan">{{ judulBulan() }}</span>
+      <button mat-icon-button (click)="geserBulan(1)" [disabled]="memuat()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    <button mat-stroked-button (click)="keHariIni()">
+      {{ "agendaPage.today" | translate }}
+    </button>
+  </div>
+
+  <div class="ag-kartu" [class.is-loading]="memuat()">
+    <div class="ag-loadingbar" *ngIf="memuat()"><span></span></div>
+
+    <div class="ag-hari">
+      <span *ngFor="let h of namaHari">{{ h }}</span>
+    </div>
+
+    <div class="ag-petak">
+      <button
+        type="button"
+        class="ag-sel"
+        *ngFor="let s of petak(); trackBy: lacakSel"
+        [class.luar]="!s.bulanIni"
+        [class.kini]="s.hariIni"
+        [class.dipilih]="dipilih() === s.kunci"
+        (click)="pilih(s)"
+      >
+        <span class="ag-tgl">{{ s.hari }}</span>
+
+        <!-- Maksimal tiga baris; sisanya diringkas agar tinggi sel tetap. -->
+        <span
+          class="ag-acara"
+          *ngFor="let a of s.acara.slice(0, 3)"
+          [ngClass]="'ag-acara--' + a.jenis"
+          [attr.title]="a.judul"
+        >
+          {{ a.judul }}
+        </span>
+        <span class="ag-lagi" *ngIf="s.acara.length > 3">
+          +{{ s.acara.length - 3 }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== rincian tanggal terpilih ===== -->
+  <div class="ag-rinci" *ngIf="dipilih()">
+    <div class="ag-rinci__head">
+      <h2>{{ labelDipilih() }}</h2>
+      <button mat-stroked-button (click)="buat(dipilih())">
+        <mat-icon>add</mat-icon>
+        {{ "agendaPage.addHere" | translate }}
+      </button>
+    </div>
+
+    <p class="ag-kosong" *ngIf="acaraTerpilih().length === 0">
+      {{ "agendaPage.noEvent" | translate }}
+    </p>
+
+    <div
+      class="ag-baris"
+      *ngFor="let a of acaraTerpilih()"
+      [class.bisa-diklik]="a.jenis === 'reminder'"
+      (click)="ubah(a)"
+    >
+      <span class="ag-titik" [ngClass]="'ag-titik--' + a.jenis"></span>
+      <div class="ag-baris__teks">
+        <div class="ag-judul">{{ a.judul }}</div>
+        <div class="ag-ket" *ngIf="a.keterangan">{{ a.keterangan }}</div>
+      </div>
+      <span class="ag-kategori" *ngIf="a.kategori">{{ a.kategori }}</span>
+      <mat-icon class="ag-panah" *ngIf="a.jenis === 'reminder'">edit</mat-icon>
+    </div>
+  </div>
+</div>

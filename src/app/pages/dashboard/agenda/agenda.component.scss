@@ -247,3 +247,15 @@
   padding: 0.35rem 0.9rem;
   cursor: pointer;
 }
+
+/* Dua tombol berdampingan di kepala kartu. */
+.ag-head__aksi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+a.ag-add {
+  display: inline-grid;
+  place-items: center;
+  text-decoration: none;
+}

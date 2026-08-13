@@ -1,14 +1,25 @@
 <div class="dashboard-card white db-panel half-h ag">
   <div class="db-panel__head ag-head">
     <h2>{{ "dashboard.todayAgenda" | translate }}</h2>
-    <button
-      type="button"
-      class="ag-add"
-      (click)="tambah()"
-      matTooltip="Buat pengingat"
-    >
-      <mat-icon>add</mat-icon>
-    </button>
+    <div class="ag-head__aksi">
+      <!-- Kartu ini hanya menampilkan tujuh hari ke depan; kalender penuh
+           menjawab "tanggal berapa ada apa". -->
+      <a
+        class="ag-add"
+        routerLink="/Agenda"
+        [matTooltip]="'agendaPage.openCalendar' | translate"
+      >
+        <mat-icon>calendar_month</mat-icon>
+      </a>
+      <button
+        type="button"
+        class="ag-add"
+        (click)="tambah()"
+        matTooltip="Buat pengingat"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
 
   @if (isLoading) {

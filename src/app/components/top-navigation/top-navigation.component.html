@@ -41,7 +41,20 @@
     <mat-icon class="tn-account__caret">expand_more</mat-icon>
   </button>
 
-  <mat-menu #accountMenu="matMenu" class="tn-account-menu">
+  <!--
+    Panel disandarkan ke ujung KANAN pemicunya.
+  
+    Tanpa `xPosition="before"`, panel dibentangkan ke kanan dari titik klik —
+    sementara tombolnya sendiri sudah menempel di tepi kanan layar, sehingga
+    panelnya terpotong. Menyandarkannya ke kiri membuat tepi kanan panel
+    sejajar dengan tepi kanan tombol, seperti menu akun pada umumnya.
+  -->
+  <mat-menu
+    #accountMenu="matMenu"
+    class="tn-account-menu"
+    xPosition="before"
+    yPosition="below"
+  >
     <div class="tn-account-menu__head" mat-menu-item disabled>
       @if (userId) {
         <app-avatar [userId]="userId" [size]="48"></app-avatar>
@@ -56,13 +69,51 @@
       </span>
     </div>
     <mat-divider></mat-divider>
-    <button mat-menu-item (click)="onProfile()">
-      <mat-icon>person</mat-icon>
-      <span>{{ "nav.profile" | translate }}</span>
-    </button>
-    <button mat-menu-item (click)="onLogout()">
-      <mat-icon>logout</mat-icon>
-      <span>{{ "nav.logout" | translate }}</span>
-    </button>
+    <!--
+      Bentuknya mengikuti butir sidenav, termasuk berkas ikonnya.
+
+      Ikon dirender sebagai mask, bukan <mat-icon>, dengan alasan yang sama
+      seperti di sidenav: warnanya mengikuti `currentColor` sehingga ikut
+      berubah saat disorot, alih-alih dikunci oleh set ikon Material yang
+      bentuk maupun tebalnya berbeda dari ikon aplikasi.
+    -->
+    <div class="tn-menu-list">
+      <button
+        type="button"
+        class="tn-menu-item"
+        (click)="onSettings()"
+      >
+        <span
+          class="tn-menu-ico"
+          [ngStyle]="{ '--tn-ico': 'url(assets/vector/setting.svg)' }"
+        ></span>
+        <span>{{ "nav.settings" | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="tn-menu-item"
+        *appCan="'audit_log:read'"
+        (click)="onActivity()"
+      >
+        <span
+          class="tn-menu-ico"
+          [ngStyle]="{ '--tn-ico': 'url(assets/vector/activity.svg)' }"
+        ></span>
+        <span>{{ "nav.activity" | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="tn-menu-item tn-menu-item--keluar"
+        (click)="onLogout()"
+      >
+        <span
+          class="tn-menu-ico"
+          [ngStyle]="{ '--tn-ico': 'url(assets/vector/logout.svg)' }"
+        ></span>
+        <span>{{ "nav.logout" | translate }}</span>
+      </button>
+    </div>
   </mat-menu>
 </mat-toolbar>

@@ -28,6 +28,29 @@ export interface ProyekRingkas {
  * proyeknya sudah ditutup. Yang dibedakan adalah penyajiannya, bukan
  * ketersediaannya.
  */
+/**
+ * Kode biaya pusat.
+ *
+ * PUSAT bukan proyek dan tidak pernah ada di tabel `projects` — ia menandai
+ * biaya yang tidak dibebankan ke proyek mana pun: perpanjangan legalitas,
+ * langganan perangkat lunak, rekrutmen, asuransi, sewa alat untuk kantor.
+ *
+ * Tanpa entri ini, seluruh dokumen berkode PUSAT ditandai "kode tidak
+ * dikenal" — padahal enam jenis PO justru mewajibkannya.
+ */
+export const KODE_PUSAT: ProyekRingkas = {
+  id: -1,
+  code: 'PUSAT',
+  name: 'Biaya pusat (non-proyek)',
+  isActive: true,
+  isCancelled: false,
+  // Tidak punya kontrak: biaya pusat tidak ditagihkan ke siapa pun,
+  // sehingga tidak ada nilai kontrak yang dapat dibandingkan.
+  contractValue: 0,
+  contractDpp: 0,
+  contractCount: 0,
+};
+
 @Injectable({ providedIn: 'root' })
 export class ProjectLookupService {
   private readonly api = inject(ApiService);
@@ -58,7 +81,11 @@ export class ProjectLookupService {
     this.berjalan = new Promise<void>((selesai) => {
       this.api.get('projects', { page: 1, pageSize: 500 }).subscribe({
         next: (res: any) => {
-          this._proyek.set(res?.data ?? []);
+          this._proyek.set(
+
+            ProjectLookupService.denganPusat(res?.data ?? []),
+
+          );
           this._dimuat.set(true);
           selesai();
         },
@@ -74,7 +101,9 @@ export class ProjectLookupService {
           console.error(
             '[Proyek] Gagal memuat daftar proyek; kode masih dapat diketik manual.',
           );
-          this._proyek.set([]);
+          // Bahkan saat gagal, PUSAT tetap tersedia: ia tidak berasal dari server.
+
+          this._proyek.set([KODE_PUSAT]);
           selesai();
         },
       });
@@ -86,6 +115,18 @@ export class ProjectLookupService {
   }
 
   /** Apakah kode ini terdaftar. Kode kosong dianggap belum diisi, bukan salah. */
+  /**
+   * Sisipkan PUSAT bila server belum memuatnya.
+   *
+   * Ditaruh paling depan karena paling sering dipakai.
+   */
+  private static denganPusat(daftar: ProyekRingkas[]): ProyekRingkas[] {
+    const sudah = daftar.some(
+      (p) => (p.code ?? '').toUpperCase() === KODE_PUSAT.code,
+    );
+    return sudah ? daftar : [KODE_PUSAT, ...daftar];
+  }
+
   dikenal(kode: string | null | undefined): boolean {
     const k = (kode ?? '').trim().toUpperCase();
     if (!k) return true;

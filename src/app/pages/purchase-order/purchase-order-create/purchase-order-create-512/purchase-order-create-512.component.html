@@ -542,6 +542,33 @@
           </div>
         }
       </div>
+
+      <!--
+        Blok tombol ini SEBELUMNYA TIDAK ADA.
+
+        Komponennya punya `onSubmit()` dan `isSubmitting`, dan formnya
+        terikat `(ngSubmit)`, tetapi tidak ada satu pun tombol yang
+        memicunya — sehingga PO 5.1.2 tidak pernah bisa disimpan dari layar
+        ini. Ditambahkan mengikuti bentuk lima belas varian lainnya.
+      -->
+      <div class="po512-actions">
+        <span class="po512-spacer"></span>
+        <button
+          type="button"
+          class="po512-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
+          type="submit"
+          class="po512-submit"
+          [disabled]="formGroup.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+        </button>
+      </div>
     </form>
   }
 </div>

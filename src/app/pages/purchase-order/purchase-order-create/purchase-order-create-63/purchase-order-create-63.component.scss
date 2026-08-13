@@ -1260,3 +1260,31 @@ app-wysiwyg {
 .po63-hint {
   margin-bottom: 0.9rem;
 }
+
+/* Tombol pratinjau: aksi sekunder di sebelah tombol simpan.
+   Bergaris, bukan berlatar penuh — supaya jelas mana yang menerbitkan
+   dokumen dan mana yang sekadar melihat.
+
+   Namanya `-previewbtn`, bukan `-preview`: nama itu sudah dipakai kotak
+   pratinjau klausul otomatis di keenam belas varian, dan memakainya ulang
+   membuat tombol ini mewarisi gaya kotak. */
+.po63-previewbtn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.4rem;
+  margin-right: 0.6rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--brand, #154dec);
+  border: 1px solid var(--brand, #154dec);
+  transition: background 0.15s ease;
+}
+.po63-previewbtn:hover:not(:disabled) {
+  background: var(--brand-soft, #e7ecfb);
+}
+.po63-previewbtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

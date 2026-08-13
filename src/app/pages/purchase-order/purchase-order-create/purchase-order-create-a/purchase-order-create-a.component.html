@@ -759,6 +759,14 @@
       <div class="poa-actions">
         <span class="poa-spacer"></span>
         <button
+          type="button"
+          class="poa-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
           type="submit"
           class="poa-submit"
           [disabled]="

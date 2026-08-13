@@ -37,6 +37,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 import { tanggalLokal } from '../../../../utils/tanggal';
+import { PoPreviewDialogComponent } from '../../../../components/po-preview-dialog/po-preview-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-purchase-order-create-g',
@@ -463,7 +465,86 @@ export class PurchaseOrderCreateGComponent {
     };
   }
 
-  onSubmit() {
+  /**
+   * Buka pratinjau dokumen tanpa menyimpan apa pun.
+   *
+   * Memakai penyusun data dan helper cetak YANG SAMA dengan penyimpanan,
+   * sehingga yang dilihat di layar benar-benar dokumen yang nanti terbit —
+   * bukan tiruan yang bisa menyimpang sendiri.
+   *
+   * Nomor PO belum ada karena diberikan server saat penyimpanan; sebagai
+   * gantinya dokumen ditandai sebagai draf, supaya tidak ada yang menyimpan
+   * berkas ini lalu mengiranya SPK yang sah.
+   */
+  /**
+   * Buka pratinjau dokumen di dalam dialog, tanpa menyimpan apa pun.
+   *
+   * Memakai penyusun data dan helper cetak YANG SAMA dengan penyimpanan,
+   * sehingga yang dilihat benar-benar dokumen yang nanti terbit — bukan
+   * tiruan yang bisa menyimpang sendiri.
+   */
+  async pratinjau(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+    this.dialog.open(PoPreviewDialogComponent, {
+      data: { src },
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+  }
+
+  /**
+   * Susun dokumen sebagai data URL.
+   *
+   * Nomor PO belum ada karena diberikan server saat penyimpanan; sebagai
+   * gantinya dokumen ditandai draf, supaya tidak ada yang menyimpan berkas
+   * ini lalu mengiranya SPK yang sah.
+   */
+  private async dokumenPratinjau(): Promise<string | null> {
+    try {
+      return (await printPurchaseOrderG(
+        this.buildPrintData('(DRAF — BELUM TERBIT)'),
+        'dataurl',
+      )) as string;
+    } catch (e) {
+      console.error('Gagal menyusun pratinjau purchase order:', e);
+      this.snackBar.open('Gagal membuat pratinjau dokumen', 'Close', {
+        duration: 3000,
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Tampilkan dokumennya lebih dulu, terbitkan setelah dinyatakan terbaca.
+   *
+   * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit —
+   * nomornya sudah terpakai dan salinannya sudah beredar. Menampilkan
+   * dokumen jadi pada langkah terakhir memindahkan koreksi ke saat masih
+   * murah: sebelum dokumennya ada.
+   *
+   * Gagal menyusun dokumen TIDAK meloloskan penerbitan. Melewatinya berarti
+   * PO terbit tanpa seorang pun pernah melihat isinya.
+   */
+  async onSubmit(): Promise<void> {
+    const src = await this.dokumenPratinjau();
+    if (!src) return;
+
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(PoPreviewDialogComponent, {
+          data: { src, konfirmasi: true },
+          maxWidth: '96vw',
+          autoFocus: false,
+          disableClose: true,
+        })
+        .afterClosed(),
+    );
+    if (setuju) this.terbitkan();
+  }
+
+  /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
+  private terbitkan() {
     this.isSubmitting = true;
     this.apiService
       .post('purchase-orders', this.formatData())

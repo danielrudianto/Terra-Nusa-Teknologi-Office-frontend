@@ -244,6 +244,13 @@ export class MainComponent {
           click: () => {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
+            // `user` ikut dihapus.
+            //
+            // Kunci itu disimpan saat masuk dan dibaca AuthService; tanpa
+            // menghapusnya, keluar lewat sidenav meninggalkan nama dan surel
+            // pengguna sebelumnya di peramban — sementara keluar lewat menu
+            // akun di atas sudah membersihkannya.
+            localStorage.removeItem('user');
 
             this.router.navigate(['/Login']);
           },

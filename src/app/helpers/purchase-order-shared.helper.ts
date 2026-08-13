@@ -17,7 +17,17 @@ import { OFFICE_CONTACT } from '../constants/clause-templates';
  */
 
 /** Cara dokumen dibuka: tab baru (default), dialog print, atau unduh. */
-export type PdfOutput = 'open' | 'print' | 'download';
+/**
+ * Cara dokumen dikeluarkan.
+ *
+ * `dataurl` mengembalikan Promise berisi data URL alih-alih membuka apa pun
+ * — dipakai untuk menampilkan dokumen di dalam dialog.
+ *
+ * Definisi ini TERPISAH dari yang di `invoice.helper.ts`, dan seluruh helper
+ * purchase order memakai yang di sini. Menambah nilai baru harus dilakukan
+ * di kedua tempat, atau salah satunya menolak nilai itu saat kompilasi.
+ */
+export type PdfOutput = 'open' | 'print' | 'download' | 'dataurl';
 
 const MONTHS = [
   'Januari',

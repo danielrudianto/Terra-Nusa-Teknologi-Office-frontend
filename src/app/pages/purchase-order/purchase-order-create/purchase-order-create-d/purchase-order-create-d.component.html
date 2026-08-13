@@ -175,10 +175,53 @@
                         <mat-option value="nextMonth">{{
                           "poForm.schedNextMonth" | translate
                         }}</mat-option>
+                        <mat-option value="semiMonthly">{{
+                          "poForm.schedSemiMonthly" | translate
+                        }}</mat-option>
                       </mat-select>
                     </mat-form-field>
 
-                    @if (wageGroupAt(i, j).value.scheduleType === "weekly") {
+                    @if (
+                      wageGroupAt(i, j).value.scheduleType === "semiMonthly"
+                    ) {
+                      <mat-form-field
+                        appearance="outline"
+                        class="pod-wage__cut"
+                      >
+                        <mat-label>{{
+                          "poForm.cutoffFirst" | translate
+                        }}</mat-label>
+                        <mat-select formControlName="cutoffFirst">
+                          @for (d of payDates; track d) {
+                            <mat-option [value]="d">{{ d }}</mat-option>
+                          }
+                        </mat-select>
+                        <mat-hint>{{
+                          "poForm.cutoffSecondFixed" | translate
+                        }}</mat-hint>
+                      </mat-form-field>
+                      <mat-form-field
+                        appearance="outline"
+                        class="pod-wage__day"
+                      >
+                        <mat-label>{{ "poForm.payDay" | translate }}</mat-label>
+                        <mat-select formControlName="payDay">
+                          @for (d of weekDays; track d.value) {
+                            <mat-option [value]="d.value">{{
+                              d.key | translate
+                            }}</mat-option>
+                          }
+                        </mat-select>
+                        <mat-icon
+                          matSuffix
+                          class="pod-wage__info"
+                          [matTooltip]="'poForm.payNextWeekHint' | translate"
+                          >info_outline</mat-icon
+                        >
+                      </mat-form-field>
+                    } @else if (
+                      wageGroupAt(i, j).value.scheduleType === "weekly"
+                    ) {
                       <mat-form-field
                         appearance="outline"
                         class="pod-wage__day"
@@ -238,8 +281,14 @@
                             "poForm.cutoffDate" | translate
                           }}</mat-label>
                           <mat-select formControlName="cutoffDate">
-                            @for (d of payDates; track d) {
-                              <mat-option [value]="d">{{ d }}</mat-option>
+                            @for (d of cutoffDates; track d) {
+                              <mat-option [value]="d">
+                                @if (d === "end") {
+                                  {{ "poForm.cutoffEndOfMonth" | translate }}
+                                } @else {
+                                  {{ d }}
+                                }
+                              </mat-option>
                             }
                           </mat-select>
                           <mat-icon
@@ -443,21 +492,7 @@
           </span>
         </div>
 
-        @if (isFieldStaff) {
-          <div class="pod-toggles__row">
-            <mat-form-field appearance="outline" class="pod-payout">
-              <mat-label>{{ "poD.payoutDate" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="payoutDay"
-                type="number"
-                [min]="1"
-                [max]="31"
-              />
-              <mat-hint>{{ "poD.cutOffMonthly" | translate }}</mat-hint>
-            </mat-form-field>
-          </div>
-        }
+
       </div>
 
       <div class="pod-toggles__row">
@@ -592,6 +627,14 @@
 
       <div class="pod-actions">
         <span class="pod-spacer"></span>
+        <button
+          type="button"
+          class="pod-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
         <button
           type="submit"
           class="pod-submit"

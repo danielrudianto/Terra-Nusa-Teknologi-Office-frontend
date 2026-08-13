@@ -919,3 +919,175 @@
     font-size: 20px;
   }
 }
+/* ---------------------------------------------------------------------------
+   Putar halaman.
+
+   Tombolnya muncul saat kursor berada di atas kartu — selalu tampak membuat
+   petak pratinjau ramai, sedangkan memutar bukan tindakan yang dilakukan
+   pada setiap halaman.
+   --------------------------------------------------------------------------- */
+.thumbnail-container {
+  position: relative;
+}
+
+.thumbnail-image {
+  /* Perputaran dianimasikan supaya arahnya terbaca; tanpa itu, gambarnya
+     seolah berganti begitu saja dan sulit dipastikan sudah berapa kali
+     ditekan. */
+  transition: transform 0.18s ease;
+}
+
+.rotate-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 9px;
+  background: rgba(22, 24, 29, 0.62);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+  &:hover {
+    background: rgba(22, 24, 29, 0.82);
+  }
+}
+.thumbnail-container:hover .rotate-btn,
+.rotate-btn:focus-visible {
+  opacity: 1;
+}
+
+/* Penanda sudut: tetap terlihat walau tombolnya tersembunyi, supaya halaman
+   yang sudah diputar dapat dikenali sekilas. */
+.rotate-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--brand, #154dec);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+   Alat coretan: penutup teks dan catatan.
+   --------------------------------------------------------------------------- */
+.alat-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.alat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border, #dfe3ea);
+  border-radius: 11px;
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: 0.15s all ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+  &--aktif {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand-strong, #0f3fd0);
+  }
+}
+.alat-petunjuk {
+  font-size: 0.8rem;
+  color: var(--brand, #154dec);
+  font-weight: 600;
+
+  &--siap {
+    color: var(--warn-fg, #a2651a);
+  }
+}
+
+/* ---- lapisan coretan di atas pratinjau ---- */
+.anotasi-layer {
+  position: absolute;
+  inset: 0;
+  /* Tidak menghalangi selama tidak ada alat yang dipilih: menekan halaman
+     tetap memilihnya seperti biasa. */
+  pointer-events: none;
+
+  &--aktif {
+    pointer-events: auto;
+    cursor: crosshair;
+  }
+}
+
+.anotasi {
+  position: absolute;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+
+  &--tutup {
+    background: #fff;
+    border: 1px dashed var(--brand, #154dec);
+  }
+  &--catatan {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px dashed var(--bad-fg, #b3322f);
+    border-radius: 4px;
+    padding: 1px 3px;
+  }
+}
+.anotasi__teks {
+  width: 100%;
+  min-width: 40px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.62rem;
+  color: var(--ink, #16181d);
+
+  .anotasi--catatan & {
+    color: var(--bad-fg, #b3322f);
+  }
+}
+.anotasi__x {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--bad-fg, #b3322f);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}

@@ -165,7 +165,26 @@ mat-toolbar {
 }
 
 /* account dropdown menu (di luar :host toolbar karena mat-menu overlay) */
+/*
+ * Panel menu akun.
+ *
+ * Tetap memakai `mat-menu`, bukan dialog buatan sendiri.
+ *
+ * Yang dibayangkan sebagai "dialog di ujung kanan" pada dasarnya adalah
+ * panel melayang yang menimpa isi halaman — dan itu memang yang dilakukan
+ * mat-menu. Bedanya hanya bentuk: dibuat lebih lebar dan berkartu.
+ *
+ * Menggantinya dengan dialog berarti menulis ulang penempatan, penutupan
+ * saat klik di luar, tombol Esc, dan pengembalian fokus ke pemicunya —
+ * semuanya sudah ditangani mat-menu, dan tidak ada satu pun yang menjadi
+ * lebih baik karena ditulis ulang.
+ */
 ::ng-deep .tn-account-menu {
+  min-width: 16.5rem !important;
+  max-width: 20rem;
+  border-radius: 14px !important;
+  overflow: hidden;
+
   .tn-account-menu__head {
     display: flex !important;
     align-items: center;
@@ -189,5 +208,73 @@ mat-toolbar {
   .tn-account-menu__email {
     font-size: 0.75rem;
     color: var(--faint, #9aa0ab);
+  }
+
+  /*
+   * Butir menu disamakan dengan butir sidenav.
+   *
+   * Nilainya disalin dari `side-nav-item.component.scss` — jarak, radius,
+   * ukuran ikon, bobot huruf — supaya dua daftar yang berisi tindakan sama
+   * tidak terlihat berasal dari dua aplikasi berbeda.
+   *
+   * `mat-menu-item` sengaja tidak dipakai: gayanya sudah ditetapkan
+   * Material (tinggi 48px, padding sendiri, ikon 24px) dan menimpanya satu
+   * per satu lebih rapuh daripada memakai tombol biasa.
+   */
+  .tn-menu-list {
+    padding: 6px;
+  }
+
+  .tn-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px 8px 13px;
+    margin-top: 2px;
+    background-color: transparent;
+    color: var(--on-inactive-button-color, #4b5160);
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    letter-spacing: 0.005em;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .tn-menu-item:first-child {
+    margin-top: 0;
+  }
+
+  .tn-menu-ico {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    opacity: 0.82;
+    background-color: currentColor;
+    -webkit-mask: var(--tn-ico) center / contain no-repeat;
+    mask: var(--tn-ico) center / contain no-repeat;
+    transition: opacity 0.15s ease;
+  }
+
+  .tn-menu-item:hover {
+    background-color: color-mix(in srgb, var(--brand, #154dec) 6%, transparent);
+    color: var(--on-active-button-color, #154dec);
+  }
+  .tn-menu-item:hover .tn-menu-ico {
+    opacity: 1;
+  }
+
+  /* Keluar dibedakan warnanya: satu-satunya butir yang mengakhiri sesi,
+     dan tidak dapat dibatalkan setelah ditekan. */
+  .tn-menu-item--keluar:hover {
+    background-color: color-mix(in srgb, var(--bad-fg, #d5303e) 8%, transparent);
+    color: var(--bad-fg, #d5303e);
   }
 }

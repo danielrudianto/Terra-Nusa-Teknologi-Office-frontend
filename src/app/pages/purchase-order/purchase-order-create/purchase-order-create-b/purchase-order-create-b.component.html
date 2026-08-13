@@ -302,9 +302,10 @@
             <div>
               <strong>Terbit sebagai SPK tipe A</strong>
               <span>
-                Hanya alat angkat/angkut yang dapat dipilih, dan operator dari
-                vendor dinyalakan sendiri. Scaffolding serta perlengkapan lain
-                tidak terbit lewat jalur ini.
+                Yang dapat dipilih hanya alat angkat/angkut: alat berat atau
+                kendaraan. Untuk alat berat, operator dari vendor dinyalakan
+                sendiri. Scaffolding serta perlengkapan lain tidak terbit
+                lewat jalur ini.
               </span>
             </div>
           </div>
@@ -488,6 +489,14 @@
 
       <div class="pob-actions">
         <span class="pob-spacer"></span>
+        <button
+          type="button"
+          class="pob-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
         <button
           type="submit"
           class="pob-submit"

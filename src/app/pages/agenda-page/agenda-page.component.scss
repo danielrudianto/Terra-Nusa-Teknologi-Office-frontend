@@ -1,0 +1,254 @@
+.ag-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.ag-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ag-bulan {
+  min-width: 11rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.ag-kartu {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Saat memuat, petaknya diredupkan sedikit — cukup untuk menandakan
+   isinya sedang berganti, tanpa menyembunyikan bulan yang sudah tampil. */
+.ag-kartu.is-loading .ag-petak {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.ag-loadingbar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.ag-loadingbar > span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: var(--brand);
+  animation: ag-geser 1.1s ease-in-out infinite;
+}
+@keyframes ag-geser {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(350%); }
+}
+
+.ag-hari {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.ag-hari span {
+  padding: 0.55rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: left;
+}
+
+.ag-petak {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.ag-sel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+  min-height: 6.5rem;
+  padding: 0.35rem 0.4rem;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+.ag-sel:nth-child(7n) {
+  border-right: 0;
+}
+.ag-sel:hover {
+  background: var(--hover);
+}
+/* Hari di luar bulan berjalan tetap ditampilkan agar pekan tidak terpotong,
+   tetapi diredupkan supaya batas bulannya tetap terbaca. */
+.ag-sel.luar {
+  background: var(--surface-2);
+}
+.ag-sel.luar .ag-tgl {
+  color: var(--faint);
+}
+.ag-sel.dipilih {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+}
+
+.ag-tgl {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.1rem;
+}
+.ag-sel.kini .ag-tgl {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+}
+
+.ag-acara {
+  display: block;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  padding: 0.12rem 0.3rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ag-acara--reminder {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.ag-acara--birthday {
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+}
+
+.ag-lagi {
+  font-size: 0.66rem;
+  color: var(--faint);
+  padding-left: 0.3rem;
+}
+
+/* ---- rincian ---- */
+.ag-rinci {
+  margin-top: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.1rem 1.35rem;
+}
+
+.ag-rinci__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+.ag-rinci__head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.ag-kosong {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.ag-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+}
+.ag-baris + .ag-baris {
+  border-top: 1px solid var(--line);
+}
+.ag-baris.bisa-diklik {
+  cursor: pointer;
+}
+.ag-baris.bisa-diklik:hover {
+  background: var(--hover);
+}
+
+.ag-titik {
+  flex: 0 0 auto;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+}
+.ag-titik--reminder { background: var(--brand); }
+.ag-titik--birthday { background: var(--warn-fg); }
+
+.ag-baris__teks {
+  flex: 1;
+  min-width: 0;
+}
+.ag-judul {
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.ag-ket {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.ag-kategori {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.ag-panah {
+  color: var(--faint);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 700px) {
+  .ag-sel {
+    min-height: 4.5rem;
+  }
+  .ag-acara {
+    font-size: 0.62rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-loadingbar > span { animation: none; }
+}

@@ -16,6 +16,7 @@ import {
   Reminder,
 } from '../../../services/agenda.service';
 import { ReminderCreateComponent } from '../reminder-create/reminder-create.component';
+import { RouterLink } from '@angular/router';
 
 /** Satu baris agenda, entah ulang tahun atau pengingat. */
 interface BarisAgenda {
@@ -38,6 +39,7 @@ interface BarisAgenda {
   selector: 'app-agenda',
   standalone: true,
   imports: [
+    RouterLink,
     CommonModule,
     TranslatePipe,
     MatIconModule,

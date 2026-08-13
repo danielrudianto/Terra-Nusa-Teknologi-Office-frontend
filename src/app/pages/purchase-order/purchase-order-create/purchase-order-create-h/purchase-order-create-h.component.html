@@ -1173,6 +1173,14 @@
           <div class="poh-actions">
             <span class="poh-spacer"></span>
             <button
+              type="button"
+              class="poh-previewbtn"
+              [disabled]="isSubmitting"
+              (click)="pratinjau()"
+            >
+              {{ "poForm.preview" | translate }}
+            </button>
+            <button
               type="submit"
               class="poh-submit"
               [disabled]="

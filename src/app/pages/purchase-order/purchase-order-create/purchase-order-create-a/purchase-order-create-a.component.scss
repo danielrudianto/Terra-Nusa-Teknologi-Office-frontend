@@ -740,3 +740,31 @@
 .poa-section__title--flush {
   margin-bottom: 0;
 }
+
+/* Tombol pratinjau: aksi sekunder di sebelah tombol simpan.
+   Bergaris, bukan berlatar penuh — supaya jelas mana yang menerbitkan
+   dokumen dan mana yang sekadar melihat.
+
+   Namanya `-previewbtn`, bukan `-preview`: nama itu sudah dipakai kotak
+   pratinjau klausul otomatis di keenam belas varian, dan memakainya ulang
+   membuat tombol ini mewarisi gaya kotak. */
+.poa-previewbtn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.4rem;
+  margin-right: 0.6rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--brand, #154dec);
+  border: 1px solid var(--brand, #154dec);
+  transition: background 0.15s ease;
+}
+.poa-previewbtn:hover:not(:disabled) {
+  background: var(--brand-soft, #e7ecfb);
+}
+.poa-previewbtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

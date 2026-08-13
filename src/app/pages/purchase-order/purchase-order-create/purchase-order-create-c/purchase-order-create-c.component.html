@@ -427,6 +427,14 @@
       <div class="poc-actions">
         <span class="poc-spacer"></span>
         <button
+          type="button"
+          class="poc-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
           type="submit"
           class="poc-submit"
           [disabled]="formGroup.invalid || isSubmitting"

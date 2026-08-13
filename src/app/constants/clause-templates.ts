@@ -202,6 +202,17 @@ export interface ClauseContext {
    * atau crane yang dipakai beberapa jam, ketentuan itu tidak berlaku —
    * unit yang rusak langsung diganti, dan tidak ada yang dibongkar-muat.
    */
+  /**
+   * Sewa kendaraan pada SPK tipe A.
+   *
+   * Kendaraan disewa untuk mengangkut, bukan untuk beroperasi di lokasi —
+   * sehingga ketentuan yang lahir dari alat berat tidak berlaku: pelaporan
+   * BBM, mekanik di lokasi, tanggung jawab keselamatan di area proyek, dan
+   * koordinasi bongkar-muat. Istilahnya pun berbeda: yang terjadi adalah
+   * serah terima kendaraan, bukan penempatan alat di lingkungan proyek.
+   */
+  sewaKendaraan?: boolean;
+
   shortTermRental?: boolean;
   /**
    * Jenis barang yang disewa.
@@ -1016,12 +1027,24 @@ const B_CLAUSES: ClauseTemplate[] = [
          * yang tidak pernah datang, dan ketentuan yang tidak pernah
          * dijalankan melemahkan seluruh dokumennya.
          */
-        ctx.operatorByVendor
-          ? `PIHAK KEDUA wajib memberikan daftar ${barang} dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`
-          : `PIHAK KEDUA wajib memberikan daftar ${barang} yang akan berada di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
-        ctx.operatorByVendor
-          ? `Hanya ${barang} dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`
-          : `Hanya ${barang} yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`,
+        /*
+         * Kendaraan diserahterimakan, bukan ditempatkan di lokasi.
+         *
+         * Alat berat berdiri di area proyek berminggu-minggu; kendaraan
+         * berpindah tangan lalu dipakai ke mana pun keperluannya. Menulis
+         * "berada di lingkungan proyek" pada sewa kendaraan menimbulkan
+         * pembatasan yang tidak pernah dijalankan.
+         */
+        ctx.sewaKendaraan
+          ? `PIHAK KEDUA wajib memberikan daftar ${barang} yang akan diserahterimakan selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`
+          : ctx.operatorByVendor
+            ? `PIHAK KEDUA wajib memberikan daftar ${barang} dan tenaga kerja yang akan beraktifitas di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`
+            : `PIHAK KEDUA wajib memberikan daftar ${barang} yang akan berada di lingkungan proyek tersebut diatas selambat-lambatnya 7 (tujuh) hari kalender sebelum tanggal tenggat mobilisasi melalui e-mail ke alamat ${OFFICE_CONTACT.email}.`,
+        ctx.sewaKendaraan
+          ? `Hanya ${barang} yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk diserahterimakan.`
+          : ctx.operatorByVendor
+            ? `Hanya ${barang} dan tenaga kerja yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`
+            : `Hanya ${barang} yang disetujui oleh PIHAK PERTAMA yang diizinkan untuk berada dalam lingkungan proyek.`,
         `PIHAK KEDUA wajib menyewakan ${barang} sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PERTAMA.`,
         // SILO hanya mengikat pesawat angkat dan angkut. Memintanya untuk
         // scaffolding atau kendaraan berarti meminta dokumen yang memang
@@ -1048,7 +1071,7 @@ const B_CLAUSES: ClauseTemplate[] = [
         // Pada sewa singkat, BBM sudah tercakup pada ketentuan harga di
         // atas — pelaporan terpisah hanya menambah kewajiban yang tidak
         // pernah dijalankan untuk pemakaian beberapa jam.
-        ...(bermesin && !ctx.shortTermRental
+        ...(bermesin && !ctx.shortTermRental && !ctx.sewaKendaraan
           ? [
               `Seluruh pengambilan dan pengisian Bahan Bakar Minyak (BBM) untuk operasional ${barang} wajib didokumentasikan oleh PIHAK KEDUA dan dilaporkan kepada perwakilan PIHAK PERTAMA.`,
             ]
@@ -1058,12 +1081,15 @@ const B_CLAUSES: ClauseTemplate[] = [
         // Mekanik didatangkan hanya pada sewa berdurasi panjang. Pada sewa
         // singkat, unit yang bermasalah diganti — bukan diperbaiki di
         // tempat.
-        ...(ctx.shortTermRental
+        // Mekanik didatangkan hanya pada sewa alat berat berdurasi panjang.
+        // Kendaraan yang bermasalah dibawa ke bengkel pemiliknya, bukan
+        // diperbaiki di lokasi.
+        ...(ctx.shortTermRental || ctx.sewaKendaraan
           ? []
           : [
               `Tim mekanik yang cakap dan handal wajib disediakan oleh PIHAK KEDUA bilamana adanya kerusakan/kendala pada ${barang} tersebut.`,
             ]),
-        'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah hari kerja maksimum pada periode tersebut, sejumlah hari perbaikan terhitung dari laporan kerusakan alat kerja.',
+        `Apabila terjadi kerusakan ${barang}, PIHAK PERTAMA berhak untuk mengurangi jumlah hari sewa pada periode tersebut, sejumlah hari perbaikan terhitung dari laporan kerusakan ${barang}.`,
         /*
          * Tenggat perbaikan berbeda menurut lama sewanya.
          *
@@ -1074,46 +1100,75 @@ const B_CLAUSES: ClauseTemplate[] = [
          */
         ctx.shortTermRental
           ? `Apabila ${barang} tidak dapat beroperasi, PIHAK KEDUA wajib mengirimkan unit pengganti yang laik pada hari yang sama. Seluruh biaya mobilisasi unit pengganti ditanggung PIHAK KEDUA, dan masa sewa selama unit tidak dapat beroperasi tidak diperhitungkan.`
-          : 'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
-        'Seluruh peralatan, perlengkapan dan material yang dibutuhkan selama perbaikan merupakan tanggung jawab PIHAK KEDUA.',
-        // Risiko mengikuti kendali: alat yang dioperasikan personel PIHAK
-        // KEDUA tetap menjadi tanggung jawab mereka. Bila dioperasikan
-        // personel PIHAK PERTAMA, tanggung jawabnya dibatasi pada nilai yang
-        // sudah disepakati tertulis — tanpa batas ini, nilai penggantian
-        // ditentukan sepihak oleh pemilik alat setelah kejadian.
-        // Batas nilai selalu disebut agar bila terjadi klaim, angkanya
-        // mengacu pada berita acara — bukan ditentukan sepihak setelah
-        // kejadian, saat posisi tawar sudah timpang.
-        `Keamanan dan keselamatan ${barang} selama berada di area proyek/kerja menjadi tanggung jawab ${
-          ctx.equipmentRiskBearer === 'pertama'
-            ? 'PIHAK PERTAMA'
-            : 'PIHAK KEDUA'
-        }, sebatas nilai alat kerja yang disepakati kedua belah pihak dan dicantumkan dalam Berita Acara Serah Terima Alat.`,
-        // Pengecualiannya mengikuti siapa yang menanggung: yang dikecualikan
-        // selalu hal-hal di luar kendali penanggungnya.
-        ...(ctx.equipmentRiskBearer === 'pertama'
-          ? [
-              'Tanggung jawab sebagaimana dimaksud tidak mencakup keausan wajar akibat pemakaian normal, cacat bawaan, kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian, serta kerusakan yang disebabkan oleh kelalaian personel atau mekanik PIHAK KEDUA.',
-            ]
-          : ctx.operatorByVendor
-            ? ['Alat kerja dioperasikan oleh personel PIHAK KEDUA.']
-            : [
-                // Alat dioperasikan personel PIHAK PERTAMA, sehingga
-                // kesalahan pengoperasian tidak dapat dibebankan ke pemilik.
-                'Tanggung jawab sebagaimana dimaksud tidak mencakup kerusakan yang disebabkan oleh kesalahan pengoperasian personel PIHAK PERTAMA, di luar keausan wajar akibat pemakaian normal, cacat bawaan, serta kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian.',
-              ]),
+          : ctx.sewaKendaraan
+            ? `Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak ${barang} tidak dapat digunakan. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib menyediakan ${barang} pengganti yang laik jalan dengan spesifikasi setara. Seluruh biaya penggantian dan pengantarannya ditanggung PIHAK KEDUA.`
+            : 'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
+        // Perlengkapan perbaikan hanya relevan bila perbaikan memang
+        // dilakukan di lokasi — pada kendaraan, perbaikan terjadi di
+        // bengkel pemiliknya.
+        ...(ctx.sewaKendaraan || ctx.shortTermRental
+          ? []
+          : [
+              'Seluruh peralatan, perlengkapan dan material yang dibutuhkan selama perbaikan merupakan tanggung jawab PIHAK KEDUA.',
+            ]),
+        /*
+         * Tanggung jawab keselamatan di area proyek tidak berlaku pada
+         * sewa kendaraan.
+         *
+         * Kendaraan tidak berdiam di lokasi kerja — ia dipakai berpindah,
+         * dan tanggung jawab selama dikendarai sudah diatur ketentuan lalu
+         * lintas serta asuransinya sendiri. Menuliskan batas nilai alat
+         * pada dokumen sewa kendaraan justru membuka tafsir yang tidak
+         * dimaksudkan.
+         */
+        ...(ctx.sewaKendaraan
+          ? []
+          : [
+            // Risiko mengikuti kendali: alat yang dioperasikan personel PIHAK
+            // KEDUA tetap menjadi tanggung jawab mereka. Bila dioperasikan
+            // personel PIHAK PERTAMA, tanggung jawabnya dibatasi pada nilai yang
+            // sudah disepakati tertulis — tanpa batas ini, nilai penggantian
+            // ditentukan sepihak oleh pemilik alat setelah kejadian.
+            // Batas nilai selalu disebut agar bila terjadi klaim, angkanya
+            // mengacu pada berita acara — bukan ditentukan sepihak setelah
+            // kejadian, saat posisi tawar sudah timpang.
+            `Keamanan dan keselamatan ${barang} selama berada di area proyek/kerja menjadi tanggung jawab ${
+              ctx.equipmentRiskBearer === 'pertama'
+                ? 'PIHAK PERTAMA'
+                : 'PIHAK KEDUA'
+            }, sebatas nilai alat kerja yang disepakati kedua belah pihak dan dicantumkan dalam Berita Acara Serah Terima Alat.`,
+            // Pengecualiannya mengikuti siapa yang menanggung: yang dikecualikan
+            // selalu hal-hal di luar kendali penanggungnya.
+            ...(ctx.equipmentRiskBearer === 'pertama'
+              ? [
+                  'Tanggung jawab sebagaimana dimaksud tidak mencakup keausan wajar akibat pemakaian normal, cacat bawaan, kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian, serta kerusakan yang disebabkan oleh kelalaian personel atau mekanik PIHAK KEDUA.',
+                ]
+              : ctx.operatorByVendor
+                ? ['Alat kerja dioperasikan oleh personel PIHAK KEDUA.']
+                : [
+                    // Alat dioperasikan personel PIHAK PERTAMA, sehingga
+                    // kesalahan pengoperasian tidak dapat dibebankan ke pemilik.
+                    'Tanggung jawab sebagaimana dimaksud tidak mencakup kerusakan yang disebabkan oleh kesalahan pengoperasian personel PIHAK PERTAMA, di luar keausan wajar akibat pemakaian normal, cacat bawaan, serta kerusakan mekanis yang bukan disebabkan kesalahan pengoperasian.',
+                  ])
+          ]),
         // Berita acara dua arah dibuat untuk penyewaan yang menginap di
         // lokasi. Untuk pemakaian beberapa jam, unitnya tidak pernah lepas
         // dari pengawasan pemiliknya.
         ...(ctx.shortTermRental
           ? []
           : [
-              'Serah terima alat kerja dituangkan dalam Berita Acara Serah Terima Alat yang memuat kondisi alat beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat mobilisasi dan demobilisasi. Kondisi yang tidak tercatat pada saat mobilisasi tidak dapat ditagihkan pada saat demobilisasi.',
+              // Pada sewa kendaraan namanya cukup "Berita Acara Serah
+              // Terima": yang diserahkan kendaraan, bukan alat kerja.
+              ctx.sewaKendaraan
+                ? `Serah terima ${barang} dituangkan dalam Berita Acara Serah Terima yang memuat kondisi ${barang} beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat penyerahan dan pengembalian. Kondisi yang tidak tercatat pada saat penyerahan tidak dapat ditagihkan pada saat pengembalian.`
+                : 'Serah terima alat kerja dituangkan dalam Berita Acara Serah Terima Alat yang memuat kondisi alat beserta dokumentasi foto, ditandatangani kedua belah pihak pada saat mobilisasi dan demobilisasi. Kondisi yang tidak tercatat pada saat mobilisasi tidak dapat ditagihkan pada saat demobilisasi.',
             ]),
-        'PIHAK KEDUA wajib mengasuransikan alat kerja miliknya dan menyerahkan salinan polis yang masih berlaku kepada PIHAK PERTAMA sebelum mobilisasi dilaksanakan.',
+        `PIHAK KEDUA wajib mengasuransikan ${barang} miliknya dan menyerahkan salinan polis yang masih berlaku kepada PIHAK PERTAMA sebelum mobilisasi dilaksanakan.`,
         // Tidak ada bongkar-muat pada sewa alat singkat: alatnya yang
         // mengangkat, bukan yang diangkat.
-        ...(ctx.shortTermRental
+        // Tidak ada bongkar-muat pada sewa singkat maupun sewa kendaraan:
+        // yang disewa justru yang mengangkut.
+        ...(ctx.shortTermRental || ctx.sewaKendaraan
           ? []
           : [
               'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',

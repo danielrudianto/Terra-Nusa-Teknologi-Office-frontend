@@ -421,6 +421,14 @@
       <div class="po652-actions">
         <span class="po652-spacer"></span>
         <button
+          type="button"
+          class="po652-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
           type="submit"
           class="po652-submit"
           [disabled]="

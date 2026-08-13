@@ -1389,3 +1389,24 @@ app-wysiwyg {
   color: var(--muted, #9aa1ad);
   font-size: 0.85rem;
 }
+
+.po512-previewbtn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.4rem;
+  margin-right: 0.6rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--brand, #154dec);
+  border: 1px solid var(--brand, #154dec);
+  transition: background 0.15s ease;
+}
+.po512-previewbtn:hover:not(:disabled) {
+  background: var(--brand-soft, #e7ecfb);
+}
+.po512-previewbtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

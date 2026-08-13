@@ -150,14 +150,14 @@
     "searchMenu": "Search menu...",
     "darkMode": "Dark mode",
     "lightMode": "Light mode",
-    "profile": "Profile",
     "bank": "Bank",
     "general": "General",
     "user": "User",
     "clear": "Clear",
     "activity": "Activity",
     "project": "Projects",
-    "projectReport": "Project Report"
+    "projectReport": "Project Report",
+    "agenda": "Agenda"
   },
   "status": {
     "paid": "Paid",
@@ -1598,7 +1598,17 @@
     "changeTypeTitle": "Change purchase order type?",
     "changeTypeBody": "Anything already entered on this form will be lost.",
     "priceExclPpnHint": "Prices are entered excluding VAT. When ticked, 11% VAT is added on top.",
-    "extraPointNote": "These points are appended after the standard ones (continuing the numbering), not replacing them. For example: delivery schedule, special terms, etc."
+    "extraPointNote": "These points are appended after the standard ones (continuing the numbering), not replacing them. For example: delivery schedule, special terms, etc.",
+    "schedSemiMonthly": "Twice a month (day X & month end)",
+    "cutoffFirst": "First cut-off",
+    "cutoffSecondFixed": "Second cut-off: month end",
+    "payNextWeekHint": "Paid on this weekday in the week following each cut-off.",
+    "cutoffEndOfMonth": "Month end",
+    "preview": "Preview",
+    "previewTitle": "Purchase Order Preview",
+    "confirmRead": "I have read and checked the entire contents of this document",
+    "confirmReadHint": "Once issued, the SPK number is used and the contents cannot be changed. Corrections require cancelling and re-issuing.",
+    "confirmCreate": "Issue Purchase Order"
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -2891,7 +2901,13 @@
     "weeklyFlow": "Cost and billing per week",
     "weeklyHint": "Weeks start on Monday. Weeks without transactions are still shown so gaps in work remain visible.",
     "busiestWeek": "Busiest week",
-    "cumulative": "Cumulative cost against contract"
+    "cumulative": "Cumulative cost against contract",
+    "tabTable": "Working table",
+    "colCode": "Code",
+    "colCategory": "Category",
+    "colValue": "Value",
+    "colSuppliers": "Suppliers",
+    "totalCost": "Total cost"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",
@@ -2946,5 +2962,15 @@
     "reasonHint": "Recorded in the payment history and visible during audits.",
     "submit": "Move",
     "moved": "Payment date moved."
+  },
+  "agendaPage": {
+    "title": "Agenda",
+    "description": "Colleagues' birthdays and reminders, by date",
+    "newReminder": "New reminder",
+    "today": "Today",
+    "addHere": "Add on this date",
+    "noEvent": "Nothing scheduled on this date.",
+    "birthdayOf": "Turns {{age}}",
+    "openCalendar": "Open agenda calendar"
   }
 }

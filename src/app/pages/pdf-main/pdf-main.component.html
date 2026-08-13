@@ -20,6 +20,42 @@
     [class.processing]="isProcessing"
     [class.selection-mode]="selectionMode"
   >
+    <!--
+      Alat coretan.
+
+      Selama tidak ada yang dipilih, menekan halaman memilihnya seperti
+      biasa — alat ini menyala hanya ketika dibutuhkan, sehingga cara kerja
+      yang sudah dikenal tidak berubah.
+    -->
+    <div class="alat-bar">
+      <button
+        type="button"
+        class="alat"
+        [class.alat--aktif]="alatAktif === 'tutup'"
+        (click)="pilihAlat('tutup')"
+      >
+        <mat-icon>format_color_fill</mat-icon>
+        <span>{{ "pdf.overwrite" | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="alat"
+        [class.alat--aktif]="alatAktif === 'catatan'"
+        (click)="pilihAlat('catatan')"
+      >
+        <mat-icon>sticky_note_2</mat-icon>
+        <span>{{ "pdf.note" | translate }}</span>
+      </button>
+
+      @if (alatAktif) {
+        <span class="alat-petunjuk">{{ "pdf.clickToPlace" | translate }}</span>
+      } @else if (adaAnotasi || adaRotasi) {
+        <span class="alat-petunjuk alat-petunjuk--siap">
+          {{ "pdf.pendingChanges" | translate }}
+        </span>
+      }
+    </div>
+
     <div
       class="files-grid"
       cdkDropList
@@ -54,13 +90,80 @@
 
         <!-- Page Thumbnail -->
         <div class="thumbnail-container">
+          <!--
+            Pratinjau ikut berputar mengikuti sudut yang dipilih, sehingga
+            hasilnya terlihat sebelum berkasnya disimpan.
+          -->
           <img
             [src]="page.thumbnail"
             [alt]="'Page ' + page.pageNumber"
             class="thumbnail-image"
             [class.loading]="isProcessing"
+            [style.transform]="'rotate(' + (page.rotation || 0) + 'deg)'"
           />
           <div class="page-badge">{{ i + 1 }}</div>
+
+          <!--
+            Tombol putar. Dokumen dari luar — scan tagihan vendor, faktur
+            pajak, surat jalan — kerap masuk dalam keadaan terbaring.
+          -->
+          <button
+            type="button"
+            class="rotate-btn"
+            (click)="putarHalaman(page); $event.stopPropagation()"
+            [attr.aria-label]="'pdf.rotate' | translate"
+            [matTooltip]="'pdf.rotate' | translate"
+          >
+            <mat-icon>rotate_right</mat-icon>
+          </button>
+
+          @if (page.rotation) {
+            <span class="rotate-badge">{{ page.rotation }}°</span>
+          }
+
+          <!--
+            Lapisan coretan.
+
+            Menangkap penekanan hanya ketika sebuah alat sedang dipilih;
+            di luar itu ia tidak menghalangi, sehingga menekan halaman
+            tetap memilihnya seperti biasa.
+          -->
+          <div
+            class="anotasi-layer"
+            [class.anotasi-layer--aktif]="alatAktif"
+            (click)="tambahAnotasi(page, $event)"
+          >
+            @for (a of page.anotasi || []; track $index) {
+              <div
+                class="anotasi"
+                [class.anotasi--tutup]="a.jenis === 'tutup'"
+                [class.anotasi--catatan]="a.jenis === 'catatan'"
+                [style.left.%]="a.x * 100"
+                [style.top.%]="a.y * 100"
+                [style.width.%]="a.jenis === 'tutup' ? (a.lebar || 0.24) * 100 : null"
+                [style.height.%]="a.jenis === 'tutup' ? (a.tinggi || 0.024) * 100 : null"
+                (click)="$event.stopPropagation()"
+              >
+                <input
+                  class="anotasi__teks"
+                  [(ngModel)]="a.teks"
+                  [placeholder]="
+                    (a.jenis === 'tutup' ? 'pdf.overwriteHint' : 'pdf.noteHint')
+                      | translate
+                  "
+                  (click)="$event.stopPropagation()"
+                />
+                <button
+                  type="button"
+                  class="anotasi__x"
+                  (click)="hapusAnotasi(page, $index); $event.stopPropagation()"
+                  aria-label="Hapus"
+                >
+                  ×
+                </button>
+              </div>
+            }
+          </div>
 
           <!-- Selected Overlay -->
           <div class="selected-overlay" *ngIf="page.selected && selectionMode">

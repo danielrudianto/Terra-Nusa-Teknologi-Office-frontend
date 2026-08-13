@@ -674,6 +674,18 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'Agenda',
+        loadComponent: () =>
+          import('./pages/agenda-page/agenda-page.component').then(
+            (m) => m.AgendaPageComponent,
+          ),
+        // Tanpa `permission`: agenda memuat ulang tahun rekan dan pengingat
+        // yang memang ditujukan kepada penggunanya sendiri. Server sudah
+        // menyaring isinya per pengguna, dan membatasinya lebih jauh justru
+        // menghilangkan gunanya.
+        data: { title: 'Agenda' },
+      },
+      {
         path: 'Project',
         canActivate: [permissionGuard],
         loadComponent: () =>

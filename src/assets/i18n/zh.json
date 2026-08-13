@@ -150,14 +150,14 @@
     "searchMenu": "搜索菜单…",
     "darkMode": "深色模式",
     "lightMode": "浅色模式",
-    "profile": "个人资料",
     "bank": "银行",
     "general": "通用",
     "user": "用户",
     "clear": "清除",
     "activity": "活动记录",
     "project": "项目",
-    "projectReport": "项目报表"
+    "projectReport": "项目报表",
+    "agenda": "日程"
   },
   "status": {
     "paid": "已付款",
@@ -1598,7 +1598,17 @@
     "changeTypeTitle": "更改采购单类型？",
     "changeTypeBody": "本表单中已填写的内容将会丢失。",
     "priceExclPpnHint": "填写的价格不含增值税；勾选后将在其上加收 11% 增值税。",
-    "extraPointNote": "此处的条款将接在标准条款之后（编号顺延），而非取代标准条款。例如：交货时间、特别约定等。"
+    "extraPointNote": "此处的条款将接在标准条款之后（编号顺延），而非取代标准条款。例如：交货时间、特别约定等。",
+    "schedSemiMonthly": "每月两次（X 日与月末）",
+    "cutoffFirst": "首次截止",
+    "cutoffSecondFixed": "第二次截止：月末",
+    "payNextWeekHint": "在每次截止后的下一周的该星期几支付。",
+    "cutoffEndOfMonth": "月末",
+    "preview": "预览",
+    "previewTitle": "采购订单预览",
+    "confirmRead": "我已阅读并核对本文件的全部内容",
+    "confirmReadHint": "一经签发，SPK 编号即已占用且内容不可更改。更正需作废后重新签发。",
+    "confirmCreate": "签发采购订单"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -2891,7 +2901,13 @@
     "weeklyFlow": "每周成本与开票",
     "weeklyHint": "每周自周一起算。无交易的周份仍会显示，以便看出停工间隔。",
     "busiestWeek": "最繁忙的一周",
-    "cumulative": "累计成本对比合同"
+    "cumulative": "累计成本对比合同",
+    "tabTable": "明细表",
+    "colCode": "代号",
+    "colCategory": "类别",
+    "colValue": "金额",
+    "colSuppliers": "供应商",
+    "totalCost": "成本合计"
   },
   "employeeStatus": {
     "title": "停用员工",
@@ -2946,5 +2962,15 @@
     "reasonHint": "将记录于付款历史，审计时可查。",
     "submit": "调整",
     "moved": "付款日期已调整。"
+  },
+  "agendaPage": {
+    "title": "日程",
+    "description": "同事生日与提醒，按日期显示",
+    "newReminder": "新建提醒",
+    "today": "今天",
+    "addHere": "在此日期添加",
+    "noEvent": "该日期没有日程。",
+    "birthdayOf": "{{age}} 岁生日",
+    "openCalendar": "打开日程日历"
   }
 }

@@ -267,6 +267,12 @@ export function printPurchaseOrderG(
   const pdf = pdfMake.createPdf(dd as any, undefined, fonts as any, vfs as any);
   const fileName = `${data.purchaseOrderName}.pdf`;
 
+  if (output === 'dataurl') {
+    // Dikembalikan sebagai Promise: pdfMake menyerahkan hasilnya lewat
+    // callback, sementara pemanggilnya perlu menunggu berkasnya jadi
+    // sebelum dialog ditampilkan.
+    return new Promise<string>((selesai) => pdf.getDataUrl((url) => selesai(url)));
+  }
   if (output === 'print') return pdf.print();
   if (output === 'download') return pdf.download(fileName);
   // 'open' — tampilkan di tab baru supaya bisa dilihat dulu sebelum dicetak

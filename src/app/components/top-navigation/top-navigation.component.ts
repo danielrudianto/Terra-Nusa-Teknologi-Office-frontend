@@ -13,11 +13,13 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
 import { SettingsService } from '../../services/setting.service';
 import { AccountService } from '../../services/account.service';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { CanDirective } from '../../directives/can.directive';
 
 @Component({
   selector: 'app-top-navigation',
   standalone: true,
   imports: [
+    CanDirective,
     AvatarComponent,
     CommonModule,
     TopNavigationBookmarkComponent,
@@ -72,9 +74,24 @@ export class TopNavigationComponent {
     return this.account.initials;
   }
 
-  onProfile(): void {
-    // halaman profile dibuat nanti
-    this.router.navigate(['/Profile']);
+  /*
+   * Menu akun berisi tiga tindakan yang sama dengan kelompok bawah sidenav:
+   * Pengaturan, Aktivitas, dan Keluar.
+   *
+   * Sebelumnya ada butir "Profil" yang menuju `/Profile` — rute yang tidak
+   * pernah dibuat, sehingga menekannya tidak melakukan apa pun. Butir mati
+   * lebih merugikan daripada butir yang tidak ada: yang menekannya mengira
+   * aplikasinya rusak, bukan fiturnya belum ada.
+   *
+   * Aktivitas dijaga izin `audit_log:read`; bila tidak berhak, butirnya
+   * disembunyikan — bukan ditampilkan lalu ditolak server.
+   */
+  onSettings(): void {
+    this.router.navigate(['/Settings']);
+  }
+
+  onActivity(): void {
+    this.router.navigate(['/Activity']);
   }
 
   onLogout(): void {

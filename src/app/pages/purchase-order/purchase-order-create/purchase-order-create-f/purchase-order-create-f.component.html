@@ -548,6 +548,14 @@
       <div class="pof-actions">
         <span class="pof-spacer"></span>
         <button
+          type="button"
+          class="pof-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
+        <button
           type="submit"
           class="pof-submit"
           [disabled]="formGroup.invalid || isSubmitting"

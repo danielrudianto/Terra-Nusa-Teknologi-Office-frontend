@@ -284,9 +284,18 @@ export class PurchaseOrderCreateBComponent {
    * dan genset tidak pernah disewa lewat jalur itu, dan menampilkannya
    * hanya membuka kemungkinan dokumen terbit dengan jenis yang keliru.
    */
+  /**
+   * Jenis barang yang boleh dipilih.
+   *
+   * Pada SPK tipe A yang disewa adalah yang mengangkat atau mengangkut —
+   * alat berat dan kendaraan. Scaffolding, genset, dan perlengkapan lain
+   * tidak pernah terbit lewat jalur itu.
+   */
   get rentalCategories() {
     return this.isTipeA
-      ? this.SEMUA_KATEGORI.filter((c) => c.value === 'alat-berat')
+      ? this.SEMUA_KATEGORI.filter((c) =>
+          ['alat-berat', 'kendaraan'].includes(c.value),
+        )
       : this.SEMUA_KATEGORI;
   }
 
@@ -371,7 +380,9 @@ export class PurchaseOrderCreateBComponent {
      * tersimpan masih pilihan lama dan klausulnya ikut yang lama.
      */
     const kategori = this.formGroup.get('rentalCategory');
-    if (kategori?.value !== 'alat-berat') kategori?.setValue('alat-berat');
+    if (!['alat-berat', 'kendaraan'].includes(kategori?.value)) {
+      kategori?.setValue('alat-berat');
+    }
 
     /*
      * Operator dari vendor dinyalakan sendiri.
@@ -390,6 +401,9 @@ export class PurchaseOrderCreateBComponent {
   private clauseContext() {
     const v = this.formGroup.getRawValue();
     return {
+      // Sewa kendaraan pada SPK tipe A: sebagian ketentuan alat berat
+      // tidak berlaku, dan istilahnya berbeda.
+      sewaKendaraan: v.purchaseType === 'A' && v.rentalCategory === 'kendaraan',
       // Hanya berarti saat terbit sebagai tipe A.
       shortTermRental: v.purchaseType === 'A' && !!v.shortTermRental,
       paymentTerm: v.paymentTerm,
