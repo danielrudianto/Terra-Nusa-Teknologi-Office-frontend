@@ -139,3 +139,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.ssp__hint--asing {
+  color: var(--warn-fg, #a2651a);
+  font-weight: 600;
+}

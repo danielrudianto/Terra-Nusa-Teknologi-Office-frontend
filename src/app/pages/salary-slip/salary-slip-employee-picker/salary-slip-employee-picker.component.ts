@@ -144,32 +144,31 @@ export class SalarySlipEmployeePickerComponent {
     return typeof k === 'string' ? k : (k?.name ?? '');
   }
 
+  /** Terisi bila daftar berhasil dimuat tetapi tidak ada satu pun isinya. */
+  kosong = false;
+
   private muatKaryawan(): void {
     /*
-     * Hanya karyawan yang masih bekerja.
+     * Penyaringan keaktifan diserahkan ke server.
      *
-     * Tabel karyawan tidak punya kolom `isActive`; keaktifan ditentukan dua
-     * hal: belum dihapus, dan tanggal berakhirnya belum lewat. Karyawan
-     * yang sudah resign tidak pernah dibuatkan slip, dan menampilkannya
-     * hanya memperpanjang daftar yang harus dibaca.
+     * Endpoint ini sudah menerima `status=active`, yang menyaring karyawan
+     * bertanggal berakhir. Memakainya berarti daftar yang datang sudah
+     * benar, dan layar tidak perlu menebak arti kolom yang belum tentu
+     * ikut terkirim.
      */
-    const hariIni = new Date();
-    hariIni.setHours(0, 0, 0, 0);
-
-    const masihBekerja = (e: any): boolean => {
-      if (e?.isDelete || e?.isDeleted) return false;
-      if (!e?.endDate) return true;
-      const akhir = new Date(e.endDate);
-      return isNaN(akhir.getTime()) ? true : akhir >= hariIni;
-    };
-
     this.api
-      .get('employees', { page: 1, pageSize: 500 })
+      .get('employees', { page: 1, pageSize: 500, status: 'active' })
       .subscribe({
         next: (r: any) => {
-          const data = r?.data ?? r ?? [];
+          // Bentuk balikan diterima apa adanya: {data: []}, {employees: []},
+          // atau larik langsung — supaya perubahan di server tidak diam-diam
+          // membuat daftarnya kosong.
+          const data: any[] = Array.isArray(r)
+            ? r
+            : (r?.data ?? r?.employees ?? []);
+
           this.karyawan = data
-            .filter(masihBekerja)
+            .filter((e: any) => !e?.isDelete && !e?.isDeleted)
             .map((e: any) => ({
               id: e.id,
               name: e.name,
@@ -177,10 +176,12 @@ export class SalarySlipEmployeePickerComponent {
               position: e.position ?? null,
             }));
           this.tersaring = this.karyawan;
+          this.kosong = this.karyawan.length === 0;
         },
         error: () => {
           this.karyawan = [];
           this.tersaring = [];
+          this.kosong = true;
           this.snackBar.open(
             this.translate.instant('notify.loadFailed'),
             'Close',

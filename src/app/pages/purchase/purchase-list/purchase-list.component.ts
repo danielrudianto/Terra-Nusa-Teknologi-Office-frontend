@@ -369,8 +369,19 @@ export class PurchaseListComponent {
                   },
                   error: (err) => {
                     console.error('Error deleting purchase:', err);
-                    this.snackBar.open(err.error.detail, 'Close', {
-                      duration: 3000,
+                    /*
+                     * Kode tetap dari server dipetakan ke kalimat, bukan
+                     * ditampilkan apa adanya. Tanpa ini yang terbaca pengguna
+                     * adalah "PURCHASE_HAS_PAYMENTS" — yang tidak memberi
+                     * tahu apa yang harus dilakukan berikutnya.
+                     */
+                    const pesan =
+                      err?.error?.detail === 'PURCHASE_HAS_PAYMENTS'
+                        ? this.translate.instant('purchase.deleteHasPayments')
+                        : (err?.error?.detail ??
+                          this.translate.instant('notify.deleteFailed'));
+                    this.snackBar.open(pesan, 'Close', {
+                      duration: 6000,
                     });
                   },
                 });

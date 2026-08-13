@@ -301,7 +301,8 @@
     "viewCopyWhatsapp": "Copy for WhatsApp",
     "viewDelete": "Delete",
     "viewCopyPphObject": "Copy PPh object",
-    "viewCopyAccount": "Copy account number"
+    "viewCopyAccount": "Copy account number",
+    "deleteHasPayments": "This purchase already has payments. Cancel the payments first, or ask a higher-level user for help."
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -502,16 +503,7 @@
     "k0": "Married; 0 dependants (K/0)",
     "k1": "Married; 1 dependant (K/1)",
     "k2": "Married; 2 dependants (K/2)",
-    "k3": "Married; 3 dependants (K/3)",
-    "createButton": "New salary slip",
-    "createTitle": "New salary slip",
-    "createSub": "Choose an employee and period",
-    "employeePlaceholder": "Search by name or ID",
-    "employeeNotChosen": "Choose an employee from the list",
-    "month": "Month",
-    "year": "Year",
-    "periodHint": "Defaults to last month, since salaries are paid for the period already worked. Change it if needed.",
-    "continue": "Continue"
+    "k3": "Married; 3 dependants (K/3)"
   },
   "employee": {
     "title": "Employees",

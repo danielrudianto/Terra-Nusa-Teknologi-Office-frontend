@@ -26,6 +26,13 @@
         </mat-autocomplete>
         @if (isLoading) {
           <mat-hint>{{ "common.loading" | translate }}</mat-hint>
+        } @else if (kosong) {
+          <!-- Dibedakan dari "tidak ada yang cocok": daftar yang kosong sejak
+               awal berarti ada yang salah pada pemuatannya, bukan pada apa
+               yang diketik. -->
+          <mat-hint class="ssp__hint--asing">{{
+            "salarySlip.noEmployee" | translate
+          }}</mat-hint>
         }
       </mat-form-field>
 
