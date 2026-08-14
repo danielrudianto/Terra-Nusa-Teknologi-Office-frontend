@@ -23,6 +23,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
 
 import { ApiService } from '../../../services/api.service';
+import { ClientAutocompleteComponent } from '../../../components/client-autocomplete/client-autocomplete.component';
 
 @Component({
   selector: 'app-project-update',
@@ -39,6 +40,7 @@ import { ApiService } from '../../../services/api.service';
     MatDatepickerModule,
     MatSnackBarModule,
     TranslatePipe,
+    ClientAutocompleteComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './project-update.component.html',

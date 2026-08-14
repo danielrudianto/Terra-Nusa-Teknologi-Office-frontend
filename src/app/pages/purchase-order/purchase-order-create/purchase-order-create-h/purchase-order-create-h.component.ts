@@ -983,6 +983,19 @@ export class PurchaseOrderCreateHComponent {
           Number(this.formGroup.get('retentionPercent')?.value) || 0,
         retentionReleaseDays:
           Number(this.formGroup.get('retentionReleaseDays')?.value) || 0,
+        /*
+         * Penanda formulir asal.
+         *
+         * `purchaseType` bernilai 'H1' atau 'H2' — membedakan badan usaha
+         * dari perorangan — sedangkan templat klausulnya terdaftar sebagai
+         * 'H'. Tanpa penanda ini, pencarian templat tidak menemukan apa pun
+         * dan pratinjau tampil TANPA satu klausul pun, sementara dokumen
+         * yang dicetak tetap lengkap karena tidak lewat jalur ini.
+         *
+         * Polanya sama dengan PO-B: penanda ini yang menentukan bentuk
+         * klausulnya, bukan kode jenisnya.
+         */
+        formOrigin: 'H',
         billingDocuments: this.billingDocumentValues,
         kewajiban: this.kewajibanPreview,
         keterangan: this.pasal4Preview,

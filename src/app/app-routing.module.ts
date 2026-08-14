@@ -799,14 +799,25 @@ export const routes: Routes = [
       },
       {
         path: 'Settings',
-        canActivate: [permissionGuard],
+        /*
+         * TANPA penjaga izin.
+         *
+         * Isinya milik penggunanya sendiri: tema, bahasa, ukuran teks, dan
+         * ganti sandi. Sebelumnya dijaga `user:read` — izin melihat SELURUH
+         * pengguna, yang level 5 — sehingga seluruh pengaturan pribadi hanya
+         * terbuka bagi pemilik sistem, dan menu Pengaturan tidak pernah
+         * muncul di navigasi bagi siapa pun selain dia.
+         *
+         * Endpoint yang dipakainya sudah menentukan penggunanya dari token,
+         * bukan dari parameter, sehingga tidak ada data orang lain yang
+         * dapat terbaca dari sini.
+         */
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
           ),
         data: {
           title: 'Settings',
-          permission: 'user:read',
           panduan: 'pengaturan',
         },
       },

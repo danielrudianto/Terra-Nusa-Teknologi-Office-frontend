@@ -6,7 +6,7 @@
     }}</span>
     <div class="sv-head__text">
       <div class="sv-name">
-        {{ formGroup.get("name")?.value || "Salary slip" }}
+        {{ formGroup.get("name")?.value || ('hardcoded.salarySlip' | translate) }}
       </div>
       <div class="sv-meta">
         {{ formGroup.get("monthName")?.value }}

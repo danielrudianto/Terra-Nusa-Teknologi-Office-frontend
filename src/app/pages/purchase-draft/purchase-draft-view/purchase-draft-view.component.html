@@ -5,7 +5,7 @@
     }}</span>
     <div class="pdv-head__text">
       <div class="pdv-name">
-        {{ formGroup.get("purchaseOrderName")?.value || "Purchase draft" }}
+        {{ formGroup.get("purchaseOrderName")?.value || ('hardcoded.purchaseDraft' | translate) }}
       </div>
       <div class="pdv-meta">
         {{ formGroup.get("supplierName")?.value

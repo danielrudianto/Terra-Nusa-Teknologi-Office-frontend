@@ -130,7 +130,7 @@
         class="mic-submit"
         [disabled]="isSubmitting || !canSubmit"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.simpanPerubahan' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

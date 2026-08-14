@@ -75,7 +75,7 @@
             {{ "common.poInfo" | translate }}
           </div>
           <span class="po651-modechip">
-            <strong>{{ isKuota ? "KUOTA" : "PESERTA" }}</strong>
+            <strong>{{ isKuota ? ('hardcoded.kuota' | translate) : ('hardcoded.peserta' | translate) }}</strong>
             <button
               type="button"
               class="po651-modechip__btn"
@@ -141,7 +141,7 @@
       <div class="po651-card">
         <div class="po651-cardhead">
           <div class="po651-section__title po651-section__title--flush">
-            {{ isKuota ? "Rincian kuota" : "Rincian pemeriksaan" }}
+            {{ isKuota ? ('hardcoded.rincianKuota' | translate) : ('hardcoded.rincianPemeriksaan' | translate) }}
           </div>
           <button type="button" class="po651-add" (click)="addLine()">
             <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}</button>
@@ -153,7 +153,7 @@
               <div class="po651-line__head">
                 <span class="po651-line__no">#{{ i + 1 }}</span>
                 <span class="po651-line__label">
-                  {{ getFormGroupAt(i).value.task || "Belum diisi" }}
+                  {{ getFormGroupAt(i).value.task || ('hardcoded.belumDiisi' | translate) }}
                 </span>
                 <span class="po651-line__amt"
                   >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
@@ -173,7 +173,7 @@
               <div class="po651-grid">
                 <mat-form-field appearance="outline" class="po651-span2">
                   <mat-label>{{
-                    isKuota ? "Nama paket / slot" : "Jenis pemeriksaan"
+                    isKuota ? ('hardcoded.namaPaketSlot' | translate) : ('hardcoded.jenisPemeriksaan' | translate)
                   }}</mat-label>
                   <input
                     matInput
@@ -219,7 +219,7 @@
 
                 <mat-form-field appearance="outline" class="po651-span2">
                   <mat-label>{{
-                    isKuota ? "Harga per satuan" : "Harga per peserta"
+                    isKuota ? ('hardcoded.hargaPerSatuan' | translate) : ('hardcoded.hargaPerPeserta' | translate)
                   }}</mat-label>
                   <input
                     matInput
@@ -465,7 +465,7 @@
               formGroup.invalid || t.controls.length === 0 || isSubmitting
             "
           >
-            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+            {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
           </button>
         </div>
       </div>

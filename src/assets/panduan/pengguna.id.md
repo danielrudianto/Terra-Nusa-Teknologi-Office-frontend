@@ -47,8 +47,17 @@ Dua hal yang perlu diperhatikan:
 seseorang di divisi kosong membuat ia hanya melihat beranda dan kalender.
 Layar menandai divisi semacam itu; jangan pilih tanpa sadar.
 
-**Level 5 tidak diberi divisi.** Pemilik memang perlu melihat seluruh sistem,
-dan memberinya divisi hanya tampak membatasi padahal tidak.
+**Level 5 dan 4 tidak diberi divisi.** Pemilik memang perlu melihat seluruh
+sistem, dan General Manager wilayahnya seluruh perusahaan — bukan satu divisi.
+Memberi mereka divisi hanya tampak membatasi padahal tidak.
+
+**Slip gaji dan data karyawan mengecualikan aturan itu.** Keduanya hanya
+terbuka bagi divisi HRD dan FAT, berapa pun levelnya. General Manager tidak
+dapat membukanya hanya karena levelnya tinggi.
+
+Bila memang perlu, berikan lewat divisi HRD atau izin khusus. Cara itu
+meninggalkan keputusan yang tercatat di jejak audit — sedangkan akses yang
+terbuka sendiri tidak pernah diputuskan siapa pun.
 
 ## Izin khusus
 

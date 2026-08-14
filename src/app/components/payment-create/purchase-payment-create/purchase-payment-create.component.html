@@ -17,10 +17,10 @@
     </span>
     <div class="ppc-head__text">
       <h2 class="ppc-title">
-        {{ metaFormGroup.get("invoiceName")?.value || "Bayar Purchase" }}
+        {{ metaFormGroup.get("invoiceName")?.value || ('hardcoded.bayarPurchase' | translate) }}
       </h2>
       <span class="ppc-sub">{{
-        metaFormGroup.get("supplierName")?.value || "Pembayaran purchase"
+        metaFormGroup.get("supplierName")?.value || ('hardcoded.pembayaranPurchase' | translate)
       }}</span>
     </div>
   </div>
@@ -161,7 +161,7 @@
               >
             </span>
             <span class="ppc-hist__chip" [class.is-pending]="!p.isApprove">{{
-              p.isApprove ? "Approved" : "Pending"
+              p.isApprove ? ('hardcoded.approved' | translate) : ('hardcoded.pending' | translate)
             }}</span>
             <span class="ppc-hist__amt"
               >Rp {{ p.amount | number: "1.0-0" }}</span
@@ -235,7 +235,7 @@
         class="ppc-submit"
         [disabled]="isLoading || isSubmitting || !formGroup.valid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Bayar purchase" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.bayarPurchase' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

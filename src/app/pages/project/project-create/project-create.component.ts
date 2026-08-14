@@ -23,6 +23,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
 
 import { ApiService } from '../../../services/api.service';
+import { ClientAutocompleteComponent } from '../../../components/client-autocomplete/client-autocomplete.component';
 
 @Component({
   selector: 'app-project-create',
@@ -39,6 +40,7 @@ import { ApiService } from '../../../services/api.service';
     MatDatepickerModule,
     MatSnackBarModule,
     TranslatePipe,
+    ClientAutocompleteComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './project-create.component.html',
@@ -58,7 +60,6 @@ export class ProjectCreateComponent {
   }
 
   isSubmitting = false;
-  clients: any[] = [];
 
   formGroup = new FormGroup({
     code: new FormControl('', [
@@ -72,18 +73,7 @@ export class ProjectCreateComponent {
     endDate: new FormControl<Date | null>(null),
   });
 
-  ngOnInit(): void {
-    this.apiService.get('clients', { page: 1, pageSize: 200 }).subscribe({
-      next: (res: any) => {
-        this.clients = res?.data ?? res ?? [];
-      },
-      error: () => {
-        // Klien bersifat pelengkap; gagal memuatnya tidak boleh menghalangi
-        // pembuatan proyek. Isiannya cukup dibiarkan kosong.
-        this.clients = [];
-      },
-    });
-  }
+
 
   /**
    * Kode diseragamkan huruf besar sejak diketik.

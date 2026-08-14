@@ -105,7 +105,7 @@
 
           <mat-form-field appearance="outline" class="poh-span2">
             <mat-label>{{
-              isEntity ? "Subkontraktor (badan usaha)" : "Mandor / perorangan"
+              isEntity ? ('hardcoded.subkontraktorBadanUsaha' | translate) : ('hardcoded.mandorPerorangan' | translate)
             }}</mat-label>
             <input
               matInput
@@ -532,7 +532,7 @@
                 <div class="poh-scope__head">
                   <span class="poh-scope__no">#{{ i + 1 }}</span>
                   <span class="poh-scope__label">{{
-                    getFormGroupAt(i).value.task || "Pekerjaan belum diisi"
+                    getFormGroupAt(i).value.task || ('hardcoded.pekerjaanBelumDiisi' | translate)
                   }}</span>
                   @if (!isLumpSum) {
                     <span class="poh-scope__amt"
@@ -1198,11 +1198,18 @@
           <button type="button" class="poh-add" (click)="addClause()">
             <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
+        <!--
+          Satu keterangan, bukan dua.
+
+          Sebelumnya banner dan teks kecil di bawahnya mengatakan hal yang
+          sama: bahwa poin tambahan melanjutkan penomoran yang baku. Dua
+          kalimat untuk satu maksud membuat yang membacanya mengira ada
+          ketentuan kedua yang belum ia pahami.
+        -->
         <div class="poh-banner">
-            <mat-icon>info</mat-icon>
-            <span>{{ "poForm.extraPointNote" | translate }}</span>
-          </div>
-        <p class="poh-rate__hint">{{ "poA.extraPointHint" | translate }}</p>
+          <mat-icon>info</mat-icon>
+          <span>{{ "poForm.extraPointNote" | translate }}</span>
+        </div>
 
         @if (additionalClauses.controls.length === 0) {
           <div class="poh-empty">
@@ -1253,7 +1260,7 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
             </button>
           </div>
         }
@@ -1304,7 +1311,7 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
             </button>
           </div>
         </div>

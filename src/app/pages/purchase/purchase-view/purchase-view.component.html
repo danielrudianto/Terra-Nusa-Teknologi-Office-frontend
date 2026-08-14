@@ -181,7 +181,7 @@
             [class.pv-badge--ok]="p.get('isApprove')?.value"
             [class.pv-badge--wait]="!p.get('isApprove')?.value"
           >
-            {{ p.get("isApprove")?.value ? "Approved" : "Pending" }}
+            {{ p.get("isApprove")?.value ? ('hardcoded.approved' | translate) : ('hardcoded.pending' | translate) }}
           </span>
         </div>
       </div>

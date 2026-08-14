@@ -105,12 +105,12 @@
               }}</mat-icon>
               {{
                 f["taxingStatus"].value === "tax_invoice_not_published"
-                  ? "Faktur belum terbit"
+                  ? ('hardcoded.fakturBelumTerbit' | translate)
                   : f["taxingStatus"].value === "waiting_for_payment"
-                    ? "Menunggu pembayaran"
+                    ? ('hardcoded.menungguPembayaran' | translate)
                     : f["taxingStatus"].value === "income_tax_not_published"
-                      ? "Bukti potong belum ada"
-                      : "Selesai"
+                      ? ('hardcoded.buktiPotongBelumAda' | translate)
+                      : ('hardcoded.selesai' | translate)
               }}
             </span>
             <span *ngIf="!f['taxingStatus'].value">—</span>
@@ -208,7 +208,7 @@
             class="sv-summary__row sv-summary__row--out"
             [class.is-settled]="vOutstanding <= 0"
           >
-            <span>{{ vOutstanding <= 0 ? "Lunas" : "Sisa tagihan" }}</span>
+            <span>{{ vOutstanding <= 0 ? ('hardcoded.lunas' | translate) : ('hardcoded.sisaTagihan' | translate) }}</span>
             <span>{{
               vOutstanding | currency: "Rp " : "symbol" : "1.0-0"
             }}</span>

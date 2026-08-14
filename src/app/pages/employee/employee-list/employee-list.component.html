@@ -140,6 +140,35 @@
                 <mat-icon>edit</mat-icon
                 ><span>{{ "menu.updateEmployee" | translate }}</span>
               </button>
+              <!--
+                Profil pribadi; izinnya modul tersendiri, bukan `employees`.
+
+                Isinya data yang aksesnya sengaja lebih sempit — dijaga
+                dengan izin yang sama seperti endpointnya, supaya menu ini
+                tidak muncul bagi yang akan ditolak servernya.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'employee_profile:read'"
+                (click)="openProfile(element)"
+              >
+                <mat-icon>badge</mat-icon
+                ><span>{{ "employeeProfile.menu" | translate }}</span>
+              </button>
+              <!--
+                Formulir keadaan berkala; izinnya modul tersendiri.
+
+                Dipisah dari profil karena isinya berbeda sifat: profil
+                diisi sekali, formulir ini ditanyakan tiap periode.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'employee_form:read'"
+                (click)="openForm(element)"
+              >
+                <mat-icon>assignment</mat-icon
+                ><span>{{ "employeeForm.menu" | translate }}</span>
+              </button>
               <button
                 mat-menu-item
                 *appCan="'employees:update'"

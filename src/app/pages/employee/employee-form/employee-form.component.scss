@@ -1,0 +1,431 @@
+/*
+ * Bentuknya sengaja sama dengan layar profil.
+ *
+ * Keduanya diisi orang yang sama untuk orang yang sama; membuat dua
+ * bentuk berbeda hanya menambah yang harus dipelajari tanpa alasan.
+ */
+
+.efm {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.efm * {
+  box-sizing: border-box;
+}
+
+.efm-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--line);
+}
+.efm-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.efm-head__text {
+  min-width: 0;
+}
+.efm-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.efm-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.efm-content {
+  padding: 1.25rem 1.5rem !important;
+  background: var(--surface, #fff);
+  width: 100%;
+  max-height: 66vh;
+}
+
+.efm-state {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* Keterangan yang perlu dibaca sebelum mengisi, bukan sesudah. */
+.efm-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--brand);
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.efm-banner--quiet {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--muted, #6b7280);
+}
+.efm-banner .mat-icon {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+/* ---- bagian yang dapat dibuka-tutup ---- */
+
+.efm-sec {
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  margin-bottom: 0.55rem;
+  background: var(--surface, #fff);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+.efm-sec.on {
+  border-color: var(--brand);
+}
+
+.efm-sec__head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.efm-sec__head:hover {
+  background: var(--brand-soft);
+}
+.efm-sec.on .efm-sec__head {
+  background: var(--brand-soft);
+}
+
+.efm-sec__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.efm-sec.on .efm-sec__ico {
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+}
+.efm-sec__ico .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+.efm-sec__judul {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+}
+
+/* Kelengkapan tiap bagian; terlihat tanpa perlu membukanya. */
+.efm-sec__hitung {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.7rem;
+  font-weight: 600;
+  /* Angka lebar tetap: tanpa ini "1/9" dan "8/9" bergeser tiap berubah. */
+  font-variant-numeric: tabular-nums;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.efm-sec__hitung.kosong {
+  background: var(--line);
+  color: var(--faint, #8a8f98);
+}
+.efm-sec__hitung.penuh {
+  background: var(--good-soft, #d8f5e3);
+  color: var(--good-fg, #1a7f47);
+}
+
+.efm-sec__panah {
+  flex: 0 0 auto;
+  color: var(--faint, #8a8f98);
+  transition: transform 0.15s ease;
+}
+.efm-sec.on .efm-sec__panah {
+  transform: rotate(180deg);
+}
+
+/*
+ * Isi bagian muncul dengan melebar dari atas.
+ *
+ * Bukan hiasan: yang membuka satu bagian perlu melihat isinya DATANG dari
+ * kepala yang barusan ditekan. Tanpa itu, isi yang muncul seketika membuat
+ * seluruh halaman seperti melompat, dan mata harus mencari lagi di mana
+ * posisinya.
+ *
+ * Hanya saat membuka. Saat menutup, isinya memang harus segera hilang —
+ * menahan yang sudah tidak dilihat justru memperlambat perpindahan.
+ */
+.efm-sec__isi {
+  padding: 0.85rem;
+  border-top: 1px solid var(--line);
+  animation: efm-buka 0.18s ease-out;
+  transform-origin: top;
+}
+
+@keyframes efm-buka {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Kartu baris berulang muncul satu per satu saat ditambahkan.
+ *
+ * Menambah baris pada daftar yang sudah panjang mudah terlewat; gerakan
+ * singkat menunjukkan baris mana yang baru.
+ */
+.efm-kartu {
+  animation: efm-kartu-masuk 0.16s ease-out;
+}
+
+@keyframes efm-kartu-masuk {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*
+ * Yang tidak menginginkan gerakan tidak mendapatkannya.
+ *
+ * Sebagian orang merasa mual oleh gerakan di layar, dan sistem operasinya
+ * sudah menyediakan pengaturan itu. Mengabaikannya berarti memaksakan
+ * sesuatu yang sudah mereka nyatakan tidak diinginkan.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .efm-sec__isi,
+  .efm-kartu {
+    animation: none;
+  }
+}
+
+/* ---- satu baris berulang = satu kartu ---- */
+
+.efm-kartu {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.7rem 0.75rem 0.2rem;
+  margin-bottom: 0.6rem;
+}
+.efm-kartu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.efm-kartu__no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/*
+ * Satu isian per baris — BUKAN petak.
+ *
+ * Petak tiga kolom memaksa mata melompat ke kanan lalu turun lalu kembali
+ * ke kiri, dan pada sembilan isian urutannya tidak lagi terbaca. Yang
+ * mengisi harus mencari-cari isian berikutnya, dan yang terlewat baru
+ * ketahuan saat menyimpan.
+ *
+ * Satu kolom membuat urutannya persis seperti membaca: turun terus. Lebih
+ * panjang, tetapi bagian yang terbuka hanya satu pada satu waktu, sehingga
+ * panjangnya tidak menumpuk.
+ */
+.efm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.efm-grid .mat-mdc-form-field {
+  width: 100%;
+}
+/* Tidak lagi berarti pada satu kolom; disisakan agar templat tidak berubah. */
+.efm-span2 {
+  width: 100%;
+}
+
+.efm-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 30px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 9px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.efm-add:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.efm-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--faint, #8a8f98);
+  cursor: pointer;
+}
+.efm-del:hover {
+  background: var(--bad-soft, #fde3e4);
+  color: var(--bad-fg, #e5484d);
+}
+.efm-del .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+/* Sub-judul di dalam satu bagian, mis. susunan keluarga. */
+.efm-subjudul {
+  margin: 0.9rem 0 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+
+.efm-empty {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--faint, #8a8f98);
+}
+
+.efm-foot {
+  display: flex !important;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line);
+}
+.efm-spacer {
+  flex: 1 1 auto;
+}
+
+.efm-close,
+.efm-save {
+  height: 36px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.efm-close {
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+}
+.efm-save {
+  border: 0;
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+}
+.efm-save:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* Di layar sempit, baris berulang menumpuk agar tidak terpotong. */
+@media (max-width: 720px) {
+  .efm-span2 {
+    grid-column: auto;
+  }
+}
+
+/* Keadaan kosong: belum ada periode yang dibuat. */
+.efm-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2.5rem 1rem;
+  color: var(--faint, #8a8f98);
+  text-align: center;
+}
+.efm-kosong .mat-icon {
+  width: 34px;
+  height: 34px;
+  font-size: 34px;
+  line-height: 34px;
+}
+.efm-kosong p {
+  margin: 0;
+  font-size: 0.85rem;
+  max-width: 34ch;
+}
+
+/* Sakelar ya/tidak sejajar dengan isian lain di petaknya. */
+.efm-toggle {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-bottom: 1.25rem;
+}

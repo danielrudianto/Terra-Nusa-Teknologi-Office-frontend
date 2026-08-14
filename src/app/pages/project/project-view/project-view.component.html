@@ -164,7 +164,7 @@
       (click)="lihatKontrak(k)"
     >
       <span class="prv-jenis" [ngClass]="'prv-jenis--' + k.documentType">
-        {{ ("project.doc" + (k.documentType === "spk" ? "Spk" : "Adendum")) | translate }}
+        {{ ("project.doc" + (k.documentType === "spk" ? "Spk" : ('hardcoded.adendum' | translate))) | translate }}
       </span>
       <div class="prv-baris__teks">
         <div class="prv-nomor">{{ k.documentNumber }}</div>

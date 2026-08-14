@@ -47,9 +47,18 @@ Two things to watch:
 an empty division leaves them seeing only the home page and the calendar. The
 screen marks such divisions; don't pick one unawares.
 
-**Level 5 is not given a division.** The owner genuinely needs to see the whole
-system, and giving them a division only looks like a restriction without being
-one.
+**Levels 5 and 4 are not given a division.** The owner genuinely needs to see
+the whole system, and the General Manager's remit is the entire company rather
+than one division. Giving either a division only looks like a restriction
+without being one.
+
+**Salary slips and employee records are the exception.** Both open only to the
+HRD and FAT divisions, whatever the level. A General Manager cannot open them
+on seniority alone.
+
+If access is genuinely needed, grant it through the HRD division or a specific
+permission. That leaves a decision recorded in the audit trail — whereas access
+that opens by itself was never decided by anyone.
 
 ## Special permissions
 

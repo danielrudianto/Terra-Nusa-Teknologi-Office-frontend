@@ -78,15 +78,15 @@
         >
           {{
             isSubscription
-              ? "Langganan (subscription)"
-              : "Beli putus (perpetual)"
+              ? ('hardcoded.langgananSubscription' | translate)
+              : ('hardcoded.beliPutusPerpetual' | translate)
           }}
         </mat-slide-toggle>
         <span class="po5112-typehint">
           {{
             isSubscription
-              ? "Berulang per-periode — cocok untuk Google Workspace, M365, domain, maintenance."
-              : "Sekali bayar, lisensi berlaku tanpa batas waktu."
+              ? ('hardcoded.berulangPerPeriodeCocokUntuk' | translate)
+              : ('hardcoded.sekaliBayarLisensiBerlakuTanpa' | translate)
           }}
         </span>
       </div>
@@ -484,7 +484,7 @@
           class="po5112-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
         </button>
       </div>
     </div>

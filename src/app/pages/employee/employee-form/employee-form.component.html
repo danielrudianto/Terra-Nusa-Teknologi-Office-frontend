@@ -1,0 +1,216 @@
+<div class="efm">
+  <div class="efm-head" mat-dialog-title>
+    <span class="efm-head__icon"><mat-icon>assignment</mat-icon></span>
+    <div class="efm-head__text">
+      <h2 class="efm-title">
+        {{ versi?.title || ("employeeForm.title" | translate) }}
+      </h2>
+      <span class="efm-sub">{{ input.name || "" }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="efm-content">
+    @if (isLoading) {
+      <div class="efm-state"><mat-spinner diameter="34"></mat-spinner></div>
+    } @else if (!versi) {
+      <!--
+        Belum ada periode yang dibuat.
+
+        Bukan galat: sebelum periode pertama dibuat, memang belum ada
+        formulir yang dapat diisi.
+      -->
+      <div class="efm-kosong">
+        <mat-icon>event_busy</mat-icon>
+        <p>{{ "employeeForm.noVersion" | translate }}</p>
+      </div>
+    } @else {
+      @if (baru) {
+        <div class="efm-banner">
+          <mat-icon>info</mat-icon>
+          <span>{{ "employeeForm.firstTime" | translate }}</span>
+        </div>
+      }
+
+      <form [formGroup]="formGroup">
+        @for (b of bagian; track b.key) {
+          <div class="efm-sec" [class.on]="terbuka === b.key">
+            <button
+              type="button"
+              class="efm-sec__head"
+              (click)="bukaBagian(b.key)"
+              [attr.aria-expanded]="terbuka === b.key"
+            >
+              <span class="efm-sec__judul">{{ b.title }}</span>
+              <span
+                class="efm-sec__hitung"
+                [class.penuh]="terisi(b) === b.fields.length"
+                [class.kosong]="terisi(b) === 0"
+                >{{ terisi(b) }}/{{ b.fields.length }}</span
+              >
+              <mat-icon class="efm-sec__panah">expand_more</mat-icon>
+            </button>
+
+            @if (terbuka === b.key) {
+              <div class="efm-sec__isi">
+                @if (b.description) {
+                  <div class="efm-banner efm-banner--quiet">
+                    <mat-icon>info</mat-icon>
+                    <span>{{ b.description }}</span>
+                  </div>
+                }
+
+                <div class="efm-grid">
+                  @for (f of b.fields; track f.key) {
+                    @if (f.type === "teks") {
+                      <mat-form-field appearance="outline">
+                        <mat-label>{{ f.label }}</mat-label>
+                        <input matInput [formControlName]="f.key" />
+                        @if (f.hint) {
+                          <mat-hint>{{ f.hint }}</mat-hint>
+                        }
+                      </mat-form-field>
+                    }
+
+                    @if (f.type === "panjang") {
+                      <mat-form-field appearance="outline" class="efm-span2">
+                        <mat-label>{{ f.label }}</mat-label>
+                        <textarea
+                          matInput
+                          [formControlName]="f.key"
+                          rows="2"
+                          style="resize: none"
+                        ></textarea>
+                        @if (f.hint) {
+                          <mat-hint>{{ f.hint }}</mat-hint>
+                        }
+                      </mat-form-field>
+                    }
+
+                    @if (f.type === "angka") {
+                      <mat-form-field appearance="outline">
+                        <mat-label>{{ f.label }}</mat-label>
+                        <input matInput type="number" [formControlName]="f.key" />
+                        @if (f.hint) {
+                          <mat-hint>{{ f.hint }}</mat-hint>
+                        }
+                      </mat-form-field>
+                    }
+
+                    @if (f.type === "tanggal") {
+                      <mat-form-field appearance="outline">
+                        <mat-label>{{ f.label }}</mat-label>
+                        <input matInput type="date" [formControlName]="f.key" />
+                      </mat-form-field>
+                    }
+
+                    @if (f.type === "pilih") {
+                      <mat-form-field appearance="outline">
+                        <mat-label>{{ f.label }}</mat-label>
+                        <mat-select [formControlName]="f.key">
+                          @for (o of f.options; track o) {
+                            <mat-option [value]="o">{{ o }}</mat-option>
+                          }
+                        </mat-select>
+                        @if (f.hint) {
+                          <mat-hint>{{ f.hint }}</mat-hint>
+                        }
+                      </mat-form-field>
+                    }
+
+                    @if (f.type === "ya-tidak") {
+                      <div class="efm-toggle efm-span2">
+                        <mat-slide-toggle color="primary" [formControlName]="f.key">
+                          {{ f.label }}
+                        </mat-slide-toggle>
+                      </div>
+                    }
+                  }
+                </div>
+
+                <!--
+                  Daftar berulang di luar petak.
+
+                  Tiap barisnya berisi beberapa kolom; diletakkan dalam petak
+                  yang sama dengan isian tunggal, lebarnya ikut menyempit dan
+                  isinya tidak terbaca.
+                -->
+                @for (f of b.fields; track f.key) {
+                  @if (f.type === "daftar") {
+                    <div class="efm-subjudul">{{ f.label }}</div>
+
+                    @if (!daftarDi(f.key).length) {
+                      <p class="efm-empty">
+                        {{ "employeeForm.emptyList" | translate }}
+                      </p>
+                    }
+
+                    <div [formArrayName]="f.key">
+                      @for (row of daftarDi(f.key).controls; track $index) {
+                        <div class="efm-kartu" [formGroup]="barisDaftar(f.key, $index)">
+                          <div class="efm-kartu__head">
+                            <span class="efm-kartu__no">{{ $index + 1 }}</span>
+                            <button
+                              type="button"
+                              class="efm-del"
+                              (click)="hapusBaris(f.key, $index)"
+                              [attr.aria-label]="'common.delete' | translate"
+                            >
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                          <div class="efm-grid">
+                            @for (k of f.columns; track k.key) {
+                              @if (k.type === "pilih") {
+                                <mat-form-field appearance="outline">
+                                  <mat-label>{{ k.label }}</mat-label>
+                                  <mat-select [formControlName]="k.key">
+                                    @for (o of k.options; track o) {
+                                      <mat-option [value]="o">{{ o }}</mat-option>
+                                    }
+                                  </mat-select>
+                                </mat-form-field>
+                              } @else if (k.type === "tanggal") {
+                                <mat-form-field appearance="outline">
+                                  <mat-label>{{ k.label }}</mat-label>
+                                  <input matInput type="date" [formControlName]="k.key" />
+                                </mat-form-field>
+                              } @else {
+                                <mat-form-field appearance="outline">
+                                  <mat-label>{{ k.label }}</mat-label>
+                                  <input matInput [formControlName]="k.key" />
+                                </mat-form-field>
+                              }
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+
+                    <button type="button" class="efm-add" (click)="tambahBaris(f)">
+                      <mat-icon>add</mat-icon>{{ "common.add" | translate }}
+                    </button>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
+      </form>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="efm-foot">
+    <span class="efm-spacer"></span>
+    <button type="button" class="efm-close" (click)="tutup()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="efm-save"
+      [disabled]="formGroup.invalid || isSubmitting || isLoading || !versi"
+      (click)="simpan()"
+    >
+      {{ (isSubmitting ? "common.saving" : "common.save") | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

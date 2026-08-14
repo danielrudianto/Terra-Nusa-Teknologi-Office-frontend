@@ -80,7 +80,7 @@
             <div class="po652-line__head">
               <span class="po652-line__no">#{{ i + 1 }}</span>
               <span class="po652-line__label">
-                {{ getFormGroupAt(i).value.trainingType || "Belum dipilih" }}
+                {{ getFormGroupAt(i).value.trainingType || ('hardcoded.belumDipilih' | translate) }}
               </span>
               <span class="po652-line__amt"
                 >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
@@ -430,7 +430,7 @@
             formGroup.invalid || t.controls.length === 0 || isSubmitting
           "
         >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
         </button>
       </div>
     </div>

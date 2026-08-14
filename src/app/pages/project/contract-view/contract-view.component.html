@@ -7,7 +7,7 @@
       <h2 class="cv__title">{{ k.documentNumber || "—" }}</h2>
       <span class="cv__sub">
         {{
-          ("project.doc" + (isAdendum ? "Adendum" : "Spk")) | translate
+          ("project.doc" + (isAdendum ? ('hardcoded.adendum' | translate) : "Spk")) | translate
         }}
         <ng-container *ngIf="data?.projectName">
           &middot; {{ data.projectName }}

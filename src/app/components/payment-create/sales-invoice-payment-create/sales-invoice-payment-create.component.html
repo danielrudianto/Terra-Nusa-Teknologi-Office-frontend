@@ -17,10 +17,10 @@
     </span>
     <div class="sip-head__text">
       <h2 class="sip-title">
-        {{ formGroup.get("name")?.value || "Terima Pembayaran" }}
+        {{ formGroup.get("name")?.value || ('hardcoded.terimaPembayaran' | translate) }}
       </h2>
       <span class="sip-sub">{{
-        formGroup.get("clientName")?.value || "Pembayaran sales invoice"
+        formGroup.get("clientName")?.value || ('hardcoded.pembayaranSalesInvoice' | translate)
       }}</span>
     </div>
   </div>
@@ -152,7 +152,7 @@
       (click)="onSubmit()"
       [disabled]="isLoading || isSubmitting || !paymentFormGroup.valid"
     >
-      {{ isSubmitting ? "Menyimpan..." : "Terima pembayaran" }}
+      {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.terimaPembayaran' | translate) }}
     </button>
   </mat-dialog-actions>
 </div>

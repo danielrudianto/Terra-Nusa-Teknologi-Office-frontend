@@ -21,7 +21,7 @@
     </span>
     <div class="sbd-head__text">
       <h2 class="sbd-title">
-        {{ isCurrentlyBlacklisted ? "Cabut Blacklist" : "Blacklist Supplier" }}
+        {{ isCurrentlyBlacklisted ? ('hardcoded.cabutBlacklist' | translate) : ('hardcoded.blacklistSupplier' | translate) }}
       </h2>
       <span class="sbd-sub">{{ data?.name }}</span>
     </div>
@@ -84,10 +84,10 @@
     >
       {{
         isSubmitting
-          ? "Menyimpan..."
+          ? ('hardcoded.menyimpan' | translate)
           : isCurrentlyBlacklisted
-            ? "Cabut Blacklist"
-            : "Blacklist Supplier"
+            ? ('hardcoded.cabutBlacklist' | translate)
+            : ('hardcoded.blacklistSupplier' | translate)
       }}
     </button>
   </mat-dialog-actions>

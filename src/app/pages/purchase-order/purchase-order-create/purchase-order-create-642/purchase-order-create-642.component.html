@@ -78,7 +78,7 @@
             {{ "common.poInfo" | translate }}
           </div>
           <span class="po642-modechip">
-            <strong>{{ lewatBroker ? "BROKER" : "LANGSUNG" }}</strong>
+            <strong>{{ lewatBroker ? ('hardcoded.broker' | translate) : ('hardcoded.langsung' | translate) }}</strong>
             <button
               type="button"
               class="po642-modechip__btn"
@@ -273,7 +273,7 @@
 
                 <mat-form-field appearance="outline" class="po642-span2">
                   <mat-label>
-                    {{ lewatBroker ? "Imbalan jasa broker" : "Nilai jasa" }}
+                    {{ lewatBroker ? ('hardcoded.imbalanJasaBroker' | translate) : ('hardcoded.nilaiJasa' | translate) }}
                   </mat-label>
                   <input
                     matInput
@@ -563,7 +563,7 @@
               formGroup.invalid || t.controls.length === 0 || isSubmitting
             "
           >
-            {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+            {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
           </button>
         </div>
       </div>

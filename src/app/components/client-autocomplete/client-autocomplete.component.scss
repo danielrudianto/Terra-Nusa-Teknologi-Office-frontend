@@ -1,0 +1,18 @@
+.cla {
+  width: 100%;
+}
+
+/* Penanda bahwa satu klien benar-benar sudah dipilih. */
+.cla-ok {
+  color: var(--good-fg, #1a7f47);
+}
+
+/* Nama dan kota pada satu baris; kota membedakan nama yang mirip. */
+.cla-nama {
+  font-weight: 500;
+}
+.cla-kota {
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--faint, #8a8f98);
+}

@@ -3,7 +3,7 @@
     <span class="lv-avatar">{{ (loan?.creditorName || "?").charAt(0) }}</span>
     <div class="lv-head__text">
       <div class="lv-name">{{ loan?.creditorName || "Loan" }}</div>
-      <div class="lv-meta">{{ loan?.description || "Detail pinjaman" }}</div>
+      <div class="lv-meta">{{ loan?.description || ('hardcoded.detailPinjaman' | translate) }}</div>
     </div>
     <span
       class="lv-chip"

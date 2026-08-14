@@ -80,7 +80,7 @@
         class="bc-submit"
         [disabled]="isSubmitting || bankFormGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan rekening" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.simpanRekening' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

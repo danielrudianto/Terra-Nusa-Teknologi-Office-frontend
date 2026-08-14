@@ -256,7 +256,7 @@
         [disabled]="isSubmitting || isLoading"
         (click)="confirm()"
       >
-        {{ isSubmitting ? "Memproses..." : "Approve invoice" }}
+        {{ isSubmitting ? ('hardcoded.memproses' | translate) : ('hardcoded.approveInvoice' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

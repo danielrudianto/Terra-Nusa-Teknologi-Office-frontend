@@ -22,7 +22,7 @@
             PO yang dibuka, sehingga tidak ada yang perlu diganti di sini.
           -->
         <span class="po63-modechip">
-          <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
+          <strong>{{ isGoods ? ('hardcoded.barang' | translate) : ('hardcoded.jasa' | translate) }}</strong> · {{ modeLabel }}
         </span>
       </div>
       <div class="po63-grid">
@@ -88,8 +88,8 @@
           <mat-icon>campaign</mat-icon>
           <span>{{
             isGoods
-              ? 'Belum ada barang. Klik "Tambah barang".'
-              : 'Belum ada jasa. Klik "Tambah jasa".'
+              ? ('hardcoded.belumAdaBarangKlikTambah' | translate)
+              : ('hardcoded.belumAdaJasaKlikTambah' | translate)
           }}</span>
         </div>
       } @else {
@@ -108,7 +108,7 @@
                       getFormGroupAt(i).value.sku
                     }}</span>
                   } @else {
-                    {{ getFormGroupAt(i).value.task || "Jasa belum diisi" }}
+                    {{ getFormGroupAt(i).value.task || ('hardcoded.jasaBelumDiisi' | translate) }}
                   }
                 </span>
                 <span class="po63-line__amt"
@@ -189,8 +189,8 @@
                 >
                   <mat-label>{{
                     isGoods
-                      ? "Catatan barang (sablon, warna, ukuran)"
-                      : "Catatan jasa (durasi, revisi, deadline)"
+                      ? ('hardcoded.catatanBarangSablonWarnaUkuran' | translate)
+                      : ('hardcoded.catatanJasaDurasiRevisiDeadline' | translate)
                   }}</mat-label>
                   <textarea
                     matInput
@@ -529,7 +529,7 @@
             formGroup.invalid || t.controls.length === 0 || isSubmitting
           "
         >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
         </button>
       </div>
     </div>

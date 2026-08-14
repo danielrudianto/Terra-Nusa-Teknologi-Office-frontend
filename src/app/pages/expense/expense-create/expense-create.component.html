@@ -588,7 +588,7 @@
               (click)="onSubmit()"
               [disabled]="!isValid || isSubmitting"
             >
-              {{ isSubmitting ? "Menyimpan..." : "Submit expense" }}
+              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.submitExpense' | translate) }}
             </button>
           </div>
         </div>

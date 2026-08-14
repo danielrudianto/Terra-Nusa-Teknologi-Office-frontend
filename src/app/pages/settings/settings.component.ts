@@ -101,7 +101,9 @@ export class SettingsComponent implements OnInit {
     if (this.userId == null) return;
     this.isLoading = true;
     this.apiService
-      .get('users/' + this.userId, {})
+      // `users/me`, bukan `users/{id}`: yang terakhir menuntut izin melihat
+      // seluruh pengguna, sedangkan ini profil miliknya sendiri.
+      .get('users/me', {})
       .subscribe({
         next: (data: any) => {
           this.profileFormGroup.patchValue({

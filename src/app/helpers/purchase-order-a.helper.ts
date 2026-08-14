@@ -326,7 +326,8 @@ function signatureColumns(data: IPurchaseOrderA) {
         stack: [
           { text: 'PIHAK PERTAMA,' },
           { text: 'PT. Alpha Konstruksi Nusantara' },
-          { text: '\n\n\n' },
+          // Jarak ke garis diatur `signerLines`; baris kosong tambahan
+          // membuat tingginya berbeda antar dokumen.
           ...signerLines(data.approvedByName, data.approvedByPosition),
         ],
       },

@@ -73,7 +73,7 @@
             {{ "common.poInfo" | translate }}
           </div>
           <span class="po512-modechip">
-            <strong>{{ isGoods ? "BARANG" : "JASA" }}</strong> · {{ modeLabel }}
+            <strong>{{ isGoods ? ('hardcoded.barang' | translate) : ('hardcoded.jasa' | translate) }}</strong> · {{ modeLabel }}
             <button
               type="button"
               class="po512-modechip__btn"
@@ -111,7 +111,7 @@
 
           <mat-form-field appearance="outline" class="po512-span2">
             <mat-label>{{
-              isGoods ? "Supplier" : "Vendor jasa / bengkel"
+              isGoods ? "Supplier" : ('hardcoded.vendorJasaBengkel' | translate)
             }}</mat-label>
             <input
               matInput
@@ -136,7 +136,7 @@
       <div class="po512-card">
         <div class="po512-cardhead">
           <div class="po512-section__title po512-section__title--flush">
-            {{ isGoods ? "Daftar Barang" : "Daftar Pekerjaan" }}
+            {{ isGoods ? ('hardcoded.daftarBarang' | translate) : ('hardcoded.daftarPekerjaan' | translate) }}
           </div>
           @if (isGoods) {
             <button
@@ -156,8 +156,8 @@
             <mat-icon>{{ isGoods ? "inventory_2" : "handyman" }}</mat-icon>
             <span>{{
               isGoods
-                ? 'Belum ada barang. Klik "Tambah barang".'
-                : 'Belum ada pekerjaan. Klik "Tambah pekerjaan".'
+                ? ('hardcoded.belumAdaBarangKlikTambah' | translate)
+                : ('hardcoded.belumAdaPekerjaanKlikTambah' | translate)
             }}</span>
           </div>
         } @else {
@@ -177,7 +177,7 @@
                       }}</span>
                     } @else {
                       {{
-                        getFormGroupAt(i).value.task || "Pekerjaan belum diisi"
+                        getFormGroupAt(i).value.task || ('hardcoded.pekerjaanBelumDiisi' | translate)
                       }}
                     }
                   </span>
@@ -472,7 +472,7 @@
           <mat-icon>lock</mat-icon>
           <span
             >Poin terisi otomatis sesuai mode ({{
-              isGoods ? "barang/sparepart" : "jasa/perbaikan"
+              isGoods ? ('hardcoded.barangSparepart' | translate) : ('hardcoded.jasaPerbaikan' | translate)
             }}) &amp; termin pembayaran. Poin tambahan menyusul di bawahnya.
             Teks inilah yang tersimpan.</span
           >
@@ -557,7 +557,7 @@
           class="po512-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? "Menyimpan..." : "Buat Purchase Order" }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
         </button>
       </div>
     </form>

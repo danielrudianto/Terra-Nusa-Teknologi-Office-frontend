@@ -298,8 +298,8 @@
               >
                 {{
                   allowance.get("isIncluded")?.value
-                    ? "Included PPh"
-                    : "Excluded PPh"
+                    ? ('hardcoded.includedPph' | translate)
+                    : ('hardcoded.excludedPph' | translate)
                 }}
               </span>
             </td>
@@ -382,8 +382,8 @@
               >
                 {{
                   allowance.get("isIncluded")?.value
-                    ? "Included PPh"
-                    : "Excluded PPh"
+                    ? ('hardcoded.includedPph' | translate)
+                    : ('hardcoded.excludedPph' | translate)
                 }}
               </span>
             </td>
@@ -513,7 +513,7 @@
           class="ssc-submit"
           [disabled]="!isFinal || isSubmitting || formGroup.invalid"
         >
-          {{ isSubmitting ? "Menyimpan..." : "Submit salary slip" }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.submitSalarySlip' | translate) }}
         </button>
       </div>
     </div>

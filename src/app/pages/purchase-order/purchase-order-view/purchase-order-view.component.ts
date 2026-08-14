@@ -18,6 +18,9 @@ import {
   buildLegalServiceClauses,
   buildManpowerClauses,
   buildTransportClauses,
+  buildPasal5,
+  buildInsuranceClauses,
+  buildTrainingClauses,
 } from '../../../constants/clause-templates';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { FormsModule } from '@angular/forms';
@@ -259,6 +262,60 @@ export class PurchaseOrderViewComponent {
         );
       case 'D':
         return buildManpowerClauses(
+          {
+            ...custom,
+            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
+          },
+          tambahan,
+        );
+      case 'H': {
+        /*
+         * PO-H punya EMPAT pasal, bukan satu daftar klausul.
+         *
+         * Sebelumnya pratinjau hanya menyusun Pasal 1 lewat
+         * `buildClauseLines`, sedangkan dokumen yang tercetak juga memuat
+         * Pasal 3 (kewajiban), Pasal 4 (keterangan), dan Pasal 5 (tata cara
+         * penagihan). Ketiganya tidak pernah muncul di layar — sehingga
+         * "sudah membaca" ditandatangani atas dokumen yang belum terlihat
+         * seluruhnya.
+         *
+         * Sumbernya `customData`, sama dengan yang dipakai cetak ulang,
+         * supaya keduanya tidak dapat berbeda.
+         */
+        const bagian: ClauseSection[] = [];
+
+        const pasal1 = buildClauseLines(
+          'H',
+          { ...custom, paymentTerm: custom.paymentTerm ?? this.data.payment_term },
+          this.data.templateVersion,
+          tambahan,
+        );
+        if (pasal1.length) bagian.push({ title: 'Pasal 1', items: pasal1 });
+
+        const kewajiban = custom.kewajiban || [];
+        if (kewajiban.length) bagian.push({ title: 'Pasal 3', items: kewajiban });
+
+        const keterangan = custom.keterangan || [];
+        if (keterangan.length) bagian.push({ title: 'Pasal 4', items: keterangan });
+
+        const pasal5 = buildPasal5(custom, custom.billingDocuments);
+        if (pasal5.length) bagian.push({ title: 'Pasal 5', items: pasal5 });
+
+        return bagian;
+      }
+      case '6.4.2':
+        // Asuransi punya penyusun klausulnya sendiri; tanpa cabang ini
+        // pencarian templat tidak menemukan apa pun dan pratinjaunya kosong.
+        return buildInsuranceClauses(
+          {
+            ...custom,
+            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
+          },
+          tambahan,
+        );
+      case '6.5.2':
+        // Pelatihan; alasannya sama dengan 6.4.2 di atas.
+        return buildTrainingClauses(
           {
             ...custom,
             paymentTerm: custom.paymentTerm ?? this.data.payment_term,

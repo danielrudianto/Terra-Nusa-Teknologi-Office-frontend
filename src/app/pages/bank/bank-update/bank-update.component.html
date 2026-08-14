@@ -80,7 +80,7 @@
         class="bu-submit"
         [disabled]="isSubmitting || formGroup.invalid"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Simpan perubahan" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.simpanPerubahan' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

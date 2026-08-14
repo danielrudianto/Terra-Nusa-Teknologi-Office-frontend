@@ -41,7 +41,7 @@
         class="prp-btn prp-btn--primary"
       >
         <mat-icon *ngIf="!isLoading">picture_as_pdf</mat-icon>
-        {{ isLoading ? "Memproses..." : "Buat laporan" }}
+        {{ isLoading ? ('hardcoded.memproses' | translate) : ('hardcoded.buatLaporan' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

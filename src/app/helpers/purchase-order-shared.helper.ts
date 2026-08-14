@@ -223,23 +223,72 @@ export function documentFooter() {
  * level akses: level menentukan apa yang boleh dilakukan, bukan apa
  * jabatannya. Pengguna yang belum mengisi jabatannya dicetak tanpa baris itu.
  */
+/** Lebar garis tanda tangan, disamakan di seluruh dokumen. */
+const LEBAR_GARIS_TTD = 170;
+
+/** Abu-abu penunjuk; cukup terbaca, tetapi jelas bukan isi dokumen. */
+const ABU_PENUNJUK = '#B8BCC4';
+
 export function signerLines(
   approvedByName?: string | null,
   approvedByPosition?: string | null,
 ) {
   const nama = (approvedByName || '').trim();
   const jabatan = (approvedByPosition || '').trim();
-
-  if (!nama) {
-    // Dua baris kosong tetap disisakan agar tinggi bloknya tidak berubah;
-    // tanpa ini tata letak halaman bergeser saat dokumen disetujui.
-    return [{ text: ' ' }, { text: ' ' }];
-  }
+  const belumSetuju = !nama;
 
   return [
-    { text: nama, bold: true },
-    // Baris jabatan tetap ada meski kosong, dengan alasan yang sama.
-    { text: jabatan || ' ' },
+    /*
+     * Ruang tanda tangan, di ATAS baris nama.
+     *
+     * Urutannya mengikuti dokumen resmi: tanda tangan dibubuhkan lebih dulu,
+     * lalu nama tertulis di atas garis, dan jabatan di bawahnya. Garis itulah
+     * yang menggarisbawahi namanya — bukan pemisah antara tanda tangan dan
+     * nama.
+     */
+    {
+      text: belumSetuju ? 'Sign Here' : ' ',
+      color: ABU_PENUNJUK,
+      fontSize: 9,
+      italics: true,
+      margin: [0, 12, 0, 0] as Margins,
+    },
+    // Ruang kosong tempat tanda tangan dibubuhkan.
+    { text: ' ', margin: [0, 0, 0, 12] as Margins },
+
+    /*
+     * Nama, tepat di atas garis.
+     *
+     * Belum disetujui, yang tercetak penunjuk abu-abu "Nama" — supaya yang
+     * mengisi tahu apa yang harus ditulis, dan tidak menuliskan jabatannya
+     * di baris yang salah.
+     */
+    belumSetuju
+      ? { text: 'Nama', color: ABU_PENUNJUK, fontSize: 9, italics: true }
+      : { text: nama, bold: true },
+
+    // Garis digambar, bukan garis bawah pada teks: teks kosong tidak
+    // menghasilkan garis bawah, sedangkan panjangnya harus tetap sama pada
+    // kedua keadaan.
+    {
+      canvas: [
+        {
+          type: 'line',
+          x1: 0,
+          y1: 0,
+          x2: LEBAR_GARIS_TTD,
+          y2: 0,
+          lineWidth: 0.8,
+          lineColor: '#16181D',
+        },
+      ],
+      margin: [0, 2, 0, 4] as Margins,
+    },
+
+    // Jabatan, di bawah garis. Penunjuknya juga abu-abu bila belum diisi.
+    belumSetuju || !jabatan
+      ? { text: 'Jabatan', color: ABU_PENUNJUK, fontSize: 9, italics: true }
+      : { text: jabatan },
   ];
 }
 
@@ -253,7 +302,9 @@ export function signatureBlock(
     stack: [
       { text: 'Hormat kami,' },
       { text: 'PT. Alpha Konstruksi Nusantara' },
-      { text: '\n\n\n' },
+      // Jarak ke garis diatur `signerLines` lewat margin penandanya, bukan
+      // lewat baris kosong: baris kosong menambah tinggi yang tidak sama
+      // pada kedua keadaan.
       ...signerLines(approvedByName, approvedByPosition),
     ],
   };

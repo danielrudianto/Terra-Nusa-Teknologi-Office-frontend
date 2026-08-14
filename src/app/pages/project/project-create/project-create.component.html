@@ -28,15 +28,23 @@
       </mat-form-field>
     </div>
 
-    <mat-form-field appearance="outline" class="w-100">
-      <mat-label>{{ "project.client" | translate }}</mat-label>
-      <mat-select formControlName="clientID">
-        <mat-option [value]="null">{{ "project.noClient" | translate }}</mat-option>
-        <mat-option *ngFor="let c of clients" [value]="c.id">
-          {{ c.prefix }} {{ c.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <!--
+      Autocomplete, bukan select.
+
+      Select memuat sejumlah tertentu klien lalu berhenti — dua ratus pada
+      pemasangan sebelumnya — sehingga klien di luar itu tidak pernah muncul
+      dan penggunanya menyimpulkan datanya belum terdaftar, lalu membuat
+      data ganda.
+
+      `required` false karena proyek memang boleh tanpa klien; yang wajib
+      adalah bila diisi, isinya klien yang benar-benar ada — bukan teks yang
+      mirip namanya.
+    -->
+    <app-client-autocomplete
+      formControlName="clientID"
+      label="project.client"
+      [required]="false"
+    />
 
     <div class="pc__grid">
       <mat-form-field appearance="outline">

@@ -87,7 +87,7 @@
         class="itc-btn itc-btn--primary"
       >
         <mat-icon *ngIf="!isSubmitting">check</mat-icon>
-        {{ isSubmitting ? "Menyimpan..." : "Simpan" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.simpan' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

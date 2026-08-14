@@ -4,7 +4,7 @@
       (formGroup.value.name || "?").charAt(0)
     }}</span>
     <div class="spc-head__text">
-      <h2 class="spc-title">{{ formGroup.value.name || "Bayar Gaji" }}</h2>
+      <h2 class="spc-title">{{ formGroup.value.name || ('hardcoded.bayarGaji' | translate) }}</h2>
       <span class="spc-sub">
         Periode {{ formGroup.value.month }}/{{ formGroup.value.year }}
         <span *ngIf="formGroup.value.taxCategory">
@@ -139,7 +139,7 @@
         class="spc-submit"
         [disabled]="!formGroup.valid || isSubmitting"
       >
-        {{ isSubmitting ? "Menyimpan..." : "Bayar gaji" }}
+        {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.bayarGaji' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

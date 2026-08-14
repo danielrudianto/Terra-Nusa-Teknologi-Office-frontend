@@ -53,7 +53,7 @@
         [disabled]="salarySlipFormGroup.invalid || isSubmitting"
         cdkFocusInitial
       >
-        {{ isSubmitting ? "Memproses..." : "Lanjut" }}
+        {{ isSubmitting ? ('hardcoded.memproses' | translate) : ('hardcoded.lanjut' | translate) }}
       </button>
     </mat-dialog-actions>
   </form>

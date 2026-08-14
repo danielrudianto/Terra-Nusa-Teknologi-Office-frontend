@@ -1,0 +1,43 @@
+<mat-form-field appearance="outline" class="cla">
+  <mat-label>{{ label | translate }}</mat-label>
+
+  <input
+    matInput
+    [formControl]="teks"
+    [matAutocomplete]="auto"
+    [required]="required"
+    (input)="onKetik($any($event.target).value)"
+    (focus)="onFokus()"
+    [placeholder]="'client.selectorPlaceholder' | translate"
+  />
+
+  <!--
+    Penanda terpilih.
+
+    Yang membedakan "sudah memilih" dari "baru mengetik namanya" hanya ini;
+    tanpa penanda, keduanya terlihat sama padahal yang kedua belum menyimpan
+    apa pun.
+  -->
+  @if (terpilih) {
+    <mat-icon matSuffix class="cla-ok">check_circle</mat-icon>
+  }
+
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="tampilan">
+    @for (k of saran; track k.id) {
+      <mat-option [value]="k" (onSelectionChange)="pilih(k, $event.isUserInput)">
+        <span class="cla-nama">{{ tampilan(k) }}</span>
+        @if (k.city) {
+          <span class="cla-kota">{{ k.city }}</span>
+        }
+      </mat-option>
+    }
+
+    @if (!isLoading && !saran.length) {
+      <mat-option [disabled]="true">
+        {{ "client.noMatch" | translate }}
+      </mat-option>
+    }
+  </mat-autocomplete>
+
+  <mat-hint>{{ "client.selectorHint" | translate }}</mat-hint>
+</mat-form-field>
