@@ -292,12 +292,105 @@ export class PurchaseOrderViewComponent {
     );
   }
 
+  /**
+   * Nilai pekerjaan bersifat BORONGAN, bukan volume kali harga satuan.
+   *
+   * PO-H menyimpan nilai borongan di `customData.lumpSumPrice`, sementara
+   * baris pekerjaannya tersimpan dengan harga nol — barisnya di situ hanya
+   * menyatakan URAIAN pekerjaannya, bukan harganya.
+   *
+   * Tanpa ini, dialog menampilkan Rp 0 untuk dokumen yang di daftar tertera
+   * 512.500, dan yang membacanya menyangka datanya rusak.
+   */
+  private get borongan(): number | null {
+    const c = this.data?.customData;
+    if (!c) return null;
+    if (String(c.rateType || '').toLowerCase() !== 'lumpsum') return null;
+    const n = Number(c.lumpSumPrice);
+    return isNaN(n) ? null : n;
+  }
+
   lineTotal(item: any): number {
+    // Pada dokumen borongan, seluruh nilainya melekat pada satu-satunya
+    // baris — bukan dibagi rata, karena memang tidak ada rinciannya.
+    const b = this.borongan;
+    if (b !== null && this.items.length === 1) return b;
     return (Number(item?.quantity) || 0) * (Number(item?.price) || 0);
   }
 
   get subTotal(): number {
+    const b = this.borongan;
+    if (b !== null) return b;
     return this.items.reduce((acc, x) => acc + this.lineTotal(x), 0);
+  }
+
+  /**
+   * Tarif PPN dokumen ini, dalam persen. Nol berarti tidak dikenakan.
+   *
+   * Dibaca dari kolomnya, bukan diasumsikan sebelas persen: dokumen lama
+   * tersimpan dengan tarif yang berlaku saat itu, dan memaksakan tarif hari
+   * ini membuat angkanya berbeda dari lembar yang sudah ditandatangani.
+   */
+  get ppnPersen(): number {
+    return Number(this.data?.ppn) || 0;
+  }
+
+  get ppnNilai(): number {
+    return (this.subTotal * this.ppnPersen) / 100;
+  }
+
+  /** Tarif PPh, dalam persen. Nol berarti tidak dipotong. */
+  get pphPersen(): number {
+    return Number(this.data?.pphPercentage) || 0;
+  }
+
+  /**
+   * PPh dihitung dari DPP, BUKAN dari nilai setelah PPN.
+   *
+   * Aturan yang sama sudah dipakai slip pembayaran; dua cara menghitung
+   * untuk pajak yang sama akan menghasilkan dua angka pada dokumen yang
+   * merujuk transaksi yang sama.
+   */
+  get pphNilai(): number {
+    return (this.subTotal * this.pphPersen) / 100;
+  }
+
+  /**
+   * Nilai akhir setelah PPN ditambahkan dan PPh dipotong.
+   *
+   * Ditampilkan hanya bila ada salah satunya — pada dokumen tanpa pajak,
+   * barisnya sama dengan subtotal dan hanya menambah baris tanpa isi.
+   */
+  get totalAkhir(): number {
+    return this.subTotal + this.ppnNilai - this.pphNilai;
+  }
+
+  /**
+   * Dokumen ini pengadaan BARANG atau JASA.
+   *
+   * Dibaca dari NOMORNYA, bukan disimpulkan ulang dari isiannya.
+   *
+   * Nomor dokumen memuat `PO` untuk purchase order dan `SPK` untuk surat
+   * perintah kerja, dan itulah yang tercetak pada lembar yang ditandatangani
+   * vendor. Menyimpulkan ulang dari `purchaseType` dan `customData` berarti
+   * menyalin aturan yang sudah ada di server — dan bila kelak aturannya
+   * berubah di satu tempat saja, layar akan menyebut "Barang" pada lembar
+   * berjudul SURAT PERINTAH KERJA.
+   *
+   * Nomor adendum tetap terbaca: `013-ADD1-PO-BPBP-F` memuat `-PO-`.
+   *
+   * `null` bila nomornya belum terbentuk, misalnya pada pratinjau.
+   */
+  get jenisPengadaan(): 'barang' | 'jasa' | null {
+    const nama = String(this.data?.name || '').toUpperCase();
+    if (!nama) return null;
+    if (nama.includes('-SPK-')) return 'jasa';
+    if (nama.includes('-PO-')) return 'barang';
+    return null;
+  }
+
+  get adaPajak(): boolean {
+    return this.ppnPersen > 0 || this.pphPersen > 0;
   }
 
   /**

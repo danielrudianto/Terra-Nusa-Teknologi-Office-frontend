@@ -504,7 +504,14 @@
     "officeExpenses": "办公支出",
     "noTypeMatch": "没有匹配的采购单类型。",
     "menuReject": "拒绝采购订单",
-    "rejectTitle": "拒绝采购订单"
+    "rejectTitle": "拒绝采购订单",
+    "viewPpn": "增值税",
+    "viewPph": "预扣税",
+    "viewTotalAkhir": "应付金额",
+    "kenaPpn": "含增值税",
+    "nonPpn": "不含增值税",
+    "jenisBarang": "货物",
+    "jenisJasa": "服务"
   },
   "income": {
     "title": "其他收入",

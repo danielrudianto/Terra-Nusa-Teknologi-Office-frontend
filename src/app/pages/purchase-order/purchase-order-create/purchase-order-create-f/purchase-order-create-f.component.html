@@ -183,31 +183,46 @@
           </div>
         }
 
-        <div class="pof-items__foot">
-          <mat-slide-toggle formControlName="includePPN" color="primary">{{
-            "poForm.includePpn" | translate
-          }}</mat-slide-toggle>
-          <div class="pof-summary">
-            <div class="pof-summary__row">
-              <span>{{ "po511.subtotalDpp" | translate }}</span
-              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
-            </div>
-            <div class="pof-summary__row">
-              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
-            </div>
-            <div class="pof-summary__row pof-summary__row--total">
-              <span>{{ "common.total" | translate }}</span
-              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pof-note">
-          <mat-icon>info</mat-icon>
-          <span>{{ "poForm.ppnNote" | translate }}</span>
-        </div>
       </div>
     }
+
+    <!--
+      Sakelar PPN dan ringkasan nilai berlaku untuk KEDUA jenis.
+      
+      Sebelumnya keduanya berada di dalam blok `@if (!isTestService)`, yang
+      hanya dirender untuk pengadaan material — sehingga jasa uji sama sekali
+      tidak punya sakelar PPN, walaupun jasa laboratorium juga dikenakan PPN.
+      
+      Diletakkan di luar kedua cabang, bukan disalin ke masing-masing: dua
+      salinan berarti dua tempat yang harus diperbaiki bersamaan, dan yang
+      terlupa tidak menimbulkan galat — hanya satu jenis yang diam-diam
+      berbeda perilakunya.
+    -->
+    <div class="pof-card">
+      <div class="pof-items__foot">
+        <mat-slide-toggle formControlName="includePPN" color="primary">{{
+          "poForm.includePpn" | translate
+        }}</mat-slide-toggle>
+        <div class="pof-summary">
+          <div class="pof-summary__row">
+            <span>{{ "po511.subtotalDpp" | translate }}</span
+            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+          </div>
+          <div class="pof-summary__row">
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+          </div>
+          <div class="pof-summary__row pof-summary__row--total">
+            <span>{{ "common.total" | translate }}</span
+            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pof-note">
+        <mat-icon>info</mat-icon>
+        <span>{{ "poForm.ppnNote" | translate }}</span>
+      </div>
+    </div>
 
     <!-- ===== 3. Pengiriman ===== -->
     <div class="pof-card">

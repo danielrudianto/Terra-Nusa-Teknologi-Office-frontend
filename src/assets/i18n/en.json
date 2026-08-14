@@ -504,7 +504,14 @@
     "officeExpenses": "Office expenses",
     "noTypeMatch": "No matching PO type.",
     "menuReject": "Reject PO",
-    "rejectTitle": "Reject Purchase Order"
+    "rejectTitle": "Reject Purchase Order",
+    "viewPpn": "VAT",
+    "viewPph": "Withholding tax",
+    "viewTotalAkhir": "Amount payable",
+    "kenaPpn": "VAT",
+    "nonPpn": "No VAT",
+    "jenisBarang": "Goods",
+    "jenisJasa": "Services"
   },
   "income": {
     "title": "Other income",

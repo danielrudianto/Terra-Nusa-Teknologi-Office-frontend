@@ -27,9 +27,16 @@ $hover: var(--hover, #f6f8ff);
   gap: 1rem;
   margin: 0.25rem 0 1rem;
 }
-.il-toolbar .mat-mdc-form-field {
-  margin-bottom: -1.25em;
-}
+/*
+ * Ruang pesan galat sudah dihilangkan lewat `subscriptSizing="dynamic"` pada
+ * kotak isiannya, sehingga kompensasi manual di sini TIDAK LAGI DIPERLUKAN —
+ * dan justru menarik kotaknya turun sekitar sepuluh piksel terhadap sakelar
+ * dan tombol di sebelahnya.
+ *
+ * Ditinggalkan sebagai catatan agar tidak dipasang kembali: bila kelak
+ * kotaknya tampak terlalu tinggi, yang perlu diperiksa `subscriptSizing`,
+ * bukan margin.
+ */
 .il-range {
   width: 260px;
 }

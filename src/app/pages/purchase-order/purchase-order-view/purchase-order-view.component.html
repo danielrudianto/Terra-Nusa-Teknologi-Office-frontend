@@ -7,6 +7,40 @@
       </h2>
       <span class="pov-sub">{{ typeLabel(data?.purchaseType) }}</span>
     </div>
+
+    <!--
+      Penanda di kanan atas: kena PPN atau tidak, dan barang atau jasa.
+
+      Keduanya menentukan perlakuan pajak dan bentuk penagihannya, dan
+      selama ini hanya dapat diketahui dengan menggulir ke bawah atau
+      membaca nomornya. Ditaruh di kepala supaya terjawab sekali lihat.
+
+      Disembunyikan selama memuat: penanda yang muncul lalu berubah lebih
+      membingungkan daripada yang muncul belakangan.
+    -->
+    @if (!isLoading && data) {
+      <div class="pov-head__tanda">
+        <span class="pov-tanda" [class.pov-tanda--off]="ppnPersen <= 0">
+          {{
+            (ppnPersen > 0 ? "purchaseOrder.kenaPpn" : "purchaseOrder.nonPpn")
+              | translate
+          }}
+        </span>
+        @if (jenisPengadaan) {
+          <span
+            class="pov-tanda pov-tanda--jenis"
+            [class.pov-tanda--jasa]="jenisPengadaan === 'jasa'"
+          >
+            {{
+              (jenisPengadaan === 'jasa'
+                ? "purchaseOrder.jenisJasa"
+                : "purchaseOrder.jenisBarang"
+              ) | translate
+            }}
+          </span>
+        }
+      </div>
+    }
   </div>
 
   <mat-dialog-content class="pov-content">
@@ -74,6 +108,58 @@
                 >Rp {{ subTotal | number: "1.0-0" }}</span
               >
             </div>
+
+            <!--
+              PPN dan PPh ditampilkan HANYA bila dikenakan.
+
+              Baris bernilai nol pada dokumen tanpa pajak hanya menambah
+              barisan tanpa memberi tahu apa pun; yang ditanyakan justru
+              "kena pajak atau tidak", dan barisnya sendiri sudah menjawab.
+
+              Tarifnya ikut dicantumkan supaya angkanya dapat diperiksa
+              tanpa membuka dokumennya.
+            -->
+            @if (ppnPersen > 0) {
+              <div class="pov-item pov-item--pajak">
+                <span class="pov-item__text">
+                  {{ "purchaseOrder.viewPpn" | translate }}
+                  <small>{{ ppnPersen | number: "1.0-2" }}%</small>
+                </span>
+                <span class="pov-item__amount"
+                  >+ Rp {{ ppnNilai | number: "1.0-0" }}</span
+                >
+              </div>
+            }
+
+            @if (pphPersen > 0) {
+              <div class="pov-item pov-item--pajak">
+                <span class="pov-item__text">
+                  {{ "purchaseOrder.viewPph" | translate }}
+                  <small>{{ pphPersen | number: "1.0-2" }}%</small>
+                  @if (data?.pphCode) {
+                    <small class="pov-item__kode">{{ data.pphCode }}</small>
+                  }
+                </span>
+                <!--
+                  PPh DIPOTONG, bukan ditambahkan — tandanya dinyatakan
+                  terang-terangan supaya tidak terbaca sebagai biaya tambahan.
+                -->
+                <span class="pov-item__amount pov-item__amount--kurang"
+                  >− Rp {{ pphNilai | number: "1.0-0" }}</span
+                >
+              </div>
+            }
+
+            @if (adaPajak) {
+              <div class="pov-item pov-item--akhir">
+                <span class="pov-item__text">{{
+                  "purchaseOrder.viewTotalAkhir" | translate
+                }}</span>
+                <span class="pov-item__amount"
+                  >Rp {{ totalAkhir | number: "1.0-0" }}</span
+                >
+              </div>
+            }
           </div>
         }
       </section>

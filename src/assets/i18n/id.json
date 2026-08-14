@@ -504,7 +504,14 @@
     "officeExpenses": "Pengeluaran kantor",
     "noTypeMatch": "Tidak ada jenis PO yang cocok.",
     "menuReject": "Tolak PO",
-    "rejectTitle": "Tolak Purchase Order"
+    "rejectTitle": "Tolak Purchase Order",
+    "viewPpn": "PPN",
+    "viewPph": "PPh",
+    "viewTotalAkhir": "Nilai dibayarkan",
+    "kenaPpn": "PPN",
+    "nonPpn": "Non-PPN",
+    "jenisBarang": "Barang",
+    "jenisJasa": "Jasa"
   },
   "income": {
     "title": "Pendapatan Lain",

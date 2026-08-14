@@ -15,9 +15,14 @@
   align-items: center;
   gap: 1rem;
   margin: 0.5rem 0 1rem;
-  .mat-mdc-form-field {
-    margin-bottom: -1.25em;
-  }
+  /*
+   * Ruang pesan galat sudah dihilangkan lewat `subscriptSizing="dynamic"`
+   * pada kotak isiannya; kompensasi manual di sini justru menarik kotaknya
+   * turun terhadap tombol di sebelahnya.
+   *
+   * Bila kelak kotaknya tampak terlalu tinggi, yang perlu diperiksa
+   * `subscriptSizing`, bukan margin.
+   */
 }
 .ssl-search {
   width: 100%;

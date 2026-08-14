@@ -377,3 +377,94 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ---- baris pajak pada ringkasan nilai ---- */
+
+.pov-item--pajak {
+  background: transparent;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Tarif disejajarkan di kanan namanya, bukan di bawahnya.
+ *
+ * `.pov-item__text` bertumpuk ke bawah karena baris BARANG memakainya untuk
+ * menaruh uraian di atas dan "2 pcs x 113.000" di bawahnya. Pada baris pajak
+ * tidak ada rincian semacam itu — hanya tarifnya — sehingga menumpuknya
+ * membuat barisnya dua kali lebih tinggi daripada Subtotal di atasnya tanpa
+ * menyampaikan apa pun tambahan.
+ */
+.pov-item--pajak .pov-item__text {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+.pov-item--pajak small {
+  font-size: 0.72rem;
+  color: var(--faint, #8a8f98);
+  font-variant-numeric: tabular-nums;
+}
+.pov-item__kode {
+  font-family: ui-monospace, monospace;
+}
+/* PPh dipotong; dibedakan warnanya agar tidak terbaca sebagai tambahan. */
+.pov-item__amount--kurang {
+  color: var(--bad-fg, #e5484d);
+}
+
+/* Nilai akhir setelah pajak; ditegaskan karena ini yang dibayarkan. */
+.pov-item--akhir {
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+/* ---- penanda di kanan atas kepala dialog ---- */
+
+.pov-head__tanda {
+  /* Didorong ke kanan; kepala dialog memakai flex tanpa space-between. */
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.pov-tanda {
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+/* Tidak kena PPN: netral, bukan merah — bukan keadaan yang keliru. */
+.pov-tanda--off {
+  background: var(--hover, #f3f4f6);
+  color: var(--muted, #6b7280);
+}
+
+/* Barang dan jasa dibedakan warnanya agar terbaca sekilas. */
+.pov-tanda--jenis {
+  background: var(--good-soft, #d8f5e3);
+  color: var(--good-fg, #1a7f47);
+}
+.pov-tanda--jasa {
+  background: var(--warn-soft, #fdf0d5);
+  color: var(--warn-fg, #d9880a);
+}
+
+@media (max-width: 520px) {
+  /* Pada layar sempit penanda turun ke baris berikutnya, tidak memotong
+     judulnya. */
+  .pov-head__tanda {
+    margin-left: 0;
+    width: 100%;
+  }
+}

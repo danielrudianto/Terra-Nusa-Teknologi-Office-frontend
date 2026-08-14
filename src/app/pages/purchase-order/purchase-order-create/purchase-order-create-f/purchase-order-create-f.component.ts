@@ -475,7 +475,20 @@ export class PurchaseOrderCreateFComponent {
 
   // ----- live summary (read-only, safe getters) -----
   get rawTotal(): number {
-    return this.t.value.reduce(
+    /*
+     * Jasa uji mengisi larik yang BERBEDA.
+     *
+     * Pengadaan material memakai `purchase_order`; uji tekan dan uji tarik
+     * memakai `testItems`, karena barisnya menyatakan spesifikasi benda uji,
+     * bukan barang yang dibeli.
+     *
+     * Sebelumnya hanya larik pertama yang dijumlahkan, sehingga subtotal
+     * jasa uji selalu nol — dan PPN yang dihitung darinya ikut nol berapa
+     * pun sakelarnya. Sakelarnya tampak tidak berfungsi, padahal yang salah
+     * angka dasarnya.
+     */
+    const baris = this.isTestService ? this.uji.value : this.t.value;
+    return (baris || []).reduce(
       (acc: number, x: any) =>
         acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
       0,
@@ -661,11 +674,16 @@ export class PurchaseOrderCreateFComponent {
   }
 
   formatData() {
-    const dpp = this.t.value.reduce(
-      (acc: any, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+    /*
+     * Nilai yang DISIMPAN memakai penjumlahan yang sama dengan yang
+     * ditampilkan.
+     *
+     * Sebelumnya hanya larik barang yang dijumlahkan di sini, sehingga
+     * dokumen jasa uji tersimpan ber-`dpp` NOL walaupun barisnya berisi —
+     * dan itu merambat ke laporan margin proyek, yang membacanya sebagai
+     * pekerjaan tanpa biaya.
+     */
+    const dpp = this.rawTotal;
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
