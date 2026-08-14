@@ -186,3 +186,10 @@
 .al-norow:hover {
   background: transparent;
 }
+
+/* Penyaring pengguna: lebih lebar daripada penyaring lain karena memuat
+   beberapa nama sekaligus. */
+.al-user {
+  min-width: 16rem;
+  max-width: 24rem;
+}

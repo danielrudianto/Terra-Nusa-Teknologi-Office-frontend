@@ -37,7 +37,7 @@
           />
           <mat-hint>{{ "masterItem.capitalNoSpace" | translate }}</mat-hint>
           <mat-error *ngIf="formGroup.get('sku')?.hasError('maxlength')"
-            >Maks 45 karakter.</mat-error
+            >{{ "masterItem.maks45Karakter" | translate }}</mat-error
           >
         </mat-form-field>
 
@@ -80,9 +80,7 @@
         </mat-form-field>
 
         <div class="mic-span2 mic-types-field">
-          <div class="mic-typeslabel">
-            Tipe PO
-            <span class="mic-req">{{
+          <div class="mic-typeslabel">{{ "masterItem.tipePo" | translate }}<span class="mic-req">{{
               "masterItem.minOneRequired" | translate
             }}</span>
           </div>

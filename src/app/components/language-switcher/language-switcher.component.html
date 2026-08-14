@@ -4,7 +4,7 @@
   [matMenuTriggerFor]="langMenu"
   #trigger="matMenuTrigger"
   [class.is-open]="trigger.menuOpen"
-  aria-label="Change language"
+  [attr.aria-label]="'common.changeLanguage' | translate"
 >
   <mat-icon class="lang-trigger__globe">language</mat-icon>
   <span class="lang-trigger__code">{{ current.short }}</span>

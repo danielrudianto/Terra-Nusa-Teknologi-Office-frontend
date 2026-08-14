@@ -10,6 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Toggle a supplier's blacklist flag. Blacklisting requires a reason;
@@ -23,6 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-supplier-blacklist-dialog',
   standalone: true,
   imports: [
+    TranslatePipe,
     MatProgressSpinnerModule,
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
     MatInputModule, MatButtonModule, MatIconModule, MatProgressBarModule,

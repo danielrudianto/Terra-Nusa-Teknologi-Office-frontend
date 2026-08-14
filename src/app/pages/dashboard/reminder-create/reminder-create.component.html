@@ -5,7 +5,7 @@
       <h2 class="rc-title">
         {{ isEdit ? "Ubah pengingat" : "Pengingat baru" }}
       </h2>
-      <span class="rc-sub">Tampil di agenda pada tanggal yang dipilih</span>
+      <span class="rc-sub">{{ "reminder.tampilDiAgendaPadaTanggal" | translate }}</span>
     </div>
   </div>
 
@@ -13,17 +13,17 @@
     <form [formGroup]="formGroup">
       <div class="rc-grid">
         <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>Judul</mat-label>
+          <mat-label>{{ "reminder.judul" | translate }}</mat-label>
           <input
             matInput
             formControlName="title"
             maxlength="150"
-            placeholder="Ex. Kirim laporan PPh 21"
+            [placeholder]="'reminder.exKirimLaporanPph21' | translate"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Tanggal</mat-label>
+          <mat-label>{{ "payment.tanggal" | translate }}</mat-label>
           <input matInput formControlName="date" [matDatepicker]="dp" />
           <mat-datepicker-toggle
             matIconPrefix
@@ -33,7 +33,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Kategori</mat-label>
+          <mat-label>{{ "reminder.kategori" | translate }}</mat-label>
           <mat-select formControlName="category">
             @for (c of categories; track c) {
               <mat-option [value]="c">{{ c }}</mat-option>
@@ -42,7 +42,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>Catatan</mat-label>
+          <mat-label>{{ "reminder.catatan" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="note"
@@ -58,16 +58,13 @@
           satu-dua rekan.
         -->
         <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>Tandai rekan</mat-label>
+          <mat-label>{{ "reminder.tandaiRekan" | translate }}</mat-label>
           <mat-select formControlName="targets" multiple>
             @for (u of users; track u.id) {
               <mat-option [value]="u.id">{{ u.name }}</mat-option>
             }
           </mat-select>
-          <mat-hint>
-            Yang ditandai melihatnya di agendanya sendiri. Kosongkan bila
-            hanya untuk Anda.
-          </mat-hint>
+          <mat-hint>{{ "reminder.yangDitandaiMelihatnyaDiAgendanya" | translate }}</mat-hint>
         </mat-form-field>
       </div>
 
@@ -77,13 +74,8 @@
         pasti ditolak server.
       -->
       @if (bolehUntukSemua) {
-        <mat-checkbox formControlName="isShared" color="primary" class="rc-all">
-          Untuk seluruh pengguna
-        </mat-checkbox>
-        <p class="rc-hint">
-          Tampil di agenda semua orang. Pakai hanya bila memang perlu
-          diketahui seluruh tim — agenda yang terlalu ramai berhenti dibaca.
-        </p>
+        <mat-checkbox formControlName="isShared" color="primary" class="rc-all">{{ "reminder.untukSeluruhPengguna" | translate }}</mat-checkbox>
+        <p class="rc-hint">{{ "reminder.tampilDiAgendaSemuaOrang" | translate }}</p>
       }
     </form>
   </mat-dialog-content>

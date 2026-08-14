@@ -15,7 +15,7 @@
         type="button"
         class="ag-add"
         (click)="tambah()"
-        matTooltip="Buat pengingat"
+        [matTooltip]="'agenda.buatPengingat' | translate"
       >
         <mat-icon>add</mat-icon>
       </button>
@@ -23,12 +23,12 @@
   </div>
 
   @if (isLoading) {
-    <div class="ag-state">Memuat…</div>
+    <div class="ag-state">{{ "agenda.memuat" | translate }}</div>
   } @else if (galat) {
     <div class="ag-state ag-state--galat">
       <mat-icon>error_outline</mat-icon>
       <span>{{ galat }}</span>
-      <button type="button" class="ag-retry" (click)="muat()">Coba lagi</button>
+      <button type="button" class="ag-retry" (click)="muat()">{{ "agenda.cobaLagi" | translate }}</button>
     </div>
   } @else if (baris.length === 0) {
     <div class="db-panel__empty">
@@ -82,16 +82,16 @@
               mat-icon-button
               class="ag-menu"
               [matMenuTriggerFor]="menu"
-              aria-label="Tindakan"
+              [attr.aria-label]="'agenda.tindakan' | translate"
             >
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="ubah(b)">
-                <mat-icon>edit</mat-icon><span>Ubah</span>
+                <mat-icon>edit</mat-icon><span>{{ "agenda.ubah" | translate }}</span>
               </button>
               <button mat-menu-item (click)="hapus(b)">
-                <mat-icon>delete</mat-icon><span>Hapus</span>
+                <mat-icon>delete</mat-icon><span>{{ "agenda.hapus" | translate }}</span>
               </button>
             </mat-menu>
           }

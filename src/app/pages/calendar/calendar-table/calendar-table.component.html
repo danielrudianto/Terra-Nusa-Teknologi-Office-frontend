@@ -33,7 +33,7 @@
             <div
               class="cal-ip"
               [ngClass]="{ 'is-shown': interpaymentExistsForDay(day) }"
-              matTooltip="Ada interpayment di tanggal ini"
+              [matTooltip]="'calendar.adaInterpaymentDiTanggalIni' | translate"
             >
               <mat-icon>swap_horiz</mat-icon>
             </div>

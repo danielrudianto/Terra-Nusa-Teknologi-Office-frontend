@@ -232,12 +232,10 @@
             <input
               matInput
               formControlName="taxInvoiceName"
-              placeholder="Masukkan nomor faktur pajak"
+              [placeholder]="'salesInvoice.masukkanNomorFakturPajak' | translate"
             />
           </mat-form-field>
-          <p class="cf-highlight__hint">
-            Pastikan nomor faktur pajak sudah benar sebelum meng-approve.
-          </p>
+          <p class="cf-highlight__hint">{{ "salesInvoice.pastikanNomorFakturPajakSudah" | translate }}</p>
         </section>
       </ng-container>
     </mat-dialog-content>

@@ -27,7 +27,7 @@
         <mat-label>{{ "reimbItemForm.date" | translate }}</mat-label>
         <input
           matInput
-          placeholder="Date"
+          [placeholder]="'reimbursement.date' | translate"
           [matDatepicker]="picker"
           formControlName="date"
         />
@@ -45,7 +45,7 @@
           type="text"
           id="description"
           formControlName="description"
-          placeholder="Enter description"
+          [placeholder]="'reimbursement.enterDescription' | translate"
           rows="3"
           style="resize: none"
           maxlength="255"
@@ -62,7 +62,7 @@
           type="text"
           id="amount"
           formControlName="amount"
-          placeholder="Enter amount"
+          [placeholder]="'reimbursement.enterAmount' | translate"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"

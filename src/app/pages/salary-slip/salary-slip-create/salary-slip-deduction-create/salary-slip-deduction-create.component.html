@@ -49,7 +49,7 @@
           matInput
           type="text"
           formControlName="amount"
-          placeholder="Nominal potongan"
+          [placeholder]="'salarySlip.nominalPotongan' | translate"
           prefix="Rp. "
           thousandSeparator=" "
           decimalScale="2"
@@ -62,7 +62,7 @@
         <textarea
           matInput
           formControlName="description"
-          placeholder="Keterangan (min. 10 karakter)"
+          [placeholder]="'salarySlip.keteranganMin10Karakter' | translate"
           rows="3"
           style="resize: none"
         ></textarea>

@@ -35,7 +35,7 @@
             matInput
             formControlName="projectCode"
             maxlength="6"
-            placeholder="Ex. R501"
+            [placeholder]="'common.exR501' | translate"
             oninput="this.value = this.value.toUpperCase()"
           />
         </mat-form-field>
@@ -142,13 +142,13 @@
       @if (willCreatePurchase) {
         <div class="inv-grid">
           <mat-form-field appearance="outline">
-            <mat-label>Nomor SPK</mat-label>
+            <mat-label>{{ "common.nomorSpk" | translate }}</mat-label>
             <input
               matInput
               formControlName="purchaseOrderNumber"
               type="number"
               [min]="1"
-              placeholder="Ex. 1"
+              [placeholder]="'common.ex1' | translate"
             />
             <mat-hint>
               @if (purchaseOrderName) {

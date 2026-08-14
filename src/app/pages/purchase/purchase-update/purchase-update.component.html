@@ -24,7 +24,7 @@
               matInput
               formControlName="supplierName"
               type="text"
-              placeholder="Supplier name"
+              [placeholder]="'purchaseDraft.supplierName' | translate"
               readonly
             />
           </mat-form-field>
@@ -34,7 +34,7 @@
               matInput
               formControlName="supplierAddress"
               rows="3"
-              placeholder="Supplier address"
+              [placeholder]="'purchase.supplierAddress' | translate"
               readonly
               style="resize: none"
             ></textarea>
@@ -48,7 +48,7 @@
               matInput
               formControlName="invoiceName"
               type="text"
-              placeholder="Invoice name"
+              [placeholder]="'expense.invoiceName' | translate"
             />
           </mat-form-field>
 
@@ -60,7 +60,7 @@
               matInput
               type="text"
               formControlName="receiptName"
-              placeholder="Receipt Name"
+              [placeholder]="'purchaseDraft.receiptName' | translate"
             />
           </mat-form-field>
 
@@ -72,7 +72,7 @@
               matInput
               type="text"
               formControlName="taxInvoiceName"
-              placeholder="Tax Invoice Name"
+              [placeholder]="'purchaseDraft.taxInvoiceName' | translate"
               maxlength="17"
             />
           </mat-form-field>
@@ -85,7 +85,7 @@
               matInput
               type="text"
               formControlName="purchaseOrderName"
-              placeholder="Purchase Order Name"
+              [placeholder]="'purchaseDraft.purchaseOrderName' | translate"
               readonly
             />
           </mat-form-field>
@@ -103,7 +103,7 @@
               matInput
               type="text"
               formControlName="purchaseType"
-              placeholder="Purchase Type"
+              [placeholder]="'purchaseDraft.purchaseType' | translate"
               readonly
             />
           </mat-form-field>
@@ -112,7 +112,7 @@
             <input
               matInput
               formControlName="date"
-              placeholder="Date"
+              [placeholder]="'expense.date' | translate"
               [matDatepicker]="picker"
             />
             <mat-datepicker-toggle
@@ -127,7 +127,7 @@
             <input
               matInput
               formControlName="dueDate"
-              placeholder="Date"
+              [placeholder]="'expense.date' | translate"
               [matDatepicker]="duePicker"
             />
             <mat-datepicker-toggle
@@ -156,7 +156,7 @@
               matInput
               type="text"
               formControlName="dpp"
-              placeholder="DPP"
+              [placeholder]="'expense.dpp' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -170,7 +170,7 @@
               matInput
               type="text"
               formControlName="ppn"
-              placeholder="PPN"
+              [placeholder]="'purchaseDraft.ppn' | translate"
               suffix="%"
               thousandSeparator=" "
               mask="separator.2"
@@ -184,7 +184,7 @@
               matInput
               type="text"
               formControlName="ppnValue"
-              placeholder="PPN (Rp.)"
+              [placeholder]="'purchaseDraft.ppnRp' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -198,7 +198,7 @@
               matInput
               type="text"
               formControlName="pbbkb"
-              placeholder="PBBKB"
+              [placeholder]="'expense.pbbkb' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -214,7 +214,7 @@
               matInput
               type="text"
               formControlName="pphTaxObject"
-              placeholder="PPh Object Name"
+              [placeholder]="'expense.pphObjectName' | translate"
               readonly
             />
           </mat-form-field>
@@ -227,7 +227,7 @@
               matInput
               type="text"
               formControlName="pphPercentage"
-              placeholder="PPh Percentage"
+              [placeholder]="'purchaseDraft.pphPercentage' | translate"
               readonly
             />
           </mat-form-field>
@@ -238,7 +238,7 @@
               matInput
               type="text"
               formControlName="otherValue"
-              placeholder="otherValue"
+              [placeholder]="'purchaseDraft.othervalue' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -269,7 +269,7 @@
               matInput
               type="text"
               formControlName="total"
-              placeholder="Total"
+              [placeholder]="'expense.total' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -308,7 +308,7 @@
             color="primary"
             class="my-2"
             formControlName="isInvoiceAttached"
-            >Invoice</mat-slide-toggle
+            >{{ "purchaseDraft.invoice" | translate }}</mat-slide-toggle
           >
           <br />
 
@@ -316,7 +316,7 @@
             color="primary"
             class="my-2"
             formControlName="isReceiptAttached"
-            >Receipt</mat-slide-toggle
+            >{{ "purchaseDraft.receipt" | translate }}</mat-slide-toggle
           >
           <br />
 
@@ -324,7 +324,7 @@
             color="primary"
             class="my-2"
             formControlName="isTaxInvoiceAttached"
-            >Tax invoice</mat-slide-toggle
+            >{{ "purchaseDraft.taxInvoice" | translate }}</mat-slide-toggle
           >
           <br />
 
@@ -332,7 +332,7 @@
             color="primary"
             class="my-2"
             formControlName="isCopAttached"
-            >Certificate of Payment</mat-slide-toggle
+            >{{ "purchaseDraft.certificateOfPayment" | translate }}</mat-slide-toggle
           >
           <br />
 
@@ -340,7 +340,7 @@
             color="primary"
             class="my-2"
             formControlName="isCopyPurchaseOrderAttached"
-            >Copy of Purchase Order / Contract</mat-slide-toggle
+            >{{ "purchaseDraft.copyOfPurchaseOrderContract" | translate }}</mat-slide-toggle
           >
           <br />
         </form>

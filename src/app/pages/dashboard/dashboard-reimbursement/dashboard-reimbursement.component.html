@@ -10,7 +10,7 @@
       class="dr__refresh"
       (click)="fetch()"
       [disabled]="isLoading"
-      title="Perbarui"
+      [title]="'dashboard.perbarui' | translate"
     >
       <svg
         width="17"
@@ -67,9 +67,7 @@
       <span class="dr__amount">{{ formatIDR(it.amount) }}</span>
     </div>
 
-    <div class="dr__empty" *ngIf="items.length === 0">
-      Tidak ada reimbursement tertunda.
-    </div>
+    <div class="dr__empty" *ngIf="items.length === 0">{{ "dashboard.tidakAdaReimbursementTertunda" | translate }}</div>
 
     <!-- peek baris tersembunyi + lihat semua -->
     <div class="dr__more" *ngIf="hiddenCount > 0">

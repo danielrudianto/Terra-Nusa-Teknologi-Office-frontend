@@ -1,5 +1,5 @@
 <app-header-title
-  title="Purchase"
+  [title]="'purchase.purchase' | translate"
   description="Create new purchase"
 ></app-header-title>
 
@@ -17,7 +17,7 @@
             <input
               matInput
               formControlName="date"
-              placeholder="Date"
+              [placeholder]="'expense.date' | translate"
               [matDatepicker]="picker"
             />
             <mat-datepicker-toggle
@@ -32,7 +32,7 @@
             <input
               matInput
               formControlName="dueDate"
-              placeholder="Date"
+              [placeholder]="'expense.date' | translate"
               [matDatepicker]="duePicker"
             />
             <mat-datepicker-toggle
@@ -155,14 +155,11 @@
             metaFormGroup.hasError('lastStatusDescriptionRequired') &&
             metaFormGroup.get('lastStatus')?.value === 'draft'
           "
-        >
-          Description is required and must be between 10 and 100 characters when
-          status is Waiting.
-        </mat-hint>
+        >{{ "purchaseDraft.descriptionIsRequiredAndMust" | translate }}</mat-hint>
       </mat-form-field>
 
       <mat-slide-toggle formControlName="isInternal" color="primary"
-        >Internal purchase</mat-slide-toggle
+        >{{ "purchaseDraft.internalPurchase" | translate }}</mat-slide-toggle
       >
     </form>
 
@@ -294,7 +291,7 @@
           matInput
           type="text"
           formControlName="pphValue"
-          placeholder="PPh Value"
+          [placeholder]="'expense.pphValue' | translate"
           readonly
           prefix="Rp. "
           thousandSeparator=" "
@@ -311,7 +308,7 @@
               matInput
               type="text"
               formControlName="otherValue"
-              placeholder="otherValue"
+              [placeholder]="'purchaseDraft.othervalue' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               decimalScale="2"
@@ -334,7 +331,7 @@
               <mat-option value="packing">{{
                 "purchaseCreate.packingFee" | translate
               }}</mat-option>
-              <mat-option value="packing">PPh 22</mat-option>
+              <mat-option value="packing">{{ "purchaseDraft.pph22" | translate }}</mat-option>
               <mat-option value="administrative">{{
                 "purchaseCreate.administrationFee" | translate
               }}</mat-option>
@@ -349,7 +346,7 @@
           matInput
           type="text"
           formControlName="total"
-          placeholder="Total"
+          [placeholder]="'expense.total' | translate"
           readonly
           prefix="Rp. "
           thousandSeparator=" "
@@ -521,7 +518,7 @@
           matInput
           type="text"
           formControlName="bankAccountNumber"
-          placeholder="Bank Account Number"
+          [placeholder]="'purchaseDraft.bankAccountNumber' | translate"
           mask="9999 9999 9999 9999"
         />
       </mat-form-field>
@@ -532,7 +529,7 @@
           matInput
           type="text"
           formControlName="paymentTotal"
-          placeholder="Payment Total"
+          [placeholder]="'expense.paymentTotal' | translate"
           readonly
           prefix="Rp. "
           thousandSeparator=" "
@@ -551,7 +548,7 @@
           <button
             type="button"
             mat-icon-button
-            matTooltip="Proxy payment is used when the payment is made by a third party on behalf of the purchaser. (e.g., we pay the supplier through our staff's personal bank account)"
+            [matTooltip]="'purchaseDraft.proxyPaymentIsUsedWhen' | translate"
           >
             <mat-icon>help</mat-icon>
           </button>
@@ -574,7 +571,7 @@
           <button
             type="button"
             mat-icon-button
-            matTooltip="Create payment slip automatically instead of manually filling the payment slip."
+            [matTooltip]="'purchaseDraft.createPaymentSlipAutomaticallyInst' | translate"
           >
             <mat-icon>help</mat-icon>
           </button>

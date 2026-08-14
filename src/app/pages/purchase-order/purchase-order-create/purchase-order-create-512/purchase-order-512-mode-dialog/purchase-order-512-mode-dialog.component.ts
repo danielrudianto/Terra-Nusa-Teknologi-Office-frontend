@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Asked once when opening the 5.1.2 form: is this a parts purchase or a
@@ -10,7 +11,8 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 @Component({
   selector: 'app-purchase-order-512-mode-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule],
+  imports: [
+    TranslatePipe,CommonModule, MatDialogModule],
   templateUrl: './purchase-order-512-mode-dialog.component.html',
   styleUrl: './purchase-order-512-mode-dialog.component.scss',
 })

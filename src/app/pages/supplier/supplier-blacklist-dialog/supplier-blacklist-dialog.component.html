@@ -38,12 +38,11 @@
       <div class="sbd-info">
         <mat-icon>info</mat-icon>
         <span
-          >Supplier ini sedang di-blacklist. Mencabut blacklist akan menghapus
-          peringatan di semua purchase &amp; purchase order.</span
+          >{{ "supplier.supplierIniSedangDiBlacklist" | translate }}</span
         >
       </div>
       <div class="sbd-reasonbox" *ngIf="data?.blacklistReason">
-        <span class="sbd-reasonbox__label">Alasan saat ini</span>
+        <span class="sbd-reasonbox__label">{{ "supplier.alasanSaatIni" | translate }}</span>
         <p class="sbd-reasonbox__text">{{ data.blacklistReason }}</p>
       </div>
     </ng-container>
@@ -52,33 +51,30 @@
       <div class="sbd-warn">
         <mat-icon>warning</mat-icon>
         <span
-          >Supplier tetap bisa dipilih, tapi akan muncul
-          <strong>peringatan</strong> setiap kali dipakai di purchase atau
+          >{{ "supplier.supplierTetapBisaDipilihTapi" | translate }}<strong>peringatan</strong> setiap kali dipakai di purchase atau
           purchase order.</span
         >
       </div>
       <form [formGroup]="formGroup">
         <mat-form-field appearance="outline" class="sbd-field">
-          <mat-label>Alasan blacklist</mat-label>
+          <mat-label>{{ "supplier.alasanBlacklist" | translate }}</mat-label>
           <textarea
             matInput
             formControlName="blacklistReason"
             rows="3"
             maxlength="500"
-            placeholder="Ex. Sering telat kirim, barang tidak sesuai spek, dokumen bermasalah"
+            [placeholder]="'supplier.exSeringTelatKirimBarang' | translate"
           ></textarea>
           <mat-error
             *ngIf="formGroup.get('blacklistReason')?.hasError('required')"
-          >
-            Alasan wajib diisi.
-          </mat-error>
+          >{{ "supplier.alasanWajibDiisi" | translate }}</mat-error>
         </mat-form-field>
       </form>
     </ng-template>
   </mat-dialog-content>
 
   <mat-dialog-actions class="sbd-actions">
-    <button type="button" class="sbd-cancel" (click)="onCancel()">Batal</button>
+    <button type="button" class="sbd-cancel" (click)="onCancel()">{{ "salarySlip.batal" | translate }}</button>
     <button
       type="button"
       class="sbd-submit"

@@ -19,6 +19,55 @@
         </mat-select>
       </mat-form-field>
 
+      <!--
+        Penyaring pengguna hanya untuk level 5.
+
+        Autocomplete, bukan daftar pilih: jumlah pengguna bertambah terus,
+        dan daftar penuh justru tidak terpakai saat paling dibutuhkan.
+      -->
+      @if (bolehSaringPengguna) {
+        <mat-form-field appearance="outline" class="al-user">
+          <mat-label>{{ "activity.filterUser" | translate }}</mat-label>
+          <mat-chip-grid #chipPengguna>
+            @for (u of penggunaTerpilih; track u.id) {
+              <mat-chip-row (removed)="lepasPengguna(u.id)">
+                {{ u.name }}
+                <button matChipRemove [attr.aria-label]="'common.delete' | translate">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input
+            [formControl]="penggunaCari"
+            [matChipInputFor]="chipPengguna"
+            [matAutocomplete]="autoPengguna"
+            [placeholder]="
+              penggunaPenuh
+                ? ('activity.userLimitReached' | translate)
+                : ('activity.searchUser' | translate)
+            "
+            [disabled]="penggunaPenuh"
+          />
+          <mat-autocomplete
+            #autoPengguna="matAutocomplete"
+            (optionSelected)="pilihPengguna($event.option.value)"
+          >
+            @for (u of saranPengguna(); track u.id) {
+              <mat-option [value]="u">{{ u.name }}</mat-option>
+            }
+            @if (saranPengguna().length === 0) {
+              <mat-option [disabled]="true">
+                {{ "activity.noUserMatch" | translate }}
+              </mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>
+            {{ penggunaTerpilih.length }}/{{ MAKS_PENGGUNA }}
+          </mat-hint>
+        </mat-form-field>
+      }
+
       <mat-form-field appearance="outline" class="al-date">
         <mat-label>{{ "activity.dateFrom" | translate }}</mat-label>
         <input

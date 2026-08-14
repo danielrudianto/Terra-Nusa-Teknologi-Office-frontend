@@ -83,7 +83,7 @@
           <input
             matInput
             formControlName="date"
-            placeholder="Tanggal bayar"
+            [placeholder]="'payment.tanggalBayar' | translate"
             [matDatepicker]="paymentDatePicker"
           />
           <mat-datepicker-toggle
@@ -104,7 +104,7 @@
             matInput
             formControlName="amount"
             type="text"
-            placeholder="Nominal"
+            [placeholder]="'payment.nominal' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"

@@ -56,12 +56,10 @@
     <!-- paid progress -->
     <div class="sip-paidrow">
       <span
-        >Sudah dibayar:
-        <strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
+        >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
       >
       <span
-        >Sisa:
-        <strong class="sip-remain"
+        >{{ "expense.sisa" | translate }}<strong class="sip-remain"
           >Rp {{ remaining | number: "1.0-0" }}</strong
         ></span
       >
@@ -112,7 +110,7 @@
             matInput
             formControlName="date"
             [matDatepicker]="picker"
-            placeholder="Tanggal"
+            [placeholder]="'payment.tanggal' | translate"
           />
           <mat-datepicker-toggle
             matIconPrefix
@@ -136,7 +134,7 @@
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
-            placeholder="Nominal"
+            [placeholder]="'expense.nominal' | translate"
           />
           <mat-hint>Sisa tagihan Rp {{ remaining | number: "1.0-0" }}</mat-hint>
         </mat-form-field>

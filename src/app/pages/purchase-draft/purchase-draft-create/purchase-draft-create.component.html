@@ -59,7 +59,7 @@
             mat-icon-button
             (click)="openSupplierSelector()"
             type="button"
-            aria-label="Pilih supplier"
+            [attr.aria-label]="'purchaseDraft.pilihSupplier' | translate"
           >
             <mat-icon>search</mat-icon>
           </button>
@@ -92,15 +92,14 @@
             matInput
             type="text"
             formControlName="purchaseOrderName"
-            placeholder="000-SPK-XXXX-A"
+            [placeholder]="'purchaseDraft.000SpkXxxxA' | translate"
           />
           <mat-hint
-            >Format: 000-PO/SPK/PKS-KODE-TIPE — project &amp; tipe terisi
-            otomatis</mat-hint
+            >{{ "purchaseDraft.format000PoSpkPks" | translate }}</mat-hint
           >
           <mat-error
             *ngIf="metaFormGroup.get('purchaseOrderName')?.hasError('pattern')"
-            >Format PO belum sesuai.</mat-error
+            >{{ "purchaseDraft.formatPoBelumSesuai" | translate }}</mat-error
           >
         </mat-form-field>
 

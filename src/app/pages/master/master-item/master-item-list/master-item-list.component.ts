@@ -74,13 +74,21 @@ export class MasterItemListComponent {
   brands: string[] = [];
   types: string[] = [];
   // opsi purchaseType yang relevan untuk master item
-  purchaseTypeOptions: { code: string; label: string }[] = [
-    { code: 'G', label: 'G — General' },
-    { code: 'C', label: 'C — Consumable/Fuel' },
-    { code: 'F', label: 'F — Besi' },
-    { code: '5.1.1', label: '5.1.1 — Asset purchase' },
-    { code: '5.1.2', label: '5.1.2 — Asset maintenance' },
-  ];
+  /*
+   * Labelnya disusun dari `purchaseTypeLabel`, bukan ditulis di sini.
+   *
+   * Nama jenis PO sudah punya satu sumber yang mengikuti bahasa aplikasi;
+   * menuliskannya lagi membuat penyaring ini menampilkan "G — General"
+   * sementara layar lain menampilkan "Alat bantu dan perlengkapan proyek".
+   */
+  private readonly KODE_MASTER_ITEM = ['G', 'C', 'F', '5.1.1', '5.1.2'];
+
+  get purchaseTypeOptions(): { code: string; label: string }[] {
+    return this.KODE_MASTER_ITEM.map((code) => ({
+      code,
+      label: `${code} — ${purchaseTypeLabel(this.translate, code)}`,
+    }));
+  }
   items: any[] = [];
   page: number = 1;
   /** Nilai awal dari pengaturan pengguna; tetap bisa diubah per halaman. */

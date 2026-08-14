@@ -51,7 +51,7 @@
                 class="su-mini"
                 *ngIf="supplierFormGroup.get('phoneNumber')?.value"
                 (click)="copyPhone()"
-                aria-label="Salin nomor telepon"
+                [attr.aria-label]="'supplier.salinNomorTelepon' | translate"
               >
                 <mat-icon>content_copy</mat-icon>
               </button>
@@ -64,7 +64,7 @@
             }}</span>
           </div>
           <div class="su-field su-field--wide">
-            <span class="su-label">NPWP</span>
+            <span class="su-label">{{ "client.npwp" | translate }}</span>
             <span class="su-value su-value--mono">
               {{ supplierFormGroup.get("npwp")?.value || "—" }}
             </span>
@@ -101,8 +101,7 @@
 
     <mat-dialog-actions class="su-actions">
       <button mat-flat-button class="su-copy" (click)="copyDocument()">
-        <mat-icon>content_copy</mat-icon>&nbsp;Copy untuk WhatsApp
-      </button>
+        <mat-icon>content_copy</mat-icon>{{ "supplier.copyUntukWhatsapp" | translate }}</button>
       <span class="su-spacer"></span>
       <button mat-button (click)="close()">
         {{ "common.close" | translate }}
@@ -138,7 +137,7 @@
               matInput
               formControlName="name"
               type="text"
-              placeholder="Supplier name"
+              [placeholder]="'purchaseDraft.supplierName' | translate"
               required
             />
           </mat-form-field>
@@ -149,7 +148,7 @@
               matInput
               formControlName="address"
               rows="2"
-              placeholder="Supplier address"
+              [placeholder]="'purchase.supplierAddress' | translate"
               required
               style="resize: none"
             ></textarea>
@@ -161,7 +160,7 @@
               matInput
               formControlName="city"
               type="text"
-              placeholder="Supplier city"
+              [placeholder]="'supplier.supplierCity' | translate"
               required
             />
           </mat-form-field>
@@ -172,7 +171,7 @@
               matInput
               formControlName="province"
               type="text"
-              placeholder="Supplier province"
+              [placeholder]="'supplier.supplierProvince' | translate"
               required
             />
           </mat-form-field>
@@ -183,7 +182,7 @@
               matInput
               formControlName="npwp"
               type="text"
-              placeholder="16 digit"
+              [placeholder]="'supplier.16Digit' | translate"
               maxlength="16"
             />
           </mat-form-field>
@@ -194,7 +193,7 @@
               matInput
               formControlName="phoneNumber"
               type="tel"
-              placeholder="Phone number"
+              [placeholder]="'supplier.phoneNumber' | translate"
               required
             />
           </mat-form-field>
@@ -205,7 +204,7 @@
               matInput
               formControlName="email"
               type="email"
-              placeholder="Supplier email"
+              [placeholder]="'supplier.supplierEmail' | translate"
             />
           </mat-form-field>
         </div>
@@ -214,14 +213,14 @@
 
         <!-- items sold -->
         <div class="su-tags su-tags--edit" *ngIf="items.length > 0">
-          <mat-chip-set aria-label="Items sold selection">
+          <mat-chip-set [attr.aria-label]="'supplier.itemsSoldSelection' | translate">
             <mat-chip
               *ngFor="let item of items"
               [removable]="true"
               (removed)="remove(item)"
             >
               {{ item }}
-              <button matChipRemove class="su-chip-x" aria-label="Remove item">
+              <button matChipRemove class="su-chip-x" [attr.aria-label]="'supplier.removeItem' | translate">
                 <svg
                   width="14"
                   height="14"
@@ -243,21 +242,21 @@
             matInput
             formControlName="soldItems"
             type="text"
-            placeholder="Ketik lalu tekan koma (,) untuk menambah"
+            [placeholder]="'supplier.ketikLaluTekanKomaUntuk' | translate"
           />
           <mat-hint>{{ "supplier.commaShort" | translate }}</mat-hint>
         </mat-form-field>
 
         <!-- service areas -->
         <div class="su-tags su-tags--edit" *ngIf="areas.length > 0">
-          <mat-chip-set aria-label="Areas selection">
+          <mat-chip-set [attr.aria-label]="'supplier.areasSelection' | translate">
             <mat-chip
               *ngFor="let area of areas"
               [removable]="true"
               (removed)="removeArea(area)"
             >
               {{ area }}
-              <button matChipRemove class="su-chip-x" aria-label="Remove area">
+              <button matChipRemove class="su-chip-x" [attr.aria-label]="'supplier.removeArea' | translate">
                 <svg
                   width="14"
                   height="14"
@@ -279,7 +278,7 @@
             matInput
             formControlName="serviceAreas"
             type="text"
-            placeholder="Ketik lalu tekan koma (,) untuk menambah"
+            [placeholder]="'supplier.ketikLaluTekanKomaUntuk' | translate"
           />
           <mat-hint>{{ "supplier.commaShort" | translate }}</mat-hint>
         </mat-form-field>

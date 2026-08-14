@@ -5,14 +5,14 @@
         class="col-xl-6 col-lg-6 col-md-10 d-flex align-items-center justify-content-center d-block"
       >
         <div class="login-form__wrapper">
-          <img src="/assets/images/sphere.png" alt="Sphere" id="sphere" />
-          <img src="/assets/images/dome.png" alt="Dome" id="dome" />
+          <img src="/assets/images/sphere.png" alt="" id="sphere" />
+          <img src="/assets/images/dome.png" alt="" id="dome" />
           <div class="login-form">
             <form [formGroup]="loginFormGroup" (submit)="onSubmit()">
               <div class="login-form__logo">
                 <img
                   src="/assets/images/login-logo.png"
-                  alt="Login logo"
+                  [alt]="'common.appName' | translate"
                   class="w-100"
                 />
               </div>
@@ -70,13 +70,13 @@
       <div
         class="col-xl-6 col-lg-6 col-md-10 h-100 p-relative d-lg-flex align-items-center justify-content-center d-none"
       >
-        <img src="/assets/images/rock.png" alt="Rock" id="rock" />
-        <img src="/assets/images/graph.png" alt="Graph" id="graph" />
-        <img src="/assets/images/cone.png" alt="Cone" id="cone" />
+        <img src="/assets/images/rock.png" alt="" id="rock" />
+        <img src="/assets/images/graph.png" alt="" id="graph" />
+        <img src="/assets/images/cone.png" alt="" id="cone" />
 
         <img
           src="/assets/images/login.png"
-          alt="Hero image"
+          alt=""
           class="w-100"
           id="hero"
         />

@@ -15,7 +15,7 @@
           <input
             matInput
             formControlName="name"
-            placeholder="Enter employee name"
+            [placeholder]="'employee.enterEmployeeName' | translate"
           />
         </mat-form-field>
 
@@ -24,7 +24,7 @@
           <input
             matInput
             formControlName="birthday"
-            placeholder="Enter employee department"
+            [placeholder]="'employee.enterEmployeeDepartment' | translate"
             [matDatepicker]="picker"
           />
           <mat-datepicker-toggle
@@ -39,7 +39,7 @@
           <input
             matInput
             formControlName="nik"
-            placeholder="Enter employee NIK (National ID)"
+            [placeholder]="'employee.enterEmployeeNikNationalId' | translate"
           />
         </mat-form-field>
 
@@ -48,7 +48,7 @@
           <textarea
             matInput
             formControlName="address"
-            placeholder="Enter employee address"
+            [placeholder]="'employee.enterEmployeeAddress' | translate"
             rows="3"
             style="resize: none"
           ></textarea>
@@ -59,7 +59,7 @@
           <input
             matInput
             formControlName="email"
-            placeholder="Enter employee email"
+            [placeholder]="'employee.enterEmployeeEmail' | translate"
           />
         </mat-form-field>
 
@@ -68,7 +68,7 @@
           <input
             matInput
             formControlName="phoneNumber"
-            placeholder="Enter employee phone number"
+            [placeholder]="'employee.enterEmployeePhoneNumber' | translate"
           />
         </mat-form-field>
 
@@ -77,7 +77,7 @@
           <input
             matInput
             formControlName="position"
-            placeholder="Enter employee position"
+            [placeholder]="'employee.enterEmployeePosition' | translate"
           />
         </mat-form-field>
 
@@ -86,7 +86,7 @@
           <input
             matInput
             formControlName="department"
-            placeholder="Enter employee department"
+            [placeholder]="'employee.enterEmployeeDepartment' | translate"
           />
         </mat-form-field>
 
@@ -94,7 +94,7 @@
           <mat-label>{{ "employee.taxCategory" | translate }}</mat-label>
           <mat-select
             formControlName="taxCategory"
-            placeholder="Select tax category"
+            [placeholder]="'employee.selectTaxCategory' | translate"
           >
             <mat-optgroup label="Tidak kawin">
               <mat-option value="TK/0">{{
@@ -132,7 +132,7 @@
           <input
             matInput
             formControlName="startDate"
-            placeholder="Enter start date"
+            [placeholder]="'employee.enterStartDate' | translate"
             [matDatepicker]="startPicker"
           />
           <mat-datepicker-toggle
@@ -150,9 +150,7 @@
         style="letter-spacing: 0"
         type="submit"
         [disabled]="formGroup.invalid || isSubmitting"
-      >
-        Submit
-      </button>
+      >{{ "employee.submit" | translate }}</button>
     </mat-dialog-actions>
   </form>
 </div>

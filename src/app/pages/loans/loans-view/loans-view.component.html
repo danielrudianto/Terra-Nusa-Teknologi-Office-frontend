@@ -33,11 +33,10 @@
         <div class="lv-bar"><span [style.width.%]="progress"></span></div>
         <div class="lv-progress__amts">
           <span
-            >Terbayar:
-            <strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
+            >{{ "loan.terbayar" | translate }}<strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
           >
           <span class="lv-remaining"
-            >Sisa: <strong>Rp {{ remaining | number: "1.0-0" }}</strong></span
+            >{{ "expense.sisa" | translate }}<strong>Rp {{ remaining | number: "1.0-0" }}</strong></span
           >
         </div>
         @if (pendingPayments.length > 0) {
@@ -84,7 +83,7 @@
             <span class="lv-value">{{ loan.date | date: "dd MMM yyyy" }}</span>
           </div>
           <div class="lv-field" *ngIf="loan.creditorNPWP">
-            <span class="lv-label">NPWP</span>
+            <span class="lv-label">{{ "client.npwp" | translate }}</span>
             <span class="lv-value lv-mono">{{ loan.creditorNPWP }}</span>
           </div>
           <div class="lv-field lv-field--full" *ngIf="loan.creditorAddress">
@@ -147,7 +146,7 @@
               p.date || p.paymentDate | date: "dd MMM yyyy"
             }}</span>
             @if (p.isApprove !== true) {
-              <span class="lv-pay__tag">Menunggu persetujuan</span>
+              <span class="lv-pay__tag">{{ "loan.menungguPersetujuan" | translate }}</span>
             }
             <span class="lv-pay__amt">Rp {{ p.amount | number: "1.0-0" }}</span>
           </div>

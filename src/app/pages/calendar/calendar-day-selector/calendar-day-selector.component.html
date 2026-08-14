@@ -13,7 +13,7 @@
     @if (isLoading) {
       <div class="ds-loading">
         <mat-spinner diameter="34"></mat-spinner>
-        <span>Loading accounts…</span>
+        <span>{{ "calendar.loadingAccounts" | translate }}</span>
       </div>
     } @else {
       <div class="ds-body">
@@ -75,21 +75,17 @@
                 class="ds-btn ds-btn--reject"
                 [disabled]="selectedPayments.length == 0 || !canConfirm"
                 (click)="reject()"
-              >
-                Reject
-              </button>
+              >{{ "calendar.reject" | translate }}</button>
               <button
                 type="button"
                 class="ds-btn ds-btn--confirm"
                 [disabled]="selectedPayments.length == 0 || !canConfirm"
                 (click)="confirm()"
-              >
-                Confirm
-              </button>
+              >{{ "calendar.confirm" | translate }}</button>
               <button
                 mat-icon-button
                 (click)="selectAllPayments()"
-                matTooltip="Pilih semua"
+                [matTooltip]="'calendar.pilihSemua' | translate"
                 [attr.aria-label]="'calendarDay.selectAll' | translate"
               >
                 <mat-icon>select_all</mat-icon>

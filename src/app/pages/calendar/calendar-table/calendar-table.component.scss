@@ -34,7 +34,7 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 /* weekday header */
 .cal-dow {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   background: $surface2;
   border-bottom: 1px solid $border;
 
@@ -54,15 +54,31 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 }
 
 /* day grid */
+
+/*
+ * Sama seperti kalender agenda: `box-sizing` bawaan membuat padding dan garis
+ * tepi tiap sel DITAMBAHKAN di atas lebar kolomnya, dan tujuh kolom sekaligus
+ * cukup untuk memunculkan gulir mendatar.
+ *
+ * `minmax(0, 1fr)` juga perlu: batas bawah `auto` pada `1fr` mengikuti lebar
+ * isi terkecil, sehingga satu label panjang melebarkan kolomnya.
+ */
 .cal-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.cal-grid *,
+.cal-grid *::before,
+.cal-grid *::after {
+  box-sizing: border-box;
 }
 
 /* cell */
 .cal-cell {
   position: relative;
   min-height: 104px;
+  min-width: 0;
   padding: 0.6rem 0.7rem;
   border-right: 1px solid $line;
   border-bottom: 1px solid $line;

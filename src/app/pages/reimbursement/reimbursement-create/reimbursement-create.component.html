@@ -19,7 +19,7 @@
           <mat-label>{{ "reimbursementCreate.date" | translate }}</mat-label>
           <input
             matInput
-            placeholder="Date"
+            [placeholder]="'reimbursement.date' | translate"
             [matDatepicker]="picker"
             formControlName="date"
           />
@@ -34,7 +34,7 @@
           <mat-label>{{ "reimbursementCreate.dueDate" | translate }}</mat-label>
           <input
             matInput
-            placeholder="Due date"
+            [placeholder]="'reimbursement.dueDate' | translate"
             [matDatepicker]="dueDatePicker"
             formControlName="dueDate"
           />
@@ -210,7 +210,7 @@
                       mat-icon-button
                       type="button"
                       (click)="removeItem(i)"
-                      aria-label="Hapus item"
+                      [attr.aria-label]="'reimbursement.hapusItem' | translate"
                     >
                       <mat-icon>delete</mat-icon>
                     </button>

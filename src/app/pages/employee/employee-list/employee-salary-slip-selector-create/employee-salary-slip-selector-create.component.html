@@ -16,8 +16,8 @@
       </svg>
     </span>
     <div class="ss-head__text">
-      <h2 class="ss-title">Buat Salary Slip</h2>
-      <span class="ss-sub">Pilih periode gaji karyawan</span>
+      <h2 class="ss-title">{{ "salarySlip.buatSalarySlip" | translate }}</h2>
+      <span class="ss-sub">{{ "salarySlip.pilihPeriodeGajiKaryawan" | translate }}</span>
     </div>
   </div>
 
@@ -25,7 +25,7 @@
     <mat-dialog-content class="ss-content">
       <div class="ss-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Month</mat-label>
+          <mat-label>{{ "salarySlip.month" | translate }}</mat-label>
           <mat-select formControlName="month">
             <mat-option *ngFor="let m of months" [value]="m.value">{{
               m.key | translate
@@ -34,19 +34,19 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Year</mat-label>
+          <mat-label>{{ "salarySlip.year" | translate }}</mat-label>
           <input
             matInput
             type="number"
             formControlName="year"
-            placeholder="Ex. 2026"
+            [placeholder]="'salarySlip.ex2026' | translate"
           />
         </mat-form-field>
       </div>
     </mat-dialog-content>
 
     <mat-dialog-actions class="ss-actions">
-      <button type="button" class="ss-cancel" mat-dialog-close>Batal</button>
+      <button type="button" class="ss-cancel" mat-dialog-close>{{ "salarySlip.batal" | translate }}</button>
       <button
         type="submit"
         class="ss-submit"

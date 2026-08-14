@@ -27,7 +27,7 @@
     type="button"
     class="tn-account"
     [matMenuTriggerFor]="accountMenu"
-    aria-label="Account"
+    [attr.aria-label]="'common.account' | translate"
   >
     @if (userId) {
       <app-avatar [userId]="userId" [size]="34"></app-avatar>

@@ -205,8 +205,8 @@
           class="st-brand__opt"
           [class.is-active]="settings.brandColor === c"
           [style.background]="settings.brandColors[c].base"
-          [attr.aria-label]="settings.brandColors[c].label"
-          [matTooltip]="settings.brandColors[c].label"
+          [attr.aria-label]="settings.brandColors[c].labelKey | translate"
+          [matTooltip]="settings.brandColors[c].labelKey | translate"
           (click)="selectBrandColor(c)"
         >
           <mat-icon *ngIf="settings.brandColor === c">check</mat-icon>

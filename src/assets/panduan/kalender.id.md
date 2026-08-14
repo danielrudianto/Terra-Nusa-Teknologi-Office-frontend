@@ -71,6 +71,28 @@ Sebelum menyetujui, pastikan tiga hal:
 Penolakan **tidak dapat dibatalkan**. Pembayaran yang terlanjur ditolak harus
 dibuat ulang dari dokumen asalnya.
 
+## Agenda: ulang tahun dan pengingat
+
+Berbeda dari kalender pembayaran, **Agenda** berisi catatan pribadi dan ulang
+tahun rekan. Tidak ada uang di sana.
+
+Kartu Agenda di Dashboard hanya menampilkan tujuh hari ke depan. Tombol
+kalender di sudut kartu membuka tampilan bulanan penuh — tanggal berapa ada
+apa, dan bulan depan seperti apa.
+
+Klik satu tanggal untuk melihat rinciannya, dan tombol **Tambah di tanggal
+ini** membuat pengingat dengan tanggalnya sudah terisi.
+
+Pengingat bisa diklik untuk diubah. Ulang tahun tidak bisa — datanya berasal
+dari Master Data Karyawan, jadi perbaikannya di sana.
+
+**Ulang tahun karyawan yang sudah tidak aktif tidak ditampilkan.** Yang
+menentukan adalah tanggal terakhir bekerja pada data karyawan: begitu terisi,
+ulang tahunnya berhenti muncul.
+
+Agenda tidak ada di menu samping. Halaman ini bersifat pribadi, dan jalan
+masuknya lewat kartu di Dashboard.
+
 ## Yang tidak dilakukan kalender
 
 Kalender tidak melakukan transfer. Persetujuan di sini menandai bahwa

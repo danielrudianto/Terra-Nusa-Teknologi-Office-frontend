@@ -2,7 +2,7 @@
   <div class="side-nav__body">
     <div class="side-nav__logo" routerLink="/" style="cursor: pointer">
       <app-logo class="side-nav__logo-icon" [size]="38"></app-logo>
-      <span>TERRABOT</span>
+      <span>{{ "common.terrabot" | translate }}</span>
     </div>
 
     <!-- search -->
@@ -67,9 +67,7 @@
             <path
               d="M9 9V3.8a.8.8 0 0 1 .8-.8h4.4a.8.8 0 0 1 .8.8V9l2.4 2.6a1 1 0 0 1 .26.68V13a1 1 0 0 1-1 1H7.34a1 1 0 0 1-1-1v-.72a1 1 0 0 1 .26-.68z"
             />
-          </svg>
-          Pinned
-        </div>
+          </svg>{{ "common.pinned" | translate }}</div>
         <div class="snav-group__items">
           <app-side-nav-item
             *ngFor="let i of pinnedItems"

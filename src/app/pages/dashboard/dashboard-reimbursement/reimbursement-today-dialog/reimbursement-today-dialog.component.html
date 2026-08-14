@@ -9,7 +9,7 @@
         {{ "dashboardReimbursement.pendingCount" | translate }}</span
       >
     </div>
-    <button class="rtd__close" (click)="close()" aria-label="Close">
+    <button class="rtd__close" (click)="close()" [attr.aria-label]="'dashboard.close' | translate">
       <svg
         width="18"
         height="18"

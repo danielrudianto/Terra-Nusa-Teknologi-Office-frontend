@@ -56,12 +56,10 @@
       <!-- paid progress -->
       <div class="spc-paidrow">
         <span
-          >Sudah dibayar:
-          <strong>Rp {{ payment | number: "1.0-0" }}</strong></span
+          >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ payment | number: "1.0-0" }}</strong></span
         >
         <span
-          >Sisa:
-          <strong class="spc-remain"
+          >{{ "expense.sisa" | translate }}<strong class="spc-remain"
             >Rp {{ maximumPayment | number: "1.0-0" }}</strong
           ></span
         >
@@ -77,7 +75,7 @@
           <input
             matInput
             formControlName="date"
-            placeholder="Tanggal"
+            [placeholder]="'payment.tanggal' | translate"
             [matDatepicker]="datePicker"
           />
           <mat-datepicker-toggle
@@ -102,7 +100,7 @@
             matInput
             type="text"
             formControlName="amount"
-            placeholder="Nominal"
+            [placeholder]="'expense.nominal' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"

@@ -46,7 +46,17 @@
                 ]
               }
             },
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "moment",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts",
+              "pdfjs-dist",
+              "exceljs",
+              "file-saver",
+              "xlsx-js-style",
+              "pako"
+            ]
           },
           "configurations": {
             "production": {
@@ -65,7 +75,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false,
+              "optimization": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,

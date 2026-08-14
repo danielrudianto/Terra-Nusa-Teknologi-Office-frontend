@@ -8,7 +8,7 @@
     <mat-chip-listbox
       class="pl-chips"
       multiple
-      aria-label="Filter Selection"
+      [attr.aria-label]="'loan.filterSelection' | translate"
       [disabled]="isLoading"
     >
       <mat-chip-option
@@ -255,7 +255,7 @@
       [length]="count"
       [pageSize]="pageSize"
       [pageSizeOptions]="[10, 25, 50]"
-      aria-label="Select page of payments"
+      [attr.aria-label]="'payment.selectPageOfPayments' | translate"
       (page)="onPageChange($event)"
     ></mat-paginator>
   </div>

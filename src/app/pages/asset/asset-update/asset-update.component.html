@@ -31,7 +31,7 @@
           <input
             matInput
             formControlName="name"
-            placeholder="Ex. Alat bor KR"
+            [placeholder]="'common.exAlatBorKr' | translate"
           />
         </mat-form-field>
 
@@ -40,13 +40,13 @@
           <textarea
             matInput
             formControlName="description"
-            placeholder="Ex. Alat bor KR"
+            [placeholder]="'common.exAlatBorKr' | translate"
           ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>{{ "asset.assetBrand" | translate }}</mat-label>
-          <input matInput formControlName="brand" placeholder="Ex. XCMG" />
+          <input matInput formControlName="brand" [placeholder]="'common.exXcmg' | translate" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
@@ -69,7 +69,7 @@
           <textarea
             matInput
             formControlName="location"
-            placeholder="Ex. Gudang Pusat"
+            [placeholder]="'common.exGudangPusat' | translate"
           ></textarea>
         </mat-form-field>
 
@@ -92,10 +92,10 @@
             </mat-optgroup>
             <mat-optgroup label="Buildings">
               <mat-option [value]="20"
-                >20 years (Permanent Building)</mat-option
+                >{{ "common.20YearsPermanentBuilding" | translate }}</mat-option
               >
               <mat-option [value]="10"
-                >10 years (Non-permanent Building)</mat-option
+                >{{ "common.10YearsNonPermanentBuilding" | translate }}</mat-option
               >
             </mat-optgroup>
           </mat-select>
@@ -106,7 +106,7 @@
           <input
             matInput
             formControlName="purchaseOrderName"
-            placeholder="Ex. 001-SPK-PUSAT-5.1.1"
+            [placeholder]="'common.ex001SpkPusat5' | translate"
           />
         </mat-form-field>
 
@@ -129,7 +129,7 @@
           <input
             matInput
             formControlName="value"
-            placeholder="Ex. 1200000"
+            [placeholder]="'common.ex1200000' | translate"
             type="number"
           />
         </mat-form-field>
@@ -150,7 +150,7 @@
           <input
             matInput
             formControlName="soldValue"
-            placeholder="Ex. 800000"
+            [placeholder]="'common.ex800000' | translate"
             type="number"
           />
         </mat-form-field>

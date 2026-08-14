@@ -249,7 +249,7 @@
 
         <!-- Action -->
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'common.actions' | translate"></th>
           <td
             mat-cell
             *matCellDef="let element"
@@ -258,7 +258,7 @@
             <button
               [matMenuTriggerFor]="menu"
               mat-icon-button
-              aria-label="Row actions"
+              [attr.aria-label]="'common.rowActions' | translate"
             >
               <mat-icon>more_horiz</mat-icon>
             </button>

@@ -4,17 +4,17 @@
       <mat-icon>admin_panel_settings</mat-icon>
     </span>
     <div class="ua-head__text">
-      <h2 class="ua-title">Atur akses</h2>
+      <h2 class="ua-title">{{ "userAccess.aturAkses" | translate }}</h2>
       <span class="ua-sub">{{ data?.user?.name }}</span>
     </div>
   </div>
 
   <mat-dialog-content class="ua-content">
     @if (isLoading) {
-      <div class="ua-loading">Memuat…</div>
+      <div class="ua-loading">{{ "agenda.memuat" | translate }}</div>
     } @else {
       <!-- ===== Divisi ===== -->
-      <div class="ua-section__title">Divisi</div>
+      <div class="ua-section__title">{{ "userAccess.divisi" | translate }}</div>
 
       @if (tanpaDivisi) {
         <!--
@@ -23,15 +23,10 @@
         -->
         <p class="ua-note">
           <mat-icon>info</mat-icon>
-          <span>
-            Pengguna level 5 melihat seluruh sistem dan tidak dibatasi divisi.
-          </span>
+          <span>{{ "userAccess.penggunaLevel5MelihatSeluruh" | translate }}</span>
         </p>
       } @else {
-        <p class="ua-hint">
-          Divisi menentukan modul apa yang menjadi wilayahnya. Boleh lebih dari
-          satu; yang dilihat adalah gabungan keduanya.
-        </p>
+        <p class="ua-hint">{{ "userAccess.divisiMenentukanModulApaYang" | translate }}</p>
         <div class="ua-divisi">
           @for (d of departments; track d.code) {
             <label class="ua-divisi__row">
@@ -51,42 +46,29 @@
         @if (adaDivisiKosongTerpilih) {
           <p class="ua-note ua-note--warn">
             <mat-icon>warning</mat-icon>
-            <span>
-              Divisi yang belum punya modul akan membatasi pengguna ini hanya
-              pada beranda dan kalender. Biarkan tanpa divisi dahulu.
-            </span>
+            <span>{{ "userAccess.divisiYangBelumPunyaModul" | translate }}</span>
           </p>
         }
         @if (dipilih.length === 0) {
           <p class="ua-note ua-note--warn">
             <mat-icon>warning</mat-icon>
-            <span>
-              Tanpa divisi, aksesnya ditentukan level saja — tidak dibatasi
-              wilayah.
-            </span>
+            <span>{{ "userAccess.tanpaDivisiAksesnyaDitentukanLevel" | translate }}</span>
           </p>
         }
       }
 
       <!-- ===== Izin khusus ===== -->
       <div class="ua-cardhead">
-        <div class="ua-section__title ua-section__title--flush">
-          Izin khusus
-        </div>
+        <div class="ua-section__title ua-section__title--flush">{{ "userAccess.izinKhusus" | translate }}</div>
         <button type="button" class="ua-add" (click)="tambahPengecualian()">
-          <mat-icon>add</mat-icon> Tambah
-        </button>
+          <mat-icon>add</mat-icon>{{ "userAccess.tambah" | translate }}</button>
       </div>
-      <p class="ua-hint">
-        Pengecualian terhadap level dan divisi. Yang diatur di sini menang atas
-        keduanya — dipakai bila seseorang perlu satu akses tertentu di luar
-        wilayahnya.
-      </p>
+      <p class="ua-hint">{{ "userAccess.pengecualianTerhadapLevelDanDivisi" | translate }}</p>
 
       @if (pengecualian.length === 0) {
         <div class="ua-empty">
           <mat-icon>rule</mat-icon>
-          <span>Belum ada izin khusus.</span>
+          <span>{{ "userAccess.belumAdaIzinKhusus" | translate }}</span>
         </div>
       } @else {
         <div class="ua-list">
@@ -113,8 +95,8 @@
               <mat-form-field appearance="outline" class="ua-row__mode">
                 <mat-label>{{ "userAccess.hasil" | translate }}</mat-label>
                 <mat-select [(ngModel)]="p.allowed" name="allowed{{ i }}">
-                  <mat-option [value]="true">Boleh</mat-option>
-                  <mat-option [value]="false">Ditolak</mat-option>
+                  <mat-option [value]="true">{{ "userAccess.boleh" | translate }}</mat-option>
+                  <mat-option [value]="false">{{ "userAccess.ditolak" | translate }}</mat-option>
                 </mat-select>
               </mat-form-field>
 
@@ -124,7 +106,7 @@
                   matInput
                   [(ngModel)]="p.note"
                   name="note{{ i }}"
-                  placeholder="Ex. Merangkap kasir sementara"
+                  [placeholder]="'userAccess.exMerangkapKasirSementara' | translate"
                 />
               </mat-form-field>
 
@@ -132,7 +114,7 @@
                 mat-icon-button
                 type="button"
                 (click)="hapusPengecualian(i)"
-                aria-label="Hapus izin khusus"
+                [attr.aria-label]="'userAccess.hapusIzinKhusus' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -143,7 +125,7 @@
         @if (adaBarisKosong) {
           <p class="ua-note ua-note--warn">
             <mat-icon>warning</mat-icon>
-            <span>Baris yang modulnya belum dipilih tidak akan disimpan.</span>
+            <span>{{ "userAccess.barisYangModulnyaBelumDipilih" | translate }}</span>
           </p>
         }
       }

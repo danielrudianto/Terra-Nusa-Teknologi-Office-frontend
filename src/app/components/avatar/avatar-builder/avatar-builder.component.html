@@ -52,7 +52,7 @@
             *ngFor="let o of options.faces"
             class="ab-opt"
             [class.is-active]="isActive('faceID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ faceID: o.id })"
           >
             <span
@@ -72,7 +72,7 @@
             class="ab-swatch"
             [class.is-active]="isActive('skinTone', c.id)"
             [style.background]="c.color"
-            [matTooltip]="c.label"
+            [matTooltip]="c.labelKey | translate"
             (click)="set({ skinTone: c.id })"
           >
             <mat-icon *ngIf="isActive('skinTone', c.id)">check</mat-icon>
@@ -91,7 +91,7 @@
             *ngFor="let o of options.hairs"
             class="ab-opt"
             [class.is-active]="isActive('hairID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ hairID: o.id })"
           >
             <span
@@ -111,7 +111,7 @@
             class="ab-swatch"
             [class.is-active]="isActive('hairColor', c.id)"
             [style.background]="c.color"
-            [matTooltip]="c.label"
+            [matTooltip]="c.labelKey | translate"
             (click)="set({ hairColor: c.id })"
           >
             <mat-icon *ngIf="isActive('hairColor', c.id)">check</mat-icon>
@@ -130,7 +130,7 @@
             *ngFor="let o of options.eyes"
             class="ab-opt"
             [class.is-active]="isActive('eyesID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ eyesID: o.id })"
           >
             <span
@@ -152,7 +152,7 @@
             *ngFor="let o of options.mouths"
             class="ab-opt"
             [class.is-active]="isActive('mouthID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ mouthID: o.id })"
           >
             <span
@@ -174,7 +174,7 @@
             *ngFor="let o of options.tops"
             class="ab-opt"
             [class.is-active]="isActive('topID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ topID: o.id })"
           >
             <span
@@ -194,7 +194,7 @@
             class="ab-swatch"
             [class.is-active]="isActive('topColor', c.id)"
             [style.background]="c.color"
-            [matTooltip]="c.label"
+            [matTooltip]="c.labelKey | translate"
             (click)="set({ topColor: c.id })"
           >
             <mat-icon *ngIf="isActive('topColor', c.id)">check</mat-icon>
@@ -213,7 +213,7 @@
             *ngFor="let o of options.accessories"
             class="ab-opt"
             [class.is-active]="isActive('accessoryID', o.id)"
-            [matTooltip]="o.label"
+            [matTooltip]="o.labelKey | translate"
             (click)="set({ accessoryID: o.id || null })"
           >
             <span
@@ -236,7 +236,7 @@
             class="ab-swatch"
             [class.is-active]="isActive('backgroundColor', c.id)"
             [style.background]="c.color"
-            [matTooltip]="c.label"
+            [matTooltip]="c.labelKey | translate"
             (click)="set({ backgroundColor: c.id })"
           >
             <mat-icon *ngIf="isActive('backgroundColor', c.id)">check</mat-icon>

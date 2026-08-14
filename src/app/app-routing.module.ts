@@ -804,7 +804,11 @@ export const routes: Routes = [
           import('./pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
           ),
-        data: { title: 'Settings', permission: 'user:read' },
+        data: {
+          title: 'Settings',
+          permission: 'user:read',
+          panduan: 'pengaturan',
+        },
       },
     ],
   },

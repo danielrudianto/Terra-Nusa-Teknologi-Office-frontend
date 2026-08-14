@@ -35,7 +35,7 @@
           }}</span>
         </div>
         <div class="sv-field">
-          <span class="sv-label">NPWP Klien</span>
+          <span class="sv-label">{{ "salesInvoice.npwpKlien" | translate }}</span>
           <span class="sv-value">{{ f["clientNPWP"].value || "—" }}</span>
         </div>
         <div class="sv-field">
@@ -144,7 +144,7 @@
           ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="sv-money__row sv-money__row--neg" *ngIf="vBpjs">
-          <span>BPJS (potongan)</span
+          <span>{{ "salesInvoice.bpjsPotongan" | translate }}</span
           ><span>− {{ vBpjs | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
 
@@ -178,9 +178,7 @@
     <section class="sv-section">
       <div class="sv-section__title">Riwayat Pembayaran ({{ t.length }})</div>
 
-      <div class="sv-nopay" *ngIf="t.length === 0">
-        Belum ada pembayaran diterima.
-      </div>
+      <div class="sv-nopay" *ngIf="t.length === 0">{{ "salesInvoice.belumAdaPembayaranDiterima" | translate }}</div>
 
       <ng-container @if(t.length)>
         <div class="sv-pay" *ngFor="let p of t.controls">

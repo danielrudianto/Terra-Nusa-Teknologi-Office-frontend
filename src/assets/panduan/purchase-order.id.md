@@ -128,6 +128,41 @@ ini di muka, karena setelah PO terbit sulit dinegosiasikan ulang.
 Ada juga dua tanggal opsional: **pengiriman sebelum** dan **pembayaran
 sebelum**. Kosongkan kalau tidak disepakati tanggal pastinya.
 
+## Memeriksa dokumen sebelum diterbitkan
+
+Dua tombol di bawah formulir, dan keduanya menampilkan dokumen yang sama.
+
+**Pratinjau** membuka dokumennya tanpa menyimpan apa pun. Nomornya masih
+bertuliskan *(DRAF — BELUM TERBIT)* karena nomor asli baru diberikan saat
+penyimpanan. Boleh dibuka berkali-kali; isian tidak berubah.
+
+**Buat Purchase Order** juga menampilkan dokumennya lebih dulu, tetapi
+tombol penerbitannya terkunci sampai pernyataan *"Saya telah membaca dan
+memeriksa seluruh isi dokumen ini"* dicentang.
+
+Kuncian itu disengaja. Setelah PO terbit, nomornya sudah terpakai dan isinya
+tidak dapat diubah — perbaikan hanya mungkin dengan membatalkan lalu
+menerbitkan ulang, dan salinan yang terlanjur dikirim ke pemasok tidak bisa
+ditarik. Membaca satu layar sebelum menekan jauh lebih murah daripada
+membatalkan sesudahnya.
+
+## Salah pilih jenis PO
+
+Tombol **Ganti jenis** di bagian atas membuka kembali pemilih jenis, tanpa
+perlu menekan tombol kembali peramban.
+
+Bila sudah ada isian yang diketik, muncul konfirmasi lebih dulu — pindah
+jenis berarti pindah formulir, dan isian yang sudah ada tidak terbawa.
+
+## Kode proyek pada tipe G
+
+Tipe G melekat pada proyek tertentu, sehingga **PUSAT tidak tersedia** di
+daftar pilihannya. Beban kantor yang tidak melekat pada proyek dicatat lewat
+jenis lain.
+
+Dokumen lama yang terlanjur berkode PUSAT tetap terbaca saat dibuka — yang
+disaring hanya sarannya, bukan datanya.
+
 ## Setelah PO terbit
 
 Nomor PO yang terbit dipakai saat mencatat tagihannya di menu **Pembelian**.

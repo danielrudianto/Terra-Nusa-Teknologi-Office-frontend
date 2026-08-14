@@ -24,7 +24,7 @@
               <input
                 matInput
                 formControlName="date"
-                placeholder="Date"
+                [placeholder]="'expense.date' | translate"
                 [matDatepicker]="picker"
               />
               <mat-datepicker-toggle
@@ -39,7 +39,7 @@
               <input
                 matInput
                 formControlName="dueDate"
-                placeholder="Due date"
+                [placeholder]="'expense.dueDate' | translate"
                 [matDatepicker]="duePicker"
               />
               <mat-datepicker-toggle
@@ -55,7 +55,7 @@
                 matInput
                 formControlName="opponentName"
                 type="text"
-                placeholder="Pilih opponent"
+                [placeholder]="'expense.pilihOpponent' | translate"
                 readonly
               />
               <button
@@ -63,7 +63,7 @@
                 mat-icon-button
                 (click)="openOpponentSelector()"
                 type="button"
-                aria-label="Pilih opponent"
+                [attr.aria-label]="'expense.pilihOpponent' | translate"
               >
                 <mat-icon>search</mat-icon>
               </button>
@@ -81,7 +81,7 @@
                 matInput
                 formControlName="opponentDescription"
                 rows="2"
-                placeholder="Opponent description"
+                [placeholder]="'expense.opponentDescription' | translate"
                 readonly
                 style="resize: none"
               ></textarea>
@@ -93,7 +93,7 @@
                 matInput
                 formControlName="invoiceName"
                 type="text"
-                placeholder="Invoice name"
+                [placeholder]="'expense.invoiceName' | translate"
               />
             </mat-form-field>
 
@@ -103,7 +103,7 @@
                 matInput
                 type="text"
                 formControlName="receiptName"
-                placeholder="Receipt name"
+                [placeholder]="'expense.receiptName' | translate"
               />
             </mat-form-field>
 
@@ -129,7 +129,7 @@
                     "expense.logistic" | translate
                   }}</mat-option>
                   <mat-option value="5.1.6"
-                    >Document handling &amp; Stationaries</mat-option
+                    >{{ "expense.documentHandlingStationaries" | translate }}</mat-option
                   >
                   <mat-option value="5.1.7">{{
                     "expense.utilities" | translate
@@ -140,7 +140,7 @@
                   <mat-optgroup label="Tax">
                     <mat-option value="5.1.8.1">PPN</mat-option>
                     <mat-option value="5.1.8.2"
-                      >PPh pasal 23 dan 4 ayat 2</mat-option
+                      >{{ "expense.pphPasal23Dan4" | translate }}</mat-option
                     >
                     <mat-option value="5.1.8.3">{{
                       "expense.pph21" | translate
@@ -149,7 +149,7 @@
                       "expense.sptTahunan" | translate
                     }}</mat-option>
                     <mat-option value="5.1.8.5"
-                      >Annual tax report service</mat-option
+                      >{{ "expense.annualTaxReportService" | translate }}</mat-option
                     >
                     <mat-option value="5.1.8.6">{{
                       "expense.penalty" | translate
@@ -159,7 +159,7 @@
                     }}</mat-option>
                   </mat-optgroup>
                   <mat-option value="5.1.14"
-                    >Social and Community Expense</mat-option
+                    >{{ "expense.socialAndCommunityExpense" | translate }}</mat-option
                   >
                   <mat-option value="5.1.9">{{
                     "expense.adminFees" | translate
@@ -178,7 +178,7 @@
                       "expense.advertising" | translate
                     }}</mat-option>
                     <mat-option value="6.3.2"
-                      >Promotional Merchandise</mat-option
+                      >{{ "expense.promotionalMerchandise" | translate }}</mat-option
                     >
                     <mat-option value="6.3.3">{{
                       "expense.socialMedia" | translate
@@ -186,11 +186,10 @@
                   </mat-optgroup>
                   <mat-optgroup label="Legal">
                     <mat-option value="6.4.1"
-                      >Legal Document (Akta, SBU)</mat-option
+                      >{{ "expense.legalDocumentAktaSbu" | translate }}</mat-option
                     >
                     <mat-option value="6.4.2"
-                      >Insurances (Marine, CAR TPL, Surety Bond,
-                      etc.)</mat-option
+                      >{{ "expense.insurancesMarineCarTplSurety" | translate }}</mat-option
                     >
                   </mat-optgroup>
                   <mat-optgroup label="Human Resources">
@@ -219,13 +218,13 @@
                     "expense.manpower" | translate
                   }}</mat-option>
                   <mat-option value="E"
-                    >Coordination; Consumption; and Accomodation</mat-option
+                    >{{ "expense.coordinationConsumptionAndAccomoda" | translate }}</mat-option
                   >
                   <mat-option value="F">{{
                     "expense.material" | translate
                   }}</mat-option>
                   <mat-option value="G"
-                    >Project supporting equipment and supplies</mat-option
+                    >{{ "expense.projectSupportingEquipmentAndSuppl" | translate }}</mat-option
                   >
                 </mat-optgroup>
               </mat-select>
@@ -239,7 +238,7 @@
                 matInput
                 formControlName="description"
                 rows="3"
-                placeholder="Deskripsi (min. 10 karakter)"
+                [placeholder]="'expense.deskripsiMin10Karakter' | translate"
                 style="resize: none"
               ></textarea>
             </mat-form-field>
@@ -252,7 +251,7 @@
               class="exc-btn exc-btn--primary"
               [disabled]="metaFormGroup.invalid"
             >
-              Lanjut
+              {{ "expense.lanjut" | translate }}
             </button>
           </div>
         </div>
@@ -268,17 +267,14 @@
 
         <div class="exc-card">
           <div class="exc-cardhead">
-            <div class="exc-section__title exc-section__title--flush">
-              Nilai &amp; Pajak
-            </div>
+            <div class="exc-section__title exc-section__title--flush">{{ "expense.nilaiPajak" | translate }}</div>
             <button
               type="button"
               class="exc-add exc-add--calc"
               [disabled]="isFinal || !isNumberValid"
               (click)="calculateTotal()"
             >
-              <mat-icon>calculate</mat-icon> Hitung total
-            </button>
+              <mat-icon>calculate</mat-icon>{{ "expense.hitungTotal" | translate }}</button>
           </div>
 
           <div class="exc-grid">
@@ -288,7 +284,7 @@
                 matInput
                 type="text"
                 formControlName="dpp"
-                placeholder="DPP"
+                [placeholder]="'expense.dpp' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 mask="separator.2"
@@ -301,7 +297,7 @@
                 matInput
                 type="text"
                 formControlName="pbbkb"
-                placeholder="PBBKB"
+                [placeholder]="'expense.pbbkb' | translate"
                 prefix="Rp. "
                 thousandSeparator=" "
                 decimalScale="2"
@@ -315,7 +311,7 @@
                 matInput
                 type="text"
                 formControlName="pphCode"
-                placeholder="PPh Code"
+                [placeholder]="'expense.pphCode' | translate"
                 readonly
               />
               <button
@@ -323,7 +319,7 @@
                 matPrefix
                 (click)="openPPHSelector()"
                 type="button"
-                aria-label="Pilih PPh"
+                [attr.aria-label]="'expense.pilihPph' | translate"
               >
                 <mat-icon>search</mat-icon>
               </button>
@@ -337,7 +333,7 @@
                 matInput
                 type="text"
                 formControlName="pphTaxObject"
-                placeholder="PPh Object Name"
+                [placeholder]="'expense.pphObjectName' | translate"
                 readonly
               />
             </mat-form-field>
@@ -350,7 +346,7 @@
                 matInput
                 type="text"
                 formControlName="pphPercentage"
-                placeholder="PPh %"
+                [placeholder]="'expense.pph' | translate"
                 readonly
               />
             </mat-form-field>
@@ -361,7 +357,7 @@
                 matInput
                 type="text"
                 formControlName="pphValue"
-                placeholder="PPh Value"
+                [placeholder]="'expense.pphValue' | translate"
                 readonly
                 prefix="Rp. "
                 thousandSeparator=" "
@@ -373,7 +369,7 @@
                 matPrefix
                 (click)="openPPHSelector()"
                 type="button"
-                aria-label="Pilih PPh"
+                [attr.aria-label]="'expense.pilihPph' | translate"
               >
                 <mat-icon>search</mat-icon>
               </button>
@@ -385,7 +381,7 @@
                 matInput
                 type="text"
                 formControlName="total"
-                placeholder="Total"
+                [placeholder]="'expense.total' | translate"
                 readonly
                 prefix="Rp. "
                 thousandSeparator=" "
@@ -399,7 +395,7 @@
               matStepperPrevious
               class="exc-btn exc-btn--ghost"
             >
-              Kembali
+              {{ "expense.kembali" | translate }}
             </button>
             <span class="exc-spacer"></span>
             <button
@@ -407,7 +403,7 @@
               class="exc-btn exc-btn--primary"
               [disabled]="valueFormGroup.invalid || !isFinal"
             >
-              Lanjut
+              {{ "expense.lanjut" | translate }}
             </button>
           </div>
         </div>
@@ -433,7 +429,7 @@
                 matInput
                 type="text"
                 formControlName="bankName"
-                placeholder="Pilih bank"
+                [placeholder]="'expense.pilihBank' | translate"
                 [matAutocomplete]="auto"
                 (input)="filter()"
                 (focus)="filter()"
@@ -455,7 +451,7 @@
                 matInput
                 type="text"
                 formControlName="bankAccountName"
-                placeholder="Nama rekening"
+                [placeholder]="'expense.namaRekening' | translate"
               />
             </mat-form-field>
 
@@ -484,7 +480,7 @@
                 matInput
                 type="text"
                 formControlName="bankAccountNumber"
-                placeholder="Nomor rekening"
+                [placeholder]="'expense.nomorRekening' | translate"
               />
             </mat-form-field>
 
@@ -499,7 +495,7 @@
                 matInput
                 type="text"
                 formControlName="paymentTotal"
-                placeholder="Payment Total"
+                [placeholder]="'expense.paymentTotal' | translate"
                 readonly
                 prefix="Rp. "
                 thousandSeparator=" "
@@ -515,7 +511,7 @@
                 "expense.createPaymentSlip" | translate
               }}</span>
               <span class="exc-toggle__hint"
-                >Bikin payment slip otomatis, nggak perlu isi manual.</span
+                >{{ "expense.bikinPaymentSlipOtomatisNggak" | translate }}</span
               >
             </div>
             <mat-slide-toggle
@@ -530,7 +526,7 @@
               matStepperPrevious
               class="exc-btn exc-btn--ghost"
             >
-              Kembali
+              {{ "expense.kembali" | translate }}
             </button>
             <span class="exc-spacer"></span>
             <button

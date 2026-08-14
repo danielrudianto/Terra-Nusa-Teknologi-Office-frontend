@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-autocomplete-result',
   templateUrl: './autocomplete-result.component.html',
   styleUrls: ['./autocomplete-result.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    TranslatePipe,CommonModule],
 })
 export class AutocompleteResultComponent {
   constructor(private router: Router) {}

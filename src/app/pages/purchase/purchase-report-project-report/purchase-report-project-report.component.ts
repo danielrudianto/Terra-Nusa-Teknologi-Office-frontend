@@ -208,19 +208,19 @@ export class PurchaseReportProjectReportComponent implements OnInit {
       labels: keys,
       datasets: [
         {
-          label: 'Pengeluaran',
+          label: this.translateSvc.instant('projectReport.chartExpense'),
           data: keys.map((k) => map.get(k)!.expense),
           backgroundColor: '#e2504a',
           borderRadius: 4,
         },
         {
-          label: 'Uang masuk',
+          label: this.translateSvc.instant('projectReport.chartIncome'),
           data: keys.map((k) => map.get(k)!.incoming),
           backgroundColor: '#1d9e75',
           borderRadius: 4,
         },
         {
-          label: 'Projected (belum masuk)',
+          label: this.translateSvc.instant('projectReport.chartProjected'),
           data: keys.map((k) => map.get(k)!.projected),
           backgroundColor: '#ef9f27',
           borderRadius: 4,
@@ -532,7 +532,7 @@ export class PurchaseReportProjectReportComponent implements OnInit {
 
     // Add "Other Purchases" at the END if exists
     if (otherTotal > 0) {
-      finalItems.push({ label: 'Other Purchases', value: otherTotal });
+      finalItems.push({ label: this.translateSvc.instant('projectReport.chartOther'), value: otherTotal });
     }
 
     const sortedLabels = finalItems.map((item) => item.label);

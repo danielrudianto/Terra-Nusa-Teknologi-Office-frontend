@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Logo TERRABOT dalam bentuk SVG.
@@ -13,6 +14,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-logo',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './logo.component.html',
   styleUrl: './logo.component.scss',
 })

@@ -1,10 +1,10 @@
 <div class="fid">
   <div class="fid-head" mat-dialog-title>
     <div class="fid-head__text">
-      <h2 class="fid-title">Panduan Jenis Kendaraan</h2>
-      <span class="fid-sub">Dimensi & kapasitas indikatif tiap armada</span>
+      <h2 class="fid-title">{{ "fleet.panduanJenisKendaraan" | translate }}</h2>
+      <span class="fid-sub">{{ "fleet.dimensiKapasitasIndikatifTiapArmad" | translate }}</span>
     </div>
-    <button class="fid-close" mat-dialog-close aria-label="Tutup">
+    <button class="fid-close" mat-dialog-close [attr.aria-label]="'fleet.tutup' | translate">
       <svg
         width="18"
         height="18"
@@ -43,9 +43,6 @@
         </div>
       </div>
     </div>
-    <p class="fid-note">
-      Angka bersifat indikatif — ukuran & kapasitas bisa berbeda tergantung
-      karoseri dan unit.
-    </p>
+    <p class="fid-note">{{ "fleet.angkaBersifatIndikatifUkuranKapasi" | translate }}</p>
   </mat-dialog-content>
 </div>

@@ -7,7 +7,7 @@
       <h2 class="itc-title">{{ "incomeTax.title" | translate }}</h2>
       <span class="itc-sub" *ngIf="data.name">{{ data.name }}</span>
       <span class="itc-sub" *ngIf="!data.name"
-        >Masukkan nomor bukti potong</span
+        >{{ "salesInvoice.masukkanNomorBuktiPotong" | translate }}</span
       >
     </div>
   </div>
@@ -63,7 +63,7 @@
         <input
           matInput
           formControlName="incomeTaxInvoiceName"
-          placeholder="Contoh: BP-2026-0001"
+          [placeholder]="'salesInvoice.contohBp20260001' | translate"
           autocomplete="off"
           maxlength="100"
         />

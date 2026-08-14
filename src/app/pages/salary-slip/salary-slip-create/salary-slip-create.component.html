@@ -2,9 +2,7 @@
   <div class="ssc-head">
     <h1 class="ssc-title">{{ "salarySlipForm.title" | translate }}</h1>
     <p class="ssc-sub">
-      <a routerLink="/Salary-slip">{{ "salarySlip.title" | translate }}</a> /
-      Create
-    </p>
+      <a routerLink="/Salary-slip">{{ "salarySlip.title" | translate }}</a>{{ "salarySlip.create" | translate }}</p>
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
@@ -19,7 +17,7 @@
           <input
             matInput
             formControlName="monthName"
-            placeholder="Month"
+            [placeholder]="'salarySlip.month' | translate"
             readonly
           />
         </mat-form-field>
@@ -29,7 +27,7 @@
             matInput
             type="text"
             formControlName="year"
-            placeholder="Year"
+            [placeholder]="'salarySlip.year' | translate"
             readonly
           />
         </mat-form-field>
@@ -38,7 +36,7 @@
           <input
             matInput
             formControlName="name"
-            placeholder="Nama karyawan"
+            [placeholder]="'salarySlip.namaKaryawan' | translate"
             readonly
           />
         </mat-form-field>
@@ -46,7 +44,7 @@
           <mat-label>{{ "salarySlipForm.taxCategory" | translate }}</mat-label>
           <mat-select
             formControlName="taxCategory"
-            placeholder="Select tax category"
+            [placeholder]="'employee.selectTaxCategory' | translate"
           >
             <mat-optgroup label="Tidak kawin">
               <mat-option value="TK/0">{{
@@ -80,14 +78,14 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.position" | translate }}</mat-label>
-          <input matInput formControlName="position" placeholder="Jabatan" />
+          <input matInput formControlName="position" [placeholder]="'salarySlip.jabatan' | translate" />
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.department" | translate }}</mat-label>
           <input
             matInput
             formControlName="department"
-            placeholder="Departemen"
+            [placeholder]="'salarySlip.departemen' | translate"
           />
         </mat-form-field>
       </div>
@@ -106,7 +104,7 @@
             matInput
             type="text"
             formControlName="bankName"
-            placeholder="Pilih bank"
+            [placeholder]="'expense.pilihBank' | translate"
             [matAutocomplete]="auto"
             (input)="filter()"
             (focus)="filter()"
@@ -143,7 +141,7 @@
             matInput
             type="text"
             formControlName="bankAccountName"
-            placeholder="Nama rekening"
+            [placeholder]="'expense.namaRekening' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -154,7 +152,7 @@
             matInput
             type="text"
             formControlName="bankAccountNumber"
-            placeholder="Nomor rekening"
+            [placeholder]="'expense.nomorRekening' | translate"
           />
         </mat-form-field>
       </div>
@@ -172,7 +170,7 @@
             matInput
             type="text"
             formControlName="basicSalary"
-            placeholder="Basic salary"
+            [placeholder]="'salarySlip.basicSalary' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -186,7 +184,7 @@
             matInput
             type="number"
             formControlName="mealAllowanceQuantity"
-            placeholder="Qty"
+            [placeholder]="'salarySlip.qty' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -195,7 +193,7 @@
             matInput
             type="text"
             formControlName="mealAllowanceRate"
-            placeholder="Rate"
+            [placeholder]="'salarySlip.rate' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -208,7 +206,7 @@
             matInput
             type="number"
             formControlName="transportationAllowanceQuantity"
-            placeholder="Qty"
+            [placeholder]="'salarySlip.qty' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -219,7 +217,7 @@
             matInput
             type="text"
             formControlName="transportationAllowanceRate"
-            placeholder="Rate"
+            [placeholder]="'salarySlip.rate' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -234,7 +232,7 @@
             matInput
             type="number"
             formControlName="overtimeQuantity"
-            placeholder="Hours"
+            [placeholder]="'salarySlip.hours' | translate"
           />
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -243,7 +241,7 @@
             matInput
             type="text"
             formControlName="overtimeRate"
-            placeholder="Rate"
+            [placeholder]="'salarySlip.rate' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"
@@ -259,8 +257,7 @@
           {{ "salarySlip.otherAllowances" | translate }}
         </div>
         <button type="button" class="ssc-add" (click)="onAddOtherAllowance()">
-          <mat-icon>add</mat-icon> Add allowance
-        </button>
+          <mat-icon>add</mat-icon>{{ "salarySlip.addAllowance" | translate }}</button>
       </div>
       <div class="ssc-table">
         <table mat-table [dataSource]="allowancesControls" #allowanceTable>
@@ -308,12 +305,12 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef aria-label="Action"></th>
+            <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'salarySlip.action' | translate"></th>
             <td mat-cell *matCellDef="let allowance; let i = index">
               <button
                 mat-icon-button
                 (click)="onRemoveAllowance(i)"
-                aria-label="Remove allowance"
+                [attr.aria-label]="'salarySlip.removeAllowance' | translate"
                 type="button"
               >
                 <mat-icon>close</mat-icon>
@@ -344,8 +341,7 @@
           {{ "salarySlip.deductions" | translate }}
         </div>
         <button type="button" class="ssc-add" (click)="onAddDeducation()">
-          <mat-icon>add</mat-icon> Add deduction
-        </button>
+          <mat-icon>add</mat-icon>{{ "salarySlip.addDeduction" | translate }}</button>
       </div>
       <div class="ssc-table">
         <table mat-table [dataSource]="deductionsControls" #deductionTable>
@@ -393,12 +389,12 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef aria-label="Action"></th>
+            <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'salarySlip.action' | translate"></th>
             <td mat-cell *matCellDef="let deduction; let i = index">
               <button
                 mat-icon-button
                 (click)="onRemoveDeduction(i)"
-                aria-label="Remove deduction"
+                [attr.aria-label]="'salarySlip.removeDeduction' | translate"
                 type="button"
               >
                 <mat-icon>close</mat-icon>
@@ -434,8 +430,7 @@
           [disabled]="isFinal"
           (click)="calculateSalary()"
         >
-          <mat-icon>calculate</mat-icon> Hitung gaji
-        </button>
+          <mat-icon>calculate</mat-icon>{{ "salarySlip.hitungGaji" | translate }}</button>
       </div>
       <div class="ssc-grid">
         <mat-form-field appearance="outline">
@@ -444,7 +439,7 @@
             matInput
             type="text"
             formControlName="grossSalary"
-            placeholder="Total salary"
+            [placeholder]="'salarySlip.totalSalary' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -458,7 +453,7 @@
             matInput
             type="text"
             formControlName="taxAmount"
-            placeholder="PPh 21"
+            [placeholder]="'salarySlip.pph21' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
@@ -471,7 +466,7 @@
             matInput
             type="text"
             formControlName="netSalary"
-            placeholder="Net salary"
+            [placeholder]="'salarySlip.netSalary' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"

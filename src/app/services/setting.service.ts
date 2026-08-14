@@ -58,7 +58,7 @@ export const BRAND_COLORS: Record<
     baseDark: string;
     softDark: string;
     strongDark: string;
-    label: string;
+    labelKey: string;
   }
 > = {
   // base/soft dipakai di tema terang, baseDark/softDark di tema gelap.
@@ -71,7 +71,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#7ba0ff',
     softDark: '#22304f',
     strongDark: '#9db8ff',
-    label: 'Blue',
+    labelKey: 'brandColor.blue',
   },
   indigo: {
     base: '#5b3df5',
@@ -80,7 +80,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#a394ff',
     softDark: '#2b2350',
     strongDark: '#bcb1ff',
-    label: 'Indigo',
+    labelKey: 'brandColor.indigo',
   },
   teal: {
     base: '#0d9488',
@@ -89,7 +89,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#5eddd0',
     softDark: '#14403c',
     strongDark: '#8ae9df',
-    label: 'Teal',
+    labelKey: 'brandColor.teal',
   },
   green: {
     base: '#15803d',
@@ -98,7 +98,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#6ee7a0',
     softDark: '#163a26',
     strongDark: '#9df0c0',
-    label: 'Green',
+    labelKey: 'brandColor.green',
   },
   amber: {
     base: '#b45309',
@@ -107,7 +107,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#f0b464',
     softDark: '#43301a',
     strongDark: '#f7cd93',
-    label: 'Amber',
+    labelKey: 'brandColor.amber',
   },
   rose: {
     base: '#be123c',
@@ -116,16 +116,16 @@ export const BRAND_COLORS: Record<
     baseDark: '#ff8ba5',
     softDark: '#431c28',
     strongDark: '#ffb3c4',
-    label: 'Rose',
+    labelKey: 'brandColor.rose',
   },
   sky: {
-    base: '#0284c7',
+    base: '#0277b0',
     soft: '#e1f0f8',
     strong: '#026ca3',
     baseDark: '#5fc5f9',
     softDark: '#143145',
     strongDark: '#93d6f8',
-    label: 'Sky',
+    labelKey: 'brandColor.sky',
   },
   cyan: {
     base: '#0891b2',
@@ -134,7 +134,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#56d5f3',
     softDark: '#153340',
     strongDark: '#88dff3',
-    label: 'Cyan',
+    labelKey: 'brandColor.cyan',
   },
   emerald: {
     base: '#059669',
@@ -143,7 +143,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#37f3b9',
     softDark: '#143432',
     strongDark: '#6bf2c8',
-    label: 'Emerald',
+    labelKey: 'brandColor.emerald',
   },
   lime: {
     base: '#4d7c0f',
@@ -152,7 +152,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#99e238',
     softDark: '#232f20',
     strongDark: '#afe568',
-    label: 'Lime',
+    labelKey: 'brandColor.lime',
   },
   orange: {
     base: '#c2410c',
@@ -161,7 +161,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#f2926b',
     softDark: '#3a231f',
     strongDark: '#f4b69c',
-    label: 'Orange',
+    labelKey: 'brandColor.orange',
   },
   red: {
     base: '#b91c1c',
@@ -170,7 +170,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#e87c7c',
     softDark: '#381c22',
     strongDark: '#eea9a9',
-    label: 'Red',
+    labelKey: 'brandColor.red',
   },
   fuchsia: {
     base: '#a21caf',
@@ -179,7 +179,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#db74e5',
     softDark: '#341c40',
     strongDark: '#e5a2eb',
-    label: 'Fuchsia',
+    labelKey: 'brandColor.fuchsia',
   },
   violet: {
     base: '#7c3aed',
@@ -188,7 +188,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#af88f1',
     softDark: '#2c224c',
     strongDark: '#c8aff3',
-    label: 'Violet',
+    labelKey: 'brandColor.violet',
   },
   slate: {
     base: '#475569',
@@ -197,7 +197,7 @@ export const BRAND_COLORS: Record<
     baseDark: '#8e9cb1',
     softDark: '#212732',
     strongDark: '#adb7c5',
-    label: 'Slate',
+    labelKey: 'brandColor.slate',
   },
 };
 

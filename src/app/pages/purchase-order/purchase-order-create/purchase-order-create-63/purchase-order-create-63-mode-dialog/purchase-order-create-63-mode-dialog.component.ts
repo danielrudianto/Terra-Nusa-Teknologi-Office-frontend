@@ -5,10 +5,12 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-order-create-63-mode-dialog',
-  imports: [MatDialogModule],
+  imports: [
+    TranslatePipe,MatDialogModule],
   templateUrl: './purchase-order-create-63-mode-dialog.component.html',
   styleUrl: './purchase-order-create-63-mode-dialog.component.scss',
 })

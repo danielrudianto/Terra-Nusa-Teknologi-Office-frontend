@@ -262,6 +262,13 @@ html {
   --line: #eef0f3;
   --border: #e3e6eb;
   --brand: #154dec;
+  /* Warna teks/ikon di ATAS warna aksen.
+
+     Wajib punya nilai di sini, bukan hanya disetel SettingsService: berkas
+     ini sudah berlaku sejak halaman dimuat, sementara layanan baru berjalan
+     setelah Angular siap. Tanpa nilai bawaan, tombol memakai cadangan
+     `#fff` — yang di tema gelap hanya berkontras 2,5:1 terhadap aksennya. */
+  --on-brand: #ffffff;
   --brand-strong: #0f3fd0;
   --brand-soft: #e7ecfb;
   --hover: #f6f8ff;
@@ -321,6 +328,9 @@ html[data-theme="dark"] {
   --line: #2a2f3a;
   --border: #2f3540;
   --brand: #7ba0ff;
+  /* Aksen tema gelap sengaja terang agar terbaca di latar gelap, sehingga
+     teks di atasnya harus GELAP — putih hanya berkontras 2,5:1. */
+  --on-brand: #16181d;
   --brand-strong: #9db8ff;
   --brand-soft: #22304f;
   --hover: #1f2531;

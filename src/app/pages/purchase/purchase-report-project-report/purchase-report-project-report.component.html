@@ -25,20 +25,18 @@
   @if (isLoading) {
     <div class="prr-state">
       <mat-icon>hourglass_top</mat-icon>
-      <span>Memuat laporan…</span>
+      <span>{{ "purchase.memuatLaporan" | translate }}</span>
     </div>
   } @else if (errorMessage) {
     <div class="prr-state prr-state--error">
       <mat-icon>error_outline</mat-icon>
       <span>{{ errorMessage }}</span>
-      <button type="button" class="prr-retry" (click)="loadReport()">
-        Coba lagi
-      </button>
+      <button type="button" class="prr-retry" (click)="loadReport()">{{ "agenda.cobaLagi" | translate }}</button>
     </div>
   } @else if (!data) {
     <div class="prr-state">
       <mat-icon>inbox</mat-icon>
-      <span>Belum ada data untuk proyek ini.</span>
+      <span>{{ "purchase.belumAdaDataUntukProyek" | translate }}</span>
     </div>
   } @else {
     <!-- 3 kartu ringkasan -->
@@ -148,7 +146,7 @@
               <td class="prr-table__num">{{ ppn | number: "1.0-0" }}</td>
             </tr>
             <tr>
-              <td>PBBKB</td>
+              <td>{{ "expense.pbbkb" | translate }}</td>
               <td class="prr-table__num">{{ pbbkb | number: "1.0-0" }}</td>
             </tr>
             <tr>
@@ -236,7 +234,7 @@
               <button
                 mat-icon-button
                 matTreeNodeToggle
-                [attr.aria-label]="'Toggle ' + node.label"
+                [attr.aria-label]="('common.toggle' | translate) + ' ' + node.label"
               >
                 <mat-icon class="mat-icon-rtl-mirror">
                   {{

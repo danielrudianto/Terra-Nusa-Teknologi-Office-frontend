@@ -28,7 +28,7 @@
         type="button"
         class="tx-year__btn"
         (click)="prevYear()"
-        aria-label="Tahun sebelumnya"
+        [attr.aria-label]="'tax.tahunSebelumnya' | translate"
       >
         <svg
           width="16"
@@ -48,7 +48,7 @@
         type="button"
         class="tx-year__btn"
         (click)="nextYear()"
-        aria-label="Tahun berikutnya"
+        [attr.aria-label]="'tax.tahunBerikutnya' | translate"
       >
         <svg
           width="16"

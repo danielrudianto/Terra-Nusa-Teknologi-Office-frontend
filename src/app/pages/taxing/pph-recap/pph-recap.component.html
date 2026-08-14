@@ -16,8 +16,8 @@
       </svg>
     </span>
     <div class="txr-head__text">
-      <h2 class="txr-title">Rekap PPh (Purchase)</h2>
-      <span class="txr-sub">Unduh laporan PPh dari purchase</span>
+      <h2 class="txr-title">{{ "tax.rekapPphPurchase" | translate }}</h2>
+      <span class="txr-sub">{{ "tax.unduhLaporanPphDariPurchase" | translate }}</span>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
           <button
             type="button"
             (click)="formGroup.patchValue({ year: +formGroup.value.year - 1 })"
-            aria-label="Tahun sebelumnya"
+            [attr.aria-label]="'tax.tahunSebelumnya' | translate"
           >
             <svg
               width="16"
@@ -48,7 +48,7 @@
           <button
             type="button"
             (click)="formGroup.patchValue({ year: +formGroup.value.year + 1 })"
-            aria-label="Tahun berikutnya"
+            [attr.aria-label]="'tax.tahunBerikutnya' | translate"
           >
             <svg
               width="16"

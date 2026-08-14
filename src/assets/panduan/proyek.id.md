@@ -82,3 +82,35 @@ membuat margin setiap proyek tampak lebih besar sekitar sebelas persen dari
 kenyataannya.
 
 Itu cukup untuk membuat proyek yang sebenarnya rugi tipis terlihat untung.
+
+## Dua tampilan di Laporan Proyek
+
+**Ikhtisar** menjawab *ke mana uangnya pergi*: komposisi biaya per kategori,
+dan tiap kategori bisa dibuka untuk melihat rincian per pemasok.
+
+Batang di bagian atas menunjukkan pembagian nilai kontrak antara biaya dan
+margin, dalam persen. Angka di bawah delapan persen sengaja disembunyikan
+dari batangnya — pada segmen sempit tulisannya terpotong dan justru tidak
+terbaca. Nilai rupiahnya tetap ada di keterangan bawah.
+
+Bila biaya melampaui nilai kontrak, batangnya berubah merah dan menampilkan
+seberapa jauh terlampaui.
+
+**Arus per minggu** menjawab pertanyaan yang tidak bisa dijawab Ikhtisar:
+*kapan* uangnya keluar, dan apakah penagihan mengejar.
+
+Mingguan, bukan bulanan, karena proyek di sini umumnya berjalan singkat —
+bulanan hanya menghasilkan tiga atau empat batang dan tidak menunjukkan
+temponya.
+
+Yang perlu diperhatikan di sini:
+
+- **Minggu dihitung mulai Senin.** Pekerjaan lapangan dan penagihan mengikuti
+  minggu kerja; memotong di hari Minggu akan membelah satu minggu kerja
+  menjadi dua batang.
+- **Minggu tanpa transaksi tetap ditampilkan.** Melompatinya membuat jeda tiga
+  minggu terlihat serapat dua minggu berturut-turut — padahal justru jeda itu
+  yang menandakan pekerjaan berhenti.
+- **Biaya kumulatif** dibandingkan terhadap nilai kontrak. Bila garisnya sudah
+  mendekati batas sementara pekerjaan baru separuh, itu ketahuan sekarang,
+  bukan setelah terlampaui.

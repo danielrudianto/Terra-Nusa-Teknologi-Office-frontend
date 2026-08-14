@@ -62,7 +62,7 @@
             [placeholder]="'clientForm.emailPlaceholder' | translate"
           />
           <mat-error *ngIf="formGroup.get('email')?.hasError('email')"
-            >Email tidak valid.</mat-error
+            >{{ "client.emailTidakValid" | translate }}</mat-error
           >
         </mat-form-field>
 
@@ -75,7 +75,7 @@
             [placeholder]="'clientForm.phonePlaceholder' | translate"
           />
           <mat-error *ngIf="formGroup.get('phoneNumber')?.hasError('pattern')"
-            >Nomor telepon tidak valid.</mat-error
+            >{{ "client.nomorTeleponTidakValid" | translate }}</mat-error
           >
         </mat-form-field>
 

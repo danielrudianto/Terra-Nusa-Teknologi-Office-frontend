@@ -54,7 +54,7 @@
             matInput
             formControlName="description"
             rows="2"
-            placeholder="Nama & spesifikasi barang"
+            [placeholder]="'masterItem.namaSpesifikasiBarang' | translate"
             style="resize: none"
           ></textarea>
         </mat-form-field>
@@ -65,7 +65,7 @@
             matInput
             formControlName="brand"
             maxlength="45"
-            placeholder="Ex. Kobelco"
+            [placeholder]="'masterItem.exKobelco' | translate"
           />
         </mat-form-field>
 
@@ -75,7 +75,7 @@
             matInput
             formControlName="type"
             maxlength="45"
-            placeholder="Ex. Kawat Las"
+            [placeholder]="'masterItem.exKawatLas' | translate"
           />
         </mat-form-field>
 
@@ -87,9 +87,7 @@
         </mat-form-field>
 
         <div class="mic-span2 mic-types-field">
-          <div class="mic-typeslabel">
-            Tipe PO
-            <span class="mic-req">{{
+          <div class="mic-typeslabel">{{ "masterItem.tipePo" | translate }}<span class="mic-req">{{
               "masterItem.minOneRequired" | translate
             }}</span>
           </div>

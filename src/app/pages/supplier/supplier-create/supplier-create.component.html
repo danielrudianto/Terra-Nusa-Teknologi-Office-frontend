@@ -45,7 +45,7 @@
             matInput
             formControlName="name"
             type="text"
-            placeholder="Supplier name"
+            [placeholder]="'purchaseDraft.supplierName' | translate"
             required
           />
         </mat-form-field>
@@ -56,7 +56,7 @@
             matInput
             formControlName="address"
             rows="2"
-            placeholder="Supplier address"
+            [placeholder]="'purchase.supplierAddress' | translate"
             required
             style="resize: none"
           ></textarea>
@@ -68,7 +68,7 @@
             matInput
             formControlName="city"
             type="text"
-            placeholder="Supplier city"
+            [placeholder]="'supplier.supplierCity' | translate"
             required
           />
         </mat-form-field>
@@ -79,18 +79,18 @@
             matInput
             formControlName="province"
             type="text"
-            placeholder="Supplier province"
+            [placeholder]="'supplier.supplierProvince' | translate"
             required
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>NPWP</mat-label>
+          <mat-label>{{ "client.npwp" | translate }}</mat-label>
           <input
             matInput
             formControlName="npwp"
             type="text"
-            placeholder="16 digit"
+            [placeholder]="'supplier.16Digit' | translate"
             maxlength="16"
           />
         </mat-form-field>
@@ -101,7 +101,7 @@
             matInput
             formControlName="phoneNumber"
             type="tel"
-            placeholder="Phone number"
+            [placeholder]="'supplier.phoneNumber' | translate"
             required
           />
         </mat-form-field>
@@ -112,7 +112,7 @@
             matInput
             formControlName="email"
             type="email"
-            placeholder="Supplier email"
+            [placeholder]="'supplier.supplierEmail' | translate"
           />
         </mat-form-field>
       </div>
@@ -121,14 +121,14 @@
 
       <!-- Items sold -->
       <div class="sc-tags" *ngIf="items.length > 0">
-        <mat-chip-set aria-label="Items sold selection">
+        <mat-chip-set [attr.aria-label]="'supplier.itemsSoldSelection' | translate">
           <mat-chip
             *ngFor="let item of items"
             [removable]="true"
             (removed)="remove(item)"
           >
             {{ item }}
-            <button matChipRemove aria-label="Remove item">
+            <button matChipRemove [attr.aria-label]="'supplier.removeItem' | translate">
               <mat-icon>close</mat-icon>
             </button>
           </mat-chip>
@@ -140,21 +140,21 @@
           matInput
           formControlName="soldItems"
           type="text"
-          placeholder="Ketik lalu tekan koma (,) untuk menambah"
+          [placeholder]="'supplier.ketikLaluTekanKomaUntuk' | translate"
         />
         <mat-hint>{{ "supplier.commaHint" | translate }}</mat-hint>
       </mat-form-field>
 
       <!-- Service areas -->
       <div class="sc-tags" *ngIf="areas.length > 0">
-        <mat-chip-set aria-label="Areas selection">
+        <mat-chip-set [attr.aria-label]="'supplier.areasSelection' | translate">
           <mat-chip
             *ngFor="let item of areas"
             [removable]="true"
             (removed)="removeArea(item)"
           >
             {{ item }}
-            <button matChipRemove aria-label="Remove area">
+            <button matChipRemove [attr.aria-label]="'supplier.removeArea' | translate">
               <mat-icon>close</mat-icon>
             </button>
           </mat-chip>
@@ -166,7 +166,7 @@
           matInput
           formControlName="serviceAreas"
           type="text"
-          placeholder="Ketik lalu tekan koma (,) untuk menambah"
+          [placeholder]="'supplier.ketikLaluTekanKomaUntuk' | translate"
         />
         <mat-hint>{{ "supplier.commaHint" | translate }}</mat-hint>
       </mat-form-field>

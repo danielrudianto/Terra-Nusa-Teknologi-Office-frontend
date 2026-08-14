@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
@@ -17,6 +17,8 @@ import {
   imports: [TranslatePipe, CommonModule],
 })
 export class TodayPaymentComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
+
   items: TodayPaymentItem[] = [];
   total = 0;
   isLoading = false;
@@ -33,14 +35,14 @@ export class TodayPaymentComponent implements OnInit {
 
   private readonly typeMeta: Record<
     PaymentType,
-    { label: string; color: string }
+    { key: string; color: string }
   > = {
-    purchase: { label: 'Pembelian', color: '#154dec' },
-    expense: { label: 'Beban', color: '#b9770f' },
-    reimbursement: { label: 'Reimburse', color: '#0f8f6b' },
-    salary: { label: 'Gaji', color: '#6b4ee0' },
-    loan: { label: 'Pinjaman', color: '#ca2929' },
-    other: { label: 'Lainnya', color: '#8a8f98' },
+    purchase: { key: 'paymentType.purchase', color: '#154dec' },
+    expense: { key: 'paymentType.expense', color: '#b9770f' },
+    reimbursement: { key: 'paymentType.reimbursement', color: '#0f8f6b' },
+    salary: { key: 'paymentType.salary', color: '#6b4ee0' },
+    loan: { key: 'paymentType.loan', color: '#ca2929' },
+    other: { key: 'paymentType.other', color: '#8a8f98' },
   };
 
   constructor(
@@ -136,7 +138,8 @@ export class TodayPaymentComponent implements OnInit {
     return {
       id: p.id,
       type,
-      typeLabel: meta.label,
+      // Nama jenis diterjemahkan di sini; dialognya hanya menampilkan.
+      typeLabel: this.translate.instant(meta.key),
       color: meta.color,
       title: title.trim(),
       subtitle,

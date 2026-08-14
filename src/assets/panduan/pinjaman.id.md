@@ -46,16 +46,30 @@ belakangan.
 Rekening **perusahaan** tempat dana pinjaman masuk — bukan rekening kreditur.
 Pilih banknya, lalu nama dan nomor rekeningnya.
 
-## Yang tidak bisa diubah setelah tersimpan
+## Mengubah setelah tersimpan
 
-Menu **Ubah data** hanya mengizinkan perbaikan pada data kreditur dan
-deskripsi. **Nilai pinjaman, jumlah diterima, dan tanggal terkunci** — ketiganya
-sudah menjadi dasar perhitungan pembayaran.
+Menu **Ubah data** mengizinkan perbaikan pada data kreditur, deskripsi,
+rekening, serta **nilai utang dan jumlah diterima**.
 
-Kalau salah satu dari ketiganya keliru, catatannya harus dibatalkan dan dibuat
-ulang. Karena itu periksa ketiga angka itu sebelum menyimpan.
+Nilai utang tidak bebas diubah: **tidak boleh turun di bawah jumlah yang sudah
+dibayarkan**. Utang Rp 100 juta yang sudah dibayar Rp 80 juta lalu diubah
+menjadi Rp 50 juta berarti pinjaman itu terbayar lebih — dan tidak ada tempat
+di sistem yang mencatat kelebihannya, sehingga selisih Rp 30 juta menghilang
+tanpa jejak. Karena itu perubahan semacam itu ditolak, lengkap dengan
+penyebutan berapa yang sudah dibayar.
 
-Menu Ubah data juga hanya muncul untuk yang punya izin mengubah pinjaman.
+Keterangan di bawah kolom utang menampilkan jumlah yang sudah dibayarkan, jadi
+batas bawahnya terlihat sebelum disimpan.
+
+**Status lunas dihitung ulang setiap kali nilainya berubah.** Menurunkan utang
+hingga sama dengan yang sudah dibayar menjadikan pinjaman itu lunas;
+menaikkannya kembali membatalkan status itu. Tidak perlu menyetel status lunas
+sendiri — dan memang tidak bisa, karena status itu kesimpulan dari angkanya,
+bukan isian.
+
+Tanggal pinjaman tetap terkunci.
+
+Menu Ubah data hanya muncul untuk yang punya izin mengubah pinjaman.
 
 ## Mencatat pembayaran
 

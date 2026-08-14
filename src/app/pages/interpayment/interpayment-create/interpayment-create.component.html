@@ -76,7 +76,7 @@
 
       <div class="ic-error" *ngIf="formGroup.hasError('sameBankAccount')">
         <mat-icon>error_outline</mat-icon>
-        <span>Rekening asal dan tujuan tidak boleh sama.</span>
+        <span>{{ "payment.rekeningAsalDanTujuanTidak" | translate }}</span>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">

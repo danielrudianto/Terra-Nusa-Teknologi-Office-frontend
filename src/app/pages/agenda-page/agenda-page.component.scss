@@ -57,8 +57,6 @@
 }
 
 .ag-hari {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   border-bottom: 1px solid var(--line);
 }
 .ag-hari span {
@@ -71,9 +69,34 @@
   text-align: left;
 }
 
-.ag-petak {
+/*
+ * Tujuh kolom yang benar-benar muat.
+ *
+ * Dua hal yang membuatnya meluap sebelumnya:
+ *
+ * 1. `box-sizing` bawaan adalah `content-box`, sehingga padding dan garis
+ *    tepi tiap sel DITAMBAHKAN di atas lebar kolomnya. Dikalikan tujuh,
+ *    kelebihannya sekitar 97px — cukup untuk memunculkan gulir mendatar.
+ *
+ * 2. `1fr` berarti `minmax(auto, 1fr)`, dan batas bawah `auto` mengikuti
+ *    lebar isi terkecil. Satu nama acara yang panjang cukup untuk melebarkan
+ *    kolomnya melewati jatah.
+ *
+ * `border-box` diterapkan pada komponen ini saja, bukan global: mengubahnya
+ * di seluruh aplikasi akan menggeser tata letak yang sudah disetel dengan
+ * anggapan lama.
+ */
+.ag-petak,
+.ag-hari {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.ag-petak *,
+.ag-petak *::before,
+.ag-petak *::after,
+.ag-hari span {
+  box-sizing: border-box;
 }
 
 .ag-sel {
@@ -91,6 +114,9 @@
   text-align: left;
   cursor: pointer;
   overflow: hidden;
+  /* Tanpa ini, tombol memakai lebar isi terkecilnya sebagai batas bawah,
+     dan nama acara yang panjang melebarkan kolomnya. */
+  min-width: 0;
 }
 .ag-sel:nth-child(7n) {
   border-right: 0;

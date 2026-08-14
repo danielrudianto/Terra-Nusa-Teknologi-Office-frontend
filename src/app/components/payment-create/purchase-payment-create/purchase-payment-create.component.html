@@ -74,7 +74,7 @@
           class="ppc-money__row"
           *ngIf="valueFormGroup.get('pbbkb')?.value > 0"
         >
-          <span>PBBKB</span
+          <span>{{ "expense.pbbkb" | translate }}</span
           ><span class="ppc-pos"
             >+ Rp
             {{ valueFormGroup.get("pbbkb")?.value | number: "1.0-0" }}</span
@@ -85,7 +85,7 @@
           *ngIf="valueFormGroup.get('otherValue')?.value > 0"
         >
           <span
-            >Lainnya<span
+            >{{ "purchase.lainnya" | translate }}<span
               class="ppc-note"
               *ngIf="valueFormGroup.get('otherValueNote')?.value"
             >
@@ -116,8 +116,7 @@
       <!-- paid progress -->
       <div class="ppc-paidrow">
         <span
-          >Sudah dibayar:
-          <strong
+          >{{ "expense.sudahDibayar" | translate }}<strong
             >Rp
             {{
               +valueFormGroup.get("total")?.value - totalAmount
@@ -126,8 +125,7 @@
           ></span
         >
         <span
-          >Sisa:
-          <strong class="ppc-remain"
+          >{{ "expense.sisa" | translate }}<strong class="ppc-remain"
             >Rp {{ totalAmount | number: "1.0-0" }}</strong
           ></span
         >
@@ -182,7 +180,7 @@
           <input
             matInput
             formControlName="date"
-            placeholder="Tanggal bayar"
+            [placeholder]="'expense.tanggalBayar' | translate"
             [matDatepicker]="paymentDatePicker"
           />
           <mat-datepicker-toggle
@@ -203,7 +201,7 @@
             matInput
             formControlName="amount"
             type="text"
-            placeholder="Nominal"
+            [placeholder]="'expense.nominal' | translate"
             prefix="Rp. "
             thousandSeparator=" "
             mask="separator.2"

@@ -113,13 +113,12 @@
           ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="pv-money__row" *ngIf="vPbbkb">
-          <span>PBBKB</span
+          <span>{{ "expense.pbbkb" | translate }}</span
           ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="pv-money__row">
           <span
-            >Other value
-            <em *ngIf="f['otherValueNote'].value"
+            >{{ "purchase.otherValue" | translate }}<em *ngIf="f['otherValueNote'].value"
               >· {{ f["otherValueNote"].value }}</em
             ></span
           ><span>+ {{ vOther | currency: "Rp " : "symbol" : "1.0-0" }}</span>

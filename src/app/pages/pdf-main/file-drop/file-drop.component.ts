@@ -7,6 +7,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-file-drop',
@@ -14,6 +15,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './file-drop.component.scss',
   standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule,],
 })
 export class FileDropComponent {

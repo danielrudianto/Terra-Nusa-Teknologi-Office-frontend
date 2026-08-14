@@ -65,8 +65,7 @@
           </div>
           <div class="sv-money__row">
             <span
-              >Transportation
-              <em
+              >{{ "salarySlip.transportation" | translate }}<em
                 >{{ formGroup.get("transportationAllowanceQuantity")?.value }} ×
                 Rp
                 {{
@@ -86,8 +85,7 @@
           </div>
           <div class="sv-money__row">
             <span
-              >Meal
-              <em
+              >{{ "salarySlip.meal" | translate }}<em
                 >{{ formGroup.get("mealAllowanceQuantity")?.value }} × Rp
                 {{
                   formGroup.get("mealAllowanceRate")?.value | number: "1.0-0"
@@ -105,8 +103,7 @@
           </div>
           <div class="sv-money__row">
             <span
-              >Overtime
-              <em
+              >{{ "salarySlip.overtime" | translate }}<em
                 >{{ formGroup.get("overtimeQuantity")?.value }} × Rp
                 {{ formGroup.get("overtimeRate")?.value | number: "1.0-0" }}</em
               ></span
@@ -165,9 +162,7 @@
               <td
                 class="mat-cell sv-norow"
                 [attr.colspan]="displayedAllowancesColumns.length"
-              >
-                No allowances added yet.
-              </td>
+              >{{ "salarySlip.noAllowancesAddedYet" | translate }}</td>
             </tr>
           </table>
         </div>
@@ -218,16 +213,14 @@
               <td
                 class="mat-cell sv-norow"
                 [attr.colspan]="displayedDeductionsColumns.length"
-              >
-                No deductions added yet.
-              </td>
+              >{{ "salarySlip.noDeductionsAddedYet" | translate }}</td>
             </tr>
           </table>
         </div>
 
         <div class="sv-money sv-money--mt">
           <div class="sv-money__row sv-money__row--neg">
-            <span>PPh 21</span>
+            <span>{{ "salarySlip.pph21" | translate }}</span>
             <span
               >− Rp
               {{ formGroup.get("taxAmount")?.value | number: "1.0-0" }}</span

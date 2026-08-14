@@ -81,6 +81,17 @@ export class LoansUpdateComponent {
       Validators.pattern(/^[0-9]*$/),
     ]),
     bankName: new FormControl('', Validators.required),
+    // Nilai pinjaman kini dapat disunting. Batas bawahnya — jumlah yang sudah
+    // dibayarkan — diperiksa server, karena hanya server yang tahu riwayat
+    // pembayaran terkini.
+    debt: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
+    received: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
     // rekening PERUSAHAAN tujuan penerimaan dana pinjaman
     bankAccountID: new FormControl('', Validators.required),
   });
@@ -100,13 +111,50 @@ export class LoansUpdateComponent {
       description: d.description ?? '',
       bankAccountName: d.bankAccountName ?? '',
       bankAccountNumber: d.bankAccountNumber ?? '',
+      debt: d.debt ?? 0,
+      received: d.received ?? 0,
       bankName: d.bankName ?? '',
       bankAccountID: d.bankAccountID ?? '',
     });
+
+    this.muatPembayaran();
   }
 
   onCancel() {
     this.dialog.close();
+  }
+
+  /**
+   * Jumlah pembayaran yang sudah disetujui atas pinjaman ini.
+   *
+   * Diambil sendiri dari server, bukan dari data yang dikirim pemanggil:
+   * dialog ini dibuka dari daftar yang hanya membawa data pinjaman, dan
+   * mengandalkan pemanggil berarti keterangannya hilang begitu dialog dibuka
+   * dari tempat lain.
+   *
+   * Ditampilkan sebagai keterangan di bawah kolom utang agar batas bawahnya
+   * terlihat sebelum disimpan, bukan baru diketahui setelah server menolak.
+   */
+  private _dibayar = 0;
+
+  sudahDibayar(): number {
+    return this._dibayar;
+  }
+
+  private muatPembayaran(): void {
+    const id = this.data?.loan?.id;
+    if (!id) return;
+    this.apiService.get(`loans/payments/${id}`, {}).subscribe({
+      next: (r: any) => {
+        const daftar = Array.isArray(r) ? r : (r?.payments ?? r?.data ?? []);
+        this._dibayar = daftar
+          .filter((p: any) => p.isApprove && !p.isDelete)
+          .reduce((t: number, p: any) => t + (Number(p.amount) || 0), 0);
+      },
+      // Gagal memuat hanya menghilangkan keterangannya; penjaga yang
+      // sesungguhnya tetap ada di server.
+      error: () => (this._dibayar = 0),
+    });
   }
 
   onSubmit() {
@@ -122,11 +170,29 @@ export class LoansUpdateComponent {
           this.dialog.close(true);
         },
         error: (error) => {
-          this.snackBar.open(
-            error?.error?.detail || 'Gagal memperbarui data pinjaman',
-            'Close',
-            { duration: 3000 },
-          );
+          /*
+           * Kode tetap dipetakan ke kalimat.
+           *
+           * Penolakan karena nilai lebih kecil daripada yang sudah dibayar
+           * perlu menyebut angkanya — tanpa itu, yang menekan simpan tidak
+           * tahu harus mengisi berapa, dan akan mencoba lagi dengan hasil
+           * sama.
+           */
+          const detail = error?.error?.detail;
+          const kode = typeof detail === 'string' ? detail : detail?.code;
+          let pesan: string;
+          if (kode === 'LOAN_BELOW_PAID') {
+            const dibayar = Number(detail?.paid ?? this.sudahDibayar()) || 0;
+            pesan = this.translate.instant('loans.belowPaid', {
+              paid: dibayar.toLocaleString('id-ID'),
+            });
+          } else {
+            pesan =
+              detail?.message ??
+              (typeof detail === 'string' ? detail : null) ??
+              this.translate.instant('notify.updateFailed');
+          }
+          this.snackBar.open(pesan, 'Close', { duration: 6000 });
         },
       })
       .add(() => {

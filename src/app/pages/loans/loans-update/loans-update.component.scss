@@ -202,3 +202,16 @@ $surface: var(--surface, #ffffff);
 .lu-locked__item {
   min-width: 0;
 }
+
+/* Dua kolom nilai berdampingan; menumpuk pada layar sempit. */
+.lu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+@media (max-width: 560px) {
+  .lu-grid {
+    grid-template-columns: 1fr;
+  }
+}

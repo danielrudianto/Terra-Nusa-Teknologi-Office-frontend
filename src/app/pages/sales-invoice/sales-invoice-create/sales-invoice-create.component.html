@@ -33,7 +33,7 @@
                 matInput
                 formControlName="clientName"
                 type="text"
-                placeholder="Pilih klien"
+                [placeholder]="'salesInvoice.pilihKlien' | translate"
                 readonly
               />
               <button
@@ -41,7 +41,7 @@
                 mat-icon-button
                 (click)="openClientSelector()"
                 type="button"
-                aria-label="Pilih klien"
+                [attr.aria-label]="'salesInvoice.pilihKlien' | translate"
               >
                 <mat-icon>search</mat-icon>
               </button>
@@ -55,7 +55,7 @@
                 matInput
                 formControlName="clientAddress"
                 rows="2"
-                placeholder="Alamat klien"
+                [placeholder]="'salesInvoice.alamatKlien' | translate"
                 readonly
                 style="resize: none"
               ></textarea>
@@ -69,7 +69,7 @@
                 matInput
                 formControlName="clientNPWP"
                 type="text"
-                placeholder="NPWP klien"
+                [placeholder]="'salesInvoice.npwpKlien' | translate"
                 readonly
               />
             </mat-form-field>
@@ -86,7 +86,7 @@
               <input
                 matInput
                 formControlName="name"
-                placeholder="000-INV-XXXX-I-2026"
+                [placeholder]="'salesInvoice.000InvXxxxI2026' | translate"
               />
               <mat-hint>{{ "salesInvoice.numberFormat" | translate }}</mat-hint>
             </mat-form-field>
@@ -97,7 +97,7 @@
                 matInput
                 [matDatepicker]="picker"
                 formControlName="date"
-                placeholder="Pilih tanggal"
+                [placeholder]="'salesInvoice.pilihTanggal' | translate"
               />
               <mat-datepicker-toggle
                 matPrefix
@@ -118,52 +118,52 @@
               }}</mat-label>
               <input
                 type="text"
-                placeholder="Pilih salah satu"
-                aria-label="Description"
+                [placeholder]="'salesInvoice.pilihSalahSatu' | translate"
+                [attr.aria-label]="'salesInvoice.description' | translate"
                 matInput
                 formControlName="description"
                 [matAutocomplete]="auto"
               />
               <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
                 <mat-option [value]="'Down payment (Uang muka)'"
-                  >Down payment (Uang muka)</mat-option
+                  >{{ "salesInvoice.downPaymentUangMuka" | translate }}</mat-option
                 >
                 <mat-option [value]="'Progress final'"
-                  >Progress final</mat-option
+                  >{{ "salesInvoice.progressFinal" | translate }}</mat-option
                 >
                 <mat-option [value]="'Retensi'">{{
                   "salesInvoice.retention" | translate
                 }}</mat-option>
                 <mat-optgroup label="Progress">
                   <mat-option [value]="'Progress pertama (1)'"
-                    >Progress pertama (1)</mat-option
+                    >{{ "salesInvoice.progressPertama1" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress kedua (2)'"
-                    >Progress kedua (2)</mat-option
+                    >{{ "salesInvoice.progressKedua2" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress ketiga (3)'"
-                    >Progress ketiga (3)</mat-option
+                    >{{ "salesInvoice.progressKetiga3" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress keempat (4)'"
-                    >Progress keempat (4)</mat-option
+                    >{{ "salesInvoice.progressKeempat4" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress kelima (5)'"
-                    >Progress kelima (5)</mat-option
+                    >{{ "salesInvoice.progressKelima5" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress keenam (6)'"
-                    >Progress keenam (6)</mat-option
+                    >{{ "salesInvoice.progressKeenam6" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress ketujuh (7)'"
-                    >Progress ketujuh (7)</mat-option
+                    >{{ "salesInvoice.progressKetujuh7" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress kedelapan (8)'"
-                    >Progress kedelapan (8)</mat-option
+                    >{{ "salesInvoice.progressKedelapan8" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress kesembilan (9)'"
-                    >Progress kesembilan (9)</mat-option
+                    >{{ "salesInvoice.progressKesembilan9" | translate }}</mat-option
                   >
                   <mat-option [value]="'Progress kesepuluh (10)'"
-                    >Progress kesepuluh (10)</mat-option
+                    >{{ "salesInvoice.progressKesepuluh10" | translate }}</mat-option
                   >
                 </mat-optgroup>
               </mat-autocomplete>
@@ -264,7 +264,7 @@
                 matPrefix
                 (click)="openPphSelector()"
                 type="button"
-                aria-label="Pilih objek PPh"
+                [attr.aria-label]="'salesInvoice.pilihObjekPph' | translate"
               >
                 <mat-icon>search</mat-icon>
               </button>

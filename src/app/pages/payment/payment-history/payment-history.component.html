@@ -73,7 +73,7 @@
       </mat-step>
 
       <mat-step>
-        <ng-template matStepLabel>Document Data</ng-template>
+        <ng-template matStepLabel>{{ "payment.documentData" | translate }}</ng-template>
         <form [formGroup]="reimbursementFormGroup" *ngIf="isReimbursement">
           <mat-form-field appearance="outline" class="ph-field">
             <mat-label>{{ "paymentHistory.date" | translate }}</mat-label>

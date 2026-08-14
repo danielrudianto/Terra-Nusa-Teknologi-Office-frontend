@@ -159,12 +159,12 @@
           <input
             matInput
             formControlName="bankAccountNumber"
-            placeholder="Nomor rekening"
+            [placeholder]="'expense.nomorRekening' | translate"
             inputmode="numeric"
           />
           <mat-error
             *ngIf="formGroup.get('bankAccountNumber')?.hasError('pattern')"
-            >Hanya angka.</mat-error
+            >{{ "loan.hanyaAngka" | translate }}</mat-error
           >
         </mat-form-field>
       </div>

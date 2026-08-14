@@ -6,7 +6,7 @@
         "selector.searchByNameAddress" | translate
       }}</span>
     </div>
-    <button type="button" class="ss-x" mat-dialog-close aria-label="Tutup">
+    <button type="button" class="ss-x" mat-dialog-close [attr.aria-label]="'tax.tutup' | translate">
       <svg
         width="18"
         height="18"
@@ -42,7 +42,7 @@
         matInput
         cdkFocusInitial
         [formControl]="searchBar"
-        placeholder="Nama supplier"
+        [placeholder]="'supplier.namaSupplier' | translate"
       />
     </mat-form-field>
 

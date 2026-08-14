@@ -65,7 +65,7 @@
           ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="ev-money__row" *ngIf="vPbbkb">
-          <span>PBBKB</span
+          <span>{{ "expense.pbbkb" | translate }}</span
           ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="ev-money__row ev-money__row--muted" *ngIf="vPph">

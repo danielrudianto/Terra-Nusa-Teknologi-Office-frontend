@@ -7,7 +7,7 @@
   />
 
   <div class="sil-toolbar">
-    <mat-chip-listbox class="sil-chips" multiple aria-label="Filter">
+    <mat-chip-listbox class="sil-chips" multiple [attr.aria-label]="'salesInvoice.filter' | translate">
       <mat-chip-option
         *ngFor="let chip of filterChips"
         class="sil-fchip"
@@ -100,8 +100,7 @@
             (click)="changeSortBy('projectName')"
           >
             <span class="sil-th"
-              >Project
-              <mat-icon
+              >{{ "salesInvoice.project" | translate }}<mat-icon
                 *ngIf="sortBy == 'projectName' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
@@ -153,8 +152,7 @@
             (click)="changeSortBy('dpp')"
           >
             <span class="sil-th sil-th--right"
-              >Tagihan
-              <mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'asc'"
+              >{{ "salesInvoice.tagihan" | translate }}<mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'asc'"
                 >arrow_drop_up</mat-icon
               >
               <mat-icon *ngIf="sortBy == 'dpp' && sortByDirection == 'desc'"
@@ -232,7 +230,7 @@
 
         <!-- Action -->
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+          <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'bank.actions' | translate"></th>
           <td
             mat-cell
             *matCellDef="let invoice"
@@ -241,7 +239,7 @@
             <button
               mat-icon-button
               [matMenuTriggerFor]="menu"
-              aria-label="Row actions"
+              [attr.aria-label]="'bank.rowActions' | translate"
             >
               <mat-icon>more_horiz</mat-icon>
             </button>

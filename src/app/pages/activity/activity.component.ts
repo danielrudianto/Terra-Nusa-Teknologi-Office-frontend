@@ -21,6 +21,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { tanggalLokal } from '../../utils/tanggal';
+import { PermissionService } from '../../services/permission.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
 
 interface ActivityEntry {
   id: number;
@@ -45,6 +48,8 @@ interface ActivityEntry {
   selector: 'app-activity',
   standalone: true,
   imports: [
+    MatChipsModule,
+    MatAutocompleteModule,
     MatInputModule,
     MatNativeDateModule,
     MatDatepickerModule,
@@ -72,6 +77,67 @@ export class ActivityComponent implements OnInit {
   readonly columns = ['when', 'who', 'what', 'where', 'detail'];
 
   entityControl = new FormControl<string>('');
+
+  /*
+   * Penyaring pengguna — hanya untuk level 5.
+   *
+   * Autocomplete, bukan daftar pilih: jumlah pengguna bertambah terus, dan
+   * daftar yang memuat semuanya menjadi tidak terpakai justru saat paling
+   * dibutuhkan.
+   *
+   * Penyaringnya disembunyikan di bawah level 5, tetapi itu hanya soal
+   * tampilan — pembatasan sesungguhnya ada di server, yang memaksa penyaring
+   * ke pengguna sendiri berapa pun nilai yang dikirim.
+   */
+  readonly MAKS_PENGGUNA = 5;
+
+  penggunaCari = new FormControl<string>('');
+  penggunaTerpilih: { id: number; name: string }[] = [];
+  private semuaPengguna: { id: number; name: string }[] = [];
+
+  get bolehSaringPengguna(): boolean {
+    return this.permission.level() >= 5;
+  }
+
+  get penggunaPenuh(): boolean {
+    return this.penggunaTerpilih.length >= this.MAKS_PENGGUNA;
+  }
+
+  /** Saran yang belum terpilih, disaring menurut yang diketik. */
+  saranPengguna(): { id: number; name: string }[] {
+    const q = (this.penggunaCari.value ?? '').trim().toLowerCase();
+    const dipilih = new Set(this.penggunaTerpilih.map((u) => u.id));
+    return this.semuaPengguna
+      .filter((u) => !dipilih.has(u.id))
+      .filter((u) => !q || u.name.toLowerCase().includes(q))
+      .slice(0, 8);
+  }
+
+  pilihPengguna(u: { id: number; name: string }): void {
+    if (this.penggunaPenuh) return;
+    this.penggunaTerpilih = [...this.penggunaTerpilih, u];
+    this.penggunaCari.setValue('', { emitEvent: false });
+    this.fetch(1);
+  }
+
+  lepasPengguna(id: number): void {
+    this.penggunaTerpilih = this.penggunaTerpilih.filter((u) => u.id !== id);
+    this.fetch(1);
+  }
+
+  private muatPengguna(): void {
+    if (!this.bolehSaringPengguna) return;
+    this.apiService.get('users', { page: 1, pageSize: 500 }).subscribe({
+      next: (r: any) => {
+        const daftar = Array.isArray(r) ? r : (r?.data ?? r?.users ?? []);
+        this.semuaPengguna = daftar
+          .map((u: any) => ({ id: u.id, name: u.name }))
+          .filter((u: any) => u.id && u.name);
+      },
+      // Gagal memuat hanya mengosongkan sarannya; penyaring lain tetap jalan.
+      error: () => (this.semuaPengguna = []),
+    });
+  }
   dateFromControl = new FormControl<Date | null>(null);
   dateToControl = new FormControl<Date | null>(null);
   entries: ActivityEntry[] = [];
@@ -86,10 +152,12 @@ export class ActivityComponent implements OnInit {
     private apiService: ApiService,
     private dialog: MatDialog,
     public settings: SettingsService,
+    public permission: PermissionService,
   ) {}
 
   ngOnInit(): void {
     this.fetch();
+    this.muatPengguna();
     this.entityControl.valueChanges.subscribe(() => this.fetch(1));
     this.dateFromControl.valueChanges.subscribe(() => this.fetch(1));
     this.dateToControl.valueChanges.subscribe(() => this.fetch(1));
@@ -113,6 +181,12 @@ export class ActivityComponent implements OnInit {
     if (dari) params['dateFrom'] = dari;
     const sampai = this.asDateParam(this.dateToControl.value);
     if (sampai) params['dateTo'] = sampai;
+
+    // Beberapa userID dikirim sebagai array; ApiService merangkainya menjadi
+    // parameter berulang, yang memang diharapkan server.
+    if (this.penggunaTerpilih.length) {
+      params['userID'] = this.penggunaTerpilih.map((u) => u.id) as any;
+    }
 
     // ApiService.get menerima query params langsung, bukan { params }.
     // Membungkusnya dua kali membuat parameter tidak terkirim, sehingga
@@ -140,6 +214,8 @@ export class ActivityComponent implements OnInit {
     this.entityControl.setValue('', { emitEvent: false });
     this.dateFromControl.setValue(null, { emitEvent: false });
     this.dateToControl.setValue(null, { emitEvent: false });
+    this.penggunaTerpilih = [];
+    this.penggunaCari.setValue('', { emitEvent: false });
     this.fetch(1);
   }
 
@@ -147,7 +223,8 @@ export class ActivityComponent implements OnInit {
     return !!(
       this.entityControl.value ||
       this.dateFromControl.value ||
-      this.dateToControl.value
+      this.dateToControl.value ||
+      this.penggunaTerpilih.length
     );
   }
 

@@ -4,7 +4,7 @@
       <h2 class="pp-title">{{ "pph.selectTitle" | translate }}</h2>
       <span class="pp-sub">{{ "pph.selectSub" | translate }}</span>
     </div>
-    <button type="button" class="pp-x" (click)="onClose()" aria-label="Tutup">
+    <button type="button" class="pp-x" (click)="onClose()" [attr.aria-label]="'tax.tutup' | translate">
       <svg
         width="18"
         height="18"
@@ -40,7 +40,7 @@
         <input
           matInput
           type="text"
-          placeholder="Kode / objek pajak"
+          [placeholder]="'tax.kodeObjekPajak' | translate"
           [formControl]="pphSearchFormControl"
         />
       </mat-form-field>
