@@ -326,7 +326,6 @@
   .sl-toolbar {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
     flex-wrap: nowrap;
   }
 
@@ -336,4 +335,16 @@
     flex: 0 1 auto;
     min-width: 0;
   }
+}
+
+/*
+ * Sisa ruang jatuh SEBELUM anak kedua, bukan dibagi rata.
+ *
+ * `space-between` hanya benar untuk DUA anak: penyaring di kiri, pencarian
+ * di kanan. Tombol muat ulang menjadikannya tiga, dan `space-between` lalu
+ * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
+ * mengambang, terpisah dari keduanya.
+ */
+.sl-toolbar > *:nth-child(2) {
+  margin-left: auto;
 }

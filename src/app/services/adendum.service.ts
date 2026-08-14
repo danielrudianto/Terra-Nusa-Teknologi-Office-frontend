@@ -139,6 +139,45 @@ export class AdendumService {
   }
 
   /**
+   * Isi satu FormArray dari daftar pada dokumen induk.
+   *
+   * Bentuk barisnya berbeda-beda antar varian, sehingga PEMBANGUNNYA
+   * diserahkan pemanggil — hanya layarnya yang tahu cara menyusun satu baris
+   * miliknya sendiri.
+   *
+   * Larik dikosongkan lebih dulu: sebagian varian sudah menambahkan satu
+   * baris kosong saat dibuat, dan tanpa dikosongkan baris itu tertinggal di
+   * atas isian yang diwarisi.
+   */
+  isiLarik(
+    formGroup: FormGroup,
+    nama: string,
+    sumber: readonly any[] | null | undefined,
+    pembangun: (baris: any) => any,
+  ): void {
+    const arr = formGroup.get(nama) as FormArray | null;
+    if (!arr) return;
+    arr.clear();
+    (sumber || []).forEach((x) => arr.push(pembangun(x)));
+  }
+
+  /**
+   * Daftar di dalam `customData` dokumen induk.
+   *
+   * Sebagian varian menyimpan isinya di sana, bukan sebagai baris barang —
+   * PO-D menyimpan uraian pekerjaan, PO-H menyimpan lingkup dan kewajiban.
+   */
+  larikCustom(induk: any, kunci: string): any[] {
+    if (!induk) return [];
+    const custom =
+      typeof induk.customData === 'string'
+        ? JSON.parse(induk.customData || '{}')
+        : induk.customData || {};
+    const v = custom?.[kunci];
+    return Array.isArray(v) ? v : [];
+  }
+
+  /**
    * Baris pekerjaan dari dokumen induk, untuk mengisi FormArray-nya.
    *
    * Volumenya dikosongkan, bukan disalin.

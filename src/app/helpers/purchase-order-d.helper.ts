@@ -33,6 +33,15 @@ export interface IPurchaseOrderDItem {
 }
 
 export interface IPurchaseOrderD {
+  /**
+   * Dokumen ini ADENDUM atas purchase order lain.
+   *
+   * Mengubah dua hal pada cetakannya: kalimat pembukanya, dan judul kolom
+   * volume — pada adendum yang dicantumkan adalah SELISIH, bukan volume
+   * yang berlaku.
+   */
+  isAdendum?: boolean;
+
   /** Jabatan penyetuju; kosong bila belum diisi. */
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
@@ -223,7 +232,7 @@ function buildDocDefinition(data: IPurchaseOrderD) {
 
       {
         // PO-D selalu pemesanan tenaga kerja; tidak ada bentuk lain.
-        text: workIntroSentence('D'),
+        text: workIntroSentence('D', data.isAdendum),
         margin: [0, 0, 0, 4] as Margins,
       },
 

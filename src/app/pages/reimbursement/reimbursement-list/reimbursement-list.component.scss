@@ -322,7 +322,6 @@
   .rl-toolbar {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
   }
   .rl-search {
     max-width: 380px;
@@ -383,4 +382,16 @@
 }
 :host ::ng-deep .rl-fchip--unpaid .mdc-evolution-chip__text-label::before {
   background: var(--bad-fg, #d64541);
+}
+
+/*
+ * Sisa ruang jatuh SEBELUM anak kedua, bukan dibagi rata.
+ *
+ * `space-between` hanya benar untuk DUA anak: penyaring di kiri, pencarian
+ * di kanan. Tombol muat ulang menjadikannya tiga, dan `space-between` lalu
+ * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
+ * mengambang, terpisah dari keduanya.
+ */
+.rl-toolbar > *:nth-child(2) {
+  margin-left: auto;
 }

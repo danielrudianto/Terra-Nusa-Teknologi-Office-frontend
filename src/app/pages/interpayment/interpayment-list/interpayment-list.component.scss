@@ -114,7 +114,6 @@
   .ip-toolbar {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
   }
 }
 .ip-toolbar__filter {
@@ -423,4 +422,16 @@
   border-top: 1px solid var(--line, #eef0f3);
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
+}
+
+/*
+ * Sisa ruang jatuh SEBELUM anak kedua, bukan dibagi rata.
+ *
+ * `space-between` hanya benar untuk DUA anak: penyaring di kiri, pencarian
+ * di kanan. Tombol muat ulang menjadikannya tiga, dan `space-between` lalu
+ * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
+ * mengambang, terpisah dari keduanya.
+ */
+.ip-toolbar > *:nth-child(2) {
+  margin-left: auto;
 }

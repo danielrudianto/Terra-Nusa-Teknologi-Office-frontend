@@ -53,6 +53,14 @@ export interface IPurchaseOrder641Fee {
 }
 
 export interface IPurchaseOrder641 {
+  /**
+   * Dokumen ini ADENDUM atas purchase order lain.
+   *
+   * Mengubah kalimat pembuka lembarnya; pada varian bertabel volume, judul
+   * kolomnya juga menyatakan bahwa yang dicantumkan SELISIH.
+   */
+  isAdendum?: boolean;
+
   /** Jabatan penyetuju; kosong bila belum diisi. */
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */

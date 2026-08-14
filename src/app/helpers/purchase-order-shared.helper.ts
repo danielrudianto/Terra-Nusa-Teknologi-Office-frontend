@@ -64,7 +64,29 @@ const MONTHS = [
  * yang isinya menyewa alat atau menutup pertanggungan — dan itu terbaca
  * janggal karena yang dipesan bukan pekerjaan dalam arti itu.
  */
-export function workIntroSentence(poType?: string): string {
+export function workIntroSentence(
+  poType?: string,
+  isAdendum?: boolean,
+): string {
+  /*
+   * Dokumen ADENDUM memakai kalimat pembukanya sendiri.
+   *
+   * Bentuknya diverifikasi terhadap delapan dokumen yang sudah terbit;
+   * ketiganya berbunyi sedikit berbeda dan satu di antaranya salah ketik,
+   * sehingga diseragamkan menjadi satu.
+   *
+   * Kalimat biasa TIDAK dipakai di sini: "untuk melakukan pekerjaan" pada
+   * lembar adendum terbaca seolah pekerjaannya baru dimulai, padahal yang
+   * dimaksud perubahan atas perjanjian yang sudah berjalan.
+   */
+  if (isAdendum) {
+    return (
+      'Berdasarkan kondisi lapangan, bersama ini kami bermaksud untuk ' +
+      'melakukan addendum terhadap dokumen bernomor sama, dengan ketentuan ' +
+      'sebagai berikut:'
+    );
+  }
+
   const t = String(poType || '').toUpperCase();
 
   if (t === 'B') {

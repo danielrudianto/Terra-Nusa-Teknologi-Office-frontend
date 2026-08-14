@@ -41,6 +41,7 @@ import { IPPh } from '../../../../utils/pph';
 import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
+import { AdendumService } from '../../../../services/adendum.service';
 
 /**
  * 6.4.1 Jasa pengurusan legalitas & perizinan (akta, SBU, izin).
@@ -98,6 +99,7 @@ export class PurchaseOrderCreate641Component {
     this.typeSwitcher.open(this.formGroup?.dirty === true);
   }
   constructor(
+    private adendum: AdendumService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
@@ -147,6 +149,9 @@ export class PurchaseOrderCreate641Component {
 
   get creditEnabled(): boolean {
     return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
+
+    // Bila dibuka sebagai adendum, isinya diambil dari induknya.
+    this.muatAdendum();
   }
 
   get prepaidEnabled(): boolean {
@@ -415,6 +420,9 @@ export class PurchaseOrderCreate641Component {
       purchaseType: '6.4.1',
       projectName: projectCode,
       projectCode: projectCode,
+      // Penanda induk bila dokumen ini ADENDUM; server yang
+      // menghitung nomor adendumnya.
+      parentPurchaseOrderID: this.adendum.indukId ?? undefined,
       name: '',
       dpp: dpp,
       ppn: ppn,
@@ -666,7 +674,20 @@ export class PurchaseOrderCreate641Component {
             console.error('Gagal membuat PDF surat perintah kerja:', e);
           }
 
-          this.router.navigate(['/Purchase-order']);
+          /*
+           * Adendum dicetak dari DAFTAR, bukan dari sini.
+           *
+           * Cetakan adendum wajib menyertakan induk dan adendum sebelumnya:
+           * isinya selisih, sehingga dibaca sendirian ia tidak menyatakan
+           * keadaan pekerjaannya. Yang menyusun rantai itu ada di halaman
+           * daftar; mengulanginya di enam belas formulir berarti enam belas
+           * salinan yang harus diperbaiki bersamaan.
+           */
+          this.router.navigate(['/Purchase-order'], {
+            queryParams: this.adendum.isAdendum
+              ? { cetak: res?.purchase_order_id ?? res?.id }
+              : undefined,
+          });
         },
         error: (error) =>
           this.snackBar.open(
@@ -677,4 +698,42 @@ export class PurchaseOrderCreate641Component {
       })
       .add(() => (this.isSubmitting = false));
   }
+
+  /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
+  get isAdendum(): boolean {
+    return this.adendum.isAdendum;
+  }
+
+  /** Dokumen induk yang diadendum; null bila dokumen baru. */
+  induk: any = null;
+
+  /**
+   * Isi formulir dari dokumen induk saat layar dibuka sebagai adendum.
+   *
+   * Volume dikosongkan: adendum berisi SELISIH, bukan pengganti. Menyalin
+   * volume induk membuat yang mengisi tinggal menekan simpan dan
+   * menggandakan seluruh pekerjaannya tanpa menyadarinya.
+   */
+  private muatAdendum(): void {
+    this.adendum.muatInduk().subscribe({
+      next: (induk: any) => {
+        if (!induk) return;
+        this.induk = induk;
+        this.adendum.isiFormulir(this.formGroup, induk);
+        this.adendum.kunciIsian(this.formGroup);
+        this.adendum.isiLarik(
+          this.formGroup,
+          'lines',
+          this.adendum.barisInduk(induk),
+          (x) => {
+          const g = this.buildLine();
+          g.patchValue(x);
+          return g;
+        },
+        );
+      },
+      error: () => {},
+    });
+  }
+
 }

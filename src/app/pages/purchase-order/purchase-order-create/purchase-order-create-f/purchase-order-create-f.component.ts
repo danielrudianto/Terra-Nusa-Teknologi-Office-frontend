@@ -880,7 +880,20 @@ export class PurchaseOrderCreateFComponent {
             console.error('Gagal membuat PDF purchase order:', e);
           }
 
-          this.router.navigate(['/Purchase-order']);
+          /*
+           * Adendum dicetak dari DAFTAR, bukan dari sini.
+           *
+           * Cetakan adendum wajib menyertakan induk dan adendum sebelumnya:
+           * isinya selisih, sehingga dibaca sendirian ia tidak menyatakan
+           * keadaan pekerjaannya. Yang menyusun rantai itu ada di halaman
+           * daftar; mengulanginya di enam belas formulir berarti enam belas
+           * salinan yang harus diperbaiki bersamaan.
+           */
+          this.router.navigate(['/Purchase-order'], {
+            queryParams: this.adendum.isAdendum
+              ? { cetak: res?.purchase_order_id ?? res?.id }
+              : undefined,
+          });
         },
         error: (error) => {
           this.snackBar.open(

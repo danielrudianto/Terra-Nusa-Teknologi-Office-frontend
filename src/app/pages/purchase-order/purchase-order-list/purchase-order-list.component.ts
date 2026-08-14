@@ -162,6 +162,8 @@ export class PurchaseOrderListComponent {
   }
 
   ngOnInit(): void {
+    // Cetak otomatis bila datang dari formulir adendum.
+    this.cetakDariAlamat();
     this.fetch();
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetch(1);
@@ -379,6 +381,38 @@ export class PurchaseOrderListComponent {
     });
   }
 
+  /**
+   * Cetak otomatis setelah adendum terbit.
+   *
+   * Formulir pembuatan mengarah ke sini dengan `?cetak={id}` alih-alih
+   * mencetak sendiri: cetakan adendum wajib menyertakan induk dan adendum
+   * sebelumnya, dan yang menyusun rantainya hanya ada di halaman ini.
+   * Mengulanginya di enam belas formulir berarti enam belas salinan yang
+   * harus diperbaiki bersamaan.
+   *
+   * Parameternya DIBERSIHKAN setelah dipakai; tanpa itu, memuat ulang
+   * halaman mencetak dokumen yang sama berulang kali.
+   */
+  private cetakDariAlamat(): void {
+    const v = this.route.snapshot.queryParamMap.get('cetak');
+    const id = Number(v);
+    if (!v || isNaN(id) || !id) return;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { cetak: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+
+    this.apiService.get(`purchase-orders/${id}`, {}).subscribe({
+      next: (po: any) => {
+        if (po) this.reprint(po);
+      },
+      error: () => {},
+    });
+  }
+
   reprint(po: any) {
     if (!this.canReprint(po)) return;
     this.isReprinting = po.id;
@@ -440,6 +474,16 @@ export class PurchaseOrderListComponent {
    * dapat digabung menjadi satu berkas.
    */
   private susunDokumen(data: any, output: PdfOutput = 'open'): any {
+    /*
+     * Penanda adendum diteruskan ke helper cetaknya.
+     *
+     * Mengubah dua hal pada lembarnya: kalimat pembukanya, dan judul kolom
+     * volume — pada adendum yang dicantumkan SELISIH, bukan volume yang
+     * berlaku. Tanpa penanda ini, vendor membaca angkanya sebagai volume
+     * total lalu menagih dua kali.
+     */
+    const isAdendum = !!data?.parentPurchaseOrderID;
+
       const custom = data.customData || {};
       try {
         const printData = {
@@ -507,6 +551,7 @@ export class PurchaseOrderListComponent {
           const scope = custom.workScope || 'borongan';
           const ringkas = scope !== 'borongan';
           return printPurchaseOrderH({
+              isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -638,6 +683,7 @@ export class PurchaseOrderListComponent {
             // PO lama berjenis sewa alat: dokumennya memakai tata letak
             // PO-B, sesuai templatenya waktu itu.
             return printPurchaseOrderB({
+              isAdendum,
               ...printData,
               // Sama dengan jalur formulir: mobilisasi disisipkan
               // sebagai baris pekerjaan tersendiri. Ditulis lewat fungsi
@@ -664,6 +710,7 @@ export class PurchaseOrderListComponent {
               output);
           } else {
             return printPurchaseOrderA({
+              isAdendum,
               purchaseOrderName: data.name,
               date: data.date,
               projectName: data.projectName,
@@ -754,6 +801,7 @@ export class PurchaseOrderListComponent {
           // Perangkat lunak & langganan: pemesanan layanan, sehingga
           // memakai tata letak Surat Perintah Kerja.
           return printPurchaseOrderB({
+              isAdendum,
             ...printData,
             poType: '5.1.12',
             items: (data.items || []).map((it: any) => ({
@@ -793,6 +841,7 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === '6.4.2') {
           // Penutupan pertanggungan: pemesanan jasa, tata letak SPK.
           return printPurchaseOrderB({
+              isAdendum,
             ...printData,
             poType: '6.4.2',
             items: (data.items || []).map((it: any) => ({
@@ -824,6 +873,7 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === '6.5.2') {
           // Pelatihan: pemesanan jasa, tata letak SPK.
           return printPurchaseOrderB({
+              isAdendum,
             ...printData,
             poType: '6.5.2',
             items: (data.items || []).map((it: any) => ({
@@ -909,6 +959,7 @@ export class PurchaseOrderListComponent {
           };
 
           return printPurchaseOrder641({
+              isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -982,6 +1033,7 @@ export class PurchaseOrderListComponent {
 
           if (jasa) {
             return printPurchaseOrderB({
+              isAdendum,
               ...data512,
               billingTerms: buildMaintenanceBillingTerms(),
               billingTitle:
@@ -997,6 +1049,7 @@ export class PurchaseOrderListComponent {
           // Termasuk yang diterbitkan sebagai tipe A — bentuk dokumennya
           // mengikuti formulir asalnya, bukan kode jenisnya.
           return printPurchaseOrderB({
+              isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -1068,6 +1121,7 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === 'D') {
           // SPK tenaga kerja: satu baris item = satu komponen upah
           return printPurchaseOrderD({
+              isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -1104,12 +1158,14 @@ export class PurchaseOrderListComponent {
            * ORDER; yang menjadi SPK hanya jasa pengujian.
            */
           return printPurchaseOrderB({
+              isAdendum,
             ...printData,
             includePpn: Number(data.ppn) > 0,
           },
               output);
         } else if (data.purchaseType === 'C') {
           return printPurchaseOrderC({
+              isAdendum,
             ...printData,
             // komponen pajak khas PO-C (pembelian BBM)
             pbbkbPercent: Number(custom.pbbkbPercent) || 0,

@@ -48,6 +48,15 @@ export interface IPurchaseOrderBItem {
 }
 
 export interface IPurchaseOrderB {
+  /**
+   * Dokumen ini ADENDUM atas purchase order lain.
+   *
+   * Mengubah dua hal pada cetakannya: kalimat pembukanya, dan judul kolom
+   * volume — pada adendum yang dicantumkan adalah SELISIH, bukan volume
+   * yang berlaku.
+   */
+  isAdendum?: boolean;
+
   /** Jabatan penyetuju; kosong bila belum diisi. */
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
@@ -171,7 +180,12 @@ function buildItemTable(data: IPurchaseOrderB) {
   const header = [
     th('No.'),
     th('Nama Pekerjaan'),
-    th('Volume'),
+    /*
+     * Pada adendum, yang dicantumkan adalah SELISIH — bukan volume yang
+     * berlaku. Judul kolomnya dinyatakan terang-terangan supaya vendor
+     * tidak membacanya sebagai volume total, lalu menagih dua kali.
+     */
+    th(data.isAdendum ? 'Volume\nTambah / Kurang' : 'Volume'),
     th('Satuan'),
     th('Harga Satuan\n(Rp.)'),
     th('Jumlah\n(Rp.)'),
@@ -392,7 +406,7 @@ export function printPurchaseOrderB(
       buildIdentityTable(data),
 
       {
-        text: workIntroSentence(data.poType),
+        text: workIntroSentence(data.poType, data.isAdendum),
         margin: [0, 0, 0, 4] as Margins,
       },
 
