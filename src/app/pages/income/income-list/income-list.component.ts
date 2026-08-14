@@ -33,6 +33,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { IncomeCreateComponent } from '../income-create/income-create.component';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { RouterModule } from '@angular/router';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-income-list',
@@ -53,6 +54,7 @@ import { RouterModule } from '@angular/router';
     TranslatePipe,
     MatDatepickerModule,
     MatSlideToggleModule,
+    RefreshButtonComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './income-list.component.html',

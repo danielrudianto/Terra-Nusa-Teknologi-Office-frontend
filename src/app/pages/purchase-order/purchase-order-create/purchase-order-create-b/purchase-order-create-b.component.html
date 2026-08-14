@@ -230,21 +230,37 @@
                 -->
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poB.mobilisasi" | translate }}</mat-label>
+                  <!--
+                    Dipisah ribuan seperti nominal lain di layar ini.
+
+                    Tanpa pemisah, `8000000` dan `800000` nyaris tidak dapat
+                    dibedakan mata — dan kesalahan satu nol pada dokumen yang
+                    mengikat vendor tidak murah.
+                  -->
                   <input
                     matInput
-                    type="number"
-                    inputmode="numeric"
                     formControlName="mobilisasi"
+                    thousandSeparator=" "
+                    decimalScale="2"
+                    mask="separator"
                   />
                   <span matTextPrefix>Rp&nbsp;</span>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poB.demobilisasi" | translate }}</mat-label>
+                  <!--
+                    Dipisah ribuan seperti nominal lain di layar ini.
+
+                    Tanpa pemisah, `8000000` dan `800000` nyaris tidak dapat
+                    dibedakan mata — dan kesalahan satu nol pada dokumen yang
+                    mengikat vendor tidak murah.
+                  -->
                   <input
                     matInput
-                    type="number"
-                    inputmode="numeric"
                     formControlName="demobilisasi"
+                    thousandSeparator=" "
+                    decimalScale="2"
+                    mask="separator"
                   />
                   <span matTextPrefix>Rp&nbsp;</span>
                 </mat-form-field>

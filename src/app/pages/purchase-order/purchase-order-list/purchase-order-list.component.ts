@@ -56,6 +56,7 @@ import { printPurchaseOrder641 } from '../../../helpers/purchase-order-641.helpe
 import { FLEET_ID_MODE, FLEET_OPTIONS } from '../../../constants/fleet';
 import { SettingsService } from '../../../services/setting.service';
 import { ServerMessageService } from '../../../services/server-message.service';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -77,6 +78,7 @@ import { ServerMessageService } from '../../../services/server-message.service';
     MatTooltipModule,
     HeaderTitleComponent,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.scss',

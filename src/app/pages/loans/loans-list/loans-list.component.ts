@@ -25,6 +25,7 @@ import { LoansCreateComponent } from '../loans-create/loans-create.component';
 import { LoansUpdateComponent } from '../loans-update/loans-update.component';
 import { LoanPaymentCreateComponent } from '../../../components/payment-create/loan-payment-create/loan-payment-create.component';
 import { LoansViewComponent } from '../loans-view/loans-view.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-loans-list',
@@ -43,6 +44,7 @@ import { LoansViewComponent } from '../loans-view/loans-view.component';
     MatInputModule,
     MatMenuModule,
     MatButtonModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './loans-list.component.html',
   styleUrl: './loans-list.component.scss',

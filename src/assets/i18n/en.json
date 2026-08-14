@@ -151,7 +151,9 @@
     "account": "Account",
     "rowActions": "Row actions",
     "toggle": "Toggle",
-    "add": "Add"
+    "add": "Add",
+    "refresh": "Refresh",
+    "refreshHint": "Fetch the latest data without losing your search and filters"
   },
   "nav": {
     "pinned": "Pinned",
@@ -1251,7 +1253,12 @@
     "namaSpesifikasiBarang": "Nama & spesifikasi barang",
     "exKobelco": "Ex. Kobelco",
     "exKawatLas": "Ex. Kawat Las",
-    "skuDeskripsiAtauBrand": "SKU, deskripsi, atau brand"
+    "skuDeskripsiAtauBrand": "SKU, deskripsi, atau brand",
+    "favorit": "Favourite",
+    "jadikanFavorit": "Mark as favourite",
+    "lepasFavorit": "Remove from favourites",
+    "favoritDitandai": "Marked as favourite; it will appear first when picking items",
+    "favoritDilepas": "Removed from favourites"
   },
   "salesInvoiceCreate": {
     "title": "Create Sales Invoice",
@@ -3443,7 +3450,8 @@
     "chartProjected": "Projected (not yet received)",
     "chartOther": "Other purchases",
     "downloadExcel": "Excel",
-    "downloadPdf": "PDF"
+    "downloadPdf": "PDF",
+    "terpakai": "Contract used"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",

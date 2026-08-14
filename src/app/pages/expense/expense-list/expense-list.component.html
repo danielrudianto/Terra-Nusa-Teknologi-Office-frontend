@@ -45,7 +45,7 @@
     <!-- Rentang tanggal, pencarian, dan toggle dikelompokkan di kanan
          sejajar chip, mengikuti tata letak halaman Pembelian. -->
     <div class="ex-toolbar__right">
-      <mat-form-field appearance="outline" class="ex-range">
+      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ex-range">
         <mat-label>{{ "expense.dateRange" | translate }}</mat-label>
         <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
           <input
@@ -66,7 +66,7 @@
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="ex-search">
+      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ex-search">
         <mat-icon matPrefix>search</mat-icon>
         <mat-label>{{ "common.search" | translate }}</mat-label>
         <input
@@ -82,6 +82,12 @@
         [formControl]="ignoreControl"
       >{{ "expense.ignoreDate" | translate }}</mat-slide-toggle>
     </div>
+    <!--
+      Muat ulang DATANYA saja. Daftar ini menyimpan pencarian dan penyaring
+      pada alamat halaman; memuat ulang lewat `fetchData` menghormati
+      keduanya, sedangkan `Ctrl+R` mengembalikan semuanya ke awal.
+    -->
+    <app-refresh-button [memuat]="isLoading" (muatUlang)="fetchData()" />
   </div>
 
   <!-- table card -->

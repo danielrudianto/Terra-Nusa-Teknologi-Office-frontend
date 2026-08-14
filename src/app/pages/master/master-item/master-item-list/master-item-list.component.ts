@@ -27,6 +27,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../../services/setting.service';
+import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
+import { ServerMessageService } from '../../../../services/server-message.service';
 
 @Component({
   selector: 'app-master-item-list',
@@ -50,12 +52,14 @@ import { SettingsService } from '../../../../services/setting.service';
     MatProgressBarModule,
     MatTooltipModule,
     HeaderTitleComponent,
+    RefreshButtonComponent,
   ],
   templateUrl: './master-item-list.component.html',
   styleUrl: './master-item-list.component.scss',
 })
 export class MasterItemListComponent {
   constructor(
+    private serverMessage: ServerMessageService,
     public settings: SettingsService,
     private translate: TranslateService,
     private apiService: ApiService,
@@ -313,6 +317,45 @@ export class MasterItemListComponent {
       .afterClosed()
       .subscribe((updated) => {
         if (updated) this.fetchItems(this.page);
+      });
+  }
+
+  /**
+   * Tandai atau lepas tanda favorit.
+   *
+   * Barang favorit didahulukan pada PEMILIH barang — bukan pada daftar ini,
+   * karena di sini yang dicari justru barang yang jarang dipakai.
+   *
+   * Nilainya diubah di layar lebih dulu agar tanggapannya terasa langsung,
+   * lalu DIKEMBALIKAN bila server menolak. Tanpa pengembalian itu, tandanya
+   * tampak tersimpan padahal tidak — dan yang menandainya baru tahu setelah
+   * membuka pemilih dan tidak menemukannya di atas.
+   */
+  toggleFavorit(item: any): void {
+    const sebelum = !!item.isFavorite;
+    const sesudah = !sebelum;
+    item.isFavorite = sesudah;
+
+    this.apiService
+      .patch(`master-items/${item.id}/favorite?favorit=${sesudah}`, {})
+      .subscribe({
+        next: () => {
+          this.snackBar.open(
+            this.translate.instant(
+              sesudah ? 'masterItem.favoritDitandai' : 'masterItem.favoritDilepas',
+            ),
+            this.translate.instant('common.close'),
+            { duration: 2500 },
+          );
+        },
+        error: (err: any) => {
+          item.isFavorite = sebelum;
+          this.snackBar.open(
+            this.serverMessage.terjemahkan(err),
+            this.translate.instant('common.close'),
+            { duration: 5000 },
+          );
+        },
       });
   }
 

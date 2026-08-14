@@ -22,6 +22,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AssetCreateComponent } from '../asset-create/asset-create.component';
 import { AssetUpdateComponent } from '../asset-update/asset-update.component';
 import { AssetViewComponent } from '../asset-view/asset-view.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-asset-list',
@@ -39,6 +40,7 @@ import { AssetViewComponent } from '../asset-view/asset-view.component';
     MatIconModule,
     MatMenuModule,
     HeaderTitleComponent,
+    RefreshButtonComponent,
   ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',

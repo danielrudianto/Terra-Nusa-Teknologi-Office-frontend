@@ -112,10 +112,26 @@
 .prp-kendali {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+}
+
+/*
+ * Tab di kiri; unduhan dan sakelar internal menempel di kanan sebagai satu
+ * kelompok.
+ *
+ * `space-between` hanya benar untuk DUA anak. Dengan tiga, yang di tengah
+ * berhenti persis di tengah dan terbaca terpisah dari keduanya — padahal
+ * unduhan dan sakelar internal saling terkait: berkas yang diunduh mengikuti
+ * keadaan sakelarnya.
+ *
+ * `nth-child(2)` tetap benar walaupun salah satu kelompok disembunyikan:
+ * yang tidak dirender tidak dihitung, sehingga sisa ruangnya selalu jatuh
+ * sebelum kelompok kanan.
+ */
+.prp-kendali > *:nth-child(2) {
+  margin-left: auto;
 }
 
 /* Tombol unduh, mengikuti bentuk tab di sebelahnya. */
@@ -710,4 +726,52 @@
 .prp-kotak--lewat {
   background: var(--bad-bg);
   border: 1px solid var(--bad-fg);
+}
+
+/* ---- berapa nilai kontrak yang sudah terpakai ---- */
+
+.prp-pakai {
+  margin-top: 0.6rem;
+}
+.prp-pakai__jalur {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line, #e3e6eb);
+  overflow: hidden;
+}
+.prp-pakai__isi {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--brand);
+  transition: width 0.25s ease;
+}
+/* Melampaui kontrak: warnanya berubah, bukan batangnya yang meluber. */
+.prp-pakai.lewat .prp-pakai__isi {
+  background: var(--bad-fg, #e5484d);
+}
+.prp-pakai__ket {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--faint, #8a8f98);
+  font-variant-numeric: tabular-nums;
+}
+.prp-pakai.lewat .prp-pakai__ket {
+  color: var(--bad-fg, #e5484d);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prp-pakai__isi {
+    transition: none;
+  }
+}
+
+/* Porsi kategori terhadap nilai kontrak; dibedakan dari porsi biaya. */
+.prp-kat__kontrak {
+  min-width: 58px;
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--faint, #8a8f98);
+  font-variant-numeric: tabular-nums;
 }

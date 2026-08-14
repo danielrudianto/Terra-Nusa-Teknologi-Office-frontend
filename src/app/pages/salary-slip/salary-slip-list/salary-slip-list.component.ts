@@ -31,6 +31,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { SettingsService } from '../../../services/setting.service';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 const moment = _rollupMoment || _moment;
 
@@ -66,6 +67,7 @@ export const MY_FORMATS = {
     MatDatepickerModule,
     MatMenuModule,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',

@@ -21,6 +21,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-expense-opponent-list',
@@ -41,6 +42,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     ReactiveFormsModule,
     MatTableModule,
     MatPaginatorModule,
+    RefreshButtonComponent,
   ],
 })
 export class ExpenseOpponentListComponent {

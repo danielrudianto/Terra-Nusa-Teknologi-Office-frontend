@@ -21,6 +21,7 @@ import { EmployeeStatusComponent } from '../employee-status/employee-status.comp
 import { EmployeeProfileComponent } from '../employee-profile/employee-profile.component';
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
 import { EmployeeFormPeriodComponent } from '../employee-form-period/employee-form-period.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-employee-list',
@@ -39,6 +40,7 @@ import { EmployeeFormPeriodComponent } from '../employee-form-period/employee-fo
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',

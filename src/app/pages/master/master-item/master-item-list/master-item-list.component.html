@@ -5,7 +5,7 @@
   ></app-header-title>
 
   <div class="mi-toolbar">
-    <mat-form-field appearance="outline" class="mi-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="mi-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -41,9 +41,16 @@
       hidden
       (change)="onFileSelected($event)"
     />
+    <!--
+      Impor hanya untuk yang boleh membuat barang.
+
+      Sebelumnya tombolnya selalu tampil, dan yang tidak berwenang baru
+      ditolak setelah berkasnya diunggah — setelah menunggu, bukan sebelum.
+    -->
     <button
       type="button"
       class="mi-btn mi-btn--ghost"
+      *appCan="'master_item:create'"
       (click)="fileInput.click()"
       [disabled]="isImporting"
     >
@@ -54,6 +61,14 @@
           : ("masterItem.importCsv" | translate)
       }}
     </button>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchItems()"
+    />
   </div>
 
   <!-- ===== Filter row ===== -->
@@ -94,7 +109,21 @@
             {{ "table.description" | translate }}
           </th>
           <td mat-cell *matCellDef="let item">
-            <span class="mi-primary">{{ item.description || "—" }}</span>
+            <span class="mi-primary">
+              <!--
+                Tanda favorit; barang ini didahulukan pada pemilih barang.
+                Ditampilkan agar yang menandai dapat melihat hasilnya tanpa
+                membuka menunya satu per satu.
+              -->
+              @if (item.isFavorite) {
+                <mat-icon
+                  class="mi-star"
+                  [title]="'masterItem.favorit' | translate"
+                  >star</mat-icon
+                >
+              }
+              {{ item.description || "—" }}
+            </span>
           </td>
         </ng-container>
 
@@ -180,6 +209,24 @@
               <button mat-menu-item (click)="viewItem(item)">
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "masterItemView.title" | translate }}</span>
+              </button>
+              <!--
+                Tandai favorit: barang ini didahulukan pada PEMILIH barang.
+                Bukan preferensi pribadi — urutannya berlaku untuk seluruh
+                pengguna, karena itu izinnya sama dengan menyunting barangnya.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'master_item:update'"
+                (click)="toggleFavorit(item)"
+              >
+                <mat-icon>{{ item.isFavorite ? "star" : "star_border" }}</mat-icon
+                ><span>{{
+                  (item.isFavorite
+                    ? "masterItem.lepasFavorit"
+                    : "masterItem.jadikanFavorit"
+                  ) | translate
+                }}</span>
               </button>
               <button
                 mat-menu-item

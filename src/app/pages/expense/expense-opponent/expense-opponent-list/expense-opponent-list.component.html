@@ -6,7 +6,7 @@
 
   <!-- toolbar -->
   <div class="eol-toolbar">
-    <mat-form-field appearance="outline" class="eol-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="eol-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -23,6 +23,14 @@
       <mat-icon>add</mat-icon>
       {{ "expenseOpponent.addOpponent" | translate }}
     </button>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchOpponents()"
+    />
   </div>
 
   <!-- card -->

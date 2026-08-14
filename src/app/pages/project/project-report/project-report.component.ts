@@ -143,6 +143,20 @@ interface Kategori {
   nama: string;
   nilai: number;
   pemasok: BarisPemasok[];
+  /**
+   * Bagian nilai kontrak yang diserap kategori ini, dalam persen.
+   *
+   * BUKAN margin per kategori: nilai kontrak tersimpan sebagai satu angka
+   * dan tidak dipecah per jenis pekerjaan, sehingga margin per kategori
+   * tidak dapat dihitung dari data yang ada — mengarangnya akan
+   * menghasilkan angka yang tampak tepat tetapi tidak berarti apa pun.
+   *
+   * Yang ini dapat dihitung dan tetap menjawab pertanyaannya: kategori mana
+   * yang paling banyak memakan kontraknya.
+   *
+   * `null` bila nilai kontraknya belum diisi.
+   */
+  porsiKontrak: number | null;
 }
 
 @Component({
@@ -319,16 +333,25 @@ export class ProjectReportComponent implements OnInit {
       catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
     }
 
+    // Nilai kontrak dibaca sekali di luar perulangan: memanggil signal di
+    // dalamnya menghitung ulang untuk setiap kategori tanpa alasan.
+    const kontrak = this.nilaiKontrak();
+
     const hasil: Kategori[] = [];
     for (const [kode, pemasokMap] of peta) {
       const pemasok = [...pemasokMap.entries()]
         .map(([nama, nilai]) => ({ nama, nilai }))
         .sort((a, b) => b.nilai - a.nilai);
+      const nilai = pemasok.reduce((a, b) => a + b.nilai, 0);
       hasil.push({
         kode,
         nama: purchaseTypeLabel(this.translate, kode) ?? kode,
-        nilai: pemasok.reduce((a, b) => a + b.nilai, 0),
+        nilai,
         pemasok,
+        // `null` bila kontraknya belum diisi — bukan nol, karena nol
+        // terbaca sebagai "tidak menyerap apa pun" padahal artinya
+        // "belum dapat dihitung".
+        porsiKontrak: kontrak > 0 ? (nilai / kontrak) * 100 : null,
       });
     }
     return hasil.sort((a, b) => b.nilai - a.nilai);
@@ -455,6 +478,30 @@ export class ProjectReportComponent implements OnInit {
   }
 
   readonly margin = computed(() => this.nilaiKontrak() - this.totalBiaya());
+
+  /**
+   * Berapa persen nilai kontrak yang sudah terpakai biaya.
+   *
+   * Angka margin saja tidak menunjukkan apakah proyeknya akan jebol: rugi
+   * lima puluh juta di proyek satu miliar berbeda artinya dengan rugi lima
+   * puluh juta di proyek seratus juta.
+   *
+   * Yang menjawabnya adalah PORSI — "biaya sudah 82% dari kontrak" dapat
+   * dibandingkan dengan seberapa jauh pekerjaannya, dan di situ ketahuan
+   * akan jebol SEBELUM jebol.
+   *
+   * `null` bila kontraknya belum diisi.
+   */
+  readonly porsiTerpakai = computed(() => {
+    const k = this.nilaiKontrak();
+    return k > 0 ? (this.totalBiaya() / k) * 100 : null;
+  });
+
+  /** True bila biaya sudah melampaui nilai kontraknya. */
+  readonly melampauiKontrak = computed(() => {
+    const p = this.porsiTerpakai();
+    return p !== null && p > 100;
+  });
 
   readonly tertagih = computed(() => {
     const d = this._data();

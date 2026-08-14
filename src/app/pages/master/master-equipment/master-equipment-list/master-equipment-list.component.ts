@@ -21,6 +21,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { MasterEquipmentCreateComponent } from '../master-equipment-create/master-equipment-create.component';
 import { MasterEquipmentViewComponent } from '../master-equipment-view/master-equipment-view.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RefreshButtonComponent } from '../../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-master-equipment-list',
@@ -41,6 +42,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatSnackBarModule,
     MatProgressBarModule,
     HeaderTitleComponent,
+    RefreshButtonComponent,
   ],
   templateUrl: './master-equipment-list.component.html',
   styleUrl: './master-equipment-list.component.scss',

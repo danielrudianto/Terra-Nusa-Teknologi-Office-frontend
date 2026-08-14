@@ -22,6 +22,7 @@ import { UserUpdateComponent } from '../user-update/user-update.component';
 import { UserAccessComponent } from '../user-access/user-access.component';
 import { UserViewComponent } from '../user-view/user-view.component';
 import { SettingsService } from '../../../services/setting.service';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-user-list',
@@ -40,6 +41,7 @@ import { SettingsService } from '../../../services/setting.service';
     MatMenuModule,
     RouterModule,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss'],

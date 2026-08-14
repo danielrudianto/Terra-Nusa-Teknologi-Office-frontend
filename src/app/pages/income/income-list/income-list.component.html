@@ -7,7 +7,7 @@
   />
 
   <div class="il-toolbar">
-    <mat-form-field appearance="outline" class="il-range">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="il-range">
       <mat-label>{{ "income.dateRange" | translate }}</mat-label>
       <mat-date-range-input [formGroup]="formGroup" [rangePicker]="picker">
         <input
@@ -28,7 +28,7 @@
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="il-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="il-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -43,6 +43,14 @@
       [disabled]="searchControl.value === ''"
       [formControl]="ignoreControl"
     >{{ "expense.ignoreDate" | translate }}</mat-slide-toggle>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchData()"
+    />
   </div>
 
   <div class="il-card" [class.is-loading]="isLoading">

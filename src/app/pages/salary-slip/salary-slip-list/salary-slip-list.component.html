@@ -5,7 +5,7 @@
   />
 
   <div class="ssl-toolbar">
-    <mat-form-field appearance="outline" class="ssl-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -16,7 +16,7 @@
       />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="ssl-month">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-month">
       <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
       <input matInput [matDatepicker]="dp" [formControl]="date" />
       <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
@@ -63,6 +63,14 @@
       <mat-icon>add</mat-icon>
       <span>{{ "salarySlip.createButton" | translate }}</span>
     </button>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="false"
+      (muatUlang)="fetchSalarySlips()"
+    />
   </div>
 
   <div class="ssl-card">

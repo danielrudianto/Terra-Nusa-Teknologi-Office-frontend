@@ -151,7 +151,9 @@
     "account": "Account",
     "rowActions": "Row actions",
     "toggle": "展开/收起",
-    "add": "添加"
+    "add": "添加",
+    "refresh": "刷新",
+    "refreshHint": "获取最新数据，且不会丢失搜索与筛选条件"
   },
   "nav": {
     "pinned": "已固定",
@@ -1251,7 +1253,12 @@
     "namaSpesifikasiBarang": "Nama & spesifikasi barang",
     "exKobelco": "Ex. Kobelco",
     "exKawatLas": "Ex. Kawat Las",
-    "skuDeskripsiAtauBrand": "SKU, deskripsi, atau brand"
+    "skuDeskripsiAtauBrand": "SKU, deskripsi, atau brand",
+    "favorit": "常用",
+    "jadikanFavorit": "设为常用",
+    "lepasFavorit": "取消常用",
+    "favoritDitandai": "已设为常用，选择物料时将优先显示",
+    "favoritDilepas": "已取消常用"
   },
   "salesInvoiceCreate": {
     "title": "创建销售发票",
@@ -3443,7 +3450,8 @@
     "chartProjected": "预计（尚未收款）",
     "chartOther": "其他采购",
     "downloadExcel": "Excel",
-    "downloadPdf": "PDF"
+    "downloadPdf": "PDF",
+    "terpakai": "合同已用"
   },
   "employeeStatus": {
     "title": "停用员工",

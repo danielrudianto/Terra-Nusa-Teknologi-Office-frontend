@@ -30,6 +30,15 @@
         >{{ "status.rejected" | translate }}</mat-chip-option
       >
     </mat-chip-listbox>
+    <!--
+      Muat ulang DATANYA saja. Daftar ini menyimpan pencarian dan penyaring
+      pada alamat halaman; memuat ulang lewat `fetchPayments` menghormati
+      keduanya, sedangkan `Ctrl+R` mengembalikan semuanya ke awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchPayments(page)"
+    />
   </div>
 
   <div class="pl-card">

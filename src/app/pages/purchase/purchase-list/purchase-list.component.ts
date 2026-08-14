@@ -31,6 +31,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
 import { PermissionService } from '../../../services/permission.service';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-purchase-list',
@@ -51,6 +52,7 @@ import { PermissionService } from '../../../services/permission.service';
     HeaderTitleComponent,
     MatSnackBarModule,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],

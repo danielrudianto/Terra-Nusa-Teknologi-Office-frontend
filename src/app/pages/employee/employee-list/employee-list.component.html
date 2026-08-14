@@ -41,7 +41,7 @@
       }}</mat-chip-option>
     </mat-chip-listbox>
 
-    <mat-form-field appearance="outline" class="el-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="el-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -51,6 +51,14 @@
         [formControl]="formControl"
       />
     </mat-form-field>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchEmployees()"
+    />
   </div>
 
   <div class="el-card" [class.is-loading]="isLoading">

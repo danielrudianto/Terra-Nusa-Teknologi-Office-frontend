@@ -57,6 +57,38 @@
           {{ persenKontrak(margin()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
         </div>
+
+        <!--
+          Berapa banyak kontraknya sudah terpakai.
+
+          Angka margin sendiri tidak menunjukkan apakah proyeknya akan jebol:
+          rugi lima puluh juta di proyek satu miliar berbeda artinya dengan
+          rugi yang sama di proyek seratus juta. Porsi inilah yang dapat
+          dibandingkan dengan seberapa jauh pekerjaannya.
+        -->
+        @if (porsiTerpakai() !== null) {
+          <div
+            class="prp-pakai"
+            [class.lewat]="melampauiKontrak()"
+            [attr.aria-label]="'projectReport.terpakai' | translate"
+          >
+            <div class="prp-pakai__jalur">
+              <!--
+                Lebar dibatasi 100% agar batangnya tidak meluber keluar
+                kartunya saat biayanya melampaui kontrak; angkanya di bawah
+                tetap menyatakan nilai sebenarnya.
+              -->
+              <span
+                class="prp-pakai__isi"
+                [style.width.%]="porsiTerpakai()! > 100 ? 100 : porsiTerpakai()"
+              ></span>
+            </div>
+            <div class="prp-pakai__ket">
+              {{ "projectReport.terpakai" | translate }}
+              {{ porsiTerpakai() | number: "1.0-0" }}%
+            </div>
+          </div>
+        }
       </div>
 
       <div class="prp-sel">
@@ -97,22 +129,6 @@
         </button>
       </div>
 
-      <div class="prp-internal" *ngIf="jumlahInternal() > 0">
-        <mat-slide-toggle
-          color="primary"
-          [checked]="sertakanInternal()"
-          (change)="toggleInternal()"
-        >
-          <span class="prp-internal__teks">
-            {{ "projectReport.includeInternal" | translate }}
-            <small>
-              {{ jumlahInternal() }}
-              {{ "projectReport.internalCount" | translate }}
-            </small>
-          </span>
-        </mat-slide-toggle>
-      </div>
-
       <!--
         Unduhan mengikuti apa yang sedang terlihat, termasuk sakelar
         "sertakan internal" di sebelahnya — berkasnya menjawab pertanyaan
@@ -137,6 +153,22 @@
           <mat-icon>picture_as_pdf</mat-icon>
           {{ "projectReport.downloadPdf" | translate }}
         </button>
+      </div>
+
+      <div class="prp-internal" *ngIf="jumlahInternal() > 0">
+        <mat-slide-toggle
+          color="primary"
+          [checked]="sertakanInternal()"
+          (change)="toggleInternal()"
+        >
+          <span class="prp-internal__teks">
+            {{ "projectReport.includeInternal" | translate }}
+            <small>
+              {{ jumlahInternal() }}
+              {{ "projectReport.internalCount" | translate }}
+            </small>
+          </span>
+        </mat-slide-toggle>
       </div>
     </div>
 
@@ -253,6 +285,25 @@
             ></span>
           </span>
           <span class="prp-kat__pct">{{ persen(k.nilai) | number: "1.1-1" }}%</span>
+          <!--
+            Porsi terhadap NILAI KONTRAK, bukan terhadap total biaya.
+
+            Angka di sebelah kiri sudah menyatakan bagian dari biaya; yang
+            ini menjawab pertanyaan berbeda — seberapa besar kategori ini
+            memakan kontraknya. "Beton 31% dari biaya" tidak menunjukkan
+            apa-apa sendirian; "beton menyerap 27% nilai kontrak" langsung
+            dapat dinilai wajar atau tidak.
+
+            Disembunyikan bila kontraknya belum diisi.
+          -->
+          @if (k.porsiKontrak !== null) {
+            <span
+              class="prp-kat__kontrak"
+              [title]="'projectReport.ofContract' | translate"
+            >
+              {{ k.porsiKontrak | number: "1.0-0" }}% K
+            </span>
+          }
           <span class="prp-kat__nilai">{{ k.nilai | number: "1.0-0" }}</span>
         </div>
 

@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ClientCreateComponent } from '../client-create/client-create.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-client-list',
@@ -34,6 +35,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
     MatIconModule,
     MatButtonModule,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
 })
 export class ClientListComponent {

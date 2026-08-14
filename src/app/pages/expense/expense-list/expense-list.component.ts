@@ -30,6 +30,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-expense-list',
@@ -51,6 +52,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatDatepickerModule,
     MatSlideToggleModule,
     TranslatePipe,
+    RefreshButtonComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './expense-list.component.html',

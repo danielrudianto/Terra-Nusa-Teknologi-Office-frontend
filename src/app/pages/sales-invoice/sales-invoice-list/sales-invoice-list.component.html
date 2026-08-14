@@ -22,7 +22,7 @@
       >
     </mat-chip-listbox>
 
-    <mat-form-field appearance="outline" class="sil-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="sil-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -31,6 +31,14 @@
         [formControl]="searchFormControl"
       />
     </mat-form-field>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchData()"
+    />
   </div>
 
   <div class="sil-card" [class.is-loading]="isLoading">

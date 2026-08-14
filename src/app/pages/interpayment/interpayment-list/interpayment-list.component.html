@@ -7,7 +7,7 @@
   <!-- ===== toolbar: date range (kiri) + add (kanan) ===== -->
   <div class="ip-toolbar">
     <form [formGroup]="formGroup" class="ip-toolbar__filter">
-      <mat-form-field appearance="outline" class="ip-range">
+      <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ip-range">
         <mat-label>{{ "interpayment.dateRange" | translate }}</mat-label>
         <mat-date-range-input [rangePicker]="picker">
           <input
@@ -33,6 +33,14 @@
       <mat-icon>add</mat-icon>
       {{ "interpayment.createNew" | translate }}
     </button>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchData()"
+    />
   </div>
 
   <!-- ===== table card ===== -->

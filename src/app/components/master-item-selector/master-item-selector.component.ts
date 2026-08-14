@@ -13,6 +13,7 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-master-item-selector',
@@ -26,6 +27,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
+    MatIconModule,
   ],
   templateUrl: './master-item-selector.component.html',
   styleUrl: './master-item-selector.component.scss',
@@ -60,6 +62,17 @@ export class MasterItemSelectorComponent {
         purchase_type: this.purchaseType,
         page: 1,
         page_size: 25,
+        /*
+         * Barang favorit didahulukan — HANYA di sini.
+         *
+         * Katalognya seribu baris lebih; yang benar-benar dipakai sehari-hari
+         * jauh lebih sedikit. Tanpa ini, barang yang sama dicari ulang setiap
+         * kali, dan yang tidak menemukannya membuat entri kembar.
+         *
+         * Daftar Master Barang sengaja TIDAK memakainya: di sana yang dicari
+         * justru barang yang jarang dipakai.
+         */
+        favoritDulu: true,
       })
       .subscribe({
         next: (res: any) => {

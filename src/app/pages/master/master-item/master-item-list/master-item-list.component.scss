@@ -248,3 +248,14 @@ $hover: var(--hover, #f6f8ff);
 :host ::ng-deep tr.mat-mdc-row:hover {
   background: var(--hover, #f6f8ff);
 }
+
+/* Tanda favorit di depan uraian barang. */
+.mi-star {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+  line-height: 15px;
+  vertical-align: -2px;
+  margin-right: 0.15rem;
+  color: var(--warn-fg, #d9880a);
+}

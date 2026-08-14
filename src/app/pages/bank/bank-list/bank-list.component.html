@@ -5,7 +5,7 @@
   ></app-header-title>
 
   <div class="bl-toolbar">
-    <mat-form-field appearance="outline" class="bl-search">
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="bl-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
@@ -22,6 +22,14 @@
       <mat-icon>add</mat-icon>
       {{ "bank.createAccount" | translate }}
     </button>
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <app-refresh-button
+      [memuat]="isLoading"
+      (muatUlang)="fetchBankAccounts()"
+    />
   </div>
 
   <div class="bl-card" [class.is-loading]="isLoading">

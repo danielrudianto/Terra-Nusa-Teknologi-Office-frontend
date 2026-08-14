@@ -25,6 +25,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-reimbursement-list',
@@ -43,6 +44,7 @@ import { ReimbursementHelper } from '../../../helpers/reimbursement.helper';
     MatChipsModule,
     MatMenuModule,
     HeaderTitleComponent,
+    RefreshButtonComponent,
   ],
   templateUrl: './reimbursement-list.component.html',
   styleUrls: ['./reimbursement-list.component.scss'],

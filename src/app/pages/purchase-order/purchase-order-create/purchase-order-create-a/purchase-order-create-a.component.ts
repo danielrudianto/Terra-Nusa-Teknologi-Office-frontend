@@ -95,13 +95,29 @@ export class PurchaseOrderCreateAComponent {
    * mengisinya baru sadar setelah totalnya tidak sesuai harapan.
    */
   onUnitChange(i: number): void {
-    const g = this.getFormGroupAt(i);
+    this.selaraskanVolume(this.getFormGroupAt(i));
+  }
+
+  /**
+   * Kunci volume hanya untuk satuan borongan.
+   *
+   * Dipisah agar dapat dipanggil dari PENDENGAR NILAI, bukan hanya dari
+   * peristiwa `change` templatnya.
+   *
+   * Satuan dipilih lewat autocomplete, dan memilih dari daftar TIDAK memicu
+   * `change` — peristiwa itu hanya menyala bila penggunanya mengetik lalu
+   * memindahkan fokus. Akibatnya baris baru terkunci pada 'LS' dan tetap
+   * terkunci walaupun satuannya sudah diganti menjadi rit atau trip.
+   */
+  private selaraskanVolume(g: FormGroup): void {
     const qty = g.get('quantity');
+    if (!qty) return;
     if (String(g.get('unit')?.value || '').toUpperCase() === 'LS') {
-      qty?.setValue(1);
-      qty?.disable();
+      // `emitEvent: false` supaya tidak memicu pendengarnya sendiri.
+      qty.setValue(1, { emitEvent: false });
+      qty.disable({ emitEvent: false });
     } else {
-      qty?.enable();
+      qty.enable({ emitEvent: false });
     }
   }
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
@@ -270,7 +286,7 @@ export class PurchaseOrderCreateAComponent {
   }
 
   private buildShipment(): FormGroup {
-    return this.formBuilder.group({
+    const g = this.formBuilder.group({
       mode: ['darat', Validators.required],
       deliveryDate: ['', Validators.required],
       from: ['', Validators.required],
@@ -300,6 +316,18 @@ export class PurchaseOrderCreateAComponent {
       picName: [''],
       picPhone: [''],
     });
+
+    /*
+     * Volume mengikuti satuannya, apa pun cara satuannya diubah.
+     *
+     * Pendengar nilai menangkap PILIHAN DARI DAFTAR juga — sedangkan
+     * peristiwa `change` pada templat hanya menyala bila penggunanya
+     * mengetik lalu memindahkan fokus. Tanpa pendengar ini, baris baru
+     * terkunci pada 'LS' dan tetap terkunci setelah satuannya diganti.
+     */
+    g.get('unit')?.valueChanges.subscribe(() => this.selaraskanVolume(g));
+    this.selaraskanVolume(g);
+    return g;
   }
 
   setMode(i: number, mode: string) {

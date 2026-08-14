@@ -24,6 +24,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { ProjectCreateComponent } from '../project-create/project-create.component';
 import { ProjectUpdateComponent } from '../project-update/project-update.component';
 import { Project, keadaanProyek } from '../project.model';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-project-list',
@@ -44,6 +45,7 @@ import { Project, keadaanProyek } from '../project.model';
     TranslatePipe,
     HeaderTitleComponent,
     CanDirective,
+    RefreshButtonComponent,
   ],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',

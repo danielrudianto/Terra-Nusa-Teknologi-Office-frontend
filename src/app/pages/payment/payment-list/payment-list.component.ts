@@ -20,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PaymentViewComponent } from '../payment-view/payment-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-payment-list',
@@ -37,6 +38,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
     MatButtonModule,
     HeaderTitleComponent,
     MatMenuModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss',

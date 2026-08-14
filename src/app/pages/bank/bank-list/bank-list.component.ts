@@ -20,6 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateService } from '@ngx-translate/core';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-bank-list',
@@ -37,6 +38,7 @@ import { TranslateService } from '@ngx-translate/core';
     MatButtonModule,
     HeaderTitleComponent,
     MatMenuModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './bank-list.component.html',
   styleUrl: './bank-list.component.scss',

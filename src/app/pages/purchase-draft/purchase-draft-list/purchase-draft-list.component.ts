@@ -24,6 +24,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-draft-create.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-purchase-draft-list',
@@ -44,6 +45,7 @@ import { PurchaseDraftCreateComponent } from '../purchase-draft-create/purchase-
     HeaderTitleComponent,
     TranslatePipe,
     MatMenuModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './purchase-draft-list.component.html',
   styleUrl: './purchase-draft-list.component.scss',

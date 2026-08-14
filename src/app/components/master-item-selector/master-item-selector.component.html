@@ -51,7 +51,19 @@
       >
         <span class="mis-item__badge">{{ (item.sku || "?").charAt(0) }}</span>
         <span class="mis-item__body">
-          <span class="mis-item__desc">{{ item.description }}</span>
+          <span class="mis-item__desc">
+            <!--
+              Tanda favorit, menjelaskan mengapa barang ini di atas.
+
+              Tanpa tanda, urutan yang bukan abjad maupun SKU terbaca sebagai
+              acak — dan yang membacanya menganggap pencariannya tidak
+              bekerja.
+            -->
+            @if (item.isFavorite) {
+              <mat-icon class="mis-item__star">star</mat-icon>
+            }
+            {{ item.description }}
+          </span>
           <span class="mis-item__meta">
             <span class="mis-item__sku">{{ item.sku }}</span>
             <span *ngIf="item.brand"> · {{ item.brand }}</span>

@@ -24,6 +24,7 @@ import { SupplierUpdateComponent } from '../supplier-update/supplier-update.comp
 import { SupplierBlacklistDialogComponent } from '../supplier-blacklist-dialog/supplier-blacklist-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierCreateComponent } from '../supplier-create/supplier-create.component';
+import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-supplier-list',
@@ -44,6 +45,7 @@ import { SupplierCreateComponent } from '../supplier-create/supplier-create.comp
     RouterModule,
     TranslatePipe,
     MatChipsModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './supplier-list.component.html',
   styleUrls: ['./supplier-list.component.scss'],
