@@ -4,8 +4,27 @@
     [description]="'activity.subtitle' | translate"
   />
 
-  <!-- Toolbar: penyaring modul + rentang tanggal -->
-  <div class="al-toolbar">
+  <!--
+    Penyaring dibungkus kartu, seperti pada Laporan Proyek.
+
+    Sebelumnya empat isian berjajar dalam satu baris yang membungkus sendiri
+    saat sempit — susunannya berubah-ubah mengikuti lebar layar, dan pada
+    lebar tertentu satu isian tersisa sendirian di baris kedua.
+
+    Dengan petak, tiap isian punya jatah tetap dan jumlah kolomnya berubah
+    di titik yang ditentukan, bukan di mana pun teksnya kebetulan tidak muat.
+  -->
+  <div class="al-kartu">
+    <div class="al-kartu__kepala">
+      <span class="al-label">{{ "activity.filterTitle" | translate }}</span>
+      @if (hasFilter) {
+        <button type="button" class="al-reset" (click)="resetFilters()">
+          <mat-icon>close</mat-icon>
+          {{ "activity.clearFilter" | translate }}
+        </button>
+      }
+    </div>
+
     <div class="al-filters">
       <mat-form-field appearance="outline" class="al-filter">
         <mat-label>{{ "activity.filterEntity" | translate }}</mat-label>
@@ -25,22 +44,23 @@
         Autocomplete, bukan daftar pilih: jumlah pengguna bertambah terus,
         dan daftar penuh justru tidak terpakai saat paling dibutuhkan.
       -->
+      <!--
+        Chip TIDAK diletakkan di dalam kolom isian.
+
+        `mat-chip-grid` menumpuk nama terpilih ke bawah di dalam kolomnya,
+        sehingga kolom ini tumbuh tiap kali satu nama ditambahkan sementara
+        tiga kolom lain tetap. Makin banyak dipilih, makin timpang.
+
+        Kolomnya kini hanya kotak pencarian bertinggi tetap; nama yang
+        terpilih ditampilkan di barisnya sendiri di bawah petak, sehingga
+        seluruh penyaring selalu sejajar berapa pun yang dipilih.
+      -->
       @if (bolehSaringPengguna) {
         <mat-form-field appearance="outline" class="al-user">
           <mat-label>{{ "activity.filterUser" | translate }}</mat-label>
-          <mat-chip-grid #chipPengguna>
-            @for (u of penggunaTerpilih; track u.id) {
-              <mat-chip-row (removed)="lepasPengguna(u.id)">
-                {{ u.name }}
-                <button matChipRemove [attr.aria-label]="'common.delete' | translate">
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
-            }
-          </mat-chip-grid>
           <input
+            matInput
             [formControl]="penggunaCari"
-            [matChipInputFor]="chipPengguna"
             [matAutocomplete]="autoPengguna"
             [placeholder]="
               penggunaPenuh
@@ -49,6 +69,7 @@
             "
             [disabled]="penggunaPenuh"
           />
+          <mat-icon matSuffix>search</mat-icon>
           <mat-autocomplete
             #autoPengguna="matAutocomplete"
             (optionSelected)="pilihPengguna($event.option.value)"
@@ -62,9 +83,7 @@
               </mat-option>
             }
           </mat-autocomplete>
-          <mat-hint>
-            {{ penggunaTerpilih.length }}/{{ MAKS_PENGGUNA }}
-          </mat-hint>
+          <mat-hint>{{ penggunaTerpilih.length }}/{{ MAKS_PENGGUNA }}</mat-hint>
         </mat-form-field>
       }
 
@@ -92,13 +111,24 @@
         <mat-datepicker #dpTo></mat-datepicker>
       </mat-form-field>
 
-      @if (hasFilter) {
-        <button type="button" class="al-reset" (click)="resetFilters()">
-          <mat-icon>close</mat-icon>
-          {{ "activity.clearFilter" | translate }}
-        </button>
-      }
     </div>
+
+    <!-- Nama terpilih, di luar petak agar tidak mengubah tinggi kolomnya. -->
+    @if (penggunaTerpilih.length) {
+      <div class="al-chips">
+        @for (u of penggunaTerpilih; track u.id) {
+          <button
+            type="button"
+            class="al-chip"
+            (click)="lepasPengguna(u.id)"
+            [attr.aria-label]="'common.delete' | translate"
+          >
+            <span>{{ u.name }}</span>
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    }
   </div>
 
   <div class="al-card" [class.is-loading]="isLoading">

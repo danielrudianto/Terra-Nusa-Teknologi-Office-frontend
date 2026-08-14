@@ -1642,8 +1642,6 @@
     "franco": "Franco (dikirim ke lokasi)",
     "loco": "Loco (diambil sendiri)",
     "deliveryAddress": "Alamat Pengiriman / Pengambilan",
-    "francoNote": "Bila",
-    "francoWord": "Franco",
     "paymentTitle": "Pembayaran",
     "paymentTerm": "Termin Pembayaran",
     "cash": "Cash (bayar tunai)",
@@ -2635,7 +2633,8 @@
     "filterUser": "Pengguna",
     "searchUser": "Ketik nama pengguna",
     "userLimitReached": "Maksimal 5 pengguna",
-    "noUserMatch": "Tidak ada pengguna yang cocok"
+    "noUserMatch": "Tidak ada pengguna yang cocok",
+    "filterTitle": "Penyaring"
   },
   "auditEntity": {
     "purchase_orders": "Purchase Order",
@@ -3471,7 +3470,6 @@
     "belumAdaBarangKlikTambah": "Belum ada barang. Klik \"Tambah barang\" untuk memilih dari katalog.",
     "subtotalDpp": "Subtotal (DPP)",
     "bilaPpnDipilihHargaDi": "Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib melampirkan faktur pajak saat penagihan.",
-    "bila": "Bila",
     "tambahPoin": "Tambah poin",
     "08xxxxxxxxxx": "08xxxxxxxxxx",
     "pilihSupplier": "Pilih supplier",

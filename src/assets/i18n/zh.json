@@ -1642,8 +1642,6 @@
     "franco": "Franco（送货上门）",
     "loco": "Loco（自取）",
     "deliveryAddress": "配送 / 自取地址",
-    "francoNote": "当",
-    "francoWord": "Franco",
     "paymentTitle": "付款",
     "paymentTerm": "付款条款",
     "cash": "现金（现付）",
@@ -2635,7 +2633,8 @@
     "filterUser": "用户",
     "searchUser": "输入用户姓名",
     "userLimitReached": "最多 5 位用户",
-    "noUserMatch": "没有匹配的用户"
+    "noUserMatch": "没有匹配的用户",
+    "filterTitle": "筛选"
   },
   "auditEntity": {
     "purchase_orders": "采购单",
@@ -3471,7 +3470,6 @@
     "belumAdaBarangKlikTambah": "Belum ada barang. Klik \"Tambah barang\" untuk memilih dari katalog.",
     "subtotalDpp": "Subtotal (DPP)",
     "bilaPpnDipilihHargaDi": "Bila PPN dipilih, harga di atas sudah termasuk PPN, dan wajib melampirkan faktur pajak saat penagihan.",
-    "bila": "Bila",
     "tambahPoin": "Tambah poin",
     "08xxxxxxxxxx": "08xxxxxxxxxx",
     "pilihSupplier": "Pilih supplier",

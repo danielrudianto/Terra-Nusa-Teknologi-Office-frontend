@@ -375,13 +375,29 @@
           </mat-form-field>
         </div>
       }
-      <div class="pof-note">
-        <mat-icon>info</mat-icon>
-        <span
-          >{{ "po511.bila" | translate }}<b>{{ "common.franco" | translate }}</b> dipilih, alamat di atas
-          adalah alamat pengiriman.</span
-        >
-      </div>
+      <!--
+        Keterangan Franco tidak berlaku pada jasa pengujian.
+
+        Di sana yang diisi alamat laboratorium, bukan alamat pengiriman
+        barang — dan moda pengiriman memang tidak ditanyakan sama sekali.
+        Menampilkannya membuat penggunanya mencari pilihan Franco/Loco yang
+        tidak ada di layarnya.
+      -->
+      @if (!isTestService) {
+        <div class="pof-note">
+          <mat-icon>info</mat-icon>
+          <!--
+            Satu kunci utuh, bukan rangkaian potongan.
+
+            Sebelumnya kalimatnya dirakit dari "po511.bila" + "common.franco"
+            ditambah teks Indonesia mentah. Selain tidak pernah ikut bahasa
+            aplikasi, potongannya menempel tanpa spasi menjadi "BilaFranco" —
+            karena susunan kata tiap bahasa berbeda, kalimat yang dirakit
+            begini tidak mungkin benar di semuanya.
+          -->
+          <span [innerHTML]="'poForm.francoHint' | translate"></span>
+        </div>
+      }
     </div>
 
     <!-- ===== 4. Pembayaran ===== -->
@@ -573,6 +589,21 @@
 
       <div class="pof-actions">
         <span class="pof-spacer"></span>
+        <!--
+          Tombol pratinjau SEBELUMNYA TIDAK ADA di varian ini.
+
+          Metodenya sudah ada dan gayanya sudah tertulis; hanya tombolnya
+          yang tidak pernah disisipkan, sehingga PO-F menjadi satu-satunya
+          jenis yang dokumennya tidak dapat dilihat sebelum diterbitkan.
+        -->
+        <button
+          type="button"
+          class="pof-previewbtn"
+          [disabled]="isSubmitting"
+          (click)="pratinjau()"
+        >
+          {{ "poForm.preview" | translate }}
+        </button>
         <button
           type="submit"
           class="pof-submit"

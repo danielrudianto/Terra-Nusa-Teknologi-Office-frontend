@@ -10,33 +10,82 @@
 }
 
 /* ---------- toolbar ---------- */
-.al-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+/*
+ * Kartu penyaring.
+ *
+ * Nilainya disalin dari Laporan Proyek — radius, bayangan, dan padding yang
+ * sama — supaya kedua halaman tidak terlihat berasal dari dua aplikasi.
+ */
+.al-kartu {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.15rem 1.35rem 0.5rem;
   margin: 0.5rem 0 1rem;
 }
 
-.al-filters {
+.al-kartu__kepala {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
 }
 
-.al-filter {
-  min-width: 220px;
+.al-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--faint);
 }
 
-.al-date {
-  min-width: 170px;
+/*
+ * Petak, bukan baris yang membungkus sendiri.
+ *
+ * Dengan `flex-wrap`, susunannya ditentukan lebar teks tiap isian: pada
+ * lebar tertentu tiga isian di baris pertama dan satu tersisa sendirian di
+ * bawahnya. Petak membuat jumlah kolomnya berubah di titik yang ditentukan,
+ * dan tiap isian mendapat jatah yang sama.
+ */
+.al-filters {
+  display: grid;
+  /*
+   * Jumlah kolom mengikuti ruang yang ada, bukan angka tetap.
+   *
+   * Penyaringnya tidak selalu sama banyak: penyaring pengguna hanya muncul
+   * untuk level 5, sehingga jumlahnya tiga atau empat. Kolom tetap membuat
+   * salah satu keadaan itu menyisakan kolom kosong yang terlihat seperti
+   * ada isian yang hilang.
+   *
+   * 230px adalah lebar terkecil yang masih memuat label dan nilainya tanpa
+   * terpotong; di bawah itu kolomnya berkurang sendiri.
+   */
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: start;
 }
 
+.al-filters > * {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Lebar diatur petaknya; isian hanya perlu mengisi kolomnya. */
+.al-date,
+.al-filter,
+.al-user {
+  width: 100%;
+}
+
+/* Berada di kepala kartu, bukan sejajar isian — jadi tingginya mengikuti
+   barisnya, bukan tinggi kolom isian. */
 .al-reset {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 40px;
+  height: 32px;
   padding: 0 0.85rem;
   border-radius: 10px;
   border: 0.5px solid var(--border, #e3e6eb);
@@ -190,6 +239,47 @@
 /* Penyaring pengguna: lebih lebar daripada penyaring lain karena memuat
    beberapa nama sekaligus. */
 .al-user {
-  min-width: 16rem;
-  max-width: 24rem;
+  width: 100%;
+}
+
+/*
+ * Nama terpilih, di barisnya sendiri di bawah petak.
+ *
+ * Diletakkan di luar petak agar tinggi kolom penyaring tidak berubah saat
+ * nama ditambahkan — itulah yang membuat susunannya miring sebelumnya.
+ */
+.al-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.al-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.7rem;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.al-chip:hover {
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+}
+.al-chip .mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+  line-height: 15px;
+  opacity: 0.75;
 }

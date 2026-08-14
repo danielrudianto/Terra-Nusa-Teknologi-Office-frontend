@@ -23,7 +23,6 @@ import { MatInputModule } from '@angular/material/input';
 import { tanggalLokal } from '../../utils/tanggal';
 import { PermissionService } from '../../services/permission.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
 
 interface ActivityEntry {
   id: number;
@@ -48,7 +47,6 @@ interface ActivityEntry {
   selector: 'app-activity',
   standalone: true,
   imports: [
-    MatChipsModule,
     MatAutocompleteModule,
     MatInputModule,
     MatNativeDateModule,

@@ -146,7 +146,40 @@ export class PurchaseOrderCreateFComponent {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
-  ) {}
+  ) {
+    /*
+     * Kewajiban `deliveryMethod` mengikuti jenis materialnya.
+     *
+     * Pada jasa pengujian, bagian pengiriman diganti bagian benda uji dan
+     * kolom moda pengiriman TIDAK ditampilkan — sementara validatornya tetap
+     * berlaku. Akibatnya formulir selamanya tidak sah: tombol Buat mati,
+     * tanpa satu pun kolom merah yang bisa dilihat penggunanya.
+     *
+     * Kolomnya tidak sekadar dilepas dari `required`, karena pada pengadaan
+     * beton dan besi moda pengiriman memang wajib. Yang berubah adalah
+     * kewajibannya, bukan kolomnya.
+     */
+    this.formGroup
+      .get('materialType')
+      ?.valueChanges.subscribe(() => this.selaraskanValidasi());
+    this.selaraskanValidasi();
+  }
+
+  /** Sesuaikan validator yang bergantung pada jenis material. */
+  private selaraskanValidasi(): void {
+    const moda = this.formGroup.get('deliveryMethod');
+    if (!moda) return;
+
+    if (this.isTestService) {
+      moda.clearValidators();
+      // Dikosongkan agar tidak terbawa ke dokumen sebagai moda yang tidak
+      // pernah dipilih penggunanya.
+      moda.setValue('', { emitEvent: false });
+    } else {
+      moda.setValidators(Validators.required);
+    }
+    moda.updateValueAndValidity({ emitEvent: false });
+  }
 
   isSubmitting: boolean = false;
 

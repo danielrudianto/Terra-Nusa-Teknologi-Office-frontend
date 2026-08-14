@@ -975,9 +975,20 @@ export class PurchaseOrderListComponent {
               });
             } else if (
               po.purchaseType === 'F' &&
-              custom.materialType === 'ujitekan'
+              (custom.materialType === 'ujitekan' ||
+                custom.materialType === 'ujibesi')
             ) {
-              // jasa uji: dokumennya SPK
+              /*
+               * Jasa pengujian dicetak sebagai Surat Perintah Kerja.
+               *
+               * KEDUA jenis pengujian harus disebut. Sebelumnya hanya
+               * `ujitekan` yang diperiksa, sehingga uji tarik dan tekuk besi
+               * tercetak ulang sebagai PURCHASE ORDER — berbeda dari dokumen
+               * yang ditandatangani vendor saat pertama kali terbit.
+               *
+               * Pengadaan beton, besi, dan material lain tetap PURCHASE
+               * ORDER; yang menjadi SPK hanya jasa pengujian.
+               */
               printPurchaseOrderB({
                 ...printData,
                 includePpn: Number(data.ppn) > 0,
