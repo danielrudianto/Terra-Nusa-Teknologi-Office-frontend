@@ -81,13 +81,14 @@ export class ExpenseCreateComponent {
   bankAccounts: any[] = [];
 
   metaFormGroup: FormGroup = new FormGroup({
-    invoiceName: new FormControl(''),
-    receiptName: new FormControl(''),
+    invoiceName: new FormControl('', Validators.maxLength(100)),
+    receiptName: new FormControl('', Validators.maxLength(100)),
     // Opsional: pemasok non-PKP tidak menerbitkan faktur pajak.
-    taxInvoiceName: new FormControl(''),
+    taxInvoiceName: new FormControl('', Validators.maxLength(100)),
     description: new FormControl('', [
       Validators.required,
       Validators.minLength(10),
+      Validators.maxLength(500),
     ]),
     purchaseType: new FormControl('', Validators.required),
     opponentID: new FormControl(''),

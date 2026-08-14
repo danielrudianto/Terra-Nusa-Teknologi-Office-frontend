@@ -103,7 +103,7 @@ export class PurchaseDraftCreateComponent {
   }
 
   metaFormGroup: FormGroup = new FormGroup({
-    description: new FormControl('', Validators.required),
+    description: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     taxInvoiceName: new FormControl('', Validators.maxLength(17)),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl(''),
@@ -114,6 +114,7 @@ export class PurchaseDraftCreateComponent {
       Validators.pattern(
         /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2)$/,
       ),
+      Validators.maxLength(100),
     ]),
     projectName: new FormControl('', [
       Validators.required,

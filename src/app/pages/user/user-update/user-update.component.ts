@@ -54,6 +54,8 @@ export class UserUpdateComponent {
   formGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
+    // Jabatan; dicetak pada blok tanda tangan dokumen yang ia setujui.
+    position: new FormControl('', Validators.maxLength(100)),
     password: new FormControl(''), // optional: blank = keep
     authenticationLevel: new FormControl(1, Validators.required),
     isActive: new FormControl(true),
@@ -69,6 +71,7 @@ export class UserUpdateComponent {
         this.formGroup.patchValue({
           name: data.name,
           email: data.email,
+          position: data.position ?? '',
           authenticationLevel: data.authenticationLevel || 1,
           isActive: data.isActive,
         });
@@ -90,6 +93,7 @@ export class UserUpdateComponent {
     const payload: any = {
       name: this.formGroup.value.name,
       email: this.formGroup.value.email,
+      position: this.formGroup.value.position || null,
       authenticationLevel: this.formGroup.value.authenticationLevel,
       isActive: this.formGroup.value.isActive,
     };

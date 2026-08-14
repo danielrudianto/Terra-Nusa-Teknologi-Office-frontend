@@ -17,6 +17,7 @@ import {
   rupiah,
   vendorDisplayName,
   workIntroSentence,
+  signerLines,
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderBItem {
@@ -36,6 +37,10 @@ export interface IPurchaseOrderBItem {
 }
 
 export interface IPurchaseOrderB {
+  /** Jabatan penyetuju; kosong bila belum diisi. */
+  approvedByPosition?: string | null;
+  /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
+  approvedByName?: string | null;
   /**
    * Kode jenis PO untuk memilih template klausul. Default 'B'.
    * PO 5.1.2 mode jasa memakai tata letak SPK yang sama persis, hanya
@@ -243,8 +248,7 @@ function signatureColumns(data: IPurchaseOrderB) {
           { text: 'PIHAK PERTAMA,' },
           { text: 'PT. Alpha Konstruksi Nusantara' },
           { text: '\n\n\n' },
-          { text: 'Daniel Tri', bold: true },
-          { text: 'Direktur' },
+          ...signerLines(data.approvedByName, data.approvedByPosition),
         ],
       },
       {

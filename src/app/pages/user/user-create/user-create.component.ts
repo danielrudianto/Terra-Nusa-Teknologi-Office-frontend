@@ -47,6 +47,14 @@ export class UserCreateComponent {
   formGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
+    /*
+     * Jabatan; dicetak di bawah nama pada blok tanda tangan dokumen.
+     *
+     * Opsional karena tidak semua pengguna menandatangani dokumen. Batasnya
+     * mengikuti kolomnya di basis data (100), agar isian panjang ditolak di
+     * layar, bukan setelah dikirim.
+     */
+    position: new FormControl('', Validators.maxLength(100)),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),

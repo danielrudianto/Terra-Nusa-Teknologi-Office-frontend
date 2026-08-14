@@ -35,6 +35,10 @@ export interface IPurchaseOrderGItem {
 }
 
 export interface IPurchaseOrderG {
+  /** Jabatan penyetuju; kosong bila belum diisi. */
+  approvedByPosition?: string | null;
+  /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
+  approvedByName?: string | null;
   /**
    * Kode jenis PO untuk memilih template klausul. Default 'G'.
    * PO 5.1.6 (ATK & dokumen) memakai tata letak yang sama persis, hanya
@@ -244,7 +248,7 @@ export function printPurchaseOrderG(
         margin: [0, 0, 0, 22] as Margins,
       },
 
-      signatureBlock(),
+      signatureBlock(data.approvedByName, data.approvedByPosition),
 
       // Judul lampiran: dua baris dengan gaya yang sama (Calibri 16 bold).
       {

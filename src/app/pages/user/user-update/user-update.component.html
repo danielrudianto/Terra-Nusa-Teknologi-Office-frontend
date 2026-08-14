@@ -27,6 +27,16 @@
         />
       </mat-form-field>
 
+
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.position" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="position"
+          [placeholder]="'user.positionPlaceholder' | translate"
+        />
+      </mat-form-field>
+
       <mat-form-field appearance="outline" class="uc-full">
         <mat-label>{{ "user.password" | translate }}</mat-label>
         <input

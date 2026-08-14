@@ -27,6 +27,22 @@
         />
       </mat-form-field>
 
+      <!--
+        Jabatan, dicetak di bawah nama pada blok tanda tangan dokumen.
+
+        Bukan diturunkan dari level akses: level menentukan apa yang boleh
+        dilakukan, bukan apa jabatannya.
+      -->
+      <mat-form-field appearance="outline" class="uc-full">
+        <mat-label>{{ "user.position" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="position"
+          [placeholder]="'user.positionPlaceholder' | translate"
+        />
+        <mat-hint>{{ "user.positionHint" | translate }}</mat-hint>
+      </mat-form-field>
+
       <mat-form-field appearance="outline" class="uc-full">
         <mat-label>{{ "user.password" | translate }}</mat-label>
         <input

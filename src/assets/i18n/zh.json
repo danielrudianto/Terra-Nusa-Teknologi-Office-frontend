@@ -1931,7 +1931,10 @@
     "createFailed": "创建用户失败",
     "updateFailed": "更新用户失败",
     "deleteFailed": "删除用户失败",
-    "level": "级别"
+    "level": "级别",
+    "position": "职位",
+    "positionPlaceholder": "例如：董事、总经理",
+    "positionHint": "打印在其审批单据上姓名的下方"
   },
   "bankMutation": {
     "period": "期间",

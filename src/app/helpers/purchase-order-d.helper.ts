@@ -19,6 +19,7 @@ import {
   rupiah,
   vendorDisplayName,
   workIntroSentence,
+  signerLines,
 } from './purchase-order-shared.helper';
 
 /** Satu komponen upah (gaji pokok, uang makan, insentif, dst). */
@@ -32,6 +33,10 @@ export interface IPurchaseOrderDItem {
 }
 
 export interface IPurchaseOrderD {
+  /** Jabatan penyetuju; kosong bila belum diisi. */
+  approvedByPosition?: string | null;
+  /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
+  approvedByName?: string | null;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -158,8 +163,7 @@ function signatureColumns(data: IPurchaseOrderD) {
           { text: 'PIHAK PERTAMA,' },
           { text: 'PT. Alpha Konstruksi Nusantara' },
           { text: '\n\n\n' },
-          { text: 'Daniel Tri', bold: true },
-          { text: 'Direktur' },
+          ...signerLines(data.approvedByName, data.approvedByPosition),
         ],
       },
       {

@@ -15,6 +15,7 @@ import {
   formatDate,
   rupiah,
   vendorDisplayName,
+  signerLines,
 } from './purchase-order-shared.helper';
 
 /**
@@ -32,6 +33,10 @@ export interface IPurchaseOrderHScope {
 }
 
 export interface IPurchaseOrderH {
+  /** Jabatan penyetuju; kosong bila belum diisi. */
+  approvedByPosition?: string | null;
+  /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
+  approvedByName?: string | null;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -263,8 +268,7 @@ function signatureColumns(data: IPurchaseOrderH) {
           { text: 'PIHAK PERTAMA,' },
           { text: 'PT. Alpha Konstruksi Nusantara' },
           { text: '\n\n\n' },
-          { text: 'Daniel Tri', bold: true },
-          { text: 'Direktur' },
+          ...signerLines(data.approvedByName, data.approvedByPosition),
         ],
       },
       {

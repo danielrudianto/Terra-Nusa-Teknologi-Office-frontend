@@ -143,8 +143,8 @@ export class PurchaseCreateComponent {
 
   metaFormGroup: FormGroup = new FormGroup(
     {
-      invoiceName: new FormControl('', Validators.required),
-      receiptName: new FormControl(''),
+      invoiceName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      receiptName: new FormControl('', Validators.maxLength(100)),
       taxInvoiceName: new FormControl('', Validators.maxLength(17)),
       supplierID: new FormControl('', Validators.required),
       supplierName: new FormControl(''),
@@ -156,6 +156,7 @@ export class PurchaseCreateComponent {
         Validators.pattern(
           /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/,
         ),
+        Validators.maxLength(100),
       ]),
       projectName: new FormControl('', [
         Validators.required,
@@ -190,7 +191,7 @@ export class PurchaseCreateComponent {
     pphPercentage: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphValue: new FormControl(0),
     otherValue: new FormControl(0, [Validators.required, Validators.min(0)]),
-    otherValueNote: new FormControl(''),
+    otherValueNote: new FormControl('', Validators.maxLength(255)),
     total: new FormControl(0, [Validators.required, Validators.min(0)]),
   });
 

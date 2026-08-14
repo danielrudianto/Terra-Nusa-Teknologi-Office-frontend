@@ -72,7 +72,7 @@ export class IncomeCreateComponent {
     opponentName: new FormControl('', Validators.required),
     opponentDescription: new FormControl('', Validators.required),
     amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
-    description: new FormControl('', Validators.required),
+    description: new FormControl('', [Validators.required, Validators.maxLength(100)]),
   });
 
   ngOnInit(): void {

@@ -1931,7 +1931,10 @@
     "createFailed": "Failed to create user",
     "updateFailed": "Failed to update user",
     "deleteFailed": "Failed to delete user",
-    "level": "Level"
+    "level": "Level",
+    "position": "Position",
+    "positionPlaceholder": "e.g. Director, General Manager",
+    "positionHint": "Printed below the name on documents they approve"
   },
   "bankMutation": {
     "period": "Period",

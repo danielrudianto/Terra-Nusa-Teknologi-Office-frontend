@@ -361,6 +361,10 @@ export class PurchaseOrderListComponent {
             const printData = {
               poType: po.purchaseType,
               purchaseOrderName: data.name,
+              // Nama penyetuju; kosong selama dokumennya belum disetujui,
+              // sehingga blok tanda tangan tidak menyebut siapa pun.
+              approvedByName: data.approvedByName ?? null,
+              approvedByPosition: data.approvedByPosition ?? null,
               date: data.date,
               projectName: data.projectName,
               supplierName: data.supplierName ?? '',

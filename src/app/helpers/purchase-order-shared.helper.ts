@@ -208,16 +208,53 @@ export function documentFooter() {
   };
 }
 
+/**
+ * Baris nama pada blok tanda tangan.
+ *
+ * DIKOSONGKAN selama dokumennya belum disetujui, lalu diisi nama penyetuju
+ * setelah ada persetujuan.
+ *
+ * Sebelumnya satu nama ditulis tetap di enam helper. Yang menandatangani
+ * tidak selalu orang itu, sehingga dokumen tercetak atas nama seseorang yang
+ * tidak menyetujuinya — dan pada dokumen yang mengikat, itu bukan sekadar
+ * salah tulis.
+ *
+ * Jabatan diambil dari kolom `position` pada pengguna, BUKAN diturunkan dari
+ * level akses: level menentukan apa yang boleh dilakukan, bukan apa
+ * jabatannya. Pengguna yang belum mengisi jabatannya dicetak tanpa baris itu.
+ */
+export function signerLines(
+  approvedByName?: string | null,
+  approvedByPosition?: string | null,
+) {
+  const nama = (approvedByName || '').trim();
+  const jabatan = (approvedByPosition || '').trim();
+
+  if (!nama) {
+    // Dua baris kosong tetap disisakan agar tinggi bloknya tidak berubah;
+    // tanpa ini tata letak halaman bergeser saat dokumen disetujui.
+    return [{ text: ' ' }, { text: ' ' }];
+  }
+
+  return [
+    { text: nama, bold: true },
+    // Baris jabatan tetap ada meski kosong, dengan alasan yang sama.
+    { text: jabatan || ' ' },
+  ];
+}
+
 /** Blok tanda tangan; unbreakable agar tidak terpotong antar halaman. */
-export function signatureBlock() {
+export function signatureBlock(
+  approvedByName?: string | null,
+  approvedByPosition?: string | null,
+) {
   return {
     unbreakable: true,
     stack: [
       { text: 'Hormat kami,' },
       { text: 'PT. Alpha Konstruksi Nusantara' },
       { text: '\n\n\n' },
-      { text: 'Daniel Tri', bold: true },
-      { text: 'Direktur' },
+      ...signerLines(approvedByName, approvedByPosition),
     ],
   };
 }

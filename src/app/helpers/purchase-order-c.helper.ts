@@ -31,6 +31,10 @@ export interface IPurchaseOrderCItem {
 }
 
 export interface IPurchaseOrderC {
+  /** Jabatan penyetuju; kosong bila belum diisi. */
+  approvedByPosition?: string | null;
+  /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
+  approvedByName?: string | null;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -228,7 +232,7 @@ export function printPurchaseOrderC(
         margin: [0, 0, 0, 22] as Margins,
       },
 
-      signatureBlock(),
+      signatureBlock(data.approvedByName, data.approvedByPosition),
 
       {
         text: `TATA CARA PENAGIHAN DAN PEMBAYARAN\nPEMBELIAN BARANG ${
