@@ -89,6 +89,10 @@ $hover: var(--hover, #f6f8ff);
   gap: 6px;
   max-height: 52vh;
   overflow-y: auto;
+  /* Mendatar ditutup: teks panjang ditangani elipsis, bukan digeser.
+     Tanpa ini, `overflow-y` sendiri sudah memaksa sumbu mendatar menjadi
+     `auto`, dan kelebihan sepersekian piksel memunculkan bilah gulir. */
+  overflow-x: hidden;
   margin-top: 4px;
 }
 .mis-item {

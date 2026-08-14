@@ -114,6 +114,19 @@
   flex: 1;
   gap: 2px;
   overflow-y: auto;
+  /*
+   * Mendatar DITUTUP secara tegas.
+   *
+   * Menyetel `overflow-y` saja tidak cukup: begitu satu sumbu bukan
+   * `visible`, CSS memaksa sumbu satunya menjadi `auto` juga. Akibatnya
+   * kelebihan sepersekian piksel — dari batas bawah baris, dari lebar
+   * bilah gulir tegak — sudah cukup memunculkan bilah gulir mendatar yang
+   * tidak pernah hilang, walaupun isinya hanya satu baris.
+   *
+   * Teks yang terlalu panjang ditangani elipsis pada `.ag-title` dan
+   * `.ag-note`, bukan dengan menggeser kartunya.
+   */
+  overflow-x: hidden;
   min-height: 0;
 }
 .ag-row {
@@ -123,6 +136,17 @@
   gap: 10px;
   padding: 0.5rem 0.15rem;
   border-bottom: 1px solid var(--line, #eef0f3);
+  /*
+   * Lebar barisnya tidak boleh melampaui kartunya.
+   *
+   * `min-width` bawaan sebuah petak lentur adalah `auto`, yang berarti
+   * "sekurang-kurangnya selebar isinya". Judul panjang karena itu
+   * melebarkan barisnya alih-alih dipotong elipsis — elipsis pada
+   * `.ag-title` sudah ada, tetapi tidak pernah berlaku karena barisnya
+   * memang tidak pernah dipaksa menyempit.
+   */
+  min-width: 0;
+  max-width: 100%;
 
   &:last-child {
     border-bottom: none;

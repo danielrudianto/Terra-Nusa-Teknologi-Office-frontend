@@ -151,6 +151,22 @@
         {{ "poForm.confirmCreate" | translate }}
       </button>
     } @else {
+      <!--
+        Adendum hanya untuk dokumen yang SUDAH DISETUJUI.
+
+        Yang belum disetujui masih boleh disunting biasa; membuat adendum
+        atasnya berarti dua dokumen padahal yang pertama belum pernah
+        dipegang vendor.
+
+        Dokumen yang sendirinya adendum juga tidak dapat diadendum lagi —
+        adendum berikutnya menunjuk induk yang sama, bukan berlapis.
+      -->
+      @if (bolehAdendum) {
+        <button type="button" class="pov-adendum" (click)="buatAdendum()">
+          <mat-icon>note_add</mat-icon>
+          {{ "poView.buatAdendum" | translate }}
+        </button>
+      }
       <button type="button" class="pov-close" mat-dialog-close>
         {{ "common.close" | translate }}
       </button>

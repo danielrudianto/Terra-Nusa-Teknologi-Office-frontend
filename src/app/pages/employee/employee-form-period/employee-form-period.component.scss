@@ -1,0 +1,236 @@
+.efp {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.efp * {
+  box-sizing: border-box;
+}
+
+.efp-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--line);
+}
+.efp-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.efp-head__text {
+  min-width: 0;
+}
+.efp-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.efp-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.efp-content {
+  padding: 1.25rem 1.5rem !important;
+  background: var(--surface, #fff);
+  width: 100%;
+  max-height: 66vh;
+}
+
+.efp-state {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+/* Periode yang sedang berlaku; yang paling perlu terlihat lebih dulu. */
+.efp-aktif {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--brand);
+  border-radius: 12px;
+  background: var(--brand-soft);
+  margin-bottom: 0.5rem;
+}
+.efp-aktif__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.efp-aktif__nama {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.efp-aktif__judul {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.efp-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.1rem 0 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+
+/* Berapa orang yang belum mengisi; hijau bila sudah tidak ada. */
+.efp-badge {
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--bad-soft, #fde3e4);
+  color: var(--bad-fg, #e5484d);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.efp-badge.penuh {
+  background: var(--good-soft, #d8f5e3);
+  color: var(--good-fg, #1a7f47);
+}
+
+.efp-beres {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--good-fg, #1a7f47);
+}
+.efp-beres .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.efp-list {
+  max-height: 190px;
+  overflow-y: auto;
+  /* Mendatar ditutup: nama panjang dipotong, bukan menggeser dialognya. */
+  overflow-x: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.efp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.efp-row:last-child {
+  border-bottom: none;
+}
+.efp-row__nama {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.efp-row__jabatan {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  color: var(--faint, #8a8f98);
+}
+
+.efp-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.75rem 1rem;
+  color: var(--faint, #8a8f98);
+  text-align: center;
+}
+.efp-kosong .mat-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
+}
+.efp-kosong p {
+  margin: 0;
+  font-size: 0.85rem;
+  max-width: 34ch;
+}
+
+.efp-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--brand);
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.efp-banner .mat-icon {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+.efp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.efp-form .mat-mdc-form-field {
+  width: 100%;
+}
+
+.efp-foot {
+  display: flex !important;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line);
+}
+.efp-spacer {
+  flex: 1 1 auto;
+}
+
+.efp-close,
+.efp-save {
+  height: 36px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.efp-close {
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+}
+.efp-save {
+  border: 0;
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+}
+.efp-save:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

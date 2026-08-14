@@ -74,6 +74,10 @@
 .rtd__body {
   padding: 0.5rem;
   overflow-y: auto;
+  /* Mendatar ditutup: teks panjang ditangani elipsis, bukan digeser.
+     Tanpa ini, `overflow-y` sendiri sudah memaksa sumbu mendatar menjadi
+     `auto`, dan kelebihan sepersekian piksel memunculkan bilah gulir. */
+  overflow-x: hidden;
 }
 .rtd__empty {
   padding: 2rem 1rem;

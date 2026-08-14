@@ -146,7 +146,7 @@
             <button
               mat-icon-button
               class="ip-delete"
-              (click)="delete(payment.id)"
+              (click)="$event.stopPropagation(); delete(payment.id)"
               [disabled]="isDisabled(payment.id)"
               [attr.aria-label]="'payment.deleteInterpayment' | translate"
             >

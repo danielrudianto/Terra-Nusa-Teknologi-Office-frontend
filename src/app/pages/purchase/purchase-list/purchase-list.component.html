@@ -231,7 +231,14 @@
               hanya teks, sehingga menelusuri asal sebuah pembelian berarti
               menyalin nomornya lalu mencarinya di halaman lain.
             -->
-            @if (purchase.purchaseOrderName) {
+            <!--
+              Nomor tetap TERBACA bagi semua; yang dijaga hanya tautannya.
+              Menyembunyikan nomornya membuat pembelian kehilangan asal-usul
+              di mata orang yang memang berhak melihat pembeliannya.
+            -->
+            @if (purchase.purchaseOrderName && !bolehLihatPO) {
+              <span class="pl-primary">{{ purchase.purchaseOrderName }}</span>
+            } @else if (purchase.purchaseOrderName) {
               <button
                 type="button"
                 class="pl-polink"
@@ -241,7 +248,10 @@
                     ? 'Buka dokumen purchase order'
                     : 'Dokumen belum tersedia'
                 "
-                (click)="viewPurchaseOrder(purchase.purchase_order_id)"
+                (click)="
+                  $event.stopPropagation();
+                  viewPurchaseOrder(purchase.purchase_order_id)
+                "
               >
                 {{ purchase.purchaseOrderName }}
                 @if (!purchase.purchase_order_id) {

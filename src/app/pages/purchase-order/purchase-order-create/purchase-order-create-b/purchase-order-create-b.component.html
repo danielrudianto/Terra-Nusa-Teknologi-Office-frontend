@@ -108,6 +108,21 @@
                 </div>
                 <div class="pob-renttotal">
                   Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  <!--
+                    Rincian muncul HANYA bila ada mobilisasi.
+
+                    Tanpa rincian, jumlah baris tidak sama dengan volume kali
+                    harga satuan — dan yang memeriksanya mengira ada salah
+                    hitung.
+                  -->
+                  @if (lineMobilisasi(i)) {
+                    <span class="pob-rentrinci">
+                      {{ "poB.sewa" | translate }}
+                      {{ lineSewa(i) | number: "1.0-0" }}
+                      + {{ "poB.mobDemob" | translate }}
+                      {{ lineMobilisasi(i) | number: "1.0-0" }}
+                    </span>
+                  }
                 </div>
                 <button
                   mat-icon-button
@@ -193,6 +208,37 @@
                       'poField.lokasiPenempatanEquipment' | translate
                     "
                   />
+                </mat-form-field>
+
+                <!--
+                  Mobilisasi dan demobilisasi melekat pada ALATNYA.
+
+                  Bukan baris tersendiri: baris sewa mewajibkan tanggal mulai,
+                  tanggal selesai, dan lokasi — sedangkan mobilisasi bukan
+                  periode sewa dan tidak punya ketiganya.
+
+                  Boleh dibiarkan nol. Bila biayanya sekali untuk seluruh
+                  pengiriman, cukup diisi pada satu baris.
+                -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poB.mobilisasi" | translate }}</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    inputmode="numeric"
+                    formControlName="mobilisasi"
+                  />
+                  <span matTextPrefix>Rp&nbsp;</span>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poB.demobilisasi" | translate }}</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    inputmode="numeric"
+                    formControlName="demobilisasi"
+                  />
+                  <span matTextPrefix>Rp&nbsp;</span>
                 </mat-form-field>
               </div>
             </div>

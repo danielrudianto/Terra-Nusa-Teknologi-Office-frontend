@@ -127,6 +127,36 @@ export class PurchaseOrderViewComponent {
   }
 
   /** Mode pratinjau: dokumen belum terbit. */
+  /**
+   * Dokumen ini dapat dibuatkan adendum.
+   *
+   * Syaratnya dua: sudah disetujui, dan bukan adendum itu sendiri.
+   *
+   * Yang belum disetujui masih boleh disunting biasa — membuat adendum
+   * atasnya berarti dua dokumen padahal yang pertama belum pernah dipegang
+   * vendor.
+   *
+   * Adendum tidak berlapis: adendum kedua menunjuk induk yang SAMA, bukan
+   * adendum pertama. Bila berlapis, nomornya menjadi `ADD1-ADD2` dan
+   * urutannya tidak lagi dapat dibaca.
+   */
+  get bolehAdendum(): boolean {
+    if (this.isPratinjau || !this.data) return false;
+    if (this.data.parentPurchaseOrderID) return false;
+    return !!this.data.isApproved;
+  }
+
+  /**
+   * Buka formulir adendum, terisi dari dokumen ini.
+   *
+   * Dialog ini ditutup lebih dulu dan hasilnya diteruskan ke pemanggilnya:
+   * membuka formulir di dalam dialog membuat dialog di dalam dialog, yang
+   * sudah terbukti membingungkan pada pemilih klien.
+   */
+  buatAdendum(): void {
+    this.dialogRef.close({ adendumDari: this.data.id });
+  }
+
   get isPratinjau(): boolean {
     return !!this.input?.data;
   }

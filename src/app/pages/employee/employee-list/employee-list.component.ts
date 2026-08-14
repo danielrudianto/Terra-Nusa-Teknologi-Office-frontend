@@ -20,6 +20,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { EmployeeStatusComponent } from '../employee-status/employee-status.component';
 import { EmployeeProfileComponent } from '../employee-profile/employee-profile.component';
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
+import { EmployeeFormPeriodComponent } from '../employee-form-period/employee-form-period.component';
 
 @Component({
   selector: 'app-employee-list',
@@ -108,6 +109,20 @@ export class EmployeeListComponent {
       data: { id: row.id, name: row.name, nik: row.nik },
       maxWidth: '96vw',
       width: 'min(900px, 96vw)',
+      autoFocus: false,
+    });
+  }
+
+  /**
+   * Kelola periode pengisian formulir keadaan.
+   *
+   * Ditaruh di daftar karyawan, bukan halaman tersendiri: yang membukanya
+   * HRD, dan ia sudah berada di sini saat menagih pengisian.
+   */
+  openPeriode() {
+    this.dialog.open(EmployeeFormPeriodComponent, {
+      maxWidth: '96vw',
+      width: 'min(560px, 96vw)',
       autoFocus: false,
     });
   }

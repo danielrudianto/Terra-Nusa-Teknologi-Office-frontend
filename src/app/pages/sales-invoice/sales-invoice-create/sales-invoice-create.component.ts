@@ -96,7 +96,10 @@ export class SalesInvoiceCreateComponent {
     pphValue: new FormControl(0, Validators.required),
     bpjs: new FormControl(0, [Validators.required, Validators.min(0)]),
     total: new FormControl(0, Validators.required),
-    separate: new FormControl(false),
+    // Nama isian mengikuti kolomnya: `separatedInvoice`, bukan `separate`.
+    // Nama yang berbeda antara layar dan server membuat nilainya mudah
+    // tertinggal saat muatan disusun — dan itulah yang terjadi.
+    separatedInvoice: new FormControl(false),
   });
 
   paymentFormGroup: FormGroup = new FormGroup({
@@ -360,14 +363,24 @@ export class SalesInvoiceCreateComponent {
             pphPercentage: this.valueFormGroup.value.pphPercentage,
             bpjs: this.valueFormGroup.value.bpjs,
             bankAccountID: this.paymentFormGroup.value.bankAccountID,
+            // Pilihan cetak terpisah ikut dikirim.
+            //
+            // Isiannya sudah lama ada di layar dan kolomnya sudah ada di
+            // basis data, tetapi nilainya tidak pernah disertakan di sini —
+            // penggunanya memilih, lalu pilihannya hilang tanpa galat.
+            separatedInvoice: !!this.valueFormGroup.value.separatedInvoice,
           })
           .subscribe({
             next: (_) => {
               this.previewInvoice();
 
+              // Ketiga langkah dikosongkan; sebelumnya `valueFormGroup`
+              // direset dua kali sedangkan `paymentFormGroup` tidak sama
+              // sekali, sehingga rekening bank faktur sebelumnya tertinggal
+              // terisi pada faktur berikutnya.
               this.metaFormGroup.reset();
               this.valueFormGroup.reset();
-              this.valueFormGroup.reset();
+              this.paymentFormGroup.reset();
 
               this.stepper.selectedIndex = 0;
 

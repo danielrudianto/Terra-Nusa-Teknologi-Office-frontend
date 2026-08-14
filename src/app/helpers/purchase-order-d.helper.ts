@@ -96,7 +96,6 @@ function buildIdentityTable(data: IPurchaseOrderD) {
   ];
   if (data.workerCity) rows.push(identityRow('', data.workerCity));
   if (data.workerNpwp) rows.push(identityRow('NPWP/NIK', data.workerNpwp));
-  if (data.workerNpwp) rows.push(identityRow('NPWP/NIK', data.workerNpwp));
   if (data.task) rows.push(identityRow('Jenis Pekerjaan', data.task));
 
   return {

@@ -27,6 +27,17 @@ export interface IPurchaseOrderBItem {
   unit: string;
   price: number;
   /**
+   * Mobilisasi dan demobilisasi, dititipkan pada kolom keterangan.
+   *
+   * `purchase_order_items` sudah menyediakan enam kolom keterangan dan tiga
+   * di antaranya belum terpakai; menambah kolom basis data untuk dua angka
+   * yang hanya dipakai satu varian tidak sepadan.
+   *
+   * Bertipe teks karena kolomnya memang teks — dibaca dengan `Number()`.
+   */
+  remarks_4?: string | number | null;
+  remarks_5?: string | number | null;
+  /**
    * Keterangan di bawah nama, dicetak lebih kecil.
    *
    * Pada sewa alat berisi periode dan lokasi penempatan — keduanya
@@ -166,9 +177,26 @@ function buildItemTable(data: IPurchaseOrderB) {
     th('Jumlah\n(Rp.)'),
   ];
 
-  const rows = data.items.map((item, i) => {
+  /*
+   * Mobilisasi dan demobilisasi dicetak sebagai BARIS TERSENDIRI.
+   *
+   * Bukan dijumlahkan ke dalam baris sewanya: vendor yang memeriksa
+   * dokumennya harus dapat mencocokkan volume kali harga satuan dengan
+   * jumlahnya. Bila mobilisasi disembunyikan di dalam angka itu, hitungannya
+   * tidak pernah cocok dan yang memeriksa menyangka ada salah hitung.
+   *
+   * Nilainya dititipkan pada `remarks_4` dan `remarks_5` — kolom keterangan
+   * yang memang belum terpakai. Dibaca dengan `Number()` karena kolomnya
+   * teks.
+   */
+  const nilaiTambahan = (item: any) => [
+    { label: 'Mobilisasi', nilai: Number(item.remarks_4) || 0 },
+    { label: 'Demobilisasi', nilai: Number(item.remarks_5) || 0 },
+  ];
+
+  const rows = data.items.flatMap((item, i) => {
     const amount = (Number(item.quantity) || 0) * (Number(item.price) || 0);
-    return [
+    const utama = [
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
       {
         style: 'td',
@@ -192,12 +220,40 @@ function buildItemTable(data: IPurchaseOrderB) {
       },
       { text: rupiah(amount), style: 'td', alignment: 'right' as Alignment },
     ];
+
+    // Baris anak: hanya yang bernilai, agar dokumen tidak dipenuhi nol.
+    const tambahan = nilaiTambahan(item)
+      .filter((x) => x.nilai > 0)
+      .map((x) => [
+        { text: '', style: 'td' },
+        { text: `   ${x.label}`, style: 'td', fontSize: 9 },
+        { text: '', style: 'td', alignment: 'center' as Alignment },
+        { text: 'LS', style: 'td', alignment: 'center' as Alignment },
+        {
+          text: rupiah(x.nilai),
+          style: 'td',
+          alignment: 'right' as Alignment,
+          fontSize: 9,
+        },
+        {
+          text: rupiah(x.nilai),
+          style: 'td',
+          alignment: 'right' as Alignment,
+          fontSize: 9,
+        },
+      ]);
+
+    return [utama, ...tambahan];
   });
 
   // Harga satuan yang diisi adalah DPP; PPN ditambahkan di atasnya.
   const subTotal = data.items.reduce(
     (acc, item) =>
-      acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+      acc +
+      (Number(item.quantity) || 0) * (Number(item.price) || 0) +
+      // Mobilisasi ikut DPP, sehingga ikut kena PPN seperti nilai sewanya.
+      (Number(item.remarks_4) || 0) +
+      (Number(item.remarks_5) || 0),
     0,
   );
   const ppn = data.includePpn ? subTotal * 0.11 : 0;

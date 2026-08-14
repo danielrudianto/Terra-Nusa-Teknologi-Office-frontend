@@ -100,7 +100,7 @@ export class EmployeeProfileComponent implements OnInit {
       'heightCm',
       'weightKg',
     ],
-    kependudukan: ['ktpAddress', 'drivingLicenses'],
+    kependudukan: ['ktpAddress'],
     kontak: ['homeOwnership', 'homePhone'],
     keluarga: ['motherName', 'fatherName'],
     jaminan: [
@@ -112,7 +112,8 @@ export class EmployeeProfileComponent implements OnInit {
     ],
   };
 
-  readonly golonganSim = ['A', 'B1', 'B2', 'C', 'D'];
+  // Golongan D tidak dipakai: tidak ada yang memerlukannya di sini.
+  readonly golonganSim = ['A', 'B1', 'B2', 'C'];
 
   readonly kepemilikanRumah = [
     { value: 'pribadi', key: 'employeeProfile.ownOwn' },
@@ -147,6 +148,14 @@ export class EmployeeProfileComponent implements OnInit {
     if (kunci === 'pendidikan') return this.barisTerisi(this.pendidikan);
     if (kunci === 'pengalaman') return this.barisTerisi(this.pengalaman);
     if (kunci === 'bahasa') return this.barisTerisi(this.bahasa);
+    // Kependudukan menghitung alamat KTP DAN daftar SIM-nya.
+    if (kunci === 'kependudukan') {
+      return (
+        (this.isiBagian['kependudukan'] || []).filter((f) =>
+          ((this.formGroup.get(f)?.value ?? '') as string).toString().trim(),
+        ).length + this.barisTerisi(this.sim)
+      );
+    }
     // Keluarga menghitung dua hal: nama orang tua DAN susunan keluarga,
     // karena keduanya ada di bagian yang sama.
     if (kunci === 'keluarga') {
@@ -166,6 +175,9 @@ export class EmployeeProfileComponent implements OnInit {
     if (kunci === 'pendidikan') return this.pendidikan.length;
     if (kunci === 'pengalaman') return this.pengalaman.length;
     if (kunci === 'bahasa') return this.bahasa.length;
+    if (kunci === 'kependudukan') {
+      return (this.isiBagian['kependudukan'] || []).length + this.sim.length;
+    }
     if (kunci === 'keluarga') {
       return (this.isiBagian['keluarga'] || []).length + this.anggotaKeluarga.length;
     }
@@ -203,6 +215,48 @@ export class EmployeeProfileComponent implements OnInit {
   readonly jenjang = ['SD', 'SMP', 'SMA/SMK', 'D3', 'S1', 'S2', 'S3'];
 
   /*
+   * Jenjang yang mengenal IPK.
+   *
+   * SD, SMP, dan SMA tidak memakai IPK — kolomnya hanya membuat yang
+   * mengisi bertanya-tanya apa yang harus ditulis, lalu mengarang.
+   */
+  private readonly berIPK = ['D3', 'S1', 'S2', 'S3'];
+
+  /** Jenjang yang mengenal jurusan. SD dan SMP tidak. */
+  private readonly berJurusan = ['SMA/SMK', 'D3', 'S1', 'S2', 'S3'];
+
+  punyaIPK(i: number): boolean {
+    return this.berIPK.includes(this.barisPendidikan(i).get('level')?.value);
+  }
+
+  punyaJurusan(i: number): boolean {
+    return this.berJurusan.includes(this.barisPendidikan(i).get('level')?.value);
+  }
+
+  /*
+   * Bahasa sebagai pilihan, bukan ketikan bebas.
+   *
+   * Ketikan bebas menghasilkan "Inggris", "inggris", "English", dan
+   * "Bhs Inggris" sebagai empat bahasa berbeda — dan tidak ada satu pun
+   * daftar yang dapat dipercaya sesudahnya.
+   */
+  readonly daftarBahasa = [
+    'Inggris',
+    'Mandarin',
+    'Arab',
+    'Jepang',
+    'Korea',
+    'Jerman',
+    'Belanda',
+    'Jawa',
+    'Sunda',
+    'Batak',
+    'Minang',
+    'Bugis',
+    'Lainnya',
+  ];
+
+  /*
    * Seluruh isian OPSIONAL, kecuali panjangnya.
    *
    * Profil diisi bertahap: sebagian datanya baru tersedia setelah orangnya
@@ -238,9 +292,13 @@ export class EmployeeProfileComponent implements OnInit {
     // `ktpNumber` tidak ada: NIK adalah nomor KTP itu sendiri, dan sudah
     // tersimpan di data karyawan. Layar ini menampilkannya sebagai bacaan.
     ktpAddress: new FormControl('', Validators.maxLength(500)),
-    // Golongan SIM sebagai daftar pilihan ganda, bukan tiga isian tetap:
-    // tidak semua orang punya semuanya, dan golongannya bisa bertambah.
-    drivingLicenses: new FormControl<string[]>([]),
+    // SIM sebagai DAFTAR bergolongan dan bernomor, bukan sekadar centang.
+    //
+    // Tiap golongan diterbitkan sebagai kartu tersendiri dengan nomornya
+    // sendiri. Mengetahui seseorang "punya SIM A" tanpa nomornya tidak
+    // menyelesaikan apa pun saat mengurus perizinan atau penugasan
+    // mengemudi.
+    drivingLicenses: new FormArray([]),
 
     // Alamat tinggal, HP, dan surel ada di data karyawan — tidak diminta
     // ulang di sini. Dua kotak untuk satu data pasti berbeda suatu saat,
@@ -271,6 +329,29 @@ export class EmployeeProfileComponent implements OnInit {
 
   get pengalaman(): FormArray {
     return this.formGroup.get('workExperience') as FormArray;
+  }
+
+  get sim(): FormArray {
+    return this.formGroup.get('drivingLicenses') as FormArray;
+  }
+
+  barisSim(i: number): FormGroup {
+    return this.sim.at(i) as FormGroup;
+  }
+
+  private buatSim(v: any = {}): FormGroup {
+    return this.formBuilder.group({
+      golongan: [v.golongan ?? ''],
+      nomor: [v.nomor ?? '', Validators.maxLength(30)],
+    });
+  }
+
+  tambahSim(): void {
+    this.sim.push(this.buatSim());
+  }
+
+  hapusSim(i: number): void {
+    this.sim.removeAt(i);
   }
 
   get bahasa(): FormArray {
@@ -455,8 +536,13 @@ export class EmployeeProfileComponent implements OnInit {
       this.anggotaKeluarga.push(this.buatKeluarga(x)),
     );
 
-    // SIM: daftar teks sederhana, bukan objek.
-    this.formGroup.patchValue({ drivingLicenses: urai(d.drivingLicenses) });
+    this.sim.clear();
+    urai(d.drivingLicenses).forEach((x: any) => {
+      // Bentuk LAMA berupa daftar teks golongan saja; dibaca sebagai
+      // golongan tanpa nomor supaya data yang sudah tersimpan tidak hilang.
+      const baris = typeof x === 'string' ? { golongan: x } : x;
+      this.sim.push(this.buatSim(baris));
+    });
   }
 
   simpan(): void {
@@ -505,7 +591,7 @@ export class EmployeeProfileComponent implements OnInit {
     bersih.workExperience = isiBaris(v.workExperience || []);
     bersih.languages = isiBaris(v.languages || []);
     bersih.familyMembers = isiBaris(v.familyMembers || []);
-    bersih.drivingLicenses = v.drivingLicenses || [];
+    bersih.drivingLicenses = isiBaris(v.drivingLicenses || []);
 
     this.apiService
       .put(`employee-profiles/${this.input.id}`, bersih)

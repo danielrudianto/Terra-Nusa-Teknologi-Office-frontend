@@ -7,6 +7,23 @@
   ></app-header-title>
 
   <div class="el-toolbar">
+    <!--
+      Kelola periode formulir keadaan.
+
+      Dijaga izin `employee_form:create`: yang boleh membuat periode adalah
+      yang boleh membuat formulirnya, bukan siapa pun yang dapat melihat
+      daftar karyawan.
+    -->
+    <button
+      type="button"
+      class="el-periode"
+      *appCan="'employee_form:create'"
+      (click)="openPeriode()"
+    >
+      <mat-icon>event_repeat</mat-icon>
+      {{ "employeeForm.periodMenu" | translate }}
+    </button>
+
     <mat-chip-listbox
       class="el-filters"
       [value]="activeFilter"

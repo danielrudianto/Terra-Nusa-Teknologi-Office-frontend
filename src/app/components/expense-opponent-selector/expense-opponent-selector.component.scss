@@ -85,6 +85,10 @@
   gap: 4px;
   max-height: 340px;
   overflow-y: auto;
+  /* Mendatar ditutup: teks panjang ditangani elipsis, bukan digeser.
+     Tanpa ini, `overflow-y` sendiri sudah memaksa sumbu mendatar menjadi
+     `auto`, dan kelebihan sepersekian piksel memunculkan bilah gulir. */
+  overflow-x: hidden;
   margin-top: 0.25rem;
 }
 .eos-row {

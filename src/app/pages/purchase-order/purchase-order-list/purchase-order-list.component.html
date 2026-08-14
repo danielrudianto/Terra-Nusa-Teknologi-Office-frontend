@@ -199,24 +199,32 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button
-                mat-menu-item
-                *appCan="'purchase_order:approve'"
-                (click)="approve(po)"
-                [disabled]="po.isApproved || po.status === 'cancelled'"
-              >
-                <mat-icon>check_circle</mat-icon
-                ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
-              </button>
-              <button
-                mat-menu-item
-                *appCan="'purchase_order:approve'"
-                (click)="reject(po)"
-                [disabled]="po.isApproved || po.status === 'cancelled'"
-              >
-                <mat-icon>cancel</mat-icon
-                ><span>{{ "purchaseOrder.menuReject" | translate }}</span>
-              </button>
+              <!--
+                Setujui dan Tolak DISEMBUNYIKAN setelah dokumennya selesai,
+                bukan sekadar dinonaktifkan.
+
+                Pilihan yang tampak abu-abu tetap mengesankan bahwa tindakan
+                itu masih mungkin — dan pada dokumen yang sudah dipegang
+                vendor, itu mengesankan hal yang salah.
+              -->
+              @if (!sudahSelesai(po)) {
+                <button
+                  mat-menu-item
+                  *appCan="'purchase_order:approve'"
+                  (click)="approve(po)"
+                >
+                  <mat-icon>check_circle</mat-icon
+                  ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
+                </button>
+                <button
+                  mat-menu-item
+                  *appCan="'purchase_order:approve'"
+                  (click)="reject(po)"
+                >
+                  <mat-icon>cancel</mat-icon
+                  ><span>{{ "purchaseOrder.menuReject" | translate }}</span>
+                </button>
+              }
               <button mat-menu-item (click)="viewOrder(po)">
                 <mat-icon>visibility</mat-icon
                 ><span>{{ "purchaseOrder.menuView" | translate }}</span>
@@ -230,14 +238,24 @@
                 <mat-icon>print</mat-icon
                 ><span>{{ "purchaseOrder.menuReprint" | translate }}</span>
               </button>
-              <button
-                mat-menu-item
-                *appCan="'purchase_order:delete'"
-                (click)="deleteOrder(po)"
-              >
-                <mat-icon>delete</mat-icon
-                ><span>{{ "purchaseOrder.menuDelete" | translate }}</span>
-              </button>
+              <!--
+                Hapus disembunyikan pada dokumen yang sudah disetujui.
+
+                Dokumen yang disetujui sudah dicetak dan dipegang vendor;
+                menghapusnya membuat lembar yang beredar tidak punya padanan
+                sama sekali. Yang perlu diubah setelah disetujui diselesaikan
+                lewat ADENDUM.
+              -->
+              @if (!sudahSelesai(po)) {
+                <button
+                  mat-menu-item
+                  *appCan="'purchase_order:delete'"
+                  (click)="deleteOrder(po)"
+                >
+                  <mat-icon>delete</mat-icon
+                  ><span>{{ "purchaseOrder.menuDelete" | translate }}</span>
+                </button>
+              }
             </mat-menu>
           </td>
         </ng-container>

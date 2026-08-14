@@ -121,6 +121,10 @@
 }
 .ds-accounts {
   overflow-y: auto;
+  /* Mendatar ditutup: teks panjang ditangani elipsis, bukan digeser.
+     Tanpa ini, `overflow-y` sendiri sudah memaksa sumbu mendatar menjadi
+     `auto`, dan kelebihan sepersekian piksel memunculkan bilah gulir. */
+  overflow-x: hidden;
   padding: 0.35rem 0.7rem 1rem;
   display: flex;
   flex-direction: column;
@@ -274,6 +278,10 @@
 .ds-list {
   flex: 1 1 auto;
   overflow-y: auto;
+  /* Mendatar ditutup: teks panjang ditangani elipsis, bukan digeser.
+     Tanpa ini, `overflow-y` sendiri sudah memaksa sumbu mendatar menjadi
+     `auto`, dan kelebihan sepersekian piksel memunculkan bilah gulir. */
+  overflow-x: hidden;
   min-height: 0;
   padding: 0.35rem 0.5rem;
 }

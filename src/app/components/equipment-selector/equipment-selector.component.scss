@@ -29,7 +29,7 @@ $hover: var(--hover, #f6f8ff);
 :host ::ng-deep .eqs-search { --mdc-outlined-text-field-container-shape: 12px; --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec); }
 .eqs-progress { margin: 2px 0 8px; }
 
-.eqs-list { display: flex; flex-direction: column; gap: 6px; max-height: 52vh; overflow-y: auto; margin-top: 4px; }
+.eqs-list { display: flex; flex-direction: column; gap: 6px; max-height: 52vh; overflow-y: auto; overflow-x: hidden; margin-top: 4px; }
 .eqs-item {
   display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; cursor: pointer;
   padding: 0.7rem 0.85rem; border-radius: 12px; border: 0.5px solid $border; background: $surface;

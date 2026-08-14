@@ -1065,3 +1065,12 @@ app-wysiwyg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Rincian sewa dan mobilisasi di bawah jumlah baris. */
+.pob-rentrinci {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--faint, #8a8f98);
+  font-variant-numeric: tabular-nums;
+}

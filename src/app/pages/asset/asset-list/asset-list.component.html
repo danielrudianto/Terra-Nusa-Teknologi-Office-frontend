@@ -144,7 +144,7 @@
             <a
               class="al-link"
               *ngIf="element.purchaseOrderName"
-              (click)="openPurchase(element.purchaseOrderName)"
+              (click)="$event.stopPropagation(); openPurchase(element.purchaseOrderName)"
             >
               {{ element.purchaseOrderName }}
             </a>

@@ -194,6 +194,22 @@ export class PurchaseOrderCreateBComponent {
       fromDate: ['', Validators.required],
       toDate: ['', Validators.required],
       location: ['', Validators.required],
+      /*
+       * Mobilisasi dan demobilisasi, melekat pada ALATNYA.
+       *
+       * Bukan baris tersendiri: tiap baris sewa mewajibkan tanggal mulai,
+       * tanggal selesai, dan lokasi — sedangkan mobilisasi bukan periode
+       * sewa dan tidak punya ketiganya. Sebagai baris, yang mengisi
+       * terpaksa mengarang tanggal supaya formulirnya sah.
+       *
+       * Melekat pada barisnya juga membuat jelas mobilisasi mana milik alat
+       * mana saat menyewa beberapa alat sekaligus.
+       *
+       * Bawaannya nol: bila biayanya sekali untuk seluruh pengiriman, cukup
+       * diisi pada satu baris dan sisanya dibiarkan.
+       */
+      mobilisasi: [0, Validators.min(0)],
+      demobilisasi: [0, Validators.min(0)],
     });
   }
 
@@ -225,7 +241,25 @@ export class PurchaseOrderCreateBComponent {
 
   lineTotal(i: number): number {
     const g = this.getFormGroupAt(i).getRawValue();
+    // Mobilisasi dan demobilisasi ikut nilai barisnya, dan karena itu ikut
+    // DPP — sehingga ikut kena PPN seperti nilai sewa lainnya.
+    return (
+      (Number(g.price) || 0) * (Number(g.quantity) || 0) +
+      (Number(g.mobilisasi) || 0) +
+      (Number(g.demobilisasi) || 0)
+    );
+  }
+
+  /** Nilai sewa saja, tanpa mobilisasi; dipakai rincian di layar. */
+  lineSewa(i: number): number {
+    const g = this.getFormGroupAt(i).getRawValue();
     return (Number(g.price) || 0) * (Number(g.quantity) || 0);
+  }
+
+  /** Total mobilisasi ditambah demobilisasi pada satu baris. */
+  lineMobilisasi(i: number): number {
+    const g = this.getFormGroupAt(i).getRawValue();
+    return (Number(g.mobilisasi) || 0) + (Number(g.demobilisasi) || 0);
   }
 
   templateVersion = latestClauseVersion('B');
@@ -553,6 +587,20 @@ export class PurchaseOrderCreateBComponent {
           remarks_1: this.toISO(x.fromDate), // dari tanggal
           remarks_2: this.toISO(x.toDate), // sampai tanggal
           remarks_3: x.location, // lokasi kerja
+          /*
+           * Mobilisasi dan demobilisasi ditumpangkan pada kolom `remarks`
+           * yang masih kosong, bukan dengan menambah kolom baru.
+           *
+           * `purchase_order_items` sudah menyediakan enam kolom keterangan
+           * dan tiga di antaranya belum terpakai; menambah kolom berarti
+           * migrasi basis data untuk dua angka yang hanya dipakai satu
+           * varian.
+           *
+           * Disimpan sebagai TEKS karena kolomnya memang teks — dibaca
+           * kembali dengan `Number()` saat mencetak.
+           */
+          remarks_4: String(Number(x.mobilisasi) || 0), // mobilisasi
+          remarks_5: String(Number(x.demobilisasi) || 0), // demobilisasi
         };
       }),
       customData: {

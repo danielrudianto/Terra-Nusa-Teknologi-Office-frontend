@@ -71,6 +71,15 @@
                           <mat-option [value]="x">{{ x }}</mat-option>
                         }
                       </mat-select>
+                      <!--
+                        Boleh dikosongkan, dan dinyatakan terang-terangan.
+
+                        Sebagian orang memang tidak pernah mengetahui
+                        golongan darahnya; tanpa keterangan ini mereka
+                        menebak, dan tebakan pada data medis lebih berbahaya
+                        daripada kosong.
+                      -->
+                      <mat-hint>{{ "employeeProfile.bloodTypeHint" | translate }}</mat-hint>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.religion" | translate }}</mat-label>
@@ -214,9 +223,21 @@
                           </button>
                         </div>
                         <div class="epf-grid">
+                          <!--
+                            Pilihan, bukan ketikan bebas.
+
+                            Ketikan bebas menghasilkan "Inggris", "inggris",
+                            "English", dan "Bhs Inggris" sebagai empat bahasa
+                            berbeda — dan tidak ada satu pun daftar yang
+                            dapat dipercaya sesudahnya.
+                          -->
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.language" | translate }}</mat-label>
-                            <input matInput formControlName="language" />
+                            <mat-select formControlName="language">
+                              @for (b of daftarBahasa; track b) {
+                                <mat-option [value]="b">{{ b }}</mat-option>
+                              }
+                            </mat-select>
                           </mat-form-field>
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.speaking" | translate }}</mat-label>
@@ -265,20 +286,62 @@
                     </div>
                   }
                   <div class="epf-grid">
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "employeeProfile.drivingLicense" | translate }}</mat-label>
-                      <mat-select formControlName="drivingLicenses" multiple>
-                        @for (x of golonganSim; track x) {
-                          <mat-option [value]="x">{{ x }}</mat-option>
-                        }
-                      </mat-select>
-                      <mat-hint>{{ "employeeProfile.drivingLicenseHint" | translate }}</mat-hint>
-                    </mat-form-field>
                     <mat-form-field appearance="outline" class="epf-span2">
                       <mat-label>{{ "employeeProfile.ktpAddress" | translate }}</mat-label>
                       <textarea matInput formControlName="ktpAddress" rows="2" style="resize: none"></textarea>
                     </mat-form-field>
                   </div>
+
+                  <!--
+                    SIM per golongan beserta NOMORNYA.
+
+                    Tiap golongan adalah kartu tersendiri dengan nomor
+                    sendiri; mengetahui seseorang "punya SIM A" tanpa
+                    nomornya tidak menyelesaikan apa pun.
+                  -->
+                  <div class="epf-subjudul">
+                    {{ "employeeProfile.drivingLicense" | translate }}
+                  </div>
+
+                  @if (!sim.length) {
+                    <p class="epf-empty">{{ "employeeProfile.noLicense" | translate }}</p>
+                  }
+
+                  <div formArrayName="drivingLicenses">
+                    @for (row of sim.controls; track $index) {
+                      <div class="epf-kartu" [formGroup]="barisSim($index)">
+                        <div class="epf-kartu__head">
+                          <span class="epf-kartu__no">{{ $index + 1 }}</span>
+                          <button
+                            type="button"
+                            class="epf-del"
+                            (click)="hapusSim($index)"
+                            [attr.aria-label]="'common.delete' | translate"
+                          >
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </div>
+                        <div class="epf-grid">
+                          <mat-form-field appearance="outline">
+                            <mat-label>{{ "employeeProfile.licenseClass" | translate }}</mat-label>
+                            <mat-select formControlName="golongan">
+                              @for (x of golonganSim; track x) {
+                                <mat-option [value]="x">{{ x }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field appearance="outline">
+                            <mat-label>{{ "employeeProfile.licenseNumber" | translate }}</mat-label>
+                            <input matInput formControlName="nomor" />
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <button type="button" class="epf-add" (click)="tambahSim()">
+                    <mat-icon>add</mat-icon>{{ "common.add" | translate }}
+                  </button>
                 }
 
                 @if (b.kunci === "kontak") {
@@ -365,22 +428,46 @@
                             <mat-label>{{ "employeeProfile.school" | translate }}</mat-label>
                             <input matInput formControlName="school" />
                           </mat-form-field>
-                          <mat-form-field appearance="outline">
-                            <mat-label>{{ "employeeProfile.major" | translate }}</mat-label>
-                            <input matInput formControlName="major" />
-                          </mat-form-field>
+                          <!--
+                            Jurusan dan IPK muncul mengikuti jenjangnya.
+
+                            SD dan SMP tidak punya jurusan; SD sampai SMA
+                            tidak punya IPK. Kolom yang tidak berlaku hanya
+                            membuat yang mengisi bertanya-tanya apa yang
+                            harus ditulis, lalu mengarang.
+                          -->
+                          @if (punyaJurusan($index)) {
+                            <mat-form-field appearance="outline">
+                              <mat-label>{{ "employeeProfile.major" | translate }}</mat-label>
+                              <input matInput formControlName="major" />
+                            </mat-form-field>
+                          }
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.fromYear" | translate }}</mat-label>
-                            <input matInput formControlName="fromYear" />
+                            <input
+                              matInput
+                              type="number"
+                              inputmode="numeric"
+                              placeholder="2015"
+                              formControlName="fromYear"
+                            />
                           </mat-form-field>
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.toYear" | translate }}</mat-label>
-                            <input matInput formControlName="toYear" />
+                            <input
+                              matInput
+                              type="number"
+                              inputmode="numeric"
+                              placeholder="2019"
+                              formControlName="toYear"
+                            />
                           </mat-form-field>
-                          <mat-form-field appearance="outline">
-                            <mat-label>{{ "employeeProfile.gpa" | translate }}</mat-label>
-                            <input matInput formControlName="gpa" />
-                          </mat-form-field>
+                          @if (punyaIPK($index)) {
+                            <mat-form-field appearance="outline">
+                              <mat-label>{{ "employeeProfile.gpa" | translate }}</mat-label>
+                              <input matInput formControlName="gpa" />
+                            </mat-form-field>
+                          }
                         </div>
                       </div>
                     }

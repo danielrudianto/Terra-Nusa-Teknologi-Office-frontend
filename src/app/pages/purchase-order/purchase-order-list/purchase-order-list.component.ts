@@ -340,11 +340,65 @@ export class PurchaseOrderListComponent {
    */
 
   /** Buka detail PO: tampilan rapi atau data mentah. */
+  /**
+   * Dokumen ini sudah selesai — tidak boleh disetujui, ditolak, atau
+   * dihapus lagi.
+   *
+   * Memeriksa DUA bidang, bukan satu. Sebagian dokumen tersimpan dengan
+   * `status: "approved"` sementara `isApproved` masih `false`; memeriksa
+   * salah satu saja membuat tombol Setujui tetap hidup pada dokumen yang
+   * sudah disetujui.
+   *
+   * Menyetujui ulang menimpa `approvedBy` dan `approvedAt`, sehingga jejak
+   * siapa yang benar-benar menyetujuinya hilang — padahal blok tanda tangan
+   * pada lembar yang dipegang vendor memuat nama penyetuju pertama.
+   */
+  sudahSelesai(po: any): boolean {
+    return (
+      !!po?.isApproved ||
+      po?.status === 'approved' ||
+      po?.status === 'cancelled'
+    );
+  }
+
   viewOrder(po: any) {
-    this.dialog.open(PurchaseOrderViewComponent, {
-      data: { id: po.id },
-      maxWidth: '94vw',
-      autoFocus: false,
+    this.dialog
+      .open(PurchaseOrderViewComponent, {
+        data: { id: po.id },
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil: any) => {
+        // Dialognya menutup diri lalu meminta formulir adendum dibuka.
+        //
+        // Formulirnya TIDAK dibuka dari dalam dialog: itu menjadi dialog di
+        // dalam dialog, yang sudah terbukti membingungkan pada pemilih
+        // klien. Dialognya menutup dulu, lalu halaman ini yang membuka.
+        if (hasil?.adendumDari) this.bukaFormulirAdendum(po, hasil.adendumDari);
+      });
+  }
+
+  /**
+   * Buka formulir varian yang sama dengan induknya, dalam mode adendum.
+   *
+   * Varian ditentukan induknya dan TIDAK dapat dipilih ulang: adendum
+   * memakai jenis dokumen yang sama dengan yang diadendumnya, dan memilih
+   * jenis lain berarti dokumen yang berbeda sama sekali.
+   */
+  private bukaFormulirAdendum(po: any, indukId: number) {
+    const segment = this.createRoutes[po.purchaseType];
+    if (!segment) {
+      this.snackBar.open(
+        `Jenis PO ${po.purchaseType} belum tersedia`,
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    this.router.navigate(['Create', segment], {
+      relativeTo: this.route,
+      queryParams: { adendumDari: indukId },
     });
   }
 

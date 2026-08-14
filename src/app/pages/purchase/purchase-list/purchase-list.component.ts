@@ -30,6 +30,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
+import { PermissionService } from '../../../services/permission.service';
 
 @Component({
   selector: 'app-purchase-list',
@@ -58,6 +59,7 @@ import { SettingsService } from '../../../services/setting.service';
 export class PurchaseListComponent {
   private readonly translate = inject(TranslateService);
   constructor(
+    private permissionService: PermissionService,
     public settings: SettingsService,
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -319,6 +321,21 @@ export class PurchaseListComponent {
    * ditekan agar keterangannya jelas; tanpa itu, teks yang tidak bereaksi
    * terbaca seperti tombol yang rusak.
    */
+  /**
+   * Apakah pengguna ini boleh membuka dokumen purchase order.
+   *
+   * Izin `purchase` dan `purchase_order` adalah dua modul terpisah, dan
+   * tidak selalu dimiliki bersamaan — izin khusus per pengguna dapat
+   * memberikan satu tanpa yang lain.
+   *
+   * Tanpa pemeriksaan ini, nomornya tetap tampil sebagai tautan bagi yang
+   * tidak berhak; menekannya menghasilkan penolakan dari server tanpa
+   * penjelasan, dan yang membacanya menyangka dokumennya rusak.
+   */
+  get bolehLihatPO(): boolean {
+    return this.permissionService.can('purchase_order', 'read');
+  }
+
   viewPurchaseOrder(id: number) {
     if (!id) {
       this.snackBar.open(

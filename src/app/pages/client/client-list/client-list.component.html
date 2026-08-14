@@ -77,7 +77,7 @@
           >
             <button
               mat-icon-button
-              (click)="openUpdateClient(element.id)"
+              (click)="$event.stopPropagation(); openUpdateClient(element.id)"
               [attr.aria-label]="'client.editClient' | translate"
             >
               <mat-icon>edit</mat-icon>

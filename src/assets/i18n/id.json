@@ -1198,7 +1198,22 @@
     "firstTime": "Belum mengisi periode ini. Lengkapi seperlunya — dapat diperbarui kapan saja sampai periodenya berakhir.",
     "noVersion": "Belum ada periode formulir yang dibuat. Buat periode lebih dulu sebelum karyawan dapat mengisinya.",
     "emptyList": "Belum ada isian.",
-    "saved": "Formulir tersimpan"
+    "saved": "Formulir tersimpan",
+    "periodMenu": "Periode formulir",
+    "periodTitle": "Periode formulir keadaan",
+    "periodSub": "Satu putaran pengisian, biasanya satu tahun",
+    "activePeriod": "Periode berlaku",
+    "notFilledYet": "Belum mengisi",
+    "allFilled": "Seluruh karyawan aktif sudah mengisi.",
+    "noPeriodYet": "Belum ada periode. Buat satu lebih dulu sebelum karyawan dapat mengisi formulirnya.",
+    "newPeriod": "Buat periode baru",
+    "createPeriod": "Buat periode",
+    "periodLabel": "Periode",
+    "periodHint": "Contoh: 2026, atau 2026 S1 bila dua kali setahun",
+    "periodFormTitle": "Judul formulir",
+    "periodTitleHint": "Boleh dikosongkan; akan terisi otomatis",
+    "replaceWarning": "Membuat periode baru menonaktifkan yang sedang berlaku. Jawaban periode lama tetap tersimpan dan tetap dibaca dengan pertanyaannya sendiri.",
+    "periodCreated": "Periode formulir dibuat"
   },
   "master": {
     "title": "Master Data",
@@ -1870,7 +1885,8 @@
     "belumTersedia": "Belum tersedia",
     "actions": "Actions",
     "rowActions": "Row actions",
-    "changeTypeConfirm": "Ya, ganti jenis"
+    "changeTypeConfirm": "Ya, ganti jenis",
+    "adendumGagalMuat": "Dokumen induk gagal dimuat. Isian di bawah masih kosong."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -2907,7 +2923,11 @@
     "catVehicle": "Kendaraan (mobil, motor, truk)",
     "catOther": "Perlengkapan lain (scaffolding, genset, dll)",
     "riskSecond": "PIHAK KEDUA (vendor pemilik alat)",
-    "riskFirst": "PIHAK PERTAMA (AKN)"
+    "riskFirst": "PIHAK PERTAMA (AKN)",
+    "mobilisasi": "Mobilisasi",
+    "demobilisasi": "Demobilisasi",
+    "sewa": "sewa",
+    "mobDemob": "mob/demob"
   },
   "poD": {
     "fieldStaff": "Staf lapangan (mis. staff engineer)",
@@ -3702,7 +3722,6 @@
     "height": "Tinggi badan",
     "weight": "Berat badan",
     "drivingLicense": "SIM",
-    "drivingLicenseHint": "Boleh lebih dari satu golongan",
     "currentAddress": "Alamat tinggal saat ini",
     "homeOwnership": "Status kepemilikan rumah",
     "ownOwn": "Pribadi",
@@ -3730,7 +3749,11 @@
     "noLanguage": "Belum ada bahasa asing.",
     "languageHint": "Lisan dan tulisan dicatat terpisah — banyak orang mampu membaca tetapi tidak berbicara.",
     "fromEmployee": "dari data karyawan",
-    "nikIsNpwp": "dari data karyawan — NIK juga berlaku sebagai NPWP"
+    "nikIsNpwp": "dari data karyawan — NIK juga berlaku sebagai NPWP",
+    "licenseClass": "Golongan",
+    "licenseNumber": "Nomor SIM",
+    "noLicense": "Belum ada SIM tercatat.",
+    "bloodTypeHint": "Boleh dikosongkan bila belum diketahui"
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",
@@ -3811,5 +3834,8 @@
     "peserta": "PESERTA",
     "selesai": "Selesai",
     "simpan": "Simpan"
+  },
+  "poView": {
+    "buatAdendum": "Buat adendum"
   }
 }

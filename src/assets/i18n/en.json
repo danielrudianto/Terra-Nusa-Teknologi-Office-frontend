@@ -1198,7 +1198,22 @@
     "firstTime": "Not filled in for this period yet. Complete what you can — it can be updated any time until the period closes.",
     "noVersion": "No form period has been created yet. Create a period before employees can fill it in.",
     "emptyList": "No entries yet.",
-    "saved": "Form saved"
+    "saved": "Form saved",
+    "periodMenu": "Form periods",
+    "periodTitle": "Employee form periods",
+    "periodSub": "One round of filling, usually once a year",
+    "activePeriod": "Active period",
+    "notFilledYet": "Not filled in",
+    "allFilled": "Every active employee has filled it in.",
+    "noPeriodYet": "No period yet. Create one before employees can fill in the form.",
+    "newPeriod": "Create a new period",
+    "createPeriod": "Create period",
+    "periodLabel": "Period",
+    "periodHint": "For example 2026, or 2026 H1 if twice a year",
+    "periodFormTitle": "Form title",
+    "periodTitleHint": "May be left blank; it will be filled in automatically",
+    "replaceWarning": "Creating a new period deactivates the current one. Earlier answers stay stored and are still read with their own questions.",
+    "periodCreated": "Form period created"
   },
   "master": {
     "title": "Master Data",
@@ -1870,7 +1885,8 @@
     "belumTersedia": "Belum tersedia",
     "actions": "Actions",
     "rowActions": "Row actions",
-    "changeTypeConfirm": "Yes, change type"
+    "changeTypeConfirm": "Yes, change type",
+    "adendumGagalMuat": "The parent document could not be loaded. The fields below are empty."
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -2907,7 +2923,11 @@
     "catVehicle": "Vehicle (car, motorcycle, truck)",
     "catOther": "Other supplies (scaffolding, genset, etc.)",
     "riskSecond": "SECOND PARTY (equipment-owning vendor)",
-    "riskFirst": "FIRST PARTY (AKN)"
+    "riskFirst": "FIRST PARTY (AKN)",
+    "mobilisasi": "Mobilisation",
+    "demobilisasi": "Demobilisation",
+    "sewa": "rental",
+    "mobDemob": "mob/demob"
   },
   "poD": {
     "fieldStaff": "Field staff (e.g. staff engineer)",
@@ -3702,7 +3722,6 @@
     "height": "Height",
     "weight": "Weight",
     "drivingLicense": "Driving licence",
-    "drivingLicenseHint": "More than one class may be selected",
     "currentAddress": "Current address",
     "homeOwnership": "Home ownership",
     "ownOwn": "Own",
@@ -3730,7 +3749,11 @@
     "noLanguage": "No foreign languages yet.",
     "languageHint": "Speaking and writing are recorded separately — many people read without speaking.",
     "fromEmployee": "from the employee record",
-    "nikIsNpwp": "from the employee record — the NIK also serves as the tax ID"
+    "nikIsNpwp": "from the employee record — the NIK also serves as the tax ID",
+    "licenseClass": "Class",
+    "licenseNumber": "Licence number",
+    "noLicense": "No driving licence recorded yet.",
+    "bloodTypeHint": "May be left blank if not known"
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",
@@ -3811,5 +3834,8 @@
     "peserta": "PARTICIPANT",
     "selesai": "Completed",
     "simpan": "Save"
+  },
+  "poView": {
+    "buatAdendum": "Create addendum"
   }
 }

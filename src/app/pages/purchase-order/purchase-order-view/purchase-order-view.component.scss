@@ -325,6 +325,38 @@
   line-height: 1.5;
 }
 
+/*
+ * Tombol buat adendum.
+ *
+ * Bergaris, bukan berlatar penuh: ia bukan tindakan utama pada layar ini —
+ * yang utama menutup dan membaca. Membuat adendum menerbitkan dokumen baru,
+ * dan tindakan seperti itu sebaiknya tidak menjadi yang paling menonjol.
+ */
+.pov-adendum {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid var(--brand);
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  margin-right: 0.6rem;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+}
+.pov-adendum:hover {
+  background: var(--brand-soft);
+}
+.pov-adendum .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
 .pov-terbit {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;

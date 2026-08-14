@@ -42,6 +42,7 @@ import { ProjectSelectorComponent } from '../../../../components/project-selecto
 import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
+import { AdendumService } from '../../../../services/adendum.service';
 
 @Component({
   selector: 'app-purchase-order-create-f',
@@ -146,6 +147,8 @@ export class PurchaseOrderCreateFComponent {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
+    private adendum: AdendumService,
+    private translateSvc: TranslateService,
   ) {
     /*
      * Kewajiban `deliveryMethod` mengikuti jenis materialnya.
@@ -163,6 +166,10 @@ export class PurchaseOrderCreateFComponent {
       .get('materialType')
       ?.valueChanges.subscribe(() => this.selaraskanValidasi());
     this.selaraskanValidasi();
+
+    // Bila layar ini dibuka sebagai adendum, isinya diambil dari induknya.
+    this.muatAdendum();
+
   }
 
   /**
@@ -306,6 +313,42 @@ export class PurchaseOrderCreateFComponent {
     { value: 'ujitekan', label: 'poForm.materialTest', dok: 'poF.docSPK' },
     { value: 'ujibesi', label: 'poForm.materialTestSteel', dok: 'poF.docSPK' },
   ];
+
+  /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
+  get isAdendum(): boolean {
+    return this.adendum.isAdendum;
+  }
+
+  /** Dokumen induk yang diadendum; null bila dokumen baru. */
+  induk: any = null;
+
+  /**
+   * Isi formulir dari dokumen induk saat layar dibuka sebagai adendum.
+   *
+   * Volume dikosongkan: adendum berisi SELISIH, bukan pengganti. Menyalin
+   * volume induk membuat yang mengisi tinggal menekan simpan dan
+   * menggandakan seluruh pekerjaannya tanpa menyadarinya.
+   */
+  private muatAdendum(): void {
+    this.adendum.muatInduk().subscribe({
+      next: (induk: any) => {
+        if (!induk) return;
+        this.induk = induk;
+        this.adendum.isiFormulir(this.formGroup, induk);
+        this.t.clear();
+        this.adendum
+          .barisInduk(induk)
+          .forEach((x) => this.t.push(this.buildItemGroup(x)));
+      },
+      error: () => {
+        this.snackBar.open(
+          this.translateSvc.instant('poForm.adendumGagalMuat'),
+          'Close',
+          { duration: 5000 },
+        );
+      },
+    });
+  }
 
   get t() {
     return this.formGroup.get('purchase_order') as FormArray;
@@ -623,6 +666,8 @@ export class PurchaseOrderCreateFComponent {
       purchaseType: this.formGroup.get('purchaseType')?.value,
       projectName: projectCode,
       projectCode: projectCode,
+      // Penanda induk; server yang menghitung nomor adendumnya.
+      parentPurchaseOrderID: this.adendum.indukId ?? undefined,
       name: '',
       dpp: dpp,
       ppn: ppn,
