@@ -24,10 +24,32 @@
         <p>{{ "employeeForm.noVersion" | translate }}</p>
       </div>
     } @else {
+      <!--
+        Kapan data ini terakhir diperbarui.
+
+        Ditampilkan karena itulah yang menentukan perlu tidaknya dikonfirmasi
+        ulang: lewat dua belas bulan, namanya muncul di agenda. Tanpa tanggal
+        ini, yang mengisi tidak punya cara mengetahui apakah kunjungannya
+        memang diperlukan.
+      -->
       @if (baru) {
         <div class="efm-banner">
           <mat-icon>info</mat-icon>
           <span>{{ "employeeForm.firstTime" | translate }}</span>
+        </div>
+      } @else {
+        <div class="efm-banner" [class.perlu]="perluKonfirmasi">
+          <mat-icon>{{ perluKonfirmasi ? "update" : "check_circle" }}</mat-icon>
+          <span>
+            {{ "employeeForm.terakhirDiperbarui" | translate }}
+            <strong>{{ terakhir | date: "d MMM y" }}</strong>
+            @if (bulanSejakTerakhir !== null) {
+              <small>
+                ({{ bulanSejakTerakhir }}
+                {{ "employeeForm.bulanLalu" | translate }})
+              </small>
+            }
+          </span>
         </div>
       }
 
@@ -210,7 +232,20 @@
       [disabled]="formGroup.invalid || isSubmitting || isLoading || !versi"
       (click)="simpan()"
     >
-      {{ (isSubmitting ? "common.saving" : "common.save") | translate }}
+      <!--
+        Disebut KONFIRMASI, bukan sekadar simpan.
+
+        Menyimpan tanpa mengubah apa pun adalah tindakan yang sah dan memang
+        diharapkan: yang dikonfirmasi bukan datanya berubah, melainkan bahwa
+        datanya masih benar. Tulisan "Simpan" membuat orang ragu menekannya
+        bila tidak ada yang ia ubah.
+      -->
+      {{
+        (isSubmitting
+          ? "common.saving"
+          : "employeeForm.konfirmasiSimpan"
+        ) | translate
+      }}
     </button>
   </mat-dialog-actions>
 </div>

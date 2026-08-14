@@ -317,32 +317,6 @@
   color: var(--faint);
 }
 
-/* Tombol kelola periode formulir; bergaris, bukan tindakan utama. */
-.el-periode {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  height: 34px;
-  padding: 0 0.85rem;
-  border: 1px solid var(--border, #e3e6eb);
-  border-radius: 10px;
-  background: var(--surface, #fff);
-  color: var(--muted, #6b7280);
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.el-periode:hover {
-  border-color: var(--brand);
-  color: var(--brand);
-}
-.el-periode .mat-icon {
-  width: 17px;
-  height: 17px;
-  font-size: 17px;
-  line-height: 17px;
-}
 
 /*
  * Sisa ruang jatuh SEBELUM anak kedua, bukan dibagi rata.
@@ -352,6 +326,43 @@
  * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
  * mengambang, terpisah dari keduanya.
  */
-.el-toolbar > *:nth-child(2) {
-  margin-left: auto;
+/*
+ * Toolbar ini MENUMPUK ke bawah, bukan berjajar.
+ *
+ * `margin-left: auto` pada anak kedua dirancang untuk toolbar mendatar; di
+ * sini ia hanya mendorong chip penyaring ke kanan, yang bukan maksudnya.
+ *
+ * Yang diperlukan justru sebaliknya: tombol periode dan muat ulang berjajar
+ * bersama kolom pencarian, bukan berdiri sendiri sebagai baris terpisah.
+ */
+.el-toolbar {
+  /* Anak-anaknya dibungkus baris mendatar yang dapat melipat sendiri. */
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Kolom pencarian mengambil sisa ruang; tombol menempel di kanannya. */
+.el-search {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+/*
+ * Chip penyaring memakai satu baris penuh di ATAS.
+ *
+ * Urutannya diatur lewat `order`, bukan dengan memindahkan elemennya di
+ * templat: tombol periode berada lebih dulu di DOM, dan tanpa ini ia
+ * berdiri sendirian pada baris pertama — persis keadaan yang membuatnya
+ * tidak dikenali sebagai tombol.
+ */
+.el-filters {
+  flex: 1 0 100%;
+  order: 1;
+}
+.el-search {
+  order: 2;
+}
+.el-toolbar > app-refresh-button {
+  order: 4;
 }

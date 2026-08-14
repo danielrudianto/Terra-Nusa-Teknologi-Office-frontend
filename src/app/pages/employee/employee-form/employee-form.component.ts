@@ -88,8 +88,35 @@ export class EmployeeFormComponent implements OnInit {
   bagian: Bagian[] = [];
   terbuka = '';
 
-  /** True bila karyawan ini belum mengisi periode berjalan. */
+  /** True bila karyawan ini belum pernah mengisi formulirnya. */
   baru = false;
+
+  /**
+   * Kapan data ini terakhir diperbarui; null bila belum pernah.
+   *
+   * Ditampilkan di kepala dialog karena itulah yang menentukan perlu tidaknya
+   * dikonfirmasi ulang — lebih dari dua belas bulan, namanya muncul di
+   * agenda.
+   */
+  terakhir: string | null = null;
+
+  /** Berapa bulan sejak pembaruan terakhir; null bila belum pernah. */
+  get bulanSejakTerakhir(): number | null {
+    if (!this.terakhir) return null;
+    const t = new Date(this.terakhir);
+    if (isNaN(t.getTime())) return null;
+    const kini = new Date();
+    return (
+      (kini.getFullYear() - t.getFullYear()) * 12 +
+      (kini.getMonth() - t.getMonth())
+    );
+  }
+
+  /** True bila sudah lewat dua belas bulan sejak pembaruan terakhir. */
+  get perluKonfirmasi(): boolean {
+    const b = this.bulanSejakTerakhir;
+    return b === null || b >= 12;
+  }
 
   formGroup: FormGroup = new FormGroup({});
 
@@ -200,6 +227,8 @@ export class EmployeeFormComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           this.baru = !data;
+          // Tanggal ini menentukan perlu tidaknya dikonfirmasi ulang.
+          this.terakhir = data?.submittedAt ?? null;
           if (data) this.isiJawaban(data.answers);
           this.isLoading = false;
         },

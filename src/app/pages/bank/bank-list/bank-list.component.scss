@@ -231,3 +231,29 @@
   color: var(--muted, #6b7280);
   font-family: "Montserrat", sans-serif;
 }
+
+/*
+ * Kepala kolom yang dapat diurut.
+ *
+ * Kelasnya dipakai templat tetapi tidak pernah didefinisikan, sehingga ikon
+ * urutnya jatuh ke tata letak bawaan — jaraknya tidak sama antar kolom.
+ * Disamakan dengan daftar aset.
+ */
+.bl-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--brand, #154dec);
+  }
+  &__idle {
+    color: var(--faint, #cfd4dc) !important;
+  }
+  &--right {
+    justify-content: flex-end;
+  }
+}

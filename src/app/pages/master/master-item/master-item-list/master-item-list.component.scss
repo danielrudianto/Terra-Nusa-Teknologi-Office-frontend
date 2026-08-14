@@ -282,3 +282,31 @@ $hover: var(--hover, #f6f8ff);
   font-size: 19px;
   line-height: 19px;
 }
+
+/*
+ * Kepala kolom yang dapat diurut.
+ *
+ * Disalin dari daftar aset agar keduanya sama: kelasnya sudah dipakai
+ * templat sejak awal tetapi TIDAK PERNAH didefinisikan di sini, sehingga
+ * ikon urutnya jatuh ke tata letak bawaan — mengambang di samping judul
+ * dengan jarak yang tidak sama antar kolom.
+ */
+.mi-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--brand, #154dec);
+  }
+  /* Panah pucat saat kolomnya bukan yang sedang diurut. */
+  &__idle {
+    color: var(--faint, #cfd4dc) !important;
+  }
+  &--right {
+    justify-content: flex-end;
+  }
+}

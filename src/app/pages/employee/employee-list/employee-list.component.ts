@@ -20,7 +20,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { EmployeeStatusComponent } from '../employee-status/employee-status.component';
 import { EmployeeProfileComponent } from '../employee-profile/employee-profile.component';
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
-import { EmployeeFormPeriodComponent } from '../employee-form-period/employee-form-period.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
 @Component({
@@ -89,45 +88,6 @@ export class EmployeeListComponent {
     this.fetchEmployees(targetPage);
   }
 
-  /**
-   * Buka profil pribadi karyawan.
-   *
-   * Dibuka dari daftar yang sudah ada, bukan halaman tersendiri: membuat
-   * layar baru berarti daftar karyawan kedua untuk hal yang sama, dan
-   * penggunanya harus mencari orang yang sama dua kali.
-   */
-  openProfile(row: any) {
-    this.dialog.open(EmployeeProfileComponent, {
-      data: { id: row.id, name: row.name },
-      maxWidth: '96vw',
-      width: 'min(900px, 96vw)',
-      autoFocus: false,
-    });
-  }
-
-  /** Buka formulir keadaan berkala untuk periode yang sedang berlaku. */
-  openForm(row: any) {
-    this.dialog.open(EmployeeFormComponent, {
-      data: { id: row.id, name: row.name, nik: row.nik },
-      maxWidth: '96vw',
-      width: 'min(900px, 96vw)',
-      autoFocus: false,
-    });
-  }
-
-  /**
-   * Kelola periode pengisian formulir keadaan.
-   *
-   * Ditaruh di daftar karyawan, bukan halaman tersendiri: yang membukanya
-   * HRD, dan ia sudah berada di sini saat menagih pengisian.
-   */
-  openPeriode() {
-    this.dialog.open(EmployeeFormPeriodComponent, {
-      maxWidth: '96vw',
-      width: 'min(560px, 96vw)',
-      autoFocus: false,
-    });
-  }
 
   openUpdateEmployee(id: number) {
     this.dialog
@@ -162,6 +122,25 @@ export class EmployeeListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  openProfile(row: any) {
+    this.dialog.open(EmployeeProfileComponent, {
+      data: { id: row.id, name: row.name },
+      maxWidth: '96vw',
+      width: 'min(900px, 96vw)',
+      autoFocus: false,
+    });
+  }
+
+  /** Buka formulir pembaruan data karyawan. Dapat diisi kapan saja. */
+  openForm(row: any) {
+    this.dialog.open(EmployeeFormComponent, {
+      data: { id: row.id, name: row.name, nik: row.nik },
+      maxWidth: '96vw',
+      width: 'min(900px, 96vw)',
+      autoFocus: false,
+    });
   }
 
   /**

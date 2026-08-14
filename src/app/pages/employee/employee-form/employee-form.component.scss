@@ -429,3 +429,20 @@
   min-height: 48px;
   padding-bottom: 1.25rem;
 }
+
+/*
+ * Keterangan pembaruan yang sudah lewat setahun.
+ *
+ * Diwarnai berbeda, bukan diberi tanda seru: ini bukan kesalahan — datanya
+ * memang wajar menua, dan yang diperlukan hanya menanyakan ulang.
+ */
+.efm-banner.perlu {
+  border-color: var(--warn-fg, #d9880a);
+  background: var(--warn-soft, #fdf0d5);
+  color: var(--warn-fg, #d9880a);
+}
+.efm-banner small {
+  margin-left: 0.25rem;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
