@@ -48,7 +48,43 @@
     <span class="cp-skeleton cp-skeleton--hero" *ngIf="isLoading"></span>
   </div>
 
-  <div class="cp-divider" *ngIf="!errorMsg"></div>
+  <!--
+    Tombol lipat, sekaligus pemisah.
+
+    Judul, tanggal, dan total TETAP terlihat saat terlipat — ketiganya yang
+    paling sering ditanyakan. Rincian per rekening baru diperlukan saat ada
+    yang tidak cocok, bukan setiap kali beranda dibuka.
+  -->
+  <button
+    type="button"
+    class="cp-toggle"
+    *ngIf="!errorMsg"
+    (click)="toggleRincian()"
+    [attr.aria-expanded]="terbuka"
+  >
+    <span class="cp-toggle__teks">
+      {{
+        (terbuka ? "dashboard.sembunyikanRincian" : "dashboard.lihatRincian")
+          | translate
+      }}
+      <span class="cp-toggle__jumlah" *ngIf="!isLoading">
+        {{ accounts.length }}
+      </span>
+    </span>
+    <svg
+      class="cp-toggle__panah"
+      [class.on]="terbuka"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
 
   <!-- Error state -->
   <div class="cp-error" *ngIf="errorMsg">
@@ -57,7 +93,7 @@
   </div>
 
   <!-- Loading skeleton -->
-  <div class="cp-list" *ngIf="isLoading && !errorMsg">
+  <div class="cp-list" *ngIf="terbuka && isLoading && !errorMsg">
     <div class="cp-row" *ngFor="let s of skeletonRows">
       <div class="cp-row__left">
         <span class="cp-skeleton cp-skeleton--line" style="width: 140px"></span>
@@ -71,7 +107,7 @@
   </div>
 
   <!-- Accounts -->
-  <div class="cp-list" *ngIf="!isLoading && !errorMsg">
+  <div class="cp-list" *ngIf="terbuka && !isLoading && !errorMsg">
     <div
       class="cp-row"
       *ngFor="let a of accounts; trackBy: trackByAccount"

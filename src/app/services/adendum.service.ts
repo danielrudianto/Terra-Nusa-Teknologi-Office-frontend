@@ -94,6 +94,51 @@ export class AdendumService {
   }
 
   /**
+   * Isian yang TIDAK BOLEH diubah pada adendum.
+   *
+   * Ketiganya mengikat adendum pada perjanjian induknya:
+   *
+   * - pemasok: mengganti berarti menagih pihak lain atas dokumen bernomor
+   *   sama, sedangkan lembar induknya sudah ditandatangani vendor tertentu;
+   * - proyek: mengganti memindahkan biayanya ke pembukuan proyek berbeda
+   *   tanpa jejak, dan laporan margin kedua proyek ikut salah;
+   * - jenis material: menentukan JUDUL dokumennya — beton dan besi terbit
+   *   sebagai PURCHASE ORDER, uji tekan dan uji besi sebagai SURAT PERINTAH
+   *   KERJA. Mengubahnya membuat nomor ber-"PO" terbit di atas lembar
+   *   berjudul SPK.
+   *
+   * Dikunci di layar SEBAGAI PELENGKAP, bukan pengganti: servernya menolak
+   * juga. Yang di sini hanya agar orang tidak mencoba lalu ditolak setelah
+   * mengisi seluruh formulirnya.
+   */
+  readonly ISIAN_TERKUNCI = [
+    'supplierID',
+    'supplier',
+    'supplierName',
+    'projectName',
+    'projectCode',
+    'purchaseType',
+    'materialType',
+    'maintenanceMode',
+    'marketingMode',
+    'recruitmentMode',
+  ];
+
+  /**
+   * Matikan isian yang tidak boleh diubah pada adendum.
+   *
+   * Dimatikan, bukan disembunyikan: yang mengisi tetap perlu MELIHAT
+   * pemasok dan proyeknya untuk memastikan sedang mengadendum dokumen yang
+   * benar.
+   */
+  kunciIsian(formGroup: FormGroup): void {
+    this.ISIAN_TERKUNCI.forEach((k) => {
+      const c = formGroup.get(k);
+      if (c) c.disable({ emitEvent: false });
+    });
+  }
+
+  /**
    * Baris pekerjaan dari dokumen induk, untuk mengisi FormArray-nya.
    *
    * Volumenya dikosongkan, bukan disalin.

@@ -99,6 +99,57 @@ $negative: var(--bad-fg, #ca2929);
   margin: 1.25rem 0 0.5rem;
 }
 
+/* ---- tombol lipat ---- */
+
+.cp-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 1.1rem 0 0;
+  padding: 0.5rem 0;
+  border: 0;
+  border-top: 1px solid $line;
+  background: transparent;
+  color: $muted;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cp-toggle:hover {
+  color: var(--brand);
+}
+.cp-toggle__teks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* Berapa rekening yang tersembunyi; angkanya menahan orang membuka
+   hanya untuk menghitung. */
+.cp-toggle__jumlah {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+.cp-toggle__panah {
+  flex: 0 0 auto;
+  transition: transform 0.15s ease;
+}
+.cp-toggle__panah.on {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-toggle__panah {
+    transition: none;
+  }
+}
+
 /* ---- account rows ---- */
 .cp-list {
   display: flex;

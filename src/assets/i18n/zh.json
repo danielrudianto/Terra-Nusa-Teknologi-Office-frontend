@@ -1490,7 +1490,9 @@
     "create": "新建",
     "tidakAdaReimbursementTertunda": "Tidak ada reimbursement tertunda.",
     "perbarui": "Perbarui",
-    "close": "Close"
+    "close": "Close",
+    "lihatRincian": "查看账户明细",
+    "sembunyikanRincian": "隐藏明细"
   },
   "calendarDay": {
     "title": "每日财务概览",
@@ -1886,7 +1888,8 @@
     "actions": "Actions",
     "rowActions": "Row actions",
     "changeTypeConfirm": "确认更换类型",
-    "adendumGagalMuat": "无法载入原始单据，下方各项为空。"
+    "adendumGagalMuat": "无法载入原始单据，下方各项为空。",
+    "adendumBanner": "针对以下单据的补充协议"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -3836,6 +3839,7 @@
     "simpan": "保存"
   },
   "poView": {
-    "buatAdendum": "创建补充协议"
+    "buatAdendum": "创建补充协议",
+    "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。"
   }
 }

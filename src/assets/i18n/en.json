@@ -1490,7 +1490,9 @@
     "create": "Create",
     "tidakAdaReimbursementTertunda": "Tidak ada reimbursement tertunda.",
     "perbarui": "Perbarui",
-    "close": "Close"
+    "close": "Close",
+    "lihatRincian": "Show account details",
+    "sembunyikanRincian": "Hide details"
   },
   "calendarDay": {
     "title": "Daily Financial Overview",
@@ -1886,7 +1888,8 @@
     "actions": "Actions",
     "rowActions": "Row actions",
     "changeTypeConfirm": "Yes, change type",
-    "adendumGagalMuat": "The parent document could not be loaded. The fields below are empty."
+    "adendumGagalMuat": "The parent document could not be loaded. The fields below are empty.",
+    "adendumBanner": "Addendum to document"
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -3836,6 +3839,7 @@
     "simpan": "Save"
   },
   "poView": {
-    "buatAdendum": "Create addendum"
+    "buatAdendum": "Create addendum",
+    "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created."
   }
 }

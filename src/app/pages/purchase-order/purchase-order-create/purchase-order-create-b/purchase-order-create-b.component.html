@@ -199,7 +199,15 @@
                   ></mat-datepicker-toggle>
                   <mat-datepicker #dp2></mat-datepicker>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="pob-span2">
+                <!--
+                  Lokasi kerja SATU kolom, bukan selebar petaknya.
+
+                  Sebelumnya ia mengambil tiga kolom sendirian, sehingga baris
+                  sebelum dan sesudahnya masing-masing menyisakan satu kolom
+                  kosong — isiannya tampak selang-seling dan sulit dibaca
+                  berurutan.
+                -->
+                <mat-form-field appearance="outline">
                   <mat-label>{{ "poB.workLocation" | translate }}</mat-label>
                   <input
                     matInput

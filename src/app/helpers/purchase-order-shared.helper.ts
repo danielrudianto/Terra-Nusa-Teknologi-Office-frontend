@@ -55,7 +55,10 @@ export function workIntroSentence(poType?: string): string {
   const t = String(poType || '').toUpperCase();
 
   if (t === 'B') {
-    return 'Untuk melakukan penyewaan alat kerja dengan ketentuan-ketentuan sebagai berikut:';
+    return (
+      'Berdasarkan permintaan kami, bersama ini kami bermaksud untuk ' +
+      'melakukan penyewaan barang dengan ketentuan sebagai berikut:'
+    );
   }
   if (t === '6.4.2') {
     return 'Untuk melakukan penutupan pertanggungan dengan ketentuan-ketentuan sebagai berikut:';

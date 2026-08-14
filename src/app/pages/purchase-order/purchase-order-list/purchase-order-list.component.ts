@@ -24,7 +24,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { printPurchaseOrderG } from '../../../helpers/purchase-order-g.helper';
 import { printPurchaseOrderC } from '../../../helpers/purchase-order-c.helper';
 import { printPurchaseOrderD } from '../../../helpers/purchase-order-d.helper';
-import { printPurchaseOrderB } from '../../../helpers/purchase-order-b.helper';
+import {
+  printPurchaseOrderB,
+  perluasItemMobilisasi,
+} from '../../../helpers/purchase-order-b.helper';
 import { printPurchaseOrderH } from '../../../helpers/purchase-order-h.helper';
 import { PurchaseOrderViewComponent } from '../purchase-order-view/purchase-order-view.component';
 import { PurchaseOrderTypeSelectorComponent } from '../purchase-order-type-selector/purchase-order-type-selector.component';
@@ -362,43 +365,13 @@ export class PurchaseOrderListComponent {
   }
 
   viewOrder(po: any) {
-    this.dialog
-      .open(PurchaseOrderViewComponent, {
-        data: { id: po.id },
-        maxWidth: '94vw',
-        autoFocus: false,
-      })
-      .afterClosed()
-      .subscribe((hasil: any) => {
-        // Dialognya menutup diri lalu meminta formulir adendum dibuka.
-        //
-        // Formulirnya TIDAK dibuka dari dalam dialog: itu menjadi dialog di
-        // dalam dialog, yang sudah terbukti membingungkan pada pemilih
-        // klien. Dialognya menutup dulu, lalu halaman ini yang membuka.
-        if (hasil?.adendumDari) this.bukaFormulirAdendum(po, hasil.adendumDari);
-      });
-  }
-
-  /**
-   * Buka formulir varian yang sama dengan induknya, dalam mode adendum.
-   *
-   * Varian ditentukan induknya dan TIDAK dapat dipilih ulang: adendum
-   * memakai jenis dokumen yang sama dengan yang diadendumnya, dan memilih
-   * jenis lain berarti dokumen yang berbeda sama sekali.
-   */
-  private bukaFormulirAdendum(po: any, indukId: number) {
-    const segment = this.createRoutes[po.purchaseType];
-    if (!segment) {
-      this.snackBar.open(
-        `Jenis PO ${po.purchaseType} belum tersedia`,
-        'Close',
-        { duration: 3000 },
-      );
-      return;
-    }
-    this.router.navigate(['Create', segment], {
-      relativeTo: this.route,
-      queryParams: { adendumDari: indukId },
+    // Dialognya menangani sendiri bila penggunanya memilih membuat adendum:
+    // ia dibuka dari tiga tempat, dan menaruh penanganannya di sini berarti
+    // ketiganya harus menyalin hal yang sama.
+    this.dialog.open(PurchaseOrderViewComponent, {
+      data: { id: po.id },
+      maxWidth: '94vw',
+      autoFocus: false,
     });
   }
 
@@ -608,13 +581,24 @@ export class PurchaseOrderListComponent {
                 // PO-B, sesuai templatenya waktu itu.
                 printPurchaseOrderB({
                   ...printData,
-                  items: (data.items || []).map((it: any) => ({
-                    name:
-                      it.equipment_name || it.item_description || it.task || '',
-                    quantity: Number(it.quantity) || 0,
-                    unit: it.unit,
-                    price: Number(it.price) || 0,
-                  })),
+                  // Sama dengan jalur formulir: mobilisasi disisipkan
+                  // sebagai baris pekerjaan tersendiri. Ditulis lewat fungsi
+                  // yang sama supaya cetak ulang tidak dapat berbeda dari
+                  // cetakan pertamanya.
+                  items: perluasItemMobilisasi(
+                    (data.items || []).map((it: any) => ({
+                      name:
+                        it.equipment_name ||
+                        it.item_description ||
+                        it.task ||
+                        '',
+                      quantity: Number(it.quantity) || 0,
+                      unit: it.unit,
+                      price: Number(it.price) || 0,
+                      remarks_4: it.remarks_4,
+                      remarks_5: it.remarks_5,
+                    })),
+                  ),
                   includePpn: Number(data.ppn) > 0,
                   clauseContext: ctx,
                   additionalClauses: additional,

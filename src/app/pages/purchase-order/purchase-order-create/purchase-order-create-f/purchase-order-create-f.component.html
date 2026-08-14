@@ -16,6 +16,26 @@
       <div class="pof-section__title">
         {{ "poForm.sectionInfo" | translate }}
       </div>
+
+      <!--
+        Keterangan saat layar ini membuat ADENDUM.
+
+        Isian yang terkunci tanpa penjelasan membuat orang mengira layarnya
+        rusak; disebutkan di sini beserta alasannya, dan nomor induknya
+        ditampilkan supaya yang mengisi dapat memastikan sedang mengadendum
+        dokumen yang benar.
+      -->
+      @if (isAdendum) {
+        <div class="pof-note">
+          <mat-icon>info</mat-icon>
+          <span>
+            {{ "poForm.adendumBanner" | translate }}
+            @if (induk?.name) {
+              <strong>{{ induk.name }}</strong>
+            }
+          </span>
+        </div>
+      }
       <div class="pof-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.dateGeneric" | translate }}</mat-label>

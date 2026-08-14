@@ -24,7 +24,36 @@ import {
 } from '../../../constants/clause-templates';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
+
+/**
+ * Kode jenis PO ke segmen rute formulirnya.
+ *
+ * Disalin dari daftar purchase order dengan sengaja: adendum memakai
+ * formulir varian yang SAMA dengan induknya, dan jenis yang belum punya
+ * formulir tidak dapat diadendum.
+ */
+const ADENDUM_ROUTES: Record<string, string> = {
+  A: 'A',
+  B: 'B',
+  C: 'C',
+  D: 'D',
+  F: 'F',
+  G: 'G',
+  H1: 'H',
+  H2: 'H',
+  '5.1.1': '511',
+  '5.1.2': '512',
+  '5.1.6': '516',
+  '5.1.12': '5112',
+  '6.3.1': '63',
+  '6.3.2': '63',
+  '6.4.1': '641',
+  '6.4.2': '642',
+  '6.5.1': '651',
+  '6.5.2': '652',
+};
 
 @Component({
   selector: 'app-purchase-order-view',
@@ -89,6 +118,7 @@ export class PurchaseOrderViewComponent {
       konfirmasi?: boolean;
     },
     private dialogRef: MatDialogRef<PurchaseOrderViewComponent>,
+    private router: Router,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
@@ -143,7 +173,15 @@ export class PurchaseOrderViewComponent {
   get bolehAdendum(): boolean {
     if (this.isPratinjau || !this.data) return false;
     if (this.data.parentPurchaseOrderID) return false;
-    return !!this.data.isApproved;
+    /*
+     * Memeriksa DUA bidang, bukan satu.
+     *
+     * Sebagian dokumen tersimpan dengan `status: "approved"` sementara
+     * `isApproved` masih `false`. Memeriksa `isApproved` saja membuat
+     * tombolnya tidak pernah muncul pada dokumen yang sudah disetujui — dan
+     * tidak ada galat yang menjelaskan mengapa.
+     */
+    return !!this.data.isApproved || this.data.status === 'approved';
   }
 
   /**
@@ -154,7 +192,32 @@ export class PurchaseOrderViewComponent {
    * sudah terbukti membingungkan pada pemilih klien.
    */
   buatAdendum(): void {
-    this.dialogRef.close({ adendumDari: this.data.id });
+    /*
+     * Dialognya sendiri yang menavigasi, bukan mengembalikan hasil ke
+     * pemanggilnya.
+     *
+     * Dialog ini dibuka dari TIGA tempat: daftar purchase order, daftar
+     * pembelian, dan layar lihat pembelian. Bila hasilnya diserahkan ke
+     * pemanggil, ketiganya harus menangani hal yang sama — dan dua di
+     * antaranya tidak, sehingga tombolnya tampak berfungsi tetapi tidak
+     * melakukan apa pun.
+     *
+     * Alamatnya MUTLAK, bukan relatif: pemanggilnya berada di cabang rute
+     * yang berbeda-beda.
+     */
+    const segment = ADENDUM_ROUTES[this.data?.purchaseType];
+    if (!segment) {
+      this.snackBar.open(
+        this.translate.instant('poView.adendumJenisBelumAda'),
+        this.translate.instant('common.close'),
+        { duration: 4000 },
+      );
+      return;
+    }
+    this.dialogRef.close();
+    this.router.navigate(['/Purchase-order', 'Create', segment], {
+      queryParams: { adendumDari: this.data.id },
+    });
   }
 
   get isPratinjau(): boolean {

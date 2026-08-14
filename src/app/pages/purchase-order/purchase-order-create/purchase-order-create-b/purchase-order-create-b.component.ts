@@ -38,7 +38,10 @@ import {
   buildTransportRentalBillingTerms,
   latestClauseVersion,
 } from '../../../../constants/clause-templates';
-import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
+import {
+  printPurchaseOrderB,
+  perluasItemMobilisasi,
+} from '../../../../helpers/purchase-order-b.helper';
 import { isTempoTerm } from '../../../../helpers/purchase-order-shared.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 import { tanggalLokal } from '../../../../utils/tanggal';
@@ -656,23 +659,38 @@ export class PurchaseOrderCreateBComponent {
       supplierCity: v.supplierCity,
       supplierNpwp: v.supplierNpwp,
       supplierPIC: v.supplierPIC,
-      items: this.t.controls.map((c) => {
-        const x = c.getRawValue();
-        return {
-          name: x.name,
+      // `perluasItemMobilisasi` menyisipkan mobilisasi dan demobilisasi
+      // sebagai baris pekerjaan tersendiri, bernomor sendiri.
+      items: perluasItemMobilisasi(
+        this.t.controls.map((c) => {
+          const x = c.getRawValue();
+          return {
+            name: x.name,
           // Periode dan lokasi dicetak di bawah nama alat.
           //
           // Sebelumnya keduanya tidak pernah sampai ke dokumen: klausul
           // memang menyebut kewajiban selama masa sewa, tetapi tidak satu
           // pun menyebut tanggalnya — sehingga dokumen yang terbit tidak
           // menyatakan sampai kapan alat itu disewa.
-          remarks: this.periodeLokasi(x),
-          quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
-          unit: x.unit,
-          price: Number(x.price) || 0,
-        };
-      }),
+            remarks: this.periodeLokasi(x),
+            quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+            unit: x.unit,
+            price: Number(x.price) || 0,
+            remarks_4: String(Number(x.mobilisasi) || 0),
+            remarks_5: String(Number(x.demobilisasi) || 0),
+          };
+        }),
+      ),
       includePpn: !!v.includePPN,
+      /*
+       * Jenis dokumen diteruskan agar kalimat pengantarnya benar.
+       *
+       * Tanpa ini `workIntroSentence` jatuh ke kalimat umum "untuk melakukan
+       * pekerjaan" — padahal PO-B menyewa alat, bukan memesan pekerjaan.
+       * Cetak ulang dari daftar sudah mengirimkannya, sehingga dokumen yang
+       * sama berbunyi berbeda tergantung dari mana ia dicetak.
+       */
+      poType: 'B',
       templateVersion: this.templateVersion,
       /*
        * Lembar penagihan mengikuti bentuk pekerjaannya.

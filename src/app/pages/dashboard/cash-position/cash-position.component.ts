@@ -28,6 +28,23 @@ interface CashPositionResponse {
   imports: [TranslatePipe, CommonModule],
 })
 export class CashPositionComponent implements OnInit {
+
+  /*
+   * Daftar rekening dilipat secara bawaan.
+   *
+   * Yang paling sering ditanyakan hanya dua: per tanggal berapa, dan berapa
+   * totalnya — dan keduanya TETAP terlihat saat terlipat. Rincian per
+   * rekening baru diperlukan saat ada yang tidak cocok, bukan setiap kali
+   * beranda dibuka.
+   *
+   * Kartunya menempati dua pertiga layar saat seluruh rekening ditampilkan,
+   * sehingga kartu lain di beranda terdorong ke bawah lipatan.
+   */
+  terbuka = false;
+
+  toggleRincian(): void {
+    this.terbuka = !this.terbuka;
+  }
   accounts: CashAccount[] = [];
   totalBalance = 0;
   generatedAt = '';

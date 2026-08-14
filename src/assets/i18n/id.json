@@ -1490,7 +1490,9 @@
     "create": "Buat",
     "tidakAdaReimbursementTertunda": "Tidak ada reimbursement tertunda.",
     "perbarui": "Perbarui",
-    "close": "Close"
+    "close": "Close",
+    "lihatRincian": "Lihat rincian rekening",
+    "sembunyikanRincian": "Sembunyikan rincian"
   },
   "calendarDay": {
     "title": "Ringkasan Keuangan Harian",
@@ -1886,7 +1888,8 @@
     "actions": "Actions",
     "rowActions": "Row actions",
     "changeTypeConfirm": "Ya, ganti jenis",
-    "adendumGagalMuat": "Dokumen induk gagal dimuat. Isian di bawah masih kosong."
+    "adendumGagalMuat": "Dokumen induk gagal dimuat. Isian di bawah masih kosong.",
+    "adendumBanner": "Adendum atas dokumen"
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -3836,6 +3839,7 @@
     "simpan": "Simpan"
   },
   "poView": {
-    "buatAdendum": "Buat adendum"
+    "buatAdendum": "Buat adendum",
+    "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat."
   }
 }

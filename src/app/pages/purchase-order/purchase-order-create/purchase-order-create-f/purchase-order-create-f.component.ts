@@ -335,6 +335,14 @@ export class PurchaseOrderCreateFComponent {
         if (!induk) return;
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
+        /*
+         * Pemasok, proyek, dan jenis material dikunci.
+         *
+         * Ketiganya mengikat adendum pada perjanjian induknya; servernya
+         * menolak juga bila berbeda, dan mengunci di sini hanya agar orang
+         * tidak mencoba lalu ditolak setelah mengisi seluruh formulirnya.
+         */
+        this.adendum.kunciIsian(this.formGroup);
         this.t.clear();
         this.adendum
           .barisInduk(induk)

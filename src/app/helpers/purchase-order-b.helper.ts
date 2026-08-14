@@ -189,14 +189,9 @@ function buildItemTable(data: IPurchaseOrderB) {
    * yang memang belum terpakai. Dibaca dengan `Number()` karena kolomnya
    * teks.
    */
-  const nilaiTambahan = (item: any) => [
-    { label: 'Mobilisasi', nilai: Number(item.remarks_4) || 0 },
-    { label: 'Demobilisasi', nilai: Number(item.remarks_5) || 0 },
-  ];
-
-  const rows = data.items.flatMap((item, i) => {
+  const rows = data.items.map((item, i) => {
     const amount = (Number(item.quantity) || 0) * (Number(item.price) || 0);
-    const utama = [
+    return [
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
       {
         style: 'td',
@@ -220,40 +215,16 @@ function buildItemTable(data: IPurchaseOrderB) {
       },
       { text: rupiah(amount), style: 'td', alignment: 'right' as Alignment },
     ];
-
-    // Baris anak: hanya yang bernilai, agar dokumen tidak dipenuhi nol.
-    const tambahan = nilaiTambahan(item)
-      .filter((x) => x.nilai > 0)
-      .map((x) => [
-        { text: '', style: 'td' },
-        { text: `   ${x.label}`, style: 'td', fontSize: 9 },
-        { text: '', style: 'td', alignment: 'center' as Alignment },
-        { text: 'LS', style: 'td', alignment: 'center' as Alignment },
-        {
-          text: rupiah(x.nilai),
-          style: 'td',
-          alignment: 'right' as Alignment,
-          fontSize: 9,
-        },
-        {
-          text: rupiah(x.nilai),
-          style: 'td',
-          alignment: 'right' as Alignment,
-          fontSize: 9,
-        },
-      ]);
-
-    return [utama, ...tambahan];
   });
 
   // Harga satuan yang diisi adalah DPP; PPN ditambahkan di atasnya.
   const subTotal = data.items.reduce(
     (acc, item) =>
       acc +
-      (Number(item.quantity) || 0) * (Number(item.price) || 0) +
-      // Mobilisasi ikut DPP, sehingga ikut kena PPN seperti nilai sewanya.
-      (Number(item.remarks_4) || 0) +
-      (Number(item.remarks_5) || 0),
+      // Mobilisasi sudah menjadi baris tersendiri lewat
+      // `perluasItemMobilisasi`, sehingga terhitung di sini seperti baris
+      // lainnya — dan ikut DPP, karena itu ikut kena PPN.
+      (Number(item.quantity) || 0) * (Number(item.price) || 0),
     0,
   );
   const ppn = data.includePpn ? subTotal * 0.11 : 0;
@@ -330,6 +301,54 @@ function pasalTitle(text: string) {
     bold: true,
     margin: [0, 10, 0, 4] as Margins,
   };
+}
+
+/**
+ * Sisipkan mobilisasi dan demobilisasi sebagai BARIS PEKERJAAN tersendiri.
+ *
+ * Bukan baris anak tanpa nomor: vendor menagih per baris, dan baris tanpa
+ * nomor tidak dapat dirujuk pada invoice maupun berita acara. Dengan nomor
+ * sendiri, "nomor 2" pada tagihan menunjuk sesuatu yang pasti.
+ *
+ * Uraiannya menyebut nomor alat yang dimaksud, sehingga tetap terbaca
+ * sebagai satu kesatuan walaupun barisnya terpisah.
+ *
+ * Dipakai DUA jalur cetak — dari formulir dan dari cetak ulang. Ditulis di
+ * sini, bukan di masing-masing, karena sebelumnya mobilisasi memang tidak
+ * pernah sampai ke dokumen: kedua jalur menyusun daftar itemnya sendiri dan
+ * keduanya lupa menyertakannya.
+ */
+export function perluasItemMobilisasi(
+  items: readonly IPurchaseOrderBItem[],
+): IPurchaseOrderBItem[] {
+  const hasil: IPurchaseOrderBItem[] = [];
+
+  items.forEach((item) => {
+    hasil.push(item);
+    const nomorAlat = hasil.length; // nomor baris alatnya, setelah disisipkan
+
+    const tambahan: Array<[string, number]> = [
+      ['Mobilisasi', Number(item.remarks_4) || 0],
+      ['Demobilisasi', Number(item.remarks_5) || 0],
+    ];
+
+    tambahan.forEach(([label, nilai]) => {
+      // Yang bernilai nol tidak dicetak: PO tanpa mobilisasi tampil persis
+      // seperti sebelumnya.
+      if (nilai <= 0) return;
+      hasil.push({
+        name: `${label} ${item.name || ''} sesuai pada nomor ${nomorAlat}`.replace(
+          /\s+/g,
+          ' ',
+        ),
+        quantity: 1,
+        unit: 'LS',
+        price: nilai,
+      });
+    });
+  });
+
+  return hasil;
 }
 
 export function printPurchaseOrderB(
