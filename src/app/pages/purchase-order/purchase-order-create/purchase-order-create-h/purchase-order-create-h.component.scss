@@ -1277,3 +1277,74 @@ app-wysiwyg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ---- lampiran penagihan (Pasal 5) ---- */
+
+.poh-lampiran {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 0.35rem 0 0.5rem;
+}
+
+.poh-lampiran__wajib {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+}
+.poh-lampiran__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+.poh-lampiran__teks {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+/* Keterangan yang perlu dibaca sebelum memilih, bukan sesudah. */
+.poh-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--brand);
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.poh-banner .mat-icon {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+.poh-lampiran__daftar {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+.poh-lampiran__daftar li {
+  margin-bottom: 0.2rem;
+}
+
+/* Dua poin baku Pasal 4 yang mengikuti kesepakatan. */
+.poh-pasal4 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 0.35rem 0 0.75rem;
+}
+.poh-pasal4 .mat-mdc-form-field {
+  width: 100%;
+}

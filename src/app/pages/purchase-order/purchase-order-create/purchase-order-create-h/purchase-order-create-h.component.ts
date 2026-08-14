@@ -41,6 +41,10 @@ import {
   H_PASAL_4_DEFAULT,
   H_PASAL_5_DOCUMENTS,
   buildPasal5,
+  dokumenPasal5,
+  type LampiranPasal5,
+  bangunPasal4,
+  type PenanggungAsuransi,
 } from '../../../../constants/clause-templates';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { printPurchaseOrderH } from '../../../../helpers/purchase-order-h.helper';
@@ -423,13 +427,48 @@ export class PurchaseOrderCreateHComponent {
       Validators.max(100),
     ]),
     retentionReleaseDays: new FormControl(0, [Validators.min(0)]),
-    billingDocuments: new FormArray(
-      H_PASAL_5_DOCUMENTS.map((t) => new FormControl(t)),
-    ),
+    /*
+     * Bukti penerimaan pekerjaan pada Pasal 5.
+     *
+     * Tidak semua proyek memakai Certificate of Payment: sebagian memakai
+     * Berita Acara Serah Terima, sebagian lagi tidak mensyaratkan keduanya.
+     * Memaksakan CoP membuat vendor menagihkan dokumen yang tidak pernah
+     * dibuat siapa pun, dan penagihannya tertahan menunggu berkas itu.
+     */
+    /*
+     * Lampiran penagihan sebagai sakelar, bukan daftar teks bebas.
+     *
+     * Invoice, kwitansi, dan SPK selalu diminta sehingga tidak punya sakelar.
+     * Faktur pajak tidak selalu ada. Bukti penerimaan berbeda tiap proyek:
+     * CoP, Berita Acara, keduanya, atau tidak sama sekali — karena itu
+     * masing-masing berdiri sendiri, bukan satu pilihan tiga cabang.
+     */
+    lampiranFakturPajak: new FormControl(true),
+    lampiranCop: new FormControl(true),
+    lampiranBeritaAcara: new FormControl(false),
 
     // Pasal 3 & 4 — isi bawaan yang tetap bisa diubah per poin
     kewajiban: new FormArray(H_PASAL_3_DEFAULT.map((t) => new FormControl(t))),
-    keterangan: new FormArray(H_PASAL_4_DEFAULT.map((t) => new FormControl(t))),
+    /*
+     * Poin tambahan Pasal 3, terpisah dari yang baku.
+     *
+     * Yang baku tidak disunting — isinya sama di semua pekerjaan borongan.
+     * Kesepakatan khusus ditambahkan di sini dan tercetak MELANJUTKAN
+     * penomoran yang baku, bukan menggantikannya.
+     */
+    kewajibanTambahan: new FormArray([]),
+    /*
+     * Pasal 4: dua poin terakhir mengikuti kesepakatan, bukan angka bawaan.
+     *
+     * Asuransi kadang ditanggung PIHAK KEDUA, kadang tidak berlaku sama
+     * sekali. Biaya standby berbeda tiap proyek. Menuliskannya tetap membuat
+     * dokumen menyebut nominal yang tidak pernah disepakati siapa pun.
+     */
+    penanggungAsuransi: new FormControl<PenanggungAsuransi>('pertama'),
+    standbyBerlaku: new FormControl(true),
+    standbyBiaya: new FormControl(5000000, [Validators.min(0)]),
+    standbyHari: new FormControl(3, [Validators.min(0)]),
+    keterangan: new FormArray([]),
     scopes: new FormArray([]),
     workers: new FormArray([]),
     includePPN: new FormControl(true),
@@ -570,29 +609,60 @@ export class PurchaseOrderCreateHComponent {
       price: [0, [Validators.required, Validators.min(0)]],
     });
   }
-  get billingDocuments(): FormArray {
-    return this.formGroup.get('billingDocuments') as FormArray;
+  /** Keadaan sakelar lampiran, dibaca klausul dan pratinjau. */
+  get lampiranPasal5(): LampiranPasal5 {
+    const v = this.formGroup.getRawValue();
+    return {
+      fakturPajak: !!v.lampiranFakturPajak,
+      cop: !!v.lampiranCop,
+      beritaAcara: !!v.lampiranBeritaAcara,
+    };
   }
 
-  addBillingDocument() {
-    this.billingDocuments.push(new FormControl(''));
+  /** Baris lampiran yang akan tercetak; disusun ulang tiap sakelar berubah. */
+  get dokumenLampiran(): string[] {
+    return dokumenPasal5(this.lampiranPasal5);
   }
 
-  removeBillingDocument(i: number) {
-    this.billingDocuments.removeAt(i);
+  /** Poin Pasal 4 yang tercetak: baku menurut pilihan, lalu tambahan. */
+  get pasal4Preview(): string[] {
+    const v = this.formGroup.getRawValue();
+    return [
+      ...bangunPasal4({
+        penanggungAsuransi: v.penanggungAsuransi,
+        standbyBerlaku: v.standbyBerlaku,
+        standbyBiaya: v.standbyBiaya,
+        standbyHari: v.standbyHari,
+      }),
+      ...this.keteranganValues,
+    ];
   }
 
-  resetBillingDocuments() {
-    this.billingDocuments.clear();
-    H_PASAL_5_DOCUMENTS.forEach((t) =>
-      this.billingDocuments.push(new FormControl(t)),
-    );
+  get standbyBerlaku(): boolean {
+    return !!this.formGroup.get('standbyBerlaku')?.value;
   }
 
-  private get billingDocumentValues(): string[] {
-    return ((this.billingDocuments.value as string[]) || [])
+  get kewajibanTambahan(): FormArray {
+    return this.formGroup.get('kewajibanTambahan') as FormArray;
+  }
+
+  addKewajibanTambahan(): void {
+    this.kewajibanTambahan.push(new FormControl(''));
+  }
+
+  removeKewajibanTambahan(i: number): void {
+    this.kewajibanTambahan.removeAt(i);
+  }
+
+  private get kewajibanTambahanValues(): string[] {
+    return ((this.kewajibanTambahan.value as string[]) || [])
       .map((x) => (x || '').trim())
       .filter((x) => x.length > 0);
+  }
+
+  /** Baris lampiran yang dipakai klausul; disusun dari sakelar. */
+  private get billingDocumentValues(): string[] {
+    return this.dokumenLampiran;
   }
 
   /** Pratinjau Pasal 5 supaya isian yang belum terisi langsung terlihat. */
@@ -614,6 +684,7 @@ export class PurchaseOrderCreateHComponent {
         hasRetention: v.hasRetention,
         retentionPercent: v.retentionPercent,
         retentionReleaseDays: v.retentionReleaseDays,
+        lampiran: this.lampiranPasal5,
       },
       this.billingDocumentValues,
     );
@@ -707,12 +778,16 @@ export class PurchaseOrderCreateHComponent {
     return this.formGroup.get('kewajiban') as FormArray;
   }
 
-  addKewajiban() {
-    this.kewajiban.push(new FormControl(''));
-  }
-
-  removeKewajiban(i: number) {
-    this.kewajiban.removeAt(i);
+  /**
+   * Pasal 3 ditampilkan, bukan disunting.
+   *
+   * Isinya ketentuan baku yang sama di semua pekerjaan borongan. FormArray-nya
+   * dipertahankan supaya nilainya tetap ikut tersimpan dan dokumen lama yang
+   * pernah disunting tetap terbaca apa adanya — yang dihilangkan hanya
+   * kemampuan menyuntingnya dari layar.
+   */
+  get kewajibanPreview(): string[] {
+    return [...this.kewajibanValues, ...this.kewajibanTambahanValues];
   }
 
   get kewajibanValues(): string[] {
@@ -721,16 +796,7 @@ export class PurchaseOrderCreateHComponent {
       .filter((x) => x.length > 0);
   }
 
-  /** Kembalikan pasal ke isi bawaan bila hasil suntingan tidak dipakai. */
-  resetKewajiban() {
-    this.kewajiban.clear();
-    H_PASAL_3_DEFAULT.forEach((t) => this.kewajiban.push(new FormControl(t)));
-  }
 
-  resetKeterangan() {
-    this.keterangan.clear();
-    H_PASAL_4_DEFAULT.forEach((t) => this.keterangan.push(new FormControl(t)));
-  }
 
   get keterangan(): FormArray {
     return this.formGroup.get('keterangan') as FormArray;
@@ -892,6 +958,9 @@ export class PurchaseOrderCreateHComponent {
         rateType: this.formGroup.get('rateType')?.value,
         lumpSumPrice: Number(this.formGroup.get('lumpSumPrice')?.value) || 0,
         billingPeriod: this.formGroup.get('billingPeriod')?.value,
+        // Sakelar lampiran; menentukan kalimat kewajiban dan baris dokumen
+        // pada Pasal 5 saat dokumennya dibaca kembali.
+        lampiran: this.lampiranPasal5,
         // Siklus penagihan beserta rinciannya; menjadi dasar klausul
         // penagihan saat dokumen dicetak ulang. Tanpa billingCycleMode,
         // cetak ulang jatuh ke keterangan bebas dan kalimatnya berubah.
@@ -915,8 +984,8 @@ export class PurchaseOrderCreateHComponent {
         retentionReleaseDays:
           Number(this.formGroup.get('retentionReleaseDays')?.value) || 0,
         billingDocuments: this.billingDocumentValues,
-        kewajiban: this.kewajibanValues,
-        keterangan: this.keteranganValues,
+        kewajiban: this.kewajibanPreview,
+        keterangan: this.pasal4Preview,
         subcontractorType: this.subType,
         isBusinessEntity: this.isEntity,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,
@@ -999,8 +1068,8 @@ export class PurchaseOrderCreateHComponent {
       isLumpSum: this.isLumpSum,
       lumpSumPrice: Number(v.lumpSumPrice) || 0,
       includePpn: !!v.includePPN,
-      kewajiban: this.kewajibanValues,
-      keterangan: this.keteranganValues,
+      kewajiban: this.kewajibanPreview,
+      keterangan: this.pasal4Preview,
       pasal5: this.pasal5Preview,
       mode: this.isRingkas ? ('ringkas' as const) : ('lengkap' as const),
       // SPK mandor berseksi: Catatan / Laporan Lapangan / Tata Cara Pembayaran

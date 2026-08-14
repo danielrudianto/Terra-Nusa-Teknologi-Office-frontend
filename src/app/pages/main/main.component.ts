@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, HostListener } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -34,8 +34,48 @@ export class MainComponent {
     private route: ActivatedRoute,
   ) {}
 
+  /*
+   * Ambang layar sempit.
+   *
+   * Di bawah ini, sidenav MENUTUPI isi halaman, bukan mendorongnya. Dengan
+   * `mode="side"` yang tetap, sidenav memakan 250px dan padding halaman
+   * 64px — pada ponsel 390px hanya tersisa 76px untuk seluruh isi.
+   *
+   * 900px dipilih karena di bawah itu tabel-tabel mulai perlu ruang penuh;
+   * di atasnya sidenav yang selalu terbuka justru membantu.
+   */
+  private readonly AMBANG_SEMPIT = 900;
+
+  /** `over` menutupi isi; `side` mendorongnya. */
+  modeSidenav: 'side' | 'over' = 'side';
+
   isSidenavigationOpened: boolean = true;
   label: string = '';
+
+  @HostListener('window:resize')
+  sesuaikanLayar(): void {
+    const sempit = window.innerWidth < this.AMBANG_SEMPIT;
+    const modeBaru = sempit ? 'over' : 'side';
+    if (modeBaru === this.modeSidenav) return;
+
+    this.modeSidenav = modeBaru;
+    // Saat menyempit sidenav ditutup; saat melebar dibuka kembali.
+    this.isSidenavigationOpened = !sempit;
+    this.tandaiSidenav();
+  }
+
+  /**
+   * Tutup sidenav setelah menu dipilih — hanya pada mode menutupi.
+   *
+   * Tanpa ini, di ponsel halaman tujuan tertutup sidenav yang masih
+   * terbuka, dan penggunanya harus menutupnya sendiri tiap kali berpindah.
+   */
+  tutupBilaMenutupi(): void {
+    if (this.modeSidenav === 'over') {
+      this.isSidenavigationOpened = false;
+      this.tandaiSidenav();
+    }
+  }
 
   /**
    * Buka/tutup side navigation.
@@ -51,6 +91,12 @@ export class MainComponent {
     this.tandaiSidenav();
   }
 
+  /** Dipanggil saat sidenav ditutup lewat latar gelap, bukan lewat tombol. */
+  tandaiTertutup(): void {
+    this.isSidenavigationOpened = false;
+    this.tandaiSidenav();
+  }
+
   private tandaiSidenav(): void {
     document.documentElement.setAttribute(
       'data-sidenav',
@@ -59,6 +105,9 @@ export class MainComponent {
   }
 
   ngOnInit(): void {
+    // Mode sidenav ditetapkan sebelum penanda dipasang, agar keadaan awal
+    // pada ponsel sudah tertutup — bukan terbuka lalu menutup sendiri.
+    this.sesuaikanLayar();
     this.tandaiSidenav();
 
     /*

@@ -135,7 +135,20 @@
 .ssc-table {
   border: 0.5px solid var(--line, #e6e9ee);
   border-radius: 12px;
-  overflow: hidden;
+  /*
+   * Gulir mendatar, bukan `hidden`.
+   *
+   * Tabelnya sepuluh kolom. Dengan `overflow: hidden`, kolom yang tidak
+   * muat DIPOTONG tanpa cara apa pun untuk melihatnya — di ponsel, kolom
+   * nominal dan tombol hapus hilang sama sekali.
+   */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+:host ::ng-deep .ssc-table table {
+  /* Lebar terkecil agar kolomnya tidak saling menghimpit saat digulir. */
+  min-width: 640px;
 }
 :host ::ng-deep .ssc-table table {
   width: 100%;

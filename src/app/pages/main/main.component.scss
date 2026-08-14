@@ -34,3 +34,20 @@
   box-sizing: border-box;
   background: transparent;
 }
+
+/*
+ * Padding menyusut di layar sempit.
+ *
+ * 2rem di kiri dan kanan berarti 64px hilang dari lebar yang tersedia —
+ * pada ponsel 390px itu seperenam layar, sebelum satu isi pun digambar.
+ */
+@media (max-width: 900px) {
+  .dashboard__container__router {
+    padding: 1.15rem 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .dashboard__container__router {
+    padding: 0.85rem 0.7rem;
+  }
+}

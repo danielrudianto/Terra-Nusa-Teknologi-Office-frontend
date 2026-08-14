@@ -1421,22 +1421,145 @@ export const H_PASAL_3_DEFAULT: string[] = [
   'PIHAK KEDUA wajib melaporkan kepada PIHAK PERTAMA apabila terdapat perubahan Data Pekerja dan/atau list peralatan selambat-lambatnya 2 x 24 jam sejak terjadinya perubahan tersebut.',
 ];
 
-export const H_PASAL_4_DEFAULT: string[] = [
-  'Material besi dan beton, akses lokasi, persiapan lahan, perataan lokasi pekerjaan, bobokan pondasi eksisting, penentuan titik (survey), keamanan & pengawalan keluar masuk alat, uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya menjadi tanggung jawab PIHAK PERTAMA.',
-  'Asuransi CAR & TPLL (jika ada) merupakan tanggung jawab PIHAK PERTAMA.',
-  'Standby alat karena lahan tidak bisa dikerjakan, menunggu gambar, dan kendala lain persiapan dari pemberi tugas akan dikenakan biaya standby alat sebesar Rp. 5.000.000,- per hari untuk 1 set alat, berlaku setelah standby selama 3 hari berturut-turut.',
-];
+/** Penanggung biaya asuransi CAR & TPL. */
+export type PenanggungAsuransi = 'pertama' | 'kedua' | 'tidakBerlaku';
 
-/** Dokumen penagihan pada Pasal 5 — jadi sub-poin bernomor 5.3.1 dst. */
-export const H_PASAL_5_DOCUMENTS: string[] = [
+export interface Pasal4Context {
+  /** Bila `'tidakBerlaku'`, poin asuransinya tidak dicetak sama sekali. */
+  penanggungAsuransi?: PenanggungAsuransi;
+  /** Bila mati, poin standby tidak dicetak. */
+  standbyBerlaku?: boolean;
+  /** Biaya per hari untuk satu set alat. */
+  standbyBiaya?: number | string;
+  /** Berlaku setelah berapa hari standby berturut-turut. */
+  standbyHari?: number | string;
+}
+
+const PIHAK: Record<'pertama' | 'kedua', string> = {
+  pertama: 'PIHAK PERTAMA',
+  kedua: 'PIHAK KEDUA',
+};
+
+/**
+ * Poin Pasal 4, disusun mengikuti kesepakatan.
+ *
+ * Dua poin terakhir tidak selalu berlaku. Asuransi kadang ditanggung PIHAK
+ * KEDUA, kadang tidak ada sama sekali; biaya standby berbeda tiap proyek dan
+ * sebagian tidak menerapkannya. Menuliskannya tetap dengan angka bawaan
+ * membuat dokumen menyebut nominal yang tidak pernah disepakati.
+ */
+export function bangunPasal4(ctx: Pasal4Context = {}): string[] {
+  const baris: string[] = [
+    'Material besi dan beton, akses lokasi, persiapan lahan, perataan lokasi pekerjaan, bobokan pondasi eksisting, penentuan titik (survey), keamanan & pengawalan keluar masuk alat, uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya menjadi tanggung jawab PIHAK PERTAMA.',
+  ];
+
+  const penanggung = ctx.penanggungAsuransi ?? 'pertama';
+  if (penanggung !== 'tidakBerlaku') {
+    baris.push(
+      `Asuransi CAR & TPL (jika ada) merupakan tanggung jawab ${PIHAK[penanggung]}.`,
+    );
+  }
+
+  if (ctx.standbyBerlaku ?? true) {
+    baris.push(
+      `Standby alat karena lahan tidak bisa dikerjakan, menunggu gambar, dan kendala lain persiapan dari pemberi tugas akan dikenakan biaya standby alat sebesar Rp. ${isian(
+        ctx.standbyBiaya,
+      )},- per hari untuk 1 set alat, berlaku setelah standby selama ${isian(
+        ctx.standbyHari,
+      )} hari berturut-turut.`,
+    );
+  }
+
+  return baris;
+}
+
+/** Bentuk bawaan, dipertahankan agar pemanggil lama tetap berjalan. */
+export const H_PASAL_4_DEFAULT: string[] = bangunPasal4({
+  penanggungAsuransi: 'pertama',
+  standbyBerlaku: true,
+  standbyBiaya: 5000000,
+  standbyHari: 3,
+});
+
+/**
+ * Lampiran penagihan pada Pasal 5.
+ *
+ * Tiga dokumen selalu diminta; sisanya menyesuaikan kesepakatan proyek.
+ * Faktur pajak tidak selalu ada, dan bukti penerimaan pekerjaan berbeda-beda:
+ * sebagian proyek memakai Certificate of Payment, sebagian Berita Acara
+ * Serah Terima, sebagian keduanya, sebagian tidak mensyaratkan apa pun.
+ *
+ * Memaksakan salah satunya membuat vendor menagihkan dokumen yang tidak
+ * pernah dibuat siapa pun, lalu penagihannya tertahan menunggu berkas itu.
+ */
+export interface LampiranPasal5 {
+  fakturPajak?: boolean;
+  cop?: boolean;
+  beritaAcara?: boolean;
+}
+
+/** Selalu diminta; tidak dapat dimatikan. */
+const H_PASAL_5_WAJIB: string[] = [
   'Invoice yang menyatakan jumlah yang harus dibayar dan nomor rekening penerima (asli);',
   'Kwitansi bermaterai (asli);',
-  'Faktur pajak;',
   'Surat Perintah Kerja yang telah ditandatangani kedua belah pihak (salinan);',
-  'Certificate of Payment - CoP (asli).',
 ];
 
+const H_PASAL_5_OPSIONAL: { kunci: keyof LampiranPasal5; teks: string }[] = [
+  { kunci: 'fakturPajak', teks: 'Faktur pajak;' },
+  { kunci: 'cop', teks: 'Certificate of Payment - CoP (asli);' },
+  {
+    kunci: 'beritaAcara',
+    teks:
+      'Berita Acara Serah Terima Pekerjaan yang ditandatangani kedua belah pihak (asli);',
+  },
+];
+
+/** Kalimat kewajiban PIHAK PERTAMA, mengikuti bukti yang disyaratkan. */
+const KALIMAT_BUKTI: Record<'cop' | 'beritaAcara', string> = {
+  cop: 'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan.',
+  beritaAcara:
+    'Berita Acara Serah Terima Pekerjaan ditandatangani kedua belah pihak setelah pekerjaan dinyatakan selesai dan diterima PIHAK PERTAMA.',
+};
+
+/**
+ * Daftar lampiran penagihan lengkap.
+ *
+ * Baris terakhir ditutup titik, sisanya titik koma — mengikuti bentuk daftar
+ * pada dokumen aslinya. Karena barisnya berubah-ubah mengikuti sakelar,
+ * penutupnya disesuaikan di sini, bukan ditulis tetap pada tiap kalimat.
+ */
+export function dokumenPasal5(lampiran: LampiranPasal5 = {}): string[] {
+  const baris = [...H_PASAL_5_WAJIB];
+  H_PASAL_5_OPSIONAL.forEach((o) => {
+    if (lampiran[o.kunci]) baris.push(o.teks);
+  });
+  baris[baris.length - 1] = baris[baris.length - 1].replace(/;$/, '.');
+  return baris;
+}
+
+/** Kalimat kewajiban yang perlu dicetak; kosong bila tidak ada yang dipilih. */
+export function kalimatBuktiPasal5(lampiran: LampiranPasal5 = {}): string[] {
+  const hasil: string[] = [];
+  if (lampiran.cop) hasil.push(KALIMAT_BUKTI.cop);
+  if (lampiran.beritaAcara) hasil.push(KALIMAT_BUKTI.beritaAcara);
+  return hasil;
+}
+
+/** Bentuk bawaan, dipertahankan agar pemanggil lama tetap berjalan. */
+export const H_PASAL_5_DOCUMENTS: string[] = dokumenPasal5({
+  fakturPajak: true,
+  cop: true,
+});
+
 export interface Pasal5Context {
+  /**
+   * Lampiran penagihan yang disyaratkan.
+   *
+   * Bila kosong dianggap faktur pajak dan CoP aktif — bentuk yang berlaku
+   * sebelum sakelar ini ada, sehingga dokumen lama tetap tersusun sama.
+   */
+  lampiran?: LampiranPasal5;
   /**
    * Siklus penagihan, sama seperti pada SPK mandor.
    *
@@ -1543,9 +1666,18 @@ export function buildPasal5(
    * dipilih — SPK borongan lama tersimpan dengan bentuk itu, dan mengganti
    * kalimatnya berarti mengubah isi dokumen yang sudah ditandatangani.
    */
+  /*
+   * Kalimat kewajiban mengikuti bukti penerimaan yang dipilih.
+   *
+   * Bila keduanya tidak dipakai, kalimatnya TIDAK dicetak — bukan dicetak
+   * kosong. Menyebut kewajiban membuat dokumen yang tidak disyaratkan
+   * membuat penagihan tertahan menunggu berkas yang tidak pernah ada.
+   */
+  const lampiran = ctx.lampiran ?? { fakturPajak: true, cop: true };
+
   lines.push(
     ...siklusPenagihan(ctx),
-    'PIHAK PERTAMA wajib membuatkan Certificate of Payment (CoP) dan mendistribusikannya kepada bagian keuangan.',
+    ...kalimatBuktiPasal5(lampiran),
     'PIHAK KEDUA berhak menagihkan hasil kerjanya dengan mengirimkan dokumen-dokumen sebagai berikut:',
     documents,
     // Termin diambil dari pilihan siklus penagihan bila sudah ditentukan.

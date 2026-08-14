@@ -1847,7 +1847,7 @@
     "preview": "Pratinjau",
     "previewTitle": "Pratinjau Purchase Order",
     "confirmRead": "Saya telah membaca dan memeriksa seluruh isi dokumen ini",
-    "confirmReadHint": "Setelah diterbitkan, nomor SPK sudah terpakai dan isinya tidak dapat diubah. Perbaikan hanya mungkin dengan membatalkan dan menerbitkan ulang.",
+    "confirmReadHint": "Setelah diterbitkan, nomor dokumen sudah terpakai dan isinya tidak dapat diubah. Perbaikan hanya mungkin dengan membatalkan dan menerbitkan ulang.",
     "confirmCreate": "Terbitkan Purchase Order",
     "draftNotIssued": "(DRAF — BELUM TERBIT)",
     "assetMaintenance": "Asset maintenance",
@@ -2412,7 +2412,13 @@
     "paymentMethod": "Metode pembayaran",
     "bankAccountNumber": "Nomor rekening",
     "bankAccountOrigin": "Rekening bank asal",
-    "createPaymentSlip": "Buat slip pembayaran"
+    "createPaymentSlip": "Buat slip pembayaran",
+    "ppnPercent": "PPN",
+    "ppnValue": "PPN (Rp.)",
+    "ppnHint": "Isi 0 bila pemasok bukan PKP",
+    "taxInvoiceName": "Nomor faktur pajak",
+    "taxInvoicePlaceholder": "mis. 010.000-26.00000001",
+    "taxInvoiceHint": "Kosongkan bila pemasok bukan PKP"
   },
   "purchaseUpdate": {
     "title": "Update data pembelian internal",
@@ -2752,7 +2758,30 @@
     "ex0811902590": "Ex. 0811 902 590",
     "hapusTanggalCutoff": "Hapus tanggal cutoff",
     "hapusPekerja": "Hapus pekerja",
-    "hapusDokumen": "Hapus dokumen"
+    "hapusDokumen": "Hapus dokumen",
+    "buktiPenerimaan": "Bukti penerimaan pekerjaan",
+    "buktiCop": "Certificate of Payment (CoP)",
+    "buktiBeritaAcara": "Berita Acara Serah Terima",
+    "buktiTidakAda": "Tidak disyaratkan",
+    "buktiHint": "Menentukan kalimat kewajiban dan baris dokumen pada Pasal 5.",
+    "article3Fixed": "Ketentuan baku; berlaku sama di semua pekerjaan borongan.",
+    "lampiranWajib": "Selalu diminta",
+    "lampiranWajibIsi": "Invoice, kwitansi bermaterai, dan Surat Perintah Kerja.",
+    "lampiranFakturPajak": "Faktur pajak",
+    "lampiranCop": "Certificate of Payment (CoP)",
+    "lampiranBeritaAcara": "Berita Acara Serah Terima",
+    "lampiranBanner": "Sakelar di atas menentukan kalimat kewajiban dan baris lampiran pada Pasal 5. CoP dan Berita Acara boleh dipilih keduanya, salah satu, atau tidak sama sekali.",
+    "previewArticle3": "PRATINJAU PASAL 3",
+    "previewArticle4": "PRATINJAU PASAL 4",
+    "penanggungAsuransi": "Penanggung asuransi CAR & TPL",
+    "pihakPertama": "PIHAK PERTAMA",
+    "pihakKedua": "PIHAK KEDUA",
+    "tidakBerlaku": "Tidak berlaku (poin dihilangkan)",
+    "standbyBerlaku": "Kenakan biaya standby alat",
+    "standbyBiaya": "Biaya standby",
+    "standbyBiayaHint": "Per hari, untuk 1 set alat",
+    "standbyHari": "Berlaku setelah",
+    "standbyHariHint": "Hari standby berturut-turut"
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",
@@ -3578,7 +3607,9 @@
     "tahunSebelumnya": "Tahun sebelumnya",
     "tahunBerikutnya": "Tahun berikutnya",
     "kodeObjekPajak": "Kode / objek pajak",
-    "tutup": "Tutup"
+    "tutup": "Tutup",
+    "sourcePurchase": "Pembelian",
+    "sourceExpense": "Beban"
   },
   "paymentType": {
     "purchase": "Pembelian",

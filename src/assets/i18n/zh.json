@@ -1847,7 +1847,7 @@
     "preview": "预览",
     "previewTitle": "采购订单预览",
     "confirmRead": "我已阅读并核对本文件的全部内容",
-    "confirmReadHint": "一经签发，SPK 编号即已占用且内容不可更改。更正需作废后重新签发。",
+    "confirmReadHint": "一经签发，单据编号即已占用且内容不可更改。唯一的补救是作废后重新签发。",
     "confirmCreate": "签发采购订单",
     "draftNotIssued": "（草稿 — 尚未签发）",
     "assetMaintenance": "Asset maintenance",
@@ -2412,7 +2412,13 @@
     "paymentMethod": "付款方式",
     "bankAccountNumber": "账号",
     "bankAccountOrigin": "来源银行账户",
-    "createPaymentSlip": "创建付款单"
+    "createPaymentSlip": "创建付款单",
+    "ppnPercent": "增值税",
+    "ppnValue": "增值税（Rp.）",
+    "ppnHint": "若供应商非增值税纳税人，请填 0",
+    "taxInvoiceName": "税务发票编号",
+    "taxInvoicePlaceholder": "例如 010.000-26.00000001",
+    "taxInvoiceHint": "若供应商非增值税纳税人，请留空"
   },
   "purchaseUpdate": {
     "title": "更新内部采购数据",
@@ -2752,7 +2758,30 @@
     "ex0811902590": "Ex. 0811 902 590",
     "hapusTanggalCutoff": "Hapus tanggal cutoff",
     "hapusPekerja": "Hapus pekerja",
-    "hapusDokumen": "Hapus dokumen"
+    "hapusDokumen": "Hapus dokumen",
+    "buktiPenerimaan": "工作验收凭证",
+    "buktiCop": "付款证书（CoP）",
+    "buktiBeritaAcara": "移交纪要",
+    "buktiTidakAda": "不作要求",
+    "buktiHint": "决定第 5 条中的义务条款与单据行。",
+    "article3Fixed": "标准条款；所有分包工程一致适用。",
+    "lampiranWajib": "始终必备",
+    "lampiranWajibIsi": "发票、贴花收据与工作指令书。",
+    "lampiranFakturPajak": "税务发票",
+    "lampiranCop": "付款证书（CoP）",
+    "lampiranBeritaAcara": "移交纪要",
+    "lampiranBanner": "上方开关决定第 5 条中的义务条款与单据行。付款证书与移交纪要可同时选择、任选其一，或均不选择。",
+    "previewArticle3": "第 3 条预览",
+    "previewArticle4": "第 4 条预览",
+    "penanggungAsuransi": "CAR 与 TPL 保险承担方",
+    "pihakPertama": "甲方",
+    "pihakKedua": "乙方",
+    "tidakBerlaku": "不适用（删除该条）",
+    "standbyBerlaku": "计收设备待机费用",
+    "standbyBiaya": "待机费用",
+    "standbyBiayaHint": "每日，按一套设备计",
+    "standbyHari": "生效条件",
+    "standbyHariHint": "连续待机天数"
   },
   "poA": {
     "shipmentService": "货物运输服务",
@@ -3578,7 +3607,9 @@
     "tahunSebelumnya": "Tahun sebelumnya",
     "tahunBerikutnya": "Tahun berikutnya",
     "kodeObjekPajak": "Kode / objek pajak",
-    "tutup": "Tutup"
+    "tutup": "Tutup",
+    "sourcePurchase": "采购",
+    "sourceExpense": "费用"
   },
   "paymentType": {
     "purchase": "采购",

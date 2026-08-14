@@ -83,6 +83,8 @@ export class ExpenseCreateComponent {
   metaFormGroup: FormGroup = new FormGroup({
     invoiceName: new FormControl(''),
     receiptName: new FormControl(''),
+    // Opsional: pemasok non-PKP tidak menerbitkan faktur pajak.
+    taxInvoiceName: new FormControl(''),
     description: new FormControl('', [
       Validators.required,
       Validators.minLength(10),
@@ -97,6 +99,20 @@ export class ExpenseCreateComponent {
 
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl('', [Validators.required, Validators.min(0.01)]),
+    /*
+     * PPN diisi sebagai PERSEN, disimpan sebagai rupiah — sama seperti pada
+     * Pembelian, supaya keduanya tidak berbeda cara pengisiannya.
+     *
+     * Boleh nol: sebagian pemasok bukan PKP dan tidak memungut PPN. Yang
+     * tidak boleh adalah tidak punya tempatnya sama sekali — beban ber-PPN
+     * lalu tercatat seolah tanpa PPN, dan PPN masukannya hilang.
+     */
+    ppn: new FormControl(0, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(11),
+    ]),
+    ppnValue: new FormControl(0),
     pbbkb: new FormControl(0, [Validators.required, Validators.min(0)]),
     pphCode: new FormControl(''),
     pphTaxObject: new FormControl(''),
@@ -126,8 +142,22 @@ export class ExpenseCreateComponent {
           this.valueFormGroup.controls['pphPercentage'].value;
         const pphValue = (value * pphPercentage) / 100;
         this.valueFormGroup.controls['pphValue'].setValue(pphValue.toFixed(2));
+
+        // Nilai PPN ikut berubah: persennya tetap, dasarnya yang bergeser.
+        const ppn = Number(this.valueFormGroup.controls['ppn'].value) || 0;
+        this.valueFormGroup.controls['ppnValue'].setValue(
+          ((value * ppn) / 100).toFixed(2),
+        );
       }
 
+      this.isFinal = false;
+    });
+
+    this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
+      const dpp = Number(this.valueFormGroup.controls['dpp'].value) || 0;
+      this.valueFormGroup.controls['ppnValue'].setValue(
+        value ? ((dpp * Number(value)) / 100).toFixed(2) : 0,
+      );
       this.isFinal = false;
     });
 
@@ -212,7 +242,10 @@ export class ExpenseCreateComponent {
   calculateTotal() {
     const dpp = Number(this.valueFormGroup.controls['dpp'].value);
     const pbbkb = Number(this.valueFormGroup.controls['pbbkb'].value);
-    const total = dpp + pbbkb;
+    // PPN menambah nilai dokumen, bukan mengurangi yang ditransfer —
+    // yang mengurangi hanya PPh. Sama persis dengan Pembelian.
+    const ppnValue = Number(this.valueFormGroup.controls['ppnValue'].value) || 0;
+    const total = dpp + ppnValue + pbbkb;
     const pph = Number(this.valueFormGroup.controls['pphPercentage'].value);
     const pphValue = (dpp * pph) / 100;
 
@@ -244,6 +277,8 @@ export class ExpenseCreateComponent {
     const expenseData = {
       invoiceName: this.metaFormGroup.controls['invoiceName'].value,
       receiptName: this.metaFormGroup.controls['receiptName'].value,
+      taxInvoiceName:
+        this.metaFormGroup.controls['taxInvoiceName'].value || null,
       opponentID: this.metaFormGroup.controls['opponentID'].value,
       // change from date object to YYYY-MM-DD
       date: dateFormatted,
@@ -251,6 +286,15 @@ export class ExpenseCreateComponent {
       purchaseType: this.metaFormGroup.controls['purchaseType'].value,
       description: this.metaFormGroup.controls['description'].value,
       dpp: this.valueFormGroup.controls['dpp'].value,
+      /*
+       * Yang dikirim PERSENNYA, bukan rupiahnya.
+       *
+       * `purchases.ppn` menyimpan persen — rekap pajak menghitung ulang
+       * nilainya dengan `ppn * dpp / 100`. Menyimpan rupiah di `expenses`
+       * membuat kedua tabel berbeda arti pada nama kolom yang sama, dan
+       * rekap gabungan pasti salah di salah satunya.
+       */
+      ppn: Number(this.valueFormGroup.controls['ppn'].value) || 0,
       pbbkb: this.valueFormGroup.controls['pbbkb'].value,
       pphCode:
         this.valueFormGroup.controls['pphCode'].value == ''

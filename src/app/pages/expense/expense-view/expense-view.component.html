@@ -35,6 +35,12 @@
           <span class="ev-label">{{ "table.receipt" | translate }}</span>
           <span class="ev-value">{{ f["receiptName"].value || "—" }}</span>
         </div>
+        <div class="ev-field">
+          <span class="ev-label">{{
+            "expenseForm.taxInvoiceName" | translate
+          }}</span>
+          <span class="ev-value">{{ f["taxInvoiceName"].value || "—" }}</span>
+        </div>
         <div
           class="ev-field ev-field--wide"
           *ngIf="f['opponentDescription'].value"
@@ -63,6 +69,10 @@
         <div class="ev-money__row">
           <span>DPP</span
           ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+        </div>
+        <div class="ev-money__row" *ngIf="vPpn">
+          <span>{{ "expenseForm.ppnPercent" | translate }}</span
+          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
         </div>
         <div class="ev-money__row" *ngIf="vPbbkb">
           <span>{{ "expense.pbbkb" | translate }}</span

@@ -62,6 +62,7 @@ export class ExpenseViewComponent {
   // raw monetary values (for consistent currency formatting in the template)
   vDpp = 0;
   vPph = 0;
+  vPpn = 0;
   vPbbkb = 0;
   vTotal = 0;
 
@@ -111,6 +112,7 @@ export class ExpenseViewComponent {
     dueDate: new FormControl(''),
     invoiceName: new FormControl(''),
     receiptName: new FormControl(''),
+    taxInvoiceName: new FormControl(''),
     purchaseType: new FormControl(''),
     description: new FormControl(''),
     pphCode: new FormControl(''),
@@ -151,8 +153,12 @@ export class ExpenseViewComponent {
           this.vDpp = e.dpp || 0;
           // NOTE: standard formula PPh = percentage% x DPP (matches expense-list)
           this.vPph = ((e.pphPercentage || 0) * (e.dpp || 0)) / 100;
+          // `ppn` tersimpan sebagai PERSEN; nilainya dihitung dari DPP.
+          this.vPpn = ((Number(e.ppn) || 0) * (Number(e.dpp) || 0)) / 100;
           this.vPbbkb = e.pbbkb || 0;
-          this.vTotal = (e.dpp || 0) + (e.pbbkb || 0);
+          // PPN menambah nilai dokumen; tanpa ini total yang tampil lebih
+          // kecil daripada yang tertera di faktur pemasok.
+          this.vTotal = (e.dpp || 0) + this.vPpn + (e.pbbkb || 0);
 
           this.formGroup.patchValue({
             date: this.datePipe.transform(e.date, 'dd MMMM yyyy'),
@@ -160,6 +166,7 @@ export class ExpenseViewComponent {
             dueDate: this.datePipe.transform(e.dueDate, 'dd MMMM yyyy'),
             invoiceName: e.invoiceName,
             receiptName: e.receiptName,
+            taxInvoiceName: e.taxInvoiceName,
             purchaseType: e.purchaseType,
             description: e.description,
             pphCode: e.pphCode || '',

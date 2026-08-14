@@ -1847,7 +1847,7 @@
     "preview": "Preview",
     "previewTitle": "Purchase Order Preview",
     "confirmRead": "I have read and checked the entire contents of this document",
-    "confirmReadHint": "Once issued, the SPK number is used and the contents cannot be changed. Corrections require cancelling and re-issuing.",
+    "confirmReadHint": "Once issued, the document number is used and its contents cannot be changed. The only fix is to cancel and reissue.",
     "confirmCreate": "Issue Purchase Order",
     "draftNotIssued": "(DRAFT — NOT ISSUED)",
     "assetMaintenance": "Asset maintenance",
@@ -2412,7 +2412,13 @@
     "paymentMethod": "Payment method",
     "bankAccountNumber": "Bank account number",
     "bankAccountOrigin": "Bank account origin",
-    "createPaymentSlip": "Create payment slip"
+    "createPaymentSlip": "Create payment slip",
+    "ppnPercent": "VAT",
+    "ppnValue": "VAT (Rp.)",
+    "ppnHint": "Enter 0 if the supplier is not VAT-registered",
+    "taxInvoiceName": "Tax invoice number",
+    "taxInvoicePlaceholder": "e.g. 010.000-26.00000001",
+    "taxInvoiceHint": "Leave empty if the supplier is not VAT-registered"
   },
   "purchaseUpdate": {
     "title": "Update internal purchase data",
@@ -2752,7 +2758,30 @@
     "ex0811902590": "Ex. 0811 902 590",
     "hapusTanggalCutoff": "Hapus tanggal cutoff",
     "hapusPekerja": "Hapus pekerja",
-    "hapusDokumen": "Hapus dokumen"
+    "hapusDokumen": "Hapus dokumen",
+    "buktiPenerimaan": "Work acceptance evidence",
+    "buktiCop": "Certificate of Payment (CoP)",
+    "buktiBeritaAcara": "Handover minutes",
+    "buktiTidakAda": "Not required",
+    "buktiHint": "Determines the obligation sentence and the document line in Article 5.",
+    "article3Fixed": "Standard terms; identical across every subcontracted job.",
+    "lampiranWajib": "Always required",
+    "lampiranWajibIsi": "Invoice, stamped receipt, and the work order.",
+    "lampiranFakturPajak": "Tax invoice",
+    "lampiranCop": "Certificate of Payment (CoP)",
+    "lampiranBeritaAcara": "Handover minutes",
+    "lampiranBanner": "The switches above determine the obligation sentence and the document lines in Article 5. CoP and handover minutes may both be selected, either one, or neither.",
+    "previewArticle3": "ARTICLE 3 PREVIEW",
+    "previewArticle4": "ARTICLE 4 PREVIEW",
+    "penanggungAsuransi": "CAR & TPL insurance borne by",
+    "pihakPertama": "FIRST PARTY",
+    "pihakKedua": "SECOND PARTY",
+    "tidakBerlaku": "Not applicable (point removed)",
+    "standbyBerlaku": "Charge equipment standby",
+    "standbyBiaya": "Standby cost",
+    "standbyBiayaHint": "Per day, for one set of equipment",
+    "standbyHari": "Applies after",
+    "standbyHariHint": "Consecutive standby days"
   },
   "poA": {
     "shipmentService": "Goods delivery service",
@@ -3578,7 +3607,9 @@
     "tahunSebelumnya": "Tahun sebelumnya",
     "tahunBerikutnya": "Tahun berikutnya",
     "kodeObjekPajak": "Kode / objek pajak",
-    "tutup": "Tutup"
+    "tutup": "Tutup",
+    "sourcePurchase": "Purchase",
+    "sourceExpense": "Expense"
   },
   "paymentType": {
     "purchase": "Purchase",

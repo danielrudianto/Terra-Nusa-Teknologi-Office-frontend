@@ -1,10 +1,21 @@
 <mat-drawer-container class="dashboard__container">
+  <!--
+    Mode mengikuti lebar layar: `side` mendorong isi, `over` menutupinya.
+
+    Sebelumnya `side` tetap — pada ponsel 390px, sidenav memakan 250px dan
+    padding halaman 64px, menyisakan 76px untuk seluruh isi halaman.
+  -->
   <mat-drawer
-    mode="side"
+    [mode]="modeSidenav"
     [opened]="isSidenavigationOpened"
+    (closedStart)="tandaiTertutup()"
     class="dashboard__container__side"
   >
-    <app-side-nav style="overflow-y: hidden" [items]="sideNavItems()" />
+    <app-side-nav
+      style="overflow-y: hidden"
+      [items]="sideNavItems()"
+      (click)="tutupBilaMenutupi()"
+    />
   </mat-drawer>
   <mat-drawer-content class="dashboard__container__content">
     <app-top-navigation

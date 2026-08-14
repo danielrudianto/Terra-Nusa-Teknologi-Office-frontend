@@ -107,6 +107,26 @@
               />
             </mat-form-field>
 
+            <!--
+              Nomor faktur pajak.
+
+              Rekap PPN memuat kolom ini; tanpa isiannya, baris beban selalu
+              kosong di sana dan fakturnya tidak dapat dilacak kembali ke
+              dokumen sumbernya saat dicocokkan konsultan.
+            -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{
+                "expenseForm.taxInvoiceName" | translate
+              }}</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="taxInvoiceName"
+                [placeholder]="'expenseForm.taxInvoicePlaceholder' | translate"
+              />
+              <mat-hint>{{ "expenseForm.taxInvoiceHint" | translate }}</mat-hint>
+            </mat-form-field>
+
             <mat-form-field appearance="outline" class="exc-span2">
               <mat-label>{{
                 "expenseForm.purchaseType" | translate
@@ -288,6 +308,40 @@
                 prefix="Rp. "
                 thousandSeparator=" "
                 mask="separator.2"
+              />
+            </mat-form-field>
+
+            <!--
+              PPN diisi persen, nilainya dihitung di sebelahnya.
+
+              Sama seperti pada Pembelian: yang tersimpan nilai rupiahnya,
+              tetapi yang diketik persennya — karena itu yang tertera di
+              faktur pajak.
+            -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "expenseForm.ppnPercent" | translate }}</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="ppn"
+                [min]="0"
+                [max]="11"
+              />
+              <span matTextSuffix>%</span>
+              <mat-hint>{{ "expenseForm.ppnHint" | translate }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "expenseForm.ppnValue" | translate }}</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="ppnValue"
+                readonly
+                prefix="Rp. "
+                thousandSeparator=" "
+                decimalScale="2"
+                mask="separator"
               />
             </mat-form-field>
 

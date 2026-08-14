@@ -108,6 +108,18 @@ export class PpnRecapComponent {
         next: (data: any) => {
           const rows = (data || []).map((x: any) => ({
             date: this.datePipe.transform(new Date(x.date), 'dd MMMM yyyy'),
+            /*
+             * Asal baris ikut tercetak.
+             *
+             * Rekap kini menggabungkan pembelian dan beban. Tanpa kolom ini,
+             * baris dari beban tidak dapat dibedakan — dan saat konsultan
+             * mencocokkan ke dokumen sumbernya, ia akan mencarinya di daftar
+             * pembelian dan tidak menemukannya.
+             */
+            sumber:
+              x.sumber === 'expense'
+                ? this.translate.instant('tax.sourceExpense')
+                : this.translate.instant('tax.sourcePurchase'),
             supplier: [x.supplier?.prefix, x.supplier?.name]
               .filter(Boolean)
               .join(' '),
@@ -127,6 +139,7 @@ export class PpnRecapComponent {
             rows,
             columns: [
               { header: 'Tanggal', key: 'date', width: 18 },
+              { header: 'Sumber', key: 'sumber', width: 14 },
               // prefix digabung ke nama supaya tidak ada kolom sempit
               // berisi "PT."/"CV." saja
               { header: 'Supplier', key: 'supplier', width: 32 },

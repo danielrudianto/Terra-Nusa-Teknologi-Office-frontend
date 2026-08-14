@@ -694,43 +694,51 @@
       }
 
       <!-- ===== Pasal 3 — Kewajiban ===== -->
+      <!--
+        Pasal 3 ditampilkan sebagai pratinjau, bukan isian.
+
+        Isinya ketentuan baku yang berlaku sama di semua pekerjaan borongan,
+        dan tidak ada yang perlu disesuaikan per dokumen. Membiarkannya
+        tersunting hanya membuka peluang salah ketik pada pasal yang mengikat
+        kedua pihak.
+      -->
       @if (!isRingkas) {
         <div class="poh-card">
           <div class="poh-cardhead">
             <div class="poh-section__title poh-section__title--flush">
               {{ "poH.article3" | translate }}
             </div>
-            <button type="button" class="poh-add" (click)="addKewajiban()">
+            <button
+              type="button"
+              class="poh-add"
+              (click)="addKewajibanTambahan()"
+            >
               <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
-            <button type="button" class="poh-reset" (click)="resetKewajiban()">
-              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
-          <p class="poh-rate__hint">{{ "poH.sudahTerisiDenganKetentuanBaku" | translate }}</p>
 
-          @if (kewajiban.controls.length === 0) {
-            <div class="poh-empty">
-              <mat-icon>rule</mat-icon>
-              <span>{{ "poH.emptyObligationPoints" | translate }}</span>
-            </div>
-          } @else {
-            <div formArrayName="kewajiban" class="poh-list">
-              @for (k of kewajiban.controls; track k; let i = $index) {
+          <div class="poh-banner">
+            <mat-icon>info</mat-icon>
+            <span>{{ "poH.article3Fixed" | translate }}</span>
+          </div>
+
+          <!-- Poin tambahan; yang baku tetap tidak disunting. -->
+          @if (kewajibanTambahan.controls.length) {
+            <div formArrayName="kewajibanTambahan" class="poh-list">
+              @for (k of kewajibanTambahan.controls; track k; let i = $index) {
                 <div class="poh-krow">
-                  <span class="poh-krow__no">3.{{ i + 1 }}</span>
+                  <span class="poh-krow__no">
+                    3.{{ kewajibanValues.length + i + 1 }}
+                  </span>
                   <mat-form-field appearance="outline" class="poh-krow__field">
                     <mat-label>{{
                       "poH.obligationPoints" | translate
                     }}</mat-label>
-                    <textarea
-                      matInput
-                      [formControlName]="i"
-                      rows="2"
-                    ></textarea>
+                    <textarea matInput [formControlName]="i" rows="2"></textarea>
                   </mat-form-field>
                   <button
                     mat-icon-button
                     type="button"
-                    (click)="removeKewajiban(i)"
+                    (click)="removeKewajibanTambahan(i)"
                     [attr.aria-label]="'po511.hapusPoin' | translate"
                   >
                     <mat-icon>close</mat-icon>
@@ -739,6 +747,17 @@
               }
             </div>
           }
+
+          <div class="poh-preview">
+            <div class="poh-preview__title">
+              {{ "poH.previewArticle3" | translate }}
+            </div>
+            <ol class="poh-preview__list">
+              @for (k of kewajibanPreview; track $index) {
+                <li><app-clause-line [value]="k" /></li>
+              }
+            </ol>
+          </div>
         </div>
       }
 
@@ -751,10 +770,60 @@
             </div>
             <button type="button" class="poh-add" (click)="addKeterangan()">
               <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
-            <button type="button" class="poh-reset" (click)="resetKeterangan()">
-              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
-          <p class="poh-rate__hint">{{ "poH.sudahTerisiDenganKetentuanBaku" | translate }}</p>
+
+          <!-- Dua poin baku yang mengikuti kesepakatan. -->
+          <div class="poh-pasal4">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "poH.penanggungAsuransi" | translate }}</mat-label>
+              <mat-select formControlName="penanggungAsuransi">
+                <mat-option value="pertama">
+                  {{ "poH.pihakPertama" | translate }}
+                </mat-option>
+                <mat-option value="kedua">
+                  {{ "poH.pihakKedua" | translate }}
+                </mat-option>
+                <mat-option value="tidakBerlaku">
+                  {{ "poH.tidakBerlaku" | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-slide-toggle color="primary" formControlName="standbyBerlaku">
+              {{ "poH.standbyBerlaku" | translate }}
+            </mat-slide-toggle>
+
+            @if (standbyBerlaku) {
+              <div class="poh-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poH.standbyBiaya" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="standbyBiaya"
+                    prefix="Rp. "
+                    thousandSeparator="."
+                    mask="separator.0"
+                  />
+                  <mat-hint>{{ "poH.standbyBiayaHint" | translate }}</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poH.standbyHari" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="standbyHari"
+                    type="number"
+                    [min]="0"
+                  />
+                  <mat-hint>{{ "poH.standbyHariHint" | translate }}</mat-hint>
+                </mat-form-field>
+              </div>
+            }
+          </div>
+
+          <div class="poh-banner">
+            <mat-icon>info</mat-icon>
+            <span>{{ "poForm.extraPointNote" | translate }}</span>
+          </div>
 
           @if (keterangan.controls.length === 0) {
             <div class="poh-empty">
@@ -786,6 +855,17 @@
               }
             </div>
           }
+
+          <div class="poh-preview">
+            <div class="poh-preview__title">
+              {{ "poH.previewArticle4" | translate }}
+            </div>
+            <ol class="poh-preview__list">
+              @for (k of pasal4Preview; track $index) {
+                <li><app-clause-line [value]="k" /></li>
+              }
+            </ol>
+          </div>
         </div>
       }
 
@@ -911,42 +991,53 @@
             >
               {{ "poH.billingDocs" | translate }}
             </div>
-            <button
-              type="button"
-              class="poh-add"
-              (click)="addBillingDocument()"
-            >
-              <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}</button>
-            <button
-              type="button"
-              class="poh-reset"
-              (click)="resetBillingDocuments()"
-            >
-              <mat-icon>restart_alt</mat-icon>{{ "poH.kembalikan" | translate }}</button>
           </div>
 
-          <div formArrayName="billingDocuments" class="poh-list">
-            @for (d of billingDocuments.controls; track d; let i = $index) {
-              <div class="poh-krow">
-                <span class="poh-krow__no">5.3.{{ i + 1 }}</span>
-                <mat-form-field appearance="outline" class="poh-krow__field">
-                  <mat-label>{{ "poH.documents" | translate }}</mat-label>
-                  <input matInput [formControlName]="i" />
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="removeBillingDocument(i)"
-                  [attr.aria-label]="'poH.hapusDokumen' | translate"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
-              </div>
-            }
+          <!--
+            Lampiran sebagai sakelar, bukan daftar teks bebas.
+
+            Invoice, kwitansi, dan Surat Perintah Kerja selalu diminta
+            sehingga tidak punya sakelar — menampilkannya sebagai pilihan
+            hanya membuka peluang mematikan yang memang tidak boleh mati.
+          -->
+          <div class="poh-lampiran">
+            <div class="poh-lampiran__wajib">
+              <span class="poh-lampiran__label">
+                {{ "poH.lampiranWajib" | translate }}
+              </span>
+              <span class="poh-lampiran__teks">
+                {{ "poH.lampiranWajibIsi" | translate }}
+              </span>
+            </div>
+
+            <mat-slide-toggle color="primary" formControlName="lampiranFakturPajak">
+              {{ "poH.lampiranFakturPajak" | translate }}
+            </mat-slide-toggle>
+            <mat-slide-toggle color="primary" formControlName="lampiranCop">
+              {{ "poH.lampiranCop" | translate }}
+            </mat-slide-toggle>
+            <mat-slide-toggle color="primary" formControlName="lampiranBeritaAcara">
+              {{ "poH.lampiranBeritaAcara" | translate }}
+            </mat-slide-toggle>
+
+            <!-- Keterangan sebagai banner, bukan teks kecil di bawah kolom. -->
+            <div class="poh-banner">
+              <mat-icon>info</mat-icon>
+              <span>{{ "poH.lampiranBanner" | translate }}</span>
+            </div>
+
+            <ol class="poh-lampiran__daftar">
+              @for (d of dokumenLampiran; track $index) {
+                <li>{{ d }}</li>
+              }
+            </ol>
           </div>
 
           <!-- pratinjau: isian kosong tampil sebagai ______ -->
-          <p class="poh-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+          <div class="poh-banner">
+            <mat-icon>info</mat-icon>
+            <span>{{ "poForm.clauseAutoHint" | translate }}</span>
+          </div>
 
           <div class="poh-preview">
             <div class="poh-preview__title">
@@ -1107,7 +1198,10 @@
           <button type="button" class="poh-add" (click)="addClause()">
             <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
-        <p class="poh-hint">{{ "poForm.extraPointNote" | translate }}</p>
+        <div class="poh-banner">
+            <mat-icon>info</mat-icon>
+            <span>{{ "poForm.extraPointNote" | translate }}</span>
+          </div>
         <p class="poh-rate__hint">{{ "poA.extraPointHint" | translate }}</p>
 
         @if (additionalClauses.controls.length === 0) {
@@ -1171,7 +1265,10 @@
           <div class="poh-section__title">
             {{ "poH.previewAgreement" | translate }}
           </div>
-          <p class="poh-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
+          <div class="poh-banner">
+            <mat-icon>info</mat-icon>
+            <span>{{ "poForm.clauseAutoHint" | translate }}</span>
+          </div>
 
           <div class="poh-preview">
             @for (sec of previewSections; track $index) {
