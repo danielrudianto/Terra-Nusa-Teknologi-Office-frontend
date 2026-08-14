@@ -31,29 +31,41 @@ export class ServerMessageService {
    */
   private static readonly PETA: Record<string, string> = {
     'salary slip already exists for this user month and year':
-      'serverError.salarySlipExists',
+      'serverError.SALARY_SLIP_EXISTS',
     'bank account with the same number already exists':
-      'serverError.bankAccountExists',
-    'blacklist reason is required': 'serverError.blacklistReasonRequired',
+      'serverError.BANK_ACCOUNT_EXISTS',
+    'blacklist reason is required': 'serverError.BLACKLIST_REASON_REQUIRED',
     'cannot move a payment that is approved or deleted':
-      'serverError.paymentLocked',
-    'cannot update a deleted employee': 'serverError.employeeDeleted',
-    'contract not found': 'serverError.contractNotFound',
-    'payment not found': 'serverError.paymentNotFound',
-    'project not found': 'serverError.projectNotFound',
-    'reminder not found': 'serverError.reminderNotFound',
-    'payment is already approved or deleted': 'serverError.paymentLocked',
-    'invalid refresh token': 'serverError.sessionExpired',
-    'refresh token not provided': 'serverError.sessionExpired',
-    'internal server error': 'serverError.internal',
+      'serverError.PAYMENT_LOCKED',
+    'cannot update a deleted employee': 'serverError.EMPLOYEE_DELETED',
+    'contract not found': 'serverError.CONTRACT_NOT_FOUND',
+    'payment not found': 'serverError.PAYMENT_NOT_FOUND',
+    'project not found': 'serverError.PROJECT_NOT_FOUND',
+    'reminder not found': 'serverError.REMINDER_NOT_FOUND',
+    'payment is already approved or deleted': 'serverError.PAYMENT_LOCKED',
+    'invalid refresh token': 'serverError.SESSION_EXPIRED',
+    'refresh token not provided': 'serverError.SESSION_EXPIRED',
+    'internal server error': 'serverError.INTERNAL',
   };
 
-  /** Kode yang dikirim server sebagai pengganti kalimat. */
+  /**
+   * Kode yang dikirim server sebagai pengganti kalimat.
+   *
+   * Kunci terjemahannya memakai NAMA KODENYA apa adanya, bukan camelCase.
+   *
+   * Sebelumnya keduanya bercampur: jalur kode membentuk kunci sebagai
+   * `serverError.${code}` — yang menghasilkan `serverError.SALARY_SLIP_EXISTS`
+   * — sementara peta ini menunjuk `serverError.salarySlipExists`. Berkas
+   * terjemahan hanya memuat bentuk pertama, sehingga jalur peta selalu
+   * menampilkan kuncinya mentah di layar.
+   *
+   * Satu bentuk saja, supaya tidak ada yang perlu diingat.
+   */
   private static readonly KODE: Record<string, string> = {
-    CURRENT_PASSWORD_INVALID: 'serverError.currentPasswordInvalid',
-    PASSWORD_UNSET: 'serverError.passwordUnset',
-    SAME_PASSWORD: 'serverError.samePassword',
-    DRAFT_ALREADY_CONVERTED: 'serverError.draftAlreadyConverted',
+    CURRENT_PASSWORD_INVALID: 'serverError.CURRENT_PASSWORD_INVALID',
+    PASSWORD_UNSET: 'serverError.PASSWORD_UNSET',
+    SAME_PASSWORD: 'serverError.SAME_PASSWORD',
+    DRAFT_ALREADY_CONVERTED: 'serverError.DRAFT_ALREADY_CONVERTED',
   };
 
   /**

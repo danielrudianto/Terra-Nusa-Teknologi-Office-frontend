@@ -18,6 +18,7 @@ import {
   vendorDisplayName,
   workIntroSentence,
   signerLines,
+  draftWatermark,
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderBItem {
@@ -48,6 +49,16 @@ export interface IPurchaseOrderBItem {
 }
 
 export interface IPurchaseOrderB {
+  /**
+   * Dokumen ini SUDAH DISETUJUI.
+   *
+   * Menentukan ada tidaknya cap air DRAFT. Keduanya diperiksa karena
+   * sebagian dokumen tersimpan dengan `status` sudah "approved" sementara
+   * `isApproved` masih `false`.
+   */
+  isApproved?: boolean;
+  status?: string;
+
   /**
    * Dokumen ini ADENDUM atas purchase order lain.
    *
@@ -386,6 +397,9 @@ export function printPurchaseOrderB(
 
   const dd = {
     ...DOCUMENT_PAGE,
+    // Cap DRAFT pada dokumen yang belum disetujui; `undefined`
+    // bila sudah sah, dan pdfmake mengabaikan bidang itu.
+    watermark: draftWatermark(data.isApproved, data.status),
     header: () => documentHeader(),
     footer: () => documentFooter(),
     content: [

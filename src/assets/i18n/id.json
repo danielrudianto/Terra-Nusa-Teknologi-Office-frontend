@@ -1705,7 +1705,7 @@
     "officePICPhone": "No. HP PIC Kantor",
     "phonePlaceholder": "08xxxxxxxxxx",
     "clauseTitle": "Poin Perjanjian",
-    "extraClauseTitle": "Poin Tambahan (opsional)",
+    "extraClauseTitle": "Poin tambahan (opsional)",
     "addClause": "Tambah poin",
     "removeClause": "Hapus",
     "noExtraClause": "Belum ada poin tambahan.",
@@ -1870,7 +1870,7 @@
     "ppnNote": "Harga satuan di atas adalah DPP; PPN ditambahkan di atasnya. Faktur pajak wajib dilampirkan saat penagihan.",
     "sectionDelivery": "Pengiriman",
     "sectionPic": "Kontak Penanggung Jawab",
-    "sectionNotes": "Catatan / Poin Perjanjian",
+    "sectionNotes": "Catatan perjanjian",
     "steelDetected": "Terdeteksi material besi",
     "addPoint": "Tambah poin",
     "clauseAutoHint": "Ketentuan baku di bawah ini akan tercetak pada dokumen. Isinya mengikuti isian di atas; tambahkan poin bila ada kesepakatan khusus.",
@@ -3771,7 +3771,8 @@
     "licenseClass": "Golongan",
     "licenseNumber": "Nomor SIM",
     "noLicense": "Belum ada SIM tercatat.",
-    "bloodTypeHint": "Boleh dikosongkan bila belum diketahui"
+    "gpaTidakAda": "Tidak menerbitkan IPK",
+    "bloodTypeTidakTahu": "Tidak tahu golongan darah"
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",

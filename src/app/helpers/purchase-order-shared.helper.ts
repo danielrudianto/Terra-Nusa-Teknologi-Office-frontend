@@ -373,6 +373,48 @@ export const DOCUMENT_DEFAULT_STYLE = {
   lineHeight: 1.15,
 };
 
+/**
+ * Cap air DRAFT untuk dokumen yang belum disetujui.
+ *
+ * Purchase order yang belum disetujui masih dapat dicetak — dan memang perlu,
+ * untuk diperiksa sebelum disahkan. Persoalannya lembar itu tidak dapat
+ * dibedakan dari yang sudah sah begitu keluar dari pencetak: bentuknya sama
+ * persis, lengkap dengan blok tanda tangan.
+ *
+ * Sudah cukup bagi satu lembar draf untuk sampai ke vendor dan dianggap
+ * mengikat.
+ *
+ * `pdfmake` menempatkan `watermark` di BELAKANG isi halaman, sehingga
+ * teksnya tidak menutupi angka maupun uraian pekerjaan. Warnanya sengaja
+ * pucat: cukup terbaca untuk menyadarkan, tidak sampai mengganggu pembacaan.
+ *
+ * Dikembalikan `undefined` bila sudah disetujui — `pdfmake` mengabaikan
+ * bidang yang tidak ada, sehingga dokumen sah tercetak tanpa perubahan
+ * apa pun.
+ */
+export function draftWatermark(isApproved?: boolean, status?: string):
+  | { text: string; color: string; opacity: number; bold: boolean; angle: number }
+  | undefined {
+  /*
+   * Memeriksa DUA sumber, bukan satu.
+   *
+   * Sebagian dokumen tersimpan dengan `status: "approved"` sementara
+   * `isApproved` masih `false`. Memeriksa `isApproved` saja membubuhkan cap
+   * DRAFT pada dokumen yang sudah sah — dan itu justru membuat lembar yang
+   * benar tampak tidak berlaku.
+   */
+  const sah = !!isApproved || String(status || '').toLowerCase() === 'approved';
+  if (sah) return undefined;
+
+  return {
+    text: 'DRAFT',
+    color: '#9aa3b2',
+    opacity: 0.18,
+    bold: true,
+    angle: -45,
+  };
+}
+
 export const DOCUMENT_PAGE = {
   pageSize: 'A4' as PageSize,
   pageMargins: [45, 86, 45, 80] as Margins,

@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -64,6 +65,7 @@ function bankAccountIDRequired(): ValidatorFn {
     MatDividerModule,
     MatSelectModule,
     CommonModule,
+    MatSlideToggleModule,
   ],
 })
 export class PurchaseUpdateComponent {

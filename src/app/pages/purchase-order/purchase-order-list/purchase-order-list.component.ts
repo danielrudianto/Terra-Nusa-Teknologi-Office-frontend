@@ -484,9 +484,26 @@ export class PurchaseOrderListComponent {
      */
     const isAdendum = !!data?.parentPurchaseOrderID;
 
+    /*
+     * Keadaan persetujuan diteruskan agar cap DRAFT muncul pada dokumen yang
+     * belum disahkan.
+     *
+     * Tanpa cap itu, lembar draf tidak dapat dibedakan dari yang sah begitu
+     * keluar dari pencetak — bentuknya sama persis, lengkap dengan blok
+     * tanda tangan.
+     */
+    const isApproved = !!data?.isApproved;
+    const status = data?.status;
+
       const custom = data.customData || {};
       try {
         const printData = {
+      // Keadaan persetujuan dan penanda adendum diteruskan lewat
+      // muatan bersama ini; enam titik cetak memakainya alih-alih
+      // objek literal, sehingga tanpa ini capnya tidak pernah muncul.
+      isApproved,
+      status,
+      isAdendum,
           poType: data.purchaseType,
           purchaseOrderName: data.name,
           // Nama penyetuju; kosong selama dokumennya belum disetujui,
@@ -551,7 +568,6 @@ export class PurchaseOrderListComponent {
           const scope = custom.workScope || 'borongan';
           const ringkas = scope !== 'borongan';
           return printPurchaseOrderH({
-              isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -610,7 +626,10 @@ export class PurchaseOrderListComponent {
                 : ringkas
                   ? 'Demikian PERJANJIAN KERJA SAMA ini dibuat sesuai dengan kesepakatan bersama dan akan digunakan sebagai dasar pekerjaan dan penagihan.'
                   : undefined,
-          },
+            isApproved,
+            status,
+            isAdendum,
+            },
               output);
         } else if (data.purchaseType === 'A' && !this.dariFormB(data, custom)) {
           // Dokumen tipe A yang benar-benar jasa transportasi.
@@ -683,7 +702,6 @@ export class PurchaseOrderListComponent {
             // PO lama berjenis sewa alat: dokumennya memakai tata letak
             // PO-B, sesuai templatenya waktu itu.
             return printPurchaseOrderB({
-              isAdendum,
               ...printData,
               // Sama dengan jalur formulir: mobilisasi disisipkan
               // sebagai baris pekerjaan tersendiri. Ditulis lewat fungsi
@@ -710,6 +728,8 @@ export class PurchaseOrderListComponent {
               output);
           } else {
             return printPurchaseOrderA({
+              isApproved,
+              status,
               isAdendum,
               purchaseOrderName: data.name,
               date: data.date,
@@ -801,7 +821,6 @@ export class PurchaseOrderListComponent {
           // Perangkat lunak & langganan: pemesanan layanan, sehingga
           // memakai tata letak Surat Perintah Kerja.
           return printPurchaseOrderB({
-              isAdendum,
             ...printData,
             poType: '5.1.12',
             items: (data.items || []).map((it: any) => ({
@@ -841,7 +860,6 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === '6.4.2') {
           // Penutupan pertanggungan: pemesanan jasa, tata letak SPK.
           return printPurchaseOrderB({
-              isAdendum,
             ...printData,
             poType: '6.4.2',
             items: (data.items || []).map((it: any) => ({
@@ -873,7 +891,6 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === '6.5.2') {
           // Pelatihan: pemesanan jasa, tata letak SPK.
           return printPurchaseOrderB({
-              isAdendum,
             ...printData,
             poType: '6.5.2',
             items: (data.items || []).map((it: any) => ({
@@ -909,6 +926,9 @@ export class PurchaseOrderListComponent {
           // pemeriksaan peserta adalah pemesanan jasa (tata letak SPK).
           const kuota = custom.recruitmentMode !== 'peserta';
           const data651 = {
+      // Keadaan persetujuan dan penanda adendum diteruskan lewat
+      // muatan bersama ini; enam titik cetak memakainya alih-alih
+      // objek literal, sehingga tanpa ini capnya tidak pernah muncul.
             ...printData,
             poType: '6.5.1',
             items: (data.items || []).map((it: any) => ({
@@ -959,6 +979,8 @@ export class PurchaseOrderListComponent {
           };
 
           return printPurchaseOrder641({
+              isApproved,
+              status,
               isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
@@ -1033,7 +1055,6 @@ export class PurchaseOrderListComponent {
 
           if (jasa) {
             return printPurchaseOrderB({
-              isAdendum,
               ...data512,
               billingTerms: buildMaintenanceBillingTerms(),
               billingTitle:
@@ -1049,6 +1070,8 @@ export class PurchaseOrderListComponent {
           // Termasuk yang diterbitkan sebagai tipe A — bentuk dokumennya
           // mengikuti formulir asalnya, bukan kode jenisnya.
           return printPurchaseOrderB({
+              isApproved,
+              status,
               isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
@@ -1121,6 +1144,8 @@ export class PurchaseOrderListComponent {
         } else if (data.purchaseType === 'D') {
           // SPK tenaga kerja: satu baris item = satu komponen upah
           return printPurchaseOrderD({
+              isApproved,
+              status,
               isAdendum,
             purchaseOrderName: data.name,
             date: data.date,
@@ -1158,14 +1183,12 @@ export class PurchaseOrderListComponent {
            * ORDER; yang menjadi SPK hanya jasa pengujian.
            */
           return printPurchaseOrderB({
-              isAdendum,
             ...printData,
             includePpn: Number(data.ppn) > 0,
           },
               output);
         } else if (data.purchaseType === 'C') {
           return printPurchaseOrderC({
-              isAdendum,
             ...printData,
             // komponen pajak khas PO-C (pembelian BBM)
             pbbkbPercent: Number(custom.pbbkbPercent) || 0,

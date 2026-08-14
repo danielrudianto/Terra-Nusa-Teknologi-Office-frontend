@@ -1705,7 +1705,7 @@
     "officePICPhone": "Office PIC Phone",
     "phonePlaceholder": "08xxxxxxxxxx",
     "clauseTitle": "Agreement Points",
-    "extraClauseTitle": "Additional Points (optional)",
+    "extraClauseTitle": "Additional points (optional)",
     "addClause": "Add point",
     "removeClause": "Remove",
     "noExtraClause": "No additional points yet.",
@@ -1870,7 +1870,7 @@
     "ppnNote": "Unit prices above are the tax base (DPP); VAT is added on top. A tax invoice must be attached when billing.",
     "sectionDelivery": "Delivery",
     "sectionPic": "Person in Charge",
-    "sectionNotes": "Notes / Agreement Points",
+    "sectionNotes": "Agreement notes",
     "steelDetected": "Steel material detected",
     "addPoint": "Add point",
     "clauseAutoHint": "The standard terms below will be printed on the document. They follow the fields above; add points for any special agreement.",
@@ -3771,7 +3771,8 @@
     "licenseClass": "Class",
     "licenseNumber": "Licence number",
     "noLicense": "No driving licence recorded yet.",
-    "bloodTypeHint": "May be left blank if not known"
+    "gpaTidakAda": "Does not issue a GPA",
+    "bloodTypeTidakTahu": "Blood type unknown"
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",

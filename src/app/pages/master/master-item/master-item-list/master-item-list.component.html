@@ -109,21 +109,7 @@
             {{ "table.description" | translate }}
           </th>
           <td mat-cell *matCellDef="let item">
-            <span class="mi-primary">
-              <!--
-                Tanda favorit; barang ini didahulukan pada pemilih barang.
-                Ditampilkan agar yang menandai dapat melihat hasilnya tanpa
-                membuka menunya satu per satu.
-              -->
-              @if (item.isFavorite) {
-                <mat-icon
-                  class="mi-star"
-                  [title]="'masterItem.favorit' | translate"
-                  >star</mat-icon
-                >
-              }
-              {{ item.description || "—" }}
-            </span>
+            <span class="mi-primary">{{ item.description || "—" }}</span>
           </td>
         </ng-container>
 
@@ -188,6 +174,41 @@
               >{{ t }}</span
             >
             <span class="mi-faint" *ngIf="typeChips(item).length === 0">—</span>
+          </td>
+        </ng-container>
+
+        <!--
+          Kolom favorit tersendiri.
+
+          Sebelumnya penandanya hanya bintang kecil di depan uraian barang —
+          terbaca sebagai hiasan, dan tidak dapat dipakai memilah. Sebagai
+          kolom, ia dapat dibaca berurutan ke bawah dan langsung terlihat
+          berapa banyak yang sudah ditandai.
+
+          Dapat ditekan langsung: menandai favorit adalah tindakan yang
+          sering diulang, dan membuka menu titik tiga untuk tiap barang
+          membuatnya melelahkan.
+        -->
+        <ng-container matColumnDef="isFavorite">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "masterItem.favorit" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let item">
+            <button
+              type="button"
+              class="mi-fav"
+              [class.on]="item.isFavorite"
+              *appCan="'master_item:update'"
+              (click)="$event.stopPropagation(); toggleFavorit(item)"
+              [title]="
+                (item.isFavorite
+                  ? 'masterItem.lepasFavorit'
+                  : 'masterItem.jadikanFavorit'
+                ) | translate
+              "
+            >
+              <mat-icon>{{ item.isFavorite ? "star" : "star_border" }}</mat-icon>
+            </button>
           </td>
         </ng-container>
 

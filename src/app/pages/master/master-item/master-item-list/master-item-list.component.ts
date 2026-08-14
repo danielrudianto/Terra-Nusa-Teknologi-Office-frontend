@@ -105,6 +105,7 @@ export class MasterItemListComponent {
     'type',
     'unit',
     'availablePurchaseType',
+    'isFavorite',
     'action',
   ];
 

@@ -71,16 +71,20 @@
                           <mat-option [value]="x">{{ x }}</mat-option>
                         }
                       </mat-select>
-                      <!--
-                        Boleh dikosongkan, dan dinyatakan terang-terangan.
-
-                        Sebagian orang memang tidak pernah mengetahui
-                        golongan darahnya; tanpa keterangan ini mereka
-                        menebak, dan tebakan pada data medis lebih berbahaya
-                        daripada kosong.
-                      -->
-                      <mat-hint>{{ "employeeProfile.bloodTypeHint" | translate }}</mat-hint>
                     </mat-form-field>
+                    <!--
+                      Sebagian orang memang tidak pernah mengetahui golongan
+                      darahnya. Tanpa penanda ini mereka menebak — dan tebakan
+                      pada data medis lebih berbahaya daripada kosong.
+                    -->
+                    <mat-slide-toggle
+                      color="primary"
+                      class="epf-tidakada"
+                      [checked]="darahTidakTahu"
+                      (change)="toggleDarahTidakTahu()"
+                    >
+                      {{ "employeeProfile.bloodTypeTidakTahu" | translate }}
+                    </mat-slide-toggle>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.religion" | translate }}</mat-label>
                       <mat-select formControlName="religion">
@@ -178,7 +182,29 @@
                           </mat-form-field>
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.birthday" | translate }}</mat-label>
-                            <input matInput formControlName="birthday" />
+                            <!--
+                              Dipilih lewat kalender, bukan diketik.
+
+                              Tanggal yang diketik bebas menghasilkan
+                              "12/03/1990", "12 Maret 1990", dan "1990-03-12"
+                              pada kolom yang sama — dan tidak satu pun dapat
+                              diurutkan atau dihitung umurnya sesudahnya.
+
+                              Penanda `#pickerKeluarga` aman dipakai berulang
+                              di dalam perulangan: Angular melingkupinya per
+                              baris, sehingga tiap kalender menunjuk isian
+                              barisnya sendiri.
+                            -->
+                            <input
+                              matInput
+                              formControlName="birthday"
+                              [matDatepicker]="pickerKeluarga"
+                            />
+                            <mat-datepicker-toggle
+                              matPrefix
+                              [for]="pickerKeluarga"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker #pickerKeluarga></mat-datepicker>
                           </mat-form-field>
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.educationLevel" | translate }}</mat-label>
@@ -377,7 +403,30 @@
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.bankName" | translate }}</mat-label>
-                      <input matInput formControlName="bankName" />
+                      <!--
+                        Saran ketik, BUKAN pilihan tertutup.
+
+                        Bank di luar daftar tetap dapat diketik — menutupnya
+                        berarti karyawan berbank daerah tidak dapat mengisi
+                        rekeningnya sama sekali.
+
+                        Gunanya menyeragamkan penulisan: "BCA", "Bca", dan
+                        "Bank Central Asia" pada kolom yang sama membuat
+                        rekapitulasi per bank tidak dapat dipercaya.
+                      -->
+                      <input
+                        matInput
+                        formControlName="bankName"
+                        [matAutocomplete]="bankAuto"
+                      />
+                      <mat-autocomplete #bankAuto="matAutocomplete">
+                        @for (
+                          b of bankTersaring(formGroup.get("bankName")?.value);
+                          track b.name
+                        ) {
+                          <mat-option [value]="b.name">{{ b.name }}</mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.bankAccountName" | translate }}</mat-label>
@@ -444,20 +493,44 @@
                           }
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.fromYear" | translate }}</mat-label>
+                            <!--
+                              Dikirim sebagai TEKS, bukan angka.
+
+                              Skema backend menyatakan tahun sebagai
+                              `Optional[str]`; `type="number"` membuat Angular
+                              mengirimnya sebagai bilangan dan seluruh
+                              penyimpanan ditolak 422 — tanpa menyebut kolom
+                              mana yang salah.
+
+                              `inputmode` tetap numerik agar papan ketik
+                              telepon membuka angka.
+                            -->
                             <input
                               matInput
-                              type="number"
                               inputmode="numeric"
+                              maxlength="4"
                               placeholder="2015"
                               formControlName="fromYear"
                             />
                           </mat-form-field>
                           <mat-form-field appearance="outline">
                             <mat-label>{{ "employeeProfile.toYear" | translate }}</mat-label>
+                            <!--
+                              Dikirim sebagai TEKS, bukan angka.
+
+                              Skema backend menyatakan tahun sebagai
+                              `Optional[str]`; `type="number"` membuat Angular
+                              mengirimnya sebagai bilangan dan seluruh
+                              penyimpanan ditolak 422 — tanpa menyebut kolom
+                              mana yang salah.
+
+                              `inputmode` tetap numerik agar papan ketik
+                              telepon membuka angka.
+                            -->
                             <input
                               matInput
-                              type="number"
                               inputmode="numeric"
+                              maxlength="4"
                               placeholder="2019"
                               formControlName="toYear"
                             />
@@ -467,6 +540,21 @@
                               <mat-label>{{ "employeeProfile.gpa" | translate }}</mat-label>
                               <input matInput formControlName="gpa" />
                             </mat-form-field>
+                            <!--
+                              Sebagian sekolah tidak menerbitkan IPK sama
+                              sekali. Tanpa penanda ini, kolomnya dibiarkan
+                              kosong — dan kosong tidak dapat dibedakan dari
+                              "belum sempat diisi", sehingga pengisinya
+                              ditanya berulang kali.
+                            -->
+                            <mat-slide-toggle
+                              color="primary"
+                              class="epf-tidakada"
+                              [checked]="ipkTidakAda($index)"
+                              (change)="toggleIpkTidakAda($index)"
+                            >
+                              {{ "employeeProfile.gpaTidakAda" | translate }}
+                            </mat-slide-toggle>
                           }
                         </div>
                       </div>

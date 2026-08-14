@@ -426,3 +426,10 @@
     grid-column: auto;
   }
 }
+
+/* Sakelar "tidak dapat dicantumkan"; ukurannya di bawah isian biasa. */
+.epf-tidakada {
+  align-self: center;
+  margin: -0.35rem 0 0.5rem;
+  font-size: 0.8rem;
+}

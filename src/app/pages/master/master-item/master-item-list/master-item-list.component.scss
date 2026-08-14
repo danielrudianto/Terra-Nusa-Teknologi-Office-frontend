@@ -248,13 +248,37 @@ $hover: var(--hover, #f6f8ff);
   background: var(--hover, #f6f8ff);
 }
 
-/* Tanda favorit di depan uraian barang. */
-.mi-star {
-  width: 15px;
-  height: 15px;
-  font-size: 15px;
-  line-height: 15px;
-  vertical-align: -2px;
-  margin-right: 0.15rem;
+/* ---- kolom favorit ---- */
+
+.mi-fav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  /*
+   * Abu-abu saat belum ditandai, bukan disembunyikan.
+   *
+   * Bintang yang hanya muncul pada yang sudah ditandai membuat barang lain
+   * tidak punya tempat untuk ditekan — dan yang menandai harus membuka menu
+   * titik tiga satu per satu.
+   */
+  color: var(--faint, #c3c7ce);
+  cursor: pointer;
+}
+.mi-fav:hover {
+  background: var(--hover, #f3f4f6);
   color: var(--warn-fg, #d9880a);
+}
+.mi-fav.on {
+  color: var(--warn-fg, #d9880a);
+}
+.mi-fav .mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+  line-height: 19px;
 }

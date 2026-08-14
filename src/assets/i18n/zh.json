@@ -1705,7 +1705,7 @@
     "officePICPhone": "办公室负责人电话",
     "phonePlaceholder": "08xxxxxxxxxx",
     "clauseTitle": "协议要点",
-    "extraClauseTitle": "附加要点（可选）",
+    "extraClauseTitle": "附加条款（可选）",
     "addClause": "添加要点",
     "removeClause": "删除",
     "noExtraClause": "暂无附加要点。",
@@ -1870,7 +1870,7 @@
     "ppnNote": "上述单价为税基（DPP），增值税另加。开票时须附税务发票。",
     "sectionDelivery": "交付",
     "sectionPic": "负责人联系方式",
-    "sectionNotes": "备注／协议条款",
+    "sectionNotes": "协议备注",
     "steelDetected": "检测到钢材",
     "addPoint": "添加条款",
     "clauseAutoHint": "以下标准条款将打印在文件上，内容依据上方填写的信息；如有特别约定请另行添加条款。",
@@ -3771,7 +3771,8 @@
     "licenseClass": "类别",
     "licenseNumber": "驾照号码",
     "noLicense": "尚未登记驾照。",
-    "bloodTypeHint": "若不清楚可留空"
+    "gpaTidakAda": "不提供绩点",
+    "bloodTypeTidakTahu": "血型不详"
   },
   "hardcoded": {
     "approveInvoice": "批准发票",

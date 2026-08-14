@@ -24,6 +24,12 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { banks, IBank } from 'src/app/utils/bank';
+import { tanggalLokal } from 'src/app/utils/tanggal';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-employee-profile',
@@ -39,6 +45,10 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     MatIconModule,
     MatProgressSpinnerModule,
     TranslatePipe,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatAutocompleteModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './employee-profile.component.html',
   styleUrl: './employee-profile.component.scss',
@@ -225,6 +235,72 @@ export class EmployeeProfileComponent implements OnInit {
   /** Jenjang yang mengenal jurusan. SD dan SMP tidak. */
   private readonly berJurusan = ['SMA/SMK', 'D3', 'S1', 'S2', 'S3'];
 
+  /*
+   * Nilai penanda "tidak dapat dicantumkan".
+   *
+   * Disimpan sebagai TEKS pada kolomnya sendiri, bukan sebagai kolom boolean
+   * terpisah: kolom baru berarti migrasi basis data, sedangkan yang perlu
+   * dibedakan hanya "belum diisi" dari "memang tidak ada".
+   *
+   * Keduanya berbeda artinya. Kosong berarti belum sempat diisi dan masih
+   * perlu ditanyakan; penanda ini berarti sudah ditanyakan dan jawabannya
+   * memang tidak ada — sehingga tidak perlu ditanyakan lagi.
+   */
+  static readonly TIDAK_ADA = '-';
+
+  /** True bila baris pendidikan ini ditandai tidak ber-IPK. */
+  ipkTidakAda(i: number): boolean {
+    return (
+      this.barisPendidikan(i).get('gpa')?.value ===
+      EmployeeProfileComponent.TIDAK_ADA
+    );
+  }
+
+  /**
+   * Tandai bahwa jenjang ini tidak menerbitkan IPK.
+   *
+   * Isian IPK-nya dimatikan, bukan disembunyikan: yang mengisi tetap perlu
+   * melihat bahwa kolom itu ada dan sengaja dilewati.
+   */
+  toggleIpkTidakAda(i: number): void {
+    const c = this.barisPendidikan(i).get('gpa');
+    if (!c) return;
+    if (this.ipkTidakAda(i)) {
+      c.enable({ emitEvent: false });
+      c.setValue('', { emitEvent: false });
+    } else {
+      c.setValue(EmployeeProfileComponent.TIDAK_ADA, { emitEvent: false });
+      c.disable({ emitEvent: false });
+    }
+  }
+
+  /** True bila golongan darahnya ditandai tidak diketahui. */
+  get darahTidakTahu(): boolean {
+    return (
+      this.formGroup.get('bloodType')?.value ===
+      EmployeeProfileComponent.TIDAK_ADA
+    );
+  }
+
+  /**
+   * Tandai bahwa golongan darahnya tidak diketahui.
+   *
+   * Sebagian orang memang tidak pernah mengetahuinya, dan membiarkannya
+   * kosong membuat pengisinya ditanya berulang kali oleh siapa pun yang
+   * memeriksa kelengkapan berikutnya.
+   */
+  toggleDarahTidakTahu(): void {
+    const c = this.formGroup.get('bloodType');
+    if (!c) return;
+    if (this.darahTidakTahu) {
+      c.enable({ emitEvent: false });
+      c.setValue('', { emitEvent: false });
+    } else {
+      c.setValue(EmployeeProfileComponent.TIDAK_ADA, { emitEvent: false });
+      c.disable({ emitEvent: false });
+    }
+  }
+
   punyaIPK(i: number): boolean {
     return this.berIPK.includes(this.barisPendidikan(i).get('level')?.value);
   }
@@ -240,7 +316,36 @@ export class EmployeeProfileComponent implements OnInit {
    * "Bhs Inggris" sebagai empat bahasa berbeda — dan tidak ada satu pun
    * daftar yang dapat dipercaya sesudahnya.
    */
+  /**
+   * Daftar bank yang SAMA dengan yang dipakai pembelian dan pembayaran.
+   *
+   * Diambil dari `utils/bank`, bukan ditulis ulang di sini: daftar terpisah
+   * berarti dua daftar yang harus diperbarui bersamaan, dan rekening yang
+   * ditulis "BCA" di satu layar dan "PT Bank Central Asia Tbk." di layar lain
+   * tidak dapat dicocokkan.
+   */
+  readonly daftarBank = banks;
+
+  /**
+   * Saran bank yang cocok dengan yang sedang diketik.
+   *
+   * Dicocokkan ke nama RESMI maupun aliasnya — orang mengetik "BCA", bukan
+   * "PT Bank Central Asia Tbk.".
+   */
+  bankTersaring(nilai: string | null | undefined): IBank[] {
+    const k = String(nilai || '').toLowerCase().trim();
+    if (!k) return this.daftarBank;
+    return this.daftarBank.filter(
+      (b) =>
+        b.name.toLowerCase().includes(k) ||
+        (b.alias || '').toLowerCase().includes(k),
+    );
+  }
+
   readonly daftarBahasa = [
+    // Indonesia lebih dulu: itu yang paling sering diisi, dan menaruhnya di
+    // urutan pertama menghemat gulir bagi hampir semua orang.
+    'Indonesia',
     'Inggris',
     'Mandarin',
     'Arab',
@@ -248,11 +353,6 @@ export class EmployeeProfileComponent implements OnInit {
     'Korea',
     'Jerman',
     'Belanda',
-    'Jawa',
-    'Sunda',
-    'Batak',
-    'Minang',
-    'Bugis',
     'Lainnya',
   ];
 
@@ -342,7 +442,16 @@ export class EmployeeProfileComponent implements OnInit {
   private buatSim(v: any = {}): FormGroup {
     return this.formBuilder.group({
       golongan: [v.golongan ?? ''],
-      nomor: [v.nomor ?? '', Validators.maxLength(30)],
+      /*
+       * Nomor SIM Indonesia 12–16 digit, kerap ditulis berkelompok dengan
+       * tanda hubung. Batas bawah dipasang karena nomor yang terpotong
+       * separuh lolos tanpa itu — dan baru ketahuan saat dipakai mengurus
+       * perizinan.
+       */
+      nomor: [
+        v.nomor ?? '',
+        [Validators.minLength(12), Validators.maxLength(20)],
+      ],
     });
   }
 
@@ -419,8 +528,24 @@ export class EmployeeProfileComponent implements OnInit {
       level: [v.level ?? '', Validators.maxLength(50)],
       school: [v.school ?? '', Validators.maxLength(200)],
       major: [v.major ?? '', Validators.maxLength(150)],
-      fromYear: [v.fromYear ?? '', Validators.maxLength(10)],
-      toYear: [v.toYear ?? '', Validators.maxLength(10)],
+      /*
+       * Tahun disimpan sebagai TEKS empat angka.
+       *
+       * Skema backend menyatakannya `Optional[str]`; mengirimnya sebagai
+       * bilangan membuat seluruh penyimpanan ditolak 422 tanpa menyebut
+       * kolom mana yang salah.
+       *
+       * Polanya membatasi ke empat angka, bukan sekadar panjangnya —
+       * "20a5" lolos `maxLength` tetapi bukan tahun.
+       */
+      fromYear: [
+        v.fromYear ?? '',
+        [Validators.pattern(/^\d{4}$/), Validators.maxLength(4)],
+      ],
+      toYear: [
+        v.toYear ?? '',
+        [Validators.pattern(/^\d{4}$/), Validators.maxLength(4)],
+      ],
       gpa: [v.gpa ?? '', Validators.maxLength(10)],
     });
   }
@@ -590,7 +715,21 @@ export class EmployeeProfileComponent implements OnInit {
     bersih.formalEducation = isiBaris(v.formalEducation || []);
     bersih.workExperience = isiBaris(v.workExperience || []);
     bersih.languages = isiBaris(v.languages || []);
-    bersih.familyMembers = isiBaris(v.familyMembers || []);
+    /*
+     * Tanggal lahir diubah menjadi tanggal LOKAL sebelum dikirim.
+     *
+     * Datepicker memberikan objek `Date`; diserialisasi apa adanya ia menjadi
+     * "1990-03-12T00:00:00.000Z" — dua puluh enam karakter, sedangkan
+     * kolomnya dibatasi dua puluh, sehingga seluruh penyimpanan ditolak
+     * `string_too_long` tanpa menyebut baris mana.
+     *
+     * Bentuk ISO juga menggeser tanggalnya ke UTC: 12 Maret dapat tersimpan
+     * sebagai 11 Maret bagi yang berada di zona waktu timur.
+     */
+    bersih.familyMembers = isiBaris(v.familyMembers || []).map((x: any) => ({
+      ...x,
+      birthday: tanggalLokal(x.birthday) ?? '',
+    }));
     bersih.drivingLicenses = isiBaris(v.drivingLicenses || []);
 
     this.apiService
