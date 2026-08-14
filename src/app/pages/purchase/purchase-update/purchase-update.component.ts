@@ -79,8 +79,8 @@ export class PurchaseUpdateComponent {
   purchaseType = null;
   metaFormGroup: FormGroup = new FormGroup({
     id: new FormControl(this.data.id),
-    invoiceName: new FormControl('', Validators.required),
-    receiptName: new FormControl(''),
+    invoiceName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    receiptName: new FormControl('', Validators.maxLength(100)),
     taxInvoiceName: new FormControl('', Validators.maxLength(17)),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl(''),

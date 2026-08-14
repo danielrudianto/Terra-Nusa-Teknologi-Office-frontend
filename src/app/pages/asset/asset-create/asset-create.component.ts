@@ -51,13 +51,13 @@ export class AssetCreateComponent {
   isSubmitting: boolean = false;
 
   assetFormGroup: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, Validators.maxLength(45)]),
     description: new FormControl('', Validators.required),
-    brand: new FormControl('', Validators.required),
+    brand: new FormControl('', [Validators.required, Validators.maxLength(50)]),
     type: new FormControl('', Validators.required),
     depreciation: new FormControl(0, [Validators.required, Validators.min(0)]),
-    location: new FormControl('', Validators.required),
-    purchaseOrderName: new FormControl('', Validators.required),
+    location: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+    purchaseOrderName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     purchaseDate: new FormControl('', Validators.required),
     value: new FormControl(0, [Validators.required, Validators.min(0)]),
   });

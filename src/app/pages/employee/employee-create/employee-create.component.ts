@@ -43,24 +43,26 @@ export class EmployeeCreateComponent {
 
   isSubmitting: boolean = false;
   formGroup: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     birthday: new FormControl('', Validators.required),
     nik: new FormControl('', [
       Validators.required,
       Validators.minLength(16),
       Validators.maxLength(16),
     ]),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(100)]),
     phoneNumber: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\d{10,15}$/),
+      Validators.maxLength(20),
     ]),
     address: new FormControl('', [
       Validators.required,
       Validators.minLength(10),
+      Validators.maxLength(255),
     ]),
-    position: new FormControl('', Validators.required),
-    department: new FormControl('', Validators.required),
+    position: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+    department: new FormControl('', [Validators.required, Validators.maxLength(50)]),
     taxCategory: new FormControl('', Validators.required),
     startDate: new FormControl('', Validators.required),
   });

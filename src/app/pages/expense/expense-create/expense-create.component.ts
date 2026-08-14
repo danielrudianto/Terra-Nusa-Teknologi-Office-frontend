@@ -123,9 +123,9 @@ export class ExpenseCreateComponent {
   });
 
   paymentFormGroup: FormGroup = new FormGroup({
-    bankName: new FormControl('', Validators.required),
-    bankAccountName: new FormControl('', Validators.required),
-    bankAccountNumber: new FormControl('', Validators.required),
+    bankName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    bankAccountName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    bankAccountNumber: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     paymentMethod: new FormControl('', Validators.required),
     paymentTotal: new FormControl(0, [Validators.required]),
     createPayment: new FormControl(false),

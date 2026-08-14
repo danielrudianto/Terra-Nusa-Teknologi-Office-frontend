@@ -59,7 +59,7 @@ export class SalesInvoiceConfirmComponent {
     date: new FormControl('', Validators.required),
     projectName: new FormControl('', Validators.required),
     invoiceName: new FormControl(''),
-    taxInvoiceName: new FormControl(''),
+    taxInvoiceName: new FormControl('', Validators.maxLength(100)),
     description: new FormControl('', Validators.required),
     spkNumber: new FormControl('', Validators.required),
     clientID: new FormControl('', Validators.required),

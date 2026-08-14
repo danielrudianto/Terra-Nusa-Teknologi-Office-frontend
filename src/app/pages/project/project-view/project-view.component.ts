@@ -74,7 +74,12 @@ export class ProjectViewComponent implements OnInit {
       Validators.maxLength(100),
     ]),
     documentType: new FormControl<'spk' | 'adendum'>('spk', Validators.required),
-    dpp: new FormControl<number | null>(null, Validators.required),
+    // Nilai kontrak tidak boleh negatif: kontrak bernilai minus tidak
+    // berarti apa pun, dan margin proyeknya ikut salah tanpa galat.
+    dpp: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
     ppn: new FormControl<number>(11, [
       Validators.required,
       Validators.min(0),

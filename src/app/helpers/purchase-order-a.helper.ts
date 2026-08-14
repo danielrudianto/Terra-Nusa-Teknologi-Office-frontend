@@ -421,6 +421,12 @@ export function printPurchaseOrderA(
   const pdf = pdfMake.createPdf(dd as any, undefined, fonts as any, vfs as any);
   const fileName = `${data.purchaseOrderName}.pdf`;
 
+  // Definisi dokumen dikembalikan apa adanya, tanpa membuat PDF.
+  //
+  // Dipakai saat beberapa dokumen harus terbit sebagai SATU berkas —
+  // mencetak adendum menyertakan induk dan adendum sebelumnya.
+  if (output === 'docdef') return dd as any;
+
   if (output === 'dataurl') {
     // Dikembalikan sebagai Promise: pdfMake menyerahkan hasilnya lewat
     // callback, sementara pemanggilnya perlu menunggu berkasnya jadi

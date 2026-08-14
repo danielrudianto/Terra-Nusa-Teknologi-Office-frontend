@@ -76,10 +76,11 @@ export class SalesInvoiceCreateComponent {
       Validators.pattern(
         /^[0-9]{3}-INV-[A-Z0-9]{4,5}-(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)-20[0-9]{2}$/,
       ),
+      Validators.maxLength(100),
     ]),
     projectName: new FormControl('', Validators.required),
-    description: new FormControl('', Validators.required),
-    spkNumber: new FormControl('', Validators.required),
+    description: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    spkNumber: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     clientID: new FormControl('', Validators.required),
     clientName: new FormControl('', Validators.required),
     clientAddress: new FormControl('', Validators.required),

@@ -39,7 +39,9 @@ export class ReimbursementCreateItemDialogComponent {
       Validators.maxLength(255),
       Validators.minLength(10),
     ]),
-    amount: new FormControl('', [Validators.required]),
+    // Nominal reimbursement tidak boleh negatif — yang negatif berarti
+    // perusahaan menagih karyawannya, dan itu bukan reimbursement.
+    amount: new FormControl('', [Validators.required, Validators.min(0)]),
   });
 
   onSubmit() {

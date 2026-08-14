@@ -45,7 +45,7 @@ export class UserCreateComponent {
   levels = [1, 2, 3, 4, 5];
 
   formGroup: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     /*
      * Jabatan; dicetak di bawah nama pada blok tanda tangan dokumen.
@@ -58,6 +58,7 @@ export class UserCreateComponent {
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
+      Validators.maxLength(255),
     ]),
     authenticationLevel: new FormControl(1, Validators.required),
   });

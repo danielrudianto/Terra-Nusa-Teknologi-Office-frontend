@@ -50,7 +50,7 @@ export class ExpenseOpponentCreateComponent {
 
   formGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
-    description: new FormControl('', Validators.required),
+    description: new FormControl('', [Validators.required, Validators.maxLength(500)]),
     type: new FormControl('', Validators.required),
     paymentNumber: new FormControl('', Validators.required),
     npwp: new FormControl(''),

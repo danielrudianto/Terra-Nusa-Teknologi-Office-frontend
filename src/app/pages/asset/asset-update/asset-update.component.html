@@ -131,6 +131,10 @@
             formControlName="value"
             [placeholder]="'common.ex1200000' | translate"
             type="number"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
           />
         </mat-form-field>
       </div>
@@ -152,6 +156,10 @@
             formControlName="soldValue"
             [placeholder]="'common.ex800000' | translate"
             type="number"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
           />
         </mat-form-field>
 

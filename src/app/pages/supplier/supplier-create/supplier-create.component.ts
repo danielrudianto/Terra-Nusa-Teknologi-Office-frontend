@@ -48,10 +48,10 @@ export class SupplierCreateComponent {
 
   supplierFormGroup: FormGroup = new FormGroup({
     prefix: new FormControl('', Validators.required),
-    name: new FormControl('', Validators.required),
-    address: new FormControl('', Validators.required),
-    city: new FormControl('', Validators.required),
-    province: new FormControl('', Validators.required),
+    name: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+    address: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+    city: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    province: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     npwp: new FormControl('', [
       Validators.maxLength(16),
       Validators.pattern(/^$|^\d{16}$/),
@@ -59,8 +59,9 @@ export class SupplierCreateComponent {
     phoneNumber: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\d{10,20}$/),
+      Validators.maxLength(20),
     ]),
-    email: new FormControl('', [Validators.email]),
+    email: new FormControl('', [Validators.email, Validators.maxLength(255)]),
     soldItems: new FormControl(''),
     serviceAreas: new FormControl(''),
   });

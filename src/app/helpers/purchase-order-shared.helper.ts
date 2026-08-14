@@ -27,7 +27,20 @@ import { OFFICE_CONTACT } from '../constants/clause-templates';
  * purchase order memakai yang di sini. Menambah nilai baru harus dilakukan
  * di kedua tempat, atau salah satunya menolak nilai itu saat kompilasi.
  */
-export type PdfOutput = 'open' | 'print' | 'download' | 'dataurl';
+/**
+ * Cara dokumen dikeluarkan.
+ *
+ * `docdef` mengembalikan definisi dokumennya TANPA membuat PDF. Dipakai saat
+ * beberapa dokumen harus terbit sebagai satu berkas — mencetak adendum wajib
+ * menyertakan induk dan adendum sebelumnya, dan vendor harus menerima satu
+ * berkas, bukan tiga yang harus disatukan sendiri.
+ */
+export type PdfOutput =
+  | 'open'
+  | 'print'
+  | 'download'
+  | 'dataurl'
+  | 'docdef';
 
 const MONTHS = [
   'Januari',

@@ -52,11 +52,11 @@ export class UserUpdateComponent {
   levels = [1, 2, 3, 4, 5];
 
   formGroup: FormGroup = new FormGroup({
-    name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(100)]),
     // Jabatan; dicetak pada blok tanda tangan dokumen yang ia setujui.
     position: new FormControl('', Validators.maxLength(100)),
-    password: new FormControl(''), // optional: blank = keep
+    password: new FormControl('', Validators.maxLength(255)), // optional: blank = keep
     authenticationLevel: new FormControl(1, Validators.required),
     isActive: new FormControl(true),
   });

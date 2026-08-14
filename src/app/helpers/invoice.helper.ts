@@ -45,13 +45,6 @@ export interface IInvoiceDocument {
   keterangan?: string;
 }
 
-/**
- * Cara dokumen dikeluarkan.
- *
- * `dataurl` mengembalikan Promise berisi data URL, bukan membuka apa pun —
- * dipakai untuk menampilkan dokumen di dalam dialog. Tab baru tidak terbaca
- * di layar sempit dan kerap diblokir peramban bila bukan hasil klik langsung.
- */
 export type PdfOutput = 'open' | 'print' | 'download' | 'dataurl';
 
 const MONTHS = [
