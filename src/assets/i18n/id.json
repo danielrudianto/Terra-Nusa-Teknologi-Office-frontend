@@ -3375,7 +3375,9 @@
     "chartExpense": "Pengeluaran",
     "chartIncome": "Uang masuk",
     "chartProjected": "Diproyeksikan (belum masuk)",
-    "chartOther": "Pembelian lain"
+    "chartOther": "Pembelian lain",
+    "downloadExcel": "Excel",
+    "downloadPdf": "PDF"
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",
@@ -3438,7 +3440,16 @@
     "labAddressHint": "Benda uji diantar oleh PIHAK PERTAMA ke alamat ini.",
     "berlakukanKetentuanUjiKuatTekan": "Berlakukan ketentuan uji kuat tekan beton",
     "ditanggungPembeliAkn": "Ditanggung pembeli (AKN)",
-    "ditanggungPenjualBeton": "Ditanggung penjual beton"
+    "ditanggungPenjualBeton": "Ditanggung penjual beton",
+    "docPO": "Purchase Order",
+    "docSPK": "Surat Perintah Kerja",
+    "testSpec": "Spesifikasi",
+    "testQty": "Jumlah",
+    "testPrice": "Harga per benda uji",
+    "testSubtotal": "Subtotal",
+    "testSpecPlaceholder": "mis. D25, K-300",
+    "testEmpty": "Belum ada benda uji. Tambahkan satu baris per spesifikasi — tarifnya berbeda tiap diameter atau mutu.",
+    "testAddRow": "Tambah spesifikasi"
   },
   "agendaPage": {
     "title": "Agenda",

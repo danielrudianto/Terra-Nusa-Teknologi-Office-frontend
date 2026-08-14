@@ -160,7 +160,6 @@ export function buildBillingTerms(tempo: boolean): any[] {
       ],
     },
     'Proses pembayaran tagihan vendor dilakukan melalui Transfer Bank ke nomor rekening yang tercantum dalam dokumen penagihan (WAJIB sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor WAJIB memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan tarif Bank Indonesia yang berlaku (bila ada).',
     courierClause,
     'Tata cara pembayaran ini merupakan sebuah kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
   ];

@@ -426,11 +426,161 @@ app-wysiwyg {
   }
 }
 /* pemilih jenis material: menentukan rangkaian klausul yang dipakai */
+/*
+ * Pilihan jenis material sebagai kartu.
+ *
+ * Petak mengikuti ruang, sehingga jumlah kolomnya berubah di titik yang
+ * ditentukan — bukan di mana pun teks pilihan kebetulan tidak muat.
+ */
 .pof-material {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.6rem;
   padding: 0.25rem 0 0;
+}
+
+.pof-mat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem 0.6rem 0.35rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.pof-mat:hover {
+  border-color: var(--brand);
+}
+.pof-mat.on {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.pof-mat__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-top: 0.55rem;
+  min-width: 0;
+}
+.pof-mat__judul {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  line-height: 1.2;
+}
+/* Dokumen yang akan terbit: PO atau SPK. */
+.pof-mat__dok {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+.pof-mat.on .pof-mat__dok {
+  color: var(--brand);
+}
+
+/* ---- baris benda uji ---- */
+
+.pof-uji {
+  margin: 0.5rem 0 1rem;
+}
+
+.pof-uji__kepala,
+.pof-uji__baris {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 90px minmax(0, 1.3fr) minmax(0, 1fr) 34px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pof-uji__kepala {
+  padding: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+.pof-uji__kanan {
+  text-align: right;
+}
+
+.pof-uji__baris .mat-mdc-form-field {
+  width: 100%;
+}
+
+.pof-uji__sub {
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  /* Sejajar dengan tengah kolom isian, bukan dengan tepi atasnya. */
+  padding-bottom: 1.25rem;
+}
+
+.pof-uji__hapus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 1.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--faint, #8a8f98);
+  cursor: pointer;
+}
+.pof-uji__hapus:hover {
+  background: var(--bad-soft, #fde3e4);
+  color: var(--bad-fg, #e5484d);
+}
+.pof-uji__hapus .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+.pof-uji__kosong {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--faint, #8a8f98);
+}
+
+.pof-uji__kaki {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+.pof-uji__total {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+@media (max-width: 720px) {
+  .pof-uji__kepala {
+    display: none;
+  }
+  .pof-uji__baris {
+    grid-template-columns: minmax(0, 1fr) 34px;
+    row-gap: 0;
+  }
+  .pof-uji__sub,
+  .pof-uji__hapus {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 }
 .pof-material__hint {
   margin: 0.35rem 0 1rem;

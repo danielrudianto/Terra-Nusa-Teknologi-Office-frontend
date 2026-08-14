@@ -13,6 +13,11 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { ProjectLookupService } from '../../../services/project-lookup.service';
 import { purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
+import {
+  unduhLaporanProyekExcel,
+  unduhLaporanProyekPdf,
+  type DataLaporanProyek,
+} from '../../../helpers/project-report-download';
 
 interface BarisPemasok {
   nama: string;
@@ -484,6 +489,70 @@ export class ProjectReportComponent implements OnInit {
   );
 
   readonly adaData = computed(() => this._data() !== null);
+
+  /*
+   * Unduhan Laporan Proyek.
+   *
+   * Angkanya diambil dari computed yang sama dengan yang dipakai layar,
+   * bukan dihitung ulang: dua rumus untuk satu angka membuat berkas dan
+   * layar bisa berbeda tanpa ada yang menyadarinya.
+   *
+   * Karena itu penyaring yang sedang aktif — termasuk sakelar "sertakan
+   * internal" — otomatis ikut terbawa.
+   */
+  readonly sedangUnduh = signal(false);
+
+  private dataUnduhan(): DataLaporanProyek {
+    const p = this.proyek();
+    return {
+      kodeProyek: this.kode() ?? '',
+      namaProyek: p?.name ?? '',
+      nilaiKontrak: this.nilaiKontrak(),
+      nominalKontrak: this.nominalKontrak(),
+      totalBiaya: this.totalBiaya(),
+      margin: this.margin(),
+      tertagih: this.tertagih(),
+      kategori: this.kategori().map((k) => ({
+        kode: k.kode,
+        nama: k.nama,
+        nilai: k.nilai,
+        pemasok: k.pemasok.map((x: any) => ({
+          nama: x.nama,
+          nilai: x.nilai,
+        })),
+      })),
+      mingguan: this.mingguan().map((m) => ({
+        label: m.label,
+        biaya: m.biaya,
+        tagihan: m.tagihan,
+        biayaKumulatif: m.biayaKumulatif,
+      })),
+    };
+  }
+
+  async unduhExcel(): Promise<void> {
+    if (this.sedangUnduh()) return;
+    this.sedangUnduh.set(true);
+    try {
+      await unduhLaporanProyekExcel(this.dataUnduhan());
+    } catch (e) {
+      console.error('Gagal menyusun berkas Excel laporan proyek:', e);
+    } finally {
+      this.sedangUnduh.set(false);
+    }
+  }
+
+  unduhPdf(): void {
+    if (this.sedangUnduh()) return;
+    this.sedangUnduh.set(true);
+    try {
+      unduhLaporanProyekPdf(this.dataUnduhan());
+    } catch (e) {
+      console.error('Gagal menyusun PDF laporan proyek:', e);
+    } finally {
+      this.sedangUnduh.set(false);
+    }
+  }
 
   toggleKategori(kode: string): void {
     this.kategoriTerbuka.set(this.kategoriTerbuka() === kode ? null : kode);

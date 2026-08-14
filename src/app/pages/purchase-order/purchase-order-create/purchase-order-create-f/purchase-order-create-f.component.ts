@@ -165,12 +165,35 @@ export class PurchaseOrderCreateFComponent {
     this.selaraskanValidasi();
   }
 
+  /**
+   * Turunkan ringkasan benda uji dari barisnya.
+   *
+   * `sampleCount` dan `testUnitPrice` dibaca klausul serta dokumen lama,
+   * sehingga tetap diisi — tetapi tidak lagi diketik pengguna. Jumlahnya
+   * total seluruh baris; harganya rata-rata tertimbang, yang hanya dipakai
+   * pada kalimat ringkas dan bukan pada rincian harga.
+   */
+  private selaraskanRingkasanUji(): void {
+    const jumlah = this.totalBendaUji;
+    const nilai = this.totalNilaiUji;
+    this.formGroup.patchValue(
+      {
+        sampleCount: jumlah,
+        testUnitPrice: jumlah ? Math.round(nilai / jumlah) : 0,
+      },
+      { emitEvent: false },
+    );
+  }
+
   /** Sesuaikan validator yang bergantung pada jenis material. */
   private selaraskanValidasi(): void {
     const moda = this.formGroup.get('deliveryMethod');
     if (!moda) return;
 
     if (this.isTestService) {
+      // Jasa uji wajib punya minimal satu baris benda uji; tanpa itu
+      // dokumennya terbit tanpa rincian harga sama sekali.
+      if (!this.uji.length) this.tambahBarisUji();
       moda.clearValidators();
       // Dikosongkan agar tidak terbawa ke dokumen sebagai moda yang tidak
       // pernah dipilih penggunanya.
@@ -240,7 +263,18 @@ export class PurchaseOrderCreateFComponent {
     // opsional: hanya dicetak bila diisi
     deliveryDate: new FormControl(''),
     paymentDueDate: new FormControl(''),
-    // khusus jasa uji tekan silinder
+    /*
+     * Jasa pengujian: satu baris per spesifikasi benda uji.
+     *
+     * Satu jumlah dan satu harga tidak cukup. Pengujian besi dikirim per
+     * diameter — D10, D25, D32 — dan tarifnya berbeda tiap diameter.
+     * Dipaksakan ke satu baris, nilainya hanya bisa benar bila seluruh
+     * benda uji kebetulan berdiameter sama.
+     *
+     * `sampleCount` dan `testUnitPrice` dipertahankan sebagai hasil
+     * penjumlahan baris, karena klausul dan dokumen lama membacanya.
+     */
+    testItems: new FormArray([]),
     sampleCount: new FormControl(0, [Validators.min(0)]),
     testUnitPrice: new FormControl(0, [Validators.min(0)]),
     testReportDays: new FormControl(0, [Validators.min(0)]),
@@ -258,8 +292,79 @@ export class PurchaseOrderCreateFComponent {
     return this.formGroup.controls;
   }
 
+  /**
+   * Pilihan jenis material.
+   *
+   * `dok` menyebutkan dokumen yang akan terbit. Dua pilihan pengujian
+   * menghasilkan Surat Perintah Kerja, bukan Purchase Order — perbedaan yang
+   * baru terlihat setelah dokumennya tercetak bila tidak disebut di sini.
+   */
+  readonly pilihanMaterial = [
+    { value: 'beton', label: 'poForm.materialConcrete', dok: 'poF.docPO' },
+    { value: 'besi', label: 'poForm.materialSteel', dok: 'poF.docPO' },
+    { value: 'lain', label: 'poForm.materialOther', dok: 'poF.docPO' },
+    { value: 'ujitekan', label: 'poForm.materialTest', dok: 'poF.docSPK' },
+    { value: 'ujibesi', label: 'poForm.materialTestSteel', dok: 'poF.docSPK' },
+  ];
+
   get t() {
     return this.formGroup.get('purchase_order') as FormArray;
+  }
+
+  /* ---- baris benda uji ---- */
+
+  get uji(): FormArray {
+    return this.formGroup.get('testItems') as FormArray;
+  }
+
+  ujiGroup(i: number): FormGroup {
+    return this.uji.at(i) as FormGroup;
+  }
+
+  private barisUji(): FormGroup {
+    return this.formBuilder.group({
+      // Spesifikasi bebas teks: diameter besi (D25), mutu beton (K-300),
+      // atau apa pun yang membedakan tarifnya.
+      spec: ['', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(1)]],
+      price: [0, [Validators.required, Validators.min(0)]],
+    });
+  }
+
+  tambahBarisUji(): void {
+    this.uji.push(this.barisUji());
+    this.selaraskanRingkasanUji();
+  }
+
+  hapusBarisUji(i: number): void {
+    this.uji.removeAt(i);
+    this.selaraskanRingkasanUji();
+  }
+
+  /** Dipanggil dari template setiap kali jumlah atau harga baris berubah. */
+  onBarisUjiBerubah(): void {
+    this.selaraskanRingkasanUji();
+  }
+
+  subtotalBarisUji(i: number): number {
+    const g = this.ujiGroup(i)?.getRawValue?.() ?? {};
+    return (Number(g.quantity) || 0) * (Number(g.price) || 0);
+  }
+
+  /** Jumlah seluruh benda uji, dipakai klausul dan rincian dokumen. */
+  get totalBendaUji(): number {
+    return (this.uji.getRawValue() || []).reduce(
+      (a: number, x: any) => a + (Number(x.quantity) || 0),
+      0,
+    );
+  }
+
+  get totalNilaiUji(): number {
+    return (this.uji.getRawValue() || []).reduce(
+      (a: number, x: any) =>
+        a + (Number(x.quantity) || 0) * (Number(x.price) || 0),
+      0,
+    );
   }
 
   getFormGroupAt(i: number) {
@@ -473,14 +578,19 @@ export class PurchaseOrderCreateFComponent {
       // Jasa uji tidak memakai katalog barang: satu baris dibentuk dari
       // jumlah benda uji dan harga per benda uji.
       items: this.isTestService
-        ? [
-            {
-              name: this.testItemName,
-              quantity: Number(v.sampleCount) || 0,
-              unit: 'benda uji',
-              price: Number(v.testUnitPrice) || 0,
-            },
-          ]
+        ? /*
+           * Satu baris per spesifikasi, bukan satu baris gabungan.
+           *
+           * Tarif pengujian berbeda tiap diameter besi atau mutu beton;
+           * digabung menjadi satu baris, dokumennya menampilkan harga
+           * rata-rata yang tidak pernah disepakati siapa pun.
+           */
+          (this.uji.getRawValue() || []).map((x: any) => ({
+            name: `${this.testItemName} — ${x.spec}`,
+            quantity: Number(x.quantity) || 0,
+            unit: 'benda uji',
+            price: Number(x.price) || 0,
+          }))
         : this.t.controls.map((c) => {
             const x = c.getRawValue();
             return {
@@ -524,15 +634,14 @@ export class PurchaseOrderCreateFComponent {
       // Jasa uji tidak memakai katalog barang: satu baris dibentuk dari
       // jumlah benda uji dan harga per benda uji.
       items: this.isTestService
-        ? [
-            {
-              // Jasa uji: satu baris dari jumlah benda uji × harga per uji.
-              task: this.testItemName,
-              quantity: Number(this.formGroup.get('sampleCount')?.value) || 0,
-              unit: 'benda uji',
-              price: Number(this.formGroup.get('testUnitPrice')?.value) || 0,
-            },
-          ]
+        ? // Satu baris per spesifikasi; tarifnya berbeda tiap diameter besi
+          // atau mutu beton, sehingga tidak boleh digabung.
+          (this.uji.getRawValue() || []).map((x: any) => ({
+            task: `${this.testItemName} — ${x.spec}`,
+            quantity: Number(x.quantity) || 0,
+            unit: 'benda uji',
+            price: Number(x.price) || 0,
+          }))
         : this.t.controls.map((c) => {
             const x = c.getRawValue();
             return {

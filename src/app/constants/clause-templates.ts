@@ -1964,7 +1964,6 @@ export function buildServiceBillingTerms(
       ],
     },
     'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
   ];
 }
@@ -2350,7 +2349,6 @@ export function buildTransportBillingTerms(): BillingItem[] {
       ],
     },
     'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
     'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
   ];
@@ -2398,7 +2396,6 @@ export function buildMaintenanceBillingTerms(): BillingItem[] {
     'Atas jasa ini PIHAK PERTAMA melakukan pemotongan Pajak Penghasilan sesuai peraturan perpajakan yang berlaku. Bukti potong diserahkan kepada PIHAK KEDUA sesuai jangka waktu yang diatur dalam peraturan tersebut.',
     'Pembayaran dilakukan sesuai termin yang tercantum dalam Surat Perintah Kerja, terhitung sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.',
     'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
     'Pembayaran yang telah dilakukan tidak membebaskan PIHAK KEDUA dari kewajiban garansi atas hasil pekerjaan.',
     'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
@@ -2783,7 +2780,6 @@ export function buildLegalServiceBillingTerms(
     },
     'Pembayaran dilakukan sesuai termin yang tercantum dalam Surat Perintah Kerja, terhitung sejak dokumen penagihan lengkap diterima oleh bagian keuangan PIHAK PERTAMA.',
     'Proses pembayaran tagihan vendor dilakukan melalui transfer bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
     'Tata cara pembayaran ini merupakan satu kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
   ];
@@ -2819,7 +2815,6 @@ const BILLING_OFFICE_ADDRESS: BillingItem = {
  */
 const BILLING_CLOSING_TERMS: BillingItem[] = [
     'Proses pembayaran tagihan vendor dilakukan melalui Transfer Bank ke nomor rekening yang tercantum dalam dokumen penagihan (wajib sesuai dengan nama penandatangan kontrak kerja). Bilamana ditemukan perbedaan nama penerima, vendor wajib memberikan surat kuasa asli dan bermaterai yang ditandatangani oleh penerima kontrak.',
-    'Biaya administrasi pembayaran melalui transfer bank dibebankan kepada vendor sesuai dengan metode pembayaran dan tarif Bank Indonesia yang berlaku (bila ada).',
     'Khusus untuk vendor yang berada di luar JABODETABEK, pengiriman dokumen penagihan dapat dilakukan melalui jasa Kurir dan dilakukan khusus di antara hari Senin dan Rabu. PIHAK PERTAMA tidak bertanggung jawab atas kehilangan dokumen pada saat proses pengiriman.',
     'Tata cara pembayaran ini merupakan sebuah kesatuan dengan kontrak yang diterima dan menjadi syarat dalam pengajuan pembayaran.',
 ];

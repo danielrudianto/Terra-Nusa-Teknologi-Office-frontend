@@ -118,6 +118,48 @@
   margin-bottom: 1rem;
 }
 
+/* Tombol unduh, mengikuti bentuk tab di sebelahnya. */
+.prp-unduh {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.prp-unduh__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 34px;
+  padding: 0 0.8rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.prp-unduh__btn:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+.prp-unduh__btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.prp-unduh__btn .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
 .prp-internal {
   display: inline-flex;
   align-items: center;

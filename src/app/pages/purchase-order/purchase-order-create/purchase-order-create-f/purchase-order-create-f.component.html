@@ -194,22 +194,27 @@
       <div class="pof-section__title">
         {{ "poForm.materialTypeTitle" | translate }}
       </div>
+      <!--
+        Kartu pilihan, bukan deretan radio polos.
+
+        Lima pilihan berjajar dalam satu baris membungkus sendiri saat sempit
+        dan susunannya berubah-ubah. Yang lebih penting: dua di antaranya —
+        pengujian — menghasilkan Surat Perintah Kerja, bukan Purchase Order,
+        dan perbedaan itu tidak terlihat sama sekali dari lingkaran radio.
+      -->
       <mat-radio-group formControlName="materialType" class="pof-material">
-        <mat-radio-button value="beton" color="primary">
-          {{ "poForm.materialConcrete" | translate }}
-        </mat-radio-button>
-        <mat-radio-button value="besi" color="primary">
-          {{ "poForm.materialSteel" | translate }}
-        </mat-radio-button>
-        <mat-radio-button value="lain" color="primary">
-          {{ "poForm.materialOther" | translate }}
-        </mat-radio-button>
-        <mat-radio-button value="ujitekan" color="primary">
-          {{ "poForm.materialTest" | translate }}
-        </mat-radio-button>
-        <mat-radio-button value="ujibesi" color="primary">
-          {{ "poForm.materialTestSteel" | translate }}
-        </mat-radio-button>
+        @for (m of pilihanMaterial; track m.value) {
+          <label
+            class="pof-mat"
+            [class.on]="formGroup.get('materialType')?.value === m.value"
+          >
+            <mat-radio-button [value]="m.value" color="primary" />
+            <span class="pof-mat__teks">
+              <span class="pof-mat__judul">{{ m.label | translate }}</span>
+              <span class="pof-mat__dok">{{ m.dok | translate }}</span>
+            </span>
+          </label>
+        }
       </mat-radio-group>
       <p class="pof-material__hint">{{ "poForm.materialHint" | translate }}</p>
 
@@ -217,28 +222,85 @@
         <p class="pof-material__hint pof-material__note">
           {{ "poForm.materialTestNote" | translate }}
         </p>
-        <div class="pof-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.sampleCount" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="sampleCount"
-              type="number"
-              [min]="0"
-            />
-            <span matSuffix>&nbsp;{{ "poForm.samplePcs" | translate }}</span>
-          </mat-form-field>
+        <!--
+          Satu baris per spesifikasi benda uji.
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.testUnitPrice" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="testUnitPrice"
-              prefix="Rp. "
-              thousandSeparator="."
-              mask="separator.0"
-            />
-          </mat-form-field>
+          Pengujian besi dikirim per diameter — D10, D25, D32 — dan tarifnya
+          berbeda tiap diameter. Satu jumlah dan satu harga hanya benar bila
+          seluruh benda uji kebetulan berdiameter sama.
+        -->
+        <div class="pof-uji">
+          <div class="pof-uji__kepala">
+            <span>{{ "poF.testSpec" | translate }}</span>
+            <span>{{ "poF.testQty" | translate }}</span>
+            <span>{{ "poF.testPrice" | translate }}</span>
+            <span class="pof-uji__kanan">{{ "poF.testSubtotal" | translate }}</span>
+            <span></span>
+          </div>
+
+          @for (row of uji.controls; track $index) {
+            <div class="pof-uji__baris" [formGroup]="ujiGroup($index)">
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  formControlName="spec"
+                  [placeholder]="'poF.testSpecPlaceholder' | translate"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  formControlName="quantity"
+                  type="number"
+                  [min]="1"
+                  (input)="onBarisUjiBerubah()"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  formControlName="price"
+                  prefix="Rp. "
+                  thousandSeparator="."
+                  mask="separator.0"
+                  (input)="onBarisUjiBerubah()"
+                />
+              </mat-form-field>
+
+              <span class="pof-uji__sub">
+                Rp {{ subtotalBarisUji($index) | number: "1.0-0" }}
+              </span>
+
+              <button
+                type="button"
+                class="pof-uji__hapus"
+                (click)="hapusBarisUji($index)"
+                [attr.aria-label]="'common.delete' | translate"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+
+          @if (!uji.length) {
+            <p class="pof-uji__kosong">{{ "poF.testEmpty" | translate }}</p>
+          }
+
+          <div class="pof-uji__kaki">
+            <button type="button" class="pof-add" (click)="tambahBarisUji()">
+              <mat-icon>add</mat-icon>
+              {{ "poF.testAddRow" | translate }}
+            </button>
+            <span class="pof-uji__total">
+              {{ totalBendaUji }} {{ "poForm.samplePcs" | translate }} ·
+              <b>Rp {{ totalNilaiUji | number: "1.0-0" }}</b>
+            </span>
+          </div>
+        </div>
+
+        <div class="pof-grid">
 
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.testReportDays" | translate }}</mat-label>

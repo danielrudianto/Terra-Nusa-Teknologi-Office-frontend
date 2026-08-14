@@ -69,11 +69,17 @@
 }
 
 /* ===== isi ===== */
+/*
+ * Isi mengikuti lebar dialognya, tidak lagi menetapkan lebarnya sendiri.
+ *
+ * Sebelumnya isinya dipatok 620px sementara dialognya dibuka 96vw, sehingga
+ * kepala dialog melebar penuh dan isinya berhenti di tengah. Lebar dialog
+ * kini disetel komponen (`updateSize`), dan isinya cukup memenuhinya.
+ */
 .pov-content {
   padding: 1.25rem 1.5rem !important;
   background: var(--surface, #fff);
-  width: min(620px, 92vw);
-  max-width: 100%;
+  width: 100%;
   max-height: 66vh;
 }
 .pov-section {

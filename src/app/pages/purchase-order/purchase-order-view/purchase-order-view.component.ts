@@ -91,6 +91,24 @@ export class PurchaseOrderViewComponent {
     private translate: TranslateService,
   ) {
     /*
+     * Lebar dialog disetel dari sini, bukan dari pemanggilnya.
+     *
+     * Tiga puluh tiga tempat membukanya dengan `maxWidth: '96vw'`, sementara
+     * isinya sendiri dibatasi 620px. Di layar 1920px dialognya melebar
+     * 1843px dengan isi tetap 620px — sisanya ruang kosong, dan kepala
+     * dialog terlihat menggantung jauh dari isinya.
+     *
+     * Ditetapkan di komponen karena yang tahu selebar apa isinya adalah
+     * komponen ini, bukan layar yang memanggilnya. Memperbaikinya di tiap
+     * pemanggil berarti tiga puluh tiga tempat yang harus diingat setiap
+     * kali lebar isinya berubah.
+     *
+     * `min()` dipakai agar pada layar sempit ia tetap mengikuti lebar
+     * layar, bukan memaksa 660px lalu terpotong.
+     */
+    this.dialogRef.updateSize('min(660px, 96vw)');
+
+    /*
      * Data yang diberikan langsung tidak diambil ulang dari server.
      *
      * Pada pratinjau, PO-nya memang belum ada di server — mengambilnya
@@ -280,20 +298,25 @@ export class PurchaseOrderViewComponent {
       // Bukan kolom `purchaseType`: lihat keterangan pada `jenisEfektif`.
       this.jenisEfektif,
       {
+        /*
+         * Seluruh `customData` diteruskan, bukan daftar bidang pilihan.
+         *
+         * Sebelumnya hanya empat belas bidang yang disebut satu per satu,
+         * sementara penyusun klausul membaca lebih dari seratus. Akibatnya
+         * pratinjau menampilkan klausul yang berbeda dari dokumen yang
+         * dicetak — pada PO-F, `materialType` tidak ikut, sehingga jasa
+         * pengujian tampil sebagai pengadaan barang biasa.
+         *
+         * Daftar pilihan seperti itu harus diperbarui setiap kali ada varian
+         * baru, dan bila terlupa tidak ada galat yang muncul: klausulnya
+         * hanya diam-diam berbeda.
+         */
+        ...custom,
+        // Beberapa nilai punya cadangan di kolom utama bila `customData`
+        // belum memuatnya — dokumen lama tidak selalu menyimpan keduanya.
         paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-        creditTerm: custom.creditTerm,
-        prepaidTerm: custom.prepaidTerm,
-        deliveryMethod: custom.deliveryMethod,
-        deliveryAddress: custom.deliveryAddress,
-        supplierPICName: custom.supplierPICName,
-        supplierPICPhoneNumber: custom.supplierPICPhoneNumber,
-        officePICName: custom.officePICName,
-        officePICPhoneNumber: custom.officePICPhoneNumber,
-        fuelReportRequired: custom.fuelReportRequired,
-        paymentTermText: custom.paymentTerm,
-        overtimeRate: custom.overtimeRate,
-        shiftHours: custom.shiftHours,
-        includeSundayPolicy: custom.includeSundayPolicy,
+        paymentTermText: custom.paymentTerm ?? this.data.payment_term,
+        projectName: custom.projectName ?? this.data.projectName,
       },
       this.data.templateVersion,
       custom.additionalClauses || [],

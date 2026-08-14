@@ -3375,7 +3375,9 @@
     "chartExpense": "支出",
     "chartIncome": "已收款",
     "chartProjected": "预计（尚未收款）",
-    "chartOther": "其他采购"
+    "chartOther": "其他采购",
+    "downloadExcel": "Excel",
+    "downloadPdf": "PDF"
   },
   "employeeStatus": {
     "title": "停用员工",
@@ -3438,7 +3440,16 @@
     "labAddressHint": "试样由甲方送至此地址。",
     "berlakukanKetentuanUjiKuatTekan": "Berlakukan ketentuan uji kuat tekan beton",
     "ditanggungPembeliAkn": "Ditanggung pembeli (AKN)",
-    "ditanggungPenjualBeton": "Ditanggung penjual beton"
+    "ditanggungPenjualBeton": "Ditanggung penjual beton",
+    "docPO": "采购订单",
+    "docSPK": "工作指令书",
+    "testSpec": "规格",
+    "testQty": "数量",
+    "testPrice": "每件试件单价",
+    "testSubtotal": "小计",
+    "testSpecPlaceholder": "例如 D25、K-300",
+    "testEmpty": "尚无试件。请按规格逐行添加——不同直径或等级的费率不同。",
+    "testAddRow": "添加规格"
   },
   "agendaPage": {
     "title": "日程",

@@ -3375,7 +3375,9 @@
     "chartExpense": "Expenses",
     "chartIncome": "Income received",
     "chartProjected": "Projected (not yet received)",
-    "chartOther": "Other purchases"
+    "chartOther": "Other purchases",
+    "downloadExcel": "Excel",
+    "downloadPdf": "PDF"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",
@@ -3438,7 +3440,16 @@
     "labAddressHint": "Samples are delivered by the first party to this address.",
     "berlakukanKetentuanUjiKuatTekan": "Berlakukan ketentuan uji kuat tekan beton",
     "ditanggungPembeliAkn": "Ditanggung pembeli (AKN)",
-    "ditanggungPenjualBeton": "Ditanggung penjual beton"
+    "ditanggungPenjualBeton": "Ditanggung penjual beton",
+    "docPO": "Purchase Order",
+    "docSPK": "Work Order",
+    "testSpec": "Specification",
+    "testQty": "Quantity",
+    "testPrice": "Price per specimen",
+    "testSubtotal": "Subtotal",
+    "testSpecPlaceholder": "e.g. D25, K-300",
+    "testEmpty": "No specimens yet. Add one row per specification — the rate differs by diameter or grade.",
+    "testAddRow": "Add specification"
   },
   "agendaPage": {
     "title": "Agenda",

@@ -112,6 +112,32 @@
           </span>
         </mat-slide-toggle>
       </div>
+
+      <!--
+        Unduhan mengikuti apa yang sedang terlihat, termasuk sakelar
+        "sertakan internal" di sebelahnya — berkasnya menjawab pertanyaan
+        yang sama dengan layarnya.
+      -->
+      <div class="prp-unduh" *ngIf="kategori().length">
+        <button
+          type="button"
+          class="prp-unduh__btn"
+          [disabled]="sedangUnduh()"
+          (click)="unduhExcel()"
+        >
+          <mat-icon>table_view</mat-icon>
+          {{ "projectReport.downloadExcel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="prp-unduh__btn"
+          [disabled]="sedangUnduh()"
+          (click)="unduhPdf()"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          {{ "projectReport.downloadPdf" | translate }}
+        </button>
+      </div>
     </div>
 
     <p class="prp-nihil" *ngIf="kategori().length === 0">
