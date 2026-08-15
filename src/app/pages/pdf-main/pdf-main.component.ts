@@ -19,8 +19,21 @@ import { tanggalLokal } from '../../utils/tanggal';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
-pdfjslib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+/*
+ * Worker PDF disajikan SENDIRI, bukan dari CDN pihak ketiga.
+ *
+ * Sebelumnya berkas ini dimuat dari cdnjs.cloudflare.com. Itu berarti dua
+ * hal: bila CDN-nya tidak dapat dijangkau — jaringan kantor memblokirnya,
+ * atau layanannya sedang turun — halaman PDF berhenti bekerja tanpa
+ * penjelasan; dan bila CDN-nya dibobol, kode asing berjalan di peramban
+ * setiap orang yang membuka halaman ini.
+ *
+ * Berkasnya disalin ke `assets/` saat build lewat entri `assets` pada
+ * angular.json, sehingga versinya selalu sama dengan paket yang terpasang —
+ * jalur CDN sebelumnya menyebut 3.11.174 secara harfiah, dan akan salah
+ * diam-diam begitu paketnya dinaikkan.
+ */
+pdfjslib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.js';
 
 /**
  * Satu coretan pada halaman.
