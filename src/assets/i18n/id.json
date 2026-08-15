@@ -2664,7 +2664,11 @@
     "create_deductions": "Potongan ditambahkan",
     "create_items": "Rincian ditambahkan",
     "move_date": "Memindahkan tanggal",
-    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri"
+    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri",
+    "contract_create": "Kontrak ditambahkan",
+    "contract_update": "Kontrak diubah",
+    "contract_delete": "Kontrak dihapus",
+    "convert": "Dikonversi menjadi pembelian"
   },
   "activity": {
     "title": "Aktivitas",
@@ -2711,7 +2715,14 @@
     "clients": "Klien",
     "expense_opponents": "Lawan Transaksi",
     "bank_accounts": "Rekening Bank",
-    "users": "Pengguna"
+    "users": "Pengguna",
+    "projects": "Proyek",
+    "project_contracts": "Kontrak proyek",
+    "purchase_draft": "Draf pembelian",
+    "employees": "Karyawan",
+    "employee_profiles": "Profil karyawan",
+    "employee_form_submissions": "Pembaruan data karyawan",
+    "employee_form_versions": "Formulir pembaruan data"
   },
   "poH": {
     "subcontractorType": "Jenis subkontraktor",

@@ -2664,7 +2664,11 @@
     "create_deductions": "Deductions added",
     "create_items": "Items added",
     "move_date": "Date moved",
-    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri"
+    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri",
+    "contract_create": "Contract added",
+    "contract_update": "Contract updated",
+    "contract_delete": "Contract deleted",
+    "convert": "Converted to purchase"
   },
   "activity": {
     "title": "Activity",
@@ -2711,7 +2715,14 @@
     "clients": "Client",
     "expense_opponents": "Expense Opponent",
     "bank_accounts": "Bank Account",
-    "users": "User"
+    "users": "User",
+    "projects": "Projects",
+    "project_contracts": "Project contracts",
+    "purchase_draft": "Purchase drafts",
+    "employees": "Employees",
+    "employee_profiles": "Employee profiles",
+    "employee_form_submissions": "Employee data updates",
+    "employee_form_versions": "Data update forms"
   },
   "poH": {
     "subcontractorType": "Subcontractor type",

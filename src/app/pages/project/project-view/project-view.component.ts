@@ -28,6 +28,7 @@ import { DeleteConfirmationComponent } from '../../../components/delete-confirma
 import { Project, ProjectContract, keadaanProyek } from '../project.model';
 import { PphSelectorComponent } from '../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../utils/pph';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-project-view',
@@ -47,6 +48,7 @@ import { IPPh } from '../../../utils/pph';
     TranslatePipe,
     HeaderTitleComponent,
     CanDirective,
+    AuditTrailComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './project-view.component.html',

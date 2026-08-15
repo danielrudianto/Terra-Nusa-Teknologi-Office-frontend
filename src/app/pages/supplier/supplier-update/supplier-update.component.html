@@ -97,6 +97,15 @@
           {{ "supplier.noAreas" | translate }}
         </div>
       </section>
+    <!--
+      Riwayat perubahan; ditaruh pada layar ubah karena catatan
+      ini tidak punya layar lihat tersendiri.
+    -->
+    <app-audit-trail
+      *ngIf="data?.id"
+      entity="suppliers"
+      [entityId]="data.id"
+    ></app-audit-trail>
     </mat-dialog-content>
 
     <mat-dialog-actions class="su-actions">

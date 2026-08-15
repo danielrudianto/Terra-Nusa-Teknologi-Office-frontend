@@ -120,6 +120,15 @@
           />
         </mat-form-field>
       </div>
+    <!--
+      Riwayat perubahan; ditaruh pada layar ubah karena catatan
+      ini tidak punya layar lihat tersendiri.
+    -->
+    <app-audit-trail
+      *ngIf="data?.id"
+      entity="clients"
+      [entityId]="data.id"
+    ></app-audit-trail>
     </mat-dialog-content>
 
     <mat-dialog-actions class="cc-actions">

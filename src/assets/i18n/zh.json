@@ -2664,7 +2664,11 @@
     "create_deductions": "已添加扣款",
     "create_items": "已添加明细",
     "move_date": "调整日期",
-    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri"
+    "disetujuiOlehPembuatnyaSendiri": "Disetujui oleh pembuatnya sendiri",
+    "contract_create": "新增合同",
+    "contract_update": "修改合同",
+    "contract_delete": "删除合同",
+    "convert": "已转为采购"
   },
   "activity": {
     "title": "活动记录",
@@ -2711,7 +2715,14 @@
     "clients": "客户",
     "expense_opponents": "费用往来方",
     "bank_accounts": "银行账户",
-    "users": "用户"
+    "users": "用户",
+    "projects": "项目",
+    "project_contracts": "项目合同",
+    "purchase_draft": "采购草稿",
+    "employees": "员工",
+    "employee_profiles": "员工档案",
+    "employee_form_submissions": "员工资料更新",
+    "employee_form_versions": "资料更新表单"
   },
   "poH": {
     "subcontractorType": "分包商类型",

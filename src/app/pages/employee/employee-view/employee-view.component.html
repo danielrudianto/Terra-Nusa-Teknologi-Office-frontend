@@ -199,6 +199,19 @@
               </div>
             }
           }
+          <!--
+            Riwayat perubahan DATA POKOK, terpisah dari pembaruan formulir.
+
+            Keduanya berbeda: pembaruan formulir adalah yang diisi karyawannya
+            sendiri; yang di bawah ini adalah perubahan yang dilakukan orang
+            lain atas datanya — jabatan, departemen, NIK.
+          -->
+          @if (input?.employee?.id) {
+            <app-audit-trail
+              entity="employees"
+              [entityId]="input.employee.id"
+            ></app-audit-trail>
+          }
         </mat-tab>
       </mat-tab-group>
     }

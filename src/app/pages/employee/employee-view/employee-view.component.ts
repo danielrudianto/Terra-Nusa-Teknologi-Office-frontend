@@ -15,6 +15,7 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { ApiService } from '../../../services/api.service';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 interface Baris {
   label: string;
@@ -48,6 +49,7 @@ interface Bagian {
     MatProgressSpinnerModule,
     DialogGeserDirective,
     TranslatePipe,
+    AuditTrailComponent,
   ],
   templateUrl: './employee-view.component.html',
   styleUrls: ['./employee-view.component.scss'],

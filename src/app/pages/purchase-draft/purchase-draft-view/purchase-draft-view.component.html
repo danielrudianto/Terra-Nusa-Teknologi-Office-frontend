@@ -102,6 +102,13 @@
     <p class="pdv-created" *ngIf="formGroup.get('createdAt')?.value">
       Dokumen dibuat pada {{ formGroup.get("createdAt")?.value }}
     </p>
+  
+  <!-- ===== riwayat ===== -->
+  <app-audit-trail
+    *ngIf="data?.id"
+    entity="purchase_draft"
+    [entityId]="data.id"
+  ></app-audit-trail>
   </mat-dialog-content>
 
   <mat-dialog-actions class="pdv-actions">

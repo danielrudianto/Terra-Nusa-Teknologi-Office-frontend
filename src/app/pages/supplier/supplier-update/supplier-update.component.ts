@@ -26,6 +26,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-supplier-update',
@@ -43,6 +44,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatIconModule,
     MatButtonModule,
     DialogGeserDirective,
+    AuditTrailComponent,
   ],
   templateUrl: './supplier-update.component.html',
   styleUrl: './supplier-update.component.scss',

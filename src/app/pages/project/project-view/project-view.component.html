@@ -193,6 +193,20 @@
     </div>
   </div>
 
+  <!--
+    Riwayat perubahan proyek.
+
+    Diletakkan setelah daftar kontrak: yang ditelusuri saat audit biasanya
+    perubahan nilai kontraknya — dan riwayat itu ada pada kontraknya sendiri —
+    sedangkan yang ini menjelaskan apa yang terjadi pada proyeknya: kode,
+    nama, dan statusnya.
+  -->
+  <app-audit-trail
+    *ngIf="project?.id"
+    entity="projects"
+    [entityId]="project.id"
+  ></app-audit-trail>
+
 </div>
 
 <div class="prv-memuat" *ngIf="isLoading">

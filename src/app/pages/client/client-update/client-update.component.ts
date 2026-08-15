@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-client-update',
@@ -36,6 +37,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatSelectModule,
     MatButtonModule,
     DialogGeserDirective,
+    AuditTrailComponent,
   ],
   templateUrl: './client-update.component.html',
   styleUrl: './client-update.component.scss',

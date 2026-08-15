@@ -17,6 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-purchase-draft-view',
@@ -35,6 +36,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     FormsModule,
     ReactiveFormsModule,
     DialogGeserDirective,
+    AuditTrailComponent,
   ],
 })
 export class PurchaseDraftViewComponent {

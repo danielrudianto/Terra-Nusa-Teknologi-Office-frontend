@@ -1,7 +1,15 @@
+/*
+ * Lebar DITETAPKAN juga, bukan hanya lebar minimum.
+ *
+ * `min-width` membiarkan dialog melebar mengikuti isi terpanjang — satu
+ * alamat KTP yang panjang pada tab Profil membuat seluruh dialog lebih lebar
+ * daripada saat tab Data pokok terbuka.
+ */
 .ev {
   display: flex;
   flex-direction: column;
-  min-width: min(680px, 94vw);
+  width: min(680px, 94vw);
+  max-width: 94vw;
 }
 
 .ev-head {
@@ -56,12 +64,40 @@
   background: var(--hover, #eef2ff);
 }
 
+/*
+ * Tinggi DITETAPKAN, bukan sekadar dibatasi.
+ *
+ * `max-height` membuat dialog mengikuti isi tab yang sedang terbuka: Data
+ * pokok sepuluh baris, Profil pribadi puluhan, Riwayat kadang satu. Tiap
+ * kali tab berganti, seluruh dialog melompat dan tombol di bawahnya
+ * berpindah tempat — termasuk saat tetikus sedang menuju ke sana.
+ *
+ * Dengan tinggi tetap, yang bergulir hanya isinya.
+ */
 .ev-content {
   padding: 0 !important;
+  height: 68vh;
   max-height: 68vh;
+  min-height: 68vh;
+  overflow-y: auto;
 }
+
+/*
+ * Tab mengisi tinggi wadahnya, dan BADANNYA yang bergulir.
+ *
+ * Tanpa ini, kepala tab ikut tergulir ke atas dan hilang begitu isinya
+ * panjang — yang sedang membandingkan dua tab kehilangan cara berpindah
+ * tanpa menggulir kembali.
+ */
 .ev-tabs {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.ev-tabs ::ng-deep .mat-mdc-tab-body-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .ev-state {

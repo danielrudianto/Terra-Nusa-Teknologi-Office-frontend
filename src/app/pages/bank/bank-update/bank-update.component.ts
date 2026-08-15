@@ -21,6 +21,7 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 
 @Component({
   selector: 'app-bank-update',
@@ -37,6 +38,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatDialogModule,
     TranslatePipe,
     DialogGeserDirective,
+    AuditTrailComponent,
   ],
 })
 export class BankUpdateComponent {

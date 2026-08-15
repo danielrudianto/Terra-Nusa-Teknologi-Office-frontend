@@ -69,6 +69,15 @@
           >{{ "common.onlyNumbers" | translate }}</mat-error
         >
       </mat-form-field>
+    <!--
+      Riwayat perubahan; ditaruh pada layar ubah karena catatan
+      ini tidak punya layar lihat tersendiri.
+    -->
+    <app-audit-trail
+      *ngIf="data?.id"
+      entity="bank_accounts"
+      [entityId]="data.id"
+    ></app-audit-trail>
     </mat-dialog-content>
 
     <mat-dialog-actions class="bu-actions">

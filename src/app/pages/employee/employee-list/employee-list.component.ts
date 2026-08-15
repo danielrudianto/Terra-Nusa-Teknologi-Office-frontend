@@ -171,6 +171,12 @@ export class EmployeeListComponent {
   openView(row: any) {
     this.dialog.open(EmployeeViewComponent, {
       data: { employee: row },
+      // Lebar DITETAPKAN di sini juga.
+      //
+      // Panel luar dialog diatur Material, bukan oleh gaya komponennya;
+      // tanpa `width`, panel itu menyusut dan melebar mengikuti isi tab yang
+      // sedang terbuka meskipun isinya sendiri sudah berlebar tetap.
+      width: 'min(680px, 96vw)',
       maxWidth: '96vw',
       autoFocus: false,
     });
