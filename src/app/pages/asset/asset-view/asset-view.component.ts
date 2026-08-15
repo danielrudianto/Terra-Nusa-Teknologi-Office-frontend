@@ -9,6 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-asset-view',
@@ -20,6 +21,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './asset-view.component.html',
   styleUrl: './asset-view.component.scss',

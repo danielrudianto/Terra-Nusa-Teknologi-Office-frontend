@@ -6,19 +6,37 @@
       <span class="master-nav__sub">{{ "master.subtitle" | translate }}</span>
     </div>
     <nav class="master-nav__list">
+      <!--
+        Menu tanpa akses DINONAKTIFKAN, bukan disembunyikan.
+
+        Kartu yang hilang membuat orang mengira halamannya memang tidak ada,
+        lalu menanyakannya sebagai kekurangan sistem. Kartu yang kelabu
+        memberi tahu bahwa halamannya ada dan aksesnya yang kurang — sehingga
+        yang ditanyakan izinnya, kepada orang yang tepat.
+
+        `routerLink` dilepas sepenuhnya saat tidak boleh; menonaktifkan lewat
+        gaya saja masih dapat dibuka lewat papan ketik.
+      -->
       <a
         *ngFor="let item of navItems"
         class="master-nav__item"
-        [routerLink]="item.route"
+        [class.master-nav__item--terkunci]="!bolehBuka(item)"
+        [routerLink]="bolehBuka(item) ? item.route : null"
+        [attr.aria-disabled]="!bolehBuka(item) ? 'true' : null"
+        [attr.tabindex]="!bolehBuka(item) ? -1 : null"
+        [title]="
+          !bolehBuka(item) ? ('masterNav.tanpaAkses' | translate) : ''
+        "
         routerLinkActive="master-nav__item--active"
       >
         <span class="master-nav__icon">
-          <mat-icon>{{ item.icon }}</mat-icon>
+          <mat-icon>{{ bolehBuka(item) ? item.icon : "lock" }}</mat-icon>
         </span>
         <span class="master-nav__text">
           <span class="master-nav__name">{{ item.name | translate }}</span>
           <span class="master-nav__desc">{{
-            item.description | translate
+            (bolehBuka(item) ? item.description : "masterNav.tanpaAkses")
+              | translate
           }}</span>
         </span>
       </a>

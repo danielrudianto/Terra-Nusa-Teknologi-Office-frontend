@@ -1,0 +1,82 @@
+<div class="por">
+  <div class="por-head" mat-dialog-title appDialogGeser>
+    <span class="por-head__icon"><mat-icon>table_view</mat-icon></span>
+    <div>
+      <h2 class="por-title">{{ "poRekap.judul" | translate }}</h2>
+      <span class="por-sub">{{ "poRekap.sub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="por-content">
+    <app-project-selector
+      [formControl]="proyek"
+      [hanyaAktif]="false"
+      [tanpaPusat]="true"
+    />
+
+    <!--
+      Bentuk berkas dipilih di sini, bukan lewat dua tombol unduh terpisah.
+
+      Keduanya bukan salinan satu sama lain: Excel memuat rincian per barang
+      dan dapat disaring; PDF memuat ikhtisar dan satu baris per dokumen.
+      Menyatukannya sebagai pilihan membuat bedanya terbaca sebelum memilih.
+    -->
+    <div class="por-bentuk">
+      <span class="por-bentuk__label">
+        {{ "poRekap.format" | translate }}
+      </span>
+      <div class="por-bentuk__pilihan">
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="bentuk === 'excel'"
+          (click)="pilihBentuk('excel')"
+        >
+          <mat-icon>table_view</mat-icon>
+          {{ "poRekap.excel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="por-opsi"
+          [class.on]="bentuk === 'pdf'"
+          (click)="pilihBentuk('pdf')"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          {{ "poRekap.pdf" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!--
+      Apa yang akan diterbitkan, disebut di muka.
+
+      Rekap ini dikirim ke luar, dan yang menerbitkannya perlu tahu bahwa
+      dokumen DRAF ikut disertakan sebelum menekan unduh — bukan setelah
+      berkasnya sampai ke penerima.
+    -->
+    <div class="por-note">
+      <mat-icon>info</mat-icon>
+      <span>{{ "poRekap.keterangan" | translate }}</span>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="por-foot">
+    <span class="por-spacer"></span>
+    <button type="button" class="por-close" (click)="tutup()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="por-save"
+      [disabled]="proyek.invalid || sedangMenyusun"
+      (click)="unduh()"
+    >
+      @if (sedangMenyusun) {
+        <mat-spinner diameter="16"></mat-spinner>
+      }
+      {{
+        (sedangMenyusun ? "poRekap.menyusun" : "poRekap.unduh") | translate
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

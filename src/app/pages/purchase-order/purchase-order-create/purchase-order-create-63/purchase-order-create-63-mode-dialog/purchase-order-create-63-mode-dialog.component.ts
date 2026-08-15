@@ -6,11 +6,12 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-purchase-order-create-63-mode-dialog',
   imports: [
-    TranslatePipe,MatDialogModule],
+    TranslatePipe,MatDialogModule, DialogGeserDirective],
   templateUrl: './purchase-order-create-63-mode-dialog.component.html',
   styleUrl: './purchase-order-create-63-mode-dialog.component.scss',
 })

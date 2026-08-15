@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-opponent-selector',
@@ -28,6 +29,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatIconModule,
     MatFormFieldModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './expense-opponent-selector.component.html',
   styleUrl: './expense-opponent-selector.component.scss',

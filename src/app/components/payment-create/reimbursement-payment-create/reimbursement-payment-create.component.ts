@@ -25,6 +25,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-reimbursement-payment-create',
@@ -42,6 +43,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatInputModule,
     NgxMaskDirective,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './reimbursement-payment-create.component.html',
   styleUrl: './reimbursement-payment-create.component.scss',

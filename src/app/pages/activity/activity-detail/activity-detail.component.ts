@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AvatarComponent } from '../../../components/avatar/avatar.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 interface ActivityEntry {
   id: number;
@@ -33,6 +34,7 @@ interface ActivityEntry {
     MatIconModule,
     TranslatePipe,
     AvatarComponent,
+    DialogGeserDirective,
   ],
   templateUrl: './activity-detail.component.html',
   styleUrl: './activity-detail.component.scss',

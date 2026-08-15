@@ -14,7 +14,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -28,6 +27,7 @@ import {
   sheetFromObjects,
 } from '../../../helpers/tax-recap-excel';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-monthly-recap',
@@ -35,13 +35,13 @@ import { TranslatePipe } from '@ngx-translate/core';
     TranslatePipe,
     FormsModule,
     ReactiveFormsModule,
-    MatCheckboxModule,
     MatSelectModule,
     MatDialogModule,
     MatSlideToggleModule,
     MatInputModule,
     MatButtonModule,
     CommonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './monthly-recap.component.html',
   styleUrl: './monthly-recap.component.scss',

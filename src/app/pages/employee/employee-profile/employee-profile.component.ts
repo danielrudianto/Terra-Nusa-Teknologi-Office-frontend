@@ -30,6 +30,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { banks, IBank } from 'src/app/utils/bank';
 import { tanggalLokal } from 'src/app/utils/tanggal';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-employee-profile',
@@ -49,6 +50,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatNativeDateModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
+    DialogGeserDirective,
   ],
   templateUrl: './employee-profile.component.html',
   styleUrl: './employee-profile.component.scss',
@@ -68,6 +70,9 @@ export class EmployeeProfileComponent implements OnInit {
   ) {}
 
   isLoading = true;
+  /** True bila profil ini belum pernah ada sebelum dialog dibuka. */
+  pertamaKali = false;
+
   isSubmitting = false;
 
   /** True bila karyawan ini belum pernah punya profil. */
@@ -324,6 +329,15 @@ export class EmployeeProfileComponent implements OnInit {
    * ditulis "BCA" di satu layar dan "PT Bank Central Asia Tbk." di layar lain
    * tidak dapat dicocokkan.
    */
+  /**
+   * Kewarganegaraan sebagai pilihan, bukan ketikan bebas.
+   *
+   * Cukup dua: yang dibedakan perlakuan ketenagakerjaannya memang hanya warga
+   * negara Indonesia dan bukan. Negara asalnya, bila diperlukan, dicatat
+   * pada kolom lain — bukan di sini.
+   */
+  readonly kewarganegaraan = ['WNI', 'WNA'];
+
   readonly daftarBank = banks;
 
   /**
@@ -587,6 +601,13 @@ export class EmployeeProfileComponent implements OnInit {
   private muat(): void {
     this.apiService.get(`employee-profiles/${this.input.id}`, {}).subscribe({
       next: (data: any) => {
+        /*
+         * Apakah ini pengisian PERTAMA, ditentukan di sini.
+         *
+         * Sesudah menyimpan, profilnya selalu ada — bedanya tidak dapat
+         * diketahui lagi. Karena itu ditandai saat memuat, bukan sesudah.
+         */
+        this.pertamaKali = !data;
         this.baru = !data;
         if (data) this.isi(data);
         this.isLoading = false;
@@ -741,7 +762,22 @@ export class EmployeeProfileComponent implements OnInit {
             this.translate.instant('common.close'),
             { duration: 3000 },
           );
-          this.dialogRef.close(true);
+          /*
+           * Pengisian PERTAMA berlanjut ke formulir keadaan.
+           *
+           * Profil hanya memuat data yang tidak berubah — KTP, orang tua,
+           * pendidikan. Riwayat kesehatan, kontak darurat, jumlah tanggungan,
+           * dan kesediaan ditempatkan ada di formulir keadaan, dan enam belas
+           * dari tujuh belas pertanyaannya TIDAK ada di profil.
+           *
+           * Tanpa sambungan ini, hal-hal itu tidak pernah ditanyakan sampai
+           * pengingat setahun berbunyi — termasuk kontak darurat, yang justru
+           * diperlukan pada hari pertama orangnya turun ke lapangan.
+           *
+           * Hanya pada pengisian pertama. Penyuntingan berikutnya tidak
+           * memaksa siapa pun mengisi ulang formulir keadaan.
+           */
+          this.dialogRef.close({ tersimpan: true, baru: this.pertamaKali });
         },
         error: (err: any) => {
           this.isSubmitting = false;

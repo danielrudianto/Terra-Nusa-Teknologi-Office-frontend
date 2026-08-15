@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-client-create',
@@ -31,6 +32,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './client-create.component.html',
   styleUrl: './client-create.component.scss',

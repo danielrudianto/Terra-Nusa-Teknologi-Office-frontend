@@ -25,6 +25,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /** Satu isian pada definisi formulir. */
 interface Isian {
@@ -58,6 +59,7 @@ interface Bagian {
     MatIconModule,
     MatProgressSpinnerModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './employee-form.component.html',
   styleUrl: './employee-form.component.scss',

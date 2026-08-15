@@ -155,9 +155,18 @@
                 dengan izin yang sama seperti endpointnya, supaya menu ini
                 tidak muncul bagi yang akan ditolak servernya.
               -->
+              <!--
+                Profil pribadi hanya untuk PENGISIAN PERTAMA.
+                
+                Sesudah terisi, perubahan berjalan lewat pembaruan data —
+                yang mencatat riwayatnya. Membiarkan keduanya terbuka berarti
+                dua jalur menulis kolom yang sama, dan penyuntingan langsung
+                di profil tidak meninggalkan jejak siapa mengubah apa.
+              -->
               <button
                 mat-menu-item
                 *appCan="'employee_profile:read'"
+                [style.display]="element.hasProfile ? 'none' : null"
                 (click)="openProfile(element)"
               >
                 <mat-icon>badge</mat-icon
@@ -169,9 +178,17 @@
                 Dipisah dari profil karena isinya berbeda sifat: profil
                 diisi sekali, formulir ini ditanyakan tiap periode.
               -->
+              <!--
+                Pembaruan baru berlaku SESUDAH profil pertama terisi.
+                
+                Sebelum itu tidak ada yang dapat diperbarui, dan menampilkan
+                menunya hanya membuat orang membuka formulir kosong lalu
+                mengira sistemnya rusak.
+              -->
               <button
                 mat-menu-item
                 *appCan="'employee_form:read'"
+                [style.display]="element.hasProfile ? null : 'none'"
                 (click)="openForm(element)"
               >
                 <mat-icon>assignment</mat-icon

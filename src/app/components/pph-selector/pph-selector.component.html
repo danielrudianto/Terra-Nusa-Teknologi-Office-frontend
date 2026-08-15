@@ -1,5 +1,5 @@
 <div class="pp">
-  <div mat-dialog-title class="pp-head">
+  <div mat-dialog-title class="pp-head" appDialogGeser>
     <div class="pp-head__text">
       <h2 class="pp-title">{{ "pph.selectTitle" | translate }}</h2>
       <span class="pp-sub">{{ "pph.selectSub" | translate }}</span>
@@ -74,7 +74,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="pp-actions">
-    <button mat-button class="pp-none" (click)="onClose()">
+    <button mat-button class="pp-none" (click)="tanpaPph()">
       {{ "pph.noPphClose" | translate }}
     </button>
   </mat-dialog-actions>

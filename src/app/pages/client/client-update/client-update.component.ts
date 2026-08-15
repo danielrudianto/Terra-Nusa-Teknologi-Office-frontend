@@ -19,6 +19,7 @@ import {
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-client-update',
@@ -34,6 +35,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     ReactiveFormsModule,
     MatSelectModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './client-update.component.html',
   styleUrl: './client-update.component.scss',

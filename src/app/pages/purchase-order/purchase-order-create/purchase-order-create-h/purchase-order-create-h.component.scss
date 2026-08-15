@@ -1196,8 +1196,26 @@ app-wysiwyg {
   color: var(--brand, #154dec);
   margin: 0.55rem 0 0.9rem;
 }
+/*
+ * Termin pembayaran selebar penuh.
+ *
+ * Lebar tetap 190px membuatnya menggantung di kiri sementara keterangan di
+ * bawahnya selebar kartu — dan pada layar sempit angkanya berdesakan dengan
+ * satuan "hari" di sebelahnya.
+ */
 .poh-cutoffs__term {
-  width: 190px;
+  width: 100%;
+}
+
+/*
+ * Banner rapat: dipakai di dalam blok yang sudah punya jaraknya sendiri,
+ * sehingga tidak perlu margin bawah seperti banner biasa.
+ */
+.poh-banner--rapat {
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.78rem;
 }
 .poh-cutoffs__hint {
   font-size: 0.75rem;
@@ -1347,4 +1365,74 @@ app-wysiwyg {
 }
 .poh-pasal4 .mat-mdc-form-field {
   width: 100%;
+}
+
+/*
+ * Kartu jenis harga.
+ *
+ * Bentuknya disamakan dengan kartu jenis material pada PO-F: keduanya
+ * pilihan yang mengubah bentuk dokumen, dan menampilkannya berbeda membuat
+ * yang satu terbaca lebih remeh daripada yang lain.
+ */
+.poh-rate {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.6rem;
+  padding: 0.25rem 0 0;
+}
+
+.poh-rt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem 0.6rem 0.35rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.poh-rt:hover {
+  border-color: var(--brand);
+}
+.poh-rt.on {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.poh-rt__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-top: 0.55rem;
+  min-width: 0;
+}
+.poh-rt__judul {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  line-height: 1.2;
+}
+/* Keterangan akibatnya; dibaca sebelum memilih, bukan sesudah. */
+.poh-rt__ket {
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.35;
+}
+
+/*
+ * Isian yang mengisi lebar penuh, di luar petak dua kolom.
+ *
+ * `poh-span2` hanya bekerja pada anak `poh-grid`; isian yang berdiri sendiri
+ * di luar petak tetap selebar isinya dan terlihat timpang di bawah kartu
+ * pilihan yang selebar penuh.
+ *
+ * Jarak atasnya dipisahkan dari kartu pilihan di atasnya — tanpa itu
+ * keduanya menempel dan terbaca seolah satu kelompok.
+ */
+.poh-penuh {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
 }

@@ -9,7 +9,7 @@ import {
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-calendar-account-selector-dialog',
@@ -20,7 +20,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     CommonModule,
     MatIconModule,
     TranslatePipe,
-    MatCheckboxModule,
+    DialogGeserDirective,
   ],
   templateUrl: './calendar-account-selector-dialog.component.html',
   styleUrl: './calendar-account-selector-dialog.component.scss',

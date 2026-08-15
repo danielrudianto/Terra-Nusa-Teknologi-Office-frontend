@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-opponent-create',
@@ -35,6 +36,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     MatSelectModule,
     MatIconModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
 })
 export class ExpenseOpponentCreateComponent {

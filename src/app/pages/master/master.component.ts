@@ -1,11 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { PermissionService } from '../../services/permission.service';
 
 interface MasterNavItem {
+  /**
+   * Modul izin yang menentukan boleh tidaknya menu ini dibuka.
+   *
+   * Dipakai untuk MENONAKTIFKAN, bukan menyembunyikan: yang tidak punya
+   * akses tetap perlu tahu bahwa halamannya ada — supaya ia meminta akses
+   * kepada yang berwenang alih-alih mengira sistemnya kurang lengkap.
+   */
+  modul: string;
   name: string;
   route: string;
   icon: string;
@@ -39,40 +48,59 @@ export class MasterComponent {
    * `name` dan `description` berisi kunci terjemahan, bukan teks jadi —
    * templatenya sudah memakai pipe translate.
    */
+  private readonly izin = inject(PermissionService);
+
+  /**
+   * Menu ini boleh dibuka oleh pengguna yang sedang masuk.
+   *
+   * Menu yang tidak boleh TETAP DITAMPILKAN, hanya dinonaktifkan. Kartu yang
+   * hilang membuat orang mengira halamannya memang tidak ada; kartu yang
+   * kelabu memberi tahu bahwa halamannya ada dan aksesnya yang kurang.
+   */
+  bolehBuka(item: MasterNavItem): boolean {
+    return this.izin.canRead(item.modul);
+  }
+
   navItems: MasterNavItem[] = [
     {
       name: 'masterNav.equipment',
       route: 'Equipment',
+      modul: 'master_equipment',
       icon: 'construction',
       description: 'masterNav.equipmentDesc',
     },
     {
       name: 'masterNav.item',
       route: 'Item',
+      modul: 'master_item',
       icon: 'inventory_2',
       description: 'masterNav.itemDesc',
     },
     {
       name: 'masterNav.expenseOpponent',
       route: 'Expense-opponent',
+      modul: 'expense_opponent',
       icon: 'groups',
       description: 'masterNav.expenseOpponentDesc',
     },
     {
       name: 'masterNav.supplier',
       route: 'Supplier',
+      modul: 'supplier',
       icon: 'local_shipping',
       description: 'masterNav.supplierDesc',
     },
     {
       name: 'masterNav.client',
       route: 'Client',
+      modul: 'client',
       icon: 'handshake',
       description: 'masterNav.clientDesc',
     },
     {
       name: 'masterNav.employee',
       route: 'Employee',
+      modul: 'employees',
       icon: 'badge',
       description: 'masterNav.employeeDesc',
     },

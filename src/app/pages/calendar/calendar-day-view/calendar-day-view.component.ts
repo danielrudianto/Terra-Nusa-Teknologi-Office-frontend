@@ -19,6 +19,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-calendar-day-view',
@@ -32,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatTooltipModule,
     CommonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class CalendarDayViewComponent {

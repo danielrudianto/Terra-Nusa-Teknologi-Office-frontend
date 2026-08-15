@@ -24,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-view',
@@ -41,6 +42,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatSnackBarModule,
     CommonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './expense-view.component.html',
   styleUrl: './expense-view.component.scss',

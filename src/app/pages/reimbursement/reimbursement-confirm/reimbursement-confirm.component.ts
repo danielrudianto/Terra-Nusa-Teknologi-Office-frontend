@@ -20,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-reimbursement-confirm',
@@ -33,6 +34,7 @@ import { ApiService } from 'src/app/services/api.service';
     NgxMaskDirective,
     CommonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   providers: [DatePipe],
   templateUrl: './reimbursement-confirm.component.html',

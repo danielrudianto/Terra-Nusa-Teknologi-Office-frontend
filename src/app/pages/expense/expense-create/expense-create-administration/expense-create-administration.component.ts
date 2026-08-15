@@ -25,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { BankAccountSelectorComponent } from '../../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-create-administration',
@@ -43,6 +44,7 @@ import { BankAccountSelectorComponent } from '../../../../components/bank-accoun
     MatSelectModule,
     NgxMaskDirective,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './expense-create-administration.component.html',
   styleUrl: './expense-create-administration.component.scss',

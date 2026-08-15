@@ -19,6 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-asset-create',
@@ -37,6 +38,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatDatepickerModule,
     MatSelectModule,
     MatDialogModule,
+    DialogGeserDirective,
   ],
 })
 export class AssetCreateComponent {

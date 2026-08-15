@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-supplier-create',
@@ -36,6 +37,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatDividerModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class SupplierCreateComponent {

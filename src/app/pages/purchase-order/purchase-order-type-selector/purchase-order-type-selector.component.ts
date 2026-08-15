@@ -12,6 +12,7 @@ import {
   purchaseTypeDescKey,
   purchaseTypeKey,
 } from '../../../constants/purchase-type-label.constant';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
  * Pemilih jenis PO dalam bentuk dialog.
@@ -29,6 +30,7 @@ import {
     MatDialogModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './purchase-order-type-selector.component.html',
   styleUrl: './purchase-order-type-selector.component.scss',

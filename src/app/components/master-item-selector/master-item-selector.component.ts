@@ -14,6 +14,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-item-selector',
@@ -28,6 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatProgressBarModule,
     MatIconModule,
+    DialogGeserDirective,
   ],
   templateUrl: './master-item-selector.component.html',
   styleUrl: './master-item-selector.component.scss',

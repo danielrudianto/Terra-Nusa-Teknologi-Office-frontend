@@ -1204,7 +1204,7 @@
     "saveUpdate": "Save changes",
     "menu": "Periodic form",
     "title": "Employee data update",
-    "firstTime": "This data has never been updated. Fill in what applies, then confirm.",
+    "firstTime": "Continuing the data entry. This part asks about things that change over time — emergency contact, medical history, and willingness to be assigned.",
     "noVersion": "No form period has been created yet. Create a period before employees can fill it in.",
     "emptyList": "No entries yet.",
     "saved": "Form saved",
@@ -1891,7 +1891,8 @@
     "rowActions": "Row actions",
     "changeTypeConfirm": "Yes, change type",
     "adendumGagalMuat": "The parent document could not be loaded. The fields below are empty.",
-    "adendumBanner": "Addendum to document"
+    "adendumBanner": "Addendum to document",
+    "extraPointTitle": "Extra points continue the numbering"
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -2616,7 +2617,8 @@
     "client": "Client",
     "clientDesc": "Client data",
     "employee": "Employee",
-    "employeeDesc": "Employee data"
+    "employeeDesc": "Employee data",
+    "tanpaAkses": "You do not have access to this section"
   },
   "confirm": {
     "cancel": "Cancel",
@@ -2816,7 +2818,9 @@
     "standbyBiaya": "Standby cost",
     "standbyBiayaHint": "Per day, for one set of equipment",
     "standbyHari": "Applies after",
-    "standbyHariHint": "Consecutive standby days"
+    "standbyHariHint": "Consecutive standby days",
+    "unitRateKet": "Value is volume × unit price on each work line.",
+    "lumpSumKet": "One price for the whole scope; per-line prices are not used."
   },
   "poA": {
     "shipmentService": "Goods delivery service",
@@ -2932,7 +2936,11 @@
     "mobilisasi": "Mobilisation",
     "demobilisasi": "Demobilisation",
     "sewa": "rental",
-    "mobDemob": "mob/demob"
+    "mobDemob": "mob/demob",
+    "addItem": "Add item",
+    "jam": "hours",
+    "shiftQuotaHint": "Length of one shift; sets the per-shift quota in the clauses.",
+    "operatorByVendorTitle": "Decides whether operator terms appear"
   },
   "poD": {
     "fieldStaff": "Field staff (e.g. staff engineer)",
@@ -3260,7 +3268,8 @@
     "biayaUjianUlang": "Re-examination cost",
     "jenisBarangYangDisewa": "Type of rented item",
     "exMicz": "e.g. MICZ",
-    "tambahBaris": "Add row"
+    "tambahBaris": "Add row",
+    "jamPerShift": "Hours per shift"
   },
   "userAccess": {
     "divisi": "Division",
@@ -3845,5 +3854,18 @@
   "poView": {
     "buatAdendum": "Create addendum",
     "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created."
+  },
+  "poRekap": {
+    "judul": "Download recap",
+    "sub": "Pick a project and a file format",
+    "unduh": "Download",
+    "menyusun": "Building…",
+    "keterangan": "The recap covers every purchase order of the selected project, drafts included. Each row is marked with its status.",
+    "kosong": "This project has no purchase orders yet.",
+    "gagal": "Could not build the recap. Please try again.",
+    "menu": "Download recap",
+    "format": "File format",
+    "excel": "Excel",
+    "pdf": "PDF"
   }
 }

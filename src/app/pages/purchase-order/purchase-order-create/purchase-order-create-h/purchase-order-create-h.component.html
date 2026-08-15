@@ -321,9 +321,25 @@
                     type="number"
                     [min]="0"
                   />
-                  <span matSuffix>&nbsp;hari</span>
+                  <span matSuffix>&nbsp;{{ "common.days" | translate }}</span>
                 </mat-form-field>
-                <p class="poh-cutoffs__hint">{{ "poH.dihitungSejakDokumenPenagihanLengk" | translate }}</p>
+                <!--
+                  Banner, bukan teks abu-abu di bawah isian.
+
+                  Kalimat ini menentukan KAPAN hitungan terminnya dimulai —
+                  bukan sejak dokumen terbit, melainkan sejak berkas
+                  penagihannya lengkap. Sebagai hint kecil ia terbaca sebagai
+                  catatan yang boleh dilewati, padahal selisihnya bisa
+                  berminggu-minggu pada tagihan yang berkasnya menyusul.
+                -->
+                <div class="poh-banner poh-banner--rapat">
+                  <mat-icon>schedule</mat-icon>
+                  <div>
+                    <span>{{
+                      "poH.dihitungSejakDokumenPenagihanLengk" | translate
+                    }}</span>
+                  </div>
+                </div>
               </div>
             } @else if (formGroup.value.billingCycleMode === "periode-pekan") {
               <div class="poh-optrow__fields">
@@ -408,9 +424,25 @@
                     type="number"
                     [min]="0"
                   />
-                  <span matSuffix>&nbsp;hari</span>
+                  <span matSuffix>&nbsp;{{ "common.days" | translate }}</span>
                 </mat-form-field>
-                <p class="poh-cutoffs__hint">{{ "poH.dihitungSejakDokumenPenagihanLengk" | translate }}</p>
+                <!--
+                  Banner, bukan teks abu-abu di bawah isian.
+
+                  Kalimat ini menentukan KAPAN hitungan terminnya dimulai —
+                  bukan sejak dokumen terbit, melainkan sejak berkas
+                  penagihannya lengkap. Sebagai hint kecil ia terbaca sebagai
+                  catatan yang boleh dilewati, padahal selisihnya bisa
+                  berminggu-minggu pada tagihan yang berkasnya menyusul.
+                -->
+                <div class="poh-banner poh-banner--rapat">
+                  <mat-icon>schedule</mat-icon>
+                  <div>
+                    <span>{{
+                      "poH.dihitungSejakDokumenPenagihanLengk" | translate
+                    }}</span>
+                  </div>
+                </div>
               </div>
             }
           </div>
@@ -475,29 +507,43 @@
         <div class="poh-section__title poh-section__title--sub">
           {{ "poH.priceType" | translate }}
         </div>
+        <!--
+          Kartu pilihan, bukan deretan radio polos.
+
+          Keduanya mengubah CARA NILAI DIHITUNG, bukan sekadar label: pada
+          borongan, kolom harga per baris tidak dipakai sama sekali. Dari
+          lingkaran radio, perbedaan itu tidak terlihat sampai seseorang
+          mengisi harga per baris lalu mendapati totalnya nol.
+
+          Keterangannya melekat pada kartunya masing-masing, sehingga
+          terbaca SEBELUM memilih — bukan sesudah.
+        -->
         <mat-radio-group
           formControlName="rateType"
           class="poh-rate"
           (change)="onRateTypeChange()"
         >
-          <mat-radio-button value="unit" color="primary">{{
-            "poH.unitRate" | translate
-          }}</mat-radio-button>
-          <mat-radio-button value="lumpsum" color="primary">{{
-            "poH.lumpSum" | translate
-          }}</mat-radio-button>
-        </mat-radio-group>
-        <p class="poh-rate__hint">
-          @if (isLumpSum) {
-            Nilai pekerjaan satu harga untuk seluruh lingkup; kolom harga per
-            baris tidak dipakai.
-          } @else {
-            Nilai dihitung dari volume × harga satuan tiap baris pekerjaan.
+          @for (r of pilihanRate; track r.value) {
+            <label
+              class="poh-rt"
+              [class.on]="formGroup.get('rateType')?.value === r.value"
+            >
+              <mat-radio-button [value]="r.value" color="primary" />
+              <span class="poh-rt__teks">
+                <span class="poh-rt__judul">{{ r.label | translate }}</span>
+                <span class="poh-rt__ket">{{ r.ket | translate }}</span>
+              </span>
+            </label>
           }
-        </p>
+        </mat-radio-group>
 
+        <!--
+          Isian ini berada DI LUAR petak dua kolom, sehingga `poh-span2`
+          tidak berlaku padanya — kelas itu hanya bekerja pada anak petak.
+          Lebarnya disetel sendiri lewat `poh-penuh`.
+        -->
         @if (isLumpSum) {
-          <mat-form-field appearance="outline" class="poh-span2">
+          <mat-form-field appearance="outline" class="poh-penuh">
             <mat-label>{{ "poH.contractValue" | translate }}</mat-label>
             <input
               matInput

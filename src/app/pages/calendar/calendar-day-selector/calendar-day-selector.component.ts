@@ -28,6 +28,7 @@ import { ExpenseViewComponent } from '../../expense/expense-view/expense-view.co
 import { LoansViewComponent } from '../../loans/loans-view/loans-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SalarySlipViewComponent } from '../../salary-slip/salary-slip-view/salary-slip-view.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 interface BankAccountSummary {
   id: number;
@@ -66,6 +67,7 @@ interface BankAccountSummary {
     MatListModule,
     MatCheckboxModule,
     MatTooltipModule,
+    DialogGeserDirective,
   ],
   templateUrl: './calendar-day-selector.component.html',
   styleUrl: './calendar-day-selector.component.scss',

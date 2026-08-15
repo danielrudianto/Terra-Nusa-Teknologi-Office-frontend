@@ -11,6 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { CanDirective } from 'src/app/directives/can.directive';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
  * Rincian satu kontrak atau adendum.
@@ -34,6 +35,7 @@ import { CanDirective } from 'src/app/directives/can.directive';
     MatButtonModule,
     AuditTrailComponent,
     CanDirective,
+    DialogGeserDirective,
   ],
   templateUrl: './contract-view.component.html',
   styleUrl: './contract-view.component.scss',

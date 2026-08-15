@@ -276,3 +276,32 @@ tr[mat-row]:hover {
   background: var(--bad-fg, #b3322f);
   opacity: 1;
 }
+
+/*
+ * Kepala kolom yang dapat diurut.
+ *
+ * Disalin dari daftar aset agar seluruh daftar sama. Sebelumnya kolomnya
+ * memang dapat diklik untuk mengurutkan, tetapi tidak ada satu pun tanda
+ * bahwa itu mungkin — dan tidak ada cara mengetahui kolom mana yang sedang
+ * menjadi dasar urutan.
+ */
+.pl-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  cursor: pointer;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--brand, #154dec);
+  }
+  /* Panah pucat saat kolomnya bukan yang sedang diurut. */
+  &__idle {
+    color: var(--faint, #cfd4dc) !important;
+  }
+  &--right {
+    justify-content: flex-end;
+  }
+}

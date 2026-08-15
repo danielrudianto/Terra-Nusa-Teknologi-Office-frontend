@@ -57,6 +57,7 @@ import { FLEET_ID_MODE, FLEET_OPTIONS } from '../../../constants/fleet';
 import { SettingsService } from '../../../services/setting.service';
 import { ServerMessageService } from '../../../services/server-message.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -410,6 +411,21 @@ export class PurchaseOrderListComponent {
         if (po) this.reprint(po);
       },
       error: () => {},
+    });
+  }
+
+  /**
+   * Buka dialog rekap Excel.
+   *
+   * Proyeknya dipilih di dalam dialog, bukan diambil dari penyaring yang
+   * sedang aktif: rekap ini dikirim ke luar, dan menerbitkannya dari keadaan
+   * layar yang kebetulan tersaring menghasilkan berkas yang isinya tidak
+   * sesuai judulnya.
+   */
+  bukaRekap(): void {
+    this.dialog.open(PurchaseOrderRekapComponent, {
+      autoFocus: false,
+      maxWidth: '96vw',
     });
   }
 

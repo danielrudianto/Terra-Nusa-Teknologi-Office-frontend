@@ -542,7 +542,22 @@ export class PurchaseOrderCreate63Component {
     this.dialog
       .open(PphSelectorComponent, {})
       .afterClosed()
-      .subscribe((data: IPPh) => {
+      .subscribe((data: any) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Dituliskan langsung di sini karena varian ini tidak punya fungsi
+         * pembersih tersendiri; bidangnya hanya tiga dan tidak dipakai di
+         * tempat lain.
+         */
+        if (data?.hapus) {
+          this.formGroup.patchValue({
+            pphCode: '',
+            pphTaxObject: '',
+            pphPercentage: 0,
+          });
+          return;
+        }
         if (!data) return;
         this.formGroup.patchValue({
           pphCode: data.code,

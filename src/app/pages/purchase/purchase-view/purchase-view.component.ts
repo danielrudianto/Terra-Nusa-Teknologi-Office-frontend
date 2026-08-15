@@ -22,7 +22,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepperModule } from '@angular/material/stepper';
 import { provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { PurchaseType } from '../../../utils/purchase-type';
@@ -30,13 +29,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AvatarComponent } from '../../../components/avatar/avatar.component';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-purchase-view',
   imports: [
     AuditTrailComponent,
     AvatarComponent,
-    MatStepperModule,
     MatInputModule,
     MatDialogModule,
     MatButtonModule,
@@ -46,6 +45,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatListModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   providers: [provideNgxMask()],
   templateUrl: './purchase-view.component.html',

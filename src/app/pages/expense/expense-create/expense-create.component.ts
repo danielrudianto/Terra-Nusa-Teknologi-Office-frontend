@@ -17,7 +17,6 @@ import { banks, IBank } from 'src/app/utils/bank';
 import { IPPh } from 'src/app/utils/pph';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -46,7 +45,6 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
-    MatChipsModule,
     MatTableModule,
     MatIconModule,
     MatStepperModule,
@@ -189,6 +187,21 @@ export class ExpenseCreateComponent {
       .open(PphSelectorComponent, {})
       .afterClosed()
       .subscribe((data) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya sempat sama-sama menutup tanpa nilai, sehingga cabang di
+         * bawah tidak berjalan dan PPh yang sudah terlanjur dipilih tidak
+         * pernah hilang.
+         */
+        if (data?.hapus) {
+          this.valueFormGroup.patchValue({
+            pphCode: '',
+            pphTaxObject: '',
+            pphPercentage: 0,
+          });
+          return;
+        }
         if (data) {
           const pph = data as IPPh;
           this.valueFormGroup.patchValue({

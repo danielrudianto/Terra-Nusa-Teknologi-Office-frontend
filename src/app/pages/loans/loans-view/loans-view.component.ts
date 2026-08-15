@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-loans-view',
@@ -25,6 +26,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatIconModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
+    DialogGeserDirective,
   ],
   templateUrl: './loans-view.component.html',
   styleUrl: './loans-view.component.scss',

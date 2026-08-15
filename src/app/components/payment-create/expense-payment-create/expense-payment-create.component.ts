@@ -23,6 +23,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-payment-create',
@@ -42,6 +43,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatDatepickerModule,
     MatSelectModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class ExpensePaymentCreateComponent {

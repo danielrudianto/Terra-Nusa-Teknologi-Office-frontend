@@ -1204,7 +1204,7 @@
     "saveUpdate": "Simpan perubahan",
     "menu": "Formulir keadaan",
     "title": "Pembaruan data karyawan",
-    "firstTime": "Data ini belum pernah diperbarui. Isi seperlunya, lalu konfirmasi.",
+    "firstTime": "Melanjutkan pengisian data. Bagian ini menanyakan hal yang berubah dari waktu ke waktu — kontak darurat, riwayat kesehatan, dan kesediaan ditempatkan.",
     "noVersion": "Belum ada periode formulir yang dibuat. Buat periode lebih dulu sebelum karyawan dapat mengisinya.",
     "emptyList": "Belum ada isian.",
     "saved": "Formulir tersimpan",
@@ -1891,7 +1891,8 @@
     "rowActions": "Row actions",
     "changeTypeConfirm": "Ya, ganti jenis",
     "adendumGagalMuat": "Dokumen induk gagal dimuat. Isian di bawah masih kosong.",
-    "adendumBanner": "Adendum atas dokumen"
+    "adendumBanner": "Adendum atas dokumen",
+    "extraPointTitle": "Poin tambahan menyambung penomoran"
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -2616,7 +2617,8 @@
     "client": "Klien",
     "clientDesc": "Data klien",
     "employee": "Karyawan",
-    "employeeDesc": "Data karyawan"
+    "employeeDesc": "Data karyawan",
+    "tanpaAkses": "Anda belum punya akses ke bagian ini"
   },
   "confirm": {
     "cancel": "Batal",
@@ -2816,7 +2818,9 @@
     "standbyBiaya": "Biaya standby",
     "standbyBiayaHint": "Per hari, untuk 1 set alat",
     "standbyHari": "Berlaku setelah",
-    "standbyHariHint": "Hari standby berturut-turut"
+    "standbyHariHint": "Hari standby berturut-turut",
+    "unitRateKet": "Nilai dihitung dari volume × harga satuan tiap baris pekerjaan.",
+    "lumpSumKet": "Satu harga untuk seluruh lingkup; kolom harga per baris tidak dipakai."
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",
@@ -2932,7 +2936,11 @@
     "mobilisasi": "Mobilisasi",
     "demobilisasi": "Demobilisasi",
     "sewa": "sewa",
-    "mobDemob": "mob/demob"
+    "mobDemob": "mob/demob",
+    "addItem": "Tambah barang",
+    "jam": "jam",
+    "shiftQuotaHint": "Panjang satu shift; menentukan kuota per shift pada klausul.",
+    "operatorByVendorTitle": "Menentukan ada tidaknya ketentuan operator"
   },
   "poD": {
     "fieldStaff": "Staf lapangan (mis. staff engineer)",
@@ -3260,7 +3268,8 @@
     "biayaUjianUlang": "Biaya ujian ulang",
     "jenisBarangYangDisewa": "Jenis barang yang disewa",
     "exMicz": "Ex. MICZ",
-    "tambahBaris": "Tambah baris"
+    "tambahBaris": "Tambah baris",
+    "jamPerShift": "Jam per shift"
   },
   "userAccess": {
     "divisi": "Divisi",
@@ -3845,5 +3854,18 @@
   "poView": {
     "buatAdendum": "Buat adendum",
     "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat."
+  },
+  "poRekap": {
+    "judul": "Unduh hasil rekap",
+    "sub": "Pilih proyek dan bentuk berkasnya",
+    "unduh": "Unduh",
+    "menyusun": "Menyusun…",
+    "keterangan": "Rekap memuat seluruh purchase order proyek terpilih, termasuk yang berstatus Draf. Statusnya ditandai pada setiap baris.",
+    "kosong": "Proyek ini belum punya purchase order.",
+    "gagal": "Rekap gagal disusun. Coba lagi.",
+    "menu": "Unduh hasil rekap",
+    "format": "Bentuk berkas",
+    "excel": "Excel",
+    "pdf": "PDF"
   }
 }

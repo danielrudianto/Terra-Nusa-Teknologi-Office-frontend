@@ -8,8 +8,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -34,13 +34,13 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 @Component({
   selector: 'app-interpayment-list',
   imports: [
+    MatDatepickerModule,
     HeaderTitleComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDatepickerModule,
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,

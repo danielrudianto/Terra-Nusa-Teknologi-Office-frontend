@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-expense-opponent-update',
@@ -38,6 +39,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatIconModule,
     MatButtonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class ExpenseOpponentUpdateComponent {

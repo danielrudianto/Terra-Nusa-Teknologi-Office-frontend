@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-payment-view',
@@ -34,6 +35,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     MatIconModule,
     MatButtonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './payment-view.component.html',
   styleUrl: './payment-view.component.scss',

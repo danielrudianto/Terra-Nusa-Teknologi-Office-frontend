@@ -23,6 +23,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-salary-slip-view',
@@ -37,6 +38,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     ReactiveFormsModule,
     CommonModule,
     MatTableModule,
+    DialogGeserDirective,
   ],
 })
 export class SalarySlipViewComponent {

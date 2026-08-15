@@ -1,5 +1,5 @@
 <div class="epf">
-  <div class="epf-head" mat-dialog-title>
+  <div class="epf-head" mat-dialog-title appDialogGeser>
     <span class="epf-head__icon"><mat-icon>badge</mat-icon></span>
     <div class="epf-head__text">
       <h2 class="epf-title">{{ "employeeProfile.title" | translate }}</h2>
@@ -64,27 +64,32 @@
                         }
                       </mat-select>
                     </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>{{ "employeeProfile.bloodType" | translate }}</mat-label>
-                      <mat-select formControlName="bloodType">
-                        @for (x of golonganDarah; track x) {
-                          <mat-option [value]="x">{{ x }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
                     <!--
-                      Sebagian orang memang tidak pernah mengetahui golongan
-                      darahnya. Tanpa penanda ini mereka menebak — dan tebakan
-                      pada data medis lebih berbahaya daripada kosong.
+                      Sakelar disandingkan dengan isiannya, bukan di baris
+                      tersendiri.
+
+                      Keduanya menjawab pertanyaan yang SAMA — golongan
+                      darahnya apa, atau memang tidak diketahui. Sakelar pada
+                      baris terpisah terbaca seolah pertanyaan lain.
                     -->
-                    <mat-slide-toggle
-                      color="primary"
-                      class="epf-tidakada"
-                      [checked]="darahTidakTahu"
-                      (change)="toggleDarahTidakTahu()"
-                    >
-                      {{ "employeeProfile.bloodTypeTidakTahu" | translate }}
-                    </mat-slide-toggle>
+                    <div class="epf-berpasangan">
+                      <mat-form-field appearance="outline">
+                        <mat-label>{{ "employeeProfile.bloodType" | translate }}</mat-label>
+                        <mat-select formControlName="bloodType">
+                          @for (x of golonganDarah; track x) {
+                            <mat-option [value]="x">{{ x }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-slide-toggle
+                        color="primary"
+                        class="epf-tidakada"
+                        [checked]="darahTidakTahu"
+                        (change)="toggleDarahTidakTahu()"
+                      >
+                        {{ "employeeProfile.bloodTypeTidakTahu" | translate }}
+                      </mat-slide-toggle>
+                    </div>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.religion" | translate }}</mat-label>
                       <mat-select formControlName="religion">
@@ -101,9 +106,21 @@
                         }
                       </mat-select>
                     </mat-form-field>
+                    <!--
+                      Pilihan, bukan ketikan bebas.
+
+                      Ketikan bebas menghasilkan "Indonesia", "INDONESIA",
+                      "WNI", dan "Indonesian" pada kolom yang sama — dan tidak
+                      ada satu pun rekapitulasi yang dapat dipercaya
+                      sesudahnya.
+                    -->
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.citizenship" | translate }}</mat-label>
-                      <input matInput formControlName="citizenship" />
+                      <mat-select formControlName="citizenship">
+                        @for (x of kewarganegaraan; track x) {
+                          <mat-option [value]="x">{{ x }}</mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.ethnicity" | translate }}</mat-label>
@@ -536,18 +553,12 @@
                             />
                           </mat-form-field>
                           @if (punyaIPK($index)) {
-                            <mat-form-field appearance="outline">
-                              <mat-label>{{ "employeeProfile.gpa" | translate }}</mat-label>
-                              <input matInput formControlName="gpa" />
-                            </mat-form-field>
-                            <!--
-                              Sebagian sekolah tidak menerbitkan IPK sama
-                              sekali. Tanpa penanda ini, kolomnya dibiarkan
-                              kosong — dan kosong tidak dapat dibedakan dari
-                              "belum sempat diisi", sehingga pengisinya
-                              ditanya berulang kali.
-                            -->
-                            <mat-slide-toggle
+                            <div class="epf-berpasangan">
+                              <mat-form-field appearance="outline">
+                                <mat-label>{{ "employeeProfile.gpa" | translate }}</mat-label>
+                                <input matInput formControlName="gpa" />
+                              </mat-form-field>
+                              <mat-slide-toggle
                               color="primary"
                               class="epf-tidakada"
                               [checked]="ipkTidakAda($index)"
@@ -555,6 +566,7 @@
                             >
                               {{ "employeeProfile.gpaTidakAda" | translate }}
                             </mat-slide-toggle>
+                            </div>
                           }
                         </div>
                       </div>

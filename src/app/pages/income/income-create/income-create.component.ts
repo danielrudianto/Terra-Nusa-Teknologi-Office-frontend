@@ -27,6 +27,7 @@ import moment from 'moment';
 import { ExpenseOpponentSelectorComponent } from '../../../components/expense-opponent-selector/expense-opponent-selector.component';
 import { ApiService } from '../../../services/api.service';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-income-create',
@@ -46,6 +47,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatButtonModule,
     MatDatepickerModule,
     NgxMaskDirective,
+    DialogGeserDirective,
   ],
   templateUrl: './income-create.component.html',
   styleUrl: './income-create.component.scss',

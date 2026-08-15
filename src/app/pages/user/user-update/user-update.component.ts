@@ -20,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-user-update',
@@ -37,6 +38,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     MatSlideToggleModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class UserUpdateComponent {

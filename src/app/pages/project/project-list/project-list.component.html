@@ -54,7 +54,22 @@
       <table mat-table [dataSource]="projects" #table>
         <ng-container matColumnDef="code">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('code')">
-            {{ "project.code" | translate }}
+            <span class="pl-th">
+              {{ "project.code" | translate }}
+              <mat-icon
+                *ngIf="sortBy == 'code' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'code' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy != 'code'"
+                class="pl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let p">
             <span class="prl-code">{{ p.code }}</span>
@@ -63,7 +78,22 @@
 
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">
-            {{ "project.name" | translate }}
+            <span class="pl-th">
+              {{ "project.name" | translate }}
+              <mat-icon
+                *ngIf="sortBy == 'name' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'name' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy != 'name'"
+                class="pl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let p">
             <div class="prl-name">{{ p.name }}</div>
@@ -77,7 +107,22 @@
             class="num"
             (click)="changeSortBy('contractValue')"
           >
-            {{ "project.contractValue" | translate }}
+            <span class="pl-th pl-th--right">
+              {{ "project.contractValue" | translate }}
+              <mat-icon
+                *ngIf="sortBy == 'contractValue' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy == 'contractValue' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon
+                *ngIf="sortBy != 'contractValue'"
+                class="pl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let p" class="num">
             <span class="prl-uang" *ngIf="p.contractCount > 0">

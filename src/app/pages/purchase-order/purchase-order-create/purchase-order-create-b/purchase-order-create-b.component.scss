@@ -1074,3 +1074,10 @@ app-wysiwyg {
   color: var(--faint, #8a8f98);
   font-variant-numeric: tabular-nums;
 }
+
+/* Dua tombol tambah berdampingan; melipat sendiri pada layar sempit. */
+.pob-add__grup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

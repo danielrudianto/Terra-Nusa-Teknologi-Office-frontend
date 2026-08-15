@@ -10,15 +10,14 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
 import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-pph-recap',
@@ -30,12 +29,11 @@ import { TranslatePipe } from '@ngx-translate/core';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatCheckboxModule,
     MatSelectModule,
     MatDialogModule,
-    MatSlideToggleModule,
     MatInputModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
 })
 export class PphRecapComponent {

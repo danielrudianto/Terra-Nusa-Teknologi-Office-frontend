@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../../services/api.service';
 import { ActivatedRoute } from '@angular/router';
@@ -29,7 +28,6 @@ import { TranslatePipe } from '@ngx-translate/core';
   providers: [provideNativeDateAdapter()],
   imports: [
     MatFormFieldModule,
-    MatDatepickerModule,
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,

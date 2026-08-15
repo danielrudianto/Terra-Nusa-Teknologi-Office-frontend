@@ -22,6 +22,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-asset-update',
@@ -41,6 +42,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatDialogModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class AssetUpdateComponent implements OnInit {

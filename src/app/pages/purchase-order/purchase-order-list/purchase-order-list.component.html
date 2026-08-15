@@ -20,6 +20,24 @@
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
       pencarian, penyaring, dan halaman ke keadaan awal.
     -->
+    <!--
+      Rekap Excel seluruh purchase order sebuah proyek.
+
+      Dijaga izin `purchase_order:read` — sama dengan daftar ini
+      sendiri. Yang boleh membaca dokumennya boleh pula merekapnya;
+      izin terpisah hanya menambah satu hal untuk disalahatur tanpa
+      menutup apa pun yang belum tertutup.
+    -->
+    <button
+      type="button"
+      class="pol-rekap"
+      *appCan="'purchase_order:read'"
+      (click)="bukaRekap()"
+    >
+      <mat-icon>table_view</mat-icon>
+      {{ "poRekap.menu" | translate }}
+    </button>
+
     <app-refresh-button
       [memuat]="isLoading"
       (muatUlang)="fetch()"

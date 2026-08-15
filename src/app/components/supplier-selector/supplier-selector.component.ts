@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-supplier-selector',
@@ -32,6 +33,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './supplier-selector.component.html',
   styleUrls: ['./supplier-selector.component.scss'],

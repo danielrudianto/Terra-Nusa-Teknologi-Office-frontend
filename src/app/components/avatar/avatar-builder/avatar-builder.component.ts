@@ -19,6 +19,7 @@ import {
 import { AvatarComponent } from '../avatar.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 type TabKey =
   | 'face'
@@ -39,6 +40,7 @@ type TabKey =
     MatTooltipModule,
     TranslatePipe,
     AvatarComponent,
+    DialogGeserDirective,
   ],
   templateUrl: './avatar-builder.component.html',
   styleUrl: './avatar-builder.component.scss',

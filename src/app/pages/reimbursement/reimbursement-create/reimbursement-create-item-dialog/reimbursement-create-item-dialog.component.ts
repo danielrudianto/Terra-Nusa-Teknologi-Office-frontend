@@ -11,6 +11,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-reimbursement-create-item-dialog',
@@ -25,6 +26,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatInputModule,
     MatDatepickerModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class ReimbursementCreateItemDialogComponent {

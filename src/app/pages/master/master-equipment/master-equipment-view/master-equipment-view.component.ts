@@ -9,6 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-equipment-view',
@@ -20,6 +21,7 @@ import { AuditTrailComponent } from '../../../../components/audit-trail/audit-tr
     MatIconModule,
     TranslatePipe,
     AuditTrailComponent,
+    DialogGeserDirective,
   ],
   templateUrl: './master-equipment-view.component.html',
   styleUrl: './master-equipment-view.component.scss',

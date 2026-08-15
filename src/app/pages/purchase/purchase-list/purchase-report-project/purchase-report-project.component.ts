@@ -25,6 +25,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -44,6 +45,7 @@ pdfMake.vfs = pdfFonts.vfs;
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
 })
 export class PurchaseReportProjectComponent {

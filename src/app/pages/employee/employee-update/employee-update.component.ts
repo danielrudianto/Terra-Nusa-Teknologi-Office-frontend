@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-employee-update',
@@ -32,6 +33,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
+    DialogGeserDirective,
   ],
   templateUrl: './employee-update.component.html',
   styleUrl: './employee-update.component.scss',

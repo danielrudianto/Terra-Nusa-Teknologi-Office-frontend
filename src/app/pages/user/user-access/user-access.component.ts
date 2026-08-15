@@ -17,6 +17,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 interface Divisi {
   code: string;
@@ -58,6 +59,7 @@ interface Pengecualian {
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
+    DialogGeserDirective,
   ],
   templateUrl: './user-access.component.html',
   styleUrl: './user-access.component.scss',

@@ -22,6 +22,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
  * Ubah data pinjaman.
@@ -50,6 +51,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatSelectModule,
     MatAutocompleteModule,
     MatIconModule,
+    DialogGeserDirective,
   ],
   templateUrl: './loans-update.component.html',
   styleUrl: './loans-update.component.scss',

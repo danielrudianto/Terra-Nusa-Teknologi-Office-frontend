@@ -7,12 +7,14 @@ import {
   Input,
   Output,
   SimpleChange,
-  SimpleChanges, inject } from '@angular/core';
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
-import { ICalendarValue } from 'src/app/model/calendar.model';
+import { ICalendarValue } from 'src/app/models/calendar.model';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
 import * as xlsx from 'xlsx-js-style';
@@ -127,7 +129,7 @@ export class CalendarTableComponent {
         },
         error: (error) => {
           this.snackBar.open(
-      this.translate.instant('notify.loadFailed'),
+            this.translate.instant('notify.loadFailed'),
             'Close',
             {
               duration: 3000,

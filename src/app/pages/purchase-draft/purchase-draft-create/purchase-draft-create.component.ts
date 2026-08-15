@@ -25,6 +25,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-purchase-draft-create',
@@ -42,6 +43,7 @@ import { ProjectSelectorComponent } from '../../../components/project-selector/p
     MatDatepickerModule,
     NgxMaskDirective,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './purchase-draft-create.component.html',
   styleUrl: './purchase-draft-create.component.scss',

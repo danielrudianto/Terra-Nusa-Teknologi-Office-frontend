@@ -1,8 +1,8 @@
 import { Component, Inject, model, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { MatButtonModule } from '@angular/material/button';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -17,20 +17,22 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-date-selector',
   providers: [provideNativeDateAdapter()],
   imports: [
+    MatDatepickerModule,
     CommonModule,
     ReactiveFormsModule,
     TranslatePipe,
     MatDialogModule,
-    MatDatepickerModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    DialogGeserDirective,
   ],
   templateUrl: './date-selector.component.html',
   styleUrl: './date-selector.component.scss',

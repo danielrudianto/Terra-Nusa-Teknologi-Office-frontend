@@ -15,6 +15,7 @@ import { ExpensePaymentCreateComponent } from 'src/app/components/payment-create
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -26,7 +27,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExpenseViewComponent } from '../expense-view/expense-view.component';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -35,6 +35,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 @Component({
   selector: 'app-expense-list',
   imports: [
+    MatDatepickerModule,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -49,7 +50,6 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatChipsModule,
     MatPaginatorModule,
     HeaderTitleComponent,
-    MatDatepickerModule,
     MatSlideToggleModule,
     TranslatePipe,
     RefreshButtonComponent,

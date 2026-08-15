@@ -243,6 +243,21 @@ export class SalesInvoiceCreateComponent {
       .open(PphSelectorComponent, {})
       .afterClosed()
       .subscribe((result) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya sempat sama-sama menutup tanpa nilai, sehingga cabang di
+         * bawah tidak berjalan dan PPh yang sudah terlanjur dipilih tidak
+         * pernah hilang.
+         */
+        if (result?.hapus) {
+          this.valueFormGroup.patchValue({
+            pphCode: '',
+            pphTaxObjectName: '',
+            pphPercentage: 0,
+          });
+          return;
+        }
         if (result) {
           this.valueFormGroup.patchValue({
             pphCode: result.code,

@@ -20,6 +20,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-employee-salary-slip-selector-create',
@@ -32,6 +33,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
+    DialogGeserDirective,
   ],
   templateUrl: './employee-salary-slip-selector-create.component.html',
   styleUrl: './employee-salary-slip-selector-create.component.scss',

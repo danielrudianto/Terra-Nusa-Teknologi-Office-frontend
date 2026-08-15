@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-employee-create',
@@ -32,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatDatepickerModule,
     MatSelectModule,
     MatIconModule,
+    DialogGeserDirective,
   ],
 })
 export class EmployeeCreateComponent {

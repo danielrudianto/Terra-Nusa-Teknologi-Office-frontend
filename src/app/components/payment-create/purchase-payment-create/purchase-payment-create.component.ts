@@ -23,6 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-purchase-payment-create',
@@ -42,6 +43,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    DialogGeserDirective,
   ],
 })
 export class PurchasePaymentCreateComponent {

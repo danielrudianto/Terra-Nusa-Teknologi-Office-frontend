@@ -153,7 +153,18 @@ export class PurchaseOrderCreateHComponent {
     this.dialog
       .open(PphSelectorComponent, {})
       .afterClosed()
-      .subscribe((data: IPPh) => {
+      .subscribe((data: any) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya sempat sama-sama menutup tanpa nilai, sehingga baris di
+         * bawah memperlakukan keduanya sebagai batal — dan PPh yang sudah
+         * terlanjur dipilih tidak pernah hilang.
+         */
+        if (data?.hapus) {
+          this.clearPph();
+          return;
+        }
         if (!data) return;
         this.formGroup.patchValue({
           pphCode: data.code,
@@ -820,6 +831,18 @@ export class PurchaseOrderCreateHComponent {
       .map((x) => (x || '').trim())
       .filter((x) => x.length > 0);
   }
+
+  /**
+   * Jenis harga sebagai kartu berketerangan.
+   *
+   * Label memakai kunci i18n; yang disimpan tetap `value` — klausul dan
+   * perhitungan membaca `'lumpsum'`, bukan labelnya, sehingga menerjemahkan
+   * label tidak mengubah isi dokumen.
+   */
+  readonly pilihanRate = [
+    { value: 'unit', label: 'poH.unitRate', ket: 'poH.unitRateKet' },
+    { value: 'lumpsum', label: 'poH.lumpSum', ket: 'poH.lumpSumKet' },
+  ];
 
   get isLumpSum(): boolean {
     return this.formGroup.get('rateType')?.value === 'lumpsum';

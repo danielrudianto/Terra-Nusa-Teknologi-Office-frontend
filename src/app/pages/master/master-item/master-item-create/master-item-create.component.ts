@@ -17,6 +17,7 @@ import { ApiService } from 'src/app/services/api.service';
 
 import { TranslatePipe } from '@ngx-translate/core';
 import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-item-create',
@@ -31,6 +32,7 @@ import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './master-item-create.component.html',
   styleUrl: './master-item-create.component.scss',

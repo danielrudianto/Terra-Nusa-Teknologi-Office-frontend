@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgxMaskDirective } from 'ngx-mask';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-salary-slip-deduction-create',
@@ -26,6 +27,7 @@ import { NgxMaskDirective } from 'ngx-mask';
     CommonModule,
     MatSlideToggleModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './salary-slip-deduction-create.component.html',
   styleUrl: './salary-slip-deduction-create.component.scss',

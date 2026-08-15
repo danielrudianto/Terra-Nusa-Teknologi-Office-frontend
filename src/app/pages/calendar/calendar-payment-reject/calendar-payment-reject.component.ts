@@ -15,6 +15,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-calendar-payment-reject',
@@ -28,6 +29,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatIconModule,
     MatCheckboxModule,
     FormsModule,
+    DialogGeserDirective,
   ],
   templateUrl: './calendar-payment-reject.component.html',
   styleUrl: './calendar-payment-reject.component.scss',

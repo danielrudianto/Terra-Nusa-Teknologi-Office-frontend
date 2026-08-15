@@ -17,6 +17,7 @@ import { debounceTime } from 'rxjs';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,7 +28,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { IncomeViewComponent } from '../income-view/income-view.component';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { IncomeCreateComponent } from '../income-create/income-create.component';
@@ -38,6 +38,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 @Component({
   selector: 'app-income-list',
   imports: [
+    MatDatepickerModule,
     CanDirective,
     RouterModule,
     CommonModule,
@@ -52,7 +53,6 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatFormFieldModule,
     HeaderTitleComponent,
     TranslatePipe,
-    MatDatepickerModule,
     MatSlideToggleModule,
     RefreshButtonComponent,
   ],

@@ -21,6 +21,7 @@ import {
 } from '../../../../helpers/tax-recap-excel';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-bank-mutation-download',
@@ -35,6 +36,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatSelectModule,
     MatDialogModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './bank-mutation-download.component.html',
   styleUrl: './bank-mutation-download.component.scss',

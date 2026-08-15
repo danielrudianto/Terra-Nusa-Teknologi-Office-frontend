@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-user-view',
@@ -17,6 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     CommonModule,
     TranslatePipe,
     AuditTrailComponent,
+    DialogGeserDirective,
   ],
 })
 export class UserViewComponent {

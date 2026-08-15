@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-equipment-create',
@@ -29,6 +30,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './master-equipment-create.component.html',
   styleUrl: './master-equipment-create.component.scss',

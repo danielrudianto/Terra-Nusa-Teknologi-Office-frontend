@@ -24,6 +24,7 @@ import moment from 'moment';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-loans-create',
@@ -44,6 +45,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatIconModule,
     MatButtonModule,
     NgxMaskDirective,
+    DialogGeserDirective,
   ],
   templateUrl: './loans-create.component.html',
   styleUrl: './loans-create.component.scss',

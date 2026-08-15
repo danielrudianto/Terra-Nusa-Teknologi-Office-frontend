@@ -1204,7 +1204,7 @@
     "saveUpdate": "保存更改",
     "menu": "定期表单",
     "title": "员工资料更新",
-    "firstTime": "该资料尚未更新过。请按需填写后确认。",
+    "firstTime": "继续填写资料。本部分询问随时间变化的事项——紧急联系人、健康史与外派意愿。",
     "noVersion": "尚未创建表单周期。请先创建周期，员工方可填写。",
     "emptyList": "尚无条目。",
     "saved": "表单已保存",
@@ -1891,7 +1891,8 @@
     "rowActions": "Row actions",
     "changeTypeConfirm": "确认更换类型",
     "adendumGagalMuat": "无法载入原始单据，下方各项为空。",
-    "adendumBanner": "针对以下单据的补充协议"
+    "adendumBanner": "针对以下单据的补充协议",
+    "extraPointTitle": "附加条款延续编号"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -2616,7 +2617,8 @@
     "client": "客户",
     "clientDesc": "客户资料",
     "employee": "员工",
-    "employeeDesc": "员工资料"
+    "employeeDesc": "员工资料",
+    "tanpaAkses": "您尚无此部分的访问权限"
   },
   "confirm": {
     "cancel": "取消",
@@ -2816,7 +2818,9 @@
     "standbyBiaya": "待机费用",
     "standbyBiayaHint": "每日，按一套设备计",
     "standbyHari": "生效条件",
-    "standbyHariHint": "连续待机天数"
+    "standbyHariHint": "连续待机天数",
+    "unitRateKet": "金额按各工作行的数量×单价计算。",
+    "lumpSumKet": "整个范围一口价；不使用逐行单价。"
   },
   "poA": {
     "shipmentService": "货物运输服务",
@@ -2932,7 +2936,11 @@
     "mobilisasi": "进场费",
     "demobilisasi": "退场费",
     "sewa": "租赁",
-    "mobDemob": "进／退场"
+    "mobDemob": "进／退场",
+    "addItem": "添加物品",
+    "jam": "小时",
+    "shiftQuotaHint": "一个班次的时长；决定条款中的每班配额。",
+    "operatorByVendorTitle": "决定是否载明操作员条款"
   },
   "poD": {
     "fieldStaff": "现场员工（如工程师）",
@@ -3260,7 +3268,8 @@
     "biayaUjianUlang": "补考费用",
     "jenisBarangYangDisewa": "租赁物品类别",
     "exMicz": "例：MICZ",
-    "tambahBaris": "添加行"
+    "tambahBaris": "添加行",
+    "jamPerShift": "每班小时数"
   },
   "userAccess": {
     "divisi": "部门",
@@ -3845,5 +3854,18 @@
   "poView": {
     "buatAdendum": "创建补充协议",
     "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。"
+  },
+  "poRekap": {
+    "judul": "下载汇总",
+    "sub": "选择项目与文件格式",
+    "unduh": "下载",
+    "menyusun": "生成中…",
+    "keterangan": "汇总包含所选项目的全部采购订单，含草稿。每行均标注状态。",
+    "kosong": "该项目尚无采购订单。",
+    "gagal": "汇总生成失败，请重试。",
+    "menu": "下载汇总",
+    "format": "文件格式",
+    "excel": "Excel",
+    "pdf": "PDF"
   }
 }

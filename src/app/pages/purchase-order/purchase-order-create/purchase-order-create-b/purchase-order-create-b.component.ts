@@ -3,12 +3,14 @@ import { ClauseLineComponent } from '../../../../components/clause-line/clause-l
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -20,13 +22,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
 import { EquipmentSelectorComponent } from '../../../../components/equipment-selector/equipment-selector.component';
+import { MasterItemSelectorComponent } from '../../../../components/master-item-selector/master-item-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { WysiwygComponent } from '../../../../components/wysiwyg/wysiwyg.component';
 import { ApiService } from '../../../../services/api.service';
@@ -49,6 +51,22 @@ import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
 
+
+/**
+ * Satu baris sewa harus punya SUMBER: alat sewa atau barang katalog.
+ *
+ * Ditulis sebagai validator kelompok, bukan `required` pada masing-masing:
+ * keduanya memang boleh kosong sendiri-sendiri, yang tidak boleh adalah
+ * kosong berdua. Tanpa ini, baris tanpa sumber lolos dan tersimpan sebagai
+ * sewa yang tidak merujuk apa pun.
+ */
+function validatorSumberSewa(g: AbstractControl): ValidationErrors | null {
+  const alat = g.get('equipment_id')?.value;
+  const barang = g.get('item_id')?.value;
+  return alat || barang ? null : { sumberSewaKosong: true };
+}
+
+
 @Component({
   selector: 'app-purchase-order-create-b',
   standalone: true,
@@ -67,7 +85,6 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatIconModule,
     MatButtonModule,
     MatSlideToggleModule,
-    MatCheckboxModule,
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
@@ -105,7 +122,14 @@ export class PurchaseOrderCreateBComponent {
   ) {}
 
   isSubmitting = false;
-  units: string[] = ['jam', 'hari', 'bulan', 'LS'];
+  /*
+   * `shift` berdiri sendiri, bukan disamakan dengan `hari`.
+   *
+   * Satu hari kerja dapat berisi lebih dari satu shift, dan panjang shiftnya
+   * disepakati per dokumen — bukan angka baku. Menyamakannya dengan hari
+   * membuat kuota jam yang disepakati tidak punya tempat untuk dicatat.
+   */
+  units: string[] = ['jam', 'shift', 'hari', 'bulan', 'LS'];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -170,6 +194,15 @@ export class PurchaseOrderCreateBComponent {
     // Hanya dipakai bila ada baris sewa bersatuan jam.
     quotaPeriodDays: new FormControl(30, [Validators.min(1)]),
     excessHourRate: new FormControl(0),
+    /*
+     * Panjang satu shift, dalam jam. Hanya dipakai bila ada baris bersatuan
+     * shift.
+     *
+     * Ditanyakan karena tidak ada angka bakunya: delapan jam lazim, tetapi
+     * pekerjaan boredpile kerap memakai sepuluh atau dua belas. Tanpa
+     * disepakati tertulis, kelebihan pemakaian tidak dapat dihitung.
+     */
+    jamPerShift: new FormControl(8, [Validators.min(1)]),
     rentals: new FormArray([]),
     includePPN: new FormControl(true),
   });
@@ -190,14 +223,29 @@ export class PurchaseOrderCreateBComponent {
     this.t.removeAt(i);
   }
 
-  private buildRental(eq: any): FormGroup {
-    return this.formBuilder.group({
-      equipment_id: [eq.id, Validators.required],
-      name: [eq.name],
-      category: [eq.category],
-      capacity: [eq.capacity],
+  /**
+   * Satu baris sewa, dari alat MAUPUN barang katalog.
+   *
+   * Yang disewa tidak selalu alat berat: kadang genset kecil, scaffolding,
+   * atau perlengkapan yang memang terdaftar sebagai barang. Karena itu
+   * `equipment_id` dan `item_id` sama-sama boleh kosong — yang wajib adalah
+   * SALAH SATUNYA terisi, dan itu dijaga `validatorSumber` di bawah.
+   *
+   * Keduanya disimpan pada kolomnya masing-masing, bukan digabung menjadi
+   * satu kolom bertipe: laporan yang menelusuri pemakaian alat membaca
+   * `equipment_id`, dan menaruh id barang di sana membuat alat yang tidak
+   * pernah ada muncul di laporannya.
+   */
+  private buildRental(sumber: any, dariKatalog = false): FormGroup {
+    return this.formBuilder.group(
+      {
+      equipment_id: [dariKatalog ? null : sumber.id],
+      item_id: [dariKatalog ? sumber.id : null],
+      name: [dariKatalog ? sumber.description : sumber.name],
+      category: [dariKatalog ? sumber.brand || '' : sumber.category],
+      capacity: [dariKatalog ? sumber.type || '' : sumber.capacity],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
-      unit: [eq.unit || 'hari', Validators.required],
+      unit: [sumber.unit || 'hari', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       fromDate: ['', Validators.required],
       toDate: ['', Validators.required],
@@ -218,7 +266,40 @@ export class PurchaseOrderCreateBComponent {
        */
       mobilisasi: [0, Validators.min(0)],
       demobilisasi: [0, Validators.min(0)],
-    });
+      },
+      { validators: validatorSumberSewa },
+    );
+  }
+
+  /**
+   * Tambah baris sewa dari KATALOG BARANG.
+   *
+   * Pemilihnya terpisah dari pemilih alat, bukan satu dialog bergabung:
+   * keduanya menyaring dari daftar yang berbeda, dan menggabungkannya
+   * membuat pencarian menampilkan alat berat berdampingan dengan sekrup.
+   */
+  openItemSelector() {
+    this.dialog
+      .open(MasterItemSelectorComponent, {
+        data: { purchaseType: 'B' },
+        width: '560px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((item) => {
+        if (!item) return;
+        const ada = this.t.value.some((x: any) => x.item_id === item.id);
+        if (ada) {
+          this.snackBar.open(
+            this.translateSvc.instant('notify.alreadyInList'),
+            'Close',
+            { duration: 2500 },
+          );
+          return;
+        }
+        this.t.push(this.buildRental(item, true));
+      });
   }
 
   openEquipmentSelector() {
@@ -371,6 +452,19 @@ export class PurchaseOrderCreateBComponent {
     );
   }
 
+  /**
+   * Ada baris sewa yang dihitung per shift.
+   *
+   * Disimpulkan dari satuan yang benar-benar dipakai, bukan pilihan
+   * terpisah — sama seperti `rentalByHour`, agar klausul yang tercetak tidak
+   * mungkin berbeda dari dasar perhitungan yang ditagihkan.
+   */
+  get rentalByShift(): boolean {
+    return this.t.controls.some(
+      (c) => String(c.getRawValue().unit || '').toLowerCase() === 'shift',
+    );
+  }
+
   get additionalClauses(): FormArray {
     return this.formGroup.get('additionalClauses') as FormArray;
   }
@@ -496,8 +590,37 @@ export class PurchaseOrderCreateBComponent {
       includeTransportCoverage: !!v.includeTransportCoverage,
       equipmentRiskBearer: v.equipmentRiskBearer,
       rentalByHour: this.rentalByHour,
-      quotaPeriodDays: this.rentalByHour ? v.quotaPeriodDays : null,
+      /*
+       * `undefined`, bukan `null` — sama seperti `shiftHours` di bawah.
+       *
+       * Keduanya sama-sama dianggap kosong oleh klausulnya, sehingga
+       * perilakunya tidak berubah. Yang berubah: bidang ini tidak lagi
+       * bergantung pada nilainya kebetulan bertipe `any` untuk lolos
+       * pemeriksaan tipe.
+       */
+      quotaPeriodDays: this.rentalByHour ? v.quotaPeriodDays : undefined,
       excessHourRate: this.rentalByHour
+        ? Number(String(v.excessHourRate ?? '').replace(/[^\d.-]/g, '')) || 0
+        : 0,
+      /*
+       * Klausul shift memakai bidang yang SUDAH ADA pada template.
+       *
+       * `shiftHours` dan `overtimeRate` sebelumnya hanya diisi PO-D dan
+       * PO-A; redaksionalnya sudah tersedia dan tidak perlu ditulis ulang.
+       * Menulis klausul kedua yang berbunyi sama berarti dua kalimat yang
+       * harus diperbaiki bersamaan bila kelak diubah.
+       *
+       * Dikirim `undefined` saat tidak ada baris bersatuan shift, sehingga
+       * dokumen sewa harian tidak ikut memuat ketentuan yang tidak berlaku.
+       *
+       * `undefined`, bukan `null`: `ClauseContext` menyatakan bidang ini
+       * opsional (`number | undefined`), dan `null` bukan nilai yang sah
+       * baginya.
+       */
+      shiftHours: this.rentalByShift
+        ? Number(v.jamPerShift) || 0
+        : undefined,
+      overtimeRate: this.rentalByShift
         ? Number(String(v.excessHourRate ?? '').replace(/[^\d.-]/g, '')) || 0
         : 0,
     };
@@ -592,6 +715,7 @@ export class PurchaseOrderCreateBComponent {
         const x = c.getRawValue();
         return {
           equipment_id: x.equipment_id,
+          item_id: x.item_id ?? null,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
@@ -753,16 +877,31 @@ export class PurchaseOrderCreateBComponent {
      * barang, dan tidak ada galat yang muncul.
      */
     const asal = this.t?.controls?.map((c: any) => c.getRawValue()) ?? [];
-    const items = baris.map((it: any, i: number) => ({
-      ...it,
-      item_description:
-        it.item_description ??
-        asal[i]?.description ??
-        asal[i]?.name ??
-        it.task ??
-        asal[i]?.sku ??
-        null,
-    }));
+    /*
+     * Mobilisasi dan demobilisasi DIPECAH menjadi baris tersendiri, sama
+     * seperti saat dicetak.
+     *
+     * `formatData()` mengembalikan baris apa adanya, dengan mobilisasi masih
+     * menumpang di `remarks_4` dan `remarks_5`. Yang menjumlah — baik
+     * pratinjau maupun dokumen — menghitung `quantity * price` per baris,
+     * sehingga keduanya tidak pernah ikut selama masih menumpang.
+     *
+     * Akibatnya pratinjau menampilkan subtotal yang lebih kecil daripada
+     * dokumen yang terbit sesudahnya, dan itu justru pada lembar yang
+     * dipakai memeriksa sebelum menandatangani.
+     */
+    const items = perluasItemMobilisasi(
+      baris.map((it: any, i: number) => ({
+        ...it,
+        item_description:
+          it.item_description ??
+          asal[i]?.description ??
+          asal[i]?.name ??
+          it.task ??
+          asal[i]?.sku ??
+          null,
+      })),
+    );
 
     return {
       ...dasar,

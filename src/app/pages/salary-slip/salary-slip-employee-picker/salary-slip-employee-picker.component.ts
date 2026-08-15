@@ -25,6 +25,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /** Paling banyak lima saran ditampilkan sekaligus. */
 const MAKS_SARAN = 5;
@@ -62,6 +63,7 @@ interface KaryawanRingkas {
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
+    DialogGeserDirective,
   ],
   templateUrl: './salary-slip-employee-picker.component.html',
   styleUrl: './salary-slip-employee-picker.component.scss',

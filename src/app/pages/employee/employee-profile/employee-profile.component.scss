@@ -433,3 +433,28 @@
   margin: -0.35rem 0 0.5rem;
   font-size: 0.8rem;
 }
+
+/*
+ * Isian beserta sakelar "tidak dapat dicantumkan" di sebelah kanannya.
+ *
+ * Keduanya menjawab pertanyaan yang SAMA, sehingga ditaruh sebaris: sakelar
+ * pada baris tersendiri terbaca seolah pertanyaan lain, dan yang mengisi
+ * mencari isian yang tidak ada.
+ *
+ * Menempati satu petak penuh agar isiannya tetap selebar isian lain di
+ * sebelahnya.
+ */
+.epf-berpasangan {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.epf-berpasangan .mat-mdc-form-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.epf-berpasangan .epf-tidakada {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+}

@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-payment-history',
@@ -40,6 +41,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatStepperModule,
     AsyncPipe,
     CommonModule,
+    DialogGeserDirective,
   ],
 })
 export class PaymentHistoryComponent {

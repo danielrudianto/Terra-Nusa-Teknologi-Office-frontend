@@ -333,6 +333,21 @@ export class PurchaseCreateComponent {
         .open(PphSelectorComponent, {})
         .afterClosed()
         .subscribe((data) => {
+          /*
+           * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+           *
+           * Keduanya sempat sama-sama menutup tanpa nilai, sehingga cabang di
+           * bawah tidak berjalan dan PPh yang sudah terlanjur dipilih tidak
+           * pernah hilang.
+           */
+          if (data?.hapus) {
+            this.valueFormGroup.patchValue({
+              pphCode: '',
+              pphTaxObject: '',
+              pphPercentage: 0,
+            });
+            return;
+          }
           if (data) {
             const pph = data as IPPh;
             this.valueFormGroup.patchValue({

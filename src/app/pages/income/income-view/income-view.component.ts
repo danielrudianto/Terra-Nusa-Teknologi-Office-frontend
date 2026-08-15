@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-income-view',
@@ -29,6 +30,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatSelectModule,
     MatButtonModule,
     AuditTrailComponent,
+    DialogGeserDirective,
   ],
   templateUrl: './income-view.component.html',
   styleUrl: './income-view.component.scss',

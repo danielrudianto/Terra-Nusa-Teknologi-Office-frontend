@@ -385,3 +385,40 @@ $hover: var(--hover, #f6f8ff);
 .pol-sup__text {
   min-width: 0;
 }
+
+/*
+ * Tombol unduh rekap didorong ke KANAN, berdampingan dengan muat ulang.
+ *
+ * Kolom pencarian dibatasi lebarnya dan tidak tumbuh, sehingga sisa ruangnya
+ * jatuh di antara keduanya: pencarian di kiri, tindakan di kanan. Tanpa itu
+ * tombolnya menempel pada kotak pencarian dan terbaca seolah bagian darinya.
+ */
+.pol-rekap {
+  margin-left: auto;
+}
+
+.pol-rekap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 34px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.pol-rekap:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+.pol-rekap .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}

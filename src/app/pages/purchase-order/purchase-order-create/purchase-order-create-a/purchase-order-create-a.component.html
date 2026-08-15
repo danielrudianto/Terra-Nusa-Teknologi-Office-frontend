@@ -135,15 +135,16 @@
             dicetak. Tenggat dan nilai pertanggungan berada di bawah kotak
             centang ini agar keduanya ikut hilang saat dimatikan.
           -->
-          <mat-checkbox
+          <mat-slide-toggle
             formControlName="requireInsuranceDoc"
-            class="poa-checkbox"
+            color="primary"
+            class="poa-span2"
           >
             {{ "poA.requireInsuranceDoc" | translate }}
-          </mat-checkbox>
+          </mat-slide-toggle>
 
           @if (formGroup.get("requireInsuranceDoc")?.value) {
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="poa-span2">
               <mat-label>{{ "poA.insuranceDoc" | translate }}</mat-label>
               <input
                 matInput
@@ -154,7 +155,7 @@
               <span matSuffix>{{ "common.days" | translate }}</span>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="poa-span2">
               <mat-label>{{ "poA.insuranceValue" | translate }}</mat-label>
               <input
                 matInput
@@ -237,7 +238,21 @@
           </mat-form-field>
         }
       </div>
-      <p class="poa-hint">{{ "poForm.extraPointNote" | translate }}</p>
+      <!--
+        Banner, bukan hint kecil.
+
+        Keterangan ini menyangkut BENTUK dokumen yang terbit — poin tambahan
+        menyambung penomoran poin baku, bukan menggantikannya. Sebagai teks
+        abu-abu kecil ia terbaca sebagai catatan yang boleh dilewati, dan
+        yang mengisi baru menyadarinya setelah dokumennya tercetak.
+      -->
+      <div class="poa-banner">
+        <mat-icon>playlist_add</mat-icon>
+        <div>
+          <strong>{{ "poForm.extraPointTitle" | translate }}</strong>
+          <span>{{ "poForm.extraPointNote" | translate }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- ===== Daftar Pengiriman ===== -->

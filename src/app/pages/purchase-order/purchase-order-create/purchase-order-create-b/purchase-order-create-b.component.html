@@ -73,9 +73,21 @@
         <div class="pob-section__title pob-section__title--flush">
           {{ "poB.rentalList" | translate }}
         </div>
-        <button type="button" class="pob-add" (click)="openEquipmentSelector()">
-          <mat-icon>add</mat-icon> {{ "poB.addEquipment" | translate }}
-        </button>
+        <!--
+          Dua pemilih terpisah, bukan satu dialog bergabung.
+
+          Alat sewa dan barang katalog berasal dari daftar yang berbeda;
+          menggabungkannya membuat pencarian menampilkan alat berat
+          berdampingan dengan sekrup.
+        -->
+        <div class="pob-add__grup">
+          <button type="button" class="pob-add" (click)="openEquipmentSelector()">
+            <mat-icon>add</mat-icon> {{ "poB.addEquipment" | translate }}
+          </button>
+          <button type="button" class="pob-add" (click)="openItemSelector()">
+            <mat-icon>add</mat-icon> {{ "poB.addItem" | translate }}
+          </button>
+        </div>
       </div>
 
       @if (t.controls.length === 0) {
@@ -415,7 +427,21 @@
       >
         {{ "poB.transportCoverage" | translate }}
       </mat-slide-toggle>
-      <p class="pob-hint">{{ "poForm.extraPointNote" | translate }}</p>
+      <!--
+        Banner, bukan hint kecil di bawah sakelar.
+
+        Keterangan ini menyangkut BENTUK dokumen yang terbit — poin tambahan
+        menyambung penomoran poin baku, bukan menggantikannya. Sebagai teks
+        abu-abu kecil ia terbaca sebagai catatan yang boleh dilewati, dan
+        yang mengisi baru menyadarinya setelah dokumennya tercetak.
+      -->
+      <div class="pob-banner">
+        <mat-icon>playlist_add</mat-icon>
+        <div>
+          <strong>{{ "poForm.extraPointTitle" | translate }}</strong>
+          <span>{{ "poForm.extraPointNote" | translate }}</span>
+        </div>
+      </div>
 
       <mat-slide-toggle
         formControlName="operatorByVendor"
@@ -424,9 +450,21 @@
       >
         {{ "poB.operatorByVendor" | translate }}
       </mat-slide-toggle>
-      <p class="pob-hint">
-        {{ "poB.operatorByVendorHint" | translate }}
-      </p>
+      <!--
+        Banner: sakelar ini MENGHAPUS seluruh penyebutan tenaga kerja dari
+        dokumen ketika dimatikan.
+
+        Akibatnya menyeluruh, bukan satu kalimat — dan sekali dokumen terbit
+        tanpa ketentuan operator, tidak ada yang menyadarinya sampai vendor
+        datang tanpa operator ber-SIO.
+      -->
+      <div class="pob-banner">
+        <mat-icon>engineering</mat-icon>
+        <div>
+          <strong>{{ "poB.operatorByVendorTitle" | translate }}</strong>
+          <span>{{ "poB.operatorByVendorHint" | translate }}</span>
+        </div>
+      </div>
 
       <!--
         Sewa singkat hanya berarti pada SPK tipe A: yang disewa beberapa jam
@@ -462,6 +500,45 @@
             <mat-hint
               >{{ "poB.hourQuotaHint" | translate }}</mat-hint
             >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poField.tarifKelebihanJam" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="excessHourRate"
+              thousandSeparator=" "
+              mask="separator.2"
+            />
+            <span matPrefix>{{ "po641.rp" | translate }}</span>
+            <span matSuffix>{{ "poB.perHour" | translate }}</span>
+            <mat-hint>{{ "poB.optionalHint" | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
+      }
+
+      <!--
+        Sewa per SHIFT: panjang shiftnya disepakati per dokumen.
+
+        Blok ini muncul sendiri begitu ada baris bersatuan shift, sama seperti
+        blok jam di atas — agar klausulnya tidak mungkin tertinggal.
+
+        Tidak ada angka bakunya: delapan jam lazim, tetapi pekerjaan boredpile
+        kerap memakai sepuluh atau dua belas. Tanpa disepakati tertulis,
+        kelebihan pemakaian tidak dapat dihitung.
+      -->
+      @if (rentalByShift) {
+        <div class="pob-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poField.jamPerShift" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="jamPerShift"
+              type="number"
+              [min]="1"
+            />
+            <span matSuffix>{{ "poB.jam" | translate }}</span>
+            <mat-hint>{{ "poB.shiftQuotaHint" | translate }}</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="outline">

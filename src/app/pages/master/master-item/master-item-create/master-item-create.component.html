@@ -1,5 +1,13 @@
 <div class="mic">
-  <div class="mic-head" mat-dialog-title>
+  <!--
+    Kepala dialog dapat diseret untuk menggesernya.
+
+    Saat membuat barang, yang mengisi kerap perlu melihat daftar di
+    belakangnya — memastikan barang serupa belum ada, atau menyalin
+    penulisannya. Tanpa dapat digeser, satu-satunya jalan adalah menutup
+    dialognya dan kehilangan isian yang sudah diketik.
+  -->
+  <div class="mic-head" mat-dialog-title appDialogGeser>
     <span class="mic-badge">
       <svg
         width="20"

@@ -25,6 +25,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-supplier-update',
@@ -41,6 +42,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatDividerModule,
     MatIconModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './supplier-update.component.html',
   styleUrl: './supplier-update.component.scss',

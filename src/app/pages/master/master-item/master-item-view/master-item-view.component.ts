@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { AuditTrailComponent } from '../../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-item-view',
@@ -23,6 +24,7 @@ import { AuditTrailComponent } from '../../../../components/audit-trail/audit-tr
     MatIconModule,
     MatTooltipModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './master-item-view.component.html',
   styleUrl: './master-item-view.component.scss',

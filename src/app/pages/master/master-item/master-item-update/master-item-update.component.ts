@@ -20,6 +20,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-master-item-update',
@@ -34,6 +35,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatSelectModule,
     MatButtonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './master-item-update.component.html',
   styleUrl: './master-item-update.component.scss',

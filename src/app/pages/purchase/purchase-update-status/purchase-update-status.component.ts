@@ -8,7 +8,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
@@ -41,7 +40,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatDatepickerModule,
     MatSelectModule,
     MatDividerModule,
-    MatAutocompleteModule,
     MatSlideToggleModule,
     NgxMaskDirective,
   ],

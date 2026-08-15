@@ -12,6 +12,7 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   templateUrl: './client-selector.component.html',
@@ -26,6 +27,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
+    DialogGeserDirective,
   ],
   styleUrl: './client-selector.component.scss',
   standalone: true,

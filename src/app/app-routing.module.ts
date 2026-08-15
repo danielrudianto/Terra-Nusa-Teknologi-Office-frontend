@@ -753,7 +753,7 @@ export const routes: Routes = [
               import('./pages/master/master-equipment/master-equipment-list/master-equipment-list.component').then(
                 (m) => m.MasterEquipmentListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'peralatan' },
+            data: { title: 'Master Data', panduanBagian: 'peralatan', permission: 'master_equipment:read' },
           },
           {
             path: 'Item',
@@ -761,7 +761,7 @@ export const routes: Routes = [
               import('./pages/master/master-item/master-item-list/master-item-list.component').then(
                 (m) => m.MasterItemListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'item' },
+            data: { title: 'Master Data', panduanBagian: 'item', permission: 'master_item:read' },
           },
           {
             path: 'Expense-opponent',
@@ -769,7 +769,7 @@ export const routes: Routes = [
               import('./pages/expense/expense-opponent/expense-opponent-list/expense-opponent-list.component').then(
                 (m) => m.ExpenseOpponentListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'lawan-transaksi' },
+            data: { title: 'Master Data', panduanBagian: 'lawan-transaksi', permission: 'expense_opponent:read' },
           },
           {
             path: 'Supplier',
@@ -777,7 +777,7 @@ export const routes: Routes = [
               import('./pages/supplier/supplier-list/supplier-list.component').then(
                 (m) => m.SupplierListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'pemasok' },
+            data: { title: 'Master Data', panduanBagian: 'pemasok', permission: 'supplier:read' },
           },
           {
             path: 'Client',
@@ -785,7 +785,7 @@ export const routes: Routes = [
               import('./pages/client/client-list/client-list.component').then(
                 (m) => m.ClientListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'klien' },
+            data: { title: 'Master Data', panduanBagian: 'klien', permission: 'client:read' },
           },
           {
             path: 'Employee',
@@ -793,7 +793,15 @@ export const routes: Routes = [
               import('./pages/employee/employee-list/employee-list.component').then(
                 (m) => m.EmployeeListComponent,
               ),
-            data: { title: 'Master Data', panduanBagian: 'karyawan' },
+            /*
+             * Panduannya topik TERSENDIRI, bukan bagian di dalam Master Data.
+             *
+             * Layar ini bercabang ke profil pribadi dan pembaruan data
+             * berkala, yang aturannya cukup panjang untuk berdiri sendiri —
+             * dan aksesnya dibatasi divisi HRD, berbeda dari isi Master Data
+             * lainnya.
+             */
+            data: { title: 'Master Data', panduan: 'karyawan', permission: 'employees:read' },
           },
         ],
       },

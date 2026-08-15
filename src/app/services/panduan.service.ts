@@ -10,7 +10,7 @@ import {
   PanduanTopik,
   PanduanTopikTampil,
   TeksLokal,
-} from '../model/panduan.model';
+} from '../models/panduan.model';
 import { PermissionService } from './permission.service';
 import { AppLang, LanguageService } from './language.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -474,7 +474,10 @@ export class PanduanService {
       jangan: 'bahaya',
     };
     doc.querySelectorAll('blockquote').forEach((b) => {
-      const kata = (b.textContent ?? '').trim().toLowerCase().split(/[\s:]+/)[0];
+      const kata = (b.textContent ?? '')
+        .trim()
+        .toLowerCase()
+        .split(/[\s:]+/)[0];
       b.classList.add('pd-callout', `pd-callout--${jenis[kata] ?? 'info'}`);
     });
 

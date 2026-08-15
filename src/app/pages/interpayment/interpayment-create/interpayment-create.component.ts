@@ -23,6 +23,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import moment from 'moment';
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 // create a validator function, which states that bankAccountIDOrigin and bankAccountIDDestination cannot be the same
 // ValidatorFn
@@ -64,6 +65,7 @@ function validateBankAccount(): ValidatorFn {
     MatButtonModule,
     MatIconModule,
     NgxMaskDirective,
+    DialogGeserDirective,
   ],
   templateUrl: './interpayment-create.component.html',
   styleUrl: './interpayment-create.component.scss',

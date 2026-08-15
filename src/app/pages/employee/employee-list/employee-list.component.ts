@@ -125,11 +125,28 @@ export class EmployeeListComponent {
   }
 
   openProfile(row: any) {
-    this.dialog.open(EmployeeProfileComponent, {
+    const ref = this.dialog.open(EmployeeProfileComponent, {
       data: { id: row.id, name: row.name },
       maxWidth: '96vw',
       width: 'min(900px, 96vw)',
       autoFocus: false,
+    });
+
+    /*
+     * Pengisian PERTAMA berlanjut ke formulir keadaan.
+     *
+     * Profil hanya memuat data yang tidak berubah. Riwayat kesehatan, kontak
+     * darurat, jumlah tanggungan, dan kesediaan ditempatkan ada di formulir
+     * keadaan — dan tanpa sambungan ini, hal-hal itu tidak pernah ditanyakan
+     * sampai pengingat setahun berbunyi.
+     *
+     * Kontak darurat terutama: itu justru diperlukan pada hari pertama
+     * orangnya turun ke lapangan, bukan setahun kemudian.
+     */
+    ref.afterClosed().subscribe((hasil: any) => {
+      if (!hasil?.tersimpan) return;
+      this.fetchEmployees();
+      if (hasil.baru) this.openForm(row);
     });
   }
 

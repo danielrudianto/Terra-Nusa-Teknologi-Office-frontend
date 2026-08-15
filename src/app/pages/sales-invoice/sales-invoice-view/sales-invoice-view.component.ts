@@ -26,6 +26,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-sales-invoice-view',
@@ -43,6 +44,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     MatListModule,
     MatIconModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './sales-invoice-view.component.html',
   styleUrl: './sales-invoice-view.component.scss',

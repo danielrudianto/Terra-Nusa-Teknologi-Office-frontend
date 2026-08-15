@@ -22,6 +22,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-reimbursement-view',
@@ -36,6 +37,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     CommonModule,
     MatListModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   providers: [DatePipe],
   templateUrl: './reimbursement-view.component.html',

@@ -27,6 +27,7 @@ import moment from 'moment';
 import { AgendaService, Reminder } from '../../../services/agenda.service';
 import { ApiService } from '../../../services/api.service';
 import { PermissionService } from '../../../services/permission.service';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
  * Buat atau ubah pengingat.
@@ -58,6 +59,7 @@ import { PermissionService } from '../../../services/permission.service';
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
+    DialogGeserDirective,
   ],
   templateUrl: './reminder-create.component.html',
   styleUrl: './reminder-create.component.scss',

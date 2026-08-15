@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuditTrailEntities } from '../../constants/audit-entity.constant';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
@@ -61,7 +60,6 @@ interface ActivityEntry {
     MatPaginatorModule,
     MatProgressBarModule,
     MatButtonModule,
-    MatTooltipModule,
     TranslatePipe,
     AvatarComponent,
     HeaderTitleComponent,

@@ -327,42 +327,19 @@
  * mengambang, terpisah dari keduanya.
  */
 /*
- * Toolbar ini MENUMPUK ke bawah, bukan berjajar.
+ * Kolom pencarian didorong ke kanan, tidak menempel pada chip.
  *
- * `margin-left: auto` pada anak kedua dirancang untuk toolbar mendatar; di
- * sini ia hanya mendorong chip penyaring ke kanan, yang bukan maksudnya.
+ * Toolbar ini berbaris mendatar pada layar lebar: chip penyaring di kiri,
+ * pencarian di kanan. Tanpa `margin-left: auto`, pencarian tumbuh mengisi
+ * sisa ruang dan tepi kirinya bersentuhan dengan chip terakhir — terbaca
+ * seolah keduanya satu kelompok.
  *
- * Yang diperlukan justru sebaliknya: tombol periode dan muat ulang berjajar
- * bersama kolom pencarian, bukan berdiri sendiri sebagai baris terpisah.
+ * Lebarnya dibatasi, bukan dibiarkan tumbuh: kolom pencarian selebar layar
+ * tidak membantu siapa pun dan hanya menjauhkan tombol muat ulang dari
+ * jangkauan mata.
  */
-.el-toolbar {
-  /* Anak-anaknya dibungkus baris mendatar yang dapat melipat sendiri. */
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-/* Kolom pencarian mengambil sisa ruang; tombol menempel di kanannya. */
 .el-search {
-  flex: 1 1 260px;
+  flex: 0 1 400px;
   min-width: 220px;
-}
-
-/*
- * Chip penyaring memakai satu baris penuh di ATAS.
- *
- * Urutannya diatur lewat `order`, bukan dengan memindahkan elemennya di
- * templat: tombol periode berada lebih dulu di DOM, dan tanpa ini ia
- * berdiri sendirian pada baris pertama — persis keadaan yang membuatnya
- * tidak dikenali sebagai tombol.
- */
-.el-filters {
-  flex: 1 0 100%;
-  order: 1;
-}
-.el-search {
-  order: 2;
-}
-.el-toolbar > app-refresh-button {
-  order: 4;
+  margin-left: auto;
 }

@@ -12,7 +12,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -71,7 +70,6 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatDatepickerModule,
     MatIconModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatSlideToggleModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -319,7 +317,18 @@ export class PurchaseOrderCreate651Component {
     this.dialog
       .open(PphSelectorComponent, {})
       .afterClosed()
-      .subscribe((data: IPPh) => {
+      .subscribe((data: any) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya sempat sama-sama menutup tanpa nilai, sehingga baris di
+         * bawah memperlakukan keduanya sebagai batal — dan PPh yang sudah
+         * terlanjur dipilih tidak pernah hilang.
+         */
+        if (data?.hapus) {
+          this.clearPph();
+          return;
+        }
         if (!data) return;
         this.formGroup.patchValue({
           pphCode: data.code,

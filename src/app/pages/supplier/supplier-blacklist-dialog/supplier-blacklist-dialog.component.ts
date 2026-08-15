@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
  * Toggle a supplier's blacklist flag. Blacklisting requires a reason;
@@ -29,6 +30,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
     MatInputModule, MatButtonModule, MatIconModule, MatProgressBarModule,
     MatSnackBarModule,
+    DialogGeserDirective,
   ],
   templateUrl: './supplier-blacklist-dialog.component.html',
   styleUrl: './supplier-blacklist-dialog.component.scss',

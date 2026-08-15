@@ -20,6 +20,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-bank-update',
@@ -35,6 +36,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatAutocompleteModule,
     MatDialogModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class BankUpdateComponent {

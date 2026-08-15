@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { AvatarComponent } from '../../../components/avatar/avatar.component';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-interpayment-view',
@@ -27,6 +28,7 @@ import { AvatarComponent } from '../../../components/avatar/avatar.component';
     MatSnackBarModule,
     MatButtonModule,
     MatIconModule,
+    DialogGeserDirective,
   ],
   templateUrl: './interpayment-view.component.html',
   styleUrl: './interpayment-view.component.scss',

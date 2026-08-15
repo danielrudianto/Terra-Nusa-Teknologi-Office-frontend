@@ -23,6 +23,7 @@ import { DeleteConfirmationComponent } from '../../../../components/delete-confi
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-sales-invoice-confirm',
@@ -35,6 +36,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     FormsModule,
     MatInputModule,
     MatButtonModule,
+    DialogGeserDirective,
   ],
   templateUrl: './sales-invoice-confirm.component.html',
   styleUrl: './sales-invoice-confirm.component.scss',

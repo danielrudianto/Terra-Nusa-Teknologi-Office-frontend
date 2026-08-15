@@ -144,3 +144,19 @@
     flex: 1 1 180px;
   }
 }
+
+/*
+ * Menu yang tidak dapat dibuka karena aksesnya kurang.
+ *
+ * Tetap terbaca, hanya diredupkan — bukan disembunyikan. Yang perlu diketahui
+ * bukan "halaman ini tidak ada", melainkan "halaman ini ada dan Anda belum
+ * punya aksesnya".
+ */
+.master-nav__item--terkunci {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+.master-nav__item--terkunci:hover {
+  background: transparent;
+}

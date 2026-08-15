@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-user-create',
@@ -31,6 +32,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     MatSelectModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
 })
 export class UserCreateComponent {

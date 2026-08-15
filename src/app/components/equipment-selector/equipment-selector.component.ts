@@ -9,6 +9,7 @@ import { debounceTime } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-equipment-selector',
@@ -22,6 +23,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
+    DialogGeserDirective,
   ],
   templateUrl: './equipment-selector.component.html',
   styleUrl: './equipment-selector.component.scss',

@@ -1,4 +1,4 @@
-import { PurchaseTypeTile } from '../model/purchase-order-tile.model';
+import { PurchaseTypeTile } from '../models/purchase-order-tile.model';
 
 /**
  * Daftar jenis PO yang bisa dibuat.

@@ -18,6 +18,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
+import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-bank-create',
@@ -32,6 +33,7 @@ import { banks, IBank } from 'src/app/utils/bank';
     MatSnackBarModule,
     MatButtonModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './bank-create.component.html',
   styleUrl: './bank-create.component.scss',

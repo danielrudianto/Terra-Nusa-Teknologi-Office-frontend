@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslatePipe } from '@ngx-translate/core';
 import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
+import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
   selector: 'app-pph-selector',
@@ -21,6 +22,7 @@ import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
     MatButtonModule,
     MatSlideToggleModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './pph-selector.component.html',
   styleUrls: ['./pph-selector.component.scss'],
@@ -51,7 +53,26 @@ export class PphSelectorComponent {
     }
   }
 
+  /**
+   * Batal — menutup tanpa mengubah apa pun.
+   *
+   * Dipakai silang di pojok dan tombol Batal. Mengembalikan `undefined`,
+   * yang oleh pemanggil dibaca sebagai "tidak jadi memilih".
+   */
   onClose() {
     this.dialog.close();
+  }
+
+  /**
+   * Tanpa PPh — MENGHAPUS pilihan yang sudah ada.
+   *
+   * Berbeda dari batal, dan itulah sebabnya ia mengembalikan nilai
+   * tersendiri. Sebelumnya keduanya memanggil `close()` tanpa nilai,
+   * sehingga pemanggil yang menulis `if (!data) return` memperlakukan
+   * "tanpa PPh" persis seperti membatalkan — dan PPh yang sudah terlanjur
+   * dipilih tidak pernah hilang.
+   */
+  tanpaPph() {
+    this.dialog.close({ hapus: true });
   }
 }

@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DialogGeserDirective } from '../../../../../directives/dialog-geser.directive';
 
 interface FilterDialogData {
   brands: string[];
@@ -33,6 +34,7 @@ interface FilterDialogData {
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './master-item-filter.component.html',
   styleUrl: './master-item-filter.component.scss',
