@@ -125,6 +125,35 @@
           </td>
         </ng-container>
 
+        <!--
+          Kapan data karyawan ini terakhir diperbarui.
+
+          Yang lewat dua belas bulan ditandai: itu ambang yang sama dengan
+          pengingat di Agenda, sehingga daftar ini dan pengingatnya tidak
+          pernah menunjuk orang yang berbeda.
+        -->
+        <ng-container matColumnDef="lastDataUpdate">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "employee.lastUpdate" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              *ngIf="element.lastDataUpdate"
+              [class.el-basi]="sudahSetahun(element.lastDataUpdate)"
+              [matTooltip]="
+                sudahSetahun(element.lastDataUpdate)
+                  ? ('employee.lastUpdateBasi' | translate)
+                  : ''
+              "
+            >
+              {{ tanggalPembaruan(element.lastDataUpdate) }}
+            </span>
+            <span class="el-kosong" *ngIf="!element.lastDataUpdate"
+              >{{ "employee.belumPernah" | translate }}</span
+            >
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef [attr.aria-label]="'common.actions' | translate"></th>
           <td

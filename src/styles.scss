@@ -252,6 +252,31 @@ html {
    Component SCSS should reference these via var(--x) so dark mode works.
    =================================================================== */
 :root {
+  /*
+   * Nama lain untuk warna status yang sama.
+   *
+   * Beberapa layar sudah terlanjur memakai penamaan `danger`, `good`, dan
+   * `soft`/`border`. Didefinisikan sebagai ALIAS, bukan warna baru: warna
+   * yang sama disebut dua nama tetap satu warna, sedangkan mendefinisikan
+   * ulang nilainya membuat dua bagian layar berbeda rona tanpa alasan.
+   *
+   * Tanpa ini, `var(--danger-soft, #fdecea)` jatuh ke nilai cadangannya —
+   * dan nilai cadangan itu tetap TERANG pada mode gelap, sehingga tulisan di
+   * atasnya tidak terbaca sama sekali.
+   */
+  --danger-bg: var(--bad-bg);
+  --danger-soft: var(--bad-bg);
+  --danger-fg: var(--bad-fg);
+  --danger-border: var(--bad-fg);
+  --bad-soft: var(--bad-bg);
+  --bad-border: var(--bad-fg);
+  --good-bg: var(--ok-bg);
+  --good-soft: var(--ok-bg);
+  --good-fg: var(--ok-fg);
+  --good-border: var(--ok-fg);
+  --warn-soft: var(--warn-bg);
+  --warn-border: var(--warn-fg);
+  --bg-soft: var(--surface-2, var(--hover));
   /* semantic surface / text / lines used by our custom components */
   --surface: #ffffff;
   --surface-2: #fafbfc;

@@ -725,7 +725,10 @@
     "selectTaxCategory": "Select tax category",
     "enterStartDate": "Enter start date",
     "namaNikAtauPosisi": "Nama, NIK, atau posisi",
-    "filterEmployees": "Filter employees"
+    "filterEmployees": "Filter employees",
+    "lastUpdate": "最后更新",
+    "lastUpdateBasi": "已超过 12 个月，需要重新确认。",
+    "belumPernah": "从未"
   },
   "taxing": {
     "title": "税务中心",
@@ -3955,6 +3958,7 @@
     "daruratJudul": "紧急联系人",
     "daruratDiperbarui": "更新于",
     "salinRingkas": "复制以便发送",
-    "ringkasTersalin": "摘要已复制，可直接粘贴"
+    "ringkasTersalin": "摘要已复制，可直接粘贴",
+    "isian": "项"
   }
 }

@@ -17,6 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { tanggalLokal } from '../../utils/tanggal';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 pdfjslib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -88,6 +89,7 @@ interface PageData {
     MatTooltipModule,
     TranslatePipe,
     MatSnackBarModule,
+    DragDropModule,
   ],
 })
 export class PdfMainComponent implements OnInit {

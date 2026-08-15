@@ -63,7 +63,50 @@ export class EmployeeViewComponent implements OnInit {
 
   pokok: Bagian[] = [];
   profil: Bagian[] = [];
-  riwayat: { tanggal: string; oleh: string; isi: Baris[] }[] = [];
+  riwayat: {
+    tanggal: string;
+    oleh: string;
+    isi: Baris[];
+    jumlah: number;
+    buka: boolean;
+  }[] = [];
+
+  /**
+   * Label pertanyaan, diambil dari definisi formulir yang berlaku.
+   *
+   * Tidak disalin ke sini sebagai daftar tetap: pertanyaannya dapat berubah,
+   * dan salinan yang tertinggal membuat riwayat lama menampilkan label yang
+   * tidak pernah ditanyakan.
+   */
+  private labelBidang: Record<string, string> = {};
+
+  /**
+   * Label cadangan, dipakai bila definisi formulir gagal dimuat.
+   *
+   * Bukan pengganti definisi di server — pertanyaannya dapat berubah, dan
+   * daftar ini akan tertinggal. Gunanya hanya agar layar tetap terbaca
+   * ketika satu permintaan gagal: menampilkan `maritalStatus` kepada yang
+   * mencari status pernikahan sama saja dengan tidak menampilkan apa pun.
+   */
+  private readonly labelCadangan: Record<string, string> = {
+    maritalStatus: 'Status pernikahan',
+    dependents: 'Jumlah tanggungan',
+    family: 'Pasangan dan anak',
+    currentAddress: 'Alamat tinggal saat ini',
+    mobilePhone: 'Nomor HP',
+    personalEmail: 'Email pribadi',
+    emergencyContacts: 'Yang dapat dihubungi',
+    conditions: 'Riwayat penyakit',
+    accident: 'Pernah mengalami kecelakaan kerja',
+    accidentNote: 'Keterangan kecelakaan kerja',
+    smoking: 'Merokok',
+    lastCheckup: 'Pemeriksaan kesehatan terakhir',
+    trainings: 'Kursus, pelatihan, sertifikasi',
+    relocate: 'Bersedia ditempatkan di kota lain',
+    overtime: 'Bersedia lembur',
+    shift: 'Bersedia kerja shift',
+    availabilityNote: 'Catatan kesediaan',
+  };
 
   /**
    * Kontak darurat dari pembaruan TERAKHIR.
@@ -206,17 +249,49 @@ export class EmployeeViewComponent implements OnInit {
     return bagian;
   }
 
+  /**
+   * Muat definisi formulir lebih dulu, lalu riwayatnya.
+   *
+   * Urutannya penting: tanpa definisinya, label tiap jawaban jatuh ke kunci
+   * teknisnya — `maritalStatus`, `currentAddress` — dan yang membaca riwayat
+   * harus menebak artinya.
+   */
   private muatRiwayat(): void {
+    this.api.get('employee-forms/versions/active', {}).subscribe({
+      next: (v: any) => {
+        const bagian = v?.fields?.sections ?? v?.sections ?? [];
+        for (const sec of bagian) {
+          for (const f of sec?.fields ?? []) {
+            if (f?.key) this.labelBidang[f.key] = f.label ?? f.key;
+          }
+        }
+      },
+      error: () => {},
+      complete: () => this.muatRiwayatData(),
+    });
+  }
+
+  private muatRiwayatData(): void {
     this.api
       .get(`employee-forms/${this.input?.employee?.id}/riwayat`, {})
       .subscribe({
         next: (res: any) => {
           const data = Array.isArray(res) ? res : (res?.data ?? []);
-          this.riwayat = data.map((r: any) => ({
-            tanggal: this.teks(r.submittedAt),
-            oleh: this.teks(r.submittedByName ?? r.submittedBy),
-            isi: this.ratakanJawaban(r.answers),
-          }));
+          this.riwayat = data.map((r: any, i: number) => {
+            const isi = this.ratakanJawaban(r.answers);
+            return {
+              tanggal: this.tanggalLokal(r.submittedAt),
+              oleh: this.teks(r.submittedByName ?? r.submittedBy),
+              isi,
+              jumlah: isi.length,
+              // Yang TERBARU terbuka sendiri; sisanya menunggu diklik.
+              //
+              // Membuka semuanya membuat daftar ini panjang sekali dan
+              // menyembunyikan justru yang paling sering dicari — keadaan
+              // yang berlaku sekarang.
+              buka: i === 0,
+            };
+          });
           this.ambilDarurat(data);
         },
         error: () => {
@@ -232,18 +307,84 @@ export class EmployeeViewComponent implements OnInit {
    * formulir; meratakannya membuat layar ini tetap terbaca walau susunan
    * pertanyaannya kelak berubah.
    */
+  /**
+   * Tanggal dan jam dalam penulisan setempat.
+   *
+   * `2026-08-15T14:20:03` adalah bentuk penyimpanan, bukan bentuk baca.
+   * Menampilkannya apa adanya memaksa yang membaca menerjemahkan sendiri —
+   * dan pada layar yang justru dibuka untuk menelusuri kapan sesuatu
+   * berubah, itu hal pertama yang dicari.
+   */
+  private tanggalLokal(v: unknown): string {
+    if (!v) return '—';
+    const d = new Date(String(v));
+    if (isNaN(d.getTime())) return String(v);
+    return d.toLocaleString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  /**
+   * Ubah satu jawaban menjadi teks yang terbaca.
+   *
+   * Daftar — anggota keluarga, kontak darurat, pelatihan — dirangkai per
+   * baris, bukan dicetak sebagai JSON. Yang membaca riwayat mencari nama dan
+   * nomor, bukan tanda kurung kurawal.
+   */
+  private nilaiTerbaca(v: unknown): string {
+    if (v === null || v === undefined || v === '') return '—';
+    if (typeof v === 'boolean') {
+      return this.translate.instant(v ? 'common.yes' : 'common.no');
+    }
+    if (Array.isArray(v)) {
+      return v
+        .map((x) =>
+          x && typeof x === 'object'
+            ? Object.values(x)
+                .filter((y) => y !== null && y !== undefined && y !== '')
+                .join(' · ')
+            : String(x),
+        )
+        .filter((x) => x)
+        .join('\n');
+    }
+    if (typeof v === 'object') {
+      return Object.values(v as Record<string, unknown>)
+        .filter((x) => x !== null && x !== undefined && x !== '')
+        .join(' · ');
+    }
+    return String(v);
+  }
+
+  /**
+   * Ratakan jawaban formulir menjadi daftar label–nilai.
+   *
+   * Labelnya diambil dari definisi formulir yang berlaku; yang tidak
+   * ditemukan jatuh ke kuncinya sendiri, bukan disembunyikan — jawaban yang
+   * ada tetap perlu terlihat walau pertanyaannya sudah tidak dipakai lagi.
+   */
   private ratakanJawaban(a: any): Baris[] {
     if (!a || typeof a !== 'object') return [];
     const out: Baris[] = [];
     for (const [k, v] of Object.entries(a)) {
       if (v === null || v === undefined || v === '') continue;
+      if (Array.isArray(v) && !v.length) continue;
       out.push({
-        label: k,
-        nilai:
-          typeof v === 'object' ? JSON.stringify(v) : this.teks(v),
+        label: this.labelBidang[k] ?? this.labelCadangan[k] ?? k,
+        nilai: this.nilaiTerbaca(v),
       });
     }
     return out;
+  }
+
+  /** Buka atau tutup satu catatan riwayat. */
+  alihkanRiwayat(i: number): void {
+    const r = this.riwayat[i];
+    if (r) r.buka = !r.buka;
   }
 
   /**
@@ -268,7 +409,12 @@ export class EmployeeViewComponent implements OnInit {
       if (!bersih.length) continue;
 
       this.darurat = bersih;
-      this.daruratTanggal = this.teks(r?.submittedAt);
+      // Tanggal setempat, bukan bentuk penyimpanan.
+      //
+      // `2026-08-15T14:18:49` adalah bentuk simpan; yang membaca banner ini
+      // sedang menilai apakah nomornya masih dapat diandalkan, dan untuk itu
+      // ia perlu membaca tanggalnya, bukan menerjemahkannya.
+      this.daruratTanggal = this.tanggalLokal(r?.submittedAt);
       return;
     }
   }

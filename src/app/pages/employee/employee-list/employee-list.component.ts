@@ -22,6 +22,7 @@ import { EmployeeProfileComponent } from '../employee-profile/employee-profile.c
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { EmployeeViewComponent } from '../employee-view/employee-view.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-employee-list',
@@ -41,6 +42,7 @@ import { EmployeeViewComponent } from '../employee-view/employee-view.component'
     MatIconModule,
     MatMenuModule,
     RefreshButtonComponent,
+    MatTooltipModule,
   ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
@@ -67,8 +69,42 @@ export class EmployeeListComponent {
     'position',
     'status',
     'endDate',
+    'lastDataUpdate',
     'action',
   ];
+
+  /**
+   * Tanggal pembaruan dalam penulisan setempat.
+   *
+   * Tanpa jam: pada kolom daftar yang dipindai sekilas, jam hanya menambah
+   * lebar tanpa menjawab pertanyaan yang diajukan — yang dicari adalah
+   * "sudah berapa lama", bukan "pukul berapa".
+   */
+  tanggalPembaruan(v: unknown): string {
+    if (!v) return '—';
+    const d = new Date(String(v));
+    if (isNaN(d.getTime())) return String(v);
+    return d.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  /**
+   * Sudah lebih dari dua belas bulan sejak terakhir diperbarui.
+   *
+   * Ambang yang sama dengan pengingat di Agenda; memakai angka berbeda
+   * membuat daftar ini dan pengingatnya menunjuk orang yang tidak sama.
+   */
+  sudahSetahun(v: unknown): boolean {
+    if (!v) return false;
+    const d = new Date(String(v));
+    if (isNaN(d.getTime())) return false;
+    const batas = new Date();
+    batas.setFullYear(batas.getFullYear() - 1);
+    return d < batas;
+  }
 
   ngOnInit(): void {
     this.fetchEmployees();

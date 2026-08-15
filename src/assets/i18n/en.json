@@ -725,7 +725,10 @@
     "selectTaxCategory": "Select tax category",
     "enterStartDate": "Enter start date",
     "namaNikAtauPosisi": "Nama, NIK, atau posisi",
-    "filterEmployees": "Filter employees"
+    "filterEmployees": "Filter employees",
+    "lastUpdate": "Last updated",
+    "lastUpdateBasi": "Over 12 months ago; needs reconfirming.",
+    "belumPernah": "Never"
   },
   "taxing": {
     "title": "Tax Center",
@@ -3955,6 +3958,7 @@
     "daruratJudul": "Emergency contact",
     "daruratDiperbarui": "Updated",
     "salinRingkas": "Copy for messaging",
-    "ringkasTersalin": "Summary copied, ready to paste"
+    "ringkasTersalin": "Summary copied, ready to paste",
+    "isian": "fields"
   }
 }

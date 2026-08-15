@@ -155,26 +155,46 @@
               {{ "employeeView.riwayatKosong" | translate }}
             </div>
           } @else {
-            @for (r of riwayat; track r.tanggal) {
-              <div class="ev-bagian">
-                <div class="ev-bagian__head">
-                  <span class="ev-bagian__judul">{{ r.tanggal }}</span>
+            <!--
+              Tiap catatan dapat dibuka; yang terbaru terbuka sendiri.
+
+              Membuka semuanya membuat daftar ini panjang sekali dan
+              menyembunyikan justru yang paling sering dicari — keadaan yang
+              berlaku sekarang.
+            -->
+            @for (r of riwayat; track $index) {
+              <div class="ev-bagian ev-riwayat">
+                <button
+                  type="button"
+                  class="ev-riwayat__head"
+                  (click)="alihkanRiwayat($index)"
+                >
+                  <mat-icon class="ev-riwayat__panah">{{
+                    r.buka ? "expand_less" : "expand_more"
+                  }}</mat-icon>
+                  <span class="ev-riwayat__tgl">{{ r.tanggal }}</span>
+                  <span class="ev-riwayat__jumlah">
+                    {{ r.jumlah }} {{ "employeeView.isian" | translate }}
+                  </span>
                   <span class="ev-oleh">{{ r.oleh }}</span>
-                </div>
-                @for (x of r.isi; track x.label) {
-                  <div class="ev-baris">
-                    <span class="ev-baris__label">{{ x.label }}</span>
-                    <span class="ev-baris__nilai">{{ x.nilai }}</span>
-                    <button
-                      type="button"
-                      class="ev-salin"
-                      [attr.aria-label]="'employeeView.salin' | translate"
-                      [matTooltip]="'employeeView.salin' | translate"
-                      (click)="salin(x.nilai)"
-                    >
-                      <mat-icon>content_copy</mat-icon>
-                    </button>
-                  </div>
+                </button>
+
+                @if (r.buka) {
+                  @for (x of r.isi; track x.label) {
+                    <div class="ev-baris">
+                      <span class="ev-baris__label">{{ x.label }}</span>
+                      <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                      <button
+                        type="button"
+                        class="ev-salin"
+                        [attr.aria-label]="'employeeView.salin' | translate"
+                        [matTooltip]="'employeeView.salin' | translate"
+                        (click)="salin(x.nilai)"
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                      </button>
+                    </div>
+                  }
                 }
               </div>
             }

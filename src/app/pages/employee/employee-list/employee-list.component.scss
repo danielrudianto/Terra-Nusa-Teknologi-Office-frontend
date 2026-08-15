@@ -343,3 +343,15 @@
   min-width: 220px;
   margin-left: auto;
 }
+
+/*
+ * Data yang sudah lewat dua belas bulan.
+ *
+ * Diberi warna peringatan, bukan merah: data yang menua itu wajar dan
+ * memang akan terjadi pada semua orang. Merah membuat daftar ini tampak
+ * penuh kesalahan padahal yang diperlukan hanya konfirmasi.
+ */
+.el-basi {
+  color: var(--warn-fg, #8a5a06);
+  font-weight: 600;
+}

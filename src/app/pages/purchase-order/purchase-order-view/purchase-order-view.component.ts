@@ -26,6 +26,7 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 /**
@@ -69,6 +70,7 @@ const ADENDUM_ROUTES: Record<string, string> = {
     MatProgressSpinnerModule,
     TranslatePipe,
     DialogGeserDirective,
+    MatTooltipModule,
   ],
   templateUrl: './purchase-order-view.component.html',
   styleUrl: './purchase-order-view.component.scss',

@@ -309,3 +309,47 @@
   height: 17px;
   font-size: 17px;
 }
+
+/* ---- riwayat yang dapat dibuka ---- */
+
+.ev-riwayat__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.35rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Montserrat", sans-serif;
+}
+.ev-riwayat__panah {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: var(--muted, #6b7280);
+}
+.ev-riwayat__tgl {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+
+/* Jumlah isian; menandai catatan mana yang berisi banyak perubahan. */
+.ev-riwayat__jumlah {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #6b7280);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.ev-riwayat .ev-oleh {
+  margin-left: auto;
+}
+.ev-riwayat__head:hover .ev-riwayat__tgl {
+  color: var(--brand, #154dec);
+}
