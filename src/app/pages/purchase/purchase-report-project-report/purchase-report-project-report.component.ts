@@ -1,7 +1,17 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PurchaseReportProjectComponent } from '../purchase-list/purchase-report-project/purchase-report-project.component';
-import * as XLSX from 'xlsx';
+/*
+ * `xlsx-js-style`, bukan `xlsx`.
+ *
+ * SheetJS berhenti merilis ke npm, sehingga paket `xlsx` di sana akan
+ * selamanya ditandai rentan — prototype pollution dan ReDoS — tanpa
+ * perbaikan yang pernah datang.
+ *
+ * `xlsx-js-style` adalah turunannya dengan API yang sama; yang dipakai di
+ * berkas ini hanya `utils` dan `writeFile`, dan keduanya identik.
+ */
+import * as XLSX from 'xlsx-js-style';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
