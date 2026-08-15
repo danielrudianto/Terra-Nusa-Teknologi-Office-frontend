@@ -402,6 +402,22 @@
                 <mat-icon>payments</mat-icon
                 ><span>{{ "salesInvoice.menuCreatePayment" | translate }}</span>
               </button>
+              <!--
+                Hitung ulang status lunas dari pembayaran yang tersimpan.
+
+                Diperlukan bila penyelarasan otomatis tertinggal — koneksi
+                putus atau server sedang padat saat pembayarannya disetujui.
+                Aman diulang: hasilnya diturunkan dari pembayaran yang ada,
+                bukan ditambahkan padanya.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'payment_outgoing:update'"
+                (click)="selaraskanLunas(purchase.id)"
+              >
+                <mat-icon>sync</mat-icon
+                ><span>{{ "purchase.selaraskanLunas" | translate }}</span>
+              </button>
               <button
                 mat-menu-item
                 *appCan="'purchase:update'"

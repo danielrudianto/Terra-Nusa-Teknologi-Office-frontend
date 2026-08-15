@@ -72,6 +72,18 @@ Ada **Import CSV** untuk memasukkan banyak barang sekaligus. Periksa hasilnya
 setelah impor: baris yang formatnya menyimpang bisa masuk sebagai item baru
 alih-alih memperbarui yang ada.
 
+### Barang favorit
+
+Kolom **Favorit** menandai barang yang sering dipakai. Bintangnya ditekan
+langsung dari daftar, tanpa membuka menu.
+
+Barang bertanda favorit **didahulukan** pada pemilih barang saat menyusun
+purchase order. Katalognya panjang, dan sebagian kecilnya dipakai hampir setiap
+hari — tanda ini memindahkannya ke atas alih-alih mengharuskan pengetikan yang
+sama berulang kali.
+
+Menandai favorit tidak mengubah apa pun selain urutan tampilnya.
+
 ## Peralatan
 
 Katalog alat berat untuk PO sewa alat (tipe B): nama, kategori, kapasitas, dan

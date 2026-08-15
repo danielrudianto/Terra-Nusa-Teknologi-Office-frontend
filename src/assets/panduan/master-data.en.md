@@ -73,6 +73,18 @@ There's a **CSV import** for loading many items at once. Check the result
 afterwards: rows whose format deviates can come in as new items instead of
 updating existing ones.
 
+### Favourite items
+
+The **Favourite** column marks frequently used items. The star is pressed
+directly from the list, without opening a menu.
+
+Items marked favourite are **listed first** in the item picker when composing a
+purchase order. The catalogue is long, and a small part of it is used almost
+daily — this moves those to the top instead of requiring the same typing over
+and over.
+
+Marking a favourite changes nothing but display order.
+
 ## Equipment
 
 The heavy-equipment catalogue for equipment-rental POs (type B): name,

@@ -229,6 +229,38 @@ export class PurchaseListComponent {
     });
   }
 
+  /**
+   * Hitung ulang status lunas satu pembelian.
+   *
+   * Statusnya diselaraskan sendiri saat pembayaran disetujui; tombol ini
+   * untuk keadaan ketika penyelarasan itu tertinggal — penulisannya gagal
+   * setelah pembayarannya tersimpan, dan tidak ada yang mengulanginya.
+   *
+   * Daftar dimuat ulang sesudahnya agar tanda lunasnya langsung terlihat
+   * berubah; tanpa itu yang menekan tidak tahu apakah ada yang terjadi.
+   */
+  selaraskanLunas(purchaseID: number): void {
+    this.apiService
+      .post(`payments-outgoing/selaraskan/purchase/${purchaseID}`, {})
+      .subscribe({
+        next: () => {
+          this.snackBar.open(
+            this.translate.instant('purchase.lunasDiselaraskan'),
+            this.translate.instant('common.close'),
+            { duration: 2500 },
+          );
+          this.fetchData();
+        },
+        error: (err: any) => {
+          this.snackBar.open(
+            this.translate.instant('purchase.lunasGagal'),
+            this.translate.instant('common.close'),
+            { duration: 4000 },
+          );
+        },
+      });
+  }
+
   openPaymentDetail(id: number) {
     this.dialog.open(PurchasePaymentCreateComponent, {
       data: {
