@@ -59,16 +59,20 @@ export class EmployeeUpdateComponent {
       Validators.minLength(16),
       Validators.maxLength(16),
     ]),
-    email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(100)]),
-    phoneNumber: new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^\d{10,15}$/),
-      Validators.maxLength(20),
-    ]),
-    address: new FormControl('', [Validators.required, Validators.maxLength(255)]),
     position: new FormControl('', [Validators.required, Validators.maxLength(50)]),
     department: new FormControl('', [Validators.required, Validators.maxLength(50)]),
-    taxCategory: new FormControl('', Validators.required),
+    /*
+     * Alamat, telepon, email, dan kategori pajak TIDAK lagi di sini.
+     *
+     * Keempatnya kini berasal dari formulir pembaruan data — satu sumber,
+     * dengan riwayat siapa mengubah kapan. Kategori pajaknya pun diturunkan
+     * sendiri dari status pernikahan dan jumlah tanggungan, bukan diketik.
+     *
+     * Kontrolnya ikut DIBUANG, bukan sekadar isiannya disembunyikan:
+     * kontrol ber-`required` tanpa isian di layar membuat formulir ini
+     * selamanya tidak sah tanpa satu pun kolom merah yang menjelaskan
+     * sebabnya.
+     */
   });
 
   ngOnInit(): void {
@@ -84,12 +88,8 @@ export class EmployeeUpdateComponent {
             name: res.name,
             birthday: res.birthday,
             nik: res.nik,
-            email: res.email,
-            phoneNumber: res.phoneNumber,
-            address: res.address,
             position: res.position,
             department: res.department,
-            taxCategory: res.taxCategory,
           });
         },
         error: (error) => {},

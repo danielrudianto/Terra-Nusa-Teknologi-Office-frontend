@@ -1,0 +1,174 @@
+.pm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 16px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+}
+
+.pm-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.pm-head__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pm-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+.pm-sub {
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.pm-refresh {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+}
+.pm-refresh:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+
+.pm-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Gulir mendatar.
+ *
+ * `overflow-x` di sini saja; tinggi kartunya tetap sehingga dashboard tidak
+ * ikut memanjang saat proyeknya bertambah.
+ */
+.pm-scroll {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  scroll-snap-type: x proximity;
+}
+.pm-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.pm-scroll::-webkit-scrollbar-thumb {
+  background: var(--border, #e3e6eb);
+  border-radius: 999px;
+}
+
+.pm-card {
+  flex: 0 0 auto;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem 0.85rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface-2, #f9fafc);
+  scroll-snap-align: start;
+}
+
+/* Proyek yang sudah selesai; diredupkan, tetap terbaca. */
+.pm-card--nonaktif {
+  opacity: 0.62;
+}
+
+.pm-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pm-card__kode {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+}
+.pm-card__tag {
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.pm-card__nama {
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pm-card__margin {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ok-fg, #1a7f4b);
+  line-height: 1.1;
+}
+.pm-card__margin--rugi {
+  color: var(--danger-fg, #c0392b);
+}
+
+/* Nilai kontrak belum diisi; bukan margin nol, melainkan belum diketahui. */
+.pm-card__kosong {
+  padding: 0.85rem 0;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--muted, #6b7280);
+}
+
+.pm-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border, #e3e6eb);
+  overflow: hidden;
+}
+.pm-bar__isi {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ok-fg, #1a7f4b);
+}
+.pm-bar__isi--rugi {
+  background: var(--danger-fg, #c0392b);
+}
+
+.pm-card__baris {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+.pm-card__baris--tebal {
+  margin-top: 0.15rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--border, #e3e6eb);
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+.pm-rugi {
+  color: var(--danger-fg, #c0392b);
+}

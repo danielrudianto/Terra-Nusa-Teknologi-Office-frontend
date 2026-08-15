@@ -1,0 +1,197 @@
+<div class="ev">
+  <div class="ev-head" mat-dialog-title appDialogGeser>
+    <span class="ev-badge"><mat-icon>badge</mat-icon></span>
+    <div class="ev-head__text">
+      <h2 class="ev-title">{{ input?.employee?.name }}</h2>
+      <span class="ev-sub">{{ input?.employee?.nik }}</span>
+    </div>
+    <button
+      type="button"
+      class="ev-x"
+      [attr.aria-label]="'common.close' | translate"
+      (click)="tutup()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!--
+    Kontak darurat di ATAS seluruh tab, bukan satu baris di antara puluhan
+    baris lain.
+
+    Ini satu-satunya data di layar ini yang dicari saat terjadi sesuatu di
+    lapangan — dan saat itu tidak ada yang sempat menggulir. Tanggal
+    pembaruannya ikut disebut: nomor yang sudah dua tahun tidak dikonfirmasi
+    belum tentu masih aktif.
+  -->
+  @if (darurat.length) {
+    <div class="ev-darurat">
+      <mat-icon class="ev-darurat__ikon">emergency</mat-icon>
+      <div class="ev-darurat__isi">
+        <span class="ev-darurat__judul">
+          {{ "employeeView.daruratJudul" | translate }}
+        </span>
+        @for (k of darurat; track k.telepon) {
+          <div class="ev-darurat__baris">
+            <button
+              type="button"
+              class="ev-darurat__nama"
+              [matTooltip]="'employeeView.salin' | translate"
+              (click)="salin(k.nama)"
+            >
+              {{ k.nama }}
+            </button>
+            <span class="ev-darurat__hub">{{ k.hubungan }}</span>
+            <button
+              type="button"
+              class="ev-darurat__telp"
+              [matTooltip]="'employeeView.salin' | translate"
+              (click)="salin(k.telepon)"
+            >
+              <mat-icon>call</mat-icon>{{ k.telepon }}
+            </button>
+          </div>
+        }
+        <span class="ev-darurat__tanggal">
+          {{ "employeeView.daruratDiperbarui" | translate }}
+          {{ daruratTanggal }}
+        </span>
+      </div>
+    </div>
+  }
+
+  <mat-dialog-content class="ev-content">
+    @if (isLoading) {
+      <div class="ev-state"><mat-spinner diameter="30"></mat-spinner></div>
+    } @else {
+      <mat-tab-group class="ev-tabs" animationDuration="0ms">
+        <!-- Data pokok: selalu ada, sumbernya daftar karyawan. -->
+        <mat-tab [label]="'employeeView.tabPokok' | translate">
+          @for (b of pokok; track b.judul) {
+            <div class="ev-bagian">
+              <div class="ev-bagian__head">
+                <span class="ev-bagian__judul">{{ b.judul | translate }}</span>
+                <button
+                  type="button"
+                  class="ev-salin-semua"
+                  [matTooltip]="'employeeView.salinBagian' | translate"
+                  (click)="salinBagian(b)"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                  {{ "employeeView.salinBagian" | translate }}
+                </button>
+              </div>
+              @for (r of b.baris; track r.label) {
+                <div class="ev-baris">
+                  <span class="ev-baris__label">{{ r.label | translate }}</span>
+                  <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                  <button
+                    type="button"
+                    class="ev-salin"
+                    [attr.aria-label]="'employeeView.salin' | translate"
+                    [matTooltip]="'employeeView.salin' | translate"
+                    (click)="salin(r.nilai)"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </mat-tab>
+
+        <!-- Profil pribadi: hanya bila profilnya sudah diisi. -->
+        <mat-tab [label]="'employeeView.tabProfil' | translate">
+          @if (!profilAda) {
+            <div class="ev-state ev-state--kosong">
+              {{ "employeeView.profilKosong" | translate }}
+            </div>
+          } @else {
+            @for (b of profil; track b.judul) {
+              <div class="ev-bagian">
+                <div class="ev-bagian__head">
+                  <span class="ev-bagian__judul">{{ b.judul | translate }}</span>
+                  <button
+                    type="button"
+                    class="ev-salin-semua"
+                    [matTooltip]="'employeeView.salinBagian' | translate"
+                    (click)="salinBagian(b)"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                    {{ "employeeView.salinBagian" | translate }}
+                  </button>
+                </div>
+                @for (r of b.baris; track r.label) {
+                  <div class="ev-baris">
+                    <span class="ev-baris__label">{{
+                      r.label | translate
+                    }}</span>
+                    <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                    <button
+                      type="button"
+                      class="ev-salin"
+                      [attr.aria-label]="'employeeView.salin' | translate"
+                      [matTooltip]="'employeeView.salin' | translate"
+                      (click)="salin(r.nilai)"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </mat-tab>
+
+        <!--
+          Riwayat pembaruan, terbaru di atas.
+
+          Seluruh catatan ditampilkan, bukan hanya yang berlaku: yang
+          diperlukan saat menelusuri justru KAPAN sebuah data berubah.
+        -->
+        <mat-tab [label]="'employeeView.tabRiwayat' | translate">
+          @if (!riwayat.length) {
+            <div class="ev-state ev-state--kosong">
+              {{ "employeeView.riwayatKosong" | translate }}
+            </div>
+          } @else {
+            @for (r of riwayat; track r.tanggal) {
+              <div class="ev-bagian">
+                <div class="ev-bagian__head">
+                  <span class="ev-bagian__judul">{{ r.tanggal }}</span>
+                  <span class="ev-oleh">{{ r.oleh }}</span>
+                </div>
+                @for (x of r.isi; track x.label) {
+                  <div class="ev-baris">
+                    <span class="ev-baris__label">{{ x.label }}</span>
+                    <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                    <button
+                      type="button"
+                      class="ev-salin"
+                      [attr.aria-label]="'employeeView.salin' | translate"
+                      [matTooltip]="'employeeView.salin' | translate"
+                      (click)="salin(x.nilai)"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </mat-tab>
+      </mat-tab-group>
+    }
+  </mat-dialog-content>
+
+  <!--
+    Ringkasan siap kirim; bentuknya polos karena aplikasi pesan tidak
+    mempertahankan spasi berturut.
+  -->
+  <mat-dialog-actions class="ev-foot">
+    <button type="button" class="ev-wa" (click)="salinRingkas()">
+      <mat-icon>chat</mat-icon>
+      {{ "employeeView.salinRingkas" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

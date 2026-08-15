@@ -6,10 +6,23 @@
     (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
-    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
+    [title]="judulLayar"
     [description]="typeLabel"
   />
 
+
+    <!--
+      Ditegaskan di muka: mengubah TIDAK menyetujui.
+      -->
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
+      </div>
+    }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== Informasi PO ===== -->
     <div class="po63-card">
@@ -242,8 +255,22 @@
             <mat-option value="CASH">{{
               "poForm.cash" | translate
             }}</mat-option>
-            <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
-            <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            <!--
+              COD dan CBD hanya berlaku pada FRANCO.
+
+              Keduanya mengacu pada peristiwa pengiriman: bayar saat barang
+              diterima, atau bayar sebelum dikirim. Pada Loco tidak ada
+              pengiriman sama sekali, sehingga keduanya tidak menyatakan
+              kapan pembayarannya jatuh tempo.
+
+              Disembunyikan, bukan dibiarkan: bila tetap dapat dipilih, yang
+              mengoreksi bukan sistemnya melainkan vendor yang membaca
+              dokumennya.
+            -->
+            @if (!isLoco) {
+              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+            }
             <mat-option value="PPD">{{
               "poForm.prepaidOpt" | translate
             }}</mat-option>
@@ -381,7 +408,9 @@
         <div class="po63-grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
-            <mat-select formControlName="deliveryMethod">
+            <mat-select formControlName="deliveryMethod"
+            (selectionChange)="selaraskanTerminLoco()"
+          >
               <mat-option [value]="0">{{
                 "poForm.franco" | translate
               }}</mat-option>
@@ -529,7 +558,7 @@
             formGroup.invalid || t.controls.length === 0 || isSubmitting
           "
         >
-          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
         </button>
       </div>
     </div>

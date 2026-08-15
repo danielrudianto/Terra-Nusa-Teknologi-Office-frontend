@@ -34,13 +34,45 @@ export class AdendumService {
     return v && !isNaN(n) ? n : null;
   }
 
+  /**
+   * Id dokumen yang sedang DIUBAH, bila layar ini dibuka untuk koreksi.
+   *
+   * Dibedakan dari adendum walaupun keduanya memuat dokumen lama ke formulir
+   * yang sama. Adendum menerbitkan dokumen BARU yang memuat selisih; ubah
+   * menimpa dokumen yang belum pernah terbit.
+   *
+   * Menyatukannya akan membuat satu penanda menentukan dua perilaku yang
+   * berlawanan — dan yang keliru membaca penanda itu akan menerbitkan
+   * dokumen ketika seharusnya membetulkan.
+   */
+  get ubahId(): number | null {
+    const v = this.route.snapshot.queryParamMap.get('ubah');
+    const n = Number(v);
+    return v && !isNaN(n) ? n : null;
+  }
+
   get isAdendum(): boolean {
     return this.indukId !== null;
   }
 
-  /** Ambil dokumen induk; null bila layar ini bukan adendum. */
+  get isUbah(): boolean {
+    return this.ubahId !== null;
+  }
+
+  /**
+   * Dokumen lama sedang dimuat ke formulir — apa pun modenya.
+   *
+   * Dipakai varian formulir untuk memutuskan apakah perlu memanggil
+   * `muatInduk()`; keputusan tentang APA yang dilakukan sesudahnya berbeda
+   * per mode, dan itu ditentukan `isAdendum` atau `isUbah`.
+   */
+  get memuatDokumenLama(): boolean {
+    return this.isAdendum || this.isUbah;
+  }
+
+  /** Ambil dokumen lama; null bila layar ini pembuatan biasa. */
   muatInduk(): Observable<any | null> {
-    const id = this.indukId;
+    const id = this.indukId ?? this.ubahId;
     if (!id) return of(null);
     return this.apiService
       .get(`purchase-orders/${id}`, {})
@@ -76,7 +108,21 @@ export class AdendumService {
      * yang tampak sah — dan itu tidak akan terlihat sampai ada yang
      * membandingkannya dengan lembar aslinya.
      */
-    const TIDAK_DIWARISI = ['date', 'purchase_order', 'name', ...abaikan];
+    /*
+     * Pada mode UBAH, tanggal DIWARISI.
+     *
+     * Yang diubah adalah dokumen yang sudah ada; tanggalnya bagian dari
+     * dokumen itu, bukan sesuatu yang ditentukan ulang. Mengosongkannya
+     * membuat yang membetulkan satu angka harus mengingat tanggal aslinya
+     * — dan bila ia salah ingat, dokumennya berpindah hari tanpa ada yang
+     * menyadarinya.
+     *
+     * Nomor tetap tidak diwarisi ke isian: ia tidak diketik, melainkan
+     * dipegang dokumennya sendiri.
+     */
+    const TIDAK_DIWARISI = this.isUbah
+      ? ['purchase_order', 'name', ...abaikan]
+      : ['date', 'purchase_order', 'name', ...abaikan];
 
     const sumber: any = { ...induk, ...custom };
     const nilai: any = {};
@@ -139,6 +185,47 @@ export class AdendumService {
   }
 
   /**
+   * Timpa satu baris formulir dengan nilai dari baris DOKUMEN.
+   *
+   * Pembangun baris tiap varian menerima objek KATALOG — barang atau alat —
+   * dan mengisi sisanya dengan nilai bawaan: volume 1, harga 0, tanggal
+   * kosong. Bidang itu memang tidak ada pada katalog.
+   *
+   * Memakainya untuk memuat dokumen lama membuat seluruh angkanya hilang,
+   * dan yang membetulkan satu kesalahan harus mengetik ulang semuanya.
+   *
+   * Yang ditimpa hanya kunci yang BENAR-BENAR ADA pada formulirnya; varian
+   * yang tidak punya `price` atau `remarks_4` tidak terpengaruh.
+   */
+  terapkanNilaiBaris(g: FormGroup, x: any): FormGroup {
+    if (!x) return g;
+
+    const peta: Record<string, unknown> = {
+      quantity: Number(x.quantity) || 0,
+      price: Number(x.price) || 0,
+      unit: x.unit ?? undefined,
+      remarks: x.remarks_1 ?? undefined,
+      fromDate: x.remarks_1 ?? undefined,
+      toDate: x.remarks_2 ?? undefined,
+      location: x.remarks_3 ?? undefined,
+      mobilisasi: Number(x.remarks_4) || 0,
+      demobilisasi: Number(x.remarks_5) || 0,
+      task: x.task ?? undefined,
+      item_id: x.item_id ?? undefined,
+      equipment_id: x.equipment_id ?? undefined,
+    };
+
+    const isi: Record<string, unknown> = {};
+    Object.keys(peta).forEach((k) => {
+      if (peta[k] === undefined) return;
+      if (!g.get(k)) return;
+      isi[k] = peta[k];
+    });
+    g.patchValue(isi, { emitEvent: false });
+    return g;
+  }
+
+  /**
    * Isi satu FormArray dari daftar pada dokumen induk.
    *
    * Bentuk barisnya berbeda-beda antar varian, sehingga PEMBANGUNNYA
@@ -189,6 +276,16 @@ export class AdendumService {
    */
   barisInduk(induk: any): any[] {
     const items = induk?.items || [];
+
+    /*
+     * Pada mode UBAH, volumenya disalin APA ADANYA.
+     *
+     * Yang dikoreksi adalah dokumen itu sendiri, bukan selisihnya —
+     * mengosongkan volume memaksa yang membetulkan satu kesalahan mengetik
+     * ulang seluruh barisnya, dan itu justru mengundang kesalahan baru.
+     */
+    if (this.isUbah) return items.map((x: any) => ({ ...x }));
+
     return items.map((x: any) => ({ ...x, quantity: null }));
   }
 }

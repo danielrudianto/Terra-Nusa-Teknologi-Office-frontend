@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { TodayPaymentComponent } from '../today-payment/today-payment/today-payment.component';
 import { CashPositionComponent } from '../cash-position/cash-position.component';
 import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dashboard-reimbursement.component';
+import { ProjectMarginComponent } from '../project-margin/project-margin.component';
 
 @Component({
   selector: 'app-dashboard-body',
@@ -23,6 +24,7 @@ import { DashboardReimbursementComponent } from '../dashboard-reimbursement/dash
     TodayPaymentComponent,
     CashPositionComponent,
     DashboardReimbursementComponent,
+    ProjectMarginComponent,
   ],
 })
 export class DashboardBodyComponent {

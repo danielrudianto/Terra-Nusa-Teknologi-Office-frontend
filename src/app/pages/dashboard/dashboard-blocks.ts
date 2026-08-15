@@ -67,6 +67,24 @@ export const DASHBOARD_BLOCKS: DashboardBlock[] = [
       ),
   },
   {
+    /*
+     * Ikhtisar margin proyek.
+     *
+     * Izinnya `project:read` — ditentukan oleh ISI bloknya: nilai kontrak
+     * dan biaya per proyek, bukan oleh letaknya di dashboard.
+     *
+     * Selebar penuh karena kartunya bergulir mendatar; setengah lebar hanya
+     * memuat dua proyek sekaligus dan memaksa menggulir sejak awal.
+     */
+    id: 'project-margin',
+    permission: 'project:read',
+    span: 12,
+    component: () =>
+      import('./project-margin/project-margin.component').then(
+        (m) => m.ProjectMarginComponent,
+      ),
+  },
+  {
     id: 'reimbursement',
     permission: 'reimbursement:read',
     span: 6,

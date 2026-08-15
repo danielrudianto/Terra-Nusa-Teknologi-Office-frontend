@@ -373,7 +373,10 @@
     "memuatLaporan": "Memuat laporan…",
     "belumAdaDataUntukProyek": "Belum ada data untuk proyek ini.",
     "supplierAddress": "Supplier address",
-    "otherValue": "Other value"
+    "otherValue": "Other value",
+    "selaraskanLunas": "Selaraskan status lunas",
+    "lunasDiselaraskan": "Status lunas dihitung ulang.",
+    "lunasGagal": "Gagal menyelaraskan status lunas."
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -511,7 +514,10 @@
     "kenaPpn": "PPN",
     "nonPpn": "Non-PPN",
     "jenisBarang": "Barang",
-    "jenisJasa": "Jasa"
+    "jenisJasa": "Jasa",
+    "revisi": "Revisi",
+    "revisiKet": "Dokumen ini pernah diubah setelah dibuat. Angkanya bertambah setiap kali disimpan.",
+    "viewMobilisasi": "mobilisasi & demobilisasi"
   },
   "income": {
     "title": "Pendapatan Lain",
@@ -1892,7 +1898,11 @@
     "changeTypeConfirm": "Ya, ganti jenis",
     "adendumGagalMuat": "Dokumen induk gagal dimuat. Isian di bawah masih kosong.",
     "adendumBanner": "Adendum atas dokumen",
-    "extraPointTitle": "Poin tambahan menyambung penomoran"
+    "extraPointTitle": "Poin tambahan menyambung penomoran",
+    "judulUbah": "Ubah Purchase Order",
+    "submitUbah": "Simpan perubahan",
+    "ubahJudulBanner": "Menyimpan perubahan, bukan menyetujui",
+    "ubahKeteranganBanner": "Dokumen tetap berstatus Draf dan masih perlu disetujui seperti biasa. Nomor revisinya bertambah setiap kali disimpan."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -3854,7 +3864,8 @@
   },
   "poView": {
     "buatAdendum": "Buat adendum",
-    "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat."
+    "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat.",
+    "ubahDraf": "Ubah dokumen"
   },
   "poRekap": {
     "judul": "Unduh hasil rekap",
@@ -3875,5 +3886,75 @@
     "cari": "Cari nomor PO, nama pemasok, atau proyek",
     "kosong": "Tidak ada purchase order yang cocok.",
     "draf": "DRAF"
+  },
+  "projectMargin": {
+    "judul": "Margin proyek",
+    "sub": "Margin atas pekerjaan yang sudah ditagihkan",
+    "kontrak": "Kontrak",
+    "biaya": "Biaya",
+    "margin": "Margin",
+    "selesai": "SELESAI",
+    "tanpaKontrak": "Belum ada tagihan",
+    "kosong": "Belum ada proyek.",
+    "gagal": "Gagal memuat ikhtisar margin.",
+    "judulHalaman": "Laporan Proyek",
+    "subHalaman": "Margin atas yang sudah ditagihkan; pilih satu untuk rinciannya",
+    "cari": "Cari kode atau nama proyek",
+    "proyek": "Proyek",
+    "sertakanSelesai": "Termasuk yang selesai",
+    "totalTampil": "Total yang ditampilkan",
+    "tertagih": "Tertagih",
+    "belumTertagih": "Belum tertagih",
+    "sertakanInternal": "Termasuk pembelian internal",
+    "internalHint": "Pembelian dari perusahaan dalam grup. Dimatikan bila ingin melihat uang yang benar-benar keluar dari grup."
+  },
+  "employeeView": {
+    "menu": "Lihat data lengkap",
+    "tabPokok": "Data pokok",
+    "tabProfil": "Profil pribadi",
+    "tabRiwayat": "Riwayat pembaruan",
+    "salin": "Salin",
+    "salinBagian": "Salin bagian",
+    "tersalin": "Tersalin",
+    "bagianTersalin": "Satu bagian tersalin",
+    "profilKosong": "Profil pribadi belum diisi.",
+    "riwayatKosong": "Belum ada pembaruan data.",
+    "dataPokok": "Data pokok",
+    "identitas": "Identitas",
+    "keluarga": "Orang tua",
+    "bank": "Rekening",
+    "jaminan": "Jaminan & izin",
+    "anggotaKeluarga": "Anggota keluarga",
+    "pendidikan": "Pendidikan formal",
+    "nama": "Nama",
+    "nik": "NIK",
+    "jabatan": "Jabatan",
+    "departemen": "Departemen",
+    "kategoriPajak": "Kategori pajak",
+    "mulai": "Tanggal masuk",
+    "selesai": "Tanggal keluar",
+    "email": "Email",
+    "telepon": "Telepon",
+    "alamat": "Alamat",
+    "tempatLahir": "Tempat lahir",
+    "jenisKelamin": "Jenis kelamin",
+    "golonganDarah": "Golongan darah",
+    "agama": "Agama",
+    "statusNikah": "Status pernikahan",
+    "kewarganegaraan": "Kewarganegaraan",
+    "suku": "Suku",
+    "alamatKtp": "Alamat KTP",
+    "namaIbu": "Nama ibu",
+    "namaAyah": "Nama ayah",
+    "namaBank": "Nama bank",
+    "atasNama": "Atas nama",
+    "nomorRekening": "Nomor rekening",
+    "bpjsKesehatan": "BPJS Kesehatan",
+    "bpjsKetenagakerjaan": "BPJS Ketenagakerjaan",
+    "sim": "SIM",
+    "daruratJudul": "Kontak darurat",
+    "daruratDiperbarui": "Diperbarui",
+    "salinRingkas": "Salin untuk pesan",
+    "ringkasTersalin": "Ringkasan tersalin, siap ditempel"
   }
 }

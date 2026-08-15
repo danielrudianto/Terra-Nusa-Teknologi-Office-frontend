@@ -21,6 +21,7 @@ import { EmployeeStatusComponent } from '../employee-status/employee-status.comp
 import { EmployeeProfileComponent } from '../employee-profile/employee-profile.component';
 import { EmployeeFormComponent } from '../employee-form/employee-form.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { EmployeeViewComponent } from '../employee-view/employee-view.component';
 
 @Component({
   selector: 'app-employee-list',
@@ -122,6 +123,21 @@ export class EmployeeListComponent {
       .add(() => {
         this.isLoading = false;
       });
+  }
+
+  /**
+   * Lihat data lengkap karyawan, hanya untuk dibaca.
+   *
+   * Menyatukan data pokok, profil pribadi, dan riwayat pembaruan dalam satu
+   * dialog bertab — sebelumnya ketiganya hanya dapat dibuka satu per satu,
+   * dan dua di antaranya lewat formulir penyuntingan.
+   */
+  openView(row: any) {
+    this.dialog.open(EmployeeViewComponent, {
+      data: { employee: row },
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
   }
 
   openProfile(row: any) {

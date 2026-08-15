@@ -6,10 +6,23 @@
     (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
-    [title]="'poForm.titleH' | translate"
+    [title]="judulLayar"
     [description]="'poForm.descH' | translate"
   />
 
+
+    <!--
+      Ditegaskan di muka: mengubah TIDAK menyetujui.
+      -->
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
+      </div>
+    }
   <!-- ===== STEP 0: pilih jenis subkontraktor ===== -->
   @if (!subType) {
     <div class="poh-card poh-choose">
@@ -1306,7 +1319,7 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
+              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
             </button>
           </div>
         }
@@ -1357,7 +1370,7 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
+              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
             </button>
           </div>
         </div>

@@ -468,3 +468,16 @@
     width: 100%;
   }
 }
+
+/* Penanda revisi; dibedakan agar tidak terbaca sebagai penanda pajak. */
+.pov-tanda--rev {
+  background: var(--warn-soft, #fdf4e3) !important;
+  color: var(--warn-fg, #8a5a06) !important;
+  border-color: var(--warn-border, #f0dcb4) !important;
+}
+
+/* Mobilisasi pada baris; diredupkan karena ia rincian, bukan judul. */
+.pov-item__mob {
+  color: var(--muted, #8a90a0);
+  font-style: italic;
+}

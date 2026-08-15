@@ -373,7 +373,10 @@
     "memuatLaporan": "Memuat laporan…",
     "belumAdaDataUntukProyek": "Belum ada data untuk proyek ini.",
     "supplierAddress": "Supplier address",
-    "otherValue": "Other value"
+    "otherValue": "Other value",
+    "selaraskanLunas": "Resync paid status",
+    "lunasDiselaraskan": "Paid status recalculated.",
+    "lunasGagal": "Failed to resync the paid status."
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -511,7 +514,10 @@
     "kenaPpn": "VAT",
     "nonPpn": "No VAT",
     "jenisBarang": "Goods",
-    "jenisJasa": "Services"
+    "jenisJasa": "Services",
+    "revisi": "Rev.",
+    "revisiKet": "This document has been edited since it was created. The number increases with each save.",
+    "viewMobilisasi": "mobilisation & demobilisation"
   },
   "income": {
     "title": "Other income",
@@ -1892,7 +1898,11 @@
     "changeTypeConfirm": "Yes, change type",
     "adendumGagalMuat": "The parent document could not be loaded. The fields below are empty.",
     "adendumBanner": "Addendum to document",
-    "extraPointTitle": "Extra points continue the numbering"
+    "extraPointTitle": "Extra points continue the numbering",
+    "judulUbah": "Edit Purchase Order",
+    "submitUbah": "Save changes",
+    "ubahJudulBanner": "Saving changes, not approving",
+    "ubahKeteranganBanner": "The document stays in Draft and still needs approval as usual. Its revision number increases each time it is saved."
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -3854,7 +3864,8 @@
   },
   "poView": {
     "buatAdendum": "Create addendum",
-    "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created."
+    "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created.",
+    "ubahDraf": "Edit document"
   },
   "poRekap": {
     "judul": "Download recap",
@@ -3875,5 +3886,75 @@
     "cari": "Search by PO number, supplier name, or project",
     "kosong": "No matching purchase order.",
     "draf": "DRAFT"
+  },
+  "projectMargin": {
+    "judul": "Project margin",
+    "sub": "Margin on work already invoiced",
+    "kontrak": "Contract",
+    "biaya": "Cost",
+    "margin": "Margin",
+    "selesai": "CLOSED",
+    "tanpaKontrak": "Nothing billed yet",
+    "kosong": "No projects yet.",
+    "gagal": "Failed to load the margin overview.",
+    "judulHalaman": "Project Reports",
+    "subHalaman": "Margin on invoiced work; pick one for its detail",
+    "cari": "Search by project code or name",
+    "proyek": "Project",
+    "sertakanSelesai": "Include closed",
+    "totalTampil": "Total shown",
+    "tertagih": "Billed",
+    "belumTertagih": "Unbilled",
+    "sertakanInternal": "Include internal purchases",
+    "internalHint": "Purchases from companies within the group. Turn off to see only money leaving the group."
+  },
+  "employeeView": {
+    "menu": "View full record",
+    "tabPokok": "Core data",
+    "tabProfil": "Personal profile",
+    "tabRiwayat": "Update history",
+    "salin": "Copy",
+    "salinBagian": "Copy section",
+    "tersalin": "Copied",
+    "bagianTersalin": "Section copied",
+    "profilKosong": "Personal profile not filled in yet.",
+    "riwayatKosong": "No data updates yet.",
+    "dataPokok": "Core data",
+    "identitas": "Identity",
+    "keluarga": "Parents",
+    "bank": "Bank account",
+    "jaminan": "Insurance & licences",
+    "anggotaKeluarga": "Family members",
+    "pendidikan": "Formal education",
+    "nama": "Name",
+    "nik": "ID number",
+    "jabatan": "Position",
+    "departemen": "Department",
+    "kategoriPajak": "Tax category",
+    "mulai": "Start date",
+    "selesai": "End date",
+    "email": "Email",
+    "telepon": "Phone",
+    "alamat": "Address",
+    "tempatLahir": "Place of birth",
+    "jenisKelamin": "Gender",
+    "golonganDarah": "Blood type",
+    "agama": "Religion",
+    "statusNikah": "Marital status",
+    "kewarganegaraan": "Citizenship",
+    "suku": "Ethnicity",
+    "alamatKtp": "ID card address",
+    "namaIbu": "Mother's name",
+    "namaAyah": "Father's name",
+    "namaBank": "Bank name",
+    "atasNama": "Account name",
+    "nomorRekening": "Account number",
+    "bpjsKesehatan": "Health insurance",
+    "bpjsKetenagakerjaan": "Employment insurance",
+    "sim": "Driving licence",
+    "daruratJudul": "Emergency contact",
+    "daruratDiperbarui": "Updated",
+    "salinRingkas": "Copy for messaging",
+    "ringkasTersalin": "Summary copied, ready to paste"
   }
 }

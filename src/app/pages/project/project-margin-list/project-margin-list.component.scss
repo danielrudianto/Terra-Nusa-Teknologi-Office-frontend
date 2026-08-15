@@ -1,0 +1,215 @@
+.pml {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.pml-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.pml-head__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pml-title {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+.pml-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+/*
+ * Muat ulang tidak lagi mendorong dirinya sendiri ke kanan.
+ *
+ * Yang mendorong seluruh kelompok penyaring adalah `--awal` di bawah;
+ * membiarkan keduanya memakai `margin-left: auto` membuat tombol ini
+ * terpisah sendirian di ujung, jauh dari penyaring yang seharusnya
+ * menyertainya.
+ */
+.pml-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+}
+.pml-refresh:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+
+.pml-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.pml-search {
+  width: 100%;
+  max-width: 380px;
+}
+.pml-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 40px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pml-toggle.on {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+.pml-toggle .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.pml-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  font-size: 0.88rem;
+  color: var(--muted, #6b7280);
+}
+.pml-state--kosong {
+  font-style: italic;
+}
+
+.pml-tabel {
+  overflow-x: auto;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+}
+.pml-tabel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Montserrat", sans-serif;
+}
+.pml-tabel th,
+.pml-tabel td {
+  padding: 0.7rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line, #f1f3f7);
+}
+
+.pml-th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.pml-th .mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  vertical-align: middle;
+  color: var(--brand, #154dec);
+}
+/* Panah pucat saat kolomnya bukan yang sedang diurut. */
+.pml-th__idle {
+  color: var(--faint, #cfd4dc) !important;
+}
+.pml-th--num {
+  text-align: right;
+}
+
+.pml-row {
+  cursor: pointer;
+}
+.pml-row:hover {
+  background: var(--hover, #f6f8ff);
+}
+.pml-kode {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+}
+.pml-tag {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--border, #e3e6eb);
+  color: var(--muted, #6b7280);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.pml-nama {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+
+.pml-num {
+  text-align: right;
+  font-size: 0.84rem;
+  color: var(--ink, #16181d);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pml-persen {
+  font-weight: 700;
+}
+.pml-rugi {
+  color: var(--danger-fg, #c0392b);
+}
+
+/* Nilai kontrak belum diisi; bukan margin nol, melainkan belum diketahui. */
+.pml-kosong {
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--muted, #8a90a0);
+  text-align: center;
+}
+
+.pml-total td {
+  border-bottom: none;
+  border-top: 1px solid var(--border, #e3e6eb);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  background: var(--surface-2, #f9fafc);
+}
+
+/*
+ * Belum tertagih; diredupkan karena ini KONTEKS, bukan penilaian.
+ *
+ * Angkanya besar pada proyek yang baru mulai — itu wajar. Yang perlu
+ * diperhatikan adalah angka besar pada proyek yang hampir selesai, dan itu
+ * dinilai orang, bukan warna.
+ */
+.pml-belum {
+  color: var(--muted, #6b7280);
+}
+
+/* Yang pertama pada kelompok penyaring; mendorong sisanya ke kanan. */
+.pml-toggle--awal {
+  margin-left: auto;
+}

@@ -222,6 +222,58 @@ export class PurchaseOrderViewComponent {
     });
   }
 
+  /**
+   * Dokumen ini masih draf dan karena itu dapat diubah.
+   *
+   * Cap DRAFT pada cetakannya sudah menyatakan bahwa ia belum mengikat;
+   * membetulkannya bukan pemalsuan melainkan gunanya tahap draf.
+   */
+  /**
+   * Nomor revisi dokumen ini.
+   *
+   * Ditampilkan hanya bila lebih dari nol. Angka nol pada dokumen yang
+   * memang belum pernah diubah bukan keterangan — ia hanya menambah satu
+   * hal untuk dibaca pada kepala yang sudah padat.
+   */
+  get revisi(): number {
+    const n = Number((this.data as any)?.revision);
+    return isNaN(n) ? 0 : n;
+  }
+
+  get bolehUbah(): boolean {
+    if (this.isPratinjau) return false;
+    const d: any = this.data ?? {};
+    const disetujui =
+      !!d.isApproved || String(d.status ?? '').toLowerCase() === 'approved';
+    return !disetujui;
+  }
+
+  /**
+   * Buka formulir untuk MENGUBAH dokumen ini.
+   *
+   * Memakai layar pembuatan yang sama, bukan layar tersendiri: bentuk
+   * formulirnya identik, dan layar kedua berarti setiap perubahan bentuk
+   * harus dikerjakan dua kali — lalu salah satunya tertinggal.
+   *
+   * Server tetap menolak bila dokumennya ternyata sudah disetujui; tombol
+   * yang disembunyikan bukan penjagaan.
+   */
+  bukaUbah(): void {
+    const segment = ADENDUM_ROUTES[this.data?.purchaseType];
+    if (!segment) {
+      this.snackBar.open(
+        this.translate.instant('poView.adendumJenisBelumAda'),
+        this.translate.instant('common.close'),
+        { duration: 4000 },
+      );
+      return;
+    }
+    this.dialogRef.close();
+    this.router.navigate(['/Purchase-order', 'Create', segment], {
+      queryParams: { ubah: this.data.id },
+    });
+  }
+
   get isPratinjau(): boolean {
     return !!this.input?.data;
   }
@@ -283,11 +335,22 @@ export class PurchaseOrderViewComponent {
     return this.data?.items || [];
   }
 
-  /** Nama barang bisa datang dari katalog barang, alat sewa, atau diketik. */
+  /**
+   * Nama barang bisa datang dari katalog barang, alat sewa, atau diketik.
+   *
+   * `name` ikut dibaca karena baris hasil PEMEKARAN mobilisasi memakai
+   * bidang itu — baris tersebut disusun di layar, bukan diambil dari basis
+   * data, sehingga tidak punya `item_description` maupun `equipment_name`.
+   *
+   * Tanpa ini, mobilisasi dan demobilisasi tampil sebagai tanda hubung pada
+   * pratinjau, dan yang memeriksa dokumen tidak dapat memastikan keduanya
+   * benar sebelum menandatangani.
+   */
   itemName(item: any): string {
     return (
       item?.item_description ||
       item?.equipment_name ||
+      item?.name ||
       item?.task ||
       item?.sku ||
       '—'
@@ -312,12 +375,49 @@ export class PurchaseOrderViewComponent {
     return isNaN(n) ? null : n;
   }
 
+  /**
+   * Mobilisasi dan demobilisasi, yang menumpang pada kolom keterangan.
+   *
+   * `purchase_order_items` tidak punya kolom tersendiri untuk keduanya,
+   * sehingga PO-B menyimpannya di `remarks_4` dan `remarks_5`. Keduanya
+   * nilai NYATA yang ditagihkan — pada `009-SPK-NVTM-B` jumlahnya
+   * Rp 3.500.000 dari total Rp 11.000.000.
+   */
+  mobilisasiBaris(item: any): number {
+    return this.mobilisasi(item);
+  }
+
+  private mobilisasi(item: any): number {
+    /*
+     * HANYA pada dokumen sewa alat (tipe B).
+     *
+     * `remarks_4` dipakai berbeda-beda antar jenis: pada PO-B ia nilai
+     * mobilisasi, sedangkan pada PO-A ia nama supir atau nomor resi.
+     * Menjumlahkannya tanpa memeriksa jenisnya membuat `Number("Budi")`
+     * bernilai NaN — atau, lebih buruk, nomor resi berangka ikut tertambah
+     * ke dalam nilai dokumen.
+     */
+    if (String(this.data?.purchaseType || '').toUpperCase() !== 'B') return 0;
+    return (Number(item?.remarks_4) || 0) + (Number(item?.remarks_5) || 0);
+  }
+
   lineTotal(item: any): number {
     // Pada dokumen borongan, seluruh nilainya melekat pada satu-satunya
     // baris — bukan dibagi rata, karena memang tidak ada rinciannya.
     const b = this.borongan;
     if (b !== null && this.items.length === 1) return b;
-    return (Number(item?.quantity) || 0) * (Number(item?.price) || 0);
+
+    /*
+     * Mobilisasi IKUT dihitung.
+     *
+     * Tanpa itu dialog menampilkan Rp 7.500.000 untuk dokumen yang `dpp`-nya
+     * tersimpan Rp 11.000.000 — dan yang membacanya menyangka salah satunya
+     * rusak, padahal yang salah hanya penjumlahan di layar ini.
+     */
+    return (
+      (Number(item?.quantity) || 0) * (Number(item?.price) || 0) +
+      this.mobilisasi(item)
+    );
   }
 
   get subTotal(): number {

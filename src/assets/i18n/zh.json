@@ -373,7 +373,10 @@
     "memuatLaporan": "Memuat laporan…",
     "belumAdaDataUntukProyek": "Belum ada data untuk proyek ini.",
     "supplierAddress": "Supplier address",
-    "otherValue": "Other value"
+    "otherValue": "Other value",
+    "selaraskanLunas": "同步付款状态",
+    "lunasDiselaraskan": "付款状态已重新计算。",
+    "lunasGagal": "同步付款状态失败。"
   },
   "purchaseDraft": {
     "title": "采购草稿",
@@ -511,7 +514,10 @@
     "kenaPpn": "含增值税",
     "nonPpn": "不含增值税",
     "jenisBarang": "货物",
-    "jenisJasa": "服务"
+    "jenisJasa": "服务",
+    "revisi": "版本",
+    "revisiKet": "此文件创建后曾被修改。每次保存后编号递增。",
+    "viewMobilisasi": "进场与退场"
   },
   "income": {
     "title": "其他收入",
@@ -1892,7 +1898,11 @@
     "changeTypeConfirm": "确认更换类型",
     "adendumGagalMuat": "无法载入原始单据，下方各项为空。",
     "adendumBanner": "针对以下单据的补充协议",
-    "extraPointTitle": "附加条款延续编号"
+    "extraPointTitle": "附加条款延续编号",
+    "judulUbah": "修改采购订单",
+    "submitUbah": "保存修改",
+    "ubahJudulBanner": "保存修改，并非批准",
+    "ubahKeteranganBanner": "文件仍为草稿状态，仍需照常批准。每次保存后版本号递增。"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -3854,7 +3864,8 @@
   },
   "poView": {
     "buatAdendum": "创建补充协议",
-    "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。"
+    "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。",
+    "ubahDraf": "修改文件"
   },
   "poRekap": {
     "judul": "下载汇总",
@@ -3875,5 +3886,75 @@
     "cari": "按采购订单编号、供应商名称或项目搜索",
     "kosong": "没有匹配的采购订单。",
     "draf": "草稿"
+  },
+  "projectMargin": {
+    "judul": "项目毛利",
+    "sub": "已开票工作的毛利",
+    "kontrak": "合同",
+    "biaya": "成本",
+    "margin": "毛利",
+    "selesai": "已结束",
+    "tanpaKontrak": "尚未开票",
+    "kosong": "暂无项目。",
+    "gagal": "加载毛利概览失败。",
+    "judulHalaman": "项目报告",
+    "subHalaman": "已开票工作的毛利；选择其一查看明细",
+    "cari": "按项目编号或名称搜索",
+    "proyek": "项目",
+    "sertakanSelesai": "含已结束",
+    "totalTampil": "显示合计",
+    "tertagih": "已开票",
+    "belumTertagih": "未开票",
+    "sertakanInternal": "含集团内部采购",
+    "internalHint": "向集团内公司的采购。关闭后仅显示实际流出集团的资金。"
+  },
+  "employeeView": {
+    "menu": "查看完整资料",
+    "tabPokok": "基本资料",
+    "tabProfil": "个人档案",
+    "tabRiwayat": "更新记录",
+    "salin": "复制",
+    "salinBagian": "复制本节",
+    "tersalin": "已复制",
+    "bagianTersalin": "本节已复制",
+    "profilKosong": "个人档案尚未填写。",
+    "riwayatKosong": "暂无资料更新。",
+    "dataPokok": "基本资料",
+    "identitas": "身份",
+    "keluarga": "父母",
+    "bank": "银行账户",
+    "jaminan": "保险与证照",
+    "anggotaKeluarga": "家庭成员",
+    "pendidikan": "正规教育",
+    "nama": "姓名",
+    "nik": "身份证号",
+    "jabatan": "职位",
+    "departemen": "部门",
+    "kategoriPajak": "税务类别",
+    "mulai": "入职日期",
+    "selesai": "离职日期",
+    "email": "电子邮件",
+    "telepon": "电话",
+    "alamat": "地址",
+    "tempatLahir": "出生地",
+    "jenisKelamin": "性别",
+    "golonganDarah": "血型",
+    "agama": "宗教",
+    "statusNikah": "婚姻状况",
+    "kewarganegaraan": "国籍",
+    "suku": "民族",
+    "alamatKtp": "身份证地址",
+    "namaIbu": "母亲姓名",
+    "namaAyah": "父亲姓名",
+    "namaBank": "银行名称",
+    "atasNama": "账户名",
+    "nomorRekening": "账号",
+    "bpjsKesehatan": "健康保险",
+    "bpjsKetenagakerjaan": "就业保险",
+    "sim": "驾驶证",
+    "daruratJudul": "紧急联系人",
+    "daruratDiperbarui": "更新于",
+    "salinRingkas": "复制以便发送",
+    "ringkasTersalin": "摘要已复制，可直接粘贴"
   }
 }

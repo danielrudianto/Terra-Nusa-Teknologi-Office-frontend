@@ -199,7 +199,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-h/purchase-order-create-h.component').then(
                 (m) => m.PurchaseOrderCreateHComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/511',
@@ -215,7 +215,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-512/purchase-order-create-512.component').then(
                 (m) => m.PurchaseOrderCreate512Component,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/516',
@@ -231,7 +231,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-5112/purchase-order-create-5112.component').then(
                 (m) => m.PurchaseOrderCreate5112Component,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/631',
@@ -239,7 +239,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
                 (m) => m.PurchaseOrderCreate63Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.3.1' },
+            data: { title: 'Purchase order', purchaseType: '6.3.1', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/632',
@@ -247,7 +247,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-63/purchase-order-create-63.component').then(
                 (m) => m.PurchaseOrderCreate63Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.3.2' },
+            data: { title: 'Purchase order', purchaseType: '6.3.2', panduan: 'purchase-order', panduanBagian: 'tipe-632-merchandise-promosi' },
           },
           {
             path: 'Create/642',
@@ -255,7 +255,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-642/purchase-order-create-642.component').then(
                 (m) => m.PurchaseOrderCreate642Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.4.2' },
+            data: { title: 'Purchase order', purchaseType: '6.4.2', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/652',
@@ -263,7 +263,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-652/purchase-order-create-652.component').then(
                 (m) => m.PurchaseOrderCreate652Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.5.2' },
+            data: { title: 'Purchase order', purchaseType: '6.5.2', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/651',
@@ -271,7 +271,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-651/purchase-order-create-651.component').then(
                 (m) => m.PurchaseOrderCreate651Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.5.1' },
+            data: { title: 'Purchase order', purchaseType: '6.5.1', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/641',
@@ -279,7 +279,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-641/purchase-order-create-641.component').then(
                 (m) => m.PurchaseOrderCreate641Component,
               ),
-            data: { title: 'Purchase order', purchaseType: '6.4.1' },
+            data: { title: 'Purchase order', purchaseType: '6.4.1', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/A',
@@ -287,7 +287,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-a/purchase-order-create-a.component').then(
                 (m) => m.PurchaseOrderCreateAComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'tipe-a-jasa-pengiriman' },
           },
           {
             path: 'Create/B',
@@ -295,7 +295,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-b/purchase-order-create-b.component').then(
                 (m) => m.PurchaseOrderCreateBComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'bagian-yang-sama-di-semua-jenis' },
           },
           {
             path: 'Create/C',
@@ -311,7 +311,7 @@ export const routes: Routes = [
               import('./pages/purchase-order/purchase-order-create/purchase-order-create-d/purchase-order-create-d.component').then(
                 (m) => m.PurchaseOrderCreateDComponent,
               ),
-            data: { title: 'Purchase order' },
+            data: { title: 'Purchase order', panduan: 'purchase-order', panduanBagian: 'tipe-d-tenaga-kerja' },
           },
           {
             path: 'Create/F',
@@ -704,12 +704,21 @@ export const routes: Routes = [
             data: { title: 'Project' },
           },
           {
+            /*
+             * Tanpa kode proyek: DAFTAR proyek beserta marginnya.
+             *
+             * Margin adalah pertanyaan, bukan jawaban — yang melihat sebuah
+             * proyek rugi ingin tahu sebabnya, dan itu ada pada laporan
+             * rincinya. Menjadikan daftar ini pintu masuknya membuat
+             * keduanya satu jalur, bukan dua halaman yang harus dicari
+             * bergantian.
+             */
             path: 'Report',
             loadComponent: () =>
               import(
-                './pages/project/project-report/project-report.component'
-              ).then((m) => m.ProjectReportComponent),
-            data: { title: 'Project' },
+                './pages/project/project-margin-list/project-margin-list.component'
+              ).then((m) => m.ProjectMarginListComponent),
+            data: { title: 'Project', panduan: 'proyek' },
           },
           {
             path: 'Report/:code',

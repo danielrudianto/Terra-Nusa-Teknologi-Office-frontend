@@ -140,6 +140,24 @@
               <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
+              <!--
+                Lihat data lengkap tanpa membuka formulir penyuntingan.
+
+                Formulir yang dibuka hanya untuk dibaca kerap tersimpan tanpa
+                sengaja; layar ini tidak dapat mengubah apa pun.
+
+              -->
+
+              <button
+                mat-menu-item
+                *appCan="'employees:read'"
+                (click)="openView(element)"
+
+              >
+                <mat-icon>visibility</mat-icon
+                ><span>{{ "employeeView.menu" | translate }}</span>
+
+              </button>
               <button
                 mat-menu-item
                 *appCan="'employees:update'"
@@ -220,7 +238,7 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedColumns"
-          (click)="openUpdateEmployee(row.id)"
+          (click)="openView(row)"
         ></tr>
         <tr class="mat-row el-norow" *matNoDataRow>
           <td class="mat-cell" [attr.colspan]="displayedColumns.length">

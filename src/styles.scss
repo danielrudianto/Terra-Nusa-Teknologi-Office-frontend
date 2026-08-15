@@ -518,3 +518,46 @@ html[data-density="compact"] {
   background: var(--line, #eef0f4);
   margin: 1.5rem 0 1.25rem;
 }
+
+
+/*
+ * Banner mode UBAH pada formulir purchase order.
+ *
+ * Ditaruh di gaya global, bukan disalin ke enam belas berkas: bentuknya
+ * sama di semuanya, dan menyalinnya berarti perubahan berikutnya harus
+ * dikerjakan enam belas kali — lalu satu tertinggal.
+ */
+.pou-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-soft, #fdf4e3);
+  border: 0.5px solid var(--warn-border, #f0dcb4);
+  color: var(--warn-fg, #8a5a06);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  strong {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  span {
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+}

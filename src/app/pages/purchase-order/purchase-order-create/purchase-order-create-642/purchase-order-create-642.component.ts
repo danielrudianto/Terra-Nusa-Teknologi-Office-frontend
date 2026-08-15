@@ -686,8 +686,20 @@ export class PurchaseOrderCreate642Component {
   /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
   private terbitkan() {
     this.isSubmitting = true;
+    /*
+     * Mode UBAH menimpa dokumennya, bukan menerbitkan yang baru.
+     *
+     * Server menolak bila dokumennya sudah disetujui, dan mengabaikan kolom
+     * yang menentukan identitasnya — nomor, pemasok, proyek, jenis. Layar
+     * ini tidak perlu menjaganya lagi; yang dijaga di sini hanya agar
+     * permintaannya menuju jalur yang benar.
+     */
+    const ubahId = this.adendum.ubahId;
     this.apiService
-      .post('purchase-orders', this.formatData())
+      [ubahId ? 'put' : 'post'](
+        ubahId ? `purchase-orders/${ubahId}` : 'purchase-orders',
+        this.formatData(),
+      )
       .subscribe({
         next: (res: any) => {
           this.snackBar.open(
@@ -734,6 +746,30 @@ export class PurchaseOrderCreate642Component {
   /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
   get isAdendum(): boolean {
     return this.adendum.isAdendum;
+  }
+
+  /**
+   * True bila layar ini MENGUBAH dokumen yang belum disetujui.
+   *
+   * Berbeda dari adendum walaupun keduanya memuat dokumen lama: adendum
+   * menerbitkan dokumen baru berisi selisih, ubah menimpa dokumen yang
+   * belum pernah terbit.
+   */
+  get isUbah(): boolean {
+    return this.adendum.isUbah;
+  }
+
+  /**
+   * Judul layar: membuat atau mengubah.
+   *
+   * Layar yang sama dipakai untuk keduanya — bentuk formulirnya identik, dan
+   * layar kedua berarti setiap perubahan bentuk harus dikerjakan dua kali.
+   * Yang membedakan hanya judulnya, banner di atas, dan tombolnya.
+   */
+  get judulLayar(): string {
+    return this.translateSvc.instant(
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+    );
   }
 
   /** Dokumen induk yang diadendum; null bila dokumen baru. */

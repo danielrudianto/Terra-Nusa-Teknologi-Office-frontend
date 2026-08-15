@@ -10,6 +10,8 @@ goods arrive and the invoice is issued, the bill is recorded through the
 > 5.1.6, and 6.3.2**. The other types are still being developed and are
 > deliberately undocumented so the guide doesn't mislead.
 
+<a id="jenis-yang-sudah-tercakup"></a>
+
 ## Types covered here
 
 The first five use the same form; what differs is only the extra fields at
@@ -30,6 +32,8 @@ sections.
 Because G, 5.1.1, and 5.1.6 have identical forms, what decides the choice is
 the **cost account**, not the look of the form. Site supporting goods go under
 G, assets recorded as property under 5.1.1, and office needs under 5.1.6.
+
+<a id="bagian-yang-sama-di-semua-jenis"></a>
 
 ## Sections common to every type
 
@@ -89,6 +93,8 @@ delivery mode, terms, and PO type. There's no need to retype them.
 The **Additional points** section is only for special agreements outside the
 standard terms. Leave it empty if there are none.
 
+<a id="khusus-c-bahan-bakar"></a>
+
 ## Type C — Fuel
 
 Two extra fields in the value section:
@@ -102,6 +108,8 @@ throws the total far off.
 There is also a **Require Fuel Analysis Report & Calibration Certificate**
 tick. When ticked, two extra clauses print on the document. Untick it only if
 it has genuinely been agreed as unnecessary.
+
+<a id="khusus-f-material"></a>
 
 ## Type F — Materials
 
@@ -131,6 +139,8 @@ issued.
 
 There are also two optional dates: **deliver before** and **pay before**. Leave
 them empty if no firm date was agreed.
+
+<a id="tipe-a-jasa-pengiriman"></a>
 
 ## Type A — Delivery services
 
@@ -168,6 +178,8 @@ turn it off merely because the policy hasn't arrived when the PO is made.
 
 **Delivery risk** and **unloading risk** are agreed up front. Once the PO is
 issued, both are hard to renegotiate precisely when they're needed.
+
+<a id="tipe-d-tenaga-kerja"></a>
 
 ## Type D — Manpower
 
@@ -212,6 +224,8 @@ Those switched off are **still printed, struck through** rather than removed.
 That's deliberate: a reader can see the point was deliberately not used, not
 merely forgotten.
 
+<a id="tipe-632-merchandise-promosi"></a>
+
 ## Type 6.3.2 — Promotional merchandise
 
 For procuring promotional goods — shirts, tumblers, umbrellas, and the like.
@@ -242,6 +256,8 @@ unenforceable.
 Because merchandise is goods, the Franco/Loco clause, address, and both
 parties' contacts apply — the same as any other goods procurement.
 
+<a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
+
 ## Checking the document before issuing
 
 Two buttons below the form, and both show the same document.
@@ -259,6 +275,8 @@ contents cannot be changed — the only fix is to cancel and reissue, and a copy
 already sent to the supplier can't be pulled back. Reading one screen before
 clicking is far cheaper than cancelling afterwards.
 
+<a id="salah-pilih-jenis-po"></a>
+
 ## Picking the wrong PO type
 
 The **Change type** button at the top reopens the type picker, without needing
@@ -266,6 +284,8 @@ the browser's back button.
 
 If anything has already been typed, a confirmation appears first — changing
 type means changing form, and existing entries aren't carried over.
+
+<a id="kode-proyek-pada-tipe-g"></a>
 
 ## Project code on type G
 
@@ -275,8 +295,96 @@ picker. Office costs not tied to a project are recorded under a different type.
 Older documents that already carry the PUSAT code still read correctly when
 opened — only the suggestions are filtered, not the data.
 
+<a id="setelah-po-terbit"></a>
+
 ## After the PO is issued
 
 The issued PO number is used when recording its bill in the **Purchases** menu.
 The format must match exactly, because Purchases validates the pattern and
 fills in the project and cost type from the number's segments.
+
+<a id="cap-draft-pada-dokumen-yang-belum-disetujui"></a>
+
+## The DRAFT watermark
+
+A purchase order that has not been approved can still be printed — and needs to
+be, for checking before signature. Its pages carry a slanted **DRAFT**
+watermark behind the content.
+
+Without it, a draft sheet and an approved one are indistinguishable once they
+leave the printer: identical in shape, signature block included. A single draft
+reaching a vendor is enough to be treated as binding.
+
+The watermark disappears on its own once the document is approved. Nothing
+needs to be set.
+
+<a id="adendum"></a>
+
+## Addenda
+
+A change to an approved purchase order is issued as an **addendum**, not by
+editing the original.
+
+The reason is simple: the original has already been signed by the vendor.
+Changing its contents means the sheet the vendor holds no longer matches what
+the system stores.
+
+The **Create addendum** button appears in the purchase order view dialog, and
+only on approved documents.
+
+### What is locked
+
+Supplier, project, and material type **cannot be changed**. All three determine
+the document's shape and number; changing them makes it an entirely different
+document, not an addendum.
+
+Locked fields are shown disabled rather than hidden — so it is visible that
+their values are inherited from the parent.
+
+### Volume is the DIFFERENCE
+
+The volume column is cleared, and its heading reads **Volume Added / Reduced**.
+
+What goes in is the change, not the resulting volume. Adding 5 m³ is written
+`5`, not the total after the addition. Reductions are written negative and may
+not exceed the unused remainder.
+
+### Numbering
+
+An addendum uses its parent's number with an insert: `013-PO-BPBP-F` becomes
+`013-ADD1-PO-BPBP-F`. The sequence is computed by the server, not typed.
+
+### Printing an addendum
+
+An addendum always prints **together with its parent and any earlier addenda**
+in one file. An addendum holds a difference; read alone, it does not state the
+state of the work.
+
+Addenda issued **afterwards** are not included — a sheet already signed does
+not change its contents.
+
+<a id="unduh-hasil-rekap"></a>
+
+## Download the recap
+
+The **Download recap** button at the top right of the list produces a recap of
+every purchase order in a project. The project is chosen inside the dialog, not
+taken from whatever filter is active on screen.
+
+Two formats are available, and they are **not copies of one another**:
+
+| | Contents | For |
+|---|---|---|
+| **Excel** | Overview, per-item detail, per-document | Filtering, summing, processing |
+| **PDF** | Overview and per-document | Reading and sending |
+
+The PDF deliberately omits per-item detail: hundreds of item rows become pages
+that help nobody read them.
+
+The recap covers **every** document in that project, drafts included. Status is
+marked on each row, and a draft is neither approved nor binding.
+
+Equipment mobilisation and demobilisation appear as their own rows, exactly as
+on the signed document. The row sum therefore matches the document value
+exactly — should they ever differ, the **Check** column on the Per Document
+sheet will flag it.

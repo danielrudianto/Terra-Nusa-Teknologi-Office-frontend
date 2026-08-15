@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
@@ -81,7 +81,7 @@ import { AdendumService } from '../../../../services/adendum.service';
   templateUrl: './purchase-order-create-a.component.html',
   styleUrl: './purchase-order-create-a.component.scss',
 })
-export class PurchaseOrderCreateAComponent {
+export class PurchaseOrderCreateAComponent implements OnInit {
   private readonly translateSvc = inject(TranslateService);
 
 
@@ -120,6 +120,16 @@ export class PurchaseOrderCreateAComponent {
     }
   }
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  ngOnInit(): void {
+    // Bila dibuka sebagai adendum ATAU koreksi, isinya diambil dari dokumen
+    // lamanya.
+    //
+    // Sebelumnya baris ini berada SETELAH `return` pada sebuah getter,
+    // sehingga tidak pernah berjalan sama sekali — adendum terbuka dengan
+    // formulir kosong tanpa satu pun galat.
+    if (this.adendum.memuatDokumenLama) this.muatAdendum();
+  }
+
   get typeCode(): string {
     return 'A';
   }
@@ -167,9 +177,6 @@ export class PurchaseOrderCreateAComponent {
 
   get creditEnabled(): boolean {
     return this.CREDIT_TERMS.includes(this.formGroup.get('paymentTerm')?.value);
-
-    // Bila dibuka sebagai adendum, isinya diambil dari induknya.
-    this.muatAdendum();
   }
 
   get prepaidEnabled(): boolean {
@@ -887,8 +894,20 @@ export class PurchaseOrderCreateAComponent {
   /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
   private terbitkan() {
     this.isSubmitting = true;
+    /*
+     * Mode UBAH menimpa dokumennya, bukan menerbitkan yang baru.
+     *
+     * Server menolak bila dokumennya sudah disetujui, dan mengabaikan kolom
+     * yang menentukan identitasnya — nomor, pemasok, proyek, jenis. Layar
+     * ini tidak perlu menjaganya lagi; yang dijaga di sini hanya agar
+     * permintaannya menuju jalur yang benar.
+     */
+    const ubahId = this.adendum.ubahId;
     this.apiService
-      .post('purchase-orders', this.formatData())
+      [ubahId ? 'put' : 'post'](
+        ubahId ? `purchase-orders/${ubahId}` : 'purchase-orders',
+        this.formatData(),
+      )
       .subscribe({
         next: (res: any) => {
           this.snackBar.open(
@@ -936,6 +955,30 @@ export class PurchaseOrderCreateAComponent {
   /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
   get isAdendum(): boolean {
     return this.adendum.isAdendum;
+  }
+
+  /**
+   * True bila layar ini MENGUBAH dokumen yang belum disetujui.
+   *
+   * Berbeda dari adendum walaupun keduanya memuat dokumen lama: adendum
+   * menerbitkan dokumen baru berisi selisih, ubah menimpa dokumen yang
+   * belum pernah terbit.
+   */
+  get isUbah(): boolean {
+    return this.adendum.isUbah;
+  }
+
+  /**
+   * Judul layar: membuat atau mengubah.
+   *
+   * Layar yang sama dipakai untuk keduanya — bentuk formulirnya identik, dan
+   * layar kedua berarti setiap perubahan bentuk harus dikerjakan dua kali.
+   * Yang membedakan hanya judulnya, banner di atas, dan tombolnya.
+   */
+  get judulLayar(): string {
+    return this.translateSvc.instant(
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+    );
   }
 
   /** Dokumen induk yang diadendum; null bila dokumen baru. */

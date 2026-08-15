@@ -10,6 +10,8 @@ dengan merujuk nomor PO ini.
 > 5.1.1, 5.1.6, dan 6.3.2**. Jenis lain masih dikembangkan dan sengaja belum
 > didokumentasikan supaya panduannya tidak menyesatkan.
 
+<a id="jenis-yang-sudah-tercakup"></a>
+
 ## Jenis yang sudah tercakup
 
 Lima yang pertama memakai formulir yang sama; yang membedakan hanya isian
@@ -31,6 +33,8 @@ Karena G, 5.1.1, dan 5.1.6 formulirnya persis sama, yang menentukan pilihan
 adalah **pos biayanya**, bukan tampilan formulirnya. Barang penunjang di
 lapangan masuk G, aset yang dicatat sebagai harta masuk 5.1.1, dan keperluan
 kantor masuk 5.1.6.
+
+<a id="bagian-yang-sama-di-semua-jenis"></a>
 
 ## Bagian yang sama di semua jenis
 
@@ -90,6 +94,8 @@ termin, dan jenis PO. Tidak perlu diketik ulang.
 Bagian **Poin Tambahan** hanya untuk kesepakatan khusus di luar ketentuan
 baku. Kosongkan kalau tidak ada.
 
+<a id="khusus-c-bahan-bakar"></a>
+
 ## Khusus C — Bahan bakar
 
 Dua isian tambahan di bagian nilai:
@@ -103,6 +109,8 @@ membuat total melenceng jauh.
 Ada juga centang **Wajibkan Fuel Analysis Report & Sertifikat Kalibrasi**.
 Kalau dicentang, dua poin ketentuan tambahan ikut tercetak di dokumen. Lepas
 centangnya hanya kalau memang disepakati tidak diperlukan.
+
+<a id="khusus-f-material"></a>
 
 ## Khusus F — Material
 
@@ -131,6 +139,8 @@ ini di muka, karena setelah PO terbit sulit dinegosiasikan ulang.
 
 Ada juga dua tanggal opsional: **pengiriman sebelum** dan **pembayaran
 sebelum**. Kosongkan kalau tidak disepakati tanggal pastinya.
+
+<a id="tipe-a-jasa-pengiriman"></a>
 
 ## Tipe A — Jasa pengiriman
 
@@ -171,6 +181,8 @@ dimatikan hanya karena polisnya belum diterima saat PO dibuat.
 **Risiko pengiriman** dan **risiko bongkar muat** disepakati di muka. Setelah
 PO terbit, keduanya sulit dinegosiasikan ulang justru ketika sedang
 dibutuhkan.
+
+<a id="tipe-d-tenaga-kerja"></a>
 
 ## Tipe D — Tenaga kerja
 
@@ -216,6 +228,8 @@ Yang dimatikan **tetap tercetak dalam keadaan tercoret**, bukan hilang. Itu
 disengaja: pembaca dokumen dapat melihat poin itu memang sengaja tidak
 dipakai, bukan terlupa dicantumkan.
 
+<a id="tipe-632-merchandise-promosi"></a>
+
 ## Tipe 6.3.2 — Merchandise promosi
 
 Untuk pengadaan barang promosi — kaos, tumbler, payung, dan sejenisnya.
@@ -247,6 +261,8 @@ biasanya justru tidak dapat ditegakkan.
 Karena merchandise berupa barang, klausul Franco/Loco, alamat, dan kontak
 kedua pihak ikut berlaku — sama seperti pada pengadaan barang lainnya.
 
+<a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
+
 ## Memeriksa dokumen sebelum diterbitkan
 
 Dua tombol di bawah formulir, dan keduanya menampilkan dokumen yang sama.
@@ -265,6 +281,8 @@ menerbitkan ulang, dan salinan yang terlanjur dikirim ke pemasok tidak bisa
 ditarik. Membaca satu layar sebelum menekan jauh lebih murah daripada
 membatalkan sesudahnya.
 
+<a id="salah-pilih-jenis-po"></a>
+
 ## Salah pilih jenis PO
 
 Tombol **Ganti jenis** di bagian atas membuka kembali pemilih jenis, tanpa
@@ -272,6 +290,8 @@ perlu menekan tombol kembali peramban.
 
 Bila sudah ada isian yang diketik, muncul konfirmasi lebih dulu — pindah
 jenis berarti pindah formulir, dan isian yang sudah ada tidak terbawa.
+
+<a id="kode-proyek-pada-tipe-g"></a>
 
 ## Kode proyek pada tipe G
 
@@ -282,8 +302,96 @@ jenis lain.
 Dokumen lama yang terlanjur berkode PUSAT tetap terbaca saat dibuka — yang
 disaring hanya sarannya, bukan datanya.
 
+<a id="setelah-po-terbit"></a>
+
 ## Setelah PO terbit
 
 Nomor PO yang terbit dipakai saat mencatat tagihannya di menu **Pembelian**.
 Formatnya harus sama persis, karena Pembelian memvalidasi polanya dan mengisi
 proyek serta tipe biaya dari potongan nomor itu.
+
+<a id="cap-draft-pada-dokumen-yang-belum-disetujui"></a>
+
+## Cap DRAFT pada dokumen yang belum disetujui
+
+Purchase order yang belum disahkan tetap dapat dicetak — dan memang perlu,
+untuk diperiksa sebelum ditandatangani. Lembarnya diberi cap **DRAFT** miring
+di belakang isinya.
+
+Tanpa cap itu, lembar draf dan lembar sah tidak dapat dibedakan begitu keluar
+dari pencetak: bentuknya sama persis, lengkap dengan blok tanda tangan. Satu
+lembar draf yang sampai ke vendor sudah cukup untuk dianggap mengikat.
+
+Capnya hilang dengan sendirinya begitu dokumennya disetujui. Tidak ada yang
+perlu disetel.
+
+<a id="adendum"></a>
+
+## Adendum
+
+Perubahan atas purchase order yang sudah disetujui dibuat sebagai **adendum**,
+bukan dengan menyunting dokumen aslinya.
+
+Alasannya sederhana: dokumen asli sudah ditandatangani vendor. Mengubah isinya
+berarti lembar yang dipegang vendor berbeda dari yang tersimpan di sistem.
+
+Tombol **Buat adendum** muncul di dialog lihat purchase order, dan hanya pada
+dokumen yang sudah disetujui.
+
+### Yang dikunci
+
+Pemasok, proyek, dan jenis materialnya **tidak dapat diubah**. Ketiganya
+menentukan bentuk dan nomor dokumennya; mengubahnya berarti dokumen yang lain
+sama sekali, bukan adendum.
+
+Isian yang dikunci ditampilkan dalam keadaan nonaktif, bukan disembunyikan —
+supaya terlihat bahwa nilainya diwarisi dari induknya.
+
+### Volume adalah SELISIH
+
+Kolom volumenya dikosongkan, dan judulnya berbunyi **Volume Tambah / Kurang**.
+
+Yang diisi adalah perubahannya, bukan volume yang berlaku. Menambah 5 m³ ditulis
+`5`, bukan volume total setelah penambahan. Pengurangan ditulis negatif, dan
+tidak boleh melampaui sisa yang belum terpakai.
+
+### Nomornya
+
+Adendum memakai nomor induknya dengan sisipan: `013-PO-BPBP-F` beradendum
+menjadi `013-ADD1-PO-BPBP-F`. Nomor urutnya dihitung server, tidak diketik.
+
+### Mencetak adendum
+
+Cetakan adendum **selalu menyertakan induk dan adendum sebelumnya** dalam satu
+berkas. Adendum berisi selisih; dibaca sendirian, ia tidak menyatakan keadaan
+pekerjaannya.
+
+Adendum yang terbit **sesudahnya** tidak ikut — lembar yang sudah
+ditandatangani tidak berubah isinya.
+
+<a id="unduh-hasil-rekap"></a>
+
+## Unduh hasil rekap
+
+Tombol **Unduh hasil rekap** di kanan atas daftar menerbitkan rekap seluruh
+purchase order sebuah proyek. Proyeknya dipilih di dalam dialog, bukan mengikuti
+penyaring yang sedang aktif di layar.
+
+Tersedia dalam dua bentuk, dan keduanya **bukan salinan satu sama lain**:
+
+| | Isinya | Untuk |
+|---|---|---|
+| **Excel** | Ikhtisar, rincian per barang, per dokumen | Disaring, dijumlah, diolah |
+| **PDF** | Ikhtisar dan per dokumen | Dibaca dan dikirim |
+
+PDF sengaja tidak memuat rincian per barang: ratusan baris barang menjadi
+berhalaman-halaman yang tidak menolong siapa pun membacanya.
+
+Rekap memuat **seluruh** dokumen proyek itu, termasuk yang masih berstatus
+Draf. Statusnya ditandai pada setiap baris, dan dokumen Draf belum disetujui
+serta belum mengikat.
+
+Mobilisasi dan demobilisasi alat muncul sebagai baris tersendiri, sama seperti
+pada dokumen yang ditandatangani. Karena itu penjumlahan barisnya sama persis
+dengan nilai dokumennya — bila kelak berbeda, kolom **Pemeriksaan** pada lembar
+Per Dokumen akan menandainya.

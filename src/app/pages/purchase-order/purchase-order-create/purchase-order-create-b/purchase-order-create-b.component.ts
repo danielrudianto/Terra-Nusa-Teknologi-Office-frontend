@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { purchaseTypeLabel } from '../../../../constants/purchase-type-label.constant';
@@ -92,10 +92,20 @@ function validatorSumberSewa(g: AbstractControl): ValidationErrors | null {
   templateUrl: './purchase-order-create-b.component.html',
   styleUrl: './purchase-order-create-b.component.scss',
 })
-export class PurchaseOrderCreateBComponent {
+export class PurchaseOrderCreateBComponent implements OnInit {
   private readonly translateSvc = inject(TranslateService);
 
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+  ngOnInit(): void {
+    // Bila dibuka sebagai adendum ATAU koreksi, isinya diambil dari dokumen
+    // lamanya.
+    //
+    // Sebelumnya baris ini berada SETELAH `return` pada sebuah getter,
+    // sehingga tidak pernah berjalan sama sekali — adendum terbuka dengan
+    // formulir kosong tanpa satu pun galat.
+    if (this.adendum.memuatDokumenLama) this.muatAdendum();
+  }
+
   get typeCode(): string {
     return 'B';
   }
@@ -209,9 +219,6 @@ export class PurchaseOrderCreateBComponent {
 
   get f() {
     return this.formGroup.controls;
-
-    // Bila dibuka sebagai adendum, isinya diambil dari induknya.
-    this.muatAdendum();
   }
   get t() {
     return this.formGroup.get('rentals') as FormArray;
@@ -300,6 +307,45 @@ export class PurchaseOrderCreateBComponent {
         }
         this.t.push(this.buildRental(item, true));
       });
+  }
+
+  /**
+   * Satu baris sewa yang berasal dari DOKUMEN, bukan dari katalog.
+   *
+   * `buildRental` menerima objek katalog — alat atau barang — dan mengisi
+   * sisanya dengan nilai bawaan. Memakainya untuk memuat dokumen lama
+   * membuat harga, tanggal, lokasi, dan mobilisasi tetap nol: bidang itu
+   * memang tidak ada pada katalog, sehingga tidak pernah terbaca.
+   *
+   * Nilainya diambil dari kolom penyimpanannya masing-masing — periode dan
+   * lokasi menumpang pada `remarks_1..3`, mobilisasi pada `remarks_4` dan
+   * `remarks_5`.
+   */
+  private barisDariDokumen(x: any): FormGroup {
+    const g = this.buildRental(
+      {
+        id: x?.equipment_id ?? x?.item_id ?? null,
+        name: x?.equipment_name ?? x?.item_description ?? x?.task ?? '',
+        description: x?.item_description ?? x?.task ?? '',
+        unit: x?.unit ?? 'hari',
+      },
+      !x?.equipment_id && !!x?.item_id,
+    );
+
+    g.patchValue({
+      equipment_id: x?.equipment_id ?? null,
+      item_id: x?.item_id ?? null,
+      name: x?.equipment_name ?? x?.item_description ?? x?.task ?? '',
+      quantity: Number(x?.quantity) || 0,
+      unit: x?.unit ?? 'hari',
+      price: Number(x?.price) || 0,
+      fromDate: x?.remarks_1 ?? '',
+      toDate: x?.remarks_2 ?? '',
+      location: x?.remarks_3 ?? '',
+      mobilisasi: Number(x?.remarks_4) || 0,
+      demobilisasi: Number(x?.remarks_5) || 0,
+    });
+    return g;
   }
 
   openEquipmentSelector() {
@@ -951,8 +997,20 @@ export class PurchaseOrderCreateBComponent {
   /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
   private terbitkan() {
     this.isSubmitting = true;
+    /*
+     * Mode UBAH menimpa dokumennya, bukan menerbitkan yang baru.
+     *
+     * Server menolak bila dokumennya sudah disetujui, dan mengabaikan kolom
+     * yang menentukan identitasnya — nomor, pemasok, proyek, jenis. Layar
+     * ini tidak perlu menjaganya lagi; yang dijaga di sini hanya agar
+     * permintaannya menuju jalur yang benar.
+     */
+    const ubahId = this.adendum.ubahId;
     this.apiService
-      .post('purchase-orders', this.formatData())
+      [ubahId ? 'put' : 'post'](
+        ubahId ? `purchase-orders/${ubahId}` : 'purchase-orders',
+        this.formatData(),
+      )
       .subscribe({
         next: (res: any) => {
           this.snackBar.open(
@@ -999,6 +1057,30 @@ export class PurchaseOrderCreateBComponent {
     return this.adendum.isAdendum;
   }
 
+  /**
+   * True bila layar ini MENGUBAH dokumen yang belum disetujui.
+   *
+   * Berbeda dari adendum walaupun keduanya memuat dokumen lama: adendum
+   * menerbitkan dokumen baru berisi selisih, ubah menimpa dokumen yang
+   * belum pernah terbit.
+   */
+  get isUbah(): boolean {
+    return this.adendum.isUbah;
+  }
+
+  /**
+   * Judul layar: membuat atau mengubah.
+   *
+   * Layar yang sama dipakai untuk keduanya — bentuk formulirnya identik, dan
+   * layar kedua berarti setiap perubahan bentuk harus dikerjakan dua kali.
+   * Yang membedakan hanya judulnya, banner di atas, dan tombolnya.
+   */
+  get judulLayar(): string {
+    return this.translateSvc.instant(
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+    );
+  }
+
   /** Dokumen induk yang diadendum; null bila dokumen baru. */
   induk: any = null;
 
@@ -1020,10 +1102,7 @@ export class PurchaseOrderCreateBComponent {
           this.formGroup,
           'rentals',
           this.adendum.barisInduk(induk),
-          (x) => {
-          const g = this.buildRental(x);
-          return g;
-        },
+          (x) => this.barisDariDokumen(x),
         );
       },
       error: () => {},

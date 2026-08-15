@@ -6,10 +6,23 @@
     (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
-    [title]="('poForm.poCodePrefix' | translate) + purchaseType"
+    [title]="judulLayar"
     [description]="typeLabel"
   />
 
+
+    <!--
+      Ditegaskan di muka: mengubah TIDAK menyetujui.
+      -->
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
+      </div>
+    }
   <!--
     Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
     bentuknya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
@@ -465,7 +478,7 @@
               formGroup.invalid || t.controls.length === 0 || isSubmitting
             "
           >
-            {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
+            {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
           </button>
         </div>
       </div>

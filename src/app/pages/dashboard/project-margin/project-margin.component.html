@@ -1,0 +1,86 @@
+<div class="pm">
+  <div class="pm-head">
+    <div class="pm-head__text">
+      <span class="pm-title">{{ "projectMargin.judul" | translate }}</span>
+      <span class="pm-sub">{{ "projectMargin.sub" | translate }}</span>
+    </div>
+    <button
+      type="button"
+      class="pm-refresh"
+      [attr.aria-label]="'common.refresh' | translate"
+      [matTooltip]="'common.refresh' | translate"
+      (click)="muat()"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="pm-state"><mat-spinner diameter="28"></mat-spinner></div>
+  } @else if (gagal) {
+    <div class="pm-state">{{ "projectMargin.gagal" | translate }}</div>
+  } @else if (!daftar.length) {
+    <div class="pm-state">{{ "projectMargin.kosong" | translate }}</div>
+  } @else {
+    <!--
+      Menggulir MENDATAR, satu kartu per proyek.
+
+      Tabel menuntut lebar tetap dan memaksa nama proyek terpotong; kartu
+      mendatar membiarkan tiap proyek terbaca utuh tanpa mengorbankan tinggi
+      dashboard.
+    -->
+    <div class="pm-scroll">
+      @for (p of daftar; track p.id) {
+        <div class="pm-card" [class.pm-card--nonaktif]="!p.isActive">
+          <div class="pm-card__head">
+            <span class="pm-card__kode">{{ p.code }}</span>
+            @if (!p.isActive) {
+              <span class="pm-card__tag">{{
+                "projectMargin.selesai" | translate
+              }}</span>
+            }
+          </div>
+          <span class="pm-card__nama" [matTooltip]="p.name">{{ p.name }}</span>
+
+          @if (tanpaKontrak(p)) {
+            <!--
+              Nilai kontrak belum diisi; marginnya tidak dapat dihitung.
+              Ditandai tersendiri, bukan ditampilkan sebagai margin negatif.
+            -->
+            <span class="pm-card__kosong">{{
+              "projectMargin.tanpaKontrak" | translate
+            }}</span>
+          } @else {
+            <span
+              class="pm-card__margin"
+              [class.pm-card__margin--rugi]="margin(p) < 0"
+            >
+              {{ persen(p) | number: "1.1-1" }}%
+            </span>
+            <div class="pm-bar">
+              <div
+                class="pm-bar__isi"
+                [class.pm-bar__isi--rugi]="margin(p) < 0"
+                [style.width.%]="lebarBilah(p)"
+              ></div>
+            </div>
+            <div class="pm-card__baris">
+              <span>{{ "projectMargin.kontrak" | translate }}</span>
+              <span>Rp {{ p.kontrak | number: "1.0-0" }}</span>
+            </div>
+            <div class="pm-card__baris">
+              <span>{{ "projectMargin.biaya" | translate }}</span>
+              <span>Rp {{ biaya(p) | number: "1.0-0" }}</span>
+            </div>
+            <div class="pm-card__baris pm-card__baris--tebal">
+              <span>{{ "projectMargin.margin" | translate }}</span>
+              <span [class.pm-rugi]="margin(p) < 0"
+                >Rp {{ margin(p) | number: "1.0-0" }}</span
+              >
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

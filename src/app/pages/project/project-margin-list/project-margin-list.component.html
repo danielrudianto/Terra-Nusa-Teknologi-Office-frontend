@@ -1,0 +1,226 @@
+<div class="pml">
+  <div class="pml-head">
+    <div class="pml-head__text">
+      <h1 class="pml-title">{{ "projectMargin.judulHalaman" | translate }}</h1>
+      <span class="pml-sub">{{ "projectMargin.subHalaman" | translate }}</span>
+    </div>
+  </div>
+
+  <div class="pml-bar">
+    <mat-form-field
+      appearance="outline"
+      class="pml-search"
+      subscriptSizing="dynamic"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [formControl]="cari"
+        [placeholder]="'projectMargin.cari' | translate"
+      />
+    </mat-form-field>
+
+    <!--
+      Proyek selesai disembunyikan secara bawaan.
+
+      Yang masih berjalan adalah yang marginnya masih dapat diperbaiki;
+      mencampurnya membuat daftar ini panjang oleh hal yang sudah tidak dapat
+      ditindaklanjuti.
+    -->
+    <!--
+      Kelompok penyaring didorong ke KANAN dengan `margin-left: auto` pada
+      yang pertama; pencarian tetap di kiri.
+    -->
+    <button
+      type="button"
+      class="pml-toggle pml-toggle--awal"
+      [class.on]="sertakanSelesai"
+      (click)="sertakanSelesai = !sertakanSelesai"
+    >
+      <mat-icon>{{ sertakanSelesai ? "check_box" : "check_box_outline_blank" }}</mat-icon>
+      {{ "projectMargin.sertakanSelesai" | translate }}
+    </button>
+
+    <!--
+      Pembelian internal disertakan secara bawaan.
+
+      Bagi proyek, barang yang dibeli dari perusahaan sendiri tetap biaya
+      nyata. Yang berbeda hanya sudut pandang pemilik grup — dan sudut
+      pandang itu pengecualian, bukan bawaan.
+    -->
+    <button
+      type="button"
+      class="pml-toggle"
+      [class.on]="sertakanInternal"
+      [matTooltip]="'projectMargin.internalHint' | translate"
+      (click)="sertakanInternal = !sertakanInternal"
+    >
+      <mat-icon>{{
+        sertakanInternal ? "check_box" : "check_box_outline_blank"
+      }}</mat-icon>
+      {{ "projectMargin.sertakanInternal" | translate }}
+    </button>
+
+    <!--
+      Muat ulang diletakkan di toolbar, bukan di kepala halaman.
+
+      Ketiganya mengubah APA YANG TAMPIL pada tabel di bawahnya; menaruh
+      salah satunya jauh di atas membuat hubungan itu tidak terlihat.
+    -->
+    <button
+      type="button"
+      class="pml-refresh"
+      [attr.aria-label]="'common.refresh' | translate"
+      [matTooltip]="'common.refresh' | translate"
+      (click)="muat()"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="pml-state"><mat-spinner diameter="32"></mat-spinner></div>
+  } @else if (gagal) {
+    <div class="pml-state">{{ "projectMargin.gagal" | translate }}</div>
+  } @else if (!daftar.length) {
+    <div class="pml-state pml-state--kosong">
+      {{ "projectMargin.kosong" | translate }}
+    </div>
+  } @else {
+    <div class="pml-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th class="pml-th" (click)="gantiUrut('code')">
+              {{ "projectMargin.proyek" | translate }}
+              <mat-icon *ngIf="urut === 'code'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'code'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('kontrak')">
+              {{ "projectMargin.kontrak" | translate }}
+              <mat-icon *ngIf="urut === 'kontrak'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'kontrak'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('tertagih')">
+              {{ "projectMargin.tertagih" | translate }}
+              <mat-icon *ngIf="urut === 'tertagih'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'tertagih'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('belum')">
+              {{ "projectMargin.belumTertagih" | translate }}
+              <mat-icon *ngIf="urut === 'belum'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'belum'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('biaya')">
+              {{ "projectMargin.biaya" | translate }}
+              <mat-icon *ngIf="urut === 'biaya'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'biaya'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('margin')">
+              {{ "projectMargin.margin" | translate }}
+              <mat-icon *ngIf="urut === 'margin'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'margin'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+            <th class="pml-th pml-th--num" (click)="gantiUrut('persen')">
+              %
+              <mat-icon *ngIf="urut === 'persen'">{{
+                naik ? "arrow_drop_up" : "arrow_drop_down"
+              }}</mat-icon>
+              <mat-icon *ngIf="urut !== 'persen'" class="pml-th__idle"
+                >unfold_more</mat-icon
+              >
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of daftar; track p.id) {
+            <tr class="pml-row" (click)="buka(p)">
+              <td>
+                <span class="pml-kode">{{ p.code }}</span>
+                @if (!p.isActive) {
+                  <span class="pml-tag">{{
+                    "projectMargin.selesai" | translate
+                  }}</span>
+                }
+                <span class="pml-nama">{{ p.name }}</span>
+              </td>
+
+              @if (tanpaKontrak(p)) {
+                <!--
+                  Nilai kontrak belum diisi; marginnya tidak dapat dihitung.
+                  Satu sel melintang, bukan empat sel berisi nol.
+                -->
+                <td class="pml-num pml-kosong" colspan="6">
+                  {{ "projectMargin.tanpaKontrak" | translate }}
+                </td>
+              } @else {
+                <td class="pml-num">{{ p.kontrak | number: "1.0-0" }}</td>
+                <td class="pml-num">{{ tertagih(p) | number: "1.0-0" }}</td>
+                <!--
+                  Belum tertagih: pekerjaan yang sudah disepakati tetapi belum
+                  difakturkan. Angka besar pada proyek yang hampir selesai
+                  adalah tanda ada yang lupa ditagihkan.
+                -->
+                <td class="pml-num pml-belum">
+                  {{ belumTertagih(p) | number: "1.0-0" }}
+                </td>
+                <td class="pml-num">{{ biaya(p) | number: "1.0-0" }}</td>
+                <td class="pml-num" [class.pml-rugi]="margin(p) < 0">
+                  {{ margin(p) | number: "1.0-0" }}
+                </td>
+                <td class="pml-num pml-persen" [class.pml-rugi]="margin(p) < 0">
+                  {{ persen(p) | number: "1.1-1" }}%
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <!--
+            Jumlah SELURUH baris yang sedang tampil, bukan seluruh proyek.
+
+            Angka yang tidak berubah saat disaring membuat orang mengira
+            penyaringnya tidak bekerja.
+          -->
+          <tr class="pml-total">
+            <td>{{ "projectMargin.totalTampil" | translate }}</td>
+            <td class="pml-num">{{ total.kontrak | number: "1.0-0" }}</td>
+            <td class="pml-num">{{ total.tertagih | number: "1.0-0" }}</td>
+            <td class="pml-num pml-belum">
+              {{ total.belum | number: "1.0-0" }}
+            </td>
+            <td class="pml-num">{{ total.biaya | number: "1.0-0" }}</td>
+            <td class="pml-num" [class.pml-rugi]="total.margin < 0">
+              {{ total.margin | number: "1.0-0" }}
+            </td>
+            <td class="pml-num"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  }
+</div>

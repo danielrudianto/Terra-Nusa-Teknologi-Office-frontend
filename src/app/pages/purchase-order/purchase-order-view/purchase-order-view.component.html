@@ -20,6 +20,17 @@
     -->
     @if (!isLoading && data) {
       <div class="pov-head__tanda">
+        <!--
+          Nomor revisi; hanya muncul bila dokumennya pernah diubah.
+          -->
+        @if (revisi > 0) {
+          <span
+            class="pov-tanda pov-tanda--rev"
+            [matTooltip]="'purchaseOrder.revisiKet' | translate"
+          >
+            {{ "purchaseOrder.revisi" | translate }} {{ revisi }}
+          </span>
+        }
         <span class="pov-tanda" [class.pov-tanda--off]="ppnPersen <= 0">
           {{
             (ppnPersen > 0 ? "purchaseOrder.kenaPpn" : "purchaseOrder.nonPpn")
@@ -94,6 +105,19 @@
                     {{ item.quantity }} {{ item.unit }} ×
                     {{ item.price | number: "1.0-0" }}
                   </span>
+                  <!--
+                    Mobilisasi disebut tersendiri.
+
+                    Tanpa baris ini, jumlah di kanan tidak sama dengan
+                    perkalian di atasnya, dan yang membacanya menyangka
+                    salah satunya keliru.
+                  -->
+                  @if (mobilisasiBaris(item) > 0) {
+                    <span class="pov-item__meta pov-item__mob">
+                      + {{ "purchaseOrder.viewMobilisasi" | translate }}
+                      {{ mobilisasiBaris(item) | number: "1.0-0" }}
+                    </span>
+                  }
                 </span>
                 <span class="pov-item__amount">
                   Rp {{ lineTotal(item) | number: "1.0-0" }}
@@ -247,6 +271,19 @@
         Dokumen yang sendirinya adendum juga tidak dapat diadendum lagi —
         adendum berikutnya menunjuk induk yang sama, bukan berlapis.
       -->
+      <!--
+        Dokumen DRAF diubah langsung, bukan diadendum.
+
+        Adendum untuk yang sudah ditandatangani vendor; draf belum pernah
+        terbit, sehingga membetulkannya cukup menimpa. Keduanya tidak pernah
+        muncul bersamaan — satu dokumen hanya berada pada satu keadaan.
+      -->
+      @if (bolehUbah) {
+        <button type="button" class="pov-adendum" (click)="bukaUbah()">
+          <mat-icon>edit</mat-icon>
+          {{ "poView.ubahDraf" | translate }}
+        </button>
+      }
       @if (bolehAdendum) {
         <button type="button" class="pov-adendum" (click)="buatAdendum()">
           <mat-icon>note_add</mat-icon>

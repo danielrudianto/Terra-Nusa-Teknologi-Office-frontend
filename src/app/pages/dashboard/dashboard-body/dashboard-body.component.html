@@ -147,6 +147,19 @@
       <div class="col-12 mt-3" *appCan="'bank:read'">
         <app-cash-position></app-cash-position>
       </div>
+
+      <!--
+        Ikhtisar margin proyek.
+
+        Izinnya `project:read`, ditentukan oleh ISI bloknya — nilai kontrak
+        dan biaya per proyek — bukan oleh letaknya di dashboard.
+
+        Selebar penuh karena kartunya bergulir mendatar; setengah lebar hanya
+        memuat dua proyek sekaligus dan memaksa menggulir sejak awal.
+      -->
+      <div class="col-12 mt-3" *appCan="'project:read'">
+        <app-project-margin></app-project-margin>
+      </div>
     </div>
   </div>
 </div>

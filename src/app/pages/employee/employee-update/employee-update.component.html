@@ -57,40 +57,6 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="eu-span2">
-          <mat-label>{{ "employeeForm.address" | translate }}</mat-label>
-          <textarea
-            matInput
-            formControlName="address"
-            rows="2"
-            [placeholder]="'employeeForm.addressPlaceholder' | translate"
-            required
-            style="resize: none"
-          ></textarea>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "employeeForm.email" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="email"
-            type="email"
-            [placeholder]="'employeeForm.emailPlaceholder' | translate"
-            required
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "employeeForm.phone" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="phoneNumber"
-            type="tel"
-            [placeholder]="'employeeForm.phonePlaceholder' | translate"
-            required
-          />
-        </mat-form-field>
-
         <mat-form-field appearance="outline">
           <mat-label>{{ "employeeForm.position" | translate }}</mat-label>
           <input
@@ -113,42 +79,6 @@
           />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="eu-span2">
-          <mat-label>{{ "employeeForm.taxCategory" | translate }}</mat-label>
-          <mat-select
-            formControlName="taxCategory"
-            [placeholder]="'employeeForm.taxCategoryPlaceholder' | translate"
-          >
-            <mat-optgroup [label]="'employeeForm.groupSingle' | translate">
-              <mat-option value="TK/0">{{
-                "employeeForm.tk0" | translate
-              }}</mat-option>
-              <mat-option value="TK/1">{{
-                "employeeForm.tk1" | translate
-              }}</mat-option>
-              <mat-option value="TK/2">{{
-                "employeeForm.tk2" | translate
-              }}</mat-option>
-              <mat-option value="TK/3">{{
-                "employeeForm.tk3" | translate
-              }}</mat-option>
-            </mat-optgroup>
-            <mat-optgroup [label]="'employeeForm.groupMarried' | translate">
-              <mat-option value="K/0">{{
-                "employeeForm.k0" | translate
-              }}</mat-option>
-              <mat-option value="K/1">{{
-                "employeeForm.k1" | translate
-              }}</mat-option>
-              <mat-option value="K/2">{{
-                "employeeForm.k2" | translate
-              }}</mat-option>
-              <mat-option value="K/3">{{
-                "employeeForm.k3" | translate
-              }}</mat-option>
-            </mat-optgroup>
-          </mat-select>
-        </mat-form-field>
       </div>
     </mat-dialog-content>
 

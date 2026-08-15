@@ -1,0 +1,311 @@
+.ev {
+  display: flex;
+  flex-direction: column;
+  min-width: min(680px, 94vw);
+}
+
+.ev-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+}
+.ev-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+.ev-head__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ev-title {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.ev-sub {
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+.ev-x {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+}
+.ev-x:hover {
+  background: var(--hover, #eef2ff);
+}
+
+.ev-content {
+  padding: 0 !important;
+  max-height: 68vh;
+}
+.ev-tabs {
+  width: 100%;
+}
+
+.ev-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+.ev-state--kosong {
+  font-style: italic;
+}
+
+.ev-bagian {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line, #eef1f6);
+}
+.ev-bagian__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.ev-bagian__judul {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand, #154dec);
+}
+.ev-oleh {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+}
+
+/* Salin seluruh bagian sebagai teks berbaris `label: nilai`. */
+.ev-salin-semua {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ev-salin-semua:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+.ev-salin-semua .mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.ev-baris {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.42rem 0;
+}
+/*
+ * Garis pemisah antar baris, kecuali yang terakhir.
+ *
+ * Tanpa garis, pasangan label dan nilainya melayang — terutama ketika satu
+ * nilai memakai dua baris dan yang berikutnya satu baris.
+ */
+.ev-baris + .ev-baris {
+  border-top: 1px solid var(--line, #f1f3f7);
+}
+/*
+ * Label dibuat lebih sempit dan lebih redup daripada nilainya.
+ *
+ * Sebelumnya keduanya hampir sama besar dan sama gelap, sehingga mata tidak
+ * punya titik masuk — yang dicari orang di layar ini adalah NILAINYA, bukan
+ * daftar sebutan.
+ */
+.ev-baris__label {
+  flex: 0 0 33%;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--muted, #8a90a0);
+}
+.ev-baris__nilai {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink, #16181d);
+  word-break: break-word;
+}
+
+/* Tombol salin per baris; muncul jelas saat barisnya disentuh tetikus. */
+.ev-salin {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--faint, #cfd4dc);
+  cursor: pointer;
+}
+.ev-baris:hover .ev-salin {
+  color: var(--muted, #6b7280);
+}
+.ev-salin:hover {
+  background: var(--hover, #eef2ff);
+  color: var(--brand, #154dec) !important;
+}
+.ev-salin .mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+}
+
+/* ---- kontak darurat ---- */
+
+.ev-darurat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0.85rem 1.5rem;
+  background: var(--danger-soft, #fdecea);
+  border-bottom: 1px solid var(--danger-border, #f6cfca);
+}
+.ev-darurat__ikon {
+  flex: 0 0 auto;
+  color: var(--danger-fg, #c0392b);
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  margin-top: 1px;
+}
+.ev-darurat__isi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.ev-darurat__judul {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--danger-fg, #c0392b);
+}
+.ev-darurat__baris {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+}
+
+/* Nama dan nomor dapat ditekan untuk disalin; keduanya yang dicari. */
+.ev-darurat__nama {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  cursor: pointer;
+}
+.ev-darurat__nama:hover {
+  text-decoration: underline;
+}
+.ev-darurat__hub {
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+}
+.ev-darurat__telp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--danger-border, #f6cfca);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--danger-fg, #c0392b);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.ev-darurat__telp:hover {
+  background: var(--danger-soft, #fdecea);
+}
+.ev-darurat__telp .mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+.ev-darurat__tanggal {
+  font-size: 0.7rem;
+  color: var(--muted, #8a90a0);
+}
+
+/* ---- footer ---- */
+
+.ev-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.85rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e4e9fb);
+}
+.ev-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 36px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ev-wa:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+}
+.ev-wa .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}

@@ -109,9 +109,6 @@ export class PurchaseOrderCreate63Component {
    */
   get mode(): 'barang' | 'jasa' {
     return this.purchaseType === '6.3.2' ? 'barang' : 'jasa';
-
-    // Bila dibuka sebagai adendum, isinya diambil dari induknya.
-    this.muatAdendum();
   }
 
   /** '6.3.1' or '6.3.2', taken from the route definition */
@@ -186,7 +183,46 @@ export class PurchaseOrderCreate63Component {
     includePPN: new FormControl(true),
   });
 
+  /**
+   * Pengambilan sendiri (Loco), bukan dikirim ke lokasi (Franco).
+   *
+   * Nilai `'1'` berarti Loco — sama dengan yang dibaca klausul lewat
+   * `isLoco()` pada template, sehingga pilihan di layar tidak mungkin
+   * berbeda dari kalimat yang tercetak.
+   */
+  /**
+   * Kosongkan termin yang tidak lagi berlaku setelah moda kirim berubah.
+   *
+   * Memilih COD lalu mengubah moda menjadi Loco meninggalkan nilai yang
+   * pilihannya sudah tidak ada di layar — tersembunyi, tetapi tetap
+   * tersimpan dan tetap tercetak pada dokumennya.
+   *
+   * Dikosongkan, bukan diganti diam-diam: termin menentukan kapan tagihan
+   * jatuh tempo, dan menggantinya tanpa sepengetahuan yang mengisi lebih
+   * buruk daripada memintanya memilih ulang.
+   */
+  selaraskanTerminLoco(): void {
+    if (!this.isLoco) return;
+    const c = this.formGroup.get('paymentTerm');
+    if (c && ['COD', 'CBD'].includes(String(c.value))) {
+      c.setValue('');
+    }
+  }
+
+  get isLoco(): boolean {
+    return String(this.formGroup.get('deliveryMethod')?.value) === '1';
+  }
+
   ngOnInit(): void {
+    // Bila dibuka sebagai adendum ATAU koreksi, isinya diambil
+    // dari dokumen lamanya.
+    //
+    // Sebelumnya baris ini berada SETELAH `return` pada getter
+    // lain, sehingga tidak pernah berjalan sama sekali —
+    // adendum terbuka dengan formulir kosong tanpa satu pun
+    // galat.
+    if (this.adendum.memuatDokumenLama) this.muatAdendum();
+
     const routeType = this.route.snapshot.data?.['purchaseType'];
     if (routeType) {
       this.purchaseType = routeType;
@@ -678,8 +714,20 @@ export class PurchaseOrderCreate63Component {
   /** Kirim ke server; dipanggil setelah dokumennya dikonfirmasi. */
   private terbitkan() {
     this.isSubmitting = true;
+    /*
+     * Mode UBAH menimpa dokumennya, bukan menerbitkan yang baru.
+     *
+     * Server menolak bila dokumennya sudah disetujui, dan mengabaikan kolom
+     * yang menentukan identitasnya — nomor, pemasok, proyek, jenis. Layar
+     * ini tidak perlu menjaganya lagi; yang dijaga di sini hanya agar
+     * permintaannya menuju jalur yang benar.
+     */
+    const ubahId = this.adendum.ubahId;
     this.apiService
-      .post('purchase-orders', this.formatData())
+      [ubahId ? 'put' : 'post'](
+        ubahId ? `purchase-orders/${ubahId}` : 'purchase-orders',
+        this.formatData(),
+      )
       .subscribe({
         next: (res: any) => {
           this.snackBar.open(
@@ -729,6 +777,30 @@ export class PurchaseOrderCreate63Component {
   /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
   get isAdendum(): boolean {
     return this.adendum.isAdendum;
+  }
+
+  /**
+   * True bila layar ini MENGUBAH dokumen yang belum disetujui.
+   *
+   * Berbeda dari adendum walaupun keduanya memuat dokumen lama: adendum
+   * menerbitkan dokumen baru berisi selisih, ubah menimpa dokumen yang
+   * belum pernah terbit.
+   */
+  get isUbah(): boolean {
+    return this.adendum.isUbah;
+  }
+
+  /**
+   * Judul layar: membuat atau mengubah.
+   *
+   * Layar yang sama dipakai untuk keduanya — bentuk formulirnya identik, dan
+   * layar kedua berarti setiap perubahan bentuk harus dikerjakan dua kali.
+   * Yang membedakan hanya judulnya, banner di atas, dan tombolnya.
+   */
+  get judulLayar(): string {
+    return this.translate.instant(
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+    );
   }
 
   /** Dokumen induk yang diadendum; null bila dokumen baru. */

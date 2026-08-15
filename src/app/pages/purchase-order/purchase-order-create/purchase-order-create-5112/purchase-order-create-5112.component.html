@@ -6,11 +6,24 @@
     (changeType)="onChangeType()"
     [backLink]="'/Purchase-order'"
     backLabel="Daftar Purchase Order"
-    [title]="'poForm.title5112' | translate"
+    [title]="judulLayar"
     [description]="'poForm.desc5112' | translate"
   ></app-header-title>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <!--
+      Ditegaskan di muka: mengubah TIDAK menyetujui.
+      -->
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
+      </div>
+    }
+
     <!-- ===== Info Umum ===== -->
     <div class="po5112-card">
       <div class="po5112-section__title">
@@ -484,7 +497,7 @@
           class="po5112-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.buatPurchaseOrder' | translate) }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
         </button>
       </div>
     </div>
