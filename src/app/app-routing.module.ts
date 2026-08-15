@@ -31,30 +31,6 @@ export const routes: Routes = [
         data: { title: 'Dashboard' },
       },
       {
-        path: 'Engineering',
-        loadComponent: () =>
-          import('./pages/engineering/engineering.component').then(
-            (m) => m.EngineeringComponent,
-          ),
-        data: { title: 'Engineering' },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./pages/engineering/engineering-dashboard/engineering-dashboard.component').then(
-                (m) => m.EngineeringDashboardComponent,
-              ),
-          },
-          {
-            path: ':projectName',
-            loadComponent: () =>
-              import('./pages/engineering/engineering-project-view/engineering-project-view.component').then(
-                (m) => m.EngineeringProjectViewComponent,
-              ),
-          },
-        ],
-      },
-      {
         path: 'PDF',
         loadComponent: () =>
           import('./pages/pdf-main/pdf-main.component').then(
