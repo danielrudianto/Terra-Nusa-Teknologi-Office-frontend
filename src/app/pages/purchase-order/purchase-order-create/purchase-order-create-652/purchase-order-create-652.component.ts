@@ -422,6 +422,17 @@ export class PurchaseOrderCreate652Component {
       supplierID: v.supplierID,
       purchaseType: '6.5.2',
       projectName: v.projectName,
+      /*
+       * Kode proyek WAJIB dikirim, bukan hanya namanya.
+       *
+       * Penomoran dokumen membaca `projectCode`; bila kosong ia jatuh ke
+       * urutan GLOBAL — seluruh purchase order sistem — sehingga proyek yang
+       * baru sampai nomor 029 tiba-tiba menerbitkan dokumen bernomor 112.
+       *
+       * Keduanya bernilai sama: kode proyek itu sendiri yang dipakai sebagai
+       * nama maupun sebagai kode.
+       */
+      projectCode: v.projectName,
       dpp: this.subTotal,
       ppn: v.includePPN ? 11 : 0,
       pphCode: v.pphCode || null,

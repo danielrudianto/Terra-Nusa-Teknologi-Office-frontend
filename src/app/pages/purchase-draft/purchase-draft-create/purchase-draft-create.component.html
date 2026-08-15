@@ -94,6 +94,20 @@
             formControlName="purchaseOrderName"
             [placeholder]="'purchaseDraft.000SpkXxxxA' | translate"
           />
+          <!--
+            Cari purchase order alih-alih mengetik nomornya; isian pemasok,
+            proyek, DPP, dan PPN terisi dari dokumennya.
+          -->
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'poPicker.judul' | translate"
+            [matTooltip]="'poPicker.judul' | translate"
+            (click)="bukaPemilihPO()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
           <mat-hint
             >{{ "purchaseDraft.format000PoSpkPks" | translate }}</mat-hint
           >

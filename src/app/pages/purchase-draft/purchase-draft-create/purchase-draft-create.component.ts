@@ -26,6 +26,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatButtonModule } from '@angular/material/button';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-purchase-draft-create',
@@ -44,6 +46,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     NgxMaskDirective,
     TranslatePipe,
     DialogGeserDirective,
+    MatTooltipModule,
   ],
   templateUrl: './purchase-draft-create.component.html',
   styleUrl: './purchase-draft-create.component.scss',
@@ -137,6 +140,36 @@ export class PurchaseDraftCreateComponent {
 
   onCancel() {
     this.dialogRef.close();
+  }
+
+  /**
+   * Pilih purchase order, lalu salin datanya ke draf ini.
+   *
+   * PPh tidak ikut: draf pembelian belum menyimpan bidang pajak penghasilan,
+   * dan menambahkannya di sini berarti nilainya hilang saat draf dikonversi.
+   *
+   * Tanggal juga tidak: `date` purchase order adalah tanggal terbit
+   * dokumennya, bukan tanggal faktur pemasok.
+   */
+  bukaPemilihPO(): void {
+    this.dialog
+      .open(PurchaseOrderPickerComponent, {
+        maxWidth: '96vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((po: any) => {
+        if (!po) return;
+        this.metaFormGroup.patchValue({
+          purchaseOrderName: po.purchaseOrderName,
+          supplierID: po.supplierID,
+          supplierName: po.supplierName,
+          projectName: po.projectName,
+          purchaseType: po.purchaseType,
+          dpp: po.dpp,
+          ppn: po.ppn,
+        });
+      });
   }
 
   openSupplierSelector() {

@@ -2962,7 +2962,8 @@
     "menambahkanSeksiLaporanLapanganDan": "Menambahkan seksi Laporan Lapangan dan Tata Cara Pembayaran bulanan.",
     "tambahTugas": "Tambah tugas",
     "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
-    "hapusTugas": "Hapus tugas"
+    "hapusTugas": "Hapus tugas",
+    "includeHousing": "Include the temporary housing clause"
   },
   "salaryDeduction": {
     "bpjs": "BPJS employment",
@@ -3867,5 +3868,12 @@
     "format": "File format",
     "excel": "Excel",
     "pdf": "PDF"
+  },
+  "poPicker": {
+    "judul": "Find purchase order",
+    "sub": "Pick a document; the fields below fill in automatically",
+    "cari": "Search by PO number, supplier name, or project",
+    "kosong": "No matching purchase order.",
+    "draf": "DRAFT"
   }
 }

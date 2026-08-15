@@ -447,6 +447,22 @@
           >
         </div>
 
+        <!--
+          Tempat tinggal sementara tidak selalu disediakan.
+
+          Pekerja yang berdomisili di sekitar lokasi proyek pulang sendiri
+          setiap hari; mencantumkannya tetap berarti perusahaan menyatakan
+          kewajiban yang tidak pernah dimaksudkan — dan itu dapat ditagih.
+        -->
+        <div class="pod-toggles__row">
+          <mat-slide-toggle
+            color="primary"
+            formControlName="includeHousingClause"
+            class="pod-toggle"
+            >{{ "poD.includeHousing" | translate }}</mat-slide-toggle
+          >
+        </div>
+
         <!-- Pekerja yang didatangkan dari luar kota. -->
         <div class="pod-toggles__row">
           <mat-slide-toggle

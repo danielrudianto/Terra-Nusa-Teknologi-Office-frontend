@@ -86,7 +86,12 @@ export class PurchaseOrderCreateDComponent {
     } else {
       qty?.enable();
     }
+
+    // Upah per shift memerlukan ketentuan berapa jam satu shift; klausulnya
+    // dinyalakan sendiri agar tidak tertinggal.
+    this.selaraskanKlausulShift();
   }
+
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
   get typeCode(): string {
     return 'D';
@@ -121,21 +126,6 @@ export class PurchaseOrderCreateDComponent {
   }
 
   isSubmitting = false;
-
-  /** satuan upah — bebas dipilih per baris pekerjaan */
-  units: string[] = [
-    'hari',
-    'kegiatan',
-    'minggu',
-    'bulan',
-    'jam',
-    'orang',
-    'titik',
-    'kg',
-    'm2',
-    'm3',
-    'LS',
-  ];
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -172,6 +162,13 @@ export class PurchaseOrderCreateDComponent {
     // Dua poin pertama SPK tidak selalu berlaku; lihat clause-templates.
     includeShiftClause: new FormControl(true),
     includePlacementClause: new FormControl(true),
+    /*
+     * Klausul tempat tinggal sementara.
+     *
+     * Bawaannya menyala: sebagian besar pekerja PO-D memang didatangkan ke
+     * lokasi proyek. Yang berdomisili di sekitar lokasi dimatikan sendiri.
+     */
+    includeHousingClause: new FormControl(true),
     // Staf lapangan: penagihan bulanan + uraian tugas
     isFieldStaff: new FormControl(false),
     jobDescriptions: new FormArray([]),
@@ -199,6 +196,32 @@ export class PurchaseOrderCreateDComponent {
   }
   removeAt(i: number) {
     this.t.removeAt(i);
+  }
+
+  /**
+   * Ada komponen upah yang dihitung per SHIFT.
+   *
+   * Disimpulkan dari satuan yang benar-benar dipakai, bukan pilihan terpisah
+   * — sama seperti PO-B, agar klausul yang tercetak tidak mungkin berbeda
+   * dari dasar perhitungan yang dibayarkan.
+   */
+  get adaShift(): boolean {
+    return this.t.controls.some(
+      (c) => String(c.getRawValue().unit || '').toLowerCase() === 'shift',
+    );
+  }
+
+  /**
+   * Nyalakan klausul shift begitu ada komponen upah bersatuan shift.
+   *
+   * Sakelarnya tetap dapat dimatikan sendiri bila memang tidak diperlukan;
+   * yang dihindari hanyalah dokumen terbit dengan upah per shift tetapi
+   * tanpa satu pun ketentuan yang menyatakan berapa jam satu shift.
+   */
+  selaraskanKlausulShift(): void {
+    if (!this.adaShift) return;
+    const c = this.formGroup.get('includeShiftClause');
+    if (c && !c.value) c.setValue(true);
   }
 
   /** Satu komponen upah: nominal + satuan + jadwal pembayarannya sendiri. */
@@ -239,7 +262,22 @@ export class PurchaseOrderCreateDComponent {
     if (this.wagesAt(i).length > 1) this.wagesAt(i).removeAt(j);
   }
 
-  readonly wageUnits = ['hari', 'bulan', 'jam', "m'", 'titik', 'lot'];
+  /*
+   * Satuan upah per baris komponen.
+   *
+   * `shift` berdiri sendiri, bukan disamakan dengan `hari`: satu hari kerja
+   * dapat berisi lebih dari satu shift, dan panjang shiftnya disepakati per
+   * dokumen — bukan angka baku.
+   */
+  readonly wageUnits = [
+    'hari',
+    'shift',
+    'bulan',
+    'jam',
+    "m'",
+    'titik',
+    'lot',
+  ];
   /** Tanggal 1–28 saja: 29–31 tidak ada di semua bulan. */
   readonly payDates = Array.from({ length: 28 }, (_, i) => i + 1);
 
@@ -484,6 +522,8 @@ export class PurchaseOrderCreateDComponent {
         includeShiftClause: !!this.formGroup.get('includeShiftClause')?.value,
         includePlacementClause: !!this.formGroup.get('includePlacementClause')
           ?.value,
+        includeHousingClause: !!this.formGroup.get('includeHousingClause')?.value,
+
         isFieldStaff: this.isFieldStaff,
         // Jangka waktu perjanjian: tanggal, atau terikat selesainya proyek.
         workLocation: this.formGroup.get('workLocation')?.value,

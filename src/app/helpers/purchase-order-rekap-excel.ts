@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 
 import { PURCHASE_TYPE_LABELS } from '../constants/purchase-type-label.constant';
+import { vendorDisplayName } from './purchase-order-shared.helper';
 
 /**
  * Rekap purchase order sebuah proyek sebagai berkas Excel.
@@ -130,11 +131,35 @@ export function barisRekapDokumen(po: IRekapPO, items: IRekapItem[]): IBaris[] {
   return hasil;
 }
 
+/**
+ * Nama pemasok, sama persis dengan yang tercetak pada dokumennya.
+ *
+ * Memakai `vendorDisplayName` — bukan merangkai sendiri. Fungsi itu sudah
+ * menangani tiga hal yang sebelumnya salah di sini:
+ *
+ *   - awalan GANDA, ketika nama di katalog sudah memuat "PT" atau "CV"
+ *     sehingga hasilnya menjadi "PT. PT Adhimix";
+ *   - titik yang ditambahkan pada awalan yang memang sudah punya titiknya;
+ *   - prefiks non-entitas seperti "Pribadi", yang seharusnya tidak muncul
+ *     sebagai bagian dari nama sama sekali.
+ *
+ * Rekap dibaca berdampingan dengan dokumen aslinya; nama yang ditulis
+ * berbeda membuat keduanya tampak merujuk pemasok yang tidak sama.
+ */
 export function namaPemasokRekap(po: IRekapPO): string {
-  const nama = (po.supplierName || '').trim();
-  const awalan = (po.supplierPrefix || '').trim();
-  if (!nama) return '—';
-  return awalan ? `${awalan}. ${nama}` : nama;
+  /*
+   * `?? undefined` — bukan melonggarkan tipe `vendorDisplayName`.
+   *
+   * Kolom di sini bertipe `string | null` karena memang begitu bentuknya di
+   * basis data, sedangkan fungsi bersama itu memakai parameter opsional.
+   * Menyesuaikan di titik pemanggilan membiarkan fungsi bersamanya tetap
+   * ketat untuk seluruh pemakai lainnya.
+   */
+  const hasil = vendorDisplayName(
+    po.supplierName ?? undefined,
+    po.supplierPrefix ?? undefined,
+  );
+  return hasil === '-' ? '—' : hasil;
 }
 
 export function sudahDisetujuiRekap(po: IRekapPO): boolean {

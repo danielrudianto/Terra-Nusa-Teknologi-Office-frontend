@@ -2962,7 +2962,8 @@
     "menambahkanSeksiLaporanLapanganDan": "Menambahkan seksi Laporan Lapangan dan Tata Cara Pembayaran bulanan.",
     "tambahTugas": "Tambah tugas",
     "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
-    "hapusTugas": "Hapus tugas"
+    "hapusTugas": "Hapus tugas",
+    "includeHousing": "载明临时住宿条款"
   },
   "salaryDeduction": {
     "bpjs": "社会保险",
@@ -3867,5 +3868,12 @@
     "format": "文件格式",
     "excel": "Excel",
     "pdf": "PDF"
+  },
+  "poPicker": {
+    "judul": "查找采购订单",
+    "sub": "选择文件后，下方字段自动填入",
+    "cari": "按采购订单编号、供应商名称或项目搜索",
+    "kosong": "没有匹配的采购订单。",
+    "draf": "草稿"
   }
 }

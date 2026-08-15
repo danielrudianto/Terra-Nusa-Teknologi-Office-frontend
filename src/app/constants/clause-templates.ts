@@ -25,6 +25,15 @@ export const OFFICE_CONTACT = {
 
 /** Everything a template might need to fill in the variable points (1-5). */
 export interface ClauseContext {
+  /**
+   * Saluran pengadaan asuransi: lewat broker atau langsung ke penanggung.
+   *
+   * Hanya diisi PO asuransi, sehingga dipakai pula sebagai penanda bahwa
+   * dokumen ini asuransi — kalimat termin pembayarannya berbicara tentang
+   * polis, bukan barang.
+   */
+  insuranceChannel?: string | null;
+
   paymentTerm?: string; // CASH | COD | CBD | PPD | CR | CRD
   /** Cara pelunasan sisa setelah uang muka: 'cash' atau 'tempo'. */
   settlementMode?: 'cash' | 'tempo';
@@ -234,6 +243,14 @@ export interface ClauseContext {
   /** Pekerja yang bertugas mendampingi alat saat mobilisasi/demobilisasi. */
   includeEquipmentEscort?: boolean;
   includePlacementClause?: boolean;
+
+  /**
+   * Sertakan klausul tempat tinggal sementara.
+   *
+   * Bawaannya `true` — dibaca sebagai `!== false`, sehingga dokumen lama
+   * yang tidak menyimpan penanda ini tetap memuat klausulnya seperti semula.
+   */
+  includeHousingClause?: boolean;
   /**
    * Staf lapangan (mis. staff engineer): penagihan bulanan, wajib FDP.
    * Uraian tugas ditulis sendiri dan hanya tercetak bila diisi.
@@ -265,13 +282,33 @@ export interface ClauseTemplate {
 function paymentSentence(ctx: ClauseContext): string {
   const credit = Number(ctx.creditTerm) || 0;
   const prepaid = Number(ctx.prepaidTerm) || 0;
+
+  /*
+   * Dokumen ASURANSI tidak menyerahkan barang.
+   *
+   * Yang diserahkan polis beserta dokumen penagihannya, sehingga kalimat
+   * baku yang berbunyi "saat barang diterima" atau "sebelum barang dikirim"
+   * tidak menyatakan peristiwa apa pun yang benar-benar terjadi — dan
+   * karena itu tidak dapat dipakai menentukan kapan pembayarannya jatuh
+   * tempo.
+   *
+   * Dikenali dari `insuranceChannel`, yang memang hanya diisi PO asuransi.
+   */
+  const asuransi = !!ctx.insuranceChannel;
+
   switch (ctx.paymentTerm) {
     case 'CASH':
-      return 'Termin pembayaran adalah tunai (Cash) saat pengambilan barang.';
+      return asuransi
+        ? 'Termin pembayaran adalah tunai (Cash) saat polis diterbitkan.'
+        : 'Termin pembayaran adalah tunai (Cash) saat pengambilan barang.';
     case 'COD':
-      return 'Termin pembayaran adalah tunai saat barang diterima (Cash on Delivery).';
+      return asuransi
+        ? 'Termin pembayaran adalah tunai saat polis dan dokumen penagihan diterima.'
+        : 'Termin pembayaran adalah tunai saat barang diterima (Cash on Delivery).';
     case 'CBD':
-      return 'Termin pembayaran adalah tunai sebelum barang dikirim (Cash before Delivery).';
+      return asuransi
+        ? 'Termin pembayaran adalah tunai sebelum polis diterbitkan.'
+        : 'Termin pembayaran adalah tunai sebelum barang dikirim (Cash before Delivery).';
     case 'PPD':
     case 'CRD': {
       // Cara pelunasan sisa uang muka: tunai saat serah terima, atau tempo
@@ -669,7 +706,21 @@ const D_CLAUSES: ClauseTemplate[] = [
             ]
           : []),
         `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
-        'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+        /*
+         * Tempat tinggal sementara TIDAK selalu disediakan.
+         *
+         * Pekerja yang berdomisili di sekitar lokasi proyek pulang sendiri
+         * setiap hari; mencantumkannya tetap berarti perusahaan menyatakan
+         * kewajiban yang tidak pernah dimaksudkan — dan itu dapat ditagih.
+         *
+         * Bawaannya TETAP disertakan (`!== false`), sehingga dokumen lama
+         * yang tidak menyimpan penanda ini tidak berubah isinya.
+         */
+        ...(ctx.includeHousingClause !== false
+          ? [
+              'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+            ]
+          : []),
 
         // KEWAJIBAN PEKERJA
         'Pekerja wajib melakukan absensi di mula dan akhir shift.',
@@ -732,7 +783,13 @@ export function buildManpowerClauses(
 
   const hak: string[] = [
     `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
-    'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+    // Lihat catatan pada penyusun di atas: bawaannya tetap disertakan agar
+    // dokumen lama tidak berubah isinya.
+    ...(ctx.includeHousingClause !== false
+      ? [
+          'Pekerja berhak mendapat tempat tinggal sementara yang layak dan disediakan oleh perusahaan.',
+        ]
+      : []),
     ...(ctx.includeTransportHome
       ? [
           'Biaya transportasi dari domisili tetap (kampung halaman) pekerja menuju ke domisili perusahaan akan ditanggung oleh perusahaan.',

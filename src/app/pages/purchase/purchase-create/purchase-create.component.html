@@ -97,6 +97,24 @@
               [placeholder]="'purchaseCreate.poName' | translate"
               oninput="this.value = this.value.toUpperCase()"
             />
+            <!--
+              Cari purchase order alih-alih mengetik nomornya.
+
+              Dokumen pembelian mengulang hampir seluruh isi purchase
+              order-nya. Mengetiknya ulang bukan hanya lambat — angka yang
+              diketik ulang dapat berbeda dari dokumen yang ditandatangani,
+              dan selisihnya baru ketahuan saat rekonsiliasi.
+            -->
+            <button
+              matSuffix
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'poPicker.judul' | translate"
+              [matTooltip]="'poPicker.judul' | translate"
+              (click)="bukaPemilihPO()"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
           </mat-form-field>
         </div>
         <div class="col-6">

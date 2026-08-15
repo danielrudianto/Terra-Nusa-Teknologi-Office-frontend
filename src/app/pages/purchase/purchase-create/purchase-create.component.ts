@@ -38,6 +38,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -305,6 +306,50 @@ export class PurchaseCreateComponent {
         }
       },
     );
+  }
+
+  /**
+   * Pilih purchase order, lalu salin datanya ke formulir ini.
+   *
+   * Yang disalin hanya bidang yang artinya SAMA di kedua dokumen. Tanggal
+   * tidak ikut: `date` pada purchase order adalah tanggal terbit dokumennya,
+   * sedangkan di sini tanggal faktur pemasok — dan menyalinnya membuat
+   * jatuh tempo dihitung dari hari yang keliru.
+   *
+   * Nilai yang sudah diisi DITIMPA. Yang menekan tombol ini sedang menyatakan
+   * bahwa dokumen inilah acuannya; membiarkan isian lama bertahan justru
+   * meninggalkan campuran dua sumber yang tidak dapat ditelusuri.
+   */
+  bukaPemilihPO(): void {
+    this.dialog
+      .open(PurchaseOrderPickerComponent, {
+        maxWidth: '96vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((po: any) => {
+        if (!po) return;
+
+        this.metaFormGroup.patchValue({
+          purchaseOrderName: po.purchaseOrderName,
+          supplierID: po.supplierID,
+          supplierName: po.supplierName,
+          projectName: po.projectName,
+          purchaseType: po.purchaseType,
+        });
+
+        this.valueFormGroup.patchValue({
+          dpp: po.dpp,
+          ppn: po.ppn,
+          pphCode: po.pphCode,
+          pphTaxObject: po.pphTaxObject,
+          pphPercentage: po.pphPercentage,
+        });
+
+        // Nilai turunan dihitung ulang dari yang baru dipasang; tanpa ini
+        // total dan nilai pembayaran masih memakai angka sebelumnya.
+        this.calculateTotal();
+      });
   }
 
   openSupplierSelector() {
