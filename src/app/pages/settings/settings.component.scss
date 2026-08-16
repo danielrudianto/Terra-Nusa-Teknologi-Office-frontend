@@ -446,3 +446,21 @@
     margin-left: auto;
   }
 }
+
+/*
+ * Isian umpan isi-otomatis.
+ *
+ * Disembunyikan dengan cara yang membuatnya TETAP terhitung ada oleh
+ * peramban. `display: none` dan `visibility: hidden` membuat Chrome
+ * melewatinya, lalu kembali mencari isian terlihat lain — yaitu kotak
+ * pencarian di navigasi samping, yang justru hendak dilindungi.
+ */
+.st-pw__umpan {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}

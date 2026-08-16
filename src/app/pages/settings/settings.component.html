@@ -277,6 +277,39 @@
     </div>
 
     <div class="st-pw" [formGroup]="passwordFormGroup">
+      <!--
+        Sasaran isi-otomatis, sengaja disembunyikan.
+
+        Chrome MENCARI isian username setiap kali menemukan isian sandi —
+        supaya pengelola sandi punya pasangan yang lengkap. Cara mencarinya:
+        isian teks terdekat SEBELUM isian sandi dalam urutan DOM.
+
+        Di halaman ini, isian terdekat itu adalah kotak pencarian di navigasi
+        samping — dan itulah yang tiba-tiba berisi alamat surel.
+
+        `autocomplete="off"` tidak menghentikannya: pada pencarian username,
+        Chrome sengaja mengabaikannya, karena menganggap situs sedang
+        menghalangi pengelola sandi.
+
+        Yang menghentikannya adalah memberi sasaran yang SAH. Isian ini
+        menerima peran itu, tidak terlihat, dan tidak pernah dikirim ke mana
+        pun.
+
+        `display: none` TIDAK dipakai: Chrome melewati isian yang benar-benar
+        tersembunyi, lalu kembali mencari yang terlihat. Isian ini harus tetap
+        terhitung ada.
+      -->
+      <input
+        class="st-pw__umpan"
+        type="text"
+        name="username"
+        autocomplete="username"
+        tabindex="-1"
+        aria-hidden="true"
+        [value]="emailPengguna"
+        readonly
+      />
+
       <div class="st-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{

@@ -38,6 +38,47 @@
         />
       </mat-form-field>
 
+      <!--
+
+        Sasaran isi-otomatis, sengaja disembunyikan.
+
+      
+
+        Chrome mencari isian username setiap kali menemukan isian
+
+        sandi, dan yang dipilihnya adalah isian teks terdekat SEBELUM
+
+        sandi itu dalam urutan DOM — termasuk kotak pencarian di
+
+        navigasi samping, yang lalu terisi alamat surel.
+
+      
+
+        `autocomplete="off"` tidak menghentikannya; yang
+
+        menghentikannya adalah menyediakan sasaran yang sah.
+
+      -->
+
+      <input
+
+        class="umpan-autofill"
+
+        type="text"
+
+        name="username"
+
+        autocomplete="username"
+
+        tabindex="-1"
+
+        aria-hidden="true"
+
+        readonly
+
+      />
+
+
       <mat-form-field appearance="outline" class="uc-full">
         <mat-label>{{ "user.password" | translate }}</mat-label>
         <input

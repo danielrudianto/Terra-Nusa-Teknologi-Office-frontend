@@ -92,6 +92,17 @@ export class SettingsComponent implements OnInit {
     email: new FormControl('', [Validators.email]),
   });
 
+  /**
+   * Alamat surel pengguna, untuk isian umpan isi-otomatis.
+   *
+   * Diisi dengan nilai yang benar — bukan dikosongkan — supaya bila Chrome
+   * menyimpannya sebagai pasangan sandi baru, yang tersimpan adalah surel
+   * yang tepat.
+   */
+  get emailPengguna(): string {
+    return this.profileFormGroup?.get('email')?.value || '';
+  }
+
   ngOnInit(): void {
     this.userId = this.authService.userId;
     // profile is read only here — it is managed from the User page
