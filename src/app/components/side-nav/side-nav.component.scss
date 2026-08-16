@@ -259,3 +259,38 @@
     }
   }
 }
+
+/*
+ * Versi aplikasi di dasar navigasi.
+ *
+ * Teredam sampai ada pembaruan; ini keterangan, bukan menu. Begitu ada versi
+ * baru, warnanya berubah mengikuti aksen supaya terlihat tanpa perlu
+ * dijelaskan.
+ */
+.snav-versi {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.72rem;
+  color: var(--muted, #9ca3af);
+  text-decoration: none;
+  cursor: default;
+}
+
+.snav-versi__kode {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  opacity: 0.75;
+}
+
+.snav-versi--baru {
+  color: var(--brand-strong);
+  font-weight: 600;
+  cursor: pointer;
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}

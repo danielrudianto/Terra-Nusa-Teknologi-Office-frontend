@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -28,6 +28,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
 import { AvatarBuilderComponent } from '../../components/avatar/avatar-builder/avatar-builder.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { VersiService } from 'src/app/services/versi.service';
 import {
   AppLang,
   LangOption,
@@ -54,6 +55,8 @@ import {
   styleUrl: './settings.component.scss',
 })
 export class SettingsComponent implements OnInit {
+  readonly versi = inject(VersiService);
+
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,

@@ -2130,7 +2130,14 @@
     "passwordFailed": "Couldn't change the password. Please try again.",
     "textSm": "Small",
     "textMd": "Normal",
-    "textLg": "Large"
+    "textLg": "Large",
+    "versi": "App version",
+    "versiSub": "Details of the running build",
+    "versiNomor": "Version",
+    "versiTanggal": "Built",
+    "versiKode": "Build code",
+    "versiPeriksa": "Check for updates",
+    "versiDiperiksa": "Last checked"
   },
   "allowanceForm": {
     "title": "Add Allowance",
@@ -3985,6 +3992,7 @@
   },
   "app": {
     "versiBaru": "A new version is available. Reload to use it.",
-    "muatUlang": "Reload"
+    "muatUlang": "Reload",
+    "versiBaruSingkat": "Update available"
   }
 }

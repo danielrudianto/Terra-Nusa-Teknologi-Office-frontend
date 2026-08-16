@@ -2130,7 +2130,14 @@
     "passwordFailed": "Kata sandi gagal diganti. Coba lagi.",
     "textSm": "Kecil",
     "textMd": "Normal",
-    "textLg": "Besar"
+    "textLg": "Besar",
+    "versi": "Versi aplikasi",
+    "versiSub": "Keterangan build yang sedang berjalan",
+    "versiNomor": "Versi",
+    "versiTanggal": "Dibangun",
+    "versiKode": "Kode build",
+    "versiPeriksa": "Periksa pembaruan",
+    "versiDiperiksa": "Terakhir diperiksa"
   },
   "allowanceForm": {
     "title": "Tambah Allowance",
@@ -3985,6 +3992,7 @@
   },
   "app": {
     "versiBaru": "Ada pembaruan aplikasi. Muat ulang untuk memakainya.",
-    "muatUlang": "Muat ulang"
+    "muatUlang": "Muat ulang",
+    "versiBaruSingkat": "Pembaruan tersedia"
   }
 }

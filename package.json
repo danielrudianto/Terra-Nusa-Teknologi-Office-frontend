@@ -1,6 +1,6 @@
 {
   "name": "terra-nusa-teknologi-office-frontend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,7 +8,9 @@
     "start:dev": "ng serve --port 3000",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "prebuild": "node scripts/versi.js",
+    "prestart": "node scripts/versi.js"
   },
   "private": true,
   "dependencies": {

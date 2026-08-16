@@ -2130,7 +2130,14 @@
     "passwordFailed": "密码修改失败，请重试。",
     "textSm": "小",
     "textMd": "标准",
-    "textLg": "大"
+    "textLg": "大",
+    "versi": "应用版本",
+    "versiSub": "当前运行版本的信息",
+    "versiNomor": "版本",
+    "versiTanggal": "构建时间",
+    "versiKode": "构建代码",
+    "versiPeriksa": "检查更新",
+    "versiDiperiksa": "上次检查"
   },
   "allowanceForm": {
     "title": "添加津贴",
@@ -3985,6 +3992,7 @@
   },
   "app": {
     "versiBaru": "有新版本可用，请重新加载以使用。",
-    "muatUlang": "重新加载"
+    "muatUlang": "重新加载",
+    "versiBaruSingkat": "有可用更新"
   }
 }

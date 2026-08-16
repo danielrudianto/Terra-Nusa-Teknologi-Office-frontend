@@ -334,4 +334,67 @@
       </div>
     </div>
   </section>
+
+  <!--
+    Versi aplikasi.
+
+    Ditaruh paling bawah karena jarang dibutuhkan — tetapi ketika dibutuhkan,
+    biasanya sedang ada laporan bug, dan yang menolong bukan nomor versinya
+    melainkan COMMIT-nya: satu baris itu menunjuk persis ke keadaan kode yang
+    dipakai orang tersebut.
+  -->
+  <section class="st-card">
+    <div class="st-card__head">
+      <span class="st-card__icon">
+        <mat-icon>info</mat-icon>
+      </span>
+      <div class="st-card__titles">
+        <h2 class="st-card__title">{{ "settings.versi" | translate }}</h2>
+        <span class="st-card__desc">{{ "settings.versiSub" | translate }}</span>
+      </div>
+    </div>
+
+    <div class="st-versi">
+      <div class="st-versi__baris">
+        <span class="st-versi__k">{{ "settings.versiNomor" | translate }}</span>
+        <span class="st-versi__v">{{ versi.versi.nomor }}</span>
+      </div>
+      <div class="st-versi__baris">
+        <span class="st-versi__k">{{ "settings.versiTanggal" | translate }}</span>
+        <span class="st-versi__v">{{
+          versi.versi.tanggal | date: "d MMM yyyy, HH:mm"
+        }}</span>
+      </div>
+      <div class="st-versi__baris">
+        <span class="st-versi__k">{{ "settings.versiKode" | translate }}</span>
+        <span class="st-versi__v st-versi__v--kode">{{
+          versi.versi.commit
+        }}</span>
+      </div>
+
+      @if (versi.adaPembaruan()) {
+        <div class="st-versi__baru">
+          <mat-icon>system_update_alt</mat-icon>
+          <span>{{ "app.versiBaru" | translate }}</span>
+          <button mat-flat-button color="primary" type="button"
+                  (click)="versi.muatUlang()">
+            {{ "app.muatUlang" | translate }}
+          </button>
+        </div>
+      } @else {
+        <div class="st-versi__aksi">
+          <span class="st-versi__periksa">
+            @if (versi.diperiksa(); as t) {
+              {{ "settings.versiDiperiksa" | translate }}
+              {{ t | date: "HH:mm" }}
+            }
+          </span>
+          <button mat-stroked-button type="button"
+                  (click)="versi.periksaSekarang()">
+            {{ "settings.versiPeriksa" | translate }}
+          </button>
+        </div>
+      }
+    </div>
+  </section>
 </div>

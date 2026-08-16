@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LogoComponent } from '../logo/logo.component';
+import { VersiService } from 'src/app/services/versi.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-side-nav',
@@ -15,12 +17,15 @@ import { LogoComponent } from '../logo/logo.component';
     FormsModule,
     RouterModule,
     SideNavItemComponent,
+    MatIconModule,
   ],
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss'],
   standalone: true,
 })
 export class SideNavComponent implements OnInit {
+  readonly versi = inject(VersiService);
+
   @Input('items') items: any[] = [];
 
   /**

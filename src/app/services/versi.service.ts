@@ -1,5 +1,6 @@
 import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { VERSI } from '../versi';
 
 /**
  * Memantau apakah ada versi baru yang sudah ter-deploy.
@@ -30,6 +31,18 @@ export class VersiService {
 
   /** Sidik jari build yang sedang berjalan; diisi saat pemeriksaan pertama. */
   private sekarang: string | null = null;
+
+  /**
+   * Versi yang sedang dipakai.
+   *
+   * Dibangkitkan saat build oleh `scripts/versi.js`, bukan diketik tangan:
+   * berkas versi yang diperbarui manual cepat atau lambat tertinggal, dan
+   * versi yang salah lebih menyesatkan daripada tidak ada versi sama sekali.
+   */
+  readonly versi = VERSI;
+
+  /** Waktu pemeriksaan terakhir; ditampilkan di halaman Pengaturan. */
+  readonly diperiksa = signal<Date | null>(null);
 
   /** Menyala ketika server sudah memuat build yang berbeda. */
   readonly adaPembaruan = signal(false);
@@ -77,6 +90,7 @@ export class VersiService {
       .subscribe({
         next: (isi) => {
           const sidik = this.sidikJari(isi);
+          this.zone.run(() => this.diperiksa.set(new Date()));
 
           if (this.sekarang === null) {
             this.sekarang = sidik;
@@ -103,6 +117,16 @@ export class VersiService {
   private sidikJari(html: string): string {
     const cocok = html.match(/(main|polyfills|styles|chunk)-[A-Z0-9]+\.(js|css)/g);
     return (cocok || []).sort().join('|');
+  }
+
+  /**
+   * Periksa sekarang juga, tanpa menunggu jadwal.
+   *
+   * Dipakai tombol di halaman Pengaturan: yang menekannya ingin tahu
+   * keadaan saat ini, bukan keadaan lima menit lalu.
+   */
+  periksaSekarang(): void {
+    this.periksa();
   }
 
   /** Muat ulang halaman ke build terbaru. */

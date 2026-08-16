@@ -138,6 +138,28 @@
         [icon]="i.icon"
         [showPin]="false"
       />
+
+      <!--
+        Versi aplikasi, hanya untuk dibaca.
+
+        Ditaruh di dasar navigasi karena di situlah orang mencarinya, dan
+        karena tempat itu tidak pernah bersaing dengan isi halaman.
+
+        Menyala ketika ada pembaruan; menekannya membuka halaman Pengaturan,
+        bukan memuat ulang langsung. Yang sedang mengisi formulir purchase
+        order akan kehilangan seluruh isiannya bila halaman dimuat ulang
+        tanpa ia sadari.
+      -->
+      <a class="snav-versi" [class.snav-versi--baru]="versi.adaPembaruan()"
+         routerLink="/Settings">
+        @if (versi.adaPembaruan()) {
+          <mat-icon>system_update_alt</mat-icon>
+          <span>{{ "app.versiBaruSingkat" | translate }}</span>
+        } @else {
+          <span>v{{ versi.versi.nomor }}</span>
+          <span class="snav-versi__kode">{{ versi.versi.commit }}</span>
+        }
+      </a>
     </div>
   </div>
 </div>
