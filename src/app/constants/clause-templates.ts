@@ -1490,6 +1490,17 @@ export interface Pasal4Context {
   standbyBiaya?: number | string;
   /** Berlaku setelah berapa hari standby berturut-turut. */
   standbyHari?: number | string;
+
+  /**
+   * Pembagian tanggungan per butir, dipakai pekerjaan bor.
+   *
+   * Bila kosong, kalimatnya memakai bentuk lama — seluruh butir pada PIHAK
+   * PERTAMA, termasuk bobokan pondasi eksisting.
+   */
+  tanggungan?: Record<string, 'pertama' | 'kedua'>;
+
+  /** Poin tambahan, mis. bobokan pondasi bila proyeknya memerlukan. */
+  poinTambahan?: string[];
 }
 
 const PIHAK: Record<'pertama' | 'kedua', string> = {
@@ -1505,10 +1516,89 @@ const PIHAK: Record<'pertama' | 'kedua', string> = {
  * sebagian tidak menerapkannya. Menuliskannya tetap dengan angka bawaan
  * membuat dokumen menyebut nominal yang tidak pernah disepakati.
  */
+/**
+ * Butir yang dapat dipindahkan antar pihak pada pekerjaan bor.
+ *
+ * Urutannya mengikuti urutan pada dokumen lama, sehingga kalimat yang
+ * tersusun tetap terbaca seperti yang sudah biasa dibaca vendor — hanya
+ * pembagian pihaknya yang kini dapat berbeda.
+ *
+ * Bobokan pondasi eksisting SENGAJA tidak ada di sini: ia tidak selalu ada
+ * pada proyeknya, dan menyebutnya ketika tidak ada membuat dokumen memuat
+ * kewajiban atas pekerjaan yang tidak pernah dikerjakan. Bila diperlukan, ia
+ * ditambahkan sebagai poin tersendiri.
+ */
+export const BUTIR_TANGGUNGAN_BOR = [
+  { kunci: 'materialBesi', teks: 'material besi' },
+  { kunci: 'materialBeton', teks: 'material beton' },
+  { kunci: 'aksesLokasi', teks: 'akses lokasi' },
+  { kunci: 'persiapanLahan', teks: 'persiapan lahan' },
+  { kunci: 'perataanLokasi', teks: 'perataan lokasi pekerjaan' },
+  { kunci: 'penentuanTitik', teks: 'penentuan titik (survey)' },
+  { kunci: 'keamananPengawalan', teks: 'keamanan & pengawalan keluar masuk alat' },
+  { kunci: 'bongkarMuat', teks: 'uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya' },
+] as const;
+
+/**
+ * Susun kalimat tanggungan dari pembagian pihak.
+ *
+ * Menghasilkan SATU kalimat bila seluruh butir jatuh pada pihak yang sama,
+ * dan DUA bila terbagi. Bukan satu kalimat per butir: delapan kalimat yang
+ * masing-masing menyebut satu hal membuat pasal ini tiga kali lebih panjang
+ * tanpa menambah satu pun keterangan.
+ */
+function kalimatTanggungan(
+  pilihan: Record<string, 'pertama' | 'kedua'> | undefined,
+): string[] {
+  const p = pilihan ?? {};
+  const perPihak: Record<'pertama' | 'kedua', string[]> = {
+    pertama: [],
+    kedua: [],
+  };
+
+  for (const b of BUTIR_TANGGUNGAN_BOR) {
+    // Tanpa pilihan, butirnya jatuh ke PIHAK PERTAMA — sama seperti bunyi
+    // dokumen sebelum pembagian ini ada, sehingga yang tidak menyentuhnya
+    // mendapat kalimat yang sudah dikenalnya.
+    perPihak[p[b.kunci] ?? 'pertama'].push(b.teks);
+  }
+
+  const susun = (daftar: string[], pihak: 'pertama' | 'kedua'): string => {
+    // Huruf pertama dibesarkan pada kalimatnya sendiri, bukan pada daftar
+    // butirnya: butir yang sama dapat muncul di tengah kalimat lain.
+    const isi = daftar.join(', ');
+    return `${isi.charAt(0).toUpperCase()}${isi.slice(1)} menjadi tanggung jawab ${PIHAK[pihak]}.`;
+  };
+
+  const hasil: string[] = [];
+  if (perPihak.pertama.length) hasil.push(susun(perPihak.pertama, 'pertama'));
+  if (perPihak.kedua.length) hasil.push(susun(perPihak.kedua, 'kedua'));
+  return hasil;
+}
+
 export function bangunPasal4(ctx: Pasal4Context = {}): string[] {
-  const baris: string[] = [
-    'Material besi dan beton, akses lokasi, persiapan lahan, perataan lokasi pekerjaan, bobokan pondasi eksisting, penentuan titik (survey), keamanan & pengawalan keluar masuk alat, uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya menjadi tanggung jawab PIHAK PERTAMA.',
-  ];
+  /*
+   * Pembagian tanggungan hanya berlaku bila DIMINTA.
+   *
+   * Tanpa `tanggungan`, kalimatnya persis seperti sebelumnya — termasuk
+   * bobokan pondasi eksisting yang dulu selalu disebut. Itu disengaja:
+   * sembilan puluh dokumen sudah terbit dengan bunyi tersebut, dan mencetak
+   * ulang salah satunya tidak boleh menghasilkan kalimat yang berbeda dari
+   * yang ditandatangani vendor.
+   */
+  const baris: string[] = ctx.tanggungan
+    ? kalimatTanggungan(ctx.tanggungan)
+    : [
+        'Material besi dan beton, akses lokasi, persiapan lahan, perataan lokasi pekerjaan, bobokan pondasi eksisting, penentuan titik (survey), keamanan & pengawalan keluar masuk alat, uang bongkar muat, uang kebisingan dan koordinasi lingkungan lainnya menjadi tanggung jawab PIHAK PERTAMA.',
+      ];
+
+  // Poin tambahan disisipkan setelah kalimat tanggungan, sebelum asuransi.
+  //
+  // Bobokan pondasi eksisting masuk di sini bila proyeknya memerlukannya.
+  for (const p of ctx.poinTambahan ?? []) {
+    const t = String(p ?? '').trim();
+    if (t) baris.push(t);
+  }
 
   const penanggung = ctx.penanggungAsuransi ?? 'pertama';
   if (penanggung !== 'tidakBerlaku') {

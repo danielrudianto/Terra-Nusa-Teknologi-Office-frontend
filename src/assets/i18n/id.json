@@ -2862,7 +2862,12 @@
     "standbyHari": "Berlaku setelah",
     "standbyHariHint": "Hari standby berturut-turut",
     "unitRateKet": "Nilai dihitung dari volume × harga satuan tiap baris pekerjaan.",
-    "lumpSumKet": "Satu harga untuk seluruh lingkup; kolom harga per baris tidak dipakai."
+    "lumpSumKet": "Satu harga untuk seluruh lingkup; kolom harga per baris tidak dipakai.",
+    "boronganBor": "Borongan — pekerjaan bor",
+    "tanggunganKet": "Tentukan pihak yang menanggung tiap butir. Yang sama pihaknya digabung menjadi satu kalimat pada dokumen.",
+    "pihakPertamaSingkat": "PERTAMA",
+    "pihakKeduaSingkat": "KEDUA",
+    "pajak": "PAJAK"
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",

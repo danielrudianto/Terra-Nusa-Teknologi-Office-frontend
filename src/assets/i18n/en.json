@@ -2862,7 +2862,12 @@
     "standbyHari": "Applies after",
     "standbyHariHint": "Consecutive standby days",
     "unitRateKet": "Value is volume × unit price on each work line.",
-    "lumpSumKet": "One price for the whole scope; per-line prices are not used."
+    "lumpSumKet": "One price for the whole scope; per-line prices are not used.",
+    "boronganBor": "Lump sum — drilling work",
+    "tanggunganKet": "Choose which party bears each item. Items on the same side are merged into one sentence in the document.",
+    "pihakPertamaSingkat": "FIRST",
+    "pihakKeduaSingkat": "SECOND",
+    "pajak": "TAX"
   },
   "poA": {
     "shipmentService": "Goods delivery service",

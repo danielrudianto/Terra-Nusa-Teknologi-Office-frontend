@@ -2862,7 +2862,12 @@
     "standbyHari": "生效条件",
     "standbyHariHint": "连续待机天数",
     "unitRateKet": "金额按各工作行的数量×单价计算。",
-    "lumpSumKet": "整个范围一口价；不使用逐行单价。"
+    "lumpSumKet": "整个范围一口价；不使用逐行单价。",
+    "boronganBor": "包工 — 钻孔工程",
+    "tanggunganKet": "选择每一项由哪一方承担。同一方的项目在单据中合并为一句。",
+    "pihakPertamaSingkat": "甲方",
+    "pihakKeduaSingkat": "乙方",
+    "pajak": "税务"
   },
   "poA": {
     "shipmentService": "货物运输服务",

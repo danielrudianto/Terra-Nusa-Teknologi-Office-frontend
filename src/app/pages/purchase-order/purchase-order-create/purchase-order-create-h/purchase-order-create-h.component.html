@@ -153,6 +153,17 @@
               <mat-option value="borongan">{{
                 "poH.borongan" | translate
               }}</mat-option>
+              <!--
+                Borongan bor dipisahkan dari borongan umum.
+
+                Klausul Pasal 4 dan 5 pada dokumen ini ditulis untuk pekerjaan
+                bor — bobokan pondasi eksisting, standby alat, penentuan titik
+                survey. Dipakai untuk subkontraktor listrik atau atap, isinya
+                menyebut kewajiban atas hal yang tidak ada dalam pekerjaannya.
+              -->
+              <mat-option value="borongan-bor">{{
+                "poH.boronganBor" | translate
+              }}</mat-option>
               <mat-option value="mandor-bor">{{
                 "poH.mandorBor" | translate
               }}</mat-option>
@@ -834,6 +845,47 @@
         </div>
       }
 
+      <!--
+        PPh pada bentuk PENUH.
+
+        Sebelumnya hanya bentuk ringkas yang punya pemilih ini, sehingga
+        borongan dan mandor bor — yang justru bernilai paling besar — terbit
+        tanpa kode objek pajak sama sekali.
+      -->
+      @if (!isRingkas) {
+        <div class="poh-card">
+          <div class="poh-section__title poh-section__title--flush">
+            {{ "poH.pajak" | translate }}
+          </div>
+          <div class="poh-grid">
+            <mat-form-field appearance="outline" class="poh-span2">
+              <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="pphCode"
+                readonly
+                (click)="openPphSelector()"
+                [placeholder]="'poField.pilihKodePph' | translate"
+              />
+              <button
+                matSuffix
+                type="button"
+                class="poh-pphbtn"
+                (click)="openPphSelector()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+              @if (formGroup.value.pphTaxObject) {
+                <mat-hint>
+                  {{ formGroup.value.pphPercentage }}% —
+                  {{ formGroup.value.pphTaxObject }}
+                </mat-hint>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      }
+
       <!-- ===== Pasal 4 — Keterangan ===== -->
       @if (!isRingkas) {
         <div class="poh-card">
@@ -844,6 +896,40 @@
             <button type="button" class="poh-add" (click)="addKeterangan()">
               <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
           </div>
+
+          <!--
+            Pembagian tanggungan, HANYA untuk pekerjaan bor.
+
+            Borongan umum tidak menampilkannya: butir-butir ini — bobokan
+            pondasi, penentuan titik survey, keamanan keluar masuk alat —
+            khas pekerjaan bor, dan menampilkannya pada subkontraktor listrik
+            berarti menawarkan pilihan atas hal yang tidak ada dalam
+            pekerjaannya.
+          -->
+          @if (isBoronganBor) {
+            <div class="poh-tanggungan">
+              <p class="poh-tanggungan__ket">
+                {{ "poH.tanggunganKet" | translate }}
+              </p>
+              @for (b of butirTanggungan; track b.kunci) {
+                <div class="poh-tanggungan__baris">
+                  <span class="poh-tanggungan__nama">{{ b.teks }}</span>
+                  <mat-button-toggle-group
+                    [value]="nilaiTanggungan(b.kunci)"
+                    (change)="setTanggungan(b.kunci, $event.value)"
+                    class="poh-tanggungan__pilih"
+                  >
+                    <mat-button-toggle value="pertama">
+                      {{ "poH.pihakPertamaSingkat" | translate }}
+                    </mat-button-toggle>
+                    <mat-button-toggle value="kedua">
+                      {{ "poH.pihakKeduaSingkat" | translate }}
+                    </mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
+              }
+            </div>
+          }
 
           <!-- Dua poin baku yang mengikuti kesepakatan. -->
           <div class="poh-pasal4">

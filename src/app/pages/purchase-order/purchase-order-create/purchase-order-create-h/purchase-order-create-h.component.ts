@@ -44,6 +44,7 @@ import {
   dokumenPasal5,
   type LampiranPasal5,
   bangunPasal4,
+  BUTIR_TANGGUNGAN_BOR,
   type PenanggungAsuransi,
 } from '../../../../constants/clause-templates';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -56,6 +57,7 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-purchase-order-create-h',
@@ -80,6 +82,7 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatSlideToggleModule,
     NgxMaskDirective,
     HeaderTitleComponent,
+    MatButtonToggleModule,
   ],
   templateUrl: './purchase-order-create-h.component.html',
   styleUrl: './purchase-order-create-h.component.scss',
@@ -304,6 +307,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
    * pekerjaan yang sama, dan itu menyulitkan penelusuran nanti.
    */
   private readonly JOB_TYPE_DEFAULTS: Record<string, string> = {
+    'borongan-bor': 'Pekerjaan Konstruksi Bore Pile',
     'mandor-bor': 'Pekerjaan Pengeboran',
     'mandor-cor': 'Pekerjaan Pengecoran',
     'mandor-besi': 'Pekerjaan Pembesian',
@@ -327,6 +331,42 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     if (kini === '' || Object.values(this.JOB_TYPE_DEFAULTS).includes(kini)) {
       jobType?.setValue(baru);
     }
+  }
+
+  /**
+   * Borongan pekerjaan BOR.
+   *
+   * Dipisahkan dari borongan umum karena klausulnya berbeda: Pasal 4 di sini
+   * membagi tanggungan per butir, sedangkan borongan umum menuliskannya
+   * sendiri baris per baris.
+   */
+  /** Butir yang dapat dipindahkan antar pihak; dibaca templat. */
+  readonly butirTanggungan = BUTIR_TANGGUNGAN_BOR;
+
+  nilaiTanggungan(kunci: string): 'pertama' | 'kedua' {
+    const v = this.formGroup.get('tanggungan')?.value ?? {};
+    return v[kunci] ?? 'pertama';
+  }
+
+  /**
+   * Pindahkan satu butir ke pihak lain.
+   *
+   * Objeknya DIGANTI, bukan disunting di tempat: Angular membandingkan
+   * rujukan, dan menyunting isi objek yang sama membuat perubahannya tidak
+   * terlihat sampai ada hal lain yang memicu penggambaran ulang.
+   */
+  setTanggungan(kunci: string, pihak: 'pertama' | 'kedua'): void {
+    const kini = this.formGroup.get('tanggungan')?.value ?? {};
+    this.formGroup.get('tanggungan')?.setValue({ ...kini, [kunci]: pihak });
+  }
+
+  get isBoronganBor(): boolean {
+    return this.formGroup.get('workScope')?.value === 'borongan-bor';
+  }
+
+  /** Bentuk penuh yang BUKAN pekerjaan bor. */
+  get isBoronganUmum(): boolean {
+    return this.formGroup.get('workScope')?.value === 'borongan';
   }
 
   get isBorongan(): boolean {
@@ -417,6 +457,24 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     // Jenis pekerjaan menentukan rangkaian klausul; versi template tetap 1.0
     // dan hanya naik bila redaksinya direvisi.
     workScope: new FormControl('borongan', Validators.required),
+
+    /*
+     * Pembagian tanggungan Pasal 4, khusus pekerjaan bor.
+     *
+     * Bawaannya PIHAK PERTAMA untuk seluruh butir — sama seperti bunyi
+     * dokumen sebelum pembagian ini ada, sehingga yang tidak menyentuhnya
+     * menghasilkan kalimat yang sudah dikenal vendor.
+     */
+    tanggungan: new FormControl<Record<string, 'pertama' | 'kedua'>>({
+      materialBesi: 'pertama',
+      materialBeton: 'pertama',
+      aksesLokasi: 'pertama',
+      persiapanLahan: 'pertama',
+      perataanLokasi: 'pertama',
+      penentuanTitik: 'pertama',
+      keamananPengawalan: 'pertama',
+      bongkarMuat: 'pertama',
+    }),
     mobilizationNoticeDays: new FormControl(7, [Validators.min(0)]),
     // Perorangan biasanya 'sejak-mulai', perusahaan memakai batas pekan tetap
     // Bentuk lama 'sejak-mulai' dibuang: yang dipakai di lapangan adalah
@@ -656,6 +714,17 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         standbyBerlaku: v.standbyBerlaku,
         standbyBiaya: v.standbyBiaya,
         standbyHari: v.standbyHari,
+
+        /*
+         * Pembagian tanggungan HANYA dikirim untuk pekerjaan bor.
+         *
+         * Dokumen lain — termasuk sembilan puluh yang sudah terbit dengan
+         * `workScope: 'borongan'` — tidak menyertakannya, sehingga
+         * kalimatnya tetap persis seperti yang ditandatangani vendor.
+         */
+        tanggungan: this.isBoronganBor
+          ? (v.tanggungan ?? undefined)
+          : undefined,
       }),
       ...this.keteranganValues,
     ];

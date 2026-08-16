@@ -1444,3 +1444,56 @@ app-wysiwyg {
   width: 100%;
   margin-top: 1rem;
 }
+
+/* Pembagian tanggungan Pasal 4 pada pekerjaan bor. */
+.poh-tanggungan {
+  padding: 0 1rem 0.5rem;
+}
+
+.poh-tanggungan__ket {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}
+
+.poh-tanggungan__baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line, #eef1f6);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.poh-tanggungan__nama {
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+/*
+ * Pilihan dibuat kecil supaya delapan baris ini tidak mendominasi kartu —
+ * ia keterangan pembagian, bukan isian utama dokumen.
+ */
+.poh-tanggungan__pilih {
+  flex: 0 0 auto;
+
+  .mat-button-toggle-label-content {
+    font-size: 0.72rem;
+    line-height: 30px;
+    padding: 0 0.7rem;
+  }
+}
+
+.poh-pphbtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #6b7280);
+  display: inline-flex;
+  align-items: center;
+}
