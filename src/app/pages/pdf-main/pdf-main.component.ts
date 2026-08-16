@@ -32,8 +32,13 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
  * angular.json, sehingga versinya selalu sama dengan paket yang terpasang —
  * jalur CDN sebelumnya menyebut 3.11.174 secara harfiah, dan akan salah
  * diam-diam begitu paketnya dinaikkan.
+ *
+ * Berakhiran `.mjs`, bukan `.js`. Sejak pdfjs 5, paketnya menjadi ESM murni
+ * dan `pdf.worker.min.js` tidak ada lagi. Nama yang salah TIDAK menggagalkan
+ * build: entri `assets` sekadar tidak menyalin apa pun, dan halaman PDF baru
+ * gagal ketika seseorang membukanya.
  */
-pdfjslib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.js';
+pdfjslib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.mjs';
 
 /**
  * Satu coretan pada halaman.

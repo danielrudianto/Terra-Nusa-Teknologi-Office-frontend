@@ -15,10 +15,14 @@ export class PdfThumbnailService {
       const loadingTask = this.pdfjs.getDocument(pdfUrl);
       const pdf: pdfjsLib.PDFDocumentProxy = await loadingTask.promise;
       const thumbnails: string[] = [];
-      for (let pageNum = 0; pageNum <= pdf.numPages; pageNum++) {
-        console.log(`masuk sini oom ${pageNum}`);
+      // Halaman pdfjs dinomori dari SATU, bukan nol.
+      //
+      // Perulangan sebelumnya dimulai dari 0 dan berakhir di `numPages`,
+      // sehingga meminta satu halaman yang tidak ada di awal dan satu lagi
+      // di akhir. `getPage(0)` melempar galat, dan seluruh pembuatan
+      // thumbnail berhenti sebelum satu pun jadi.
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page: pdfjsLib.PDFPageProxy = await pdf.getPage(pageNum);
-        console.log(`ini ada page nya ${page}`);
         // Get the natural viewport (scale 1) to compute the scaling factor
         const naturalViewport = page.getViewport({ scale: 1 });
         const scale = thumbnailWidth / naturalViewport.width;

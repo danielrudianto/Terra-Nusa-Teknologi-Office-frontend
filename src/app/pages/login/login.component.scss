@@ -1,9 +1,69 @@
 .login__wrapper {
   width: 100%;
-  height: 100%;
+
+  /*
+   * Tinggi diukur dari LAYAR, bukan dari induknya.
+   *
+   * `height: 100%` bergantung pada tinggi elemen di atasnya; bila salah satu
+   * dalam rantai itu tidak punya tinggi tetap, hasilnya menciut mengikuti
+   * isinya — dan sisa layar di bawahnya tampak putih kosong.
+   *
+   * `dvh` dipakai, bukan `vh`: di peramban ponsel, `vh` mengabaikan bilah
+   * alamat yang muncul dan hilang, sehingga halaman menjadi sedikit lebih
+   * panjang daripada layarnya dan ikut tergulir. `dvh` mengikuti tinggi yang
+   * benar-benar terlihat.
+   *
+   * `100vh` tetap ditulis lebih dulu sebagai cadangan untuk peramban lama
+   * yang belum mengenal `dvh`.
+   */
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  /*
+   * `height` DIBIARKAN mengikuti isi, tetapi rantai `h-100` di dalamnya
+   * tetap bekerja karena wadah ini sendiri sudah menata isinya di tengah.
+   *
+   * Templatnya memakai `container h-100 > row h-100 > col h-100` — Bootstrap
+   * `height: 100%` bertingkat tiga, yang masing-masing bergantung pada
+   * tinggi induknya. Memberi `height: auto` di sini membuat seluruh rantai
+   * itu menciut, dan kartunya menempel ke atas.
+   *
+   * Dengan `min-height` pada wadah dan penataan flex di bawah, isinya berada
+   * di tengah pada layar tinggi dan tetap dapat digulir pada layar pendek —
+   * tanpa bergantung pada rantai `h-100` sama sekali.
+   */
   background: linear-gradient(132.65deg, #ffffff -7.38%, #47b2f9 137.63%);
   margin: 0;
-  overflow: hidden;
+
+  /*
+   * Hanya guliran MENDATAR yang ditutup.
+   *
+   * `overflow: hidden` menutup keduanya — dan pada layar ponsel yang pendek,
+   * atau saat papan ketik muncul, itu memotong isian sandi sehingga tidak
+   * dapat dijangkau sama sekali. Yang perlu ditahan hanyalah pergeseran ke
+   * samping akibat gambar latarnya.
+   */
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  /*
+   * Isi ditata di TENGAH secara tegak.
+   *
+   * Sebelumnya penataan itu menumpang pada `height: 100%` — begitu tingginya
+   * diubah menjadi `min-height`, kartunya menempel ke atas dan sisa layar
+   * menganga di bawahnya.
+   *
+   * `justify-content: center` bekerja bersama `min-height`: pada layar
+   * tinggi, kartunya berada di tengah; pada layar pendek — atau saat papan
+   * ketik muncul — wadahnya memanjang mengikuti isi dan dapat digulir, bukan
+   * memotong isian sandi.
+   */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 
   #rock {
     position: absolute;
@@ -31,6 +91,12 @@
   }
 
   .login-form__wrapper {
+  /*
+   * Batas lebar; tanpa ini `width: 80%` membuat kartunya melar mengikuti
+   * layar lebar, dan isian di dalamnya berjauhan tanpa alasan.
+   */
+  max-width: 460px;
+
     width: 80%;
     position: relative;
 

@@ -586,3 +586,35 @@ html[data-density="compact"] {
     line-height: 1.4;
   }
 }
+
+
+/* ===================================================================
+   LAYAR KECIL
+   =================================================================== */
+
+/*
+ * Teks diperbesar sendiri pada layar ponsel.
+ *
+ * Ukuran di komponen ditulis untuk layar besar — yang terkecil 0.6rem, sekitar
+ * 10 piksel. Pada layar 380px yang dipegang sejauh lengan, ukuran itu tidak
+ * terbaca oleh siapa pun.
+ *
+ * Dinaikkan lewat `--app-text-scale`, bukan dengan menyunting ratusan berkas:
+ * seluruh ukuran mengikuti pengali yang sama, sehingga perbandingan antar
+ * elemen tetap terjaga — judul tetap lebih besar daripada isinya.
+ *
+ * Pengguna yang menyetelnya sendiri lewat Pengaturan tetap menang: nilai dari
+ * SettingsService ditulis pada elemen `html` secara langsung, dan itu lebih
+ * kuat daripada aturan di sini.
+ */
+@media (max-width: 600px) {
+  :root {
+    --app-text-scale: 1.25;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --app-text-scale: 1.2;
+  }
+}
