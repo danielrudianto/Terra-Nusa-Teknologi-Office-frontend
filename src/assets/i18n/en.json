@@ -1175,7 +1175,8 @@
     "tanggalBayar": "Tanggal bayar",
     "nominal": "Nominal",
     "deleteInterpayment": "Delete interpayment",
-    "selectPageOfPayments": "Select page of payments"
+    "selectPageOfPayments": "Select page of payments",
+    "sudahLunasBanner": "This document is fully paid. There is nothing left to pay."
   },
   "employeeForm": {
     "updateSubtitle": "Update employee data",

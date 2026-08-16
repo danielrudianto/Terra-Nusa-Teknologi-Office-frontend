@@ -29,6 +29,19 @@
 
   <form [formGroup]="formGroup">
     <mat-dialog-content class="rpc-content">
+    <!--
+      Alasan tombolnya mati disebutkan, bukan dibiarkan ditebak.
+
+      Tombol yang mati tanpa keterangan membuat orang menekannya berulang
+      lalu mengira aplikasinya rusak.
+    -->
+    @if (sudahLunas) {
+      <div class="plc-banner">
+        <mat-icon>task_alt</mat-icon>
+        <span>{{ "payment.sudahLunasBanner" | translate }}</span>
+      </div>
+    }
+
       <!-- meta chips -->
       <div class="rpc-chips">
         <span class="rpc-chip" *ngIf="metaFormGroup.get('projectName')?.value">
@@ -125,7 +138,7 @@
         type="button"
         class="rpc-submit"
         (click)="onSubmit()"
-        [disabled]="!formGroup.valid || isSubmitting"
+        [disabled]="!formGroup.valid || isSubmitting || sudahLunas"
       >
         {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.bayarReimbursement' | translate) }}
       </button>

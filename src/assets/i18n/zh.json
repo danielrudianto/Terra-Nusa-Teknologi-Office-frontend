@@ -1175,7 +1175,8 @@
     "tanggalBayar": "Tanggal bayar",
     "nominal": "Nominal",
     "deleteInterpayment": "Delete interpayment",
-    "selectPageOfPayments": "Select page of payments"
+    "selectPageOfPayments": "Select page of payments",
+    "sudahLunasBanner": "此单据已付清，没有可支付的余额。"
   },
   "employeeForm": {
     "updateSubtitle": "更新员工数据",

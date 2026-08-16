@@ -26,6 +26,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-reimbursement-payment-create',
@@ -44,6 +45,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     NgxMaskDirective,
     TranslatePipe,
     DialogGeserDirective,
+    MatIconModule,
   ],
   templateUrl: './reimbursement-payment-create.component.html',
   styleUrl: './reimbursement-payment-create.component.scss',
@@ -88,6 +90,21 @@ export class ReimbursementPaymentCreateComponent {
     bankAccountID: new FormControl('', Validators.required),
     amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
   });
+
+  /**
+   * Tidak ada lagi sisa yang dapat dibayarkan.
+   *
+   * Toleransi lima rupiah, sama seperti pada perhitungan `isPaid` di server:
+   * pembulatan pajak menyisakan selisih beberapa rupiah yang bukan kekurangan
+   * bayar, dan tanpa toleransi itu dokumen yang sebenarnya lunas tetap
+   * menerima pembayaran satu rupiah.
+   *
+   * Server tetap menolaknya secara terpisah — ini hanya agar tombolnya tidak
+   * mengundang penekanan yang pasti gagal.
+   */
+  get sudahLunas(): boolean {
+    return (Number(this.totalAmount) || 0) <= 5;
+  }
 
   ngOnInit(): void {
     this.fetchBankData();

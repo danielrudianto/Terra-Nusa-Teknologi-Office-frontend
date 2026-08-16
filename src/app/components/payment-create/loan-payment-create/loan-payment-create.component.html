@@ -9,6 +9,19 @@
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="lpc-content">
+    <!--
+      Alasan tombolnya mati disebutkan, bukan dibiarkan ditebak.
+
+      Tombol yang mati tanpa keterangan membuat orang menekannya berulang
+      lalu mengira aplikasinya rusak.
+    -->
+    @if (sudahLunas) {
+      <div class="plc-banner">
+        <mat-icon>task_alt</mat-icon>
+        <span>{{ "payment.sudahLunasBanner" | translate }}</span>
+      </div>
+    }
+
       <!-- sisa tagihan ditonjolkan: ini angka acuan saat mengisi nominal -->
       <div class="lpc-outstanding">
         <span class="lpc-outstanding__label">
@@ -68,7 +81,7 @@
         type="button"
         class="lpc-cancel"
         (click)="onClose()"
-        [disabled]="isSubmitting"
+        [disabled]="isSubmitting || sudahLunas"
       >
         {{ "loanPayment.cancel" | translate }}
       </button>

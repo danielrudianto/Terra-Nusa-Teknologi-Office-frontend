@@ -27,6 +27,19 @@
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="epc-content">
+    <!--
+      Alasan tombolnya mati disebutkan, bukan dibiarkan ditebak.
+
+      Tombol yang mati tanpa keterangan membuat orang menekannya berulang
+      lalu mengira aplikasinya rusak.
+    -->
+    @if (sudahLunas) {
+      <div class="plc-banner">
+        <mat-icon>task_alt</mat-icon>
+        <span>{{ "payment.sudahLunasBanner" | translate }}</span>
+      </div>
+    }
+
       <!-- meta chips -->
       <div class="epc-chips">
         <span
@@ -208,7 +221,7 @@
       <button
         type="submit"
         class="epc-submit"
-        [disabled]="isLoading || isSubmitting || !formGroup.valid"
+        [disabled]="isLoading || isSubmitting || !formGroup.valid || sudahLunas"
       >
         {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.bayarExpense' | translate) }}
       </button>

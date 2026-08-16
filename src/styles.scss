@@ -618,3 +618,30 @@ html[data-density="compact"] {
     --app-text-scale: 1.2;
   }
 }
+
+/*
+ * Banner "sudah lunas" pada dialog pembuatan pembayaran.
+ *
+ * Di gaya global, bukan disalin ke empat berkas: bentuknya sama di semuanya,
+ * dan menyalinnya berarti perubahan berikutnya harus dikerjakan empat kali.
+ */
+.plc-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--ok-bg);
+  border: 0.5px solid var(--ok-fg);
+  color: var(--ok-fg);
+  font-size: 0.84rem;
+  line-height: 1.4;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}

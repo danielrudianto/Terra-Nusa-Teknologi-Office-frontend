@@ -1175,7 +1175,8 @@
     "tanggalBayar": "Tanggal bayar",
     "nominal": "Nominal",
     "deleteInterpayment": "Delete interpayment",
-    "selectPageOfPayments": "Select page of payments"
+    "selectPageOfPayments": "Select page of payments",
+    "sudahLunasBanner": "Dokumen ini sudah lunas. Tidak ada sisa tagihan yang dapat dibayarkan."
   },
   "employeeForm": {
     "updateSubtitle": "Ubah data karyawan",
