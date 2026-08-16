@@ -48,6 +48,18 @@ export const VERSI = {
 } as const;
 `;
 
+/*
+ * Ditulis ke `src/app/versi.ts`, yang SENGAJA tidak ikut git.
+ *
+ * Berkas yang dibangkitkan tetapi ter-commit akan ditimpa kembali oleh
+ * `git pull` dengan isi lama — sehingga aplikasi menampilkan tanggal dan
+ * commit dari saat berkas itu pertama dibuat, bukan dari build yang sedang
+ * berjalan. Sudah terjadi sekali; tanggalnya beku di 16 Agustus 15:09.
+ *
+ * Karena itu skrip ini WAJIB berjalan sebelum build. Ia dipasang sebagai
+ * `prebuild` di package.json, dan `deploy-fe.sh` memakai `npm run build`
+ * agar tahapan itu tidak terlewat.
+ */
 const tujuan = path.join(akar, 'src', 'app', 'versi.ts');
 fs.writeFileSync(tujuan, isi);
 console.log(`versi ${pkg.version} (${commitPendek()}) ditulis ke src/app/versi.ts`);
