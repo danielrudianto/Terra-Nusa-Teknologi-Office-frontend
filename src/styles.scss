@@ -556,7 +556,12 @@ html[data-density="compact"] {
   display: flex;
   align-items: flex-start;
   gap: 0.7rem;
-  margin: 0 0 1rem;
+
+  /*
+   * Jarak atas diperlukan juga; tanpa itu banner menempel pada elemen di
+   * atasnya dan tampak seperti bagian darinya.
+   */
+  margin: 0.75rem 0 1rem;
   padding: 0.85rem 1rem;
   border-radius: 12px;
   background: var(--warn-soft, #fdf4e3);

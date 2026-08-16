@@ -233,6 +233,13 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   gap: 10px;
   margin-top: 1.25rem;
   padding-top: 1.25rem;
+  /*
+   * Garis pemisah digambar DI SINI saja.
+   *
+   * Sebelumnya `.poh-divider` juga menggambar garis tepat di atas
+   * blok ini, sehingga keduanya tampak sebagai dua garis
+   * berdempetan. Divider-nya dibuang; yang ini sudah cukup.
+   */
   border-top: 1px solid $line;
 }
 .poh-spacer {

@@ -272,8 +272,22 @@
                   <mat-option [value]="n">{{ n }}</mat-option>
                 }
               </mat-autocomplete>
-              <mat-hint>{{ "poH.kodeObjekPajakMenyesuaikanOtomatis" | translate }}</mat-hint>
             </mat-form-field>
+
+            <!--
+              Banner, bukan hint.
+
+              Ini bukan petunjuk pengisian melainkan keterangan tentang apa
+              yang terjadi SENDIRI setelah tarif dipilih — dan hint berukuran
+              kecil di bawah isian mudah terlewat justru pada hal yang
+              mengubah kode objek pajak dokumennya.
+            -->
+            <div class="poh-banner">
+              <mat-icon>info</mat-icon>
+              <span>{{
+                "poH.kodeObjekPajakMenyesuaikanOtomatis" | translate
+              }}</span>
+            </div>
 
             <mat-form-field appearance="outline" class="poh-span2">
               <mat-label>{{ "poH.toolNote" | translate }}</mat-label>
@@ -1298,7 +1312,6 @@
         }
 
         @if (!isRingkas) {
-          <div class="poh-divider"></div>
           <div class="poh-actions">
             <span class="poh-spacer"></span>
             <button
@@ -1357,9 +1370,19 @@
             }
           </div>
 
-          <div class="poh-divider"></div>
           <div class="poh-actions">
             <span class="poh-spacer"></span>
+            <!--
+              Pratinjau ada di bentuk ringkas juga.
+              -->
+            <button
+              type="button"
+              class="poh-previewbtn"
+              [disabled]="isSubmitting"
+              (click)="pratinjau()"
+            >
+              {{ "poForm.preview" | translate }}
+            </button>
             <button
               type="submit"
               class="poh-submit"

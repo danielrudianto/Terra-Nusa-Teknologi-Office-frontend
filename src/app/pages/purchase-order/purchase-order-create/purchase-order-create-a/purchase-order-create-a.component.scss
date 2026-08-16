@@ -779,6 +779,15 @@
   display: flex;
   align-items: flex-start;
   gap: 0.7rem;
+  /*
+   * Jarak ATAS diperlukan juga.
+   *
+   * Banner ini biasanya menyusul sebuah sakelar dan menjelaskan
+   * akibatnya. Tanpa jarak atas, keduanya menempel dan tampak
+   * seperti satu blok — padahal yang satu kendali, yang satu
+   * keterangan.
+   */
+  margin-top: 0.75rem;
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;
   border-radius: 12px;

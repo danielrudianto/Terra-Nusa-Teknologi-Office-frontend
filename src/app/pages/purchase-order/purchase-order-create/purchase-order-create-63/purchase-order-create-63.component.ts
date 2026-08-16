@@ -798,9 +798,9 @@ export class PurchaseOrderCreate63Component {
    * Yang membedakan hanya judulnya, banner di atas, dan tombolnya.
    */
   get judulLayar(): string {
-    return this.translate.instant(
-      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
-    );
+    return this.isUbah
+      ? this.translate.instant('poForm.judulUbah')
+      : this.translate.instant('poForm.poCodePrefix') + this.purchaseType;
   }
 
   /** Dokumen induk yang diadendum; null bila dokumen baru. */

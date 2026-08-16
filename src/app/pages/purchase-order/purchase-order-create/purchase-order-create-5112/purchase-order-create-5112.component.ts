@@ -738,7 +738,7 @@ export class PurchaseOrderCreate5112Component {
    */
   get judulLayar(): string {
     return this.translateSvc.instant(
-      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title5112',
     );
   }
 

@@ -753,7 +753,7 @@ export class PurchaseOrderCreate641Component {
    */
   get judulLayar(): string {
     return this.translateSvc.instant(
-      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.title641',
     );
   }
 

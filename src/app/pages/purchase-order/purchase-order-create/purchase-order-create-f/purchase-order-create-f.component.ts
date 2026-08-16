@@ -369,7 +369,7 @@ export class PurchaseOrderCreateFComponent {
    */
   get judulLayar(): string {
     return this.translate.instant(
-      this.isUbah ? 'poForm.judulUbah' : 'poForm.title',
+      this.isUbah ? 'poForm.judulUbah' : 'poForm.titleF',
     );
   }
 

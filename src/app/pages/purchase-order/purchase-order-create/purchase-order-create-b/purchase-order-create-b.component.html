@@ -232,7 +232,14 @@
                   kosong — isiannya tampak selang-seling dan sulit dibaca
                   berurutan.
                 -->
-                <mat-form-field appearance="outline">
+                <!--
+                  Lokasi kerja selebar PENUH.
+
+                  Isinya alamat proyek — "DPT PT. Asri, Kota Baru
+                  Parahyangan" dan sejenisnya — yang tidak muat pada satu
+                  kolom sempit dan terpotong di tengah kata.
+                -->
+                <mat-form-field appearance="outline" class="pob-span3">
                   <mat-label>{{ "poB.workLocation" | translate }}</mat-label>
                   <input
                     matInput
