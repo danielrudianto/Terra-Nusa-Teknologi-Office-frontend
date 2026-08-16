@@ -134,6 +134,28 @@ export class MasterItemListComponent {
     this.fetchItems();
   }
 
+  /**
+   * Barang yang MENDEKATI kata pencarian, ditampilkan hanya bila tidak ada
+   * yang cocok.
+   *
+   * Terpisah dari `items`, bukan dicampur: yang membaca perlu tahu ia sedang
+   * melihat saran, bukan hasil. Mencampurnya mengembalikan persoalan yang
+   * hendak diperbaiki — barang yang tidak dicari muncul seolah-olah cocok,
+   * lalu terpilih masuk purchase order.
+   */
+  saran: any[] = [];
+
+  /**
+   * Pakai salah satu saran sebagai kata pencarian yang baru.
+   *
+   * Yang dimasukkan SKU-nya, bukan deskripsinya: SKU unik dan dikecualikan
+   * dari toleransi salah ketik, sehingga pencariannya pasti mengenai satu
+   * barang saja.
+   */
+  pakaiSaran(item: any): void {
+    this.searchControl.setValue(item.sku);
+  }
+
   fetchItems(targetPage: number = 1) {
     this.isLoading = true;
     this.page = targetPage;
@@ -152,6 +174,7 @@ export class MasterItemListComponent {
         next: (res: any) => {
           this.items = res.data || [];
           this.count = res.count || 0;
+          this.saran = res.suggestions || [];
         },
         error: (err) => {
           this.snackBar.open(

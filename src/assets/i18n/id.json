@@ -1263,7 +1263,8 @@
     "jadikanFavorit": "Jadikan favorit",
     "lepasFavorit": "Lepas dari favorit",
     "favoritDitandai": "Barang ditandai favorit; akan muncul lebih dulu saat memilih barang",
-    "favoritDilepas": "Tanda favorit dilepas"
+    "favoritDilepas": "Tanda favorit dilepas",
+    "tidakDitemukanMaksudAnda": "Tidak ada yang cocok. Mungkin yang Anda maksud:"
   },
   "salesInvoiceCreate": {
     "title": "Buat Sales Invoice",
@@ -1908,7 +1909,11 @@
     "submitUbah": "Simpan perubahan",
     "ubahJudulBanner": "Menyimpan perubahan, bukan menyetujui",
     "ubahKeteranganBanner": "Dokumen tetap berstatus Draf dan masih perlu disetujui seperti biasa. Nomor revisinya bertambah setiap kali disimpan.",
-    "confirmReadTunggu": "Silakan baca dokumennya terlebih dahulu — pernyataan ini dapat dicentang dalam {{detik}} detik."
+    "confirmReadTunggu": "Silakan baca dokumennya terlebih dahulu — pernyataan ini dapat dicentang dalam {{detik}} detik.",
+    "hargaMelompat": "Harga berbeda jauh dari terakhir kali",
+    "hargaMelompatKet": "Terakhir Rp {{lama}}/{{satuan}} pada {{nomor}}. Sekarang Rp {{baru}} — {{kali}}× lipat. Periksa kembali sebelum menerbitkan.",
+    "mungkinDuplikat": "Sudah ada dokumen serupa hari ini",
+    "mungkinDuplikatKet": "{{nomor}} dibuat oleh {{pembuat}} untuk pemasok dan proyek yang sama, senilai Rp {{nilai}}. Pastikan ini bukan pengiriman kedua."
   },
   "menu": {
     "editAsset": "Ubah aset",

@@ -1263,7 +1263,8 @@
     "jadikanFavorit": "Mark as favourite",
     "lepasFavorit": "Remove from favourites",
     "favoritDitandai": "Marked as favourite; it will appear first when picking items",
-    "favoritDilepas": "Removed from favourites"
+    "favoritDilepas": "Removed from favourites",
+    "tidakDitemukanMaksudAnda": "No exact match. Did you mean:"
   },
   "salesInvoiceCreate": {
     "title": "Create Sales Invoice",
@@ -1908,7 +1909,11 @@
     "submitUbah": "Save changes",
     "ubahJudulBanner": "Saving changes, not approving",
     "ubahKeteranganBanner": "The document stays in Draft and still needs approval as usual. Its revision number increases each time it is saved.",
-    "confirmReadTunggu": "Please read the document first — this can be ticked in {{detik}} seconds."
+    "confirmReadTunggu": "Please read the document first — this can be ticked in {{detik}} seconds.",
+    "hargaMelompat": "Price differs greatly from last time",
+    "hargaMelompatKet": "Last was Rp {{lama}}/{{satuan}} on {{nomor}}. Now Rp {{baru}} — {{kali}}× that. Please re-check before issuing.",
+    "mungkinDuplikat": "A similar document already exists today",
+    "mungkinDuplikatKet": "{{nomor}} was created by {{pembuat}} for the same supplier and project, worth Rp {{nilai}}. Make sure this isn't a second submission."
   },
   "menu": {
     "editAsset": "Edit asset",

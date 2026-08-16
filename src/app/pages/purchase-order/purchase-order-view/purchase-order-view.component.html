@@ -229,6 +229,61 @@
       ></app-audit-trail>
     }
     <!--
+      Peringatan sebelum penerbitan, tepat di atas pernyataan sudah membaca.
+
+      Letaknya disengaja: yang membaca sampai ke sini berarti sudah menggulir
+      seluruh dokumen, dan peringatan ini hal terakhir yang dilihatnya
+      sebelum mencentang.
+
+      TIDAK memblokir. Harga memang dapat melompat — pemasok mengganti
+      spesifikasi, kurs bergerak, atau justru catatan lama yang keliru. Yang
+      diperlukan bukan menghentikan orang, melainkan menyodorkan angka
+      pembandingnya beserta nomor dokumennya.
+    -->
+    @if (isPratinjau && input.konfirmasi && peringatan) {
+      @if (peringatan.harga; as h) {
+        <div class="pov-waspada">
+          <mat-icon>trending_up</mat-icon>
+          <div>
+            <strong>{{ "poForm.hargaMelompat" | translate }}</strong>
+            <p>
+              {{
+                "poForm.hargaMelompatKet"
+                  | translate
+                    : {
+                        lama: (h.sebelumnya | number: "1.0-0"),
+                        satuan: h.satuan,
+                        nomor: h.nomor,
+                        baru: (h.sekarang | number: "1.0-0"),
+                        kali: h.rasio
+                      }
+              }}
+            </p>
+          </div>
+        </div>
+      }
+      @if (peringatan.duplikat; as d) {
+        <div class="pov-waspada">
+          <mat-icon>content_copy</mat-icon>
+          <div>
+            <strong>{{ "poForm.mungkinDuplikat" | translate }}</strong>
+            <p>
+              {{
+                "poForm.mungkinDuplikatKet"
+                  | translate
+                    : {
+                        nomor: d.number,
+                        pembuat: d.pembuat,
+                        nilai: (d.dpp | number: "1.0-0")
+                      }
+              }}
+            </p>
+          </div>
+        </div>
+      }
+    }
+
+    <!--
       Pernyataan sudah membaca; DI DALAM isi dialog, paling bawah.
 
       Sebelumnya blok ini berada di luar area bergulir, sehingga selalu

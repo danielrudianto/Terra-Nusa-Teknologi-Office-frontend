@@ -290,6 +290,27 @@
       </table>
     </div>
 
+    <!--
+      Saran, ditampilkan hanya ketika pencarian tidak menemukan apa pun.
+
+      Dipisah dari tabel supaya jelas ini bukan hasil. Barang di sini
+      MENDEKATI kata yang diketik, dan mendekati tidak sama dengan cocok —
+      pada katalog besi, satu karakter membedakan D22 dari D25.
+    -->
+    @if (saran.length && !items.length) {
+      <div class="mil-saran">
+        <p class="mil-saran__judul">
+          {{ "masterItem.tidakDitemukanMaksudAnda" | translate }}
+        </p>
+        @for (s of saran; track s.id) {
+          <button type="button" class="mil-saran__baris" (click)="pakaiSaran(s)">
+            <span class="mil-saran__sku">{{ s.sku }}</span>
+            <span class="mil-saran__desc">{{ s.description }}</span>
+          </button>
+        }
+      </div>
+    }
+
     <mat-paginator
       [length]="count"
       [pageSize]="pageSize"

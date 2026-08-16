@@ -1263,7 +1263,8 @@
     "jadikanFavorit": "设为常用",
     "lepasFavorit": "取消常用",
     "favoritDitandai": "已设为常用，选择物料时将优先显示",
-    "favoritDilepas": "已取消常用"
+    "favoritDilepas": "已取消常用",
+    "tidakDitemukanMaksudAnda": "没有完全匹配的结果。您是否想找："
   },
   "salesInvoiceCreate": {
     "title": "创建销售发票",
@@ -1908,7 +1909,11 @@
     "submitUbah": "保存修改",
     "ubahJudulBanner": "保存修改，并非批准",
     "ubahKeteranganBanner": "文件仍为草稿状态，仍需照常批准。每次保存后版本号递增。",
-    "confirmReadTunggu": "请先阅读文件——{{detik}} 秒后可勾选。"
+    "confirmReadTunggu": "请先阅读文件——{{detik}} 秒后可勾选。",
+    "hargaMelompat": "价格与上次相差很大",
+    "hargaMelompatKet": "上次为 Rp {{lama}}/{{satuan}}（{{nomor}}）。现在 Rp {{baru}} — 相差 {{kali}} 倍。请在签发前复核。",
+    "mungkinDuplikat": "今天已有相似单据",
+    "mungkinDuplikatKet": "{{nomor}} 由 {{pembuat}} 为同一供应商和项目创建，金额 Rp {{nilai}}。请确认这不是重复提交。"
   },
   "menu": {
     "editAsset": "编辑资产",

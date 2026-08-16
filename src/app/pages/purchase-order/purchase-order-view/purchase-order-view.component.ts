@@ -119,6 +119,59 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
     return this.sisaDetik > 0;
   }
 
+  /**
+   * Peringatan sebelum dokumen terbit: harga melompat dan kemungkinan
+   * duplikat.
+   *
+   * Diminta dari server, bukan disimpulkan di layar: pembandingnya adalah
+   * dokumen lama yang tidak ada di sini.
+   *
+   * Dipasang di dialog pratinjau, bukan di keenam belas layar pembuatan —
+   * satu tempat, dan yang membaca sudah selesai mengisi sehingga tidak
+   * terganggu di tengah pekerjaan.
+   */
+  peringatan: { harga?: any; duplikat?: any } | null = null;
+
+  private periksaSebelumTerbit(): void {
+    if (!this.isPratinjau || !this.input?.konfirmasi) return;
+
+    const d = this.data || {};
+    const supplierID = Number(d.supplierID) || 0;
+    if (!supplierID) return;
+
+    // Baris bernilai tertinggi yang dipilih sebagai wakil.
+    //
+    // Memeriksa seluruh baris berarti satu permintaan per barang, dan
+    // dokumen dengan dua puluh baris akan menunggu lama justru pada saat
+    // orang hendak menerbitkan. Baris termahal yang paling berarti bila
+    // angkanya keliru.
+    const baris: any[] = Array.isArray(d.items) ? d.items : [];
+    const wakil = baris
+      .filter((x) => Number(x?.item_id) > 0 && Number(x?.price) > 0)
+      .sort((a, b) => Number(b.price) - Number(a.price))[0];
+
+    this.apiService
+      .get('purchase-orders/pemeriksaan', {
+        supplierID,
+        projectName: d.projectName || '',
+        dpp: Number(d.dpp) || 0,
+        itemID: Number(wakil?.item_id) || 0,
+        price: Number(wakil?.price) || 0,
+        kecualiID: Number(d.id) || 0,
+      })
+      .subscribe({
+        next: (res: any) => {
+          this.peringatan =
+            res?.harga || res?.duplikat
+              ? { harga: res.harga, duplikat: res.duplikat }
+              : null;
+        },
+        // Pemeriksaan ini pelengkap; kegagalannya tidak boleh menghalangi
+        // orang menerbitkan dokumen yang sudah benar.
+        error: () => (this.peringatan = null),
+      });
+  }
+
   private mulaiHitungMundur(): void {
     // Hanya pada pratinjau yang meminta konfirmasi; dialog yang sekadar
     // menampilkan dokumen tidak perlu menahan siapa pun.
@@ -137,6 +190,7 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.mulaiHitungMundur();
+    this.periksaSebelumTerbit();
   }
 
   ngOnDestroy(): void {

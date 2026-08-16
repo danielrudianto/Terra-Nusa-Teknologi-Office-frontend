@@ -496,3 +496,41 @@
     cursor: not-allowed;
   }
 }
+
+/*
+ * Peringatan sebelum penerbitan.
+ *
+ * Warnanya waspada, bukan bahaya: ini hal yang perlu diperiksa, bukan
+ * kesalahan yang sudah pasti. Warna merah pada sesuatu yang sering benar
+ * membuat orang berhenti membacanya.
+ */
+.pov-waspada {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg);
+  border: 0.5px solid var(--warn-fg);
+  color: var(--warn-fg);
+
+  strong {
+    display: block;
+    font-size: 0.86rem;
+    margin-bottom: 0.2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
