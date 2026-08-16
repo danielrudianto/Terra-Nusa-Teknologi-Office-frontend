@@ -628,7 +628,8 @@
     "copyUntukWhatsapp": " Copy untuk WhatsApp",
     "salinNomorTelepon": "Salin nomor telepon",
     "namaSupplier": "Nama supplier",
-    "filterSuppliers": "Filter suppliers"
+    "filterSuppliers": "Filter suppliers",
+    "menuLaporan": "View report"
   },
   "salarySlip": {
     "title": "Salary slip",
@@ -4014,5 +4015,24 @@
     "versiBaru": "A new version is available. Reload to use it.",
     "muatUlang": "Reload",
     "versiBaruSingkat": "Update available"
+  },
+  "supplierReport": {
+    "periode": "Period",
+    "sepanjangWaktu": "All time",
+    "tahunIni": "This year",
+    "tigaBulan": "Last 3 months",
+    "proyek": "Project",
+    "jumlahPembelian": "Purchases",
+    "nilaiPembelian": "Purchase value",
+    "belumDibayar": "Unpaid",
+    "lewatTempo": "Overdue",
+    "lewatTempoSingkat": "Overdue",
+    "sebaranProyek": "By project",
+    "dokumenTerakhir": "Recent purchases",
+    "lunas": "Paid",
+    "belumLunas": "Unpaid",
+    "belumAda": "No purchases in this period.",
+    "daftarHitam": "This supplier is blacklisted",
+    "gagalMuat": "Failed to load report"
   }
 }

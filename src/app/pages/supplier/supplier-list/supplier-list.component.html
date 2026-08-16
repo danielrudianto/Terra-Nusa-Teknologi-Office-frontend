@@ -134,6 +134,17 @@
                 <mat-icon>view_array</mat-icon
                 ><span>{{ "supplier.menuView" | translate }}</span>
               </button>
+              <!--
+                Laporan dibuka dari sini, bukan dari layar tersendiri.
+
+                Yang membukanya sedang menimbang pemasok tertentu — dan
+                menutup laporan mengembalikannya ke daftar yang sama, pada
+                halaman dan pencarian yang sama.
+              -->
+              <button mat-menu-item (click)="bukaLaporan(element)">
+                <mat-icon>insights</mat-icon
+                ><span>{{ "supplier.menuLaporan" | translate }}</span>
+              </button>
               <button
                 mat-menu-item
                 *appCan="'supplier:update'"

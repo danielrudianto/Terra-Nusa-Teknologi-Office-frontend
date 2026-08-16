@@ -1,0 +1,181 @@
+<div class="sr-head">
+  <div class="sr-head__ava" [class.sr-head__ava--hitam]="diblacklist">
+    {{ inisial }}
+  </div>
+  <div class="sr-head__text">
+    <h2 class="sr-head__nama">{{ namaPemasok }}</h2>
+    <span class="sr-head__sub">
+      {{ data.supplier?.city || "—" }}
+      @if (data.supplier?.itemsSold) {
+        · {{ data.supplier.itemsSold }}
+      }
+    </span>
+  </div>
+  <button
+    type="button"
+    class="sr-tutup"
+    [attr.aria-label]="'common.close' | translate"
+    (click)="tutup()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!--
+  Daftar hitam disebutkan di atas, bukan disembunyikan.
+
+  Yang membuka laporan ini kerap sedang menimbang memakai pemasoknya lagi —
+  dan status itu hal pertama yang perlu diketahuinya, bukan sesuatu yang
+  ditemukan setelah membaca seluruh angka.
+-->
+@if (diblacklist) {
+  <div class="sr-hitam">
+    <mat-icon>block</mat-icon>
+    <div>
+      <strong>{{ "supplierReport.daftarHitam" | translate }}</strong>
+      @if (data.supplier?.blacklistReason) {
+        <p>{{ data.supplier.blacklistReason }}</p>
+      }
+    </div>
+  </div>
+}
+
+<div class="sr-filter">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>{{ "supplierReport.periode" | translate }}</mat-label>
+    <mat-select [(ngModel)]="periode" (selectionChange)="ubahPenyaring()">
+      <mat-option value="">{{
+        "supplierReport.sepanjangWaktu" | translate
+      }}</mat-option>
+      <mat-option value="tahun">{{
+        "supplierReport.tahunIni" | translate
+      }}</mat-option>
+      <mat-option value="3bulan">{{
+        "supplierReport.tigaBulan" | translate
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>{{ "supplierReport.proyek" | translate }}</mat-label>
+    <mat-select [(ngModel)]="proyekTerpilih" (selectionChange)="ubahPenyaring()">
+      <mat-option value="">{{ "common.semua" | translate }}</mat-option>
+      @for (p of proyek; track p.projectName) {
+        <mat-option [value]="p.projectName">{{ p.projectName }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<mat-dialog-content class="sr-content">
+  @if (isLoading) {
+    <div class="sr-muat"><mat-spinner diameter="28"></mat-spinner></div>
+  } @else {
+    <div class="sr-angka">
+      <div class="sr-kartu">
+        <span class="sr-kartu__k">{{
+          "supplierReport.jumlahPembelian" | translate
+        }}</span>
+        <span class="sr-kartu__v">{{ ringkasan.jumlah }}</span>
+      </div>
+      <div class="sr-kartu">
+        <span class="sr-kartu__k">{{
+          "supplierReport.nilaiPembelian" | translate
+        }}</span>
+        <span class="sr-kartu__v">{{
+          ringkasan.total | currency: "Rp " : "symbol" : "1.0-0"
+        }}</span>
+      </div>
+      <div class="sr-kartu">
+        <span class="sr-kartu__k">{{
+          "supplierReport.belumDibayar" | translate
+        }}</span>
+        <span class="sr-kartu__v sr-kartu__v--warn">{{
+          ringkasan.belumDibayar | currency: "Rp " : "symbol" : "1.0-0"
+        }}</span>
+      </div>
+      <!--
+        "Lewat tempo" ditampilkan walau nol.
+
+        Menyembunyikannya saat kosong membuat yang membacanya tidak dapat
+        membedakan "tidak ada tunggakan" dari "tidak dihitung".
+      -->
+      <div class="sr-kartu">
+        <span class="sr-kartu__k">{{
+          "supplierReport.lewatTempo" | translate
+        }}</span>
+        <span
+          class="sr-kartu__v"
+          [class.sr-kartu__v--bad]="ringkasan.lewatTempo > 0"
+        >
+          @if (ringkasan.lewatTempo > 0) {
+            {{ ringkasan.lewatTempo | currency: "Rp " : "symbol" : "1.0-0" }}
+          } @else {
+            —
+          }
+        </span>
+      </div>
+    </div>
+
+    @if (proyek.length) {
+      <div class="sr-bagian">
+        <span class="sr-bagian__judul">{{
+          "supplierReport.sebaranProyek" | translate
+        }}</span>
+        @for (p of proyek; track p.projectName) {
+          <div class="sr-proyek">
+            <span class="sr-proyek__nama">{{ p.projectName || "—" }}</span>
+            <div class="sr-proyek__bar">
+              <div
+                class="sr-proyek__isi"
+                [style.width.%]="lebarBatang(p.total)"
+              ></div>
+            </div>
+            <span class="sr-proyek__nilai">{{
+              p.total | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="sr-bagian">
+      <span class="sr-bagian__judul">{{
+        "supplierReport.dokumenTerakhir" | translate
+      }}</span>
+
+      @if (terakhir.length) {
+        @for (d of terakhir; track d.id) {
+          <div class="sr-dok">
+            <div class="sr-dok__kiri">
+              <span class="sr-dok__no">{{
+                d.invoiceName || d.purchaseOrderName || "—"
+              }}</span>
+              <span class="sr-dok__ket">
+                {{ d.date | date: "d MMM yyyy" }} · {{ d.projectName || "—" }}
+              </span>
+            </div>
+            <span class="sr-dok__nilai">{{
+              d.nilai | currency: "Rp " : "symbol" : "1.0-0"
+            }}</span>
+            @if (d.isPaid) {
+              <span class="sr-tag sr-tag--ok">{{
+                "supplierReport.lunas" | translate
+              }}</span>
+            } @else if (lewatTempo(d)) {
+              <span class="sr-tag sr-tag--bad">{{
+                "supplierReport.lewatTempoSingkat" | translate
+              }}</span>
+            } @else {
+              <span class="sr-tag sr-tag--warn">{{
+                "supplierReport.belumLunas" | translate
+              }}</span>
+            }
+          </div>
+        }
+      } @else {
+        <p class="sr-kosong">{{ "supplierReport.belumAda" | translate }}</p>
+      }
+    </div>
+  }
+</mat-dialog-content>

@@ -25,6 +25,7 @@ import { SupplierBlacklistDialogComponent } from '../supplier-blacklist-dialog/s
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierCreateComponent } from '../supplier-create/supplier-create.component';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { SupplierReportComponent } from '../supplier-report/supplier-report.component';
 
 @Component({
   selector: 'app-supplier-list',
@@ -183,6 +184,21 @@ export class SupplierListComponent {
         id: id,
         readOnly: false,
       },
+    });
+  }
+
+  /**
+   * Buka laporan pemasok.
+   *
+   * Barisnya DIKIRIM UTUH, bukan hanya idnya: nama, kota, dan status daftar
+   * hitam sudah ada di daftar, dan memuat ulang hanya menambah jeda yang
+   * terlihat sebagai kedipan pada kepala dialog.
+   */
+  bukaLaporan(supplier: any): void {
+    this.dialog.open(SupplierReportComponent, {
+      maxWidth: '96vw',
+      autoFocus: false,
+      data: { supplier },
     });
   }
 
