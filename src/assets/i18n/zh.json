@@ -3982,5 +3982,9 @@
     "salinRingkas": "复制以便发送",
     "ringkasTersalin": "摘要已复制，可直接粘贴",
     "isian": "项"
+  },
+  "app": {
+    "versiBaru": "有新版本可用，请重新加载以使用。",
+    "muatUlang": "重新加载"
   }
 }

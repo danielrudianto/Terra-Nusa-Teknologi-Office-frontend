@@ -1,4 +1,4 @@
-import { Component, computed, HostListener } from '@angular/core';
+import { Component, computed, HostListener, inject } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -12,6 +12,8 @@ import {
   RouterModule,
 } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { VersiService } from 'src/app/services/versi.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-main',
@@ -22,12 +24,15 @@ import { filter, map } from 'rxjs';
     RouterModule,
     PanduanPanelComponent,
     PanduanFabComponent,
+    MatIconModule,
   ],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   standalone: true,
 })
 export class MainComponent {
+  readonly versi = inject(VersiService);
+
   constructor(
     private permissionService: PermissionService,
     private router: Router,
@@ -105,6 +110,7 @@ export class MainComponent {
   }
 
   ngOnInit(): void {
+    this.versi.mulai();
     // Mode sidenav ditetapkan sebelum penanda dipasang, agar keadaan awal
     // pada ponsel sudah tertutup — bukan terbuka lalu menutup sendiri.
     this.sesuaikanLayar();

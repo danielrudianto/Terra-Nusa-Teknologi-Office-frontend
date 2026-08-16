@@ -3982,5 +3982,9 @@
     "salinRingkas": "Salin untuk pesan",
     "ringkasTersalin": "Ringkasan tersalin, siap ditempel",
     "isian": "isian"
+  },
+  "app": {
+    "versiBaru": "Ada pembaruan aplikasi. Muat ulang untuk memakainya.",
+    "muatUlang": "Muat ulang"
   }
 }

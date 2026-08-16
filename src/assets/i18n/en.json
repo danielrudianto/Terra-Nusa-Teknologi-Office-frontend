@@ -3982,5 +3982,9 @@
     "salinRingkas": "Copy for messaging",
     "ringkasTersalin": "Summary copied, ready to paste",
     "isian": "fields"
+  },
+  "app": {
+    "versiBaru": "A new version is available. Reload to use it.",
+    "muatUlang": "Reload"
   }
 }
