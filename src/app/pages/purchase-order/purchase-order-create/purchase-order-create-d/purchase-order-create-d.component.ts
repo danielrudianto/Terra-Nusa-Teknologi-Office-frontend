@@ -397,6 +397,61 @@ export class PurchaseOrderCreateDComponent {
     return wages.flatMap((w, idx) => this.wageSentences(w, idx));
   }
 
+  /**
+   * Susun kembali daftar pekerjaan dan upahnya dari dokumen lama.
+   *
+   * Saat disimpan, satu pekerjaan yang punya beberapa komponen upah
+   * DIRATAKAN menjadi beberapa baris `items` — masing-masing membawa `task`
+   * yang sama. Memuatnya kembali karena itu perlu MENGELOMPOKKAN ulang
+   * berdasarkan `task`, bukan membuat satu baris per item.
+   *
+   * Sebelumnya baris ini dicari di `customData` lewat `larikCustom`, padahal
+   * yang tersimpan di sana hanya pengaturannya — upah lembur, jam shift, dan
+   * klausul. Akibatnya daftar upah selalu kosong, dan karena `task` wajib
+   * diisi, formulirnya tidak pernah sah dan tombol simpannya mati terus.
+   */
+  private muatPekerjaan(induk: any): void {
+    const items: any[] = Array.isArray(induk?.items) ? induk.items : [];
+    if (!items.length) return;
+
+    // Urutan pekerjaan dipertahankan seperti pada dokumennya; `Map` menjaga
+    // urutan penyisipan, sehingga cetakannya tidak berubah susunan.
+    const perTugas = new Map<string, any[]>();
+    for (const x of items) {
+      const tugas = String(x?.task ?? '');
+      if (!perTugas.has(tugas)) perTugas.set(tugas, []);
+      perTugas.get(tugas)!.push(x);
+    }
+
+    const larik = this.formGroup.get('workers') as FormArray;
+    larik.clear();
+
+    for (const [tugas, baris] of perTugas) {
+      const g = this.buildWorker();
+      g.patchValue({ task: tugas });
+
+      const upah = g.get('wages') as FormArray;
+      upah.clear();
+      for (const x of baris) {
+        const w = this.buildWage();
+        w.patchValue({
+          label: x?.remarks_3 || 'Upah harian',
+          amount: Number(x?.price) || 0,
+          unit: x?.unit || 'hari',
+          scheduleType: x?.type || 'weekly',
+          payDay: x?.payDay ?? 'Sabtu',
+          payDate: x?.payDate ?? null,
+          cutoffDay: x?.cutoffDay ?? null,
+          cutoffDate: x?.cutoffDate ?? null,
+        });
+        upah.push(w);
+      }
+      if (!upah.length) upah.push(this.buildWage());
+
+      larik.push(g);
+    }
+  }
+
   private buildWorker(): FormGroup {
     return this.formBuilder.group({
       task: ['', [Validators.required, Validators.maxLength(100)]], // nama pekerjaan
@@ -895,26 +950,7 @@ export class PurchaseOrderCreateDComponent {
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
-        this.adendum.isiLarik(
-          this.formGroup,
-          'jobDescriptions',
-          this.adendum.larikCustom(induk, 'jobDescriptions'),
-          (x) => {
-            const g = this.buildWage();
-            g.patchValue(x);
-            return g;
-          },
-        );
-        this.adendum.isiLarik(
-          this.formGroup,
-          'workers',
-          this.adendum.larikCustom(induk, 'workers'),
-          (x) => {
-            const g = this.buildWorker();
-            g.patchValue(x);
-            return g;
-          },
-        );
+        this.muatPekerjaan(induk);
       },
       error: () => {},
     });

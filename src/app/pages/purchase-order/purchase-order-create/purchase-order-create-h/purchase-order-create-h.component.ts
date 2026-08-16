@@ -1389,15 +1389,21 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
+        /*
+         * Lingkup kerja dimuat dari `items`, bukan `customData`.
+         *
+         * Saat menyimpan, `scopes` disusun menjadi `items` — `customData`
+         * hanya memuat pengaturan seperti lokasi, jenis pekerjaan, dan
+         * periode penagihan. Mencarinya di sana membuat daftarnya selalu
+         * kosong, dan karena `task` wajib diisi, formulirnya tidak pernah
+         * sah dan tombol simpannya mati terus.
+         */
         this.adendum.isiLarik(
           this.formGroup,
           'scopes',
-          this.adendum.larikCustom(induk, 'scopes'),
-          (x) => {
-            const g = this.buildScope();
-            g.patchValue(x);
-            return g;
-          },
+          this.adendum.barisInduk(induk),
+          (x) =>
+            this.adendum.terapkanNilaiBaris(this.buildScope(), x),
         );
         this.adendum.isiLarik(
           this.formGroup,
