@@ -3988,7 +3988,11 @@
     "daruratDiperbarui": "Diperbarui",
     "salinRingkas": "Salin untuk pesan",
     "ringkasTersalin": "Ringkasan tersalin, siap ditempel",
-    "isian": "isian"
+    "isian": "isian",
+    "riwayatKerja": "Riwayat kerja",
+    "bahasa": "Bahasa",
+    "lisan": "Lisan",
+    "tulisan": "Tulisan"
   },
   "app": {
     "versiBaru": "Ada pembaruan aplikasi. Muat ulang untuk memakainya.",

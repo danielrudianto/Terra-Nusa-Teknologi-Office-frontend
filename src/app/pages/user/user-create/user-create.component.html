@@ -21,6 +21,7 @@
       <mat-form-field appearance="outline" class="uc-full">
         <mat-label>{{ "user.email" | translate }}</mat-label>
         <input
+            autocomplete="off"
           matInput
           formControlName="email"
           [placeholder]="'user.emailPlaceholder' | translate"
@@ -46,6 +47,7 @@
       <mat-form-field appearance="outline" class="uc-full">
         <mat-label>{{ "user.password" | translate }}</mat-label>
         <input
+            autocomplete="new-password"
           matInput
           type="password"
           formControlName="password"

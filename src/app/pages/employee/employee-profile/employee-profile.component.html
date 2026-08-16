@@ -403,7 +403,8 @@
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>{{ "employeeProfile.homePhone" | translate }}</mat-label>
-                      <input matInput formControlName="homePhone" />
+                      <input
+            autocomplete="off" matInput formControlName="homePhone" />
                     </mat-form-field>
                   </div>
                 }

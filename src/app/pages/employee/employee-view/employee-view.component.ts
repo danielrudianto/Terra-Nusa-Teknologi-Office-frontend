@@ -20,12 +20,51 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
 interface Baris {
   label: string;
   nilai: string;
+
+  /** Keterangan tambahan pada label, mis. golongan SIM. */
+  labelSufiks?: string;
 }
 
 interface Bagian {
   judul: string;
   baris: Baris[];
 }
+
+/**
+ * Ikon per label.
+ *
+ * Deretan `label — nilai` yang seragam sulit dipindai: mata tidak punya
+ * pegangan, sehingga mencari satu nomor telepon berarti membaca seluruhnya.
+ * Ikon memberi bentuk yang berbeda pada tiap baris, dan itu yang membuat
+ * baris yang dicari ditemukan tanpa dibaca.
+ *
+ * Hanya untuk label yang benar-benar punya padanan lazim; yang tidak ada di
+ * sini tampil tanpa ikon, bukan dengan ikon yang dipaksakan.
+ */
+const IKON: Record<string, string> = {
+  'employeeView.nama': 'person',
+  'employeeView.nik': 'badge',
+  'employeeView.jabatan': 'work',
+  'employeeView.departemen': 'apartment',
+  'employeeView.kategoriPajak': 'receipt_long',
+  'employeeView.mulai': 'event_available',
+  'employeeView.selesai': 'event_busy',
+  'employeeView.email': 'mail',
+  'employeeView.telepon': 'call',
+  'employeeView.alamat': 'home',
+  'employeeView.tempatLahir': 'location_city',
+  'employeeView.tanggalLahir': 'cake',
+  'employeeView.jenisKelamin': 'wc',
+  'employeeView.agama': 'volunteer_activism',
+  'employeeView.statusPernikahan': 'favorite',
+  'employeeView.tanggungan': 'family_restroom',
+  'employeeView.pendidikan': 'school',
+  'employeeView.npwp': 'account_balance',
+  'employeeView.bpjsKesehatan': 'health_and_safety',
+  'employeeView.bpjsKetenagakerjaan': 'shield',
+  'employeeView.rekening': 'account_balance_wallet',
+  'employeeView.bank': 'account_balance',
+};
 
 /**
  * Lihat data karyawan secara lengkap, hanya untuk dibaca.
@@ -142,7 +181,37 @@ export class EmployeeViewComponent implements OnInit {
     if (typeof v === 'boolean') {
       return this.translate.instant(v ? 'common.yes' : 'common.no');
     }
+
+    /*
+     * Objek dan larik TIDAK diserahkan ke `String()`.
+     *
+     * `String({})` menghasilkan "[object Object]" — tampil di layar sebagai
+     * kalimat yang tidak berarti apa pun, dan yang membacanya menyimpulkan
+     * datanya rusak.
+     *
+     * Yang benar adalah menyusun bidang bersarang menjadi baris tersendiri,
+     * seperti yang dilakukan pada SIM dan anggota keluarga. Cabang ini
+     * jaring pengaman untuk bidang yang belum sempat ditangani: nilainya
+     * dirangkai apa adanya, dan itu masih jauh lebih berguna daripada
+     * "[object Object]".
+     */
+    if (Array.isArray(v)) {
+      const isi = v.map((x) => this.teks(x)).filter((x) => x !== '—');
+      return isi.length ? isi.join(', ') : '—';
+    }
+    if (typeof v === 'object') {
+      const isi = Object.values(v as Record<string, unknown>)
+        .filter((x) => x !== null && x !== undefined && x !== '')
+        .map((x) => String(x));
+      return isi.length ? isi.join(' · ') : '—';
+    }
+
     return String(v);
+  }
+
+  /** Ikon untuk sebuah label; kosong bila tidak ada padanannya. */
+  ikon(label: string): string {
+    return IKON[label] || '';
   }
 
   private susunPokok(): void {
@@ -215,10 +284,33 @@ export class EmployeeViewComponent implements OnInit {
         baris: [
           { label: 'employeeView.bpjsKesehatan', nilai: this.teks(d.bpjsKesehatan) },
           { label: 'employeeView.bpjsKetenagakerjaan', nilai: this.teks(d.bpjsKetenagakerjaan) },
-          { label: 'employeeView.sim', nilai: this.teks(d.drivingLicenses) },
         ],
       },
     ];
+
+    /*
+     * SIM: satu baris per golongan, dengan NOMORNYA.
+     *
+     * `drivingLicenses` berupa daftar objek `{golongan, nomor}` — sebelumnya
+     * diserahkan apa adanya ke `teks()`, yang memanggil `String()` dan
+     * menghasilkan "[object Object]".
+     *
+     * Dipisah per golongan, bukan dirangkai jadi satu baris: yang mencari
+     * nomor SIM B2 tidak perlu memilahnya dari untaian panjang, dan tombol
+     * salin per baris menyalin nomor yang benar saja.
+     */
+    const sim = Array.isArray(d.drivingLicenses) ? d.drivingLicenses : [];
+    const barisSim = sim
+      .filter((x: any) => x?.golongan || x?.nomor)
+      .map((x: any) => ({
+        label: 'employeeView.sim',
+        labelSufiks: this.teks(x.golongan),
+        nilai: this.teks(x.nomor),
+      }));
+
+    if (barisSim.length) {
+      bagian[bagian.length - 1].baris.push(...barisSim);
+    }
 
     // Anggota keluarga dan pendidikan berupa daftar; dirangkai jadi satu
     // baris per orang agar tetap terbaca tanpa tabel bersarang.
@@ -242,6 +334,50 @@ export class EmployeeViewComponent implements OnInit {
         baris: pendidikan.map((p: any) => ({
           label: this.teks(p.level),
           nilai: [p.school, p.major, [p.fromYear, p.toYear].filter(Boolean).join('–')]
+            .filter(Boolean)
+            .join(' · '),
+        })),
+      });
+    }
+
+    /*
+     * Riwayat kerja dan bahasa: ADA di server, tetapi tidak pernah
+     * ditampilkan.
+     *
+     * Keduanya sudah diisi lewat formulir profil dan tersimpan sebagai
+     * daftar, hanya tidak pernah disusun ke layar — sehingga yang mengisinya
+     * tidak punya cara memastikan isiannya benar-benar tersimpan.
+     */
+    const kerja = Array.isArray(d.workExperience) ? d.workExperience : [];
+    if (kerja.length) {
+      bagian.push({
+        judul: 'employeeView.riwayatKerja',
+        baris: kerja.map((k: any) => ({
+          label: this.teks(k.company),
+          nilai: [
+            k.position,
+            k.field,
+            [k.fromDate, k.toDate].filter(Boolean).join(' – '),
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        })),
+      });
+    }
+
+    const bahasa = Array.isArray(d.languages) ? d.languages : [];
+    if (bahasa.length) {
+      bagian.push({
+        judul: 'employeeView.bahasa',
+        baris: bahasa.map((b: any) => ({
+          label: this.teks(b.language),
+          // Lisan dan tulisan disebut terpisah; keduanya kerap berbeda, dan
+          // menggabungkannya menjadi satu tingkat menghilangkan perbedaan
+          // yang justru menentukan saat menugaskan pekerjaan.
+          nilai: [
+            b.speaking ? `${this.translate.instant('employeeView.lisan')}: ${b.speaking}` : '',
+            b.writing ? `${this.translate.instant('employeeView.tulisan')}: ${b.writing}` : '',
+          ]
             .filter(Boolean)
             .join(' · '),
         })),

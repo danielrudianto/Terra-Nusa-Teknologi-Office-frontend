@@ -113,14 +113,32 @@
 }
 
 .ev-bagian {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--line, #eef1f6);
+  /*
+   * Tiap bagian sebagai KARTU, bukan blok yang dipisah garis.
+   *
+   * Dengan garis pemisah saja, seluruh dialog terbaca sebagai satu daftar
+   * panjang — dan judul bagian tenggelam di antara barisnya. Kartu memberi
+   * batas yang terlihat sebelum dibaca.
+   */
+  margin: 0 1.25rem 1rem;
+  padding: 0;
+  border: 1px solid var(--line, #eef1f6);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  overflow: hidden;
+
+  &:first-of-type {
+    margin-top: 1rem;
+  }
 }
 .ev-bagian__head {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.5rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  background: var(--surface-2, #f7f8fa);
+  border-bottom: 1px solid var(--line, #eef1f6);
 }
 .ev-bagian__judul {
   font-family: "Montserrat", sans-serif;
@@ -163,10 +181,80 @@
 }
 
 .ev-baris {
+  /*
+   * Label DI ATAS nilainya, bukan di sampingnya.
+   *
+   * Susunan berdampingan memaksa label dipangkas agar muat pada sepertiga
+   * lebar — "BPJS Ketenagakerjaan" menjadi terpotong — dan nilainya
+   * tersisa ruang sempit yang membuat alamat panjang membungkus berkali-kali.
+   *
+   * Bertumpuk memberi keduanya lebar penuh, dan yang memindai tetap dapat
+   * membedakan label dari nilainya lewat ukuran dan warna.
+   */
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.42rem 0;
+  gap: 0.7rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line, #eef1f6);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  /*
+   * Tombol salin muncul saat baris disentuh.
+   *
+   * Sebelumnya selalu terlihat pada seluruh baris, sehingga sepuluh ikon
+   * yang sama berjajar menuruni dialog dan menarik perhatian dari isinya.
+   */
+  .ev-salin {
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+
+  &:hover .ev-salin,
+  .ev-salin:focus-visible {
+    opacity: 1;
+  }
+}
+
+.ev-baris__ikon {
+  flex: 0 0 auto;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.15rem;
+  color: var(--muted, #9aa1b1);
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+.ev-baris__isi {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ev-baris__label {
+  font-size: 0.7rem;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #9aa1b1);
+}
+
+.ev-baris__nilai {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink, #16181d);
+  word-break: break-word;
 }
 /*
  * Garis pemisah antar baris, kecuali yang terakhir.
@@ -184,21 +272,8 @@
  * punya titik masuk — yang dicari orang di layar ini adalah NILAINYA, bukan
  * daftar sebutan.
  */
-.ev-baris__label {
-  flex: 0 0 33%;
-  font-size: 0.74rem;
-  line-height: 1.45;
-  color: var(--muted, #8a90a0);
-}
-.ev-baris__nilai {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-size: 0.84rem;
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--ink, #16181d);
-  word-break: break-word;
-}
+
+
 
 /* Tombol salin per baris; muncul jelas saat barisnya disentuh tetikus. */
 .ev-salin {
@@ -388,4 +463,27 @@
 }
 .ev-riwayat__head:hover .ev-riwayat__tgl {
   color: var(--brand, #154dec);
+}
+
+
+/* Baris berada di dalam kartu, sehingga paddingnya di sini. */
+.ev-bagian .ev-baris {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/*
+ * Keterangan pada label, mis. golongan SIM.
+ *
+ * Dibedakan warnanya supaya terbaca sebagai bagian dari label — "SIM B2" —
+ * bukan sebagai nilai tersendiri.
+ */
+.ev-baris__sufiks {
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 5px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }

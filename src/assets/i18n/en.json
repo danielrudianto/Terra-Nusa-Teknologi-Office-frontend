@@ -3988,7 +3988,11 @@
     "daruratDiperbarui": "Updated",
     "salinRingkas": "Copy for messaging",
     "ringkasTersalin": "Summary copied, ready to paste",
-    "isian": "fields"
+    "isian": "fields",
+    "riwayatKerja": "Work history",
+    "bahasa": "Languages",
+    "lisan": "Spoken",
+    "tulisan": "Written"
   },
   "app": {
     "versiBaru": "A new version is available. Reload to use it.",

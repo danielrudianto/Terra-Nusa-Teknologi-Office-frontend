@@ -83,8 +83,29 @@
               </div>
               @for (r of b.baris; track r.label) {
                 <div class="ev-baris">
-                  <span class="ev-baris__label">{{ r.label | translate }}</span>
-                  <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                  <!--
+                    Ikon memberi bentuk berbeda pada tiap baris.
+
+                    Deretan `label — nilai` yang seragam sulit dipindai: mata
+                    tidak punya pegangan, sehingga mencari satu nomor telepon
+                    berarti membaca seluruh daftar. Label yang tidak punya
+                    padanan lazim tampil tanpa ikon, bukan dengan ikon yang
+                    dipaksakan.
+                  -->
+                  <span class="ev-baris__ikon">
+                    @if (ikon(r.label); as ic) {
+                      <mat-icon>{{ ic }}</mat-icon>
+                    }
+                  </span>
+                  <div class="ev-baris__isi">
+                    <span class="ev-baris__label">
+                      {{ r.label | translate }}
+                      @if (r.labelSufiks) {
+                        <span class="ev-baris__sufiks">{{ r.labelSufiks }}</span>
+                      }
+                    </span>
+                    <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                  </div>
                   <button
                     type="button"
                     class="ev-salin"
@@ -123,9 +144,12 @@
                 </div>
                 @for (r of b.baris; track r.label) {
                   <div class="ev-baris">
-                    <span class="ev-baris__label">{{
-                      r.label | translate
-                    }}</span>
+                    <span class="ev-baris__label">
+                      {{ r.label | translate }}
+                      @if (r.labelSufiks) {
+                        <span class="ev-baris__sufiks">{{ r.labelSufiks }}</span>
+                      }
+                    </span>
                     <span class="ev-baris__nilai">{{ r.nilai }}</span>
                     <button
                       type="button"

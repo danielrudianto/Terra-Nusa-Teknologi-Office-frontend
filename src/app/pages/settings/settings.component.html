@@ -46,6 +46,7 @@
           <input
             matInput
             formControlName="name"
+            autocomplete="off"
             readonly
             [placeholder]="'settings.namePlaceholder' | translate"
           />
@@ -53,10 +54,22 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "settings.email" | translate }}</mat-label>
+          <!--
+            `autocomplete="off"` walau isiannya hanya-baca.
+
+            Halaman ini memuat formulir ganti sandi, dan begitu peramban
+            mengenalinya ia mengisi SELURUH isian yang tampak seperti
+            identitas pada halaman yang sama — termasuk kotak pencarian di
+            navigasi samping, yang tiba-tiba berisi alamat surel.
+
+            `readonly` tidak menghentikannya: yang menentukan bagi peramban
+            adalah `type="email"`, bukan apakah isiannya dapat disunting.
+          -->
           <input
             matInput
             formControlName="email"
             readonly
+            autocomplete="off"
             type="email"
             [placeholder]="'settings.emailPlaceholder' | translate"
           />

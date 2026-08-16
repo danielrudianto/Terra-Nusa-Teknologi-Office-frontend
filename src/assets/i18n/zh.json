@@ -3988,7 +3988,11 @@
     "daruratDiperbarui": "更新于",
     "salinRingkas": "复制以便发送",
     "ringkasTersalin": "摘要已复制，可直接粘贴",
-    "isian": "项"
+    "isian": "项",
+    "riwayatKerja": "工作经历",
+    "bahasa": "语言",
+    "lisan": "口语",
+    "tulisan": "书面"
   },
   "app": {
     "versiBaru": "有新版本可用，请重新加载以使用。",
