@@ -1340,7 +1340,8 @@
     "menuDelete": "Hapus",
     "noData": "Belum ada equipment. Klik \"Tambah equipment\".",
     "addEquipment": "Tambah equipment",
-    "menuView": "Lihat detail"
+    "menuView": "Lihat detail",
+    "menuUbah": "Ubah"
   },
   "bank": {
     "title": "Rekening Bank",
@@ -1906,7 +1907,8 @@
     "judulUbah": "Ubah Purchase Order",
     "submitUbah": "Simpan perubahan",
     "ubahJudulBanner": "Menyimpan perubahan, bukan menyetujui",
-    "ubahKeteranganBanner": "Dokumen tetap berstatus Draf dan masih perlu disetujui seperti biasa. Nomor revisinya bertambah setiap kali disimpan."
+    "ubahKeteranganBanner": "Dokumen tetap berstatus Draf dan masih perlu disetujui seperti biasa. Nomor revisinya bertambah setiap kali disimpan.",
+    "confirmReadTunggu": "Silakan baca dokumennya terlebih dahulu — pernyataan ini dapat dicentang dalam {{detik}} detik."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -2008,7 +2010,9 @@
     "descriptionPlaceholder": "Spesifikasi / catatan",
     "save": "Simpan equipment",
     "saving": "Menyimpan...",
-    "cancel": "Batal"
+    "cancel": "Batal",
+    "titleUbah": "Ubah alat",
+    "subtitleUbah": "Perbarui data alat pada katalog"
   },
   "itemForm": {
     "title": "Tambah Master Item",

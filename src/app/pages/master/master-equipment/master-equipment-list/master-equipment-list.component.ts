@@ -119,6 +119,30 @@ export class MasterEquipmentListComponent {
       });
   }
 
+  /**
+   * Buka dialog pembuatan dalam mode ubah.
+   *
+   * Alat DIKIRIM UTUH, bukan hanya idnya. Dialog karena itu terisi seketika
+   * tanpa permintaan tambahan — datanya sudah ada di daftar, dan memuat
+   * ulang hanya menambah jeda yang terlihat sebagai kedipan.
+   */
+  ubahItem(item: any) {
+    this.dialog
+      .open(MasterEquipmentCreateComponent, {
+        width: '640px',
+        maxWidth: '94vw',
+        autoFocus: false,
+        data: item,
+      })
+      .afterClosed()
+      .subscribe((berubah) => {
+        // Halaman yang sedang dibuka dimuat ulang, bukan kembali ke halaman
+        // satu: yang baru saja mengubah alat di halaman tiga tidak perlu
+        // mencarinya lagi dari awal.
+        if (berubah) this.fetch(this.page);
+      });
+  }
+
   viewItem(item: any) {
     this.dialog.open(MasterEquipmentViewComponent, {
       width: '560px',

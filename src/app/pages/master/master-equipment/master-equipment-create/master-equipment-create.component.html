@@ -18,8 +18,8 @@
       </svg>
     </span>
     <div class="mec-head__text">
-      <h2 class="mec-title">{{ "equipmentForm.title" | translate }}</h2>
-      <span class="mec-sub">{{ "equipmentForm.subtitle" | translate }}</span>
+      <h2 class="mec-title">{{ (isUbah ? "equipmentForm.titleUbah" : "equipmentForm.title") | translate }}</h2>
+      <span class="mec-sub">{{ (isUbah ? "equipmentForm.subtitleUbah" : "equipmentForm.subtitle") | translate }}</span>
     </div>
   </div>
 

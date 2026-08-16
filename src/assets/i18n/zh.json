@@ -1340,7 +1340,8 @@
     "menuDelete": "删除",
     "noData": "暂无设备。点击\"添加设备\"。",
     "addEquipment": "添加设备",
-    "menuView": "查看详情"
+    "menuView": "查看详情",
+    "menuUbah": "修改"
   },
   "bank": {
     "title": "银行账户",
@@ -1906,7 +1907,8 @@
     "judulUbah": "修改采购订单",
     "submitUbah": "保存修改",
     "ubahJudulBanner": "保存修改，并非批准",
-    "ubahKeteranganBanner": "文件仍为草稿状态，仍需照常批准。每次保存后版本号递增。"
+    "ubahKeteranganBanner": "文件仍为草稿状态，仍需照常批准。每次保存后版本号递增。",
+    "confirmReadTunggu": "请先阅读文件——{{detik}} 秒后可勾选。"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -2008,7 +2010,9 @@
     "descriptionPlaceholder": "规格 / 备注",
     "save": "保存设备",
     "saving": "保存中...",
-    "cancel": "取消"
+    "cancel": "取消",
+    "titleUbah": "修改设备",
+    "subtitleUbah": "更新目录中的设备资料"
   },
   "itemForm": {
     "title": "添加主数据物品",

@@ -92,6 +92,14 @@
               </button>
               <button
                 mat-menu-item
+                *appCan="'master_equipment:update'"
+                (click)="ubahItem(it)"
+              >
+                <mat-icon>edit</mat-icon
+                ><span>{{ "masterEquipment.menuUbah" | translate }}</span>
+              </button>
+              <button
+                mat-menu-item
                 *appCan="'master_equipment:delete'"
                 (click)="deleteItem(it)"
               >

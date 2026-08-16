@@ -251,6 +251,38 @@
                 </mat-form-field>
 
                 <!--
+                  PPh atas sewa alat.
+
+                  Kodenya dipilih dari daftar, tidak diketik: tarifnya
+                  mengikuti kode objek pajak, sehingga angka pada dokumen
+                  selalu sejalan dengan kodenya.
+                -->
+                <mat-form-field appearance="outline" class="pob-span3">
+                  <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="pphCode"
+                    readonly
+                    (click)="openPphSelector()"
+                    [placeholder]="'poField.pilihKodePph' | translate"
+                  />
+                  <button
+                    matSuffix
+                    type="button"
+                    class="pob-pphbtn"
+                    (click)="openPphSelector()"
+                  >
+                    <mat-icon>search</mat-icon>
+                  </button>
+                  @if (formGroup.value.pphTaxObject) {
+                    <mat-hint>
+                      {{ formGroup.value.pphPercentage }}% —
+                      {{ formGroup.value.pphTaxObject }}
+                    </mat-hint>
+                  }
+                </mat-form-field>
+
+                <!--
                   Mobilisasi dan demobilisasi melekat pada ALATNYA.
 
                   Bukan baris tersendiri: baris sewa mewajibkan tanggal mulai,

@@ -1101,3 +1101,18 @@ app-wysiwyg {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+/*
+ * Tombol pencari pada isian PPh.
+ *
+ * Tanpa gaya, tombol di dalam mat-form-field mewarisi bentuk tombol biasa
+ * dan menonjol keluar kotaknya.
+ */
+.pob-pphbtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #6b7280);
+  display: inline-flex;
+  align-items: center;
+}

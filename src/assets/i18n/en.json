@@ -1340,7 +1340,8 @@
     "menuDelete": "Delete",
     "noData": "No equipment yet. Click \"Add equipment\".",
     "addEquipment": "Add equipment",
-    "menuView": "View detail"
+    "menuView": "View detail",
+    "menuUbah": "Edit"
   },
   "bank": {
     "title": "Bank Accounts",
@@ -1906,7 +1907,8 @@
     "judulUbah": "Edit Purchase Order",
     "submitUbah": "Save changes",
     "ubahJudulBanner": "Saving changes, not approving",
-    "ubahKeteranganBanner": "The document stays in Draft and still needs approval as usual. Its revision number increases each time it is saved."
+    "ubahKeteranganBanner": "The document stays in Draft and still needs approval as usual. Its revision number increases each time it is saved.",
+    "confirmReadTunggu": "Please read the document first — this can be ticked in {{detik}} seconds."
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -2008,7 +2010,9 @@
     "descriptionPlaceholder": "Specs / notes",
     "save": "Save equipment",
     "saving": "Saving...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "titleUbah": "Edit equipment",
+    "subtitleUbah": "Update this equipment in the catalogue"
   },
   "itemForm": {
     "title": "Add Master Item",

@@ -50,6 +50,7 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 
 
 /**
@@ -167,6 +168,20 @@ export class PurchaseOrderCreateBComponent implements OnInit {
      */
     includeTransportCoverage: new FormControl(false),
     supplierID: new FormControl('', Validators.required),
+
+    /*
+     * PPh atas sewa alat.
+     *
+     * Sewa alat berat termasuk jasa, sehingga dipotong PPh — berbeda dari
+     * pembelian barang seperti beton dan besi, yang tidak.
+     *
+     * Tidak wajib diisi: sebagian vendor berstatus yang membuat pemotongan
+     * tidak berlaku, dan memaksakannya membuat dokumen yang benar tidak
+     * dapat diterbitkan.
+     */
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
     supplierName: new FormControl('', Validators.required),
     supplierPrefix: new FormControl(''),
     supplierCity: new FormControl(''),
@@ -736,6 +751,45 @@ export class PurchaseOrderCreateBComponent implements OnInit {
     return d ? tanggalLokal(d) : null;
   }
 
+  /**
+   * Pilih kode objek pajak PPh untuk sewa ini.
+   *
+   * Tarifnya tidak diketik: ia mengikuti kode objek pajak yang dipilih,
+   * sehingga angka pada dokumen selalu sejalan dengan kodenya.
+   */
+  openPphSelector() {
+    this.dialog
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((data: any) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya menutup dialog tanpa nilai; tanpa penanda `hapus`,
+         * keduanya diperlakukan sebagai batal dan PPh yang terlanjur dipilih
+         * tidak pernah bisa dikosongkan lagi.
+         */
+        if (data?.hapus) {
+          this.clearPph();
+          return;
+        }
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
+  clearPph() {
+    this.formGroup.patchValue({
+      pphCode: '',
+      pphTaxObject: '',
+      pphPercentage: 0,
+    });
+  }
+
   formatData() {
     const includePPN = this.formGroup.get('includePPN')?.value;
     const dpp = this.rawTotal;
@@ -754,6 +808,12 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       dpp: dpp,
       ppn: ppn,
       payment_term: this.formGroup.get('paymentTerm')?.value,
+      // PPh dikirim sebagai kolom dokumen, bukan di dalam customData:
+      // ketiganya kolom `purchase_orders` yang dibaca laporan pajak.
+      pphCode: this.formGroup.get('pphCode')?.value || null,
+      pphTaxObject: this.formGroup.get('pphTaxObject')?.value || null,
+      pphPercentage: Number(this.formGroup.get('pphPercentage')?.value) || 0,
+
       templateVersion: this.templateVersion,
       billing_requirements: {},
       // equipment rentals -> purchase_order_items (equipment_id -> master_equipment)

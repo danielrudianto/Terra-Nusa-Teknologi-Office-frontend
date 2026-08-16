@@ -234,14 +234,15 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   /*
-   * Garis pemisah digambar DI SINI saja.
+   * TIDAK menggambar garis sendiri.
    *
-   * Sebelumnya `.poh-divider` juga menggambar garis tepat di atas
-   * blok ini, sehingga keduanya tampak sebagai dua garis
-   * berdempetan. Divider-nya dibuang; yang ini sudah cukup.
+   * Blok ini selalu menyusul `.poh-foot`, yang sudah punya `border-top`.
+   * Menggambar lagi di sini menghasilkan dua garis berdempetan dengan jarak
+   * beberapa piksel — cacat yang tampak seperti kesalahan render.
+   *
+   * Jarak atasnya dipertahankan; yang dibuang hanya garisnya.
    */
-  border-top: 1px solid $line;
-}
+  }
 .poh-spacer {
   flex: 1;
 }
