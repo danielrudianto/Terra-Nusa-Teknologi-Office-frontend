@@ -2179,7 +2179,8 @@
   },
   "itemEditForm": {
     "title": "Edit Master Item",
-    "subtitle": "Update item data in catalog"
+    "subtitle": "Update item data in catalog",
+    "skuPeringatan": "Changing the SKU changes the identifier used across all documents. Be certain."
   },
   "loanPayment": {
     "title": "Payment data",

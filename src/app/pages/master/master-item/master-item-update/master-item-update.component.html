@@ -25,27 +25,44 @@
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="mic-content">
-      <!-- SKU read-only (kunci katalog, tidak diubah) -->
-      <div class="mic-sku">
-        <span class="mic-sku__k">{{ "masterItem.sku" | translate }}</span>
-        <span class="mic-sku__v">{{ item.sku }}</span>
-        <span class="mic-sku__lock">
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <rect x="3" y="11" width="18" height="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          terkunci
-        </span>
-      </div>
+      <!--
+        SKU: teks terkunci untuk semua, isian untuk level 5.
+
+        Kode ini penyebut yang dipegang seluruh dokumen — purchase order,
+        pembelian, dan rekap menyebutnya. Mengubahnya bukan pembetulan biasa,
+        sehingga dibatasi pada level tertinggi tanpa pengecualian.
+
+        Yang tidak berhak tetap MELIHAT kodenya; menyembunyikannya membuat
+        orang mencari sesuatu yang ia tahu ada.
+      -->
+      @if (bolehUbahSku) {
+        <mat-form-field appearance="outline" class="mic-skufield">
+          <mat-label>{{ "masterItem.sku" | translate }}</mat-label>
+          <input matInput formControlName="sku" maxlength="45" />
+          <mat-hint>{{ "itemEditForm.skuPeringatan" | translate }}</mat-hint>
+        </mat-form-field>
+      } @else {
+        <div class="mic-sku">
+          <span class="mic-sku__k">{{ "masterItem.sku" | translate }}</span>
+          <span class="mic-sku__v">{{ item.sku }}</span>
+          <span class="mic-sku__lock">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            terkunci
+          </span>
+        </div>
+      }
 
       <div class="mic-grid">
         <mat-form-field appearance="outline" class="mic-span2">

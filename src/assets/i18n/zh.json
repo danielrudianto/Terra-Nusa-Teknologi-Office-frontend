@@ -2179,7 +2179,8 @@
   },
   "itemEditForm": {
     "title": "编辑主数据物品",
-    "subtitle": "更新目录中的物品数据"
+    "subtitle": "更新目录中的物品数据",
+    "skuPeringatan": "修改 SKU 会改变所有单据共用的编号。请确认无误。"
   },
   "loanPayment": {
     "title": "付款数据",

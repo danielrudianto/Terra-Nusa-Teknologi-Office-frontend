@@ -2179,7 +2179,8 @@
   },
   "itemEditForm": {
     "title": "Edit Master Item",
-    "subtitle": "Perbarui data barang di katalog"
+    "subtitle": "Perbarui data barang di katalog",
+    "skuPeringatan": "Mengubah SKU mengubah penyebut yang dipakai seluruh dokumen. Pastikan benar."
   },
   "loanPayment": {
     "title": "Data pembayaran",

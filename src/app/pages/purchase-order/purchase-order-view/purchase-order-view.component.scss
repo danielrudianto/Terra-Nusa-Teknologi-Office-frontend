@@ -481,3 +481,18 @@
   color: var(--muted, #8a90a0);
   font-style: italic;
 }
+
+/*
+ * Pernyataan yang belum dapat dicentang.
+ *
+ * Diredupkan, bukan disembunyikan: yang membaca perlu tahu bahwa langkah ini
+ * ada dan sedang menunggu — bukan mengira dialognya rusak.
+ */
+.pov-cek--menunggu {
+  opacity: 0.55;
+  cursor: not-allowed;
+
+  input {
+    cursor: not-allowed;
+  }
+}

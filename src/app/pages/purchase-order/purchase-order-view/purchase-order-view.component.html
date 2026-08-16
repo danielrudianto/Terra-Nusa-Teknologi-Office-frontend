@@ -228,23 +228,37 @@
         [entityId]="data.id"
       ></app-audit-trail>
     }
+    <!--
+      Pernyataan sudah membaca; DI DALAM isi dialog, paling bawah.
+
+      Sebelumnya blok ini berada di luar area bergulir, sehingga selalu
+      terlihat tanpa perlu menggulir sedikit pun — dan pernyataan "sudah
+      membaca" dapat dicentang atas dokumen yang belum pernah dilihat
+      isinya.
+
+      SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit —
+      nomornya sudah terpakai dan salinannya sudah beredar.
+    -->
+    @if (isPratinjau && input.konfirmasi) {
+      <div class="pov-konfirmasi">
+        <label class="pov-cek" [class.pov-cek--menunggu]="masihMenunggu">
+          <input
+            type="checkbox"
+            [(ngModel)]="dibaca"
+            [disabled]="masihMenunggu"
+          />
+          <span>{{ "poForm.confirmRead" | translate }}</span>
+        </label>
+        <p class="pov-ket">
+          @if (masihMenunggu) {
+            {{ "poForm.confirmReadTunggu" | translate: { detik: sisaDetik } }}
+          } @else {
+            {{ "poForm.confirmReadHint" | translate }}
+          }
+        </p>
+      </div>
+    }
   </mat-dialog-content>
-
-  <!--
-    Pernyataan sudah membaca; hanya pada pratinjau sebelum penerbitan.
-
-    SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit — nomornya
-    sudah terpakai dan salinannya sudah beredar.
-  -->
-  @if (isPratinjau && input.konfirmasi) {
-    <div class="pov-konfirmasi">
-      <label class="pov-cek">
-        <input type="checkbox" [(ngModel)]="dibaca" />
-        <span>{{ "poForm.confirmRead" | translate }}</span>
-      </label>
-      <p class="pov-ket">{{ "poForm.confirmReadHint" | translate }}</p>
-    </div>
-  }
 
   <mat-dialog-actions class="pov-foot">
     <span class="pov-spacer"></span>

@@ -266,3 +266,14 @@ $surface: var(--surface, #ffffff);
     color: var(--faint, #9aa0ab);
   }
 }
+
+/*
+ * Isian SKU pada mode level 5.
+ *
+ * Selebar penuh supaya sejajar dengan blok terkunci yang digantikannya, dan
+ * tidak tampak seperti isian sisipan.
+ */
+.mic-skufield {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}

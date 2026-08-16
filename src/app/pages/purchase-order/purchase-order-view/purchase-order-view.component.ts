@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -75,7 +75,7 @@ const ADENDUM_ROUTES: Record<string, string> = {
   templateUrl: './purchase-order-view.component.html',
   styleUrl: './purchase-order-view.component.scss',
 })
-export class PurchaseOrderViewComponent {
+export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
   isLoading = true;
   /*
    * `clauseSections` disusun sekali saat data tiba, bukan lewat getter.
@@ -99,6 +99,51 @@ export class PurchaseOrderViewComponent {
   }
 
   clauseSections: ClauseSection[] = [];
+
+  /**
+   * Sisa detik sebelum pernyataan "sudah membaca" dapat dicentang.
+   *
+   * Tiga detik bukan waktu yang cukup untuk membaca seluruh SPK — tidak ada
+   * angka yang cukup untuk itu. Gunanya menahan gerak refleks: mencentang
+   * dan menekan terbit dalam satu tarikan, tanpa mata pernah singgah pada
+   * isinya.
+   *
+   * Yang benar-benar menahan adalah letaknya di dasar dokumen; jeda ini
+   * hanya melengkapi.
+   */
+  sisaDetik = 3;
+
+  private penghitung?: ReturnType<typeof setInterval>;
+
+  get masihMenunggu(): boolean {
+    return this.sisaDetik > 0;
+  }
+
+  private mulaiHitungMundur(): void {
+    // Hanya pada pratinjau yang meminta konfirmasi; dialog yang sekadar
+    // menampilkan dokumen tidak perlu menahan siapa pun.
+    if (!this.isPratinjau || !this.input?.konfirmasi) {
+      this.sisaDetik = 0;
+      return;
+    }
+    this.penghitung = setInterval(() => {
+      this.sisaDetik -= 1;
+      if (this.sisaDetik <= 0 && this.penghitung) {
+        clearInterval(this.penghitung);
+        this.penghitung = undefined;
+      }
+    }, 1000);
+  }
+
+  ngOnInit(): void {
+    this.mulaiHitungMundur();
+  }
+
+  ngOnDestroy(): void {
+    // Penghitung dihentikan saat dialog ditutup; tanpa ini ia terus berjalan
+    // setelah komponennya hilang.
+    if (this.penghitung) clearInterval(this.penghitung);
+  }
 
   /**
    * Menyatakan sudah membaca; hanya berarti pada mode pratinjau.

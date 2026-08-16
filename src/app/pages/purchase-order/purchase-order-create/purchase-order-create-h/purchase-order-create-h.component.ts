@@ -698,6 +698,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         weekStartDay: v.weekStartDay,
         weekEndDay: v.weekEndDay,
         cutoffDays: this.cutoffValues,
+
         billingTermDays: v.billingTermDays,
         paymentDays: v.paymentDays,
         finalPaymentDays: v.finalPaymentDays,
@@ -1006,6 +1007,16 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         weekStartDay: this.formGroup.get('weekStartDay')?.value,
         weekEndDay: this.formGroup.get('weekEndDay')?.value,
         cutoffDays: this.cutoffValues,
+
+        // Jenis subkontraktor dan lingkup kerja IKUT DISIMPAN.
+        //
+        // Keduanya menentukan bentuk dokumennya — H1 atau H2, ringkas atau
+        // penuh — tetapi sebelumnya hanya hidup di memori layar. Dokumen yang
+        // dibuka kembali karena itu selalu meminta keduanya dipilih ulang,
+        // dan pilihan yang keliru mengubah dokumen yang nomornya sudah
+        // terlanjur terbentuk.
+        subType: this.subType,
+        workScope: this.formGroup.get('workScope')?.value ?? null,
         billingTermDays:
           Number(this.formGroup.get('billingTermDays')?.value) || 0,
         paymentDays: Number(this.formGroup.get('paymentDays')?.value) || 0,
@@ -1388,6 +1399,38 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         if (!induk) return;
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
+
+        /*
+         * Pulihkan yang TIDAK tercakup `isiFormulir`.
+         *
+         * `isiFormulir` hanya menyalin ke kontrol biasa; FormArray sengaja
+         * dilewati karena bentuk barisnya berbeda-beda antar varian. Akibatnya
+         * `cutoffDays` — yang tersimpan dengan benar — tidak pernah kembali,
+         * dan tanggal cut-off yang sudah diisi hilang saat dokumen dibuka
+         * lagi.
+         *
+         * `subType` bukan kontrol formulir sama sekali; ia menentukan layar
+         * mana yang tampil, dan tanpa dipulihkan pengguna diminta memilih
+         * H1/H2 ulang atas dokumen yang nomornya sudah terbentuk.
+         */
+        const custom =
+          typeof induk?.customData === 'string'
+            ? JSON.parse(induk.customData || '{}')
+            : induk?.customData || {};
+
+        if (custom.subType === 'H1' || custom.subType === 'H2') {
+          this.subType = custom.subType;
+        }
+
+        const hari: any[] = Array.isArray(custom.cutoffDays)
+          ? custom.cutoffDays
+          : [];
+        if (hari.length) {
+          this.cutoffDays.clear();
+          for (const d of hari) {
+            this.cutoffDays.push(new FormControl(Number(d) || null));
+          }
+        }
         this.adendum.kunciIsian(this.formGroup);
         /*
          * Lingkup kerja dimuat dari `items`, bukan `customData`.

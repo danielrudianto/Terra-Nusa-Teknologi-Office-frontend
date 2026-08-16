@@ -21,6 +21,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { MASTER_ITEM_PURCHASE_TYPES, purchaseTypeLabel } from 'src/app/constants/purchase-type-label.constant';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
+import { PermissionService } from 'src/app/services/permission.service';
 
 @Component({
   selector: 'app-master-item-update',
@@ -47,7 +48,20 @@ export class MasterItemUpdateComponent {
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialogRef<MasterItemUpdateComponent>,
+    private izin: PermissionService,
   ) {}
+
+  /**
+   * Hanya level 5 yang boleh mengubah SKU.
+   *
+   * Tanpa pengecualian — bukan lewat izin per modul, melainkan level itu
+   * sendiri. Izin `master_item:update` terbuka sampai level 3, dan itu
+   * memang tepat untuk deskripsi dan merek; SKU berbeda karena ia penyebut
+   * yang dipegang seluruh dokumen.
+   */
+  get bolehUbahSku(): boolean {
+    return this.izin.level() >= 5;
+  }
 
   isSubmitting: boolean = false;
 
@@ -81,6 +95,23 @@ export class MasterItemUpdateComponent {
   selectedTypes: string[] = [];
 
   formGroup: FormGroup = new FormGroup({
+    /*
+     * SKU dapat diubah, tetapi HANYA oleh level 5.
+     *
+     * Kode ini dipakai untuk mencocokkan barang lintas dokumen — purchase
+     * order, pembelian, dan rekap semuanya menyebutnya. Mengubahnya berarti
+     * mengubah penyebut yang dipegang bersama, dan itu bukan pembetulan
+     * salah ketik biasa.
+     *
+     * Dibiarkan dapat diubah karena kesalahan pengetikan saat memasukkan
+     * barang baru memang terjadi, dan tanpa jalur ini satu-satunya cara
+     * membetulkannya adalah menghapus barangnya — yang memutus kaitan
+     * dokumen lama yang sudah menyebutnya.
+     */
+    sku: new FormControl(
+      { value: '', disabled: true },
+      [Validators.required, Validators.maxLength(45)],
+    ),
     description: new FormControl('', Validators.required),
     brand: new FormControl('', [Validators.required, Validators.maxLength(45)]),
     type: new FormControl('', [Validators.required, Validators.maxLength(45)]),
@@ -90,11 +121,24 @@ export class MasterItemUpdateComponent {
   ngOnInit(): void {
     const item = this.data?.item ?? this.data ?? {};
     this.formGroup.patchValue({
+      sku: item.sku || '',
       description: item.description || '',
       brand: item.brand || '',
       type: item.type || '',
       unit: item.unit || '',
     });
+
+    /*
+     * Kuncinya dibuka HANYA untuk level 5.
+     *
+     * Isian yang dikunci tetap menampilkan nilainya, sehingga yang tidak
+     * berhak tetap dapat membaca SKU-nya — yang tidak bisa hanya
+     * mengubahnya. Menyembunyikannya justru membingungkan: orang mencari
+     * kode yang ia tahu ada.
+     */
+    if (this.bolehUbahSku) {
+      this.formGroup.get('sku')?.enable();
+    }
     this.selectedTypes = this.normalizeTypes(item.availablePurchaseType);
   }
 
@@ -137,6 +181,20 @@ export class MasterItemUpdateComponent {
     this.apiService
       .put('master-items/' + id, {
         id: id,
+
+        /*
+         * SKU hanya IKUT bila isiannya terbuka.
+         *
+         * `formGroup.value` tidak memuat kontrol yang dikunci, sehingga
+         * pengguna di bawah level 5 tidak pernah mengirimnya sama sekali —
+         * bukan mengirim nilai lama yang kebetulan sama. Bedanya penting:
+         * yang tidak dikirim tidak tersentuh, sedangkan nilai yang dikirim
+         * ulang tetap tercatat sebagai perubahan pada jejak audit.
+         */
+        ...(this.bolehUbahSku && this.formGroup.value.sku
+          ? { sku: this.formGroup.value.sku }
+          : {}),
+
         description: this.formGroup.value.description,
         brand: this.formGroup.value.brand,
         type: this.formGroup.value.type,
