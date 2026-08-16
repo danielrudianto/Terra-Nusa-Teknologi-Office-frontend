@@ -12,6 +12,8 @@
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "clientSelector.search" | translate }}</mat-label>
       <input
+        autocomplete="off"
+            type="search"
         matInput
         cdkFocusInitial
         [formControl]="searchBar"

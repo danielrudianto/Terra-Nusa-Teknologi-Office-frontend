@@ -479,9 +479,10 @@
             <mat-form-field appearance="outline" class="exc-span2">
               <mat-label>{{ "expenseForm.bankName" | translate }}</mat-label>
               <input
+        autocomplete="off"
                 #input
                 matInput
-                type="text"
+                type="search"
                 formControlName="bankName"
                 [placeholder]="'expense.pilihBank' | translate"
                 [matAutocomplete]="auto"

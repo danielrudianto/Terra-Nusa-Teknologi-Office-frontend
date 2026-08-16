@@ -9,8 +9,9 @@
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
+        autocomplete="off"
         matInput
-        type="text"
+        type="search"
         [placeholder]="'salarySlip.searchPlaceholder' | translate"
         [formControl]="formControl"
       />

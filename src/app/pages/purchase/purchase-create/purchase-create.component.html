@@ -474,9 +474,10 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.bankName" | translate }}</mat-label>
         <input
+        autocomplete="off"
           #input
           matInput
-          type="text"
+          type="search"
           formControlName="bankName"
           [placeholder]="'purchaseCreate.bankName' | translate"
           [matAutocomplete]="auto"

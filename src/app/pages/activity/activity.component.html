@@ -59,6 +59,8 @@
         <mat-form-field appearance="outline" class="al-user">
           <mat-label>{{ "activity.filterUser" | translate }}</mat-label>
           <input
+        autocomplete="off"
+            type="search"
             matInput
             [formControl]="penggunaCari"
             [matAutocomplete]="autoPengguna"

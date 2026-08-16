@@ -16,7 +16,8 @@
     <div class="pots-search">
       <mat-icon>search</mat-icon>
       <input
-        type="text"
+        autocomplete="off"
+        type="search"
         [(ngModel)]="keyword"
         [placeholder]="'purchaseOrder.searchType' | translate"
         cdkFocusInitial

@@ -127,6 +127,8 @@
         <mat-form-field appearance="outline" class="lc-span2">
           <mat-label>{{ "loansCreate.bankName" | translate }}</mat-label>
           <input
+        autocomplete="off"
+            type="search"
             #input
             matInput
             formControlName="bankName"

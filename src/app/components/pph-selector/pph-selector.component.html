@@ -38,8 +38,9 @@
         </svg>
         <mat-label>{{ "pph.searchCode" | translate }}</mat-label>
         <input
+        autocomplete="off"
           matInput
-          type="text"
+          type="search"
           [placeholder]="'tax.kodeObjekPajak' | translate"
           [formControl]="pphSearchFormControl"
         />

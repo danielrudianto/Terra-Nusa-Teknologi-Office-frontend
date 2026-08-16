@@ -100,9 +100,10 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ "salarySlipForm.bankName" | translate }}</mat-label>
           <input
+        autocomplete="off"
             #input
             matInput
-            type="text"
+            type="search"
             formControlName="bankName"
             [placeholder]="'expense.pilihBank' | translate"
             [matAutocomplete]="auto"

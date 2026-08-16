@@ -26,6 +26,8 @@
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
       <input
+        autocomplete="off"
+            type="search"
         matInput
         [placeholder]="'salesInvoice.searchPlaceholder' | translate"
         [formControl]="searchFormControl"

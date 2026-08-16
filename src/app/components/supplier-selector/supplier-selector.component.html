@@ -39,6 +39,8 @@
       </svg>
       <mat-label>{{ "selector.searchSupplier" | translate }}</mat-label>
       <input
+        autocomplete="off"
+            type="search"
         matInput
         cdkFocusInitial
         [formControl]="searchBar"
