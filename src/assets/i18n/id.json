@@ -153,7 +153,9 @@
     "toggle": "Buka/tutup",
     "add": "Tambah",
     "refresh": "Muat ulang",
-    "refreshHint": "Ambil data terbaru tanpa kehilangan pencarian dan penyaring"
+    "refreshHint": "Ambil data terbaru tanpa kehilangan pencarian dan penyaring",
+    "semua": "Semua",
+    "bersihkan": "Bersihkan"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -517,7 +519,16 @@
     "jenisJasa": "Jasa",
     "revisi": "Revisi",
     "revisiKet": "Dokumen ini pernah diubah setelah dibuat. Angkanya bertambah setiap kali disimpan.",
-    "viewMobilisasi": "mobilisasi & demobilisasi"
+    "viewMobilisasi": "mobilisasi & demobilisasi",
+    "filterJudul": "Saring purchase order",
+    "filterStatus": "Status",
+    "filterTipe": "Tipe dokumen",
+    "filterProyek": "Proyek",
+    "filterDari": "Sejak",
+    "filterSampai": "Sampai",
+    "filterTanggalKet": "Rentang mengikuti tanggal dokumen, bukan tanggal dibuat.",
+    "statusDraf": "Draf",
+    "statusDisetujui": "Disetujui"
   },
   "income": {
     "title": "Pendapatan Lain",

@@ -1,0 +1,57 @@
+.pof-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 1.25rem 1.5rem 0;
+  margin: 0;
+}
+
+.pof-content {
+  padding: 1.5rem;
+}
+
+.pof-field {
+  width: 100%;
+}
+
+.pof-ket {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Dua isian tanggal berdampingan.
+ *
+ * Menumpuknya membuat dialog memanjang sampai tombolnya keluar layar pada
+ * laptop berlayar pendek.
+ */
+.pof-tanggal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.pof-actions {
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * "Bersihkan" sengaja dijauhkan dari "Terapkan".
+ *
+ * Keduanya berlawanan akibatnya, dan tombol berlawanan yang bersebelahan
+ * ditekan keliru justru saat orang sedang terburu.
+ */
+.pof-spacer {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 600px) {
+  .pof-tanggal {
+    grid-template-columns: 1fr;
+  }
+}

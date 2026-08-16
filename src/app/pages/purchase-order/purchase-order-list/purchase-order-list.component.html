@@ -18,6 +18,34 @@
         [formControl]="searchControl"
       />
     </mat-form-field>
+
+    <!--
+      Tombol penyaring dengan lencana jumlah.
+
+      Lencananya bukan hiasan: daftar yang tersaring tampak seperti daftar
+      yang kosong, dan tanpa penanda yang terlihat, orang menyimpulkan
+      datanya hilang lalu mencarinya di tempat lain.
+    -->
+    <button
+      type="button"
+      class="pol-filter"
+      [class.pol-filter--aktif]="activeFilterCount() > 0"
+      (click)="openFilter()"
+    >
+      <mat-icon>filter_list</mat-icon>
+      {{ "common.filter" | translate }}
+      @if (activeFilterCount() > 0) {
+        <span class="pol-filter__badge">{{ activeFilterCount() }}</span>
+      }
+    </button>
+
+    @if (activeFilterCount() > 0) {
+      <button type="button" class="pol-filter__hapus" (click)="bersihkanFilter()">
+        <mat-icon>close</mat-icon>
+        {{ "common.bersihkan" | translate }}
+      </button>
+    }
+
     <!--
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
       pencarian, penyaring, dan halaman ke keadaan awal.

@@ -153,7 +153,9 @@
     "toggle": "Toggle",
     "add": "Add",
     "refresh": "Refresh",
-    "refreshHint": "Fetch the latest data without losing your search and filters"
+    "refreshHint": "Fetch the latest data without losing your search and filters",
+    "semua": "All",
+    "bersihkan": "Clear"
   },
   "nav": {
     "pinned": "Pinned",
@@ -517,7 +519,16 @@
     "jenisJasa": "Services",
     "revisi": "Rev.",
     "revisiKet": "This document has been edited since it was created. The number increases with each save.",
-    "viewMobilisasi": "mobilisation & demobilisation"
+    "viewMobilisasi": "mobilisation & demobilisation",
+    "filterJudul": "Filter purchase orders",
+    "filterStatus": "Status",
+    "filterTipe": "Document type",
+    "filterProyek": "Project",
+    "filterDari": "From",
+    "filterSampai": "To",
+    "filterTanggalKet": "The range follows the document date, not the creation date.",
+    "statusDraf": "Draft",
+    "statusDisetujui": "Approved"
   },
   "income": {
     "title": "Other income",

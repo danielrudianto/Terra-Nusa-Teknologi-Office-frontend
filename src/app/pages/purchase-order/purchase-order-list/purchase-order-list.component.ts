@@ -58,6 +58,7 @@ import { SettingsService } from '../../../services/setting.service';
 import { ServerMessageService } from '../../../services/server-message.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
+import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -171,6 +172,87 @@ export class PurchaseOrderListComponent {
     });
   }
 
+  /*
+   * Keadaan penyaring.
+   *
+   * Disimpan di komponen, bukan di dalam dialog: dialog dibuang setiap kali
+   * ditutup, dan penyaring yang ikut hilang berarti yang membukanya lagi
+   * harus mengisi ulang seluruhnya.
+   */
+  filterStatus = '';
+  filterTipe: string[] = [];
+  filterProyek = '';
+  filterDari: Date | null = null;
+  filterSampai: Date | null = null;
+
+  /** Kode proyek untuk pilihan; diambil dari daftar yang sedang tampil. */
+  proyekOptions: string[] = [];
+
+  /**
+   * Berapa penyaring yang sedang aktif.
+   *
+   * Ditampilkan sebagai lencana pada tombolnya — tanpa itu, daftar yang
+   * tersaring tampak seperti daftar yang kosong, dan yang melihatnya
+   * menyimpulkan datanya hilang.
+   */
+  activeFilterCount(): number {
+    let n = 0;
+    if (this.filterStatus) n++;
+    if (this.filterTipe.length) n++;
+    if (this.filterProyek) n++;
+    if (this.filterDari || this.filterSampai) n++;
+    return n;
+  }
+
+  openFilter(): void {
+    this.dialog
+      .open(PurchaseOrderFilterComponent, {
+        width: '460px',
+        maxWidth: '92vw',
+        autoFocus: false,
+        data: {
+          projects: this.proyekOptions,
+          status: this.filterStatus,
+          purchaseType: this.filterTipe,
+          projectName: this.filterProyek,
+          dateFrom: this.filterDari,
+          dateTo: this.filterSampai,
+        },
+      })
+      .afterClosed()
+      .subscribe((hasil) => {
+        if (!hasil) return;
+        this.filterStatus = hasil.status;
+        this.filterTipe = hasil.purchaseType;
+        this.filterProyek = hasil.projectName;
+        this.filterDari = hasil.dateFrom;
+        this.filterSampai = hasil.dateTo;
+
+        // Kembali ke halaman satu.
+        //
+        // Penyaring baru menghasilkan daftar yang berbeda, dan halaman lima
+        // dari daftar itu kerap tidak ada — sehingga yang tampil justru
+        // kosong.
+        this.fetch(1);
+      });
+  }
+
+  bersihkanFilter(): void {
+    this.filterStatus = '';
+    this.filterTipe = [];
+    this.filterProyek = '';
+    this.filterDari = null;
+    this.filterSampai = null;
+    this.fetch(1);
+  }
+
+  /** Tanggal untuk server: YYYY-MM-DD waktu setempat. */
+  private tglParam(d: Date | null): string {
+    if (!d) return '';
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
   fetch(targetPage: number = 1) {
     this.isLoading = true;
     this.page = targetPage;
@@ -181,11 +263,33 @@ export class PurchaseOrderListComponent {
         page_size: this.pageSize,
         sortBy: this.sortBy,
         sortByDirection: this.sortByDirection,
+
+        // Penyaring dikirim sebagai teks kosong bila tidak dipakai; server
+        // mengabaikan yang kosong dan tidak menambah kondisi apa pun.
+        status: this.filterStatus,
+        purchase_type: this.filterTipe.join(','),
+        project_name: this.filterProyek,
+        date_from: this.tglParam(this.filterDari),
+        date_to: this.tglParam(this.filterSampai),
       })
       .subscribe({
         next: (res: any) => {
           this.orders = res.data || [];
           this.count = res.count || 0;
+
+          /*
+           * Kode proyek dikumpulkan dari daftar yang tampil.
+           *
+           * Bukan dari seluruh proyek yang pernah ada: sebagian sudah selesai
+           * bertahun lalu dan tidak akan pernah dicari lagi, sementara
+           * daftar pilihan yang panjang justru menyulitkan menemukan yang
+           * sedang berjalan.
+           */
+          const proyek = new Set(this.proyekOptions);
+          for (const o of this.orders) {
+            if (o?.projectName) proyek.add(o.projectName);
+          }
+          this.proyekOptions = [...proyek].sort();
         },
         error: (err) => {
           this.snackBar.open(

@@ -153,7 +153,9 @@
     "toggle": "展开/收起",
     "add": "添加",
     "refresh": "刷新",
-    "refreshHint": "获取最新数据，且不会丢失搜索与筛选条件"
+    "refreshHint": "获取最新数据，且不会丢失搜索与筛选条件",
+    "semua": "全部",
+    "bersihkan": "清除"
   },
   "nav": {
     "pinned": "已固定",
@@ -517,7 +519,16 @@
     "jenisJasa": "服务",
     "revisi": "版本",
     "revisiKet": "此文件创建后曾被修改。每次保存后编号递增。",
-    "viewMobilisasi": "进场与退场"
+    "viewMobilisasi": "进场与退场",
+    "filterJudul": "筛选采购订单",
+    "filterStatus": "状态",
+    "filterTipe": "单据类型",
+    "filterProyek": "项目",
+    "filterDari": "自",
+    "filterSampai": "至",
+    "filterTanggalKet": "日期范围依据单据日期，而非创建日期。",
+    "statusDraf": "草稿",
+    "statusDisetujui": "已批准"
   },
   "income": {
     "title": "其他收入",

@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="pof-title">
+  {{ "purchaseOrder.filterJudul" | translate }}
+</h2>
+
+<mat-dialog-content class="pof-content">
+  <mat-form-field appearance="outline" class="pof-field">
+    <mat-label>{{ "purchaseOrder.filterStatus" | translate }}</mat-label>
+    <mat-select [(ngModel)]="status">
+      <mat-option value="">{{ "common.semua" | translate }}</mat-option>
+      <mat-option value="draft">{{
+        "purchaseOrder.statusDraf" | translate
+      }}</mat-option>
+      <mat-option value="approved">{{
+        "purchaseOrder.statusDisetujui" | translate
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!--
+    Tipe dapat dipilih LEBIH DARI SATU.
+
+    "Semua PO mandor" berarti D, 5.1.1, dan 5.1.2 — memilihnya satu per satu
+    berarti memuat ulang daftar tiga kali.
+  -->
+  <mat-form-field appearance="outline" class="pof-field">
+    <mat-label>{{ "purchaseOrder.filterTipe" | translate }}</mat-label>
+    <mat-select [(ngModel)]="purchaseType" multiple>
+      @for (t of typeOptions; track t) {
+        <mat-option [value]="t">{{ t }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="pof-field">
+    <mat-label>{{ "purchaseOrder.filterProyek" | translate }}</mat-label>
+    <mat-select [(ngModel)]="projectName">
+      <mat-option value="">{{ "common.semua" | translate }}</mat-option>
+      @for (p of projects; track p) {
+        <mat-option [value]="p">{{ p }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!--
+    Rentang memakai TANGGAL DOKUMEN, bukan tanggal dibuat.
+
+    Yang dicari saat merekap adalah tanggal yang tercetak dan disepakati
+    vendor — bukan kapan barisnya kebetulan dimasukkan ke sistem.
+  -->
+  <p class="pof-ket">{{ "purchaseOrder.filterTanggalKet" | translate }}</p>
+
+  <div class="pof-tanggal">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "purchaseOrder.filterDari" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dp1" [(ngModel)]="dateFrom" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
+      <mat-datepicker #dp1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "purchaseOrder.filterSampai" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dp2" [(ngModel)]="dateTo" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp2"></mat-datepicker-toggle>
+      <mat-datepicker #dp2></mat-datepicker>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="pof-actions">
+  <button mat-button type="button" (click)="bersihkan()">
+    {{ "common.bersihkan" | translate }}
+  </button>
+  <span class="pof-spacer"></span>
+  <button mat-button type="button" (click)="batal()">
+    {{ "common.cancel" | translate }}
+  </button>
+  <button mat-flat-button color="primary" type="button" (click)="terapkan()">
+    {{ "common.apply" | translate }}
+  </button>
+</mat-dialog-actions>

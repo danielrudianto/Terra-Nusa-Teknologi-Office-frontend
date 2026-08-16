@@ -422,3 +422,67 @@ $hover: var(--hover, #f6f8ff);
   height: 17px;
   font-size: 17px;
 }
+
+/* Tombol penyaring pada bilah atas. */
+.pol-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.84rem;
+  white-space: nowrap;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+/*
+ * Warna aksen ketika ada penyaring yang berlaku.
+ *
+ * Daftar yang tersaring tampak sama seperti daftar yang kosong; tanda ini
+ * yang membedakan "tidak ada hasil" dari "belum ada datanya".
+ */
+.pol-filter--aktif {
+  border-color: var(--brand-strong);
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
+.pol-filter__badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 0.3rem;
+  border-radius: 9px;
+  background: var(--brand-strong);
+  color: var(--on-brand);
+  font-size: 0.7rem;
+  line-height: 18px;
+  text-align: center;
+}
+
+.pol-filter__hapus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: transparent;
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  white-space: nowrap;
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
