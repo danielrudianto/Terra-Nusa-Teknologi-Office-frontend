@@ -23,6 +23,17 @@ interface Baris {
 
   /** Keterangan tambahan pada label, mis. golongan SIM. */
   labelSufiks?: string;
+
+  /**
+   * Nilai yang berupa DAFTAR, bukan satu kalimat.
+   *
+   * Riwayat penyakit dan kontak darurat berisi beberapa butir yang
+   * masing-masing berdiri sendiri. Dirangkai jadi satu baris —
+   * "Aritmia · 2024 Lambung / Maag · 2020" — titik tengahnya tidak
+   * lagi jelas memisahkan apa dari apa, dan yang membacanya harus
+   * menebak di mana satu butir berakhir.
+   */
+  daftar?: string[];
 }
 
 interface Bagian {
@@ -42,6 +53,47 @@ interface Bagian {
  * sini tampil tanpa ikon, bukan dengan ikon yang dipaksakan.
  */
 const IKON: Record<string, string> = {
+  'employeeView.alamatKtp': 'contact_mail',
+  'employeeView.golonganDarah': 'bloodtype',
+  'employeeView.kewarganegaraan': 'flag',
+  'employeeView.suku': 'diversity_3',
+  'employeeView.statusNikah': 'favorite',
+  'employeeView.namaIbu': 'woman',
+  'employeeView.namaAyah': 'man',
+  'employeeView.namaBank': 'account_balance',
+  'employeeView.atasNama': 'person',
+  'employeeView.nomorRekening': 'account_balance_wallet',
+  'employeeView.sim': 'directions_car',
+  'employeeView.riwayatKerja': 'business_center',
+  'employeeView.bahasa': 'translate',
+
+  /*
+   * Kunci bidang FORMULIR pembaruan.
+   *
+   * Bagian riwayat memakai kunci ini, bukan kunci i18n — labelnya diambil
+   * dari definisi formulir yang berlaku di server, sehingga pertanyaan yang
+   * berubah kata tetap menampilkan sebutan yang benar.
+   *
+   * Keduanya dijadikan satu peta agar `ikon()` cukup satu, dan tidak ada
+   * bagian dialog yang punya perilaku ikon berbeda dari yang lain.
+   */
+  maritalStatus: 'favorite',
+  dependents: 'family_restroom',
+  family: 'groups',
+  currentAddress: 'home',
+  mobilePhone: 'smartphone',
+  personalEmail: 'alternate_email',
+  emergencyContacts: 'emergency',
+  conditions: 'medical_information',
+  accident: 'personal_injury',
+  accidentNote: 'description',
+  smoking: 'smoking_rooms',
+  lastCheckup: 'monitor_heart',
+  trainings: 'school',
+  relocate: 'moving',
+  overtime: 'more_time',
+  shift: 'schedule',
+  availabilityNote: 'sticky_note_2',
   'employeeView.nama': 'person',
   'employeeView.nik': 'badge',
   'employeeView.jabatan': 'work',
@@ -53,16 +105,11 @@ const IKON: Record<string, string> = {
   'employeeView.telepon': 'call',
   'employeeView.alamat': 'home',
   'employeeView.tempatLahir': 'location_city',
-  'employeeView.tanggalLahir': 'cake',
   'employeeView.jenisKelamin': 'wc',
   'employeeView.agama': 'volunteer_activism',
-  'employeeView.statusPernikahan': 'favorite',
-  'employeeView.tanggungan': 'family_restroom',
   'employeeView.pendidikan': 'school',
-  'employeeView.npwp': 'account_balance',
   'employeeView.bpjsKesehatan': 'health_and_safety',
   'employeeView.bpjsKetenagakerjaan': 'shield',
-  'employeeView.rekening': 'account_balance_wallet',
   'employeeView.bank': 'account_balance',
 };
 
@@ -505,18 +552,59 @@ export class EmployeeViewComponent implements OnInit {
    * ditemukan jatuh ke kuncinya sendiri, bukan disembunyikan — jawaban yang
    * ada tetap perlu terlihat walau pertanyaannya sudah tidak dipakai lagi.
    */
+  /**
+   * Pecah nilai menjadi butir-butir yang berdiri sendiri.
+   *
+   * Hanya larik yang dipecah. Objek tunggal — misalnya satu alamat — tetap
+   * satu butir: memecahnya per bidang menghasilkan daftar potongan yang
+   * kehilangan artinya bila dibaca terpisah.
+   */
+  private butirTerbaca(v: unknown): string[] {
+    if (!Array.isArray(v)) return [];
+    return v
+      .map((x) =>
+        x && typeof x === 'object'
+          ? Object.values(x)
+              .filter((y) => y !== null && y !== undefined && y !== '')
+              .join(' · ')
+          : String(x ?? ''),
+      )
+      .filter((x) => x.trim() !== '');
+  }
+
   private ratakanJawaban(a: any): Baris[] {
     if (!a || typeof a !== 'object') return [];
     const out: Baris[] = [];
     for (const [k, v] of Object.entries(a)) {
       if (v === null || v === undefined || v === '') continue;
       if (Array.isArray(v) && !v.length) continue;
+      // Larik berisi lebih dari satu butir ditampilkan sebagai DAFTAR.
+      //
+      // Satu butir tetap sebagai kalimat biasa: memberi penanda daftar pada
+      // satu baris justru menambah bentuk tanpa menambah kejelasan.
+      const butir = this.butirTerbaca(v);
       out.push({
         label: this.labelBidang[k] ?? this.labelCadangan[k] ?? k,
-        nilai: this.nilaiTerbaca(v),
+        nilai: butir.length > 1 ? '' : this.nilaiTerbaca(v),
+        daftar: butir.length > 1 ? butir : undefined,
       });
     }
     return out;
+  }
+
+  /**
+   * Teks yang disalin untuk sebuah baris.
+   *
+   * Baris berbentuk daftar tidak punya `nilai` — menyalinnya begitu saja
+   * menghasilkan teks kosong, dan yang menekan tombolnya baru menyadarinya
+   * setelah menempel di tempat lain.
+   *
+   * Butirnya dipisah baris baru, bukan koma: keduanya sudah memuat titik
+   * tengah di dalamnya, dan menambah koma membuat pemisahnya tidak lagi
+   * terbaca.
+   */
+  teksSalin(b: Baris): string {
+    return b.daftar?.length ? b.daftar.join('\n') : b.nilai;
   }
 
   /** Buka atau tutup satu catatan riwayat. */

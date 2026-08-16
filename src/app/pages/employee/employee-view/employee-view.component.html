@@ -230,14 +230,30 @@
                       <span class="ev-baris__ikon"></span>
                       <div class="ev-baris__isi">
                         <span class="ev-baris__label">{{ x.label }}</span>
-                        <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                        @if (x.daftar) {
+                          <!--
+                            Nilai berisi beberapa butir ditampilkan sebagai
+                            daftar, bukan dirangkai jadi satu kalimat.
+
+                            "Aritmia · 2024 Lambung / Maag · 2020" memaksa
+                            yang membacanya menebak di mana satu penyakit
+                            berakhir dan yang berikutnya mulai.
+                          -->
+                          <ul class="ev-baris__daftar">
+                            @for (d of x.daftar; track d) {
+                              <li>{{ d }}</li>
+                            }
+                          </ul>
+                        } @else {
+                          <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                        }
                       </div>
                       <button
                         type="button"
                         class="ev-salin"
                         [attr.aria-label]="'employeeView.salin' | translate"
                         [matTooltip]="'employeeView.salin' | translate"
-                        (click)="salin(x.nilai)"
+                        (click)="salin(teksSalin(x))"
                       >
                         <mat-icon>content_copy</mat-icon>
                       </button>

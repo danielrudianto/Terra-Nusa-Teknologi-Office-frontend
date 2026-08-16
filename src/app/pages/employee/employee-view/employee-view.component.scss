@@ -485,3 +485,36 @@
   font-weight: 700;
   letter-spacing: 0.02em;
 }
+
+/*
+ * Nilai yang berupa daftar.
+ *
+ * Penanda butir dibuat halus — titik kecil, bukan bulatan penuh — supaya
+ * daftar ini terbaca sebagai rincian sebuah nilai, bukan sebagai daftar
+ * setara dengan bagian-bagian lain di dialog.
+ */
+.ev-baris__daftar {
+  margin: 0.15rem 0 0;
+  padding: 0 0 0 1rem;
+  list-style: none;
+
+  li {
+    position: relative;
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--ink, #16181d);
+    word-break: break-word;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -0.75rem;
+      top: 0.6em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--muted, #9aa1b1);
+    }
+  }
+}
