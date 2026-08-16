@@ -273,8 +273,6 @@
  * daftar sebutan.
  */
 
-
-
 /* Tombol salin per baris; muncul jelas saat barisnya disentuh tetikus. */
 .ev-salin {
   flex: 0 0 auto;
@@ -435,6 +433,7 @@
   cursor: pointer;
   text-align: left;
   font-family: "Montserrat", sans-serif;
+  padding: 1rem;
 }
 .ev-riwayat__panah {
   flex: 0 0 auto;
@@ -464,7 +463,6 @@
 .ev-riwayat__head:hover .ev-riwayat__tgl {
   color: var(--brand, #154dec);
 }
-
 
 /* Baris berada di dalam kartu, sehingga paddingnya di sini. */
 .ev-bagian .ev-baris {

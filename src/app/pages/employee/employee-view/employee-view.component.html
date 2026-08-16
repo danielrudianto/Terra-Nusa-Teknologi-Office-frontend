@@ -101,7 +101,9 @@
                     <span class="ev-baris__label">
                       {{ r.label | translate }}
                       @if (r.labelSufiks) {
-                        <span class="ev-baris__sufiks">{{ r.labelSufiks }}</span>
+                        <span class="ev-baris__sufiks">{{
+                          r.labelSufiks
+                        }}</span>
                       }
                     </span>
                     <span class="ev-baris__nilai">{{ r.nilai }}</span>
@@ -131,7 +133,9 @@
             @for (b of profil; track b.judul) {
               <div class="ev-bagian">
                 <div class="ev-bagian__head">
-                  <span class="ev-bagian__judul">{{ b.judul | translate }}</span>
+                  <span class="ev-bagian__judul">{{
+                    b.judul | translate
+                  }}</span>
                   <button
                     type="button"
                     class="ev-salin-semua"
@@ -144,13 +148,22 @@
                 </div>
                 @for (r of b.baris; track r.label) {
                   <div class="ev-baris">
-                    <span class="ev-baris__label">
-                      {{ r.label | translate }}
-                      @if (r.labelSufiks) {
-                        <span class="ev-baris__sufiks">{{ r.labelSufiks }}</span>
+                    <span class="ev-baris__ikon">
+                      @if (ikon(r.label); as ic) {
+                        <mat-icon>{{ ic }}</mat-icon>
                       }
                     </span>
-                    <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                    <div class="ev-baris__isi">
+                      <span class="ev-baris__label">
+                        {{ r.label | translate }}
+                        @if (r.labelSufiks) {
+                          <span class="ev-baris__sufiks">{{
+                            r.labelSufiks
+                          }}</span>
+                        }
+                      </span>
+                      <span class="ev-baris__nilai">{{ r.nilai }}</span>
+                    </div>
                     <button
                       type="button"
                       class="ev-salin"
@@ -206,8 +219,19 @@
                 @if (r.buka) {
                   @for (x of r.isi; track x.label) {
                     <div class="ev-baris">
-                      <span class="ev-baris__label">{{ x.label }}</span>
-                      <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                      <!--
+                        Bentuknya disamakan dengan baris data lainnya.
+
+                        Sebelumnya label dan nilai berdampingan tanpa lebar
+                        tetap, sehingga nilainya mulai di posisi berbeda pada
+                        tiap baris — dan daftar yang seharusnya mudah
+                        dibandingkan justru tampak berantakan.
+                      -->
+                      <span class="ev-baris__ikon"></span>
+                      <div class="ev-baris__isi">
+                        <span class="ev-baris__label">{{ x.label }}</span>
+                        <span class="ev-baris__nilai">{{ x.nilai }}</span>
+                      </div>
                       <button
                         type="button"
                         class="ev-salin"
@@ -230,12 +254,14 @@
             sendiri; yang di bawah ini adalah perubahan yang dilakukan orang
             lain atas datanya — jabatan, departemen, NIK.
           -->
-          @if (input?.employee?.id) {
-            <app-audit-trail
-              entity="employees"
-              [entityId]="input.employee.id"
-            ></app-audit-trail>
-          }
+          <div class="p-2">
+            @if (input?.employee?.id) {
+              <app-audit-trail
+                entity="employees"
+                [entityId]="input.employee.id"
+              ></app-audit-trail>
+            }
+          </div>
         </mat-tab>
       </mat-tab-group>
     }
