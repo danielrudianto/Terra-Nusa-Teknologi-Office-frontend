@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 /**
  * Pengisian data karyawan lewat tautan undangan.
@@ -38,6 +39,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatIconModule,
     MatProgressSpinnerModule,
     TranslateModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './employee-form-fill.component.html',
   styleUrl: './employee-form-fill.component.scss',
@@ -147,6 +149,18 @@ export class EmployeeFormFillComponent implements OnInit {
    * rujukan, dan menambah ke larik yang sama membuat barisnya tidak muncul
    * sampai ada hal lain yang memicu penggambaran ulang.
    */
+  /**
+   * Simpan jawaban ya/tidak sebagai BOOLEAN, bukan teks.
+   *
+   * Jawaban lama menyimpan `true` dan `false` sungguhan; menyimpannya sebagai
+   * "Ya"/"Tidak" membuat dua bentuk hidup berdampingan di kolom yang sama,
+   * dan rekap yang menghitungnya harus menebak mana yang berarti apa.
+   */
+  setYaTidak(kunci: string, nilai: boolean): void {
+    this.jawaban = { ...this.jawaban, [kunci]: !!nilai };
+    this.ubah();
+  }
+
   tambahBaris(kunci: string): void {
     const kini = Array.isArray(this.jawaban[kunci]) ? this.jawaban[kunci] : [];
     this.jawaban = { ...this.jawaban, [kunci]: [...kini, {}] };

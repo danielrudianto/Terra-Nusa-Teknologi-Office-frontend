@@ -8,6 +8,32 @@
   display: block;
   min-height: 100dvh;
   background: var(--surface-2, #f7f8fa);
+
+  /*
+   * Halaman tidak boleh melebihi lebar layar.
+   *
+   * Satu elemen yang lebih lebar sedikit saja membuat SELURUH halaman
+   * menyusut, dan yang membukanya harus memperbesar dulu sebelum apa pun
+   * terbaca. Penyebabnya di sini `mat-form-field`, yang membawa lebar
+   * minimum bawaan sekitar 180px — dan tiga di antaranya berjajar dalam
+   * satu baris daftar sudah melampaui layar ponsel.
+   */
+  overflow-x: hidden;
+}
+
+/*
+ * Lebar minimum bawaan Material dilepas.
+ *
+ * Disetel sekali di sini, bukan per isian: seluruh isian pada halaman ini
+ * berada di dalam kartu yang sudah membatasi lebarnya.
+ */
+:host ::ng-deep .mat-mdc-form-field-infix {
+  width: auto;
+  min-width: 0;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  max-width: 100%;
 }
 
 .eff {
@@ -280,4 +306,89 @@
   margin: 0 auto;
   height: 46px;
   font-size: 0.92rem;
+}
+
+/*
+ * Isian ya/tidak.
+ *
+ * Labelnya di atas, togglenya di bawah — bukan berdampingan: pertanyaan
+ * seperti "Pernah mengalami kecelakaan kerja?" tidak muat di samping toggle
+ * pada layar ponsel, dan yang terpangkas justru pertanyaannya.
+ */
+.eff-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+}
+
+.eff-toggle__label {
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.eff-toggle__ket {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Isian ya/tidak.
+ *
+ * Labelnya di atas, togglenya di bawah — bukan berdampingan: pertanyaan
+ * seperti "Pernah mengalami kecelakaan kerja?" tidak muat di samping toggle
+ * pada layar ponsel, dan yang terpangkas justru pertanyaannya.
+ */
+.eff-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+}
+
+.eff-toggle__label {
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.eff-toggle__ket {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Layar sempit.
+ *
+ * Diuji pada 360px — lebar Samsung A07 dan sebagian besar ponsel yang
+ * dipakai di lapangan.
+ */
+@media (max-width: 600px) {
+  .eff {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .eff-bagian {
+    padding: 1rem;
+  }
+
+  /*
+   * Isian dalam baris daftar menumpuk penuh.
+   *
+   * Berdampingan pada layar 360px, tiap isian tersisa kurang dari 100px —
+   * label terpangkas menjadi dua huruf dan tanggalnya tidak terbaca sama
+   * sekali.
+   */
+  .eff-baris {
+    flex-wrap: wrap;
+    padding: 0.75rem 0.6rem;
+  }
+
+  .eff-baris__isi {
+    grid-template-columns: 1fr;
+  }
 }

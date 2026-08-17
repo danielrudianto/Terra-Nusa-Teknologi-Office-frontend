@@ -126,6 +126,30 @@
                   }
                 </mat-form-field>
               }
+              @case ("ya-tidak") {
+                <!--
+                  Slide toggle, bukan isian teks.
+
+                  Jenis ini sempat tidak ditangani sama sekali sehingga jatuh
+                  ke cabang bawaan — dan yang mengisinya melihat kotak teks
+                  berisi kata "true", yang tidak berarti apa pun baginya.
+                -->
+                <div class="eff-toggle">
+                  <span class="eff-toggle__label">{{ f.label }}</span>
+                  <mat-slide-toggle
+                    color="primary"
+                    [ngModel]="!!jawaban[f.key]"
+                    (ngModelChange)="setYaTidak(f.key, $event)"
+                  >
+                    {{
+                      (jawaban[f.key] ? "common.yes" : "common.no") | translate
+                    }}
+                  </mat-slide-toggle>
+                </div>
+                @if (f.hint) {
+                  <p class="eff-toggle__ket">{{ f.hint }}</p>
+                }
+              }
               @case ("daftar") {
                 <div class="eff-daftar">
                   <span class="eff-daftar__judul">{{ f.label }}</span>
