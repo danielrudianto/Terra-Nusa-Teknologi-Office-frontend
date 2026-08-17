@@ -1,0 +1,296 @@
+/*
+ * Halaman pengerjaan ujian.
+ *
+ * Dikerjakan pelamar dari perangkatnya sendiri — kerap ponsel, kerap dengan
+ * koneksi seadanya. Karena itu tata letaknya sederhana dan satu kolom: yang
+ * mengerjakan sedang berpikir tentang soalnya, bukan tentang layarnya.
+ */
+.exw {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+  min-height: 100vh;
+  background: var(--surface-2, #f6f8ff);
+}
+
+/* ---- keadaan tengah: memuat, selesai, galat ---- */
+.exw-tengah {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  min-height: 100vh;
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+
+.exw-selesai__ikon {
+  width: 56px;
+  height: 56px;
+  font-size: 56px;
+  color: var(--ok, #1a9e5c);
+}
+
+.exw-selesai h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.exw-galat {
+  color: var(--danger, #c62828);
+}
+
+/*
+ * Bilah waktu.
+ *
+ * Menempel di atas dan selalu terlihat: waktu yang tidak terlihat adalah
+ * waktu yang dilupakan.
+ */
+.exw-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.25rem;
+  background: var(--surface, #fff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+}
+
+.exw-bar__kiri {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.exw-bar__waktu {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Lima menit terakhir.
+ *
+ * Warna saja tidak cukup — sebagian orang tidak membedakannya. Karena itu
+ * angkanya juga membesar, dan pada saat habis muncul keterangan tertulis.
+ */
+.exw-bar--warn {
+  background: var(--warn-bg, #fff4e5);
+}
+.exw-bar--warn .exw-bar__waktu {
+  color: var(--warn, #b26a00);
+  font-size: 1.3rem;
+}
+
+.exw-bar--habis {
+  background: var(--danger-bg, #fdecea);
+}
+.exw-bar--habis .exw-bar__waktu {
+  color: var(--danger, #c62828);
+}
+
+.exw-bar__ket {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--danger, #c62828);
+}
+
+.exw-bar__kanan {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.exw-bar__hitung {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.exw-simpan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--muted, #8a90a0);
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+.exw-simpan--ok {
+  color: var(--ok, #1a9e5c);
+}
+.exw-simpan--gagal {
+  color: var(--danger, #c62828);
+}
+
+/* ---- isi ---- */
+.exw-isi {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.exw-soal {
+  padding: 1.1rem 1.25rem 0.35rem;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.exw-soal__kepala {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.exw-soal__no {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.exw-soal__teks {
+  min-width: 0;
+}
+
+.exw-soal__tanya {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Catatan memuat standar yang harus diikuti; tidak boleh tenggelam. */
+.exw-soal__catatan {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+}
+
+.exw-soal__lampiran {
+  margin: 0 0 0.85rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+
+  table {
+    border-collapse: collapse;
+    min-width: 100%;
+  }
+  th,
+  td {
+    border: 1px solid var(--line, #e4e9fb);
+    padding: 0.35rem 0.55rem;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.exw-soal__jawab {
+  width: 100%;
+}
+
+.exw-soal__unggah {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  color: var(--muted, #8a90a0);
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+
+/* ---- kirim ---- */
+.exw-kirim {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.exw-kirim__sisa {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fff4e5);
+  font-size: 0.85rem;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    color: var(--warn, #b26a00);
+  }
+}
+
+.exw-kirim__tautan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+
+  button {
+    min-width: 30px;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--warn, #b26a00);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--warn, #b26a00);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.exw-kirim__btn {
+  width: 100%;
+  padding: 0.65rem 1rem;
+}
+
+.exw-kirim__ket {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .exw-bar {
+    padding: 0.65rem 1rem;
+  }
+  .exw-isi {
+    padding: 1rem 0.75rem 3rem;
+  }
+  .exw-soal {
+    padding: 1rem 1rem 0.35rem;
+  }
+}

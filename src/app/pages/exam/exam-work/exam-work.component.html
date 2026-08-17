@@ -1,0 +1,182 @@
+<div class="exw">
+  @if (memuat) {
+    <div class="exw-tengah">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ "examWork.menyiapkan" | translate }}</p>
+    </div>
+  } @else if (terkirim) {
+    <!--
+      Layar setelah terkirim.
+
+      Sengaja tanpa tombol kembali ke ujian: yang sudah dikirim tidak dapat
+      disunting, dan menyediakan jalan kembali hanya menimbulkan harapan
+      bahwa masih bisa.
+    -->
+    <div class="exw-tengah exw-selesai">
+      <mat-icon class="exw-selesai__ikon">task_alt</mat-icon>
+      <h1>{{ "examWork.terkirimJudul" | translate }}</h1>
+      <p>{{ "examWork.terkirimKet" | translate }}</p>
+    </div>
+  } @else if (galat) {
+    <div class="exw-tengah exw-galat">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ galat }}</p>
+    </div>
+  } @else {
+    <!--
+      Bilah waktu, menempel di atas.
+
+      Selalu terlihat: yang mengerjakan perlu tahu sisa waktunya tanpa
+      menggulir ke atas, dan waktu yang tidak terlihat adalah waktu yang
+      dilupakan.
+    -->
+    <div
+      class="exw-bar"
+      [class.exw-bar--warn]="hampirHabis"
+      [class.exw-bar--habis]="waktuHabis"
+    >
+      <div class="exw-bar__kiri">
+        <mat-icon>schedule</mat-icon>
+        <span class="exw-bar__waktu">{{ waktuTeks }}</span>
+        @if (waktuHabis) {
+          <span class="exw-bar__ket">{{
+            "examWork.waktuHabis" | translate
+          }}</span>
+        }
+      </div>
+
+      <div class="exw-bar__kanan">
+        <!--
+          Penanda penyimpanan.
+
+          Tanpa ini, satu-satunya cara memastikan pekerjaannya aman adalah
+          memuat ulang halaman — dan itu justru yang paling ditakuti saat
+          ujian berjalan.
+        -->
+        @switch (keadaanSimpan) {
+          @case ("menyimpan") {
+            <span class="exw-simpan">{{
+              "examWork.menyimpan" | translate
+            }}</span>
+          }
+          @case ("tersimpan") {
+            <span class="exw-simpan exw-simpan--ok">
+              <mat-icon>cloud_done</mat-icon>{{
+                "examWork.tersimpan" | translate
+              }}
+            </span>
+          }
+          @case ("gagal") {
+            <span class="exw-simpan exw-simpan--gagal">
+              <mat-icon>cloud_off</mat-icon>{{
+                "examWork.gagalSimpan" | translate
+              }}
+            </span>
+          }
+        }
+
+        <span class="exw-bar__hitung">
+          {{
+            "examWork.terjawab"
+              | translate: { n: soal.length - belumDijawab.length, total: soal.length }
+          }}
+        </span>
+      </div>
+    </div>
+
+    <div class="exw-isi">
+      @for (s of soal; track s.id; let i = $index) {
+        <div class="exw-soal" [id]="'soal-' + s.id">
+          <div class="exw-soal__kepala">
+            <span class="exw-soal__no">{{ i + 1 }}</span>
+            <div class="exw-soal__teks">
+              <p class="exw-soal__tanya">{{ s.question }}</p>
+              @if (s.notes) {
+                <p class="exw-soal__catatan">{{ s.notes }}</p>
+              }
+            </div>
+          </div>
+
+          <!--
+            Lampiran berupa HTML dari bank soal: tabel berat besi, potongan
+            gambar. Isinya ditulis HRD lewat layar bank soal, bukan masukan
+            dari luar.
+          -->
+          @if (s.attachment) {
+            <div class="exw-soal__lampiran" [innerHTML]="s.attachment"></div>
+          }
+
+          <mat-form-field appearance="outline" class="exw-soal__jawab">
+            <mat-label>{{ "examWork.jawaban" | translate }}</mat-label>
+            <textarea
+              matInput
+              rows="6"
+              [(ngModel)]="jawaban[s.id]"
+              (ngModelChange)="onKetik()"
+              [disabled]="waktuHabis"
+              [placeholder]="'examWork.jawabanPlaceholder' | translate"
+            ></textarea>
+          </mat-form-field>
+
+          @if (s.allowsUpload) {
+            <!--
+              Unggah berkas belum tersedia.
+
+              Disebut terus terang, bukan disembunyikan: soal gambar memang
+              meminta berkas, dan yang mengerjakan perlu tahu bahwa
+              menjelaskannya dengan kata-kata sudah cukup untuk sekarang.
+            -->
+            <p class="exw-soal__unggah">
+              <mat-icon>info</mat-icon>{{
+                "examWork.unggahBelumAda" | translate
+              }}
+            </p>
+          }
+        </div>
+      }
+
+      <!--
+        Ringkasan sebelum mengirim.
+
+        Soal yang terlewat adalah kesalahan yang paling sering terjadi dan
+        paling mudah dicegah — menyebutnya di sini lebih menolong daripada
+        peringatan setelah tombol ditekan.
+      -->
+      <div class="exw-kirim">
+        @if (belumDijawab.length) {
+          <div class="exw-kirim__sisa">
+            <mat-icon>warning_amber</mat-icon>
+            <div>
+              <strong>{{
+                "examWork.masihKosong"
+                  | translate: { n: belumDijawab.length }
+              }}</strong>
+              <div class="exw-kirim__tautan">
+                @for (b of belumDijawab; track b.id) {
+                  <button type="button" (click)="keSoal(b.id)">
+                    {{ b.sortOrder }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          class="exw-kirim__btn"
+          [disabled]="mengirim"
+          (click)="kirim()"
+        >
+          {{
+            (mengirim ? "examWork.mengirim" : "examWork.kirim") | translate
+          }}
+        </button>
+
+        <p class="exw-kirim__ket">{{ "examWork.kirimKet" | translate }}</p>
+      </div>
+    </div>
+  }
+</div>

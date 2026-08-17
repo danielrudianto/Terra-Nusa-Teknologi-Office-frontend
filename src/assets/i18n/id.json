@@ -4196,5 +4196,24 @@
     "mulai": "Mulai ujian",
     "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
     "belumSiap": "Halaman pengerjaan sedang disiapkan. Mohon hubungi bagian HRD."
+  },
+  "examWork": {
+    "menyiapkan": "Menyiapkan soal…",
+    "gagalMemuat": "Gagal memuat soal. Periksa koneksi Anda lalu muat ulang halaman.",
+    "gagalKirim": "Gagal mengirim. Periksa koneksi Anda lalu coba lagi.",
+    "waktuHabis": "Waktu habis",
+    "menyimpan": "Menyimpan…",
+    "tersimpan": "Tersimpan",
+    "gagalSimpan": "Belum tersimpan",
+    "terjawab": "{{n}} dari {{total}} terjawab",
+    "jawaban": "Jawaban Anda",
+    "jawabanPlaceholder": "Tuliskan jawaban beserta penjelasannya",
+    "unggahBelumAda": "Unggah berkas belum tersedia — jelaskan dengan kata-kata.",
+    "masihKosong": "{{n}} soal belum dijawab",
+    "kirim": "Kirim jawaban",
+    "mengirim": "Mengirim…",
+    "kirimKet": "Setelah dikirim, jawaban tidak dapat diubah lagi.",
+    "terkirimJudul": "Jawaban Anda sudah kami terima",
+    "terkirimKet": "Terima kasih sudah meluangkan waktu. Hasilnya akan kami kabari lewat kontak yang Anda isikan."
   }
 }

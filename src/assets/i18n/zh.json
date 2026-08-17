@@ -4196,5 +4196,24 @@
     "mulai": "开始考试",
     "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
     "belumSiap": "考试页面正在准备中，请联系人力资源部。"
+  },
+  "examWork": {
+    "menyiapkan": "正在准备题目……",
+    "gagalMemuat": "无法加载题目。请检查网络连接后重新载入页面。",
+    "gagalKirim": "提交失败。请检查网络连接后重试。",
+    "waktuHabis": "时间已到",
+    "menyimpan": "保存中……",
+    "tersimpan": "已保存",
+    "gagalSimpan": "尚未保存",
+    "terjawab": "已回答 {{n}} / {{total}} 题",
+    "jawaban": "您的答案",
+    "jawabanPlaceholder": "请写下答案及您的说明",
+    "unggahBelumAda": "暂不支持上传文件——请用文字说明。",
+    "masihKosong": "还有 {{n}} 题未作答",
+    "kirim": "提交答案",
+    "mengirim": "提交中……",
+    "kirimKet": "提交后将无法再修改答案。",
+    "terkirimJudul": "我们已收到您的答案",
+    "terkirimKet": "感谢您抽出时间。我们将通过您填写的联系方式与您联系。"
   }
 }

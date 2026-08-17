@@ -32,7 +32,7 @@
 
         Dipakai mengisi alamat pengiriman pada purchase order Franco.
       -->
-      <mat-form-field appearance="outline" class="">
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "project.address" | translate }}</mat-label>
         <textarea
           matInput
@@ -40,8 +40,20 @@
           formControlName="address"
           [placeholder]="'project.addressPlaceholder' | translate"
         ></textarea>
-        <mat-hint>{{ "project.addressHint" | translate }}</mat-hint>
       </mat-form-field>
+
+      <!--
+        Banner, bukan hint.
+
+        Hint tercetak kecil di bawah kotak dan hilang begitu isiannya
+        disentuh — padahal keterangan ini justru menjelaskan MENGAPA
+        alamatnya perlu diisi. Yang tidak tahu kegunaannya akan
+        melewatinya, dan PO Franco kembali diketik tangan.
+      -->
+      <div class="pc__banner w-100">
+        <mat-icon>local_shipping</mat-icon>
+        <span>{{ "project.addressHint" | translate }}</span>
+      </div>
 
 
     <!-- Autocomplete; alasannya sama dengan layar pembuatan proyek. -->

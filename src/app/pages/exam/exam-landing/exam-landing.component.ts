@@ -56,8 +56,6 @@ export class ExamLandingComponent implements OnInit {
   siapPerangkat = false;
   siapInternet = false;
 
-  /** Halaman pengerjaan belum dibangun; ditandai supaya jelas. */
-  belumSiap = false;
 
   /** Keterangan ujian, muncul setelah tokennya dikenali. */
   ujian: any = null;
@@ -137,6 +135,6 @@ export class ExamLandingComponent implements OnInit {
    */
   mulai(): void {
     if (!this.bolehMulai) return;
-    this.belumSiap = true;
+    this.router.navigate(['/exam', this.token.trim(), 'start']);
   }
 }

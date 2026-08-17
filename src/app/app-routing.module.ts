@@ -33,6 +33,23 @@ export const routes: Routes = [
   },
   {
     /*
+     * Halaman pengerjaan ujian — TERBUKA, tanpa masuk.
+     *
+     * Yang menandai pesertanya hanya tokennya sendiri. Seluruh penjagaan ada
+     * di server: timer, masa berlaku, dan kepemilikan soal diperiksa ulang
+     * pada setiap permintaan.
+     *
+     * Didaftarkan SETELAH `exam/:token` supaya keduanya tidak saling
+     * menutupi.
+     */
+    path: 'exam/:token/start',
+    loadComponent: () =>
+      import('./pages/exam/exam-work/exam-work.component').then(
+        (m) => m.ExamWorkComponent,
+      ),
+  },
+  {
+    /*
      * Pengisian data karyawan lewat tautan undangan.
      *
      * DI LUAR kerangka utama dan tanpa penjaga masuk: yang membukanya adalah

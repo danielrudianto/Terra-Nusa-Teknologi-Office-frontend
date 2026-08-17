@@ -4196,5 +4196,24 @@
     "mulai": "Start the test",
     "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
     "belumSiap": "The test page is still being prepared. Please contact HR."
+  },
+  "examWork": {
+    "menyiapkan": "Preparing questions…",
+    "gagalMemuat": "Could not load the questions. Check your connection and reload the page.",
+    "gagalKirim": "Could not submit. Check your connection and try again.",
+    "waktuHabis": "Time is up",
+    "menyimpan": "Saving…",
+    "tersimpan": "Saved",
+    "gagalSimpan": "Not saved yet",
+    "terjawab": "{{n}} of {{total}} answered",
+    "jawaban": "Your answer",
+    "jawabanPlaceholder": "Write your answer and your reasoning",
+    "unggahBelumAda": "File upload isn't available yet — describe it in words.",
+    "masihKosong": "{{n}} question(s) not answered",
+    "kirim": "Submit answers",
+    "mengirim": "Submitting…",
+    "kirimKet": "Once submitted, answers can no longer be changed.",
+    "terkirimJudul": "We've received your answers",
+    "terkirimKet": "Thank you for your time. We'll get back to you using the contact details you provided."
   }
 }
