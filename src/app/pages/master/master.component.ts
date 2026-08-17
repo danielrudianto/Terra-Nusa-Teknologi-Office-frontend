@@ -104,25 +104,6 @@ export class MasterComponent {
       icon: 'badge',
       description: 'masterNav.employeeDesc',
     },
-    {
-      // Bank soal ujian rekrutmen.
-      //
-      // Ditaruh di sini bersama data karyawan, bukan di menu tersendiri:
-      // yang membukanya orang yang sama, dan modulnya sama-sama hanya
-      // terbuka bagi HRD.
-      name: 'masterNav.hrQuestion',
-      route: 'HrQuestion',
-      modul: 'hr_recruitment',
-      icon: 'quiz',
-      description: 'masterNav.hrQuestionDesc',
-    },
-    {
-      name: 'masterNav.hrCandidate',
-      route: 'HrCandidate',
-      modul: 'hr_recruitment',
-      icon: 'how_to_reg',
-      description: 'masterNav.hrCandidateDesc',
-    },
   ];
 
   // key unik per route -> animasi ter-trigger tiap ganti halaman

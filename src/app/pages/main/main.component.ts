@@ -281,6 +281,32 @@ export class MainComponent {
       ],
     },
     {
+      /*
+       * HRD berdiri sebagai grup tersendiri, bukan kartu di Data Master.
+       *
+       * Modulnya hanya terbuka bagi divisi HRD dan pemilik, dan isinya akan
+       * bertambah — penilaian jawaban dan rekap hasil menyusul. Tiga entri
+       * berserakan di antara Pemasok dan Klien lebih sulit ditemukan
+       * daripada satu grup yang jelas namanya.
+       *
+       * Bagi yang tidak berhak, seluruh grup ini tidak tergambar sama
+       * sekali: `izinRute` membaca izin dari konfigurasi rutenya.
+       */
+      name: 'nav.hrd',
+      children: [
+        {
+          name: 'nav.hrCandidate',
+          icon: 'user.svg',
+          route: '/HrCandidate',
+        },
+        {
+          name: 'nav.hrQuestion',
+          icon: 'document.svg',
+          route: '/HrQuestion',
+        },
+      ],
+    },
+    {
       name: 'nav.general',
       children: [
         {

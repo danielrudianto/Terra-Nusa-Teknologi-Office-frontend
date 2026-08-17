@@ -83,6 +83,35 @@
       ]
     },
     {
+      "id": "bank-soal",
+      "judul": {
+        "id": "Bank Soal Rekrutmen",
+        "en": "Recruitment Question Bank",
+        "zh": "招聘题库"
+      },
+      "berkas": "bank-soal",
+      "modul": "hr_recruitment",
+      "ringkas": {
+        "id": "Pertanyaan ujian saringan masuk; esai, dinilai manual.",
+        "en": "Entrance-test questions; essays, marked by hand.",
+        "zh": "入职笔试题目；论述题，人工评分。"
+      },
+      "kataKunci": [
+        "bank soal",
+        "soal",
+        "ujian",
+        "rekrutmen",
+        "tes",
+        "question bank",
+        "test",
+        "recruitment",
+        "exam",
+        "题库",
+        "考试",
+        "招聘"
+      ]
+    },
+    {
       "id": "beban",
       "judul": {
         "id": "Beban",
@@ -296,6 +325,36 @@
         "employee",
         "equipment",
         "counterparty"
+      ]
+    },
+    {
+      "id": "pelamar",
+      "judul": {
+        "id": "Pelamar Rekrutmen",
+        "en": "Recruitment Candidates",
+        "zh": "招聘应聘者"
+      },
+      "berkas": "pelamar",
+      "modul": "hr_recruitment",
+      "ringkas": {
+        "id": "Daftarkan pelamar dan terbitkan tautan pengerjaan ujian.",
+        "en": "Register candidates and issue their test links.",
+        "zh": "登记应聘者并生成考试链接。"
+      },
+      "kataKunci": [
+        "pelamar",
+        "kandidat",
+        "token",
+        "tautan ujian",
+        "rekrutmen",
+        "undangan",
+        "candidate",
+        "applicant",
+        "link",
+        "invite",
+        "应聘者",
+        "令牌",
+        "链接"
       ]
     },
     {

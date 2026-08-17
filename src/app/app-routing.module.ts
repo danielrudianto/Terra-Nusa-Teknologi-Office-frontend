@@ -752,6 +752,52 @@ export const routes: Routes = [
           },
         ],
       },
+      /*
+       * Rekrutmen: rute AKAR, bukan anak Master.
+       *
+       * Menu sampingnya menuju `/HrCandidate` dan `/HrQuestion`
+       * langsung. Selama keduanya menjadi anak Master, alamat yang sah
+       * adalah `Master/HrQuestion` — dan menu sampingnya menghasilkan
+       * NG04002.
+       */
+        {
+          /*
+           * Pelamar ujian rekrutmen; anak dari Master, sama seperti bank
+           * soal — kartu di halaman Data Master menavigasi RELATIF.
+           */
+          path: 'HrCandidate',
+          canActivate: [permissionGuard],
+          loadComponent: () =>
+            import(
+              './pages/hr/hr-candidate-list/hr-candidate-list.component'
+            ).then((m) => m.HrCandidateListComponent),
+          data: {
+            title: 'Pelamar Rekrutmen',
+            permission: 'hr_recruitment:read',
+            panduan: 'pelamar',
+          },
+        },
+        {
+          /*
+           * Bank soal rekrutmen; anak dari Master, bukan rute akar.
+           *
+           * Kartu di halaman Data Master menavigasi RELATIF terhadap
+           * rutenya sendiri. Didaftarkan di akar, alamat yang dituju
+           * menjadi `Master/HrQuestion` dan tidak cocok dengan rute mana
+           * pun — NG04002, halamannya tidak pernah terbuka.
+           */
+          path: 'HrQuestion',
+          canActivate: [permissionGuard],
+          loadComponent: () =>
+            import(
+              './pages/hr/hr-question-list/hr-question-list.component'
+            ).then((m) => m.HrQuestionListComponent),
+          data: {
+            title: 'Bank Soal Rekrutmen',
+            permission: 'hr_recruitment:read',
+            panduan: 'bank-soal',
+          },
+        },
       {
         path: 'Master',
         canActivate: [permissionGuard],
@@ -809,42 +855,6 @@ export const routes: Routes = [
                 (m) => m.ClientListComponent,
               ),
             data: { title: 'Master Data', panduanBagian: 'klien', permission: 'client:read' },
-          },
-          {
-            /*
-             * Pelamar ujian rekrutmen; anak dari Master, sama seperti bank
-             * soal — kartu di halaman Data Master menavigasi RELATIF.
-             */
-            path: 'HrCandidate',
-            canActivate: [permissionGuard],
-            loadComponent: () =>
-              import(
-                './pages/hr/hr-candidate-list/hr-candidate-list.component'
-              ).then((m) => m.HrCandidateListComponent),
-            data: {
-              title: 'Pelamar Rekrutmen',
-              permission: 'hr_recruitment:read',
-            },
-          },
-          {
-            /*
-             * Bank soal rekrutmen; anak dari Master, bukan rute akar.
-             *
-             * Kartu di halaman Data Master menavigasi RELATIF terhadap
-             * rutenya sendiri. Didaftarkan di akar, alamat yang dituju
-             * menjadi `Master/HrQuestion` dan tidak cocok dengan rute mana
-             * pun — NG04002, halamannya tidak pernah terbuka.
-             */
-            path: 'HrQuestion',
-            canActivate: [permissionGuard],
-            loadComponent: () =>
-              import(
-                './pages/hr/hr-question-list/hr-question-list.component'
-              ).then((m) => m.HrQuestionListComponent),
-            data: {
-              title: 'Bank Soal Rekrutmen',
-              permission: 'hr_recruitment:read',
-            },
           },
           {
             path: 'Employee',

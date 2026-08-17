@@ -194,7 +194,10 @@
     "activity": "Aktivitas",
     "project": "Proyek",
     "projectReport": "Laporan Proyek",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "hrd": "HRD",
+    "hrCandidate": "Pelamar",
+    "hrQuestion": "Bank Soal"
   },
   "status": {
     "paid": "Lunas",
@@ -2672,11 +2675,7 @@
     "clientDesc": "Data klien",
     "employee": "Karyawan",
     "employeeDesc": "Data karyawan",
-    "tanpaAkses": "Anda belum punya akses ke bagian ini",
-    "hrQuestion": "Bank soal",
-    "hrQuestionDesc": "Pertanyaan ujian rekrutmen",
-    "hrCandidate": "Pelamar",
-    "hrCandidateDesc": "Pelamar dan tautan ujiannya"
+    "tanpaAkses": "Anda belum punya akses ke bagian ini"
   },
   "confirm": {
     "cancel": "Batal",
@@ -4173,6 +4172,7 @@
     "siapPerangkat": "Saya sudah menyiapkan perangkat untuk membuat gambar dalam format CAD dan PDF.",
     "siapInternet": "Saya berada di tempat dengan koneksi internet yang stabil.",
     "mulai": "Mulai ujian",
-    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara"
+    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
+    "belumSiap": "Halaman pengerjaan sedang disiapkan. Mohon hubungi bagian HRD."
   }
 }

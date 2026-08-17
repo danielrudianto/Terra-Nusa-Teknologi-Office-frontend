@@ -194,7 +194,10 @@
     "activity": "Activity",
     "project": "Projects",
     "projectReport": "Project Report",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "hrd": "HR",
+    "hrCandidate": "Candidates",
+    "hrQuestion": "Question Bank"
   },
   "status": {
     "paid": "Paid",
@@ -2672,11 +2675,7 @@
     "clientDesc": "Client data",
     "employee": "Employee",
     "employeeDesc": "Employee data",
-    "tanpaAkses": "You do not have access to this section",
-    "hrQuestion": "Question bank",
-    "hrQuestionDesc": "Recruitment test questions",
-    "hrCandidate": "Candidates",
-    "hrCandidateDesc": "Candidates and their test links"
+    "tanpaAkses": "You do not have access to this section"
   },
   "confirm": {
     "cancel": "Cancel",
@@ -4173,6 +4172,7 @@
     "siapPerangkat": "I have prepared a device capable of producing drawings in CAD and PDF format.",
     "siapInternet": "I am somewhere with a stable internet connection.",
     "mulai": "Start the test",
-    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara"
+    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
+    "belumSiap": "The test page is still being prepared. Please contact HR."
   }
 }

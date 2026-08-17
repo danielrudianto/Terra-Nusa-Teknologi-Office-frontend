@@ -194,7 +194,10 @@
     "activity": "活动记录",
     "project": "项目",
     "projectReport": "项目报表",
-    "agenda": "日程"
+    "agenda": "日程",
+    "hrd": "人力资源",
+    "hrCandidate": "应聘者",
+    "hrQuestion": "题库"
   },
   "status": {
     "paid": "已付款",
@@ -2672,11 +2675,7 @@
     "clientDesc": "客户资料",
     "employee": "员工",
     "employeeDesc": "员工资料",
-    "tanpaAkses": "您尚无此部分的访问权限",
-    "hrQuestion": "题库",
-    "hrQuestionDesc": "招聘考试题目",
-    "hrCandidate": "应聘者",
-    "hrCandidateDesc": "应聘者及其考试链接"
+    "tanpaAkses": "您尚无此部分的访问权限"
   },
   "confirm": {
     "cancel": "取消",
@@ -4173,6 +4172,7 @@
     "siapPerangkat": "我已准备好可制作 CAD 与 PDF 格式图纸的设备。",
     "siapInternet": "我所在的位置网络连接稳定。",
     "mulai": "开始考试",
-    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara"
+    "hakCipta": "© 2026 PT Alpha Konstruksi Nusantara",
+    "belumSiap": "考试页面正在准备中，请联系人力资源部。"
   }
 }

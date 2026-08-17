@@ -56,6 +56,9 @@ export class ExamLandingComponent implements OnInit {
   siapPerangkat = false;
   siapInternet = false;
 
+  /** Halaman pengerjaan belum dibangun; ditandai supaya jelas. */
+  belumSiap = false;
+
   /** Keterangan ujian, muncul setelah tokennya dikenali. */
   ujian: any = null;
   galat = '';
@@ -121,8 +124,19 @@ export class ExamLandingComponent implements OnInit {
     return '';
   }
 
+  /**
+   * Halaman pengerjaan BELUM ada.
+   *
+   * Tombolnya sengaja tetap ditampilkan supaya alur sampai titik ini dapat
+   * diuji, tetapi menekannya tidak boleh menuju rute yang tidak terdaftar —
+   * itu menghasilkan NG04002 dan halaman kosong, yang bagi pelamar terbaca
+   * sebagai sistemnya rusak.
+   *
+   * Ganti isi metode ini dengan `router.navigate` begitu halaman
+   * pengerjaannya dibuat.
+   */
   mulai(): void {
     if (!this.bolehMulai) return;
-    this.router.navigate(['/exam', this.token.trim(), 'start']);
+    this.belumSiap = true;
   }
 }
