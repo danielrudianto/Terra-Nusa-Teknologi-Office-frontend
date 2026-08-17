@@ -93,11 +93,19 @@ export class HrQuestionListComponent implements OnInit {
 
   muatSoal(): void {
     this.isLoading = true;
+    /*
+     * Parameter kosong TIDAK dikirim sama sekali.
+     *
+     * `?testID=` mengirim teks kosong, dan teks kosong bukan `None` bagi
+     * FastAPI: ia mencoba mengubahnya menjadi angka, gagal, lalu menolak
+     * seluruh permintaan dengan 422 — sebelum satu baris pun dibaca.
+     */
+    const param: any = {};
+    if (this.ujianTerpilih) param.testID = this.ujianTerpilih;
+    if (this.cari?.trim()) param.keyword = this.cari.trim();
+
     this.apiService
-      .get('hr/questions', {
-        testID: this.ujianTerpilih ?? '',
-        keyword: this.cari || '',
-      })
+      .get('hr/questions', param)
       .subscribe({
         next: (res: any) => (this.soal = res || []),
         error: (err) =>
