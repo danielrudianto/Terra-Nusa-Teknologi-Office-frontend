@@ -294,3 +294,12 @@
     font-size: 16px;
   }
 }
+
+/* Penanda versi sebagai tombol; bentuknya disamakan dengan tautannya. */
+button.snav-versi {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+}

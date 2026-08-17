@@ -151,16 +151,30 @@
         order akan kehilangan seluruh isiannya bila halaman dimuat ulang
         tanpa ia sadari.
       -->
-      <a class="snav-versi" [class.snav-versi--baru]="versi.adaPembaruan()"
-         routerLink="/Settings">
-        @if (versi.adaPembaruan()) {
+      <!--
+        Ketika ada pembaruan, menekannya MEMUAT ULANG — bukan membuka
+        Pengaturan.
+
+        Membuka halaman lain justru memuat potongan aplikasi yang sudah tidak
+        ada di server, dan peramban menolaknya dengan galat MIME. Jalan
+        keluar yang disediakan karena itu tidak dapat ditempuh persis ketika
+        diperlukan.
+      -->
+      @if (versi.adaPembaruan()) {
+        <button
+          type="button"
+          class="snav-versi snav-versi--baru"
+          (click)="versi.muatUlang()"
+        >
           <mat-icon>system_update_alt</mat-icon>
           <span>{{ "app.versiBaruSingkat" | translate }}</span>
-        } @else {
+        </button>
+      } @else {
+        <a class="snav-versi" routerLink="/Settings">
           <span>v{{ versi.versi.nomor }}</span>
           <span class="snav-versi__kode">{{ versi.versi.commit }}</span>
-        }
-      </a>
+        </a>
+      }
     </div>
   </div>
 </div>

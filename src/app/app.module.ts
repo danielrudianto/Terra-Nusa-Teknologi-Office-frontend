@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -71,6 +71,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NumberFormatInputPipe } from './pipes/number-format-input.pipe';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ChunkErrorHandler } from './services/chunk-error.handler';
 
 export const MY_FORMATS = {
   parse: {
@@ -146,6 +147,18 @@ export const MY_FORMATS = {
     }),
   ],
   providers: [
+    /*
+     * Potongan aplikasi yang sudah tidak ada memuat ulang halaman sendiri.
+     *
+     * Nama berkas mengikuti hash isinya, sehingga tab yang terbuka sejak
+     * sebelum deploy mencari berkas yang sudah tidak ada. Nginx membalasnya
+     * dengan `index.html`, dan peramban menolaknya dengan galat MIME yang
+     * tidak menyebut sebabnya sama sekali.
+     *
+     * Pemberitahuan versi saja tidak cukup: banner itu mengarahkan ke
+     * Pengaturan, dan menuju Pengaturan justru memuat potongan yang hilang.
+     */
+    { provide: ErrorHandler, useClass: ChunkErrorHandler },
     provideNgxMask(),
     {
       provide: HTTP_INTERCEPTORS,
