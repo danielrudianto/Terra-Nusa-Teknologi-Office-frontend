@@ -331,9 +331,70 @@ export function signerLines(
 }
 
 /** Blok tanda tangan; unbreakable agar tidak terpotong antar halaman. */
+/**
+ * Keterangan penelusuran di bawah blok tanda tangan.
+ *
+ * BUKAN pengganti tanda tangan basah. Tanda tangan elektronik baru
+ * menggantikannya bila tersertifikasi dari penyelenggara resmi, dan vendor
+ * pun harus punya akun di penyelenggara yang sama untuk menandatangani balik.
+ *
+ * Nilainya penelusuran: ketika vendor menanyakan sebuah dokumen setahun
+ * kemudian, atau ketika ada pertanyaan siapa menyetujui apa, keterangannya
+ * ada di lembarnya sendiri — tanpa perlu membuka sistem.
+ *
+ * Tidak tercetak sama sekali bila dokumennya belum disetujui. Menuliskan
+ * "disetujui" pada lembar draf, walau dengan tanggal kosong, membuat lembar
+ * yang belum sah terbaca seperti sudah.
+ */
+function keteranganPersetujuan(
+  approvedAt?: string | Date | null,
+  checkedByName?: string | null,
+  documentNumber?: string | null,
+) {
+  if (!approvedAt) return [];
+
+  const t = approvedAt instanceof Date ? approvedAt : new Date(approvedAt);
+  if (isNaN(t.getTime())) return [];
+
+  /*
+   * Tanggal disusun dari bagian waktu SETEMPAT.
+   *
+   * `toISOString()` mengubahnya ke UTC lebih dulu, dan bagi WIB itu
+   * memundurkan tanggalnya tujuh jam — dokumen yang disetujui pukul 05.00
+   * akan tercetak disetujui sehari sebelumnya.
+   */
+  const BULAN = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+  const dd = (n: number) => String(n).padStart(2, '0');
+  const tanggal =
+    `${t.getDate()} ${BULAN[t.getMonth()]} ${t.getFullYear()}, ` +
+    `${dd(t.getHours())}.${dd(t.getMinutes())} WIB`;
+
+  const baris: string[] = [`Disetujui secara elektronik pada ${tanggal}`];
+
+  const kedua: string[] = [];
+  if (checkedByName) kedua.push(`Diperiksa oleh ${checkedByName}`);
+  if (documentNumber) kedua.push(documentNumber);
+  if (kedua.length) baris.push(kedua.join(' \u00b7 '));
+
+  return [
+    {
+      text: baris.join('\n'),
+      fontSize: 7,
+      color: ABU_PENUNJUK,
+      margin: [0, 10, 0, 0] as Margins,
+    },
+  ];
+}
+
 export function signatureBlock(
   approvedByName?: string | null,
   approvedByPosition?: string | null,
+  approvedAt?: string | Date | null,
+  checkedByName?: string | null,
+  documentNumber?: string | null,
 ) {
   return {
     unbreakable: true,
@@ -344,6 +405,9 @@ export function signatureBlock(
       // lewat baris kosong: baris kosong menambah tinggi yang tidak sama
       // pada kedua keadaan.
       ...signerLines(approvedByName, approvedByPosition),
+      // Ketiganya opsional: pemanggil lama yang belum mengirimnya tetap
+      // menghasilkan dokumen yang sama seperti sebelumnya.
+      ...keteranganPersetujuan(approvedAt, checkedByName, documentNumber),
     ],
   };
 }

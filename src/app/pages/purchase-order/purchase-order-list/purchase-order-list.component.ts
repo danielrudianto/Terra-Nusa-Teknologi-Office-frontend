@@ -630,6 +630,12 @@ export class PurchaseOrderListComponent {
           // sehingga blok tanda tangan tidak menyebut siapa pun.
           approvedByName: data.approvedByName ?? null,
           approvedByPosition: data.approvedByPosition ?? null,
+          // Keterangan penelusuran di bawah blok tanda tangan.
+          //
+          // Bukan pengganti tanda tangan basah; nilainya agar dokumen yang
+          // beredar dapat ditelusuri tanpa membuka sistem.
+          approvedAt: data.approvedAt ?? null,
+          checkedByName: data.checkedByName ?? null,
           date: data.date,
           projectName: data.projectName,
           supplierName: data.supplierName ?? '',

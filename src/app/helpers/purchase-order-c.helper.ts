@@ -54,6 +54,15 @@ export interface IPurchaseOrderC {
   approvedByPosition?: string | null;
   /** Nama penyetuju; kosong selama dokumennya belum disetujui. */
   approvedByName?: string | null;
+
+  /**
+   * Keterangan penelusuran di bawah blok tanda tangan.
+   *
+   * Ketiganya opsional; tanpa `approvedAt` keterangannya tidak tercetak sama
+   * sekali — lembar draf tidak boleh terbaca seolah sudah disetujui.
+   */
+  approvedAt?: string | Date | null;
+  checkedByName?: string | null;
   purchaseOrderName: string;
   date: Date | string;
   projectName: string;
@@ -254,7 +263,13 @@ export function printPurchaseOrderC(
         margin: [0, 0, 0, 22] as Margins,
       },
 
-      signatureBlock(data.approvedByName, data.approvedByPosition),
+      signatureBlock(
+        data.approvedByName,
+        data.approvedByPosition,
+        data.approvedAt,
+        data.checkedByName,
+        data.purchaseOrderName,
+      ),
 
       {
         text: `TATA CARA PENAGIHAN DAN PEMBAYARAN\nPEMBELIAN BARANG ${
