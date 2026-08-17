@@ -57,6 +57,7 @@
             dibedakan dari isian yang memang belum diisi.
           -->
           <app-supplier-terkunci
+            class="poc-span2"
             [label]="'poForm.supplier' | translate"
             [nama]="formGroup.get('supplierName')?.value"
             [alamat]="formGroup.get('supplierAddress')?.value"
@@ -162,6 +163,26 @@
                     }}</mat-option>
                   </mat-select>
                 </mat-form-field>
+                @if (satuanBerbeda(i)) {
+                  <!--
+                    Peringatan, bukan larangan.
+
+                    Sebagian pembelian memang memakai satuan berbeda dari
+                    yang tercatat di master. Yang berbahaya bukan
+                    perbedaannya, melainkan tidak menyadarinya: "Bendrat
+                    kemasan 20 kg" bersatuan `pcs`, dan mengisi 100 dengan
+                    satuan `Kg` menghasilkan pesanan lima kali lipat yang
+                    baru ketahuan saat barangnya datang.
+                  -->
+                  <div class="po-satuan-beda">
+                    <mat-icon>warning_amber</mat-icon>
+                    <span>{{
+                      "poForm.satuanBerbedaMaster"
+                        | translate: { satuan: satuanMaster(i) }
+                    }}</span>
+                  </div>
+                }
+
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
                   <input

@@ -84,13 +84,22 @@
           </div>
           <span class="poh-typechip">
             <strong>{{ subType }}</strong> · {{ subTypeLabel }}
-            <button
-              type="button"
-              class="poh-typechip__btn"
-              (click)="resetSubType()"
-            >
-              {{ "common.change" | translate }}
-            </button>
+            <!--
+              Tombol ganti hilang saat menyunting atau mengadendum.
+
+              H1 dan H2 menghasilkan dokumen yang berbeda; menggantinya di
+              tengah penyuntingan mengubah seluruh bentuknya, dan yang sudah
+              terisi hilang tanpa sempat ditinjau.
+            -->
+            @if (!adendum.memuatDokumenLama) {
+              <button
+                type="button"
+                class="poh-typechip__btn"
+                (click)="resetSubType()"
+              >
+                {{ "common.change" | translate }}
+              </button>
+            }
           </span>
         </div>
 
@@ -124,6 +133,7 @@
             dibedakan dari isian yang memang belum diisi.
           -->
           <app-supplier-terkunci
+            class="poh-span2"
             [label]="'poForm.supplier' | translate"
             [nama]="formGroup.get('supplierName')?.value"
             [alamat]="formGroup.get('supplierAddress')?.value"

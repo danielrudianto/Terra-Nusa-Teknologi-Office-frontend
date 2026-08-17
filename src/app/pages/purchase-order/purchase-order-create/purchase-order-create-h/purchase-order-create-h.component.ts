@@ -1544,6 +1544,46 @@ export class PurchaseOrderCreateHComponent implements OnInit {
          * pada dokumen induknya — dan yang membacanya menganggap poin itu
          * memang tidak pernah ada.
          */
+        /*
+         * Jenis subkontraktor diwarisi, BUKAN ditanyakan lagi.
+         *
+         * H1 dan H2 menghasilkan dokumen yang berbeda — H2 wajib memuat data
+         * pekerja, H1 tidak. Menanyakannya ulang saat menyunting membuat
+         * yang membetulkan satu angka harus mengingat pilihan aslinya, dan
+         * bila ia salah pilih, seluruh bentuk dokumennya berubah.
+         *
+         * Mengisinya di sini sekaligus melewati layar pemilih, karena layar
+         * itu tampil hanya selama `subType` masih kosong.
+         */
+        const bawaanInduk =
+          typeof induk.customData === 'string'
+            ? JSON.parse(induk.customData || '{}')
+            : induk.customData || {};
+        if (
+          bawaanInduk?.subType === 'H1' ||
+          bawaanInduk?.subType === 'H2'
+        ) {
+          this.subType = bawaanInduk.subType;
+        }
+
+        /*
+         * Data pekerja ikut diwarisi.
+         *
+         * Disimpan di `customData.workers`, bukan sebagai baris pekerjaan —
+         * sehingga tidak tersentuh sama sekali. Pada H2 daftar ini WAJIB,
+         * dan kehilangannya membuat yang menyunting harus mengetik ulang
+         * seluruh nama dan NIK.
+         */
+        const pekerja = this.adendum.larikCustom(induk, 'workers');
+        this.w.clear();
+        for (const x of pekerja) {
+          this.addWorker();
+          this.w.at(this.w.length - 1).patchValue({
+            name: x.name ?? '',
+            idCard: x.idCard ?? '',
+          });
+        }
+
         const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
         this.additionalClauses.clear();
         for (const teks of klausulInduk) {

@@ -364,6 +364,28 @@ export class PurchaseOrderCreate512Component implements OnInit {
   get t() {
     return this.formGroup.get('lines') as FormArray;
   }
+  /**
+   * Satuan yang dipilih berbeda dari satuan master barangnya.
+   *
+   * Bukan larangan — sebagian pembelian memang memakai satuan berbeda.
+   * Hanya peringatan, karena yang keliru di sini tidak terlihat sampai
+   * barangnya datang.
+   */
+  satuanBerbeda(i: number): boolean {
+    const g = this.getFormGroupAt(i);
+    const master = String(g?.get('unitMaster')?.value || '').trim();
+    const dipakai = String(g?.get('unit')?.value || '').trim();
+    if (!master || !dipakai) return false;
+    return master.toLowerCase() !== dipakai.toLowerCase();
+  }
+
+  /** Satuan menurut master barang; dipakai pada teks peringatan. */
+  satuanMaster(i: number): string {
+    return String(
+      this.getFormGroupAt(i)?.get('unitMaster')?.value || '',
+    ).trim();
+  }
+
   getFormGroupAt(i: number) {
     return this.t.at(i) as FormGroup;
   }
@@ -399,6 +421,19 @@ export class PurchaseOrderCreate512Component implements OnInit {
       asset: [''], // aset tujuan sparepart -> remarks_2
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unit: [item.unit || 'pcs', Validators.required],
+      /*
+       * Satuan menurut MASTER BARANG, disimpan terpisah.
+       *
+       * Isian satuannya sendiri boleh diubah — sebagian pembelian memang
+       * memakai satuan berbeda dari yang tercatat. Tetapi satuan master
+       * hilang begitu diubah, sehingga tidak ada lagi yang dapat
+       * memperingatkan bahwa keduanya berbeda.
+       *
+       * "Bendrat kemasan 20 kg" berstuan `pcs`; mengisi 100 dengan satuan
+       * `Kg` menghasilkan pesanan lima kali lipat dari yang dimaksud, dan
+       * itu baru ketahuan saat barangnya datang.
+       */
+      unitMaster: [item.unit || ''],
       price: [0, [Validators.required, Validators.min(0)]],
       note: [''],
     });
@@ -893,6 +928,26 @@ export class PurchaseOrderCreate512Component implements OnInit {
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
+
+        /*
+         * Mode pekerjaan diwarisi, BUKAN ditanyakan lagi.
+         *
+         * Pilihannya menentukan bentuk seluruh formulir dan dokumennya.
+         * Menanyakannya ulang saat menyunting membuat yang membetulkan satu
+         * angka harus mengingat pilihan aslinya — dan bila ia salah pilih,
+         * dokumennya berubah bentuk tanpa ada yang menyadarinya.
+         *
+         * Mengisinya di sini sekaligus melewati layar pemilih, karena layar
+         * itu tampil hanya selama `mode` masih kosong.
+         */
+        const modeInduk =
+          induk?.maintenanceMode ??
+          (typeof induk.customData === 'string'
+            ? JSON.parse(induk.customData || '{}')
+            : induk.customData || {})?.maintenanceMode;
+        if (modeInduk) {
+          this.mode = modeInduk;
+        }
         this.adendum.isiLarik(
           this.formGroup,
           'lines',

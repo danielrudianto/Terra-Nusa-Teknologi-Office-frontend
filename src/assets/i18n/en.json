@@ -1941,7 +1941,8 @@
     "hargaMelompatKet": "Last was Rp {{lama}}/{{satuan}} on {{nomor}}. Now Rp {{baru}} — {{kali}}× that. Please re-check before issuing.",
     "mungkinDuplikat": "A similar document already exists today",
     "mungkinDuplikatKet": "{{nomor}} was created by {{pembuat}} for the same supplier and project, worth Rp {{nilai}}. Make sure this isn't a second submission.",
-    "pemasokTerkunci": "Cannot be changed on an addendum"
+    "pemasokTerkunci": "Cannot be changed while editing",
+    "satuanBerbedaMaster": "The master item unit is {{satuan}}. Make sure the quantity matches the unit you selected."
   },
   "menu": {
     "editAsset": "Edit asset",

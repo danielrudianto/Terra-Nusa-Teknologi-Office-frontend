@@ -19,6 +19,10 @@
 /** Satu baris `items` sebagaimana dikembalikan server. */
 export interface BarisDokumen {
   item_id?: number | null;
+  /** Nama barang dari master; server melabelinya begini, bukan `description`. */
+  item_description?: string | null;
+  equipment_name?: string | null;
+  sku?: string | null;
   equipment_id?: number | null;
   fleet_id?: number | null;
   task?: string | null;
@@ -44,10 +48,28 @@ function volume(x: BarisDokumen, isUbah: boolean): number | null {
   return isUbah ? (Number(x.quantity) || 0) : null;
 }
 
+/**
+ * Nama barang dari baris dokumen.
+ *
+ * Server mengembalikannya sebagai `item_description` dan `equipment_name` —
+ * BUKAN `description` dan `name` seperti pada objek katalog. Pembangun baris
+ * tiap varian menerima objek katalog, sehingga membacanya apa adanya
+ * menghasilkan nama kosong: yang menyunting hanya melihat SKU, dan harus
+ * membuka master barang untuk tahu itu barang apa.
+ */
+function namaBarang(x: BarisDokumen): string {
+  return x.item_description ?? x.equipment_name ?? '';
+}
+
 const dasar = (x: BarisDokumen, isUbah: boolean) => ({
   quantity: volume(x, isUbah),
   unit: x.unit ?? '',
   price: Number(x.price) || 0,
+  // Disertakan pada SETIAP varian: yang punya isian `description` atau
+  // `sku` akan terisi, yang tidak punya mengabaikannya — `patchValue`
+  // melewati kunci yang tidak ada di formulirnya.
+  description: namaBarang(x),
+  sku: x.sku ?? '',
 });
 
 /**
@@ -110,6 +132,9 @@ export const BALIK_BARIS: Record<
     issuer: x.remarks_3 ?? '',
   }),
   h: (x, u) => ({ ...dasar(x, u), task: x.task ?? '' }),
+
+  // --- pengujian material: barang dari katalog, catatan di remarks_1 ---
+  f: (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
 
   // --- pertanggungan: rinciannya di customData, `items` hanya angkanya ---
   '642': (x, u) => ({ ...dasar(x, u), object: x.remarks_1 ?? '' }),

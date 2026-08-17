@@ -731,6 +731,26 @@ export class PurchaseOrderCreate651Component {
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
+
+        /*
+         * Mode pekerjaan diwarisi, BUKAN ditanyakan lagi.
+         *
+         * Pilihannya menentukan bentuk seluruh formulir dan dokumennya.
+         * Menanyakannya ulang saat menyunting membuat yang membetulkan satu
+         * angka harus mengingat pilihan aslinya — dan bila ia salah pilih,
+         * dokumennya berubah bentuk tanpa ada yang menyadarinya.
+         *
+         * Mengisinya di sini sekaligus melewati layar pemilih, karena layar
+         * itu tampil hanya selama `mode` masih kosong.
+         */
+        const modeInduk =
+          induk?.recruitmentMode ??
+          (typeof induk.customData === 'string'
+            ? JSON.parse(induk.customData || '{}')
+            : induk.customData || {})?.recruitmentMode;
+        if (modeInduk) {
+          this.mode = modeInduk;
+        }
         this.t.clear();
         this.adendum.barisInduk(induk).forEach((x: any) => {
           this.addLine();
