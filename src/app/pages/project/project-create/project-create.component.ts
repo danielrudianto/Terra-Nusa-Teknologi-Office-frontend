@@ -110,6 +110,12 @@ export class ProjectCreateComponent {
       .post('projects', {
         code: v.code,
         name: v.name,
+        // Alamat lokasi proyek; dipakai mengisi pengiriman PO Franco.
+        //
+        // Muatan ini menyebut kolomnya satu per satu, sehingga isian baru
+        // TIDAK ikut dengan sendirinya — yang lupa ditambahkan di sini
+        // tersimpan sebagai NULL tanpa galat apa pun.
+        address: v.address ?? null,
         clientID: v.clientID,
         startDate: v.startDate ? moment(v.startDate).format('YYYY-MM-DD') : null,
         endDate: v.endDate ? moment(v.endDate).format('YYYY-MM-DD') : null,

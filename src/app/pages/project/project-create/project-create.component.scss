@@ -158,3 +158,15 @@
     margin-top: 1px;
   }
 }
+
+/*
+ * Isian selebar kartu.
+ *
+ * Petaknya dua kolom; alamat yang mengisi satu kolom saja menjadi kotak
+ * sempit di kiri dengan ruang kosong di kanannya — dan alamat justru isian
+ * yang paling perlu ruang.
+ */
+.pc__span2 {
+  grid-column: 1 / -1;
+  width: 100%;
+}

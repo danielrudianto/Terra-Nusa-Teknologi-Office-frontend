@@ -56,6 +56,9 @@ export class ProjectUpdateComponent {
   ) {
     this.formGroup.patchValue({
       name: data?.name ?? '',
+      // Tanpa ini alamat yang sudah tersimpan tidak muncul saat menyunting,
+      // dan penyimpanan berikutnya menimpanya dengan kosong.
+      address: data?.address ?? '',
       clientID: data?.clientID ?? null,
       startDate: data?.startDate ? new Date(data.startDate) : null,
       endDate: data?.endDate ? new Date(data.endDate) : null,
@@ -134,6 +137,12 @@ export class ProjectUpdateComponent {
     this.apiService
       .put(`projects/${this.data.id}`, {
         name: v.name,
+        // Alamat lokasi proyek; dipakai mengisi pengiriman PO Franco.
+        //
+        // Muatan ini menyebut kolomnya satu per satu, sehingga isian baru
+        // TIDAK ikut dengan sendirinya — yang lupa ditambahkan di sini
+        // tersimpan sebagai NULL tanpa galat apa pun.
+        address: v.address ?? null,
         clientID: v.clientID,
         startDate: v.startDate ? moment(v.startDate).format('YYYY-MM-DD') : null,
         endDate: v.endDate ? moment(v.endDate).format('YYYY-MM-DD') : null,
