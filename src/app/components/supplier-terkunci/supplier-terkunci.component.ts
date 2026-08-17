@@ -47,6 +47,19 @@ import { TranslatePipe } from '@ngx-translate/core';
   `,
   styles: [
     `
+      /*
+       * Lebar penuh.
+       *
+       * Tanpa ini komponennya menyusut mengikuti isinya: elemen kustom
+       * bersifat inline secara bawaan, sehingga kelas span2 pada
+       * pemanggilnya menentukan KOLOM grid-nya tetapi tidak lebarnya.
+       * Hasilnya kartu sempit di kiri dengan ruang kosong di kanannya.
+       */
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .sptk {
         display: flex;
         flex-direction: column;

@@ -81,15 +81,25 @@
           </mat-form-field>
         }
 
-        <mat-form-field appearance="outline" class="po5112-span2">
-          <mat-label>{{ "poForm.supplierAddress" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="supplierAddress"
-            readonly
-            [placeholder]="'poField.otomatisDariSupplier' | translate"
-          />
-        </mat-form-field>
+        <!--
+          Alamat pemasok disembunyikan saat menyunting.
+
+          Ia sudah tercantum pada kartu pemasok di atas, dan
+          menampilkannya dua kali membuat yang membaca ragu mana yang
+          berlaku — terlebih ketika salah satunya berupa isian yang
+          tampak dapat diubah.
+        -->
+        @if (!adendum.memuatDokumenLama) {
+          <mat-form-field appearance="outline" class="po5112-span2">
+            <mat-label>{{ "poForm.supplierAddress" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="supplierAddress"
+              readonly
+              [placeholder]="'poField.otomatisDariSupplier' | translate"
+            />
+          </mat-form-field>
+        }
       </div>
     </div>
 
