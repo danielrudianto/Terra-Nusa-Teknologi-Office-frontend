@@ -534,3 +534,15 @@
     font-size: 20px;
   }
 }
+
+/*
+ * Baris rincian.
+ *
+ * Dibuat lebih redup daripada judulnya: ia melengkapi, bukan menggantikan —
+ * yang memindai daftar membaca judulnya dulu, dan rinciannya hanya bila
+ * baris itu yang dicarinya.
+ */
+.pov-item__rinci {
+  color: var(--muted, #8a90a0);
+  word-break: break-word;
+}

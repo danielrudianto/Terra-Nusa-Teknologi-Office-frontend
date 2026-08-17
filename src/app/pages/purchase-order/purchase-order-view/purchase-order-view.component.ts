@@ -27,6 +27,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { barisTampil } from '../../../constants/baris-tampil-po';
 
 
 /**
@@ -456,6 +457,23 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
       item?.sku ||
       '—'
     );
+  }
+
+  /**
+   * Judul baris menurut JENIS dokumennya.
+   *
+   * Kolom `remarks_1..6` berbeda arti tiap varian, sehingga satu pembacaan
+   * bersama tidak cukup. Pada PO-A `task` kebetulan berisi tanggal kirim —
+   * dan tanpa pemetaan ini daftar barangnya hanya berupa tujuh tanggal,
+   * tanpa satu pun keterangan tentang dari mana ke mana.
+   */
+  barisJudul(item: any): string {
+    return barisTampil(this.data?.purchaseType, item).judul;
+  }
+
+  /** Baris kecil di bawah judul; kosong bila tidak ada yang perlu disebut. */
+  barisRincian(item: any): string[] {
+    return barisTampil(this.data?.purchaseType, item).rincian;
   }
 
   /**

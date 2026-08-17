@@ -100,7 +100,20 @@
               <div class="pov-item">
                 <span class="pov-item__no">{{ $index + 1 }}</span>
                 <span class="pov-item__text">
-                  <span class="pov-item__name">{{ itemName(item) }}</span>
+                  <span class="pov-item__name">{{ barisJudul(item) }}</span>
+
+                  <!--
+                    Rincian menurut jenis dokumennya.
+
+                    Pengiriman menyebut moda, kendaraan, dan pengemudinya;
+                    sewa menyebut jangka waktu dan lokasinya. Tanpa ini yang
+                    memeriksa harus membuka PDF untuk tahu isi dokumen yang
+                    sedang ia periksa.
+                  -->
+                  @for (r of barisRincian(item); track r) {
+                    <span class="pov-item__meta pov-item__rinci">{{ r }}</span>
+                  }
+
                   <span class="pov-item__meta">
                     {{ item.quantity }} {{ item.unit }} ×
                     {{ item.price | number: "1.0-0" }}
