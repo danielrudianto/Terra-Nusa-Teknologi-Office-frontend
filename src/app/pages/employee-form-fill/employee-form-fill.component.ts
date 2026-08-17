@@ -86,7 +86,16 @@ export class EmployeeFormFillComponent implements OnInit {
         this.employeeName = res?.employeeName || '';
         this.pengundang = res?.pengundang || '';
         this.expiresAt = res?.expiresAt || null;
-        this.bagian = res?.version?.fields ?? [];
+        /*
+         * `fields` berbentuk `{ sections: [...] }`, bukan larik.
+         *
+         * Diambil apa adanya, `@for` atasnya melempar "not iterable" dan
+         * SELURUH halaman gagal — bukan hanya bagian itu. Bentuk larik
+         * langsung tetap diterima supaya definisi lama, bila ada, tidak
+         * ikut jatuh.
+         */
+        const f = res?.version?.fields;
+        this.bagian = Array.isArray(f) ? f : (f?.sections ?? []);
         this.jawaban = res?.answers ?? {};
         this.siapkanDaftar();
         this.isLoading = false;
@@ -160,6 +169,14 @@ export class EmployeeFormFillComponent implements OnInit {
    * `@for` atas `null` menggagalkan seluruh halaman — bukan hanya baris itu.
    */
   private siapkanDaftar(): void {
+    // Penjaga terakhir; `bagian` seharusnya sudah berupa larik, tetapi
+    // definisi formulir datang dari basis data dan bentuknya tidak dijamin
+    // oleh apa pun di sisi ini.
+    if (!Array.isArray(this.bagian)) {
+      this.bagian = [];
+      return;
+    }
+
     for (const s of this.bagian) {
       for (const f of s?.fields ?? []) {
         if (f?.type !== 'daftar') continue;

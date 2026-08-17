@@ -1235,7 +1235,8 @@
     "konfirmasiSimpan": "Konfirmasi & simpan",
     "kirimUndangan": "Kirim tautan pengisian",
     "undanganTerkirim": "Tautan untuk {{nama}} sudah dibuat dan disalin. Berlaku 3 hari.",
-    "undanganGagal": "Gagal membuat tautan"
+    "undanganGagal": "Gagal membuat tautan",
+    "undanganTautanSaja": "Tautan untuk {{nama}} sudah dibuat dan disalin, tetapi SUREL GAGAL TERKIRIM. Kirimkan tautannya secara manual."
   },
   "master": {
     "title": "Master Data",

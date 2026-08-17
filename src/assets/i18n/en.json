@@ -1235,7 +1235,8 @@
     "konfirmasiSimpan": "Confirm & save",
     "kirimUndangan": "Send fill-in link",
     "undanganTerkirim": "Link for {{nama}} created and copied. Valid for 3 days.",
-    "undanganGagal": "Failed to create link"
+    "undanganGagal": "Failed to create link",
+    "undanganTautanSaja": "Link for {{nama}} created and copied, but THE EMAIL FAILED TO SEND. Please share the link manually."
   },
   "master": {
     "title": "Master Data",

@@ -187,12 +187,26 @@ export class EmployeeListComponent {
         next: (res: any) => {
           const tautan = `${window.location.origin}/isi/${res.token}`;
           navigator.clipboard?.writeText(tautan).catch(() => {});
+
+          /*
+           * Kegagalan pengiriman surel DIBERITAHUKAN.
+           *
+           * Tautannya tetap dibuat dan sah — server sengaja tidak
+           * menggagalkan penerbitan karena surelnya tidak terkirim. Tetapi
+           * tanpa pemberitahuan, yang menerbitkannya melihat "berhasil" lalu
+           * menunggu surel yang tidak akan pernah datang.
+           *
+           * Sudah terjadi: token O365 kedaluwarsa, pengiriman gagal diam-diam,
+           * dan baru ketahuan setelah membuka log server.
+           */
+          const kunci = res?.emailTerkirim
+            ? 'employeeForm.undanganTerkirim'
+            : 'employeeForm.undanganTautanSaja';
+
           this.snackBar.open(
-            this.translate.instant('employeeForm.undanganTerkirim', {
-              nama: employee.name,
-            }),
-            'Tutup',
-            { duration: 6000 },
+            this.translate.instant(kunci, { nama: employee.name }),
+            this.translate.instant('common.close'),
+            { duration: res?.emailTerkirim ? 6000 : 10000 },
           );
         },
         error: (err) =>

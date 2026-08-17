@@ -1235,7 +1235,8 @@
     "konfirmasiSimpan": "确认并保存",
     "kirimUndangan": "发送填写链接",
     "undanganTerkirim": "已为 {{nama}} 创建并复制链接，有效期 3 天。",
-    "undanganGagal": "创建链接失败"
+    "undanganGagal": "创建链接失败",
+    "undanganTautanSaja": "已为 {{nama}} 创建并复制链接，但邮件发送失败。请手动发送该链接。"
   },
   "master": {
     "title": "主数据",
