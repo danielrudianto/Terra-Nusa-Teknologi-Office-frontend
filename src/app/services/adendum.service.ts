@@ -168,6 +168,15 @@ export class AdendumService {
     'maintenanceMode',
     'marketingMode',
     'recruitmentMode',
+    /*
+     * Lingkup pekerjaan PO-H.
+     *
+     * Menentukan bentuk seluruh dokumennya — borongan, borongan bor, buang
+     * lumpur, dan grouting masing-masing punya pasal yang berbeda. Adendum
+     * yang lingkupnya berbeda dari induknya bukan lagi adendum; ia perjanjian
+     * lain yang kebetulan bernomor turunan.
+     */
+    'workScope',
   ];
 
   /**

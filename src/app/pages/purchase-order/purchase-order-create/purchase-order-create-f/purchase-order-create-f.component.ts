@@ -215,7 +215,7 @@ export class PurchaseOrderCreateFComponent {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
-    private adendum: AdendumService,
+    public adendum: AdendumService,
     private translateSvc: TranslateService,
   ) {
     /*

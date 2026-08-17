@@ -109,7 +109,7 @@ export class PurchaseOrderCreateDComponent {
     this.typeSwitcher.open(this.formGroup?.dirty === true);
   }
   constructor(
-    private adendum: AdendumService,
+    public adendum: AdendumService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private apiService: ApiService,

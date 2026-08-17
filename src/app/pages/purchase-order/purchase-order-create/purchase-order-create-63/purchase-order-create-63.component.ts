@@ -89,7 +89,7 @@ export class PurchaseOrderCreate63Component {
     this.typeSwitcher.open(this.formGroup?.dirty === true);
   }
   constructor(
-    private adendum: AdendumService,
+    public adendum: AdendumService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private apiService: ApiService,
@@ -261,6 +261,11 @@ export class PurchaseOrderCreate63Component {
   }
 
   ngOnInit(): void {
+    // Bila dibuka sebagai adendum atau koreksi, isinya diambil dari
+    // dokumen induknya. Dipanggil di `ngOnInit` — bukan di penangan
+    // tombol — karena alamatnya sudah membawa `adendumDari` sejak
+    // halaman dibuka, dan yang membukanya tidak menekan apa pun.
+    this.muatAdendum();
     // Bila dibuka sebagai adendum ATAU koreksi, isinya diambil
     // dari dokumen lamanya.
     //
