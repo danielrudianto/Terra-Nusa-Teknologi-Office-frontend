@@ -39,6 +39,7 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
 @Component({
   selector: 'app-purchase-order-create-d',
@@ -61,6 +62,7 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatSlideToggleModule,
     NgxMaskDirective,
     HeaderTitleComponent,
+    SupplierTerkunciComponent,
   ],
   templateUrl: './purchase-order-create-d.component.html',
   styleUrl: './purchase-order-create-d.component.scss',
@@ -951,6 +953,21 @@ export class PurchaseOrderCreateDComponent {
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
         this.muatPekerjaan(induk);
+        /*
+         * Poin perjanjian tambahan ikut diwarisi.
+         *
+         * `isiFormulir` melewati setiap FormArray, sehingga poin khusus yang
+         * sudah disepakati pada dokumen induk tidak pernah terbawa — dan
+         * yang membaca adendumnya menganggap poin itu memang tidak ada.
+         */
+        const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
+        this.additionalClauses.clear();
+        for (const teks of klausulInduk) {
+          this.addClause();
+          this.additionalClauses
+            .at(this.additionalClauses.length - 1)
+            .setValue(teks ?? '');
+        }
       },
       error: () => {},
     });

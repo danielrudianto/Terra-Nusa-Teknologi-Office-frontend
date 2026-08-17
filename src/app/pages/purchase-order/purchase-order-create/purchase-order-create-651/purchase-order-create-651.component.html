@@ -119,24 +119,38 @@
             <input matInput formControlName="projectName" readonly />
           </mat-form-field>
 
+          @if (adendum.memuatDokumenLama) {
+          <!--
+            Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
+            yang dimatikan. Kotak abu-abu tetap terlihat seperti
+            dapat diisi, dan ketika nilainya kosong ia tidak dapat
+            dibedakan dari isian yang memang belum diisi.
+          -->
+          <app-supplier-terkunci
+            [label]="'common.supplier' | translate"
+            [nama]="formGroup.get('supplierName')?.value"
+            [alamat]="formGroup.get('supplierAddress')?.value"
+          />
+        } @else {
           <mat-form-field appearance="outline" class="po651-span2">
-            <mat-label>{{ "common.supplier" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="supplierName"
-              readonly
-              (click)="openSupplierSelector()"
-              [placeholder]="'poField.pilihVendor' | translate"
-            />
-            <button
-              matSuffix
-              type="button"
-              mat-icon-button
-              (click)="openSupplierSelector()"
-            >
-              <mat-icon>search</mat-icon>
-            </button>
-          </mat-form-field>
+              <mat-label>{{ "common.supplier" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="supplierName"
+                readonly
+                (click)="openSupplierSelector()"
+                [placeholder]="'poField.pilihVendor' | translate"
+              />
+              <button
+                matSuffix
+                type="button"
+                mat-icon-button
+                (click)="openSupplierSelector()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+        }
 
           <mat-form-field appearance="outline" class="po651-span2">
             <mat-label>{{ "common.address" | translate }}</mat-label>

@@ -155,7 +155,8 @@
     "refresh": "Muat ulang",
     "refreshHint": "Ambil data terbaru tanpa kehilangan pencarian dan penyaring",
     "semua": "Semua",
-    "bersihkan": "Bersihkan"
+    "bersihkan": "Bersihkan",
+    "dash": "—"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -1939,7 +1940,8 @@
     "hargaMelompat": "Harga berbeda jauh dari terakhir kali",
     "hargaMelompatKet": "Terakhir Rp {{lama}}/{{satuan}} pada {{nomor}}. Sekarang Rp {{baru}} — {{kali}}× lipat. Periksa kembali sebelum menerbitkan.",
     "mungkinDuplikat": "Sudah ada dokumen serupa hari ini",
-    "mungkinDuplikatKet": "{{nomor}} dibuat oleh {{pembuat}} untuk pemasok dan proyek yang sama, senilai Rp {{nilai}}. Pastikan ini bukan pengiriman kedua."
+    "mungkinDuplikatKet": "{{nomor}} dibuat oleh {{pembuat}} untuk pemasok dan proyek yang sama, senilai Rp {{nilai}}. Pastikan ini bukan pengiriman kedua.",
+    "pemasokTerkunci": "Tidak dapat diganti pada adendum"
   },
   "menu": {
     "editAsset": "Ubah aset",

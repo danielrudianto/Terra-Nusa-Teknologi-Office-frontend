@@ -38,6 +38,7 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
 /**
  * 6.4.2 Penutupan pertanggungan (asuransi & surety bond).
@@ -72,6 +73,7 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatDialogModule,
     MatSnackBarModule,
     NgxMaskDirective,
+    SupplierTerkunciComponent,
   ],
   templateUrl: './purchase-order-create-642.component.html',
   styleUrl: './purchase-order-create-642.component.scss',
@@ -814,11 +816,87 @@ export class PurchaseOrderCreate642Component {
 
         this.adendum.isiFormulir(this.formGroup, induk);
         this.adendum.kunciIsian(this.formGroup);
+
+        /*
+         * Rincian pertanggungan diambil dari `customData.coverages`, BUKAN
+         * dari `items`.
+         *
+         * Varian ini menyimpan isinya di sana — jenis, objek, nilai
+         * pertanggungan, risiko sendiri, dan masa berlakunya tidak punya
+         * padanan pada baris barang biasa. Membacanya dari `items`
+         * menghasilkan baris yang hanya berisi volume dan harga, sehingga
+         * seluruh rincian pertanggungannya kosong.
+         *
+         * `items` tetap dibaca untuk volume, satuan, dan harga; keduanya
+         * digabung menurut urutan barisnya.
+         */
+        const coverages = this.adendum.larikCustom(induk, 'coverages');
+        const items = this.adendum.barisInduk(induk);
+        const jumlah = Math.max(coverages.length, items.length);
+
         this.t.clear();
-        this.adendum.barisInduk(induk).forEach((x: any) => {
+        for (let i = 0; i < jumlah; i++) {
+          const c = coverages[i] || {};
+          const b = items[i] || {};
           this.addLine();
-          this.t.at(this.t.length - 1).patchValue(x);
-        });
+          this.t.at(this.t.length - 1).patchValue({
+            // Jenis pertanggungan disimpan sebagai teks tugasnya; bila tidak
+            // ada di daftar pilihan, ia jatuh ke "Lainnya" dengan teks itu
+            // sebagai isian bebasnya.
+            insuranceType: this.insuranceTypes.includes(c.type)
+              ? c.type
+              : c.type
+                ? 'Lainnya'
+                : '',
+            customType: this.insuranceTypes.includes(c.type)
+              ? ''
+              : (c.type ?? ''),
+            object: c.object ?? '',
+            sumInsured: Number(c.sumInsured) || 0,
+            deductible: c.deductible ?? '',
+            coverageStart: c.coverageStart ?? '',
+            coverageEnd: c.coverageEnd ?? '',
+            // Volume dikosongkan pada adendum — ia memuat SELISIH.
+            quantity: b.quantity ?? null,
+            unit: b.unit ?? 'polis',
+            price: Number(b.price) || 0,
+          });
+        }
+
+        /*
+         * Premi yang dititipkan ikut diwarisi.
+         *
+         * Tanpa ini, adendum atas dokumen berpremi kehilangan seluruh
+         * daftarnya — dan yang mengisinya tidak melihat bahwa preminya
+         * pernah ada.
+         */
+        const premi = this.adendum.larikCustom(induk, 'premiums');
+        this.premiums.clear();
+        for (const x of premi) {
+          this.addPremium();
+          this.premiums.at(this.premiums.length - 1).patchValue({
+            task: x.task ?? '',
+            description: x.description ?? '',
+            amount: Number(x.amount) || 0,
+          });
+        }
+        /*
+         * Poin perjanjian tambahan ikut diwarisi.
+         *
+         * Hilang di SELURUH varian sebelumnya: `isiFormulir` melewati setiap
+         * FormArray, dan tidak ada satu pun varian yang mengisinya sendiri.
+         * Adendum karena itu terbit tanpa poin khusus yang sudah disepakati
+         * pada dokumen induknya — dan yang membacanya menganggap poin itu
+         * memang tidak pernah ada.
+         */
+        const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
+        this.additionalClauses.clear();
+        for (const teks of klausulInduk) {
+          this.addClause();
+          this.additionalClauses
+            .at(this.additionalClauses.length - 1)
+            .setValue(teks ?? '');
+        }
       },
       error: () => {},
     });

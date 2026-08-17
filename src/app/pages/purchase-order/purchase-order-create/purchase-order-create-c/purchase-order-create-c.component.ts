@@ -41,6 +41,8 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
+import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
 @Component({
   selector: 'app-purchase-order-create-g',
@@ -62,6 +64,7 @@ import { AdendumService } from '../../../../services/adendum.service';
     HeaderTitleComponent,
     MatSlideToggleModule,
     NgxMaskDirective,
+    SupplierTerkunciComponent,
   ],
   templateUrl: './purchase-order-create-c.component.html',
   styleUrl: './purchase-order-create-c.component.scss',
@@ -792,8 +795,29 @@ export class PurchaseOrderCreateCComponent {
           this.formGroup,
           'purchase_order',
           this.adendum.barisInduk(induk),
-          (x) => this.adendum.terapkanNilaiBaris(this.buildItemGroup(x), x),
+          (x) => {
+            const g = this.buildItemGroup(x);
+            g.patchValue(BALIK_BARIS['c'](x, this.isUbah));
+            return g;
+          },
         );
+        /*
+         * Poin perjanjian tambahan ikut diwarisi.
+         *
+         * Hilang di SELURUH varian sebelumnya: `isiFormulir` melewati setiap
+         * FormArray, dan tidak ada satu pun varian yang mengisinya sendiri.
+         * Adendum karena itu terbit tanpa poin khusus yang sudah disepakati
+         * pada dokumen induknya — dan yang membacanya menganggap poin itu
+         * memang tidak pernah ada.
+         */
+        const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
+        this.additionalClauses.clear();
+        for (const teks of klausulInduk) {
+          this.addClause();
+          this.additionalClauses
+            .at(this.additionalClauses.length - 1)
+            .setValue(teks ?? '');
+        }
       },
       error: () => {},
     });

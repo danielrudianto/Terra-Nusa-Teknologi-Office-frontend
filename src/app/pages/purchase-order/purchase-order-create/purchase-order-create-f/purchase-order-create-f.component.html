@@ -71,24 +71,38 @@
         [label]="'poForm.projectCode' | translate"
       />
 
-        <mat-form-field appearance="outline" class="pof-span2">
-          <mat-label>{{ "poForm.supplier" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="supplierName"
-            readonly
-            [placeholder]="'poField.pilihSupplier' | translate"
+        @if (adendum.memuatDokumenLama) {
+          <!--
+            Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
+            yang dimatikan. Kotak abu-abu tetap terlihat seperti
+            dapat diisi, dan ketika nilainya kosong ia tidak dapat
+            dibedakan dari isian yang memang belum diisi.
+          -->
+          <app-supplier-terkunci
+            [label]="'poForm.supplier' | translate"
+            [nama]="formGroup.get('supplierName')?.value"
+            [alamat]="formGroup.get('supplierAddress')?.value"
           />
-          <button
-            mat-icon-button
-            matPrefix
-            type="button"
-            (click)="openSupplierSelector()"
-            [attr.aria-label]="'po511.pilihSupplier' | translate"
-          >
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
+        } @else {
+          <mat-form-field appearance="outline" class="pof-span2">
+            <mat-label>{{ "poForm.supplier" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              readonly
+              [placeholder]="'poField.pilihSupplier' | translate"
+            />
+            <button
+              mat-icon-button
+              matPrefix
+              type="button"
+              (click)="openSupplierSelector()"
+              [attr.aria-label]="'po511.pilihSupplier' | translate"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+        }
 
         <mat-form-field appearance="outline" class="pof-span2">
           <mat-label>{{ "poForm.supplierAddress" | translate }}</mat-label>

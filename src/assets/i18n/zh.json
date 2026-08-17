@@ -155,7 +155,8 @@
     "refresh": "刷新",
     "refreshHint": "获取最新数据，且不会丢失搜索与筛选条件",
     "semua": "全部",
-    "bersihkan": "清除"
+    "bersihkan": "清除",
+    "dash": "—"
   },
   "nav": {
     "pinned": "已固定",
@@ -1939,7 +1940,8 @@
     "hargaMelompat": "价格与上次相差很大",
     "hargaMelompatKet": "上次为 Rp {{lama}}/{{satuan}}（{{nomor}}）。现在 Rp {{baru}} — 相差 {{kali}} 倍。请在签发前复核。",
     "mungkinDuplikat": "今天已有相似单据",
-    "mungkinDuplikatKet": "{{nomor}} 由 {{pembuat}} 为同一供应商和项目创建，金额 Rp {{nilai}}。请确认这不是重复提交。"
+    "mungkinDuplikatKet": "{{nomor}} 由 {{pembuat}} 为同一供应商和项目创建，金额 Rp {{nilai}}。请确认这不是重复提交。",
+    "pemasokTerkunci": "附录中不可更换"
   },
   "menu": {
     "editAsset": "编辑资产",

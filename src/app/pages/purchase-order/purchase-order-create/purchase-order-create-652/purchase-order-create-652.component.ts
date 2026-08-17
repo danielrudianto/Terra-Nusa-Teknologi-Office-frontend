@@ -37,6 +37,8 @@ import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
+import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
+import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
 /**
  * 6.5.2 Biaya pelatihan.
@@ -67,6 +69,7 @@ import { AdendumService } from '../../../../services/adendum.service';
     MatDialogModule,
     MatSnackBarModule,
     NgxMaskDirective,
+    SupplierTerkunciComponent,
   ],
   templateUrl: './purchase-order-create-652.component.html',
   styleUrl: './purchase-order-create-652.component.scss',
@@ -726,8 +729,27 @@ export class PurchaseOrderCreate652Component {
         this.t.clear();
         this.adendum.barisInduk(induk).forEach((x: any) => {
           this.addLine();
-          this.t.at(this.t.length - 1).patchValue(x);
+          this.t.at(this.t.length - 1).patchValue(
+            BALIK_BARIS['652'](x, this.isUbah),
+          );
         });
+        /*
+         * Poin perjanjian tambahan ikut diwarisi.
+         *
+         * Hilang di SELURUH varian sebelumnya: `isiFormulir` melewati setiap
+         * FormArray, dan tidak ada satu pun varian yang mengisinya sendiri.
+         * Adendum karena itu terbit tanpa poin khusus yang sudah disepakati
+         * pada dokumen induknya — dan yang membacanya menganggap poin itu
+         * memang tidak pernah ada.
+         */
+        const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
+        this.additionalClauses.clear();
+        for (const teks of klausulInduk) {
+          this.addClause();
+          this.additionalClauses
+            .at(this.additionalClauses.length - 1)
+            .setValue(teks ?? '');
+        }
       },
       error: () => {},
     });

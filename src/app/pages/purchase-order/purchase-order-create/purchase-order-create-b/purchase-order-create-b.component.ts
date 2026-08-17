@@ -51,6 +51,7 @@ import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 
 
 /**
@@ -89,6 +90,7 @@ function validatorSumberSewa(g: AbstractControl): ValidationErrors | null {
     TextFieldModule,
     NgxMaskDirective,
     HeaderTitleComponent,
+    SupplierTerkunciComponent,
   ],
   templateUrl: './purchase-order-create-b.component.html',
   styleUrl: './purchase-order-create-b.component.scss',
@@ -356,7 +358,11 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       equipment_id: x?.equipment_id ?? null,
       item_id: x?.item_id ?? null,
       name: x?.equipment_name ?? x?.item_description ?? x?.task ?? '',
-      quantity: Number(x?.quantity) || 0,
+      // Volume dikosongkan pada ADENDUM, disalin pada koreksi.
+      //
+      // Adendum berisi selisih; menyalin volume induk membuat yang mengisi
+      // tinggal menekan simpan dan menggandakan seluruh sewanya.
+      quantity: this.isUbah ? Number(x?.quantity) || 0 : null,
       unit: x?.unit ?? 'hari',
       price: Number(x?.price) || 0,
       fromDate: x?.remarks_1 ?? '',
@@ -1169,6 +1175,23 @@ export class PurchaseOrderCreateBComponent implements OnInit {
           this.adendum.barisInduk(induk),
           (x) => this.barisDariDokumen(x),
         );
+        /*
+         * Poin perjanjian tambahan ikut diwarisi.
+         *
+         * Hilang di SELURUH varian sebelumnya: `isiFormulir` melewati setiap
+         * FormArray, dan tidak ada satu pun varian yang mengisinya sendiri.
+         * Adendum karena itu terbit tanpa poin khusus yang sudah disepakati
+         * pada dokumen induknya — dan yang membacanya menganggap poin itu
+         * memang tidak pernah ada.
+         */
+        const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
+        this.additionalClauses.clear();
+        for (const teks of klausulInduk) {
+          this.addClause();
+          this.additionalClauses
+            .at(this.additionalClauses.length - 1)
+            .setValue(teks ?? '');
+        }
       },
       error: () => {},
     });

@@ -59,24 +59,38 @@
         [hanyaAktif]="true"
         [label]="'poB.projectCode' | translate"
       />
-        <mat-form-field appearance="outline" class="pob-span2">
-          <mat-label>{{ "poB.rentalVendor" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="supplierName"
-            readonly
-            [placeholder]="'poField.pilihVendor' | translate"
+        @if (adendum.memuatDokumenLama) {
+          <!--
+            Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
+            yang dimatikan. Kotak abu-abu tetap terlihat seperti
+            dapat diisi, dan ketika nilainya kosong ia tidak dapat
+            dibedakan dari isian yang memang belum diisi.
+          -->
+          <app-supplier-terkunci
+            [label]="'poB.rentalVendor' | translate"
+            [nama]="formGroup.get('supplierName')?.value"
+            [alamat]="formGroup.get('supplierAddress')?.value"
           />
-          <button
-            mat-icon-button
-            matPrefix
-            type="button"
-            (click)="openSupplierSelector()"
-            [attr.aria-label]="'poB.pickVendor' | translate"
-          >
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
+        } @else {
+          <mat-form-field appearance="outline" class="pob-span2">
+            <mat-label>{{ "poB.rentalVendor" | translate }}</mat-label>
+            <input
+              matInput
+              formControlName="supplierName"
+              readonly
+              [placeholder]="'poField.pilihVendor' | translate"
+            />
+            <button
+              mat-icon-button
+              matPrefix
+              type="button"
+              (click)="openSupplierSelector()"
+              [attr.aria-label]="'poB.pickVendor' | translate"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+        }
       </div>
     </div>
 

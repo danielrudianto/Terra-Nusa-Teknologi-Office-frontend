@@ -155,7 +155,8 @@
     "refresh": "Refresh",
     "refreshHint": "Fetch the latest data without losing your search and filters",
     "semua": "All",
-    "bersihkan": "Clear"
+    "bersihkan": "Clear",
+    "dash": "—"
   },
   "nav": {
     "pinned": "Pinned",
@@ -1939,7 +1940,8 @@
     "hargaMelompat": "Price differs greatly from last time",
     "hargaMelompatKet": "Last was Rp {{lama}}/{{satuan}} on {{nomor}}. Now Rp {{baru}} — {{kali}}× that. Please re-check before issuing.",
     "mungkinDuplikat": "A similar document already exists today",
-    "mungkinDuplikatKet": "{{nomor}} was created by {{pembuat}} for the same supplier and project, worth Rp {{nilai}}. Make sure this isn't a second submission."
+    "mungkinDuplikatKet": "{{nomor}} was created by {{pembuat}} for the same supplier and project, worth Rp {{nilai}}. Make sure this isn't a second submission.",
+    "pemasokTerkunci": "Cannot be changed on an addendum"
   },
   "menu": {
     "editAsset": "Edit asset",
