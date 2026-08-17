@@ -287,6 +287,28 @@ export class PurchaseOrderCreateCComponent {
     return (this.additionalClauses.value as string[]) || [];
   }
 
+  /**
+   * Satuan yang dipilih berbeda dari satuan master barangnya.
+   *
+   * Bukan larangan — sebagian pembelian memang memakai satuan berbeda.
+   * Hanya peringatan, karena yang keliru di sini tidak terlihat sampai
+   * barangnya datang.
+   */
+  satuanBerbeda(i: number): boolean {
+    const g = this.getFormGroupAt(i);
+    const master = String(g?.get('unitMaster')?.value || '').trim();
+    const dipakai = String(g?.get('unit')?.value || '').trim();
+    if (!master || !dipakai) return false;
+    return master.toLowerCase() !== dipakai.toLowerCase();
+  }
+
+  /** Satuan menurut master barang; dipakai pada teks peringatan. */
+  satuanMaster(i: number): string {
+    return String(
+      this.getFormGroupAt(i)?.get('unitMaster')?.value || '',
+    ).trim();
+  }
+
   getFormGroupAt(i: number) {
     return this.t.at(i) as FormGroup;
   }
@@ -301,6 +323,19 @@ export class PurchaseOrderCreateCComponent {
       sku: [item.sku],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
+      /*
+       * Satuan menurut MASTER BARANG, disimpan terpisah.
+       *
+       * Isian satuannya sendiri boleh diubah — sebagian pembelian memang
+       * memakai satuan berbeda dari yang tercatat. Tetapi satuan master
+       * hilang begitu diubah, sehingga tidak ada lagi yang dapat
+       * memperingatkan bahwa keduanya berbeda.
+       *
+       * "Bendrat kemasan 20 kg" berstuan `pcs`; mengisi 100 dengan satuan
+       * `Kg` menghasilkan pesanan lima kali lipat dari yang dimaksud, dan
+       * itu baru ketahuan saat barangnya datang.
+       */
+      unitMaster: [item.unit || ''],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       price: [0, [Validators.required, Validators.min(0)]],
       remarks: [''],
