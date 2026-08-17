@@ -2665,7 +2665,9 @@
     "clientDesc": "Data klien",
     "employee": "Karyawan",
     "employeeDesc": "Data karyawan",
-    "tanpaAkses": "Anda belum punya akses ke bagian ini"
+    "tanpaAkses": "Anda belum punya akses ke bagian ini",
+    "hrQuestion": "Bank soal",
+    "hrQuestionDesc": "Pertanyaan ujian rekrutmen"
   },
   "confirm": {
     "cancel": "Batal",
@@ -4056,5 +4058,41 @@
     "tambah": "Tambah",
     "hapusBaris": "Hapus baris",
     "gagalSimpan": "Gagal menyimpan. Coba lagi."
+  },
+  "hrQuestion": {
+    "judul": "Bank soal rekrutmen",
+    "subjudul": "Pertanyaan ujian untuk pelamar; dinilai manual oleh pemeriksa.",
+    "cariPlaceholder": "Cari di pertanyaan atau catatan",
+    "paketUjian": "Paket ujian",
+    "tambah": "Tambah soal",
+    "kosong": "Belum ada soal yang cocok.",
+    "jumlahTampil": "{{n}} soal",
+    "nilaiMaks": "Nilai maks {{n}}",
+    "terimaBerkas": "Terima berkas",
+    "adaLampiran": "Ada lampiran",
+    "buatJudul": "Soal baru",
+    "ubahJudul": "Ubah soal",
+    "paketTerkunci": "Paket ujian tidak dapat dipindah setelah soal dibuat.",
+    "pertanyaan": "Pertanyaan",
+    "pertanyaanPlaceholder": "Jelaskan peran kontraktor dalam sebuah proyek konstruksi.",
+    "pertanyaanHint": "Soal esai; jawabannya dinilai manusia, bukan dicocokkan.",
+    "catatan": "Catatan",
+    "catatanPlaceholder": "Lakukan berdasarkan standar minimum SNI-03-2874-2002",
+    "catatanHint": "Standar atau batasan yang harus dipakai menjawab.",
+    "kategori": "Kategori",
+    "nilaiMaksimal": "Nilai maksimal",
+    "terimaBerkasLabel": "Terima unggahan berkas",
+    "terimaBerkasHint": "Untuk soal gambar. Membukanya pada soal lain mengundang jawaban dikirim sebagai foto tulisan tangan.",
+    "lampiran": "Lampiran (HTML)",
+    "lampiranPlaceholder": "<table>…</table>",
+    "lampiranHint": "Tabel atau gambar yang menyatu dengan soal, mis. tabel berat besi.",
+    "hapusJudul": "Hapus soal",
+    "hapusPesan": "Soal \"{{soal}}…\" akan ditandai terhapus. Jawaban lama tetap tersimpan.",
+    "terhapus": "Soal dihapus",
+    "dibuat": "Soal ditambahkan",
+    "tersimpan": "Soal diperbarui",
+    "gagalMuat": "Gagal memuat soal",
+    "gagalSimpan": "Gagal menyimpan soal",
+    "gagalHapus": "Gagal menghapus soal"
   }
 }

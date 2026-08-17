@@ -1,0 +1,138 @@
+<app-header-title
+  [title]="'hrQuestion.judul' | translate"
+  [subtitle]="'hrQuestion.subjudul' | translate"
+></app-header-title>
+
+<div class="hql">
+  <div class="hql-toolbar">
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="hql-cari"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        autocomplete="off"
+        type="search"
+        matInput
+        [(ngModel)]="cari"
+        (keyup.enter)="muatSoal()"
+        [placeholder]="'hrQuestion.cariPlaceholder' | translate"
+      />
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="hql-ujian"
+    >
+      <mat-label>{{ "hrQuestion.paketUjian" | translate }}</mat-label>
+      <mat-select [(ngModel)]="ujianTerpilih" (selectionChange)="muatSoal()">
+        <mat-option [value]="null">{{ "common.semua" | translate }}</mat-option>
+        @for (u of ujian; track u.id) {
+          <mat-option [value]="u.id">
+            {{ u.name }} ({{ u.jumlahSoal }})
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <span class="hql-spacer"></span>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      *appCan="'hr_recruitment:create'"
+      (click)="buatSoal()"
+    >
+      <mat-icon>add</mat-icon>
+      {{ "hrQuestion.tambah" | translate }}
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="hql-muat"><mat-spinner diameter="30"></mat-spinner></div>
+  } @else if (!soal.length) {
+    <p class="hql-kosong">{{ "hrQuestion.kosong" | translate }}</p>
+  } @else {
+    <p class="hql-jumlah">
+      {{ "hrQuestion.jumlahTampil" | translate: { n: jumlahTampil } }}
+    </p>
+
+    <!--
+      Dikelompokkan per paket ujian.
+
+      Daftar rata sepanjang tujuh puluh lima baris tidak memberi tahu soal itu
+      milik ujian yang mana, dan yang mencarinya harus membaca kolom nama
+      berulang kali.
+    -->
+    @for (g of kelompok; track g.nama) {
+      <section class="hql-grup">
+        <h2 class="hql-grup__judul">{{ g.nama }}</h2>
+
+        @for (s of g.soal; track s.id) {
+          <div class="hql-soal">
+            <div class="hql-soal__no">{{ s.sortOrder }}</div>
+
+            <div class="hql-soal__isi">
+              <p class="hql-soal__tanya">{{ s.question }}</p>
+
+              @if (s.notes) {
+                <p class="hql-soal__catatan">
+                  <mat-icon>sticky_note_2</mat-icon>{{ s.notes }}
+                </p>
+              }
+
+              <div class="hql-soal__tag">
+                <span class="hql-tag">{{ s.category }}</span>
+                <span class="hql-tag">
+                  {{ "hrQuestion.nilaiMaks" | translate: { n: s.maxScore } }}
+                </span>
+                @if (s.allowsUpload) {
+                  <span class="hql-tag hql-tag--unggah">
+                    <mat-icon>attach_file</mat-icon>
+                    {{ "hrQuestion.terimaBerkas" | translate }}
+                  </span>
+                }
+                @if (s.attachment) {
+                  <span class="hql-tag">
+                    <mat-icon>table_chart</mat-icon>
+                    {{ "hrQuestion.adaLampiran" | translate }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="'common.rowActions' | translate"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                *appCan="'hr_recruitment:update'"
+                (click)="ubahSoal(s)"
+              >
+                <mat-icon>edit</mat-icon>
+                <span>{{ "common.edit" | translate }}</span>
+              </button>
+              <button
+                mat-menu-item
+                *appCan="'hr_recruitment:delete'"
+                (click)="hapusSoal(s)"
+              >
+                <mat-icon>delete</mat-icon>
+                <span>{{ "common.delete" | translate }}</span>
+              </button>
+            </mat-menu>
+          </div>
+        }
+      </section>
+    }
+  }
+</div>

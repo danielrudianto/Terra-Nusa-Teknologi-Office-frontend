@@ -2665,7 +2665,9 @@
     "clientDesc": "客户资料",
     "employee": "员工",
     "employeeDesc": "员工资料",
-    "tanpaAkses": "您尚无此部分的访问权限"
+    "tanpaAkses": "您尚无此部分的访问权限",
+    "hrQuestion": "题库",
+    "hrQuestionDesc": "招聘考试题目"
   },
   "confirm": {
     "cancel": "取消",
@@ -4056,5 +4058,41 @@
     "tambah": "添加",
     "hapusBaris": "删除此行",
     "gagalSimpan": "保存失败，请重试。"
+  },
+  "hrQuestion": {
+    "judul": "招聘题库",
+    "subjudul": "应聘者考试题目；由审阅人手动评分。",
+    "cariPlaceholder": "搜索题目或备注",
+    "paketUjian": "试卷",
+    "tambah": "添加题目",
+    "kosong": "暂无匹配的题目。",
+    "jumlahTampil": "{{n}} 道题",
+    "nilaiMaks": "满分 {{n}}",
+    "terimaBerkas": "可上传文件",
+    "adaLampiran": "含附件",
+    "buatJudul": "新题目",
+    "ubahJudul": "编辑题目",
+    "paketTerkunci": "题目创建后不可更换试卷。",
+    "pertanyaan": "题目",
+    "pertanyaanPlaceholder": "请说明承包商在建设项目中的作用。",
+    "pertanyaanHint": "论述题；答案由人工评分，非自动匹配。",
+    "catatan": "备注",
+    "catatanPlaceholder": "依据 SNI-03-2874-2002 最低标准作答",
+    "catatanHint": "作答须遵循的标准或限制。",
+    "kategori": "类别",
+    "nilaiMaksimal": "满分",
+    "terimaBerkasLabel": "允许上传文件",
+    "terimaBerkasHint": "用于绘图题。在其他题目开启会导致答案以手写照片提交。",
+    "lampiran": "附件（HTML）",
+    "lampiranPlaceholder": "<table>…</table>",
+    "lampiranHint": "与题目一体的表格或图，例如钢筋重量表。",
+    "hapusJudul": "删除题目",
+    "hapusPesan": "题目「{{soal}}…」将被标记为已删除。已有答案仍会保留。",
+    "terhapus": "题目已删除",
+    "dibuat": "题目已添加",
+    "tersimpan": "题目已更新",
+    "gagalMuat": "加载题目失败",
+    "gagalSimpan": "保存题目失败",
+    "gagalHapus": "删除题目失败"
   }
 }

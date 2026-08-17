@@ -2665,7 +2665,9 @@
     "clientDesc": "Client data",
     "employee": "Employee",
     "employeeDesc": "Employee data",
-    "tanpaAkses": "You do not have access to this section"
+    "tanpaAkses": "You do not have access to this section",
+    "hrQuestion": "Question bank",
+    "hrQuestionDesc": "Recruitment test questions"
   },
   "confirm": {
     "cancel": "Cancel",
@@ -4056,5 +4058,41 @@
     "tambah": "Add",
     "hapusBaris": "Remove row",
     "gagalSimpan": "Failed to save. Please try again."
+  },
+  "hrQuestion": {
+    "judul": "Recruitment question bank",
+    "subjudul": "Test questions for candidates; scored manually by a reviewer.",
+    "cariPlaceholder": "Search questions or notes",
+    "paketUjian": "Test package",
+    "tambah": "Add question",
+    "kosong": "No matching questions yet.",
+    "jumlahTampil": "{{n}} questions",
+    "nilaiMaks": "Max score {{n}}",
+    "terimaBerkas": "Accepts files",
+    "adaLampiran": "Has attachment",
+    "buatJudul": "New question",
+    "ubahJudul": "Edit question",
+    "paketTerkunci": "The test package cannot be changed after creation.",
+    "pertanyaan": "Question",
+    "pertanyaanPlaceholder": "Explain the contractor's role in a construction project.",
+    "pertanyaanHint": "Essay question; answers are graded by a person, not matched.",
+    "catatan": "Notes",
+    "catatanPlaceholder": "Follow the minimum standard of SNI-03-2874-2002",
+    "catatanHint": "Standard or constraint the answer must follow.",
+    "kategori": "Category",
+    "nilaiMaksimal": "Max score",
+    "terimaBerkasLabel": "Accept file uploads",
+    "terimaBerkasHint": "For drawing questions. Enabling it elsewhere invites answers sent as photos of handwriting.",
+    "lampiran": "Attachment (HTML)",
+    "lampiranPlaceholder": "<table>…</table>",
+    "lampiranHint": "A table or figure that belongs with the question, e.g. rebar weight table.",
+    "hapusJudul": "Delete question",
+    "hapusPesan": "The question \"{{soal}}…\" will be marked deleted. Existing answers are kept.",
+    "terhapus": "Question deleted",
+    "dibuat": "Question added",
+    "tersimpan": "Question updated",
+    "gagalMuat": "Failed to load questions",
+    "gagalSimpan": "Failed to save question",
+    "gagalHapus": "Failed to delete question"
   }
 }

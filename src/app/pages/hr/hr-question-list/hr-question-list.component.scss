@@ -1,0 +1,165 @@
+.hql {
+  padding: 0 1.5rem 2rem;
+}
+
+.hql-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.hql-cari {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.hql-ujian {
+  flex: 0 1 240px;
+  min-width: 0;
+}
+
+.hql-spacer {
+  flex: 1 1 auto;
+}
+
+.hql-muat {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.hql-kosong,
+.hql-jumlah {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: var(--muted, #8a90a0);
+}
+
+.hql-kosong {
+  padding: 3rem 0;
+  text-align: center;
+}
+
+/* --- kelompok per paket ujian --- */
+.hql-grup {
+  margin-bottom: 1.75rem;
+}
+
+.hql-grup__judul {
+  margin: 0 0 0.75rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-strong);
+}
+
+/* --- satu soal --- */
+.hql-soal {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.6rem;
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.hql-soal__no {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #6b7280);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+
+.hql-soal__isi {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/*
+ * Pertanyaan ditampilkan UTUH, tidak dipangkas.
+ *
+ * Soal esai kerap memuat angka dan satuan di bagian akhir — "diameter 60 cm,
+ * kedalaman 24 meter" — dan memangkasnya menghilangkan justru bagian yang
+ * membedakan satu soal dari soal lain yang mirip.
+ */
+.hql-soal__tanya {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.hql-soal__catatan {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    margin-top: 0.15rem;
+  }
+}
+
+.hql-soal__tag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.hql-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #6b7280);
+  font-size: 0.7rem;
+
+  .mat-icon {
+    width: 13px;
+    height: 13px;
+    font-size: 13px;
+  }
+}
+
+/* Soal yang menerima unggahan ditandai; hanya soal gambar yang begitu. */
+.hql-tag--unggah {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .hql {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hql-cari,
+  .hql-ujian {
+    flex: 1 1 100%;
+  }
+}
