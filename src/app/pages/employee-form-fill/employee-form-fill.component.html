@@ -1,0 +1,225 @@
+@if (isLoading) {
+  <div class="eff-muat"><mat-spinner diameter="32"></mat-spinner></div>
+} @else if (tidakBerlaku) {
+  <!--
+    Satu pesan untuk tiga sebab: token tidak dikenal, sudah dicabut, dan
+    sudah lewat masa berlakunya.
+
+    Membedakannya memberi tahu penebak bahwa tokennya PERNAH ada — dan bagi
+    yang berhak, ketiganya menuntut hal yang sama: minta tautan baru.
+  -->
+  <div class="eff-tolak">
+    <mat-icon>link_off</mat-icon>
+    <h1>Tautan tidak berlaku</h1>
+    <p>
+      Tautan ini sudah kedaluwarsa atau sudah diganti. Hubungi bagian HRD
+      untuk mendapatkan tautan baru.
+    </p>
+  </div>
+} @else {
+  <div class="eff">
+    <header class="eff-kepala">
+      <div class="eff-kepala__merek">TERRABOT</div>
+      <h1 class="eff-kepala__judul">Pembaruan data karyawan</h1>
+      <p class="eff-kepala__nama">{{ employeeName }}</p>
+
+      @if (pengundang) {
+        <!--
+          Siapa yang meminta, disebut jelas.
+
+          Tautan tanpa asal yang jelas tampak seperti percobaan penipuan —
+          dan yang berhati-hati justru tidak mengisinya.
+        -->
+        <p class="eff-kepala__minta">Diminta oleh {{ pengundang }}</p>
+      }
+
+      @if (sisaWaktu) {
+        <span class="eff-sisa" [class.eff-sisa--habis]="segeraHabis">
+          <mat-icon>schedule</mat-icon>
+          Berlaku {{ sisaWaktu }}
+        </span>
+      }
+    </header>
+
+    @if (tersimpan) {
+      <div class="eff-simpan">
+        <mat-icon>check_circle</mat-icon>
+        <div>
+          <strong>Data tersimpan</strong>
+          <p>
+            Isian di bawah masih dapat diubah selama tautan ini berlaku.
+            Tekan Simpan lagi setelah mengubahnya.
+          </p>
+        </div>
+      </div>
+    }
+
+    @for (s of bagian; track s.key) {
+      <section class="eff-bagian">
+        <h2 class="eff-bagian__judul">{{ s.title }}</h2>
+        @if (s.description) {
+          <p class="eff-bagian__ket">{{ s.description }}</p>
+        }
+
+        @for (f of s.fields; track f.key) {
+          <div class="eff-isian">
+            @switch (f.type) {
+              @case ("panjang") {
+                <mat-form-field appearance="outline" class="eff-full">
+                  <mat-label>{{ f.label }}</mat-label>
+                  <textarea
+                    matInput
+                    rows="3"
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
+                  ></textarea>
+                  @if (f.hint) {
+                    <mat-hint>{{ f.hint }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+              @case ("pilih") {
+                <mat-form-field appearance="outline" class="eff-full">
+                  <mat-label>{{ f.label }}</mat-label>
+                  <mat-select
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
+                  >
+                    @for (o of f.options; track o) {
+                      <mat-option [value]="o">{{ o }}</mat-option>
+                    }
+                  </mat-select>
+                  @if (f.hint) {
+                    <mat-hint>{{ f.hint }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+              @case ("angka") {
+                <mat-form-field appearance="outline" class="eff-full">
+                  <mat-label>{{ f.label }}</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    inputmode="numeric"
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
+                  />
+                  @if (f.hint) {
+                    <mat-hint>{{ f.hint }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+              @case ("tanggal") {
+                <!--
+                  `type="date"` bawaan peramban, bukan datepicker Material.
+
+                  Di ponsel ia membuka pemilih tanggal milik sistem — yang
+                  sudah dikenal penggunanya dan jauh lebih mudah disentuh
+                  daripada kalender kecil di dalam halaman.
+                -->
+                <mat-form-field appearance="outline" class="eff-full">
+                  <mat-label>{{ f.label }}</mat-label>
+                  <input
+                    matInput
+                    type="date"
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
+                  />
+                  @if (f.hint) {
+                    <mat-hint>{{ f.hint }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+              @case ("daftar") {
+                <div class="eff-daftar">
+                  <span class="eff-daftar__judul">{{ f.label }}</span>
+                  @if (f.hint) {
+                    <p class="eff-daftar__ket">{{ f.hint }}</p>
+                  }
+
+                  @for (baris of jawaban[f.key]; track $index) {
+                    <div class="eff-baris">
+                      <div class="eff-baris__no">{{ $index + 1 }}</div>
+                      <div class="eff-baris__isi">
+                        @for (k of f.columns; track k.key) {
+                          <mat-form-field appearance="outline">
+                            <mat-label>{{ k.label }}</mat-label>
+                            @if (k.type === "pilih") {
+                              <mat-select
+                                [(ngModel)]="baris[k.key]"
+                                (ngModelChange)="ubah()"
+                              >
+                                @for (o of k.options; track o) {
+                                  <mat-option [value]="o">{{ o }}</mat-option>
+                                }
+                              </mat-select>
+                            } @else {
+                              <input
+                                matInput
+                                [type]="k.type === 'tanggal' ? 'date' : 'text'"
+                                [(ngModel)]="baris[k.key]"
+                                (ngModelChange)="ubah()"
+                              />
+                            }
+                          </mat-form-field>
+                        }
+                      </div>
+                      <button
+                        type="button"
+                        class="eff-baris__hapus"
+                        aria-label="Hapus baris"
+                        (click)="hapusBaris(f.key, $index)"
+                      >
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+
+                  <button
+                    type="button"
+                    class="eff-tambah"
+                    (click)="tambahBaris(f.key)"
+                  >
+                    <mat-icon>add</mat-icon> Tambah
+                  </button>
+                </div>
+              }
+              @default {
+                <mat-form-field appearance="outline" class="eff-full">
+                  <mat-label>{{ f.label }}</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
+                  />
+                  @if (f.hint) {
+                    <mat-hint>{{ f.hint }}</mat-hint>
+                  }
+                </mat-form-field>
+              }
+            }
+          </div>
+        }
+      </section>
+    }
+
+    <!--
+      Tombol simpan menempel di bawah layar.
+
+      Formulir ini panjang; tombol yang hanya ada di paling bawah memaksa
+      menggulir seluruh isian setiap kali hendak menyimpan.
+    -->
+    <div class="eff-kaki">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="eff-simpan-btn"
+        [disabled]="isSaving"
+        (click)="simpan()"
+      >
+        {{ isSaving ? "Menyimpan…" : "Simpan" }}
+      </button>
+    </div>
+  </div>
+}

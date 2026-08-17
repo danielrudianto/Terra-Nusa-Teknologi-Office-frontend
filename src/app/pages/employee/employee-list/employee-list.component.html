@@ -187,6 +187,21 @@
                 ><span>{{ "employeeView.menu" | translate }}</span>
 
               </button>
+              <!--
+                Kirim tautan pengisian ke karyawan yang bersangkutan.
+
+                Dijaga izin `employee_form:update` — menerbitkan tautan
+                berarti memberi seseorang kuasa mengubah datanya sendiri,
+                dan itu setara dengan mengisikannya atas namanya.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'employee_form:update'"
+                (click)="kirimUndangan(element)"
+              >
+                <mat-icon>outgoing_mail</mat-icon
+                ><span>{{ "employeeForm.kirimUndangan" | translate }}</span>
+              </button>
               <button
                 mat-menu-item
                 *appCan="'employees:update'"

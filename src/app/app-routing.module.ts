@@ -10,6 +10,22 @@ export const routes: Routes = [
       import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    /*
+     * Pengisian data karyawan lewat tautan undangan.
+     *
+     * DI LUAR kerangka utama dan tanpa penjaga masuk: yang membukanya adalah
+     * karyawan yang tidak punya akun, dan tokennya pada alamat inilah yang
+     * menandai siapa dia.
+     *
+     * Ditaruh sebelum rute induk `''` supaya tidak tertangkap penjaganya.
+     */
+    path: 'isi/:token',
+    loadComponent: () =>
+      import('./pages/employee-form-fill/employee-form-fill.component').then(
+        (m) => m.EmployeeFormFillComponent,
+      ),
+  },
+  {
     path: '',
     /*
      * Seluruh halaman di dalam kerangka utama mensyaratkan sudah masuk.

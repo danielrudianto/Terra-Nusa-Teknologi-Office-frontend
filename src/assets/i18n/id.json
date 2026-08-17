@@ -1232,7 +1232,10 @@
     "saved": "Formulir tersimpan",
     "terakhirDiperbarui": "Terakhir diperbarui",
     "bulanLalu": "bulan lalu",
-    "konfirmasiSimpan": "Konfirmasi & simpan"
+    "konfirmasiSimpan": "Konfirmasi & simpan",
+    "kirimUndangan": "Kirim tautan pengisian",
+    "undanganTerkirim": "Tautan untuk {{nama}} sudah dibuat dan disalin. Berlaku 3 hari.",
+    "undanganGagal": "Gagal membuat tautan"
   },
   "master": {
     "title": "Master Data",

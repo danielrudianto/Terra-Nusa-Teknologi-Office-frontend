@@ -1232,7 +1232,10 @@
     "saved": "Form saved",
     "terakhirDiperbarui": "Last updated",
     "bulanLalu": "months ago",
-    "konfirmasiSimpan": "Confirm & save"
+    "konfirmasiSimpan": "Confirm & save",
+    "kirimUndangan": "Send fill-in link",
+    "undanganTerkirim": "Link for {{nama}} created and copied. Valid for 3 days.",
+    "undanganGagal": "Failed to create link"
   },
   "master": {
     "title": "Master Data",

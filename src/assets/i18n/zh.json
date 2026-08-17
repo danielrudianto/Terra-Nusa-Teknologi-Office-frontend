@@ -1232,7 +1232,10 @@
     "saved": "表单已保存",
     "terakhirDiperbarui": "最后更新",
     "bulanLalu": "个月前",
-    "konfirmasiSimpan": "确认并保存"
+    "konfirmasiSimpan": "确认并保存",
+    "kirimUndangan": "发送填写链接",
+    "undanganTerkirim": "已为 {{nama}} 创建并复制链接，有效期 3 天。",
+    "undanganGagal": "创建链接失败"
   },
   "master": {
     "title": "主数据",

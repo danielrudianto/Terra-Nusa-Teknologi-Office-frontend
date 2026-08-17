@@ -1,0 +1,283 @@
+/*
+ * Halaman pengisian mandiri.
+ *
+ * Dirancang untuk PONSEL lebih dulu: yang membukanya menerima tautan lewat
+ * surel dan membukanya di telepon, bukan di depan komputer kantor.
+ */
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--surface-2, #f7f8fa);
+}
+
+.eff {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 1rem 7rem;
+}
+
+.eff-muat {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+/* --- tautan tidak berlaku --- */
+.eff-tolak {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+  text-align: center;
+
+  .mat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 48px;
+    color: var(--muted, #9aa1b1);
+  }
+
+  h1 {
+    margin: 1rem 0 0.5rem;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--muted, #6b7280);
+  }
+}
+
+/* --- kepala --- */
+.eff-kepala {
+  padding: 2rem 0 1.5rem;
+  text-align: center;
+}
+
+.eff-kepala__merek {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--brand-strong);
+}
+
+.eff-kepala__judul {
+  margin: 0.75rem 0 0.35rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.eff-kepala__nama {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.eff-kepala__minta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+.eff-sisa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.9rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+
+/* Menipis: ditandai supaya terlihat tanpa perlu dibaca. */
+.eff-sisa--habis {
+  background: var(--warn-bg);
+  border-color: var(--warn-fg);
+  color: var(--warn-fg);
+  font-weight: 600;
+}
+
+/* --- pesan tersimpan --- */
+.eff-simpan {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+
+  strong {
+    display: block;
+    font-size: 0.88rem;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+/* --- bagian --- */
+.eff-bagian {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.eff-bagian__judul {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--brand-strong);
+}
+
+.eff-bagian__ket {
+  margin: 0.4rem 0 1rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+.eff-isian {
+  margin-top: 0.5rem;
+}
+
+.eff-full {
+  width: 100%;
+}
+
+/* --- isian berbentuk daftar --- */
+.eff-daftar {
+  margin-top: 0.75rem;
+}
+
+.eff-daftar__judul {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.eff-daftar__ket {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+.eff-baris {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f7f8fa);
+}
+
+.eff-baris__no {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+
+.eff-baris__isi {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.eff-baris__hapus {
+  flex: 0 0 auto;
+  margin-top: 0.65rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #9aa1b1);
+  display: inline-flex;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.eff-tambah {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px dashed var(--border, #d7dbe3);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--brand-strong);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+/* --- tombol simpan --- */
+.eff-kaki {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+  background: var(--surface, #fff);
+  border-top: 0.5px solid var(--border, #e3e6eb);
+}
+
+.eff-simpan-btn {
+  display: block;
+  width: 100%;
+  max-width: 608px;
+  margin: 0 auto;
+  height: 46px;
+  font-size: 0.92rem;
+}

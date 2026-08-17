@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +23,8 @@ import { EmployeeFormComponent } from '../employee-form/employee-form.component'
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { EmployeeViewComponent } from '../employee-view/employee-view.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-employee-list',
@@ -49,6 +51,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   standalone: true,
 })
 export class EmployeeListComponent {
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
@@ -168,6 +173,38 @@ export class EmployeeListComponent {
    * dialog bertab — sebelumnya ketiganya hanya dapat dibuka satu per satu,
    * dan dua di antaranya lewat formulir penyuntingan.
    */
+  /**
+   * Terbitkan tautan pengisian dan tampilkan hasilnya.
+   *
+   * Tautannya ditampilkan untuk disalin, bukan hanya dikirim diam-diam:
+   * surel dapat masuk folder sampah, dan yang mengirim perlu punya cara
+   * menyampaikannya lewat jalan lain tanpa menerbitkan tautan kedua.
+   */
+  kirimUndangan(employee: any): void {
+    this.apiService
+      .post(`employee-forms/${employee.id}/undang`, {})
+      .subscribe({
+        next: (res: any) => {
+          const tautan = `${window.location.origin}/isi/${res.token}`;
+          navigator.clipboard?.writeText(tautan).catch(() => {});
+          this.snackBar.open(
+            this.translate.instant('employeeForm.undanganTerkirim', {
+              nama: employee.name,
+            }),
+            'Tutup',
+            { duration: 6000 },
+          );
+        },
+        error: (err) =>
+          this.snackBar.open(
+            err?.error?.detail ||
+              this.translate.instant('employeeForm.undanganGagal'),
+            'Tutup',
+            { duration: 4000 },
+          ),
+      });
+  }
+
   openView(row: any) {
     this.dialog.open(EmployeeViewComponent, {
       data: { employee: row },
