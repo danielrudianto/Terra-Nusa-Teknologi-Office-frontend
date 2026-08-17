@@ -104,6 +104,7 @@ export class EmployeeFormFillComponent implements OnInit {
         this.bagian = Array.isArray(f) ? f : (f?.sections ?? []);
         this.jawaban = res?.answers ?? {};
         this.siapkanDaftar();
+        this.siapkanTanggal();
         this.isLoading = false;
       },
       error: () => {
@@ -222,17 +223,67 @@ export class EmployeeFormFillComponent implements OnInit {
    * `tanggal` tetap tanggal, dan yang tidak cocok tetap teks biasa.
    */
   /**
-   * Ubah nilai tersimpan menjadi `Date` untuk datepicker.
+   * Ubah nilai tanggal menjadi objek `Date` SATU KALI, saat dimuat.
    *
-   * Jawaban disimpan sebagai teks `YYYY-MM-DD`; datepicker Material bekerja
-   * dengan objek tanggal. Nilai lama yang tidak terbaca dikembalikan `null`,
-   * bukan tanggal hari ini — mengisikan tanggal yang tidak pernah dipilih
-   * siapa pun lebih buruk daripada membiarkannya kosong.
+   * Datepicker Material bekerja dengan `Date`, sedangkan jawaban tersimpan
+   * sebagai teks. Mengubahnya di dalam templat — `[ngModel]="ubah(nilai)"` —
+   * menghasilkan objek BARU pada setiap siklus deteksi perubahan; Angular
+   * membandingkan rujukan, menganggap nilainya berubah, lalu menjalankan
+   * siklus berikutnya tanpa henti.
+   *
+   * Gejalanya: halaman membeku dan klik pada kalender tidak pernah selesai.
+   * Sudah terjadi.
    */
-  tanggalDari(nilai: any): Date | null {
-    if (!nilai) return null;
-    const d = new Date(nilai);
-    return isNaN(d.getTime()) ? null : d;
+  private siapkanTanggal(): void {
+    const keDate = (v: any) => {
+      if (!v || v instanceof Date) return v || null;
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? null : d;
+    };
+
+    for (const s of this.bagian) {
+      for (const f of s?.fields ?? []) {
+        if (f?.type === 'tanggal') {
+          this.jawaban[f.key] = keDate(this.jawaban[f.key]);
+          continue;
+        }
+        if (f?.type !== 'daftar') continue;
+
+        for (const baris of this.jawaban[f.key] ?? []) {
+          for (const k of f.columns ?? []) {
+            if (this.jenisIsian(k) === 'date') {
+              baris[k.key] = keDate(baris[k.key]);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** Salinan jawaban dengan seluruh tanggal sudah menjadi teks. */
+  private jawabanUntukKirim(): Record<string, any> {
+    const hasil: Record<string, any> = { ...this.jawaban };
+
+    for (const s of this.bagian) {
+      for (const f of s?.fields ?? []) {
+        if (f?.type === 'tanggal') {
+          hasil[f.key] = this.teksTanggal(hasil[f.key]) || null;
+          continue;
+        }
+        if (f?.type !== 'daftar') continue;
+
+        hasil[f.key] = (hasil[f.key] ?? []).map((baris: any) => {
+          const b = { ...baris };
+          for (const k of f.columns ?? []) {
+            if (this.jenisIsian(k) === 'date') {
+              b[k.key] = this.teksTanggal(b[k.key]) || null;
+            }
+          }
+          return b;
+        });
+      }
+    }
+    return hasil;
   }
 
   /**
@@ -248,16 +299,6 @@ export class EmployeeFormFillComponent implements OnInit {
     if (isNaN(t.getTime())) return '';
     const p = (n: number) => String(n).padStart(2, '0');
     return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}`;
-  }
-
-  setTanggal(kunci: string, nilai: any): void {
-    this.jawaban = { ...this.jawaban, [kunci]: this.teksTanggal(nilai) };
-    this.ubah();
-  }
-
-  setTanggalBaris(baris: any, kunci: string, nilai: any): void {
-    baris[kunci] = this.teksTanggal(nilai);
-    this.ubah();
   }
 
   jenisIsian(kolom: any): string {
@@ -280,7 +321,7 @@ export class EmployeeFormFillComponent implements OnInit {
 
   simpan(): void {
     this.isSaving = true;
-    this.http.put(this.url, { answers: this.jawaban }).subscribe({
+    this.http.put(this.url, { answers: this.jawabanUntukKirim() }).subscribe({
       next: () => {
         this.tersimpan = true;
         this.isSaving = false;

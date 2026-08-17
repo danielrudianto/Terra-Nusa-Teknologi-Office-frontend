@@ -122,8 +122,8 @@
                   <input
                     matInput
                     [matDatepicker]="dp"
-                    [ngModel]="tanggalDari(jawaban[f.key])"
-                    (ngModelChange)="setTanggal(f.key, $event)"
+                    [(ngModel)]="jawaban[f.key]"
+                    (ngModelChange)="ubah()"
                     readonly
                     (click)="dp.open()"
                   />
@@ -211,10 +211,8 @@
                               <input
                                 matInput
                                 [matDatepicker]="dpk"
-                                [ngModel]="tanggalDari(baris[k.key])"
-                                (ngModelChange)="
-                                  setTanggalBaris(baris, k.key, $event)
-                                "
+                                [(ngModel)]="baris[k.key]"
+                                (ngModelChange)="ubah()"
                                 readonly
                                 (click)="dpk.open()"
                               />
