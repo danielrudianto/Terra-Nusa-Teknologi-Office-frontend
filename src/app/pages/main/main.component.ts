@@ -300,8 +300,14 @@ export class MainComponent {
           route: '/HrCandidate',
         },
         {
+          // `type.svg`, bukan `document.svg`.
+          //
+          // Ikon menu samping diambil dari `assets/vector/`, sedangkan
+          // `document.svg` hanya ada di `assets/images/` — menunjuk berkas
+          // yang tidak ada di sana menghasilkan ikon kosong tanpa galat
+          // apa pun.
           name: 'nav.hrQuestion',
-          icon: 'document.svg',
+          icon: 'type.svg',
           route: '/HrQuestion',
         },
       ],
