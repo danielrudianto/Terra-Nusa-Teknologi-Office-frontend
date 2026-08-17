@@ -4102,7 +4102,8 @@
     "tersimpan": "Question updated",
     "gagalMuat": "Failed to load questions",
     "gagalSimpan": "Failed to save question",
-    "gagalHapus": "Failed to delete question"
+    "gagalHapus": "Failed to delete question",
+    "dialogSub": "Essay question; answers are graded by a person."
   },
   "hrCandidate": {
     "judul": "Recruitment candidates",
@@ -4143,7 +4144,8 @@
     "gagalDaftar": "Failed to register candidates",
     "salinPesan": "Copy message",
     "lihatPesan": "Preview message",
-    "pesanTersalin": "Message for {{nama}} copied. Paste it into WhatsApp."
+    "pesanTersalin": "Message for {{nama}} copied. Paste it into WhatsApp.",
+    "dialogSub": "Name and gender only; candidates fill in the rest themselves."
   },
   "exam": {
     "departemen": "Human Resource Department",

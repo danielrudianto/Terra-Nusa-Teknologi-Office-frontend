@@ -9,13 +9,13 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 
 interface Baris {
   name: string;
@@ -38,10 +38,10 @@ interface Baris {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule,
     MatButtonToggleModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './hr-candidate-form.component.html',
   styleUrl: './hr-candidate-form.component.scss',

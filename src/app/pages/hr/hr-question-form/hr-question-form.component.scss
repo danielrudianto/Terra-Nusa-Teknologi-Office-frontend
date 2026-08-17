@@ -1,21 +1,75 @@
-:host {
-  display: block;
-  width: min(720px, 96vw);
+/*
+ * Gaya dialog mengikuti `user-create`.
+ *
+ * Bukan pilihan rasa: seluruh dialog di TerraBot memakai susunan yang sama —
+ * kepala berikon dengan latar terpisah, isi berlatar putih, kaki bergaris
+ * atas. Dialog yang menyusun gayanya sendiri terlihat berasal dari aplikasi
+ * lain, dan yang membukanya berhenti sejenak untuk memastikan ia masih di
+ * tempat yang sama.
+ */
+.hqf {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+.hqf * {
+  box-sizing: border-box;
 }
 
+.hqf-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+.hqf-head__icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.hqf-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
 .hqf-title {
-  font-family: "Montserrat", sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 1.25rem 1.5rem 0;
+  line-height: 1.2;
   margin: 0;
+}
+.hqf-sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
 }
 
 .hqf-content {
-  padding: 1.5rem;
-  max-height: 68vh;
+  padding: 1.5rem !important;
+  background: var(--surface, #ffffff);
+  min-width: 340px;
+  max-height: 66vh;
 }
-
+.hqf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
 .hqf-full {
   width: 100%;
 }
@@ -29,9 +83,9 @@
 /*
  * Isian ya/tidak dengan keterangannya.
  *
- * Keterangannya di bawah label, bukan sebagai hint di dalam form-field:
- * toggle tidak punya form-field, dan tanpa keterangan yang menyalakannya
- * tidak tahu apa akibatnya bagi yang mengerjakan ujian.
+ * Keterangan di bawah label, bukan sebagai hint di dalam form-field: toggle
+ * tidak punya form-field, dan tanpa keterangan yang menyalakannya tidak tahu
+ * apa akibatnya bagi yang mengerjakan ujian.
  */
 .hqf-toggle {
   display: flex;
@@ -39,42 +93,74 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  margin: 0.25rem 0 1.25rem;
+  margin: 0.25rem 0 1rem;
   border-radius: 12px;
-  background: var(--surface-2, #f7f8fa);
+  background: var(--surface-2, #f6f8ff);
 }
-
 .hqf-toggle__teks {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
   min-width: 0;
 }
-
 .hqf-toggle__label {
   font-size: 0.86rem;
   font-weight: 500;
 }
-
 .hqf-toggle__ket {
   font-size: 0.78rem;
   line-height: 1.45;
   color: var(--muted, #6b7280);
 }
 
-.hqf-actions {
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.hqf-foot {
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  gap: 0.6rem;
 }
-
 .hqf-spacer {
   flex: 1 1 auto;
+}
+.hqf-cancel {
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.3rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+.hqf-submit {
+  border: none;
+  background: var(--banner-background-color, #154dec);
+  color: var(--on-banner-color, #fff);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  &:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
 }
 
 @media (max-width: 600px) {
   .hqf-grid {
     grid-template-columns: 1fr;
+  }
+  .hqf-content {
+    min-width: 0;
   }
 }

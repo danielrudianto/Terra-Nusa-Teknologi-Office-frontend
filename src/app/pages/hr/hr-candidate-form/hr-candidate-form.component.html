@@ -1,8 +1,15 @@
-<h2 mat-dialog-title class="hcf-title">
-  {{ "hrCandidate.daftarkanJudul" | translate }}
-</h2>
+<div class="hcf">
+  <div class="hcf-head" mat-dialog-title appDialogGeser>
+    <span class="hcf-head__icon"><mat-icon>person_add</mat-icon></span>
+    <div class="hcf-head__text">
+      <h2 class="hcf-title">
+        {{ "hrCandidate.daftarkanJudul" | translate }}
+      </h2>
+      <span class="hcf-sub">{{ "hrCandidate.dialogSub" | translate }}</span>
+    </div>
+  </div>
 
-<mat-dialog-content class="hcf-content">
+  <mat-dialog-content class="hcf-content">
   <div class="hcf-atas">
     <mat-form-field appearance="outline">
       <mat-label>{{ "hrCandidate.paketUjian" | translate }}</mat-label>
@@ -41,13 +48,12 @@
     </mat-form-field>
 
     <div class="hcf-tempel-aksi">
-      <button mat-button type="button" (click)="modeTempel = false">
+      <button type="button" class="hcf-cancel" (click)="modeTempel = false">
         {{ "common.cancel" | translate }}
       </button>
       <button
-        mat-flat-button
-        color="primary"
         type="button"
+        class="hcf-submit"
         [disabled]="!tempelan.trim()"
         (click)="terapkanTempelan()"
       >
@@ -107,24 +113,25 @@
   }
 </mat-dialog-content>
 
-<mat-dialog-actions class="hcf-actions">
-  <span class="hcf-jumlah">
-    {{ "hrCandidate.akanDidaftarkan" | translate: { n: jumlahTerisi } }}
-  </span>
-  <span class="hcf-spacer"></span>
-  <button mat-button type="button" (click)="batal()">
-    {{ "common.cancel" | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    [disabled]="!bolehSimpan"
-    (click)="simpan()"
-  >
-    {{
-      (isSubmitting ? "hrCandidate.menerbitkan" : "hrCandidate.terbitkanToken")
-        | translate
-    }}
-  </button>
-</mat-dialog-actions>
+<mat-dialog-actions class="hcf-foot">
+    <span class="hcf-jumlah">
+      {{ "hrCandidate.akanDidaftarkan" | translate: { n: jumlahTerisi } }}
+    </span>
+    <span class="hcf-spacer"></span>
+    <button type="button" class="hcf-cancel" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="hcf-submit"
+      [disabled]="!bolehSimpan"
+      (click)="simpan()"
+    >
+      {{
+        (isSubmitting
+          ? "hrCandidate.menerbitkan"
+          : "hrCandidate.terbitkanToken") | translate
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

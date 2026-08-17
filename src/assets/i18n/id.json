@@ -4102,7 +4102,8 @@
     "tersimpan": "Soal diperbarui",
     "gagalMuat": "Gagal memuat soal",
     "gagalSimpan": "Gagal menyimpan soal",
-    "gagalHapus": "Gagal menghapus soal"
+    "gagalHapus": "Gagal menghapus soal",
+    "dialogSub": "Soal esai; jawabannya dinilai manusia."
   },
   "hrCandidate": {
     "judul": "Pelamar rekrutmen",
@@ -4143,7 +4144,8 @@
     "gagalDaftar": "Gagal mendaftarkan pelamar",
     "salinPesan": "Salin pesan",
     "lihatPesan": "Lihat pesan",
-    "pesanTersalin": "Pesan untuk {{nama}} disalin. Tinggal tempel di WhatsApp."
+    "pesanTersalin": "Pesan untuk {{nama}} disalin. Tinggal tempel di WhatsApp.",
+    "dialogSub": "Nama dan jenis kelamin saja; sisanya diisi pelamar sendiri."
   },
   "exam": {
     "departemen": "Human Resource Department",

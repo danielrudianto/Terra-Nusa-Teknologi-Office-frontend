@@ -1,105 +1,116 @@
-<h2 mat-dialog-title class="hqf-title">
-  {{ (isUbah ? "hrQuestion.ubahJudul" : "hrQuestion.buatJudul") | translate }}
-</h2>
-
-<mat-dialog-content class="hqf-content" [formGroup]="formGroup">
-  <mat-form-field appearance="outline" class="hqf-full">
-    <mat-label>{{ "hrQuestion.paketUjian" | translate }}</mat-label>
-    <mat-select formControlName="testID">
-      @for (u of ujian; track u.id) {
-        <mat-option [value]="u.id">{{ u.name }}</mat-option>
-      }
-    </mat-select>
-    @if (isUbah) {
-      <mat-hint>{{ "hrQuestion.paketTerkunci" | translate }}</mat-hint>
-    }
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="hqf-full">
-    <mat-label>{{ "hrQuestion.pertanyaan" | translate }}</mat-label>
-    <textarea
-      matInput
-      rows="4"
-      formControlName="question"
-      [placeholder]="'hrQuestion.pertanyaanPlaceholder' | translate"
-    ></textarea>
-    <mat-hint>{{ "hrQuestion.pertanyaanHint" | translate }}</mat-hint>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="hqf-full">
-    <mat-label>{{ "hrQuestion.catatan" | translate }}</mat-label>
-    <textarea
-      matInput
-      rows="2"
-      formControlName="notes"
-      [placeholder]="'hrQuestion.catatanPlaceholder' | translate"
-    ></textarea>
-    <mat-hint>{{ "hrQuestion.catatanHint" | translate }}</mat-hint>
-  </mat-form-field>
-
-  <div class="hqf-grid">
-    <mat-form-field appearance="outline">
-      <mat-label>{{ "hrQuestion.kategori" | translate }}</mat-label>
-      <mat-select
-        formControlName="category"
-        (selectionChange)="onKategoriUbah($event.value)"
-      >
-        @for (k of kategori; track k) {
-          <mat-option [value]="k">{{ k }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>{{ "hrQuestion.nilaiMaksimal" | translate }}</mat-label>
-      <input matInput type="number" formControlName="maxScore" min="1" />
-    </mat-form-field>
-  </div>
-
-  <!--
-    Slide toggle, bukan kotak centang.
-
-    Hanya soal gambar yang biasanya memerlukannya; membuka unggahan pada
-    seluruh soal mengundang jawaban dikirim sebagai foto tulisan tangan, yang
-    tidak dapat dibaca ulang saat dinilai.
-  -->
-  <div class="hqf-toggle">
-    <div class="hqf-toggle__teks">
-      <span class="hqf-toggle__label">
-        {{ "hrQuestion.terimaBerkasLabel" | translate }}
-      </span>
-      <span class="hqf-toggle__ket">
-        {{ "hrQuestion.terimaBerkasHint" | translate }}
-      </span>
+<div class="hqf">
+  <div class="hqf-head" mat-dialog-title appDialogGeser>
+    <span class="hqf-head__icon">
+      <mat-icon>{{ isUbah ? "edit_note" : "post_add" }}</mat-icon>
+    </span>
+    <div class="hqf-head__text">
+      <h2 class="hqf-title">
+        {{ (isUbah ? "hrQuestion.ubahJudul" : "hrQuestion.buatJudul") | translate }}
+      </h2>
+      <span class="hqf-sub">{{ "hrQuestion.dialogSub" | translate }}</span>
     </div>
-    <mat-slide-toggle color="primary" formControlName="allowsUpload">
-    </mat-slide-toggle>
   </div>
 
-  <mat-form-field appearance="outline" class="hqf-full">
-    <mat-label>{{ "hrQuestion.lampiran" | translate }}</mat-label>
-    <textarea
-      matInput
-      rows="3"
-      formControlName="attachment"
-      [placeholder]="'hrQuestion.lampiranPlaceholder' | translate"
-    ></textarea>
-    <mat-hint>{{ "hrQuestion.lampiranHint" | translate }}</mat-hint>
-  </mat-form-field>
-</mat-dialog-content>
+  <mat-dialog-content class="hqf-content">
+    <form [formGroup]="formGroup" class="hqf-form">
+      <mat-form-field appearance="outline" class="hqf-full">
+        <mat-label>{{ "hrQuestion.paketUjian" | translate }}</mat-label>
+        <mat-select formControlName="testID">
+          @for (u of ujian; track u.id) {
+            <mat-option [value]="u.id">{{ u.name }}</mat-option>
+          }
+        </mat-select>
+        @if (isUbah) {
+          <mat-hint>{{ "hrQuestion.paketTerkunci" | translate }}</mat-hint>
+        }
+      </mat-form-field>
 
-<mat-dialog-actions class="hqf-actions">
-  <span class="hqf-spacer"></span>
-  <button mat-button type="button" (click)="batal()">
-    {{ "common.cancel" | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    [disabled]="formGroup.invalid || isSubmitting"
-    (click)="simpan()"
-  >
-    {{ (isSubmitting ? "common.saving" : "common.save") | translate }}
-  </button>
-</mat-dialog-actions>
+      <mat-form-field appearance="outline" class="hqf-full">
+        <mat-label>{{ "hrQuestion.pertanyaan" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="4"
+          formControlName="question"
+          [placeholder]="'hrQuestion.pertanyaanPlaceholder' | translate"
+        ></textarea>
+        <mat-hint>{{ "hrQuestion.pertanyaanHint" | translate }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="hqf-full">
+        <mat-label>{{ "hrQuestion.catatan" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="2"
+          formControlName="notes"
+          [placeholder]="'hrQuestion.catatanPlaceholder' | translate"
+        ></textarea>
+        <mat-hint>{{ "hrQuestion.catatanHint" | translate }}</mat-hint>
+      </mat-form-field>
+
+      <div class="hqf-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "hrQuestion.kategori" | translate }}</mat-label>
+          <mat-select
+            formControlName="category"
+            (selectionChange)="onKategoriUbah($event.value)"
+          >
+            @for (k of kategori; track k) {
+              <mat-option [value]="k">{{ k }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "hrQuestion.nilaiMaksimal" | translate }}</mat-label>
+          <input matInput type="number" formControlName="maxScore" min="1" />
+        </mat-form-field>
+      </div>
+
+      <!--
+        Slide toggle, bukan kotak centang.
+
+        Hanya soal gambar yang biasanya memerlukannya; membuka unggahan pada
+        seluruh soal mengundang jawaban dikirim sebagai foto tulisan tangan,
+        yang tidak dapat dibaca ulang saat dinilai.
+      -->
+      <div class="hqf-toggle">
+        <div class="hqf-toggle__teks">
+          <span class="hqf-toggle__label">
+            {{ "hrQuestion.terimaBerkasLabel" | translate }}
+          </span>
+          <span class="hqf-toggle__ket">
+            {{ "hrQuestion.terimaBerkasHint" | translate }}
+          </span>
+        </div>
+        <mat-slide-toggle color="primary" formControlName="allowsUpload">
+        </mat-slide-toggle>
+      </div>
+
+      <mat-form-field appearance="outline" class="hqf-full">
+        <mat-label>{{ "hrQuestion.lampiran" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          formControlName="attachment"
+          [placeholder]="'hrQuestion.lampiranPlaceholder' | translate"
+        ></textarea>
+        <mat-hint>{{ "hrQuestion.lampiranHint" | translate }}</mat-hint>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="hqf-foot">
+    <span class="hqf-spacer"></span>
+    <button type="button" class="hqf-cancel" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="hqf-submit"
+      [disabled]="formGroup.invalid || isSubmitting"
+      (click)="simpan()"
+    >
+      {{ (isSubmitting ? "common.saving" : "common.save") | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

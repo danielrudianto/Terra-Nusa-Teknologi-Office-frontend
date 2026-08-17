@@ -4102,7 +4102,8 @@
     "tersimpan": "题目已更新",
     "gagalMuat": "加载题目失败",
     "gagalSimpan": "保存题目失败",
-    "gagalHapus": "删除题目失败"
+    "gagalHapus": "删除题目失败",
+    "dialogSub": "论述题；答案由人工评分。"
   },
   "hrCandidate": {
     "judul": "招聘应聘者",
@@ -4143,7 +4144,8 @@
     "gagalDaftar": "登记应聘者失败",
     "salinPesan": "复制消息",
     "lihatPesan": "预览消息",
-    "pesanTersalin": "已复制给 {{nama}} 的消息，可直接粘贴到 WhatsApp。"
+    "pesanTersalin": "已复制给 {{nama}} 的消息，可直接粘贴到 WhatsApp。",
+    "dialogSub": "仅需姓名与性别；其余由应聘者自行填写。"
   },
   "exam": {
     "departemen": "人力资源部",

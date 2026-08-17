@@ -15,12 +15,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 
 /**
  * Buat atau ubah satu soal.
@@ -41,9 +41,9 @@ import { ApiService } from 'src/app/services/api.service';
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './hr-question-form.component.html',
   styleUrl: './hr-question-form.component.scss',
