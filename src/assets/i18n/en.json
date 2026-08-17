@@ -2704,7 +2704,8 @@
     "contract_create": "Contract added",
     "contract_update": "Contract updated",
     "contract_delete": "Contract deleted",
-    "convert": "Converted to purchase"
+    "convert": "Converted to purchase",
+    "set_checked": "Check state changed"
   },
   "activity": {
     "title": "Activity",

@@ -2704,7 +2704,8 @@
     "contract_create": "Kontrak ditambahkan",
     "contract_update": "Kontrak diubah",
     "contract_delete": "Kontrak dihapus",
-    "convert": "Dikonversi menjadi pembelian"
+    "convert": "Dikonversi menjadi pembelian",
+    "set_checked": "Pemeriksaan diubah"
   },
   "activity": {
     "title": "Aktivitas",
