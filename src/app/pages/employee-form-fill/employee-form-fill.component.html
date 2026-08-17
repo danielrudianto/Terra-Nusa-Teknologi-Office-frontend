@@ -107,20 +107,31 @@
               }
               @case ("tanggal") {
                 <!--
-                  `type="date"` bawaan peramban, bukan datepicker Material.
+                  Datepicker Material, bukan `type="date"` bawaan peramban.
 
-                  Di ponsel ia membuka pemilih tanggal milik sistem — yang
-                  sudah dikenal penggunanya dan jauh lebih mudah disentuh
-                  daripada kalender kecil di dalam halaman.
+                  Sebagian peramban ponsel menampilkan `type="date"` sebagai
+                  isian teks biasa — dan yang mengetik sendiri menghasilkan
+                  "Mei 2024", "05/2024", "1-5-24" untuk hal yang sama.
+                  Datepicker tidak memberi kesempatan itu.
+
+                  `readonly` pada isiannya disengaja: mengetik langsung ke
+                  kolom itulah yang hendak dihilangkan.
                 -->
                 <mat-form-field appearance="outline" class="eff-full">
                   <mat-label>{{ f.label }}</mat-label>
                   <input
                     matInput
-                    type="date"
-                    [(ngModel)]="jawaban[f.key]"
-                    (ngModelChange)="ubah()"
+                    [matDatepicker]="dp"
+                    [ngModel]="tanggalDari(jawaban[f.key])"
+                    (ngModelChange)="setTanggal(f.key, $event)"
+                    readonly
+                    (click)="dp.open()"
                   />
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="dp"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dp></mat-datepicker>
                   @if (f.hint) {
                     <mat-hint>{{ f.hint }}</mat-hint>
                   }
@@ -174,12 +185,39 @@
                                 }
                               </mat-select>
                             } @else {
-                              <input
-                                matInput
-                                [type]="k.type === 'tanggal' ? 'date' : 'text'"
-                                [(ngModel)]="baris[k.key]"
-                                (ngModelChange)="ubah()"
-                              />
+                              <!--
+                                Jenis isian ditentukan `jenisIsian()`, bukan
+                                langsung dari `k.type`.
+
+                                Definisi formulir disusun manusia; satu isian
+                                tanggal yang tertulis "teks" membuat yang
+                                mengisinya mengetik sendiri. Nama kolomnya
+                                ikut dibaca sebagai jaring pengaman.
+                              -->
+                              @if (jenisIsian(k) === "date") {
+                                <input
+                                  matInput
+                                  [matDatepicker]="dpk"
+                                  [ngModel]="tanggalDari(baris[k.key])"
+                                  (ngModelChange)="
+                                    setTanggalBaris(baris, k.key, $event)
+                                  "
+                                  readonly
+                                  (click)="dpk.open()"
+                                />
+                                <mat-datepicker-toggle
+                                  matIconSuffix
+                                  [for]="dpk"
+                                ></mat-datepicker-toggle>
+                                <mat-datepicker #dpk></mat-datepicker>
+                              } @else {
+                                <input
+                                  matInput
+                                  [type]="jenisIsian(k)"
+                                  [(ngModel)]="baris[k.key]"
+                                  (ngModelChange)="ubah()"
+                                />
+                              }
                             }
                           </mat-form-field>
                         }

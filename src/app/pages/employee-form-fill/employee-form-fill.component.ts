@@ -13,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 /**
  * Pengisian data karyawan lewat tautan undangan.
@@ -40,6 +42,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatProgressSpinnerModule,
     TranslateModule,
     MatSlideToggleModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
   templateUrl: './employee-form-fill.component.html',
   styleUrl: './employee-form-fill.component.scss',
@@ -199,6 +203,75 @@ export class EmployeeFormFillComponent implements OnInit {
         }
       }
     }
+  }
+
+  /**
+   * Jenis isian HTML untuk sebuah kolom.
+   *
+   * Biasanya cukup membaca `type` dari definisinya. Tetapi definisi itu
+   * disusun manusia dan disimpan sebagai teks di basis data — satu isian
+   * tanggal yang tertulis `"teks"` membuat yang mengisinya mengetik sendiri,
+   * dan menghasilkan "Mei 2024", "05/2024", "2024-5-1" untuk hal yang sama.
+   * Sudah terjadi pada kolom sertifikasi.
+   *
+   * Karena itu NAMA KOLOM ikut dibaca sebagai jaring pengaman. Dicocokkan
+   * pada kuncinya, bukan labelnya: kunci ditulis pembuat formulir dan
+   * bentuknya tetap, sedangkan label boleh berubah kata kapan saja.
+   *
+   * Hanya menambah, tidak pernah mengurangi: kolom yang sudah dinyatakan
+   * `tanggal` tetap tanggal, dan yang tidak cocok tetap teks biasa.
+   */
+  /**
+   * Ubah nilai tersimpan menjadi `Date` untuk datepicker.
+   *
+   * Jawaban disimpan sebagai teks `YYYY-MM-DD`; datepicker Material bekerja
+   * dengan objek tanggal. Nilai lama yang tidak terbaca dikembalikan `null`,
+   * bukan tanggal hari ini — mengisikan tanggal yang tidak pernah dipilih
+   * siapa pun lebih buruk daripada membiarkannya kosong.
+   */
+  tanggalDari(nilai: any): Date | null {
+    if (!nilai) return null;
+    const d = new Date(nilai);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  /**
+   * Simpan tanggal sebagai `YYYY-MM-DD` waktu SETEMPAT.
+   *
+   * `toISOString()` mengubahnya ke UTC lebih dulu — dan bagi WIB itu
+   * memundurkan tanggalnya tujuh jam, sehingga yang memilih 1 Mei tersimpan
+   * sebagai 30 April. Sudah terjadi pada data produksi sebelumnya.
+   */
+  private teksTanggal(d: any): string {
+    if (!d) return '';
+    const t = d instanceof Date ? d : new Date(d);
+    if (isNaN(t.getTime())) return '';
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}`;
+  }
+
+  setTanggal(kunci: string, nilai: any): void {
+    this.jawaban = { ...this.jawaban, [kunci]: this.teksTanggal(nilai) };
+    this.ubah();
+  }
+
+  setTanggalBaris(baris: any, kunci: string, nilai: any): void {
+    baris[kunci] = this.teksTanggal(nilai);
+    this.ubah();
+  }
+
+  jenisIsian(kolom: any): string {
+    if (kolom?.type === 'tanggal') return 'date';
+    if (kolom?.type === 'angka') return 'number';
+
+    const kunci = String(kolom?.key ?? '');
+    const bertanggal =
+      /^(date|tanggal)$/i.test(kunci) ||
+      /(date|Date|tanggal|Tanggal|validUntil|expiry|expired|berlaku)/.test(
+        kunci,
+      );
+
+    return bertanggal ? 'date' : 'text';
   }
 
   ubah(): void {
