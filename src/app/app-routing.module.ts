@@ -55,18 +55,6 @@ export const routes: Routes = [
         data: { title: 'PDF' },
       },
       {
-        path: 'HrQuestion',
-        canActivate: [permissionGuard],
-        loadComponent: () =>
-          import(
-            './pages/hr/hr-question-list/hr-question-list.component'
-          ).then((m) => m.HrQuestionListComponent),
-        data: {
-          title: 'Bank Soal Rekrutmen',
-          permission: 'hr_recruitment:read',
-        },
-      },
-      {
         path: 'Invoice',
         canActivate: [permissionGuard],
         loadComponent: () =>
@@ -799,6 +787,26 @@ export const routes: Routes = [
                 (m) => m.ClientListComponent,
               ),
             data: { title: 'Master Data', panduanBagian: 'klien', permission: 'client:read' },
+          },
+          {
+            /*
+             * Bank soal rekrutmen; anak dari Master, bukan rute akar.
+             *
+             * Kartu di halaman Data Master menavigasi RELATIF terhadap
+             * rutenya sendiri. Didaftarkan di akar, alamat yang dituju
+             * menjadi `Master/HrQuestion` dan tidak cocok dengan rute mana
+             * pun — NG04002, halamannya tidak pernah terbuka.
+             */
+            path: 'HrQuestion',
+            canActivate: [permissionGuard],
+            loadComponent: () =>
+              import(
+                './pages/hr/hr-question-list/hr-question-list.component'
+              ).then((m) => m.HrQuestionListComponent),
+            data: {
+              title: 'Bank Soal Rekrutmen',
+              permission: 'hr_recruitment:read',
+            },
           },
           {
             path: 'Employee',
