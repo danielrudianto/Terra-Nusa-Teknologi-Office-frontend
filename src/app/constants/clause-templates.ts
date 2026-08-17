@@ -431,6 +431,18 @@ const G_CLAUSES: ClauseTemplate[] = [
         // tertukar; cukup sebut pemilik kontaknya saja.
         `Kontak penanggung jawab supplier adalah: ${joinContact(ctx.supplierPICName, ctx.supplierPICPhoneNumber)}.`,
         `Kontak penanggung jawab PT. Alpha Konstruksi Nusantara adalah: ${joinContact(ctx.officePICName, ctx.officePICPhoneNumber)}.`,
+        /*
+         * Kesesuaian spesifikasi, disamakan dengan PO-F.
+         *
+         * Ditaruh setelah poin kontak — sesudahnya klausul beralih ke tata
+         * cara pengiriman dan serah terima, sehingga kewajiban atas ISI
+         * barangnya harus disebut lebih dulu.
+         *
+         * Berlaku sekaligus untuk 5.1.1 dan 5.1.6: ketiganya berbagi
+         * template ini, dan itu memang disengaja — satu kebijakan, satu
+         * tempat perubahan.
+         */
+        'PIHAK PENJUAL wajib mengirimkan barang sesuai dengan spesifikasi yang telah disetujui oleh PIHAK PEMBELI.',
         `PIHAK PENJUAL dan PEMBELI wajib mendokumentasikan (video) serah terima yang berisi pemeriksaan kondisi barang.`,
         `Bila Franco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PENJUAL wajib memberikan detail Kontak Penanggung Jawab Pengiriman, nomor polisi kendaraan pengirim beserta bukti kelengkapan dokumen pengirim (STNK, KIR, SIM) dalam bentuk softcopy melalui e-mail ke ${OFFICE_CONTACT.email};`,
         `Bila Loco, selambat-lambatnya 1 hari sebelum dilakukan pengiriman, PIHAK PEMBELI akan memberikan detail Kontak Penanggung Jawab Penerima, dalam bentuk softcopy melalui nomor telepon/fax atau alamat e-mail yang diberikan;`,
@@ -864,7 +876,20 @@ export function buildManpowerClauses(
   const shift = Number(ctx.shiftHours) || 8;
 
   const hak: string[] = [
-    `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
+    /*
+     * Bentuk lembur berbeda bagi staf lapangan.
+     *
+     * Pada staf lapangan, bekerja melewati jam batas diganti uang makan satu
+     * hari — bukan dihitung per jam. Menyebutnya "lembur" mengikuti kebiasaan
+     * di lapangan, walaupun perhitungannya bukan lembur.
+     */
+    ctx.isFieldStaff
+      ? `Pekerja yang bekerja melewati pukul ${
+          ctx.overtimeAfter || '20:00'
+        } waktu setempat berhak mendapatkan uang makan senilai ${overtime} untuk satu hari kerja.`
+      : `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per ${
+          ctx.overtimeUnit === 'hari' ? 'hari' : 'jam'
+        }, terhitung sejak berakhirnya jam shift yang berlaku.`,
     // Lihat catatan pada penyusun di atas: bawaannya tetap disertakan agar
     // dokumen lama tidak berubah isinya.
     ...(ctx.includeHousingClause !== false
@@ -971,9 +996,46 @@ export function buildManpowerClauses(
 
   const tambahan = (additionalClauses ?? []).filter((x) => !!x && x.trim());
 
+  /*
+   * Seksi "Waktu bekerja" — hanya untuk staf lapangan.
+   *
+   * Kedelapan poinnya ketentuan baku yang selama ini ditulis manual pada
+   * setiap SPK staf lapangan. Menuliskannya ulang tiap kali membuka
+   * kemungkinan satu poin terlewat — dan yang terlewat baru ketahuan ketika
+   * dipersoalkan.
+   *
+   * Jamnya diambil dari isian, dengan nilai bawaan yang selama ini dipakai;
+   * dokumen lama yang tidak menyimpannya tetap berbunyi sama.
+   */
+  const bLembur = ctx.overtimeAfter || '20:00';
+  const jmMulai = ctx.workStart || '08:00';
+  const jmSelesai = ctx.workEnd || '17:00';
+  const sbMulai = ctx.workStartSat || '08:00';
+  const sbSelesai = ctx.workEndSat || '15:00';
+  const cutiHari = Number(ctx.leaveNoticeDays) || 7;
+  const resignHari = Number(ctx.resignNoticeDays) || 30;
+
+  const waktuBekerja: string[] = ctx.isFieldStaff
+    ? [
+        `Lembur yang dimaksud pada uraian pembayaran adalah pekerjaan di atas pukul ${bLembur} waktu setempat.`,
+        `Jam kerja dari pukul ${jmMulai} - ${jmSelesai} waktu setempat (Senin - Jumat) dan pukul ${sbMulai} - ${sbSelesai} waktu setempat (Sabtu).`,
+        'Pekerja dengan ini menyatakan bersedia untuk bekerja di luar jam kerja (apabila dibutuhkan). Jam kerja lembur harus mendapatkan persetujuan dari atasan.',
+        'Hari dan jam lembur dapat digantikan dalam bentuk paid leave berdasarkan kebijakan atasan dan perusahaan berdasarkan kebutuhan workforce.',
+        'Jika ada keperluan / kepentingan mendesak yang mengakibatkan keterlambatan, pekerja harus memberikan informasi kepada atasan terlebih dahulu.',
+        'Jika ada keperluan / kepentingan yang mengakibatkan ketidakhadiran, pekerja harus memberikan informasi tertulis kepada atasan setidaknya 1 hari sebelum hari tersebut.',
+        `Ijin cuti harus diajukan setidaknya ${cutiHari} hari sebelum cuti dan harus disetujui oleh atasan dan rekan kerja sekelompok.`,
+        `Selama perjanjian kontrak kerja ini berlangsung, apabila pekerja ingin mengundurkan diri, maka pekerja wajib memberikan surat pengunduran diri secara tertulis minimal ${resignHari} hari.`,
+      ]
+    : [];
+
   return [
     ...(umum.length ? [{ title: 'Informasi Umum', items: umum }] : []),
     { title: 'Hak Pekerja', items: hak },
+    // Ditaruh setelah hak, sebelum kewajiban: poinnya mengatur WAKTU, yang
+    // menjadi dasar bagi keduanya.
+    ...(waktuBekerja.length
+      ? [{ title: 'Waktu Bekerja', items: waktuBekerja }]
+      : []),
     { title: 'Kewajiban Pekerja', items: kewajiban },
     { title: 'Laporan Lapangan', items: laporan },
     { title: 'Tata Cara Pembayaran', items: pembayaran },
