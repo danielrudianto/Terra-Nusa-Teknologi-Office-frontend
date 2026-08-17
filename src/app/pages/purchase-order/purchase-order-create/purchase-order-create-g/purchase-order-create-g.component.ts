@@ -130,6 +130,44 @@ export class PurchaseOrderCreateGComponent implements OnInit {
    * buruk daripada memintanya memilih ulang.
    */
   selaraskanTerminLoco(): void {
+
+    /*
+     * Loco: barang diambil DI TEMPAT PEMASOK.
+     *
+     * Alamat pengambilan dan penanggung jawabnya karena itu adalah alamat
+     * dan kontak pemasok itu sendiri — mengetiknya ulang berarti menyalin
+     * dari layar sebelah, dan yang disalin tangan cepat atau lambat berbeda
+     * dari sumbernya.
+     *
+     * Isian yang SUDAH diisi sendiri tidak ditimpa: sebagian pemasok punya
+     * gudang yang berbeda dari alamat suratnya, dan itu justru keterangan
+     * yang tidak boleh hilang.
+     */
+    if (this.isLoco) {
+      const v = this.formGroup.getRawValue();
+      const isi: any = {};
+
+      if (!String(v.deliveryAddress || '').trim()) {
+        isi.deliveryAddress = [
+          v.supplierName,
+          v.supplierAddress,
+          v.supplierCity,
+        ]
+          .map((x: any) => String(x || '').trim())
+          .filter((x: string) => !!x)
+          .join('\n');
+      }
+
+      if (!String(v.supplierPICName || '').trim() && v.supplierName) {
+        isi.supplierPICName = v.supplierName;
+      }
+
+      if (!String(v.supplierPICPhoneNumber || '').trim() && v.supplierPhone) {
+        isi.supplierPICPhoneNumber = v.supplierPhone;
+      }
+
+      if (Object.keys(isi).length) this.formGroup.patchValue(isi);
+    }
     if (!this.isLoco) return;
     const c = this.formGroup.get('paymentTerm');
     if (c && ['COD', 'CBD'].includes(String(c.value))) {
@@ -184,6 +222,15 @@ export class PurchaseOrderCreateGComponent implements OnInit {
 
     supplierNpwp: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
+
+    /*
+     * Nomor telepon pemasok, hanya untuk mengisikan kontak Loco.
+     *
+     * Tidak dikirim ke server dan tidak tercetak: yang tercetak
+     * adalah `supplierPICPhoneNumber`, yang boleh disunting bila
+     * penanggung jawabnya ternyata orang lain.
+     */
+    supplierPhone: new FormControl(''),
     // Kota + provinsi supplier: hanya untuk dicetak, tidak dikirim sebagai
     // kolom PO (backend mengambilnya lagi dari supplierID saat cetak ulang).
     supplierCity: new FormControl(''),
@@ -403,6 +450,7 @@ export class PurchaseOrderCreateGComponent implements OnInit {
             // lebih mengganggu daripada tidak ada barisnya.
             supplierNpwp: data.npwp || '',
             supplierAddress: data.address,
+            supplierPhone: data.phoneNumber || '',
             supplierCity: [data.city, data.province]
               .filter((x: string) => !!x)
               .join(', '),
