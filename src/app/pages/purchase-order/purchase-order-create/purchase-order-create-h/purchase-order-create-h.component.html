@@ -521,11 +521,22 @@
         <div class="poh-grid">
           <mat-form-field appearance="outline" class="poh-span2">
             <mat-label>{{ "poH.workLocation" | translate }}</mat-label>
-            <input
+            <!--
+              Textarea, bukan isian satu baris.
+
+              Alamat dan lokasi kerja kerap beberapa baris: nama
+              tempat, jalan, kota, patokan. Isian satu baris
+              memaksa semuanya berdesak dalam larik yang harus
+              digulir mendatar untuk dibaca ulang.
+
+              Diseragamkan dengan isian alamat lain di seluruh
+              aplikasi; sebelumnya hanya empat isian ini yang
+              menyimpang.
+            -->
+            <textarea rows="2"
               matInput
               formControlName="workLocation"
-              [placeholder]="'poField.exR501KotaBaruParahyangan' | translate"
-            />
+              [placeholder]="'poField.exR501KotaBaruParahyangan' | translate"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="poh-span2">
@@ -799,6 +810,20 @@
                   </button>
                 </div>
               }
+
+      <!--
+        Tombol tambah KEDUA, di bawah daftar.
+
+        Yang di kepala kartu tidak terjangkau setelah beberapa baris
+        terisi: yang menyadari ada satu yang kurang harus menggulir ke
+        atas, menekan, lalu menggulir kembali ke bawah untuk
+        mengisinya.
+      -->
+      @if (w.controls.length) {
+        <button type="button" class="pou-add pou-add--bawah" (click)="addWorker()">
+          <mat-icon>add</mat-icon>{{ "poH.tambahPekerja" | translate }}
+        </button>
+      }
             </div>
           }
         </div>
@@ -1340,14 +1365,25 @@
             {{ "poH.fieldReport" | translate }}
           </div>
           <div class="poh-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "poH.picName" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="officePICName"
-                [placeholder]="'poH.exStephanie' | translate"
-              />
-            </mat-form-field>
+            <!--
+          Pemilih dari daftar karyawan, bukan isian teks biasa.
+
+          Nama penanggung jawab kantor selalu orang yang sama
+          berulang kali; mengetiknya penuh setiap membuat purchase
+          order menghasilkan ejaan yang berbeda-beda untuk orang
+          yang sama.
+
+          Mengetik bebas TETAP boleh: sebagian dokumen menyebut
+          penanggung jawab yang tidak ada di daftar karyawan.
+        -->
+        <app-pic-autocomplete
+          [label]="'poH.picName' | translate"
+          [placeholder]="'poH.exStephanie' | translate"
+          formControlName="officePICName"
+          (teleponTerpilih)="
+            formGroup.get('officePICPhoneNumber')?.setValue($event)
+          "
+        />
 
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.picPhone" | translate }}</mat-label>

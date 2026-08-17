@@ -1943,7 +1943,8 @@
     "mungkinDuplikat": "今天已有相似单据",
     "mungkinDuplikatKet": "{{nomor}} 由 {{pembuat}} 为同一供应商和项目创建，金额 Rp {{nilai}}。请确认这不是重复提交。",
     "pemasokTerkunci": "编辑过程中不可更改",
-    "satuanBerbedaMaster": "主数据中的单位为 {{satuan}}。请确认所填数量与所选单位一致。"
+    "satuanBerbedaMaster": "主数据中的单位为 {{satuan}}。请确认所填数量与所选单位一致。",
+    "picHint": "从员工列表中选择，或输入其他姓名。"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -3502,7 +3503,10 @@
     "docReceived": "扣税后收款",
     "noPph": "无预扣税",
     "choosePph": "选择预扣税",
-    "description": "说明"
+    "description": "说明",
+    "address": "项目现场地址",
+    "addressPlaceholder": "现场名称、街道、城市、地标",
+    "addressHint": "用于在 Franco 采购单中填写送货地址。"
   },
   "projectReport": {
     "title": "项目报表",

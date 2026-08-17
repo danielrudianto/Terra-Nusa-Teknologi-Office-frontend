@@ -1943,7 +1943,8 @@
     "mungkinDuplikat": "Sudah ada dokumen serupa hari ini",
     "mungkinDuplikatKet": "{{nomor}} dibuat oleh {{pembuat}} untuk pemasok dan proyek yang sama, senilai Rp {{nilai}}. Pastikan ini bukan pengiriman kedua.",
     "pemasokTerkunci": "Tidak bisa dirubah pada saat proses sunting",
-    "satuanBerbedaMaster": "Satuan di master barang adalah {{satuan}}. Pastikan volume yang diisi memang dalam satuan yang dipilih."
+    "satuanBerbedaMaster": "Satuan di master barang adalah {{satuan}}. Pastikan volume yang diisi memang dalam satuan yang dipilih.",
+    "picHint": "Pilih dari daftar karyawan, atau ketik nama lain."
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -3502,7 +3503,10 @@
     "docReceived": "Diterima setelah PPh",
     "noPph": "Tanpa potongan PPh",
     "choosePph": "Pilih PPh",
-    "description": "Keterangan"
+    "description": "Keterangan",
+    "address": "Alamat lokasi proyek",
+    "addressPlaceholder": "Nama lokasi, jalan, kota, patokan",
+    "addressHint": "Dipakai mengisi alamat pengiriman pada PO Franco."
   },
   "projectReport": {
     "title": "Laporan Proyek",

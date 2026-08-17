@@ -658,6 +658,23 @@
         </div>
       }
 
+      <!--
+        Tombol tambah KEDUA, di bawah daftar.
+
+        Yang di kepala kartu tidak terjangkau setelah beberapa baris terisi:
+        satu PO transportasi kerap memuat tujuh pengiriman atau lebih, dan
+        yang menyadari ada satu yang kurang harus menggulir ke atas, menekan,
+        lalu menggulir kembali ke bawah untuk mengisinya.
+
+        Hanya muncul bila sudah ada barisnya — pada daftar kosong, tombol di
+        kepala kartu berjarak beberapa sentimeter saja.
+      -->
+      @if (t.controls.length) {
+        <button type="button" class="poa-add poa-add--bawah" (click)="addShipment()">
+          <mat-icon>add</mat-icon>{{ "poA.tambahPengiriman" | translate }}
+        </button>
+      }
+
       <div class="poa-foot">
         <mat-slide-toggle formControlName="includePPN" color="primary">{{
           "poForm.includePpn" | translate

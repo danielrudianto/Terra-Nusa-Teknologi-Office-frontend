@@ -6,6 +6,14 @@ export interface ProyekRingkas {
   id: number;
   code: string;
   name: string;
+  /**
+   * Alamat lokasi proyek.
+   *
+   * Dipakai mengisi alamat pengiriman pada purchase order Franco. Boleh
+   * kosong — proyek lama belum punya alamat, dan yang mengisinya diminta
+   * mengetik sendiri seperti sebelumnya.
+   */
+  address?: string | null;
   isActive: boolean;
   isCancelled: boolean;
   /** Nominal dokumen (DPP + PPN). Untuk ditampilkan. */

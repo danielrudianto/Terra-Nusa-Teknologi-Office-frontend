@@ -1410,3 +1410,51 @@ app-wysiwyg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/*
+ * Peringatan satuan berbeda dari master barang.
+ *
+ * Warna waspada, bukan merah: ini bukan kesalahan yang menghalangi
+ * penyimpanan — sebagian pembelian memang memakai satuan berbeda. Merah
+ * membuat yang benar pun ragu.
+ */
+.po-satuan-beda {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: -0.35rem 0 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  font-size: 0.76rem;
+  line-height: 1.45;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+/*
+ * Tombol tambah di bawah daftar.
+ *
+ * Selebar kartu dan bergaris putus-putus, dibedakan dari yang di kepala:
+ * yang ini menandai UJUNG daftar, dan bentuknya menyerupai baris kosong
+ * yang menunggu diisi.
+ */
+.pou-add--bawah {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0.5rem 0 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border, #d7dbe3);
+  border-radius: 12px;
+  background: transparent;
+}

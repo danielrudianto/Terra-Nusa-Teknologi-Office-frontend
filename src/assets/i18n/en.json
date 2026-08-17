@@ -1943,7 +1943,8 @@
     "mungkinDuplikat": "A similar document already exists today",
     "mungkinDuplikatKet": "{{nomor}} was created by {{pembuat}} for the same supplier and project, worth Rp {{nilai}}. Make sure this isn't a second submission.",
     "pemasokTerkunci": "Cannot be changed while editing",
-    "satuanBerbedaMaster": "The master item unit is {{satuan}}. Make sure the quantity matches the unit you selected."
+    "satuanBerbedaMaster": "The master item unit is {{satuan}}. Make sure the quantity matches the unit you selected.",
+    "picHint": "Pick from the employee list, or type another name."
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -3502,7 +3503,10 @@
     "docReceived": "Received after withholding",
     "noPph": "No withholding tax",
     "choosePph": "Choose withholding tax",
-    "description": "Description"
+    "description": "Description",
+    "address": "Project site address",
+    "addressPlaceholder": "Site name, street, city, landmark",
+    "addressHint": "Used to fill the delivery address on Franco POs."
   },
   "projectReport": {
     "title": "Project Report",

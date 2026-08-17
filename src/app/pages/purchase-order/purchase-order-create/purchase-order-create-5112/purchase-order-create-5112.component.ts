@@ -42,6 +42,7 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
 import { AdendumService } from '../../../../services/adendum.service';
 import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
+import { PicAutocompleteComponent } from '../../../../components/pic-autocomplete/pic-autocomplete.component';
 
 @Component({
   selector: 'app-purchase-order-create-5112',
@@ -63,6 +64,7 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
     MatSlideToggleModule,
     NgxMaskDirective,
     SupplierTerkunciComponent,
+    PicAutocompleteComponent,
   ],
   templateUrl: './purchase-order-create-5112.component.html',
   styleUrl: './purchase-order-create-5112.component.scss',

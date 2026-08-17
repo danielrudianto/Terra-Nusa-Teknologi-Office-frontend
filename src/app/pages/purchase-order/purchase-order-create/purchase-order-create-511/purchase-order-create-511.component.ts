@@ -37,6 +37,8 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
 import { AdendumService } from '../../../../services/adendum.service';
 import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
+import { ProjectLookupService } from '../../../../services/project-lookup.service';
+import { PicAutocompleteComponent } from '../../../../components/pic-autocomplete/pic-autocomplete.component';
 
 @Component({
   selector: 'app-purchase-order-create-511',
@@ -57,11 +59,13 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
     MatSlideToggleModule,
     NgxMaskDirective,
     SupplierTerkunciComponent,
+    PicAutocompleteComponent,
   ],
   templateUrl: './purchase-order-create-511.component.html',
   styleUrl: './purchase-order-create-511.component.scss',
 })
 export class PurchaseOrderCreate511Component implements OnInit {
+  private readonly projectLookup = inject(ProjectLookupService);
   private readonly translate = inject(TranslateService);
 
   /**
@@ -179,6 +183,51 @@ export class PurchaseOrderCreate511Component implements OnInit {
      * gudang yang berbeda dari alamat suratnya, dan itu justru keterangan
      * yang tidak boleh hilang.
      */
+    /*
+     * Kontak pemasok diisi pada KEDUA metode.
+     *
+     * Siapa yang dihubungi di pihak pemasok tidak bergantung pada siapa yang
+     * mengantar — pada Franco pun yang ditanya soal barangnya tetap orang
+     * yang sama. Sebelumnya hanya terisi pada Loco, sehingga setiap PO Franco
+     * menuntut mengetik ulang nama dan nomor yang sudah tersimpan di data
+     * pemasok.
+     */
+    {
+      const v = this.formGroup.getRawValue();
+      const kontak: any = {};
+
+      if (!String(v.supplierPICName || '').trim() && v.supplierName) {
+        kontak.supplierPICName = v.supplierName;
+      }
+      if (!String(v.supplierPICPhoneNumber || '').trim() && v.supplierPhone) {
+        kontak.supplierPICPhoneNumber = v.supplierPhone;
+      }
+      if (Object.keys(kontak).length) this.formGroup.patchValue(kontak);
+    }
+
+    /*
+     * FRANCO: alamat pengiriman diisi dari LOKASI PROYEK.
+     *
+     * Barang dikirim ke proyeknya, dan alamatnya sudah tersimpan pada data
+     * proyek — mengetiknya ulang pada setiap PO berarti menyalin dari catatan
+     * lain yang cepat atau lambat berbeda dari sumbernya.
+     *
+     * Tidak menimpa yang sudah diisi: sebagian pengiriman menuju titik
+     * tertentu di dalam proyek — gudang, area tertentu — dan itu justru
+     * keterangan yang tidak boleh hilang.
+     */
+    if (!this.isLoco) {
+      const v = this.formGroup.getRawValue();
+      if (!String(v.deliveryAddress || '').trim()) {
+        const proyek = this.projectLookup.cari(String(v.projectName || ''));
+        const alamat = [proyek?.name, proyek?.address]
+          .map((x: any) => String(x || '').trim())
+          .filter((x: string) => !!x)
+          .join('\n');
+        if (alamat) this.formGroup.patchValue({ deliveryAddress: alamat });
+      }
+    }
+
     if (this.isLoco) {
       const v = this.formGroup.getRawValue();
       const isi: any = {};

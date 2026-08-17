@@ -60,6 +60,7 @@ import { AdendumService } from '../../../../services/adendum.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
+import { PicAutocompleteComponent } from '../../../../components/pic-autocomplete/pic-autocomplete.component';
 
 @Component({
   selector: 'app-purchase-order-create-h',
@@ -86,6 +87,7 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
     HeaderTitleComponent,
     MatButtonToggleModule,
     SupplierTerkunciComponent,
+    PicAutocompleteComponent,
   ],
   templateUrl: './purchase-order-create-h.component.html',
   styleUrl: './purchase-order-create-h.component.scss',

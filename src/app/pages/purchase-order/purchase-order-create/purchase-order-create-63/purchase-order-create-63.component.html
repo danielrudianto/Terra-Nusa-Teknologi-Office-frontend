@@ -252,6 +252,20 @@
               </div>
             </div>
           }
+
+      <!--
+        Tombol tambah KEDUA, di bawah daftar.
+
+        Yang di kepala kartu tidak terjangkau setelah beberapa baris
+        terisi: yang menyadari ada satu yang kurang harus menggulir ke
+        atas, menekan, lalu menggulir kembali ke bawah untuk
+        mengisinya.
+      -->
+      @if (t.controls.length) {
+        <button type="button" class="pou-add pou-add--bawah" (click)="addService()">
+          <mat-icon>add</mat-icon>{{ "po63.tambahJasa" | translate }}
+        </button>
+      }
         </div>
       }
 
@@ -490,10 +504,25 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poField.picKantor" | translate }}</mat-label>
-            <input matInput formControlName="officePICName" />
-          </mat-form-field>
+          <!--
+          Pemilih dari daftar karyawan, bukan isian teks biasa.
+
+          Nama penanggung jawab kantor selalu orang yang sama
+          berulang kali; mengetiknya penuh setiap membuat purchase
+          order menghasilkan ejaan yang berbeda-beda untuk orang
+          yang sama.
+
+          Mengetik bebas TETAP boleh: sebagian dokumen menyebut
+          penanggung jawab yang tidak ada di daftar karyawan.
+        -->
+        <app-pic-autocomplete
+          [label]="'poField.picKantor' | translate"
+          [placeholder]="'poForm.officePICPlaceholder' | translate"
+          formControlName="officePICName"
+          (teleponTerpilih)="
+            formGroup.get('officePICPhoneNumber')?.setValue($event)
+          "
+        />
 
           <mat-form-field appearance="outline">
             <mat-label>{{

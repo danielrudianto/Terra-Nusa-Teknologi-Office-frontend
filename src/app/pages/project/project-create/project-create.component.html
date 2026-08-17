@@ -26,6 +26,28 @@
           [placeholder]="'project.namePlaceholder' | translate"
         />
       </mat-form-field>
+
+      <!--
+        Alamat lokasi proyek — TEXTAREA, bukan isian satu baris.
+
+        Alamat proyek kerap beberapa baris: nama lokasi, jalan, kota, patokan.
+        Isian satu baris memaksa semuanya berdesak dalam satu larik yang harus
+        digulir mendatar untuk dibaca ulang — dan yang menyalinnya ke dokumen
+        pengiriman tidak dapat memastikan tidak ada yang terpotong.
+
+        Dipakai mengisi alamat pengiriman pada purchase order Franco.
+      -->
+      <mat-form-field appearance="outline" class="">
+        <mat-label>{{ "project.address" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          formControlName="address"
+          [placeholder]="'project.addressPlaceholder' | translate"
+        ></textarea>
+        <mat-hint>{{ "project.addressHint" | translate }}</mat-hint>
+      </mat-form-field>
+
     </div>
 
     <!--

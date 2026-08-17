@@ -68,6 +68,11 @@ export class ProjectCreateComponent {
       Validators.maxLength(20),
     ]),
     name: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+    // Alamat lokasi proyek; dipakai mengisi alamat pengiriman
+    // purchase order Franco. Boleh kosong — proyek lama belum
+    // punya alamat, dan mewajibkannya membuat seluruhnya tidak
+    // dapat disunting sampai satu per satu diisi.
+    address: new FormControl(''),
     clientID: new FormControl<number | null>(null),
     startDate: new FormControl<Date | null>(null),
     endDate: new FormControl<Date | null>(null),

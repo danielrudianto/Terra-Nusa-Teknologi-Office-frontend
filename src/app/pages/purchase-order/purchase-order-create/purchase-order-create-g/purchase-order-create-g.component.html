@@ -375,14 +375,25 @@
             [placeholder]="'poForm.phonePlaceholder' | translate"
           />
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ "poForm.officePIC" | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="officePICName"
-            [placeholder]="'poForm.officePICPlaceholder' | translate"
-          />
-        </mat-form-field>
+        <!--
+          Pemilih dari daftar karyawan, bukan isian teks biasa.
+
+          Nama penanggung jawab kantor selalu orang yang sama
+          berulang kali; mengetiknya penuh setiap membuat purchase
+          order menghasilkan ejaan yang berbeda-beda untuk orang
+          yang sama.
+
+          Mengetik bebas TETAP boleh: sebagian dokumen menyebut
+          penanggung jawab yang tidak ada di daftar karyawan.
+        -->
+        <app-pic-autocomplete
+          [label]="'poForm.officePIC' | translate"
+          [placeholder]="'poForm.officePICPlaceholder' | translate"
+          formControlName="officePICName"
+          (teleponTerpilih)="
+            formGroup.get('officePICPhoneNumber')?.setValue($event)
+          "
+        />
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.officePICPhone" | translate }}</mat-label>
           <input

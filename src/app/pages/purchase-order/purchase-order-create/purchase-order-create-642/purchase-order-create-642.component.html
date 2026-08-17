@@ -325,6 +325,20 @@
               </div>
             </div>
           }
+
+      <!--
+        Tombol tambah KEDUA, di bawah daftar.
+
+        Yang di kepala kartu tidak terjangkau setelah beberapa baris
+        terisi: yang menyadari ada satu yang kurang harus menggulir ke
+        atas, menekan, lalu menggulir kembali ke bawah untuk
+        mengisinya.
+      -->
+      @if (t.controls.length) {
+        <button type="button" class="pou-add pou-add--bawah" (click)="addLine()">
+          <mat-icon>add</mat-icon>{{ "poField.tambahBaris" | translate }}
+        </button>
+      }
         </div>
       </div>
 
