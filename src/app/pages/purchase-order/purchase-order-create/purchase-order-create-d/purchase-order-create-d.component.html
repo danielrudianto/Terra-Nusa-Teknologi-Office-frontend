@@ -379,8 +379,110 @@
             thousandSeparator="."
             mask="separator.0"
           />
-          <span matSuffix>&nbsp;{{ "poForm.unitPerHour" | translate }}</span>
+          <!--
+            Satuan tidak lagi tetap "per jam".
+            
+            Sebagian pekerja disepakati lembur harian, dan menuliskannya
+            tetap membuat dokumen menyebut satuan yang tidak pernah
+            disepakati.
+          -->
+          <span matSuffix>&nbsp;{{
+            (formGroup.get("overtimeUnit")?.value === "hari"
+              ? "poD.perHari"
+              : "poD.perJam"
+            ) | translate
+          }}</span>
         </mat-form-field>
+
+        <!--
+          Tidak berlaku bagi staf lapangan: bekerja melewati pukul 20:00
+          diganti uang makan satu hari, bukan dihitung per jam maupun
+          per hari.
+        -->
+        @if (!formGroup.get("isFieldStaff")?.value) {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poD.satuanLembur" | translate }}</mat-label>
+            <mat-select formControlName="overtimeUnit">
+              <mat-option value="jam">{{
+                "poD.perJam" | translate
+              }}</mat-option>
+              <mat-option value="hari">{{
+                "poD.perHari" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <!--
+          Jam kerja staf lapangan.
+
+          Hanya tampil bila tuas staf lapangan menyala — pada pekerja biasa
+          seksi "Waktu bekerja" tidak dicetak sama sekali, dan isian yang
+          tidak berpengaruh pada dokumen hanya menambah yang harus dibaca.
+
+          `type="time"` membuka pemilih jam bawaan ponsel; mengetik jam
+          dengan papan ketik angka menghasilkan "8", "08.00", dan "8:00 pagi"
+          untuk hal yang sama.
+        -->
+        @if (formGroup.get("isFieldStaff")?.value) {
+          <div class="pod-span2 pod-jam">
+            <span class="pod-jam__judul">{{
+              "poD.jamKerjaJudul" | translate
+            }}</span>
+            <span class="pod-jam__ket">{{
+              "poD.jamKerjaKet" | translate
+            }}</span>
+
+            <div class="pod-jam__grid">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.lemburSetelah" | translate }}</mat-label>
+                <input matInput type="time" formControlName="overtimeAfter" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.senJumMulai" | translate }}</mat-label>
+                <input matInput type="time" formControlName="workStart" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.senJumSelesai" | translate }}</mat-label>
+                <input matInput type="time" formControlName="workEnd" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.sabtuMulai" | translate }}</mat-label>
+                <input matInput type="time" formControlName="workStartSat" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.sabtuSelesai" | translate }}</mat-label>
+                <input matInput type="time" formControlName="workEndSat" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.pengajuanCuti" | translate }}</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  formControlName="leaveNoticeDays"
+                />
+                <span matSuffix>&nbsp;{{ "common.hari" | translate }}</span>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "poD.pengunduranDiri" | translate }}</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  formControlName="resignNoticeDays"
+                />
+                <span matSuffix>&nbsp;{{ "common.hari" | translate }}</span>
+              </mat-form-field>
+            </div>
+          </div>
+        }
         @if (formGroup.value.includeShiftClause) {
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.shiftHours" | translate }}</mat-label>

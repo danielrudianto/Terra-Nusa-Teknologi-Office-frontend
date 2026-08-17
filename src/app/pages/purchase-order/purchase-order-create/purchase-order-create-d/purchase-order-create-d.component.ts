@@ -161,6 +161,32 @@ export class PurchaseOrderCreateDComponent {
       Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     overtimeRate: new FormControl(0, [Validators.min(0)]),
+    /*
+     * Satuan upah lembur.
+     *
+     * Bawaannya `jam` — itu yang berlaku sebelum satuannya dapat dipilih,
+     * sehingga dokumen lama terbaca persis seperti sebelumnya.
+     *
+     * Pada staf lapangan satuannya tidak dipakai: bekerja melewati pukul
+     * 20:00 diganti uang makan satu hari, bukan dihitung per jam.
+     */
+    overtimeUnit: new FormControl<'jam' | 'hari'>('jam'),
+
+    /*
+     * Jam kerja staf lapangan.
+     *
+     * Bawaannya mengikuti yang selama ini dipakai, sehingga SPK yang tidak
+     * mengubahnya berbunyi persis seperti sebelumnya. Dijadikan isian karena
+     * proyek yang berbeda punya jam yang berbeda — dan dokumen yang menyebut
+     * jam yang tidak disepakati lebih buruk daripada yang tidak menyebutnya.
+     */
+    overtimeAfter: new FormControl('20:00'),
+    workStart: new FormControl('08:00'),
+    workEnd: new FormControl('17:00'),
+    workStartSat: new FormControl('08:00'),
+    workEndSat: new FormControl('15:00'),
+    leaveNoticeDays: new FormControl(7, [Validators.min(0)]),
+    resignNoticeDays: new FormControl(30, [Validators.min(0)]),
     // Dua poin pertama SPK tidak selalu berlaku; lihat clause-templates.
     includeShiftClause: new FormControl(true),
     includePlacementClause: new FormControl(true),
@@ -572,6 +598,16 @@ export class PurchaseOrderCreateDComponent {
         // Hanya data sumber — poin perjanjian TIDAK disimpan sebagai teks.
         // Renderer merakitnya dari templateVersion + data di bawah ini.
         overtimeRate: Number(this.formGroup.get('overtimeRate')?.value) || 0,
+        overtimeUnit: this.formGroup.get('overtimeUnit')?.value || 'jam',
+        overtimeAfter: this.formGroup.get('overtimeAfter')?.value,
+        workStart: this.formGroup.get('workStart')?.value,
+        workEnd: this.formGroup.get('workEnd')?.value,
+        workStartSat: this.formGroup.get('workStartSat')?.value,
+        workEndSat: this.formGroup.get('workEndSat')?.value,
+        leaveNoticeDays:
+          Number(this.formGroup.get('leaveNoticeDays')?.value) || 7,
+        resignNoticeDays:
+          Number(this.formGroup.get('resignNoticeDays')?.value) || 30,
         shiftHours: Math.min(
           24,
           Math.max(1, Number(this.formGroup.get('shiftHours')?.value) || 8),
@@ -856,6 +892,14 @@ export class PurchaseOrderCreateDComponent {
       includePlacementClause: !!this.formGroup.get('includePlacementClause')
         ?.value,
       overtimeRate: v.overtimeRate,
+      overtimeUnit: v.overtimeUnit || 'jam',
+      overtimeAfter: v.overtimeAfter,
+      workStart: v.workStart,
+      workEnd: v.workEnd,
+      workStartSat: v.workStartSat,
+      workEndSat: v.workEndSat,
+      leaveNoticeDays: v.leaveNoticeDays,
+      resignNoticeDays: v.resignNoticeDays,
       shiftHours: v.shiftHours,
       includeSundayPolicy: v.includeSundayPolicy,
       includeTransportHome: !!v.includeTransportHome,

@@ -154,7 +154,39 @@ export interface ClauseContext {
   /** Tarif tambahan per jam untuk pemakaian di atas kuota. */
   excessHourRate?: number | string;
   // PO-D (SPK tenaga kerja harian)
-  overtimeRate?: number; // upah lembur per jam
+  overtimeRate?: number; // upah lembur; satuannya `overtimeUnit`
+  /**
+   * Satuan upah lembur.
+   *
+   * Dokumen lama tidak menyimpannya dan dianggap `jam` — itu yang berlaku
+   * selama ini. Mengubah anggapannya membuat SPK lama terbaca dengan tarif
+   * yang tidak pernah disepakati.
+   */
+  overtimeUnit?: 'jam' | 'hari';
+  /**
+   * Jam kerja staf lapangan.
+   *
+   * Semula ditulis tetap. Dijadikan isian karena proyek yang berbeda punya
+   * jam yang berbeda — dan dokumen yang menyebut jam yang tidak disepakati
+   * lebih buruk daripada yang tidak menyebutnya sama sekali.
+   *
+   * Nilai bawaan mengikuti yang selama ini dipakai, sehingga dokumen lama
+   * dan SPK baru yang tidak mengubahnya tetap berbunyi sama.
+   */
+  overtimeAfter?: string;      // batas lembur, mis. '20:00'
+  workStart?: string;          // Senin–Jumat mulai
+  workEnd?: string;            // Senin–Jumat selesai
+  workStartSat?: string;       // Sabtu mulai
+  workEndSat?: string;         // Sabtu selesai
+  leaveNoticeDays?: number;    // pengajuan cuti, hari
+  resignNoticeDays?: number;   // pengunduran diri, hari
+  /**
+   * Staf lapangan.
+   *
+   * Menambahkan seksi "Waktu bekerja" dan mengubah bentuk lembur: bagi staf
+   * lapangan lembur tidak dihitung per jam, melainkan uang makan satu hari
+   * bila bekerja melewati pukul 20:00.
+   */
   wageSchedules?: string[]; // kalimat jadwal bayar tiap komponen upah
   shiftHours?: number; // jam kerja per shift
   /**
@@ -705,7 +737,20 @@ const D_CLAUSES: ClauseTemplate[] = [
               'Selama perjanjian kerja sama, PIHAK KEDUA bersedia ditempatkan di seluruh Indonesia sesuai lokasi proyek.',
             ]
           : []),
-        `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per jam, terhitung sejak berakhirnya jam shift yang berlaku.`,
+        /*
+         * Bentuk lembur berbeda bagi staf lapangan.
+         *
+         * Pada staf lapangan, bekerja melewati pukul 20:00 diganti uang makan
+         * satu hari — bukan dihitung per jam. Menyebutnya "lembur" mengikuti
+         * kebiasaan di lapangan, walaupun perhitungannya bukan lembur.
+         */
+        ctx.isFieldStaff
+          ? `Pekerja yang bekerja melewati pukul ${
+              ctx.overtimeAfter || '20:00'
+            } waktu setempat berhak mendapatkan uang makan senilai ${overtime} untuk satu hari kerja.`
+          : `Pekerja berhak mendapatkan uang lembur senilai ${overtime} per ${
+              ctx.overtimeUnit === 'hari' ? 'hari' : 'jam'
+            }, terhitung sejak berakhirnya jam shift yang berlaku.`,
         /*
          * Tempat tinggal sementara TIDAK selalu disediakan.
          *
@@ -756,6 +801,43 @@ const D_CLAUSES: ClauseTemplate[] = [
       // Jadwal & periode perhitungan tiap komponen upah ditaruh paling
       // bawah supaya poin baku tidak bergeser saat komponen ditambah.
       lines.push(...schedules);
+
+      /*
+       * Seksi "Waktu bekerja" — hanya untuk staf lapangan.
+       *
+       * Kedelapan poinnya ketentuan baku yang selama ini ditulis manual pada
+       * setiap SPK staf lapangan. Menuliskannya ulang tiap kali membuka
+       * kemungkinan satu poin terlewat — dan yang terlewat baru ketahuan
+       * ketika dipersoalkan.
+       *
+       * Jamnya ditulis tetap karena seragam di seluruh proyek. Bila kelak
+       * berbeda per dokumen, angka-angka di bawah perlu menjadi isian
+       * tersendiri.
+       */
+      if (ctx.isFieldStaff) {
+        /*
+         * Jam diambil dari isian, dengan nilai bawaan yang selama ini
+         * dipakai. Dokumen lama yang tidak menyimpannya tetap berbunyi sama.
+         */
+        const bLembur = ctx.overtimeAfter || '20:00';
+        const jmMulai = ctx.workStart || '08:00';
+        const jmSelesai = ctx.workEnd || '17:00';
+        const sbMulai = ctx.workStartSat || '08:00';
+        const sbSelesai = ctx.workEndSat || '15:00';
+        const cuti = Number(ctx.leaveNoticeDays) || 7;
+        const resign = Number(ctx.resignNoticeDays) || 30;
+
+        lines.push(
+          `Lembur yang dimaksud pada uraian pembayaran adalah pekerjaan di atas pukul ${bLembur} waktu setempat.`,
+          `Jam kerja dari pukul ${jmMulai} - ${jmSelesai} waktu setempat (Senin - Jumat) dan pukul ${sbMulai} - ${sbSelesai} waktu setempat (Sabtu).`,
+          'Pekerja dengan ini menyatakan bersedia untuk bekerja di luar jam kerja (apabila dibutuhkan). Jam kerja lembur harus mendapatkan persetujuan dari atasan.',
+          'Hari dan jam lembur dapat digantikan dalam bentuk paid leave berdasarkan kebijakan atasan dan perusahaan berdasarkan kebutuhan workforce.',
+          'Jika ada keperluan / kepentingan mendesak yang mengakibatkan keterlambatan, pekerja harus memberikan informasi kepada atasan terlebih dahulu.',
+          'Jika ada keperluan / kepentingan yang mengakibatkan ketidakhadiran, pekerja harus memberikan informasi tertulis kepada atasan setidaknya 1 hari sebelum hari tersebut.',
+          `Ijin cuti harus diajukan setidaknya ${cuti} hari sebelum cuti dan harus disetujui oleh atasan dan rekan kerja sekelompok.`,
+          `Selama perjanjian kontrak kerja ini berlangsung, apabila pekerja ingin mengundurkan diri, maka pekerja wajib memberikan surat pengunduran diri secara tertulis minimal ${resign} hari.`,
+        );
+      }
 
       return lines;
     },

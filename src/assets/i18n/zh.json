@@ -156,7 +156,8 @@
     "refreshHint": "获取最新数据，且不会丢失搜索与筛选条件",
     "semua": "全部",
     "bersihkan": "清除",
-    "dash": "—"
+    "dash": "—",
+    "hari": "天"
   },
   "nav": {
     "pinned": "已固定",
@@ -3040,7 +3041,19 @@
     "tambahTugas": "Tambah tugas",
     "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
     "hapusTugas": "Hapus tugas",
-    "includeHousing": "载明临时住宿条款"
+    "includeHousing": "载明临时住宿条款",
+    "satuanLembur": "加班计价单位",
+    "perJam": "每小时",
+    "perHari": "每天",
+    "jamKerjaJudul": "工作时间",
+    "jamKerjaKet": "在现场员工文件中作为独立章节打印。",
+    "lemburSetelah": "加班起始时间",
+    "senJumMulai": "周一至周五自",
+    "senJumSelesai": "周一至周五至",
+    "sabtuMulai": "周六自",
+    "sabtuSelesai": "周六至",
+    "pengajuanCuti": "请假提前天数",
+    "pengunduranDiri": "离职提前天数"
   },
   "salaryDeduction": {
     "bpjs": "社会保险",

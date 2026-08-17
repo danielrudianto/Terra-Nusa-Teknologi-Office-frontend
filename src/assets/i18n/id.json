@@ -156,7 +156,8 @@
     "refreshHint": "Ambil data terbaru tanpa kehilangan pencarian dan penyaring",
     "semua": "Semua",
     "bersihkan": "Bersihkan",
-    "dash": "—"
+    "dash": "—",
+    "hari": "hari"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -3040,7 +3041,19 @@
     "tambahTugas": "Tambah tugas",
     "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
     "hapusTugas": "Hapus tugas",
-    "includeHousing": "Sertakan klausul tempat tinggal sementara"
+    "includeHousing": "Sertakan klausul tempat tinggal sementara",
+    "satuanLembur": "Satuan lembur",
+    "perJam": "per jam",
+    "perHari": "per hari",
+    "jamKerjaJudul": "Waktu bekerja",
+    "jamKerjaKet": "Dicetak sebagai seksi tersendiri pada dokumen staf lapangan.",
+    "lemburSetelah": "Lembur setelah pukul",
+    "senJumMulai": "Senin–Jumat mulai",
+    "senJumSelesai": "Senin–Jumat selesai",
+    "sabtuMulai": "Sabtu mulai",
+    "sabtuSelesai": "Sabtu selesai",
+    "pengajuanCuti": "Pengajuan cuti",
+    "pengunduranDiri": "Pengunduran diri"
   },
   "salaryDeduction": {
     "bpjs": "BPJS Ketenagakerjaan",

@@ -1273,3 +1273,39 @@ app-wysiwyg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/*
+ * Jam kerja staf lapangan.
+ *
+ * Dikelompokkan dalam satu kotak, bukan disebar di antara isian upah:
+ * ketujuhnya menyusun satu seksi dokumen, dan yang mengubah salah satunya
+ * biasanya perlu meninjau yang lain.
+ */
+.pod-jam {
+  padding: 0.85rem 1rem 0.25rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+}
+
+.pod-jam__judul {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #8a90a0);
+}
+
+.pod-jam__ket {
+  display: block;
+  margin: 0.15rem 0 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+.pod-jam__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0 1rem;
+}

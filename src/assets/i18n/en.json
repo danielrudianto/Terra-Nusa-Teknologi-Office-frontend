@@ -156,7 +156,8 @@
     "refreshHint": "Fetch the latest data without losing your search and filters",
     "semua": "All",
     "bersihkan": "Clear",
-    "dash": "—"
+    "dash": "—",
+    "hari": "days"
   },
   "nav": {
     "pinned": "Pinned",
@@ -3040,7 +3041,19 @@
     "tambahTugas": "Tambah tugas",
     "rincianPekerjaanStafTercetakSebaga": "Rincian pekerjaan staf; tercetak sebagai seksi tersendiri. Kosongkan bila tidak perlu.",
     "hapusTugas": "Hapus tugas",
-    "includeHousing": "Include the temporary housing clause"
+    "includeHousing": "Include the temporary housing clause",
+    "satuanLembur": "Overtime unit",
+    "perJam": "per hour",
+    "perHari": "per day",
+    "jamKerjaJudul": "Working hours",
+    "jamKerjaKet": "Printed as its own section on field-staff documents.",
+    "lemburSetelah": "Overtime after",
+    "senJumMulai": "Mon–Fri from",
+    "senJumSelesai": "Mon–Fri until",
+    "sabtuMulai": "Saturday from",
+    "sabtuSelesai": "Saturday until",
+    "pengajuanCuti": "Leave notice",
+    "pengunduranDiri": "Resignation notice"
   },
   "salaryDeduction": {
     "bpjs": "BPJS employment",
