@@ -1369,6 +1369,67 @@ export class PurchaseOrderListComponent {
       });
   }
 
+  /** Dokumen ini sudah diperiksa. */
+  sudahDiperiksa(po: any): boolean {
+    return !!po?.isChecked;
+  }
+
+  /**
+   * Tandai dokumen sudah diperiksa.
+   *
+   * Tahap SEBELUM persetujuan; dokumen yang belum diperiksa ditolak server
+   * ketika hendak disetujui.
+   */
+  periksa(po: any): void {
+    this.ubahPemeriksaan(po, true, 'purchaseOrder.diperiksa');
+  }
+
+  /**
+   * Cabut pemeriksaan.
+   *
+   * Dikonfirmasi lebih dulu karena persetujuan yang terlanjur ikut GUGUR —
+   * dokumen kembali ke draf, dan yang tadinya siap terbit harus melewati
+   * kedua tahap lagi.
+   */
+  batalkanPemeriksaan(po: any): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('purchaseOrder.cabutPeriksaTitle'),
+          prompt: this.translate.instant('purchaseOrder.cabutPeriksaPrompt', {
+            name: po.name,
+          }),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (setuju) {
+          this.ubahPemeriksaan(po, false, 'purchaseOrder.periksaDicabut');
+        }
+      });
+  }
+
+  private ubahPemeriksaan(po: any, checked: boolean, kunciSukses: string) {
+    this.apiService
+      .patch(`purchase-orders/${po.id}/checked?checked=${checked}`, {})
+      .subscribe({
+        next: () => {
+          this.snackBar.open(
+            this.translate.instant(kunciSukses),
+            'Close',
+            { duration: 2000 },
+          );
+          this.fetch(this.page);
+        },
+        error: (err) =>
+          this.snackBar.open(
+            this.serverMessage.terjemahkan(err),
+            'Close',
+            { duration: 5000 },
+          ),
+      });
+  }
+
   approve(po: any) {
     this.ubahStatus(po, 'approved', 'notify.approveSuccess');
   }

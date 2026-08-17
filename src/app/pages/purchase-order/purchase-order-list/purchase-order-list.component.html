@@ -241,6 +241,20 @@
             <span class="pol-chip" [ngClass]="'is-' + displayStatus(po)">{{
               statusKey(displayStatus(po)) | translate
             }}</span>
+            <!--
+              Penanda sudah diperiksa, hanya pada dokumen yang belum terbit.
+
+              Setelah disetujui ia tidak menambah keterangan apa pun —
+              persetujuan sudah mensyaratkan pemeriksaan — dan dua lencana
+              berdampingan pada tiap baris membuat kolomnya penuh tanpa
+              menjawab satu pun pertanyaan.
+            -->
+            @if (sudahDiperiksa(po) && !sudahSelesai(po)) {
+              <span class="pol-diperiksa">
+                <mat-icon>fact_check</mat-icon>
+                {{ "purchaseOrder.sudahDiperiksa" | translate }}
+              </span>
+            }
           </td>
         </ng-container>
 
@@ -264,14 +278,41 @@
                 vendor, itu mengesankan hal yang salah.
               -->
               @if (!sudahSelesai(po)) {
-                <button
-                  mat-menu-item
-                  *appCan="'purchase_order:approve'"
-                  (click)="approve(po)"
-                >
-                  <mat-icon>check_circle</mat-icon
-                  ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
-                </button>
+                <!--
+                  Pemeriksaan mendahului persetujuan.
+
+                  Ditampilkan bergantian, bukan berdampingan: menyodorkan
+                  "Setujui" pada dokumen yang belum diperiksa hanya menuntun
+                  orang menekan tombol yang pasti ditolak server.
+                -->
+                @if (!sudahDiperiksa(po)) {
+                  <button
+                    mat-menu-item
+                    *appCan="'purchase_order:update'"
+                    (click)="periksa(po)"
+                  >
+                    <mat-icon>fact_check</mat-icon
+                    ><span>{{ "purchaseOrder.menuPeriksa" | translate }}</span>
+                  </button>
+                } @else {
+                  <button
+                    mat-menu-item
+                    *appCan="'purchase_order:update'"
+                    (click)="batalkanPemeriksaan(po)"
+                  >
+                    <mat-icon>undo</mat-icon
+                    ><span>{{
+                      "purchaseOrder.menuCabutPeriksa" | translate
+                    }}</span>
+                  </button>
+                  <button
+                    mat-menu-item
+                    *appCan="'purchase_order:approve'"
+                    (click)="approve(po)"
+                  >
+                    <mat-icon>check_circle</mat-icon
+                    ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
+                  </button>
                 <button
                   mat-menu-item
                   *appCan="'purchase_order:approve'"

@@ -528,7 +528,14 @@
     "filterSampai": "To",
     "filterTanggalKet": "The range follows the document date, not the creation date.",
     "statusDraf": "Draft",
-    "statusDisetujui": "Approved"
+    "statusDisetujui": "Approved",
+    "menuPeriksa": "Mark as checked",
+    "menuCabutPeriksa": "Undo check",
+    "sudahDiperiksa": "Checked",
+    "diperiksa": "Document marked as checked",
+    "periksaDicabut": "Check undone; document returned to draft",
+    "cabutPeriksaTitle": "Undo check",
+    "cabutPeriksaPrompt": "The check on {{name}} will be undone and its approval will lapse. The document returns to draft."
   },
   "income": {
     "title": "Other income",

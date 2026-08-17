@@ -528,7 +528,14 @@
     "filterSampai": "至",
     "filterTanggalKet": "日期范围依据单据日期，而非创建日期。",
     "statusDraf": "草稿",
-    "statusDisetujui": "已批准"
+    "statusDisetujui": "已批准",
+    "menuPeriksa": "标记为已审核",
+    "menuCabutPeriksa": "撤销审核",
+    "sudahDiperiksa": "已审核",
+    "diperiksa": "单据已标记为已审核",
+    "periksaDicabut": "审核已撤销；单据回到草稿状态",
+    "cabutPeriksaTitle": "撤销审核",
+    "cabutPeriksaPrompt": "{{name}} 的审核将被撤销，其批准同时失效。单据回到草稿状态。"
   },
   "income": {
     "title": "其他收入",

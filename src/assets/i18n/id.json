@@ -528,7 +528,14 @@
     "filterSampai": "Sampai",
     "filterTanggalKet": "Rentang mengikuti tanggal dokumen, bukan tanggal dibuat.",
     "statusDraf": "Draf",
-    "statusDisetujui": "Disetujui"
+    "statusDisetujui": "Disetujui",
+    "menuPeriksa": "Tandai sudah diperiksa",
+    "menuCabutPeriksa": "Cabut pemeriksaan",
+    "sudahDiperiksa": "Diperiksa",
+    "diperiksa": "Dokumen ditandai sudah diperiksa",
+    "periksaDicabut": "Pemeriksaan dicabut; dokumen kembali ke draf",
+    "cabutPeriksaTitle": "Cabut pemeriksaan",
+    "cabutPeriksaPrompt": "Pemeriksaan {{name}} akan dicabut dan persetujuannya ikut gugur. Dokumen kembali ke draf."
   },
   "income": {
     "title": "Pendapatan Lain",
