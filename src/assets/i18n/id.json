@@ -540,7 +540,8 @@
     "diperiksa": "Dokumen ditandai sudah diperiksa",
     "periksaDicabut": "Pemeriksaan dicabut; dokumen kembali ke draf",
     "cabutPeriksaTitle": "Cabut pemeriksaan",
-    "cabutPeriksaPrompt": "Pemeriksaan {{name}} akan dicabut dan persetujuannya ikut gugur. Dokumen kembali ke draf."
+    "cabutPeriksaPrompt": "Pemeriksaan {{name}} akan dicabut dan persetujuannya ikut gugur. Dokumen kembali ke draf.",
+    "filterSub": "Persempit daftar tanpa mengetik ulang pencarian."
   },
   "income": {
     "title": "Pendapatan Lain",

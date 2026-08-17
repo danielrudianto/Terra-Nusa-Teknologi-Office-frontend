@@ -540,7 +540,8 @@
     "diperiksa": "Document marked as checked",
     "periksaDicabut": "Check undone; document returned to draft",
     "cabutPeriksaTitle": "Undo check",
-    "cabutPeriksaPrompt": "The check on {{name}} will be undone and its approval will lapse. The document returns to draft."
+    "cabutPeriksaPrompt": "The check on {{name}} will be undone and its approval will lapse. The document returns to draft.",
+    "filterSub": "Narrow the list without retyping your search."
   },
   "income": {
     "title": "Other income",

@@ -669,3 +669,72 @@ html[data-density="compact"] {
   opacity: 0;
   pointer-events: none;
 }
+
+
+/*
+ * Kepala dialog — bentuk bersama.
+ *
+ * Ditaruh di gaya global, bukan disalin ke tiap komponen: enam belas dialog
+ * memakainya, dan menyalinnya berarti enam belas tempat yang harus diubah
+ * bersamaan ketika bentuknya disesuaikan.
+ *
+ * Kelas khusus tiap dialog tetap dipertahankan di sebelahnya — sebagian punya
+ * penyesuaian sendiri yang tidak boleh hilang.
+ */
+.dlg__head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+
+  /*
+   * Material menambahkan garis bawah sendiri lewat `::before` pada
+   * `mat-dialog-title`. Dibiarkan, ia menumpuk dengan border di atas dan
+   * menghasilkan dua garis dengan ketebalan berbeda.
+   */
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+.dlg__head-icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+
+  .mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+  }
+}
+
+.dlg__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dlg__title {
+  margin: 0 !important;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  /* Judul panjang tidak boleh mendorong ikonnya keluar kartu. */
+  word-break: break-word;
+}
+
+.dlg__sub {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}

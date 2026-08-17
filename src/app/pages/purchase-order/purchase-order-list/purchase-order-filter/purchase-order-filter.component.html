@@ -1,6 +1,17 @@
-<h2 mat-dialog-title class="pof-title">
-  {{ "purchaseOrder.filterJudul" | translate }}
-</h2>
+<!--
+  Kepala berikon, mengikuti dialog lain di TerraBot.
+  
+  Judul polos membuat dialog ini terlihat berasal dari aplikasi lain, dan
+  yang membukanya berhenti sejenak untuk memastikan ia masih di tempat yang
+  sama.
+-->
+<div class="pof-head dlg__head" mat-dialog-title appDialogGeser>
+  <span class="dlg__head-icon"><mat-icon>filter_alt</mat-icon></span>
+  <div class="dlg__head-text">
+    <h2 class="dlg__title">{{ "purchaseOrder.filterJudul" | translate }}</h2>
+    <span class="dlg__sub">{{ "purchaseOrder.filterSub" | translate }}</span>
+  </div>
+</div>
 
 <mat-dialog-content class="pof-content">
   <mat-form-field appearance="outline" class="pof-field">

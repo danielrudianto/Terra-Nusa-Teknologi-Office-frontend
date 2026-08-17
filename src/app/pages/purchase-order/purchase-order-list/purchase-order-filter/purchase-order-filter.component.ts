@@ -9,6 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 
 /**
  * Penyaring daftar purchase order.
@@ -35,6 +36,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MatButtonModule,
     MatIconModule,
     TranslateModule,
+    DialogGeserDirective,
   ],
   templateUrl: './purchase-order-filter.component.html',
   styleUrl: './purchase-order-filter.component.scss',

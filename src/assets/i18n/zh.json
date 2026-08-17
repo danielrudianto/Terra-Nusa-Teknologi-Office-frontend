@@ -540,7 +540,8 @@
     "diperiksa": "单据已标记为已审核",
     "periksaDicabut": "审核已撤销；单据回到草稿状态",
     "cabutPeriksaTitle": "撤销审核",
-    "cabutPeriksaPrompt": "{{name}} 的审核将被撤销，其批准同时失效。单据回到草稿状态。"
+    "cabutPeriksaPrompt": "{{name}} 的审核将被撤销，其批准同时失效。单据回到草稿状态。",
+    "filterSub": "无需重新输入搜索即可缩小列表范围。"
   },
   "income": {
     "title": "其他收入",
