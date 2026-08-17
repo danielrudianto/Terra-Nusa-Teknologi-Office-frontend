@@ -1,0 +1,245 @@
+/*
+ * Halaman depan ujian rekrutmen.
+ *
+ * Dibuka pelamar di luar perusahaan, kerap dari ponsel. Dirancang berdiri
+ * sendiri — tanpa navigasi samping, tanpa bilah atas — karena yang membukanya
+ * tidak punya akun dan tidak ada halaman lain yang dapat ia tuju.
+ */
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--surface, #fff);
+  overflow-x: hidden;
+}
+
+.exl {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.exl-kiri {
+  flex: 1 1 auto;
+  max-width: 720px;
+  padding: 3rem 2rem 2rem;
+}
+
+/*
+ * Panel kanan.
+ *
+ * Gradien, bukan foto: berkas gambar rig dari sistem lama tidak ikut
+ * dipindahkan, dan menunjuk berkas yang tidak ada menghasilkan kotak kosong
+ * berbatas — lebih buruk daripada latar polos yang memang dirancang begitu.
+ *
+ * Bila kelak fotonya tersedia, ganti `background` di bawah dengan:
+ *   url("/assets/images/hero-image.png") center / cover no-repeat
+ */
+.exl-kanan {
+  flex: 1 1 40%;
+  background: linear-gradient(
+    160deg,
+    var(--brand-strong) 0%,
+    #0b2a5b 100%
+  );
+}
+
+.exl-merek {
+  display: block;
+}
+
+.exl-merek__pt {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--brand-strong);
+}
+
+.exl-merek__dept {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.74rem;
+  color: var(--muted, #8a90a0);
+}
+
+.exl-moto {
+  margin: 2rem 0 1.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--ink, #16181d);
+
+  span {
+    font-weight: 700;
+    color: var(--brand-strong);
+  }
+}
+
+.exl-bahasa {
+  width: 220px;
+}
+
+.exl-perkenalan {
+  margin: 0.5rem 0 2rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--muted, #4b5563);
+}
+
+/* --- kartu --- */
+.exl-kartu {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: var(--surface-2, #f7f8fa);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.exl-kartu__judul {
+  margin: 0 0 0.35rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.exl-kartu__ket {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+}
+
+/* --- isian token --- */
+.exl-token {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.exl-token__isian {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.exl-token__btn {
+  flex: 0 0 auto;
+  height: 48px;
+  margin-top: 0.35rem;
+}
+
+.exl-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--bad-fg);
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+/* --- setelah token dikenali --- */
+.exl-sapa {
+  margin: 0 0 1.25rem;
+  font-size: 0.94rem;
+}
+
+.exl-ringkas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.exl-ringkas__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--surface, #fff);
+}
+
+.exl-ringkas__k {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #9aa1b1);
+}
+
+.exl-ringkas__v {
+  font-size: 0.94rem;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/*
+ * Peringatan timer.
+ *
+ * Warna waspada, bukan sekadar teks: timer tidak dapat dihentikan setelah
+ * berjalan, dan yang menyadarinya setelah menekan Mulai tidak punya jalan
+ * kembali.
+ */
+.exl-ingat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  font-size: 0.82rem;
+  line-height: 1.55;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+}
+
+mat-checkbox {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.86rem;
+}
+
+.exl-mulai {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin-top: 1.5rem;
+  font-size: 0.94rem;
+}
+
+.exl-kaki {
+  margin: 2.5rem 0 0;
+  font-size: 0.72rem;
+  color: var(--muted, #9aa1b1);
+}
+
+@media (max-width: 900px) {
+  .exl-kanan {
+    display: none;
+  }
+
+  .exl-kiri {
+    max-width: none;
+    padding: 2rem 1.25rem;
+  }
+
+  .exl-moto {
+    font-size: 1.5rem;
+  }
+
+  .exl-token__btn {
+    flex: 1 1 100%;
+  }
+}

@@ -11,6 +11,28 @@ export const routes: Routes = [
   },
   {
     /*
+     * Ujian rekrutmen; DI LUAR kerangka utama dan tanpa penjaga masuk.
+     *
+     * Yang membukanya pelamar yang belum menjadi karyawan dan tidak punya
+     * akun. Dua bentuk alamat: `/exam` untuk mengetik token sendiri, dan
+     * `/exam/:token` langsung dari tautan — tautan panjang kerap terpotong
+     * saat disalin dari WhatsApp.
+     */
+    path: 'exam',
+    loadComponent: () =>
+      import('./pages/exam/exam-landing/exam-landing.component').then(
+        (m) => m.ExamLandingComponent,
+      ),
+  },
+  {
+    path: 'exam/:token',
+    loadComponent: () =>
+      import('./pages/exam/exam-landing/exam-landing.component').then(
+        (m) => m.ExamLandingComponent,
+      ),
+  },
+  {
+    /*
      * Pengisian data karyawan lewat tautan undangan.
      *
      * DI LUAR kerangka utama dan tanpa penjaga masuk: yang membukanya adalah
@@ -787,6 +809,22 @@ export const routes: Routes = [
                 (m) => m.ClientListComponent,
               ),
             data: { title: 'Master Data', panduanBagian: 'klien', permission: 'client:read' },
+          },
+          {
+            /*
+             * Pelamar ujian rekrutmen; anak dari Master, sama seperti bank
+             * soal — kartu di halaman Data Master menavigasi RELATIF.
+             */
+            path: 'HrCandidate',
+            canActivate: [permissionGuard],
+            loadComponent: () =>
+              import(
+                './pages/hr/hr-candidate-list/hr-candidate-list.component'
+              ).then((m) => m.HrCandidateListComponent),
+            data: {
+              title: 'Pelamar Rekrutmen',
+              permission: 'hr_recruitment:read',
+            },
           },
           {
             /*

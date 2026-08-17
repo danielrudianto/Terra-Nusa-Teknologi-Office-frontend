@@ -1,0 +1,146 @@
+<app-header-title
+  [title]="'hrCandidate.judul' | translate"
+  [description]="'hrCandidate.subjudul' | translate"
+></app-header-title>
+
+<div class="hcl">
+  <div class="hcl-toolbar">
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="hcl-filter"
+    >
+      <mat-label>{{ "hrCandidate.paketUjian" | translate }}</mat-label>
+      <mat-select [(ngModel)]="ujianTerpilih" (selectionChange)="muat()">
+        <mat-option [value]="null">{{ "common.semua" | translate }}</mat-option>
+        @for (u of ujian; track u.id) {
+          <mat-option [value]="u.id">{{ u.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="hcl-filter"
+    >
+      <mat-label>{{ "hrCandidate.status" | translate }}</mat-label>
+      <mat-select [(ngModel)]="statusTerpilih" (selectionChange)="muat()">
+        <mat-option value="">{{ "common.semua" | translate }}</mat-option>
+        @for (s of statusPilihan; track s) {
+          <mat-option [value]="s">
+            {{ "hrCandidate.status_" + s | translate }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <span class="hcl-spacer"></span>
+
+    @if (pelamar.length) {
+      <button type="button" class="hcl-salin" (click)="salinSemua()">
+        <mat-icon>content_copy</mat-icon>
+        {{ "hrCandidate.salinSemua" | translate }}
+      </button>
+    }
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      *appCan="'hr_recruitment:create'"
+      (click)="daftarkan()"
+    >
+      <mat-icon>person_add</mat-icon>
+      {{ "hrCandidate.daftarkan" | translate }}
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="hcl-muat"><mat-spinner diameter="30"></mat-spinner></div>
+  } @else if (!pelamar.length) {
+    <p class="hcl-kosong">{{ "hrCandidate.kosong" | translate }}</p>
+  } @else {
+    @for (p of pelamar; track p.id) {
+      <div class="hcl-baris" [class.hcl-baris--habis]="kedaluwarsa(p)">
+        <div class="hcl-baris__utama">
+          <span class="hcl-nama">{{ p.name }}</span>
+          @if (p.gender) {
+            <span class="hcl-gender">{{ p.gender }}</span>
+          }
+          <span class="hcl-status" [ngClass]="'is-' + p.status">
+            {{ "hrCandidate.status_" + p.status | translate }}
+          </span>
+        </div>
+
+        <div class="hcl-baris__ket">
+          <span>{{ p.testName }}</span>
+          <span class="hcl-titik">·</span>
+          <!--
+            Sisa waktu, bukan tanggal kedaluwarsa.
+
+            "Berlaku sampai 24 Agu 2026, 14:32" menuntut yang membacanya
+            menghitung sendiri; "2 hari lagi" langsung memberi tahu seberapa
+            mendesak.
+          -->
+          <span [class.hcl-habis]="kedaluwarsa(p)">{{ sisaWaktu(p) }}</span>
+          @if (p.email) {
+            <span class="hcl-titik">·</span>
+            <span>{{ p.email }}</span>
+          }
+        </div>
+
+        @if (!kedaluwarsa(p)) {
+          <!--
+            Dua tombol: tautan saja, dan pesan lengkap.
+
+            Tautan saja dipakai ketika percakapannya sudah berjalan; pesan
+            lengkap untuk kiriman pertama. Menggabungkannya berarti salah
+            satu keadaan selalu dilayani dengan teks yang tidak pas.
+          -->
+          <button
+            type="button"
+            class="hcl-tautan"
+            [attr.aria-label]="'hrCandidate.salinTautan' | translate"
+            (click)="salinTautan(p)"
+          >
+            <mat-icon>link</mat-icon>
+            {{ "hrCandidate.salinTautan" | translate }}
+          </button>
+
+          <button
+            type="button"
+            class="hcl-tautan hcl-tautan--utama"
+            [attr.aria-label]="'hrCandidate.salinPesan' | translate"
+            (click)="salinPesan(p)"
+          >
+            <mat-icon>chat</mat-icon>
+            {{ "hrCandidate.salinPesan" | translate }}
+          </button>
+
+          <button
+            type="button"
+            class="hcl-intip"
+            [attr.aria-label]="'hrCandidate.lihatPesan' | translate"
+            (click)="intip = intip === p.id ? null : p.id"
+          >
+            <mat-icon>{{
+              intip === p.id ? "expand_less" : "expand_more"
+            }}</mat-icon>
+          </button>
+        }
+
+        <!--
+          Pratinjau pesan.
+
+          Yang mengirimnya perlu membaca sebelum menempel: pesan ini kiriman
+          pertama kepada orang di luar perusahaan, dan salah kirim tidak dapat
+          ditarik kembali dari WhatsApp.
+        -->
+        @if (intip === p.id) {
+          <pre class="hcl-pratinjau">{{ pesanUndangan(p) }}</pre>
+        }
+      </div>
+    }
+  }
+</div>

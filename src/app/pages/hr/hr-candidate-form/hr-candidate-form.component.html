@@ -1,0 +1,130 @@
+<h2 mat-dialog-title class="hcf-title">
+  {{ "hrCandidate.daftarkanJudul" | translate }}
+</h2>
+
+<mat-dialog-content class="hcf-content">
+  <div class="hcf-atas">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "hrCandidate.paketUjian" | translate }}</mat-label>
+      <mat-select [(ngModel)]="testID">
+        @for (u of ujian; track u.id) {
+          <mat-option [value]="u.id">
+            {{ u.name }} ({{ u.jumlahSoal }})
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "hrCandidate.berlakuHari" | translate }}</mat-label>
+      <input matInput type="number" [(ngModel)]="berlakuHari" min="1" max="30" />
+      <mat-hint>{{ "hrCandidate.berlakuHint" | translate }}</mat-hint>
+    </mat-form-field>
+  </div>
+
+  @if (modeTempel) {
+    <!--
+      Tempel daftar sekaligus.
+
+      Nama pelamar biasanya sudah ada di lembar kerja atau pesan; mengetiknya
+      ulang satu per satu adalah pekerjaan yang tidak perlu ada.
+    -->
+    <mat-form-field appearance="outline" class="hcf-full">
+      <mat-label>{{ "hrCandidate.tempelLabel" | translate }}</mat-label>
+      <textarea
+        matInput
+        rows="8"
+        [(ngModel)]="tempelan"
+        [placeholder]="'hrCandidate.tempelPlaceholder' | translate"
+      ></textarea>
+      <mat-hint>{{ "hrCandidate.tempelHint" | translate }}</mat-hint>
+    </mat-form-field>
+
+    <div class="hcf-tempel-aksi">
+      <button mat-button type="button" (click)="modeTempel = false">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="!tempelan.trim()"
+        (click)="terapkanTempelan()"
+      >
+        {{ "hrCandidate.terapkanTempelan" | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="hcf-kepala">
+      <span class="hcf-kepala__judul">
+        {{ "hrCandidate.daftarNama" | translate }}
+      </span>
+      <button type="button" class="hcf-tempel-btn" (click)="modeTempel = true">
+        <mat-icon>content_paste</mat-icon>
+        {{ "hrCandidate.tempelDaftar" | translate }}
+      </button>
+    </div>
+
+    @for (b of baris; track $index) {
+      <div class="hcf-baris">
+        <span class="hcf-baris__no">{{ $index + 1 }}</span>
+
+        <mat-form-field appearance="outline" class="hcf-baris__nama">
+          <mat-label>{{ "hrCandidate.nama" | translate }}</mat-label>
+          <input matInput [(ngModel)]="b.name" />
+        </mat-form-field>
+
+        <!--
+          Dua tombol, bukan daftar pilihan.
+
+          Hanya ada dua kemungkinan dan keduanya satu huruf; membuka daftar
+          untuk memilih salah satu dari dua menambah dua ketukan pada setiap
+          baris.
+        -->
+        <mat-button-toggle-group
+          [(ngModel)]="b.gender"
+          class="hcf-baris__jk"
+          [attr.aria-label]="'hrCandidate.jenisKelamin' | translate"
+        >
+          <mat-button-toggle value="L">L</mat-button-toggle>
+          <mat-button-toggle value="P">P</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <button
+          type="button"
+          class="hcf-baris__hapus"
+          [attr.aria-label]="'common.delete' | translate"
+          (click)="hapusBaris($index)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <button type="button" class="hcf-tambah" (click)="tambahBaris()">
+      <mat-icon>add</mat-icon>{{ "hrCandidate.tambahBaris" | translate }}
+    </button>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="hcf-actions">
+  <span class="hcf-jumlah">
+    {{ "hrCandidate.akanDidaftarkan" | translate: { n: jumlahTerisi } }}
+  </span>
+  <span class="hcf-spacer"></span>
+  <button mat-button type="button" (click)="batal()">
+    {{ "common.cancel" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!bolehSimpan"
+    (click)="simpan()"
+  >
+    {{
+      (isSubmitting ? "hrCandidate.menerbitkan" : "hrCandidate.terbitkanToken")
+        | translate
+    }}
+  </button>
+</mat-dialog-actions>

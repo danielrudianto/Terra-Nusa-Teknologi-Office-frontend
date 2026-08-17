@@ -1,0 +1,146 @@
+<div class="exl">
+  <div class="exl-kiri">
+    <div class="exl-merek">
+      <span class="exl-merek__pt">PT ALPHA KONSTRUKSI NUSANTARA</span>
+      <span class="exl-merek__dept">{{ "exam.departemen" | translate }}</span>
+    </div>
+
+    <h1 class="exl-moto">
+      {{ "exam.motoAwal" | translate }}<br />
+      <span>{{ "exam.motoSatu" | translate }}</span
+      >, <span>{{ "exam.motoDua" | translate }}</span
+      >,<br />
+      {{ "exam.motoDan" | translate }}
+      <span>{{ "exam.motoTiga" | translate }}</span
+      >.
+    </h1>
+
+    <!--
+      Pilihan bahasa di muka.
+
+      Yang mengerjakan bukan karyawan dan belum pernah membuka sistem ini;
+      menyembunyikan pilihan bahasa di dalam pengaturan berarti sebagian
+      mengerjakan ujian dalam bahasa yang tidak dikuasainya.
+    -->
+    <mat-form-field appearance="outline" class="exl-bahasa">
+      <mat-label>{{ "exam.bahasa" | translate }}</mat-label>
+      <mat-select [ngModel]="bahasa" (ngModelChange)="gantiBahasa($event)">
+        <mat-option value="id">Bahasa Indonesia</mat-option>
+        <mat-option value="en">English</mat-option>
+        <mat-option value="zh">中文</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <p class="exl-perkenalan">{{ "exam.perkenalan" | translate }}</p>
+
+    @if (!ujian) {
+      <!-- --- isian token --- -->
+      <div class="exl-kartu">
+        <h2 class="exl-kartu__judul">{{ "exam.masukkanToken" | translate }}</h2>
+        <p class="exl-kartu__ket">{{ "exam.tokenKet" | translate }}</p>
+
+        <div class="exl-token">
+          <mat-form-field appearance="outline" class="exl-token__isian">
+            <mat-label>{{ "exam.token" | translate }}</mat-label>
+            <input
+              matInput
+              autocomplete="off"
+              type="search"
+              [(ngModel)]="token"
+              (keyup.enter)="periksa()"
+              [placeholder]="'exam.tokenPlaceholder' | translate"
+            />
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="exl-token__btn"
+            [disabled]="!token.trim() || isChecking"
+            (click)="periksa()"
+          >
+            {{ (isChecking ? "exam.memeriksa" : "exam.periksa") | translate }}
+          </button>
+        </div>
+
+        @if (galat) {
+          <p class="exl-galat">
+            <mat-icon>error_outline</mat-icon>{{ galat }}
+          </p>
+        }
+      </div>
+    } @else {
+      <!-- --- token dikenali: keterangan & persiapan --- -->
+      <div class="exl-kartu">
+        <p class="exl-sapa">
+          {{ "exam.selamatDatang" | translate }}
+          <strong>{{ sapaan }} {{ ujian.name }}</strong>
+        </p>
+
+        <div class="exl-ringkas">
+          <div class="exl-ringkas__item">
+            <span class="exl-ringkas__k">{{ "exam.paket" | translate }}</span>
+            <span class="exl-ringkas__v">{{ ujian.testName }}</span>
+          </div>
+          <div class="exl-ringkas__item">
+            <span class="exl-ringkas__k">{{ "exam.jumlahSoal" | translate }}</span>
+            <span class="exl-ringkas__v">{{ ujian.jumlahSoal }}</span>
+          </div>
+          <div class="exl-ringkas__item">
+            <span class="exl-ringkas__k">{{ "exam.durasi" | translate }}</span>
+            <span class="exl-ringkas__v">
+              {{ "exam.menit" | translate: { n: ujian.durationMinutes } }}
+            </span>
+          </div>
+        </div>
+
+        <!--
+          Peringatan timer, dibuat menonjol.
+
+          Timer tidak dapat dihentikan setelah berjalan, dan yang menyadarinya
+          setelah menekan Mulai tidak punya jalan kembali. Menuliskannya
+          sebagai catatan kecil di antara paragraf lain membuat sebagian
+          melewatinya.
+        -->
+        <div class="exl-ingat">
+          <mat-icon>timer</mat-icon>
+          <span>{{
+            "exam.peringatanTimer" | translate: { n: ujian.durationMinutes }
+          }}</span>
+        </div>
+
+        <h2 class="exl-kartu__judul">{{ "exam.persiapan" | translate }}</h2>
+
+        <mat-checkbox color="primary" [(ngModel)]="siapPerangkat">
+          {{ "exam.siapPerangkat" | translate }}
+        </mat-checkbox>
+        <mat-checkbox color="primary" [(ngModel)]="siapInternet">
+          {{ "exam.siapInternet" | translate }}
+        </mat-checkbox>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          class="exl-mulai"
+          [disabled]="!bolehMulai"
+          (click)="mulai()"
+        >
+          {{ "exam.mulai" | translate }}
+        </button>
+      </div>
+    }
+
+    <p class="exl-kaki">{{ "exam.hakCipta" | translate }}</p>
+  </div>
+
+  <!--
+    Gambar rig pengeboran.
+
+    Disembunyikan pada layar sempit, bukan diperkecil: pada ponsel ia
+    mendorong isian token ke bawah lipatan, dan yang membukanya harus
+    menggulir sebelum menemukan hal yang ia datangi.
+  -->
+  <div class="exl-kanan" aria-hidden="true"></div>
+</div>

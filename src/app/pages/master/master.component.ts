@@ -116,6 +116,13 @@ export class MasterComponent {
       icon: 'quiz',
       description: 'masterNav.hrQuestionDesc',
     },
+    {
+      name: 'masterNav.hrCandidate',
+      route: 'HrCandidate',
+      modul: 'hr_recruitment',
+      icon: 'how_to_reg',
+      description: 'masterNav.hrCandidateDesc',
+    },
   ];
 
   // key unik per route -> animasi ter-trigger tiap ganti halaman

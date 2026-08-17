@@ -1,0 +1,226 @@
+.hcl {
+  padding: 0 1.5rem 2rem;
+}
+
+.hcl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.hcl-filter {
+  flex: 0 1 220px;
+  min-width: 0;
+}
+
+.hcl-spacer {
+  flex: 1 1 auto;
+}
+
+.hcl-salin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.84rem;
+  white-space: nowrap;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+.hcl-muat {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.hcl-kosong {
+  padding: 3rem 0;
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--muted, #8a90a0);
+}
+
+/* --- satu pelamar --- */
+.hcl-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.6rem;
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+/*
+ * Tautan kedaluwarsa diredam, bukan disembunyikan.
+ *
+ * Yang mencarinya perlu tahu pelamarnya PERNAH diundang — menyembunyikannya
+ * membuat orang mendaftarkannya lagi dan menerbitkan token kedua.
+ */
+.hcl-baris--habis {
+  opacity: 0.6;
+}
+
+.hcl-baris__utama {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.hcl-nama {
+  font-size: 0.88rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.hcl-gender {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #6b7280);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.hcl-status {
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #6b7280);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.is-selesai {
+    background: var(--ok-bg);
+    color: var(--ok-fg);
+  }
+
+  &.is-diterima {
+    background: var(--ok-bg);
+    color: var(--ok-fg);
+  }
+
+  &.is-ditolak {
+    background: var(--bad-bg);
+    color: var(--bad-fg);
+  }
+
+  &.is-mengerjakan {
+    background: var(--warn-bg);
+    color: var(--warn-fg);
+  }
+}
+
+.hcl-baris__ket {
+  flex: 1 1 240px;
+  min-width: 0;
+  font-size: 0.76rem;
+  color: var(--muted, #8a90a0);
+  word-break: break-word;
+}
+
+.hcl-titik {
+  margin: 0 0.35rem;
+}
+
+.hcl-habis {
+  color: var(--bad-fg);
+  font-weight: 600;
+}
+
+.hcl-tautan {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--brand-strong);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  white-space: nowrap;
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hcl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hcl-filter {
+    flex: 1 1 100%;
+  }
+}
+
+/* Tombol pesan lengkap; dibedakan dari salin tautan biasa. */
+.hcl-tautan--utama {
+  border-color: var(--brand-strong);
+  background: var(--brand-soft);
+}
+
+.hcl-intip {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #9aa1b1);
+  display: inline-flex;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+/*
+ * Pratinjau pesan.
+ *
+ * `pre` supaya baris barunya terlihat persis seperti yang akan tertempel di
+ * WhatsApp — teks biasa membungkusnya menjadi satu paragraf, dan yang
+ * membacanya tidak dapat memastikan susunannya.
+ */
+.hcl-pratinjau {
+  flex: 1 1 100%;
+  margin: 0.6rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f7f8fa);
+  border: 0.5px solid var(--border, #e3e6eb);
+  font-family: inherit;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
