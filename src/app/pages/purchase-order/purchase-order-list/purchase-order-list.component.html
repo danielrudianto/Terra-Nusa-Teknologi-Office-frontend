@@ -313,6 +313,16 @@
                     <mat-icon>check_circle</mat-icon
                     ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
                   </button>
+                }
+
+                <!--
+                  Menolak selalu tersedia, diperiksa atau belum.
+
+                  Dokumen yang keliru sejak awal tidak perlu diperiksa lebih
+                  dulu untuk dibatalkan — memaksanya lewat pemeriksaan hanya
+                  menambah satu tanda pada dokumen yang memang tidak akan
+                  dipakai.
+                -->
                 <button
                   mat-menu-item
                   *appCan="'purchase_order:approve'"
