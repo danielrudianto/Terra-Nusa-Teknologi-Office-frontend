@@ -4037,5 +4037,23 @@
     "belumAda": "Belum ada pembelian pada periode ini.",
     "daftarHitam": "Pemasok ini ada di daftar hitam",
     "gagalMuat": "Gagal memuat laporan"
+  },
+  "formFill": {
+    "judul": "Pembaruan data karyawan",
+    "dimintaOleh": "Diminta oleh {{nama}}",
+    "berlaku": "Berlaku {{sisa}}",
+    "sisaHari": "{{n}} hari lagi",
+    "sisaJam": "{{n}} jam lagi",
+    "sisaKurangSejam": "kurang dari 1 jam lagi",
+    "sudahLewat": "sudah lewat",
+    "tidakBerlaku": "Tautan tidak berlaku",
+    "tidakBerlakuKet": "Tautan ini sudah kedaluwarsa atau sudah diganti. Hubungi bagian HRD untuk mendapatkan tautan baru.",
+    "tersimpan": "Data tersimpan",
+    "tersimpanKet": "Isian di bawah masih dapat diubah selama tautan ini berlaku. Tekan Simpan lagi setelah mengubahnya.",
+    "simpan": "Simpan",
+    "menyimpan": "Menyimpan…",
+    "tambah": "Tambah",
+    "hapusBaris": "Hapus baris",
+    "gagalSimpan": "Gagal menyimpan. Coba lagi."
   }
 }

@@ -10,17 +10,14 @@
   -->
   <div class="eff-tolak">
     <mat-icon>link_off</mat-icon>
-    <h1>Tautan tidak berlaku</h1>
-    <p>
-      Tautan ini sudah kedaluwarsa atau sudah diganti. Hubungi bagian HRD
-      untuk mendapatkan tautan baru.
-    </p>
+    <h1>{{ "formFill.tidakBerlaku" | translate }}</h1>
+    <p>{{ "formFill.tidakBerlakuKet" | translate }}</p>
   </div>
 } @else {
   <div class="eff">
     <header class="eff-kepala">
       <div class="eff-kepala__merek">TERRABOT</div>
-      <h1 class="eff-kepala__judul">Pembaruan data karyawan</h1>
+      <h1 class="eff-kepala__judul">{{ "formFill.judul" | translate }}</h1>
       <p class="eff-kepala__nama">{{ employeeName }}</p>
 
       @if (pengundang) {
@@ -30,13 +27,15 @@
           Tautan tanpa asal yang jelas tampak seperti percobaan penipuan —
           dan yang berhati-hati justru tidak mengisinya.
         -->
-        <p class="eff-kepala__minta">Diminta oleh {{ pengundang }}</p>
+        <p class="eff-kepala__minta">
+          {{ "formFill.dimintaOleh" | translate: { nama: pengundang } }}
+        </p>
       }
 
       @if (sisaWaktu) {
         <span class="eff-sisa" [class.eff-sisa--habis]="segeraHabis">
           <mat-icon>schedule</mat-icon>
-          Berlaku {{ sisaWaktu }}
+          {{ "formFill.berlaku" | translate: { sisa: sisaWaktu } }}
         </span>
       }
     </header>
@@ -45,11 +44,8 @@
       <div class="eff-simpan">
         <mat-icon>check_circle</mat-icon>
         <div>
-          <strong>Data tersimpan</strong>
-          <p>
-            Isian di bawah masih dapat diubah selama tautan ini berlaku.
-            Tekan Simpan lagi setelah mengubahnya.
-          </p>
+          <strong>{{ "formFill.tersimpan" | translate }}</strong>
+          <p>{{ "formFill.tersimpanKet" | translate }}</p>
         </div>
       </div>
     }
@@ -167,7 +163,7 @@
                       <button
                         type="button"
                         class="eff-baris__hapus"
-                        aria-label="Hapus baris"
+                        [attr.aria-label]="'formFill.hapusBaris' | translate"
                         (click)="hapusBaris(f.key, $index)"
                       >
                         <mat-icon>close</mat-icon>
@@ -180,7 +176,7 @@
                     class="eff-tambah"
                     (click)="tambahBaris(f.key)"
                   >
-                    <mat-icon>add</mat-icon> Tambah
+                    <mat-icon>add</mat-icon> {{ "formFill.tambah" | translate }}
                   </button>
                 </div>
               }
@@ -218,7 +214,9 @@
         [disabled]="isSaving"
         (click)="simpan()"
       >
-        {{ isSaving ? "Menyimpan…" : "Simpan" }}
+        {{
+          (isSaving ? "formFill.menyimpan" : "formFill.simpan") | translate
+        }}
       </button>
     </div>
   </div>

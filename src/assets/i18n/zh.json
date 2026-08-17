@@ -4037,5 +4037,23 @@
     "belumAda": "此期间没有采购记录。",
     "daftarHitam": "此供应商已列入黑名单",
     "gagalMuat": "加载报表失败"
+  },
+  "formFill": {
+    "judul": "员工资料更新",
+    "dimintaOleh": "由 {{nama}} 请求",
+    "berlaku": "有效期 {{sisa}}",
+    "sisaHari": "还有 {{n}} 天",
+    "sisaJam": "还有 {{n}} 小时",
+    "sisaKurangSejam": "不到 1 小时",
+    "sudahLewat": "已过期",
+    "tidakBerlaku": "链接无效",
+    "tidakBerlakuKet": "此链接已过期或已被替换。请联系人事部门获取新链接。",
+    "tersimpan": "资料已保存",
+    "tersimpanKet": "在链接有效期内仍可修改以下内容。修改后请再次点击保存。",
+    "simpan": "保存",
+    "menyimpan": "保存中…",
+    "tambah": "添加",
+    "hapusBaris": "删除此行",
+    "gagalSimpan": "保存失败，请重试。"
   }
 }

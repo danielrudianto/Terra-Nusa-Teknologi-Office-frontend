@@ -4037,5 +4037,23 @@
     "belumAda": "No purchases in this period.",
     "daftarHitam": "This supplier is blacklisted",
     "gagalMuat": "Failed to load report"
+  },
+  "formFill": {
+    "judul": "Employee data update",
+    "dimintaOleh": "Requested by {{nama}}",
+    "berlaku": "Valid for {{sisa}}",
+    "sisaHari": "{{n}} more days",
+    "sisaJam": "{{n}} more hours",
+    "sisaKurangSejam": "less than 1 hour",
+    "sudahLewat": "expired",
+    "tidakBerlaku": "This link is no longer valid",
+    "tidakBerlakuKet": "This link has expired or been replaced. Please contact HR for a new one.",
+    "tersimpan": "Your data has been saved",
+    "tersimpanKet": "You can still change the fields below while this link is valid. Press Save again after editing.",
+    "simpan": "Save",
+    "menyimpan": "Saving…",
+    "tambah": "Add",
+    "hapusBaris": "Remove row",
+    "gagalSimpan": "Failed to save. Please try again."
   }
 }

@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /**
  * Pengisian data karyawan lewat tautan undangan.
@@ -36,6 +37,7 @@ import { environment } from 'src/environments/environment';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    TranslateModule,
   ],
   templateUrl: './employee-form-fill.component.html',
   styleUrl: './employee-form-fill.component.scss',
@@ -44,6 +46,7 @@ export class EmployeeFormFillComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   isLoading = true;
   isSaving = false;
@@ -107,15 +110,18 @@ export class EmployeeFormFillComponent implements OnInit {
   get sisaWaktu(): string {
     if (!this.expiresAt) return '';
     const selisih = new Date(this.expiresAt).getTime() - Date.now();
-    if (selisih <= 0) return 'sudah lewat';
+    if (selisih <= 0) return this.translate.instant('formFill.sudahLewat');
 
     const jam = Math.floor(selisih / 3_600_000);
     if (jam >= 24) {
-      const hari = Math.floor(jam / 24);
-      return `${hari} hari lagi`;
+      return this.translate.instant('formFill.sisaHari', {
+        n: Math.floor(jam / 24),
+      });
     }
-    if (jam >= 1) return `${jam} jam lagi`;
-    return 'kurang dari 1 jam lagi';
+    if (jam >= 1) {
+      return this.translate.instant('formFill.sisaJam', { n: jam });
+    }
+    return this.translate.instant('formFill.sisaKurangSejam');
   }
 
   /** Sisa waktu menipis; ditandai supaya terlihat tanpa dibaca. */
@@ -183,8 +189,9 @@ export class EmployeeFormFillComponent implements OnInit {
       error: (err) => {
         this.isSaving = false;
         this.snackBar.open(
-          err?.error?.detail || 'Gagal menyimpan. Coba lagi.',
-          'Tutup',
+          err?.error?.detail ||
+            this.translate.instant('formFill.gagalSimpan'),
+          this.translate.instant('common.close'),
           { duration: 4000 },
         );
       },
