@@ -1470,6 +1470,21 @@ app-wysiwyg {
   }
 }
 
+/*
+ * Huruf pertama dibesarkan LEWAT CSS, bukan dengan mengubah teksnya.
+ *
+ * Teks butirnya dipakai menyusun kalimat pasal — "PIHAK KEDUA menanggung
+ * material besi, material beton, ..." — sehingga butir yang sama muncul di
+ * TENGAH kalimat. Membesarkan hurufnya di sumber membuat kalimat dokumennya
+ * berisi kapital di tengah.
+ *
+ * `::first-letter` hanya menyentuh yang tergambar, dan nilai yang dikirim ke
+ * server tetap apa adanya.
+ */
+.poh-tanggungan__nama::first-letter {
+  text-transform: uppercase;
+}
+
 .poh-tanggungan__nama {
   font-size: 0.84rem;
   line-height: 1.4;
