@@ -173,9 +173,20 @@
                       <div class="eff-baris__no">{{ $index + 1 }}</div>
                       <div class="eff-baris__isi">
                         @for (k of f.columns; track k.key) {
-                          <mat-form-field appearance="outline">
-                            <mat-label>{{ k.label }}</mat-label>
-                            @if (k.type === "pilih") {
+                          <!--
+                            Tiap cabang punya `mat-form-field` SENDIRI.
+
+                            Menaruh `@if` di dalam satu form-field membuat
+                            proyeksi konten Angular gagal menemukan
+                            `matIconSuffix`: selektornya dinilai atas susunan
+                            templat statis, dan elemen di dalam blok bersyarat
+                            berada di tampilan tersemat yang tidak terjangkau.
+                            Akibatnya tombol kalender jatuh ke dalam kotak
+                            isian, bukan menempel di kanannya.
+                          -->
+                          @if (k.type === "pilih") {
+                            <mat-form-field appearance="outline">
+                              <mat-label>{{ k.label }}</mat-label>
                               <mat-select
                                 [(ngModel)]="baris[k.key]"
                                 (ngModelChange)="ubah()"
@@ -184,42 +195,46 @@
                                   <mat-option [value]="o">{{ o }}</mat-option>
                                 }
                               </mat-select>
-                            } @else {
-                              <!--
-                                Jenis isian ditentukan `jenisIsian()`, bukan
-                                langsung dari `k.type`.
+                            </mat-form-field>
+                          } @else if (jenisIsian(k) === "date") {
+                            <!--
+                              Jenis isian ditentukan `jenisIsian()`, bukan
+                              langsung dari `k.type`.
 
-                                Definisi formulir disusun manusia; satu isian
-                                tanggal yang tertulis "teks" membuat yang
-                                mengisinya mengetik sendiri. Nama kolomnya
-                                ikut dibaca sebagai jaring pengaman.
-                              -->
-                              @if (jenisIsian(k) === "date") {
-                                <input
-                                  matInput
-                                  [matDatepicker]="dpk"
-                                  [ngModel]="tanggalDari(baris[k.key])"
-                                  (ngModelChange)="
-                                    setTanggalBaris(baris, k.key, $event)
-                                  "
-                                  readonly
-                                  (click)="dpk.open()"
-                                />
-                                <mat-datepicker-toggle
-                                  matIconSuffix
-                                  [for]="dpk"
-                                ></mat-datepicker-toggle>
-                                <mat-datepicker #dpk></mat-datepicker>
-                              } @else {
-                                <input
-                                  matInput
-                                  [type]="jenisIsian(k)"
-                                  [(ngModel)]="baris[k.key]"
-                                  (ngModelChange)="ubah()"
-                                />
-                              }
-                            }
-                          </mat-form-field>
+                              Definisi formulir disusun manusia; satu isian
+                              tanggal yang tertulis "teks" membuat yang
+                              mengisinya mengetik sendiri. Nama kolomnya ikut
+                              dibaca sebagai jaring pengaman.
+                            -->
+                            <mat-form-field appearance="outline">
+                              <mat-label>{{ k.label }}</mat-label>
+                              <input
+                                matInput
+                                [matDatepicker]="dpk"
+                                [ngModel]="tanggalDari(baris[k.key])"
+                                (ngModelChange)="
+                                  setTanggalBaris(baris, k.key, $event)
+                                "
+                                readonly
+                                (click)="dpk.open()"
+                              />
+                              <mat-datepicker-toggle
+                                matIconSuffix
+                                [for]="dpk"
+                              ></mat-datepicker-toggle>
+                              <mat-datepicker #dpk></mat-datepicker>
+                            </mat-form-field>
+                          } @else {
+                            <mat-form-field appearance="outline">
+                              <mat-label>{{ k.label }}</mat-label>
+                              <input
+                                matInput
+                                [type]="jenisIsian(k)"
+                                [(ngModel)]="baris[k.key]"
+                                (ngModelChange)="ubah()"
+                              />
+                            </mat-form-field>
+                          }
                         }
                       </div>
                       <button

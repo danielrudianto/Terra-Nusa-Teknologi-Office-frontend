@@ -16,3 +16,8 @@
   font-size: 0.78rem;
   color: var(--faint, #8a8f98);
 }
+
+/* Disembunyikan tanpa dikeluarkan dari susunan templat. */
+.cla-ok--sembunyi {
+  visibility: hidden;
+}

@@ -1497,3 +1497,9 @@ app-wysiwyg {
   display: inline-flex;
   align-items: center;
 }
+
+/* Disembunyikan tanpa dikeluarkan dari susunan templat. */
+.poh-cutoff__x--sembunyi {
+  visibility: hidden;
+  pointer-events: none;
+}

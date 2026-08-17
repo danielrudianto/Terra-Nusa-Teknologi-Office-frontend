@@ -26,6 +26,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 /** Satu isian pada definisi formulir. */
 interface Isian {
@@ -60,6 +62,8 @@ interface Bagian {
     MatProgressSpinnerModule,
     TranslatePipe,
     DialogGeserDirective,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './employee-form.component.html',
   styleUrl: './employee-form.component.scss',
@@ -269,6 +273,37 @@ export class EmployeeFormComponent implements OnInit {
     );
   }
 
+  /**
+   * Tanggal disimpan sebagai teks `YYYY-MM-DD` waktu SETEMPAT.
+   *
+   * Datepicker Material mengembalikan objek `Date`, sedangkan jawaban lama
+   * tersimpan sebagai teks. Tanpa penyeragaman, satu kolom memuat dua bentuk
+   * sekaligus — teks bagi nilai yang tidak disentuh, objek bagi yang baru
+   * dipilih — dan rekap yang membacanya harus menebak mana yang mana.
+   *
+   * `toISOString()` TIDAK dipakai: ia mengubah ke UTC lebih dulu, dan bagi
+   * WIB itu memundurkan tanggalnya sehari. Yang memilih 1 Mei akan tersimpan
+   * sebagai 30 April, tanpa galat apa pun.
+   */
+  private teksTanggal(nilai: any): string {
+    if (!nilai) return '';
+    const t = nilai instanceof Date ? nilai : new Date(nilai);
+    if (isNaN(t.getTime())) return '';
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}`;
+  }
+
+  /** Seragamkan seluruh kolom bertanggal pada satu baris daftar. */
+  private seragamkanTanggal(baris: any, isian: any): any {
+    const hasil = { ...baris };
+    for (const k of isian?.columns ?? []) {
+      if (k?.type === 'tanggal' && hasil[k.key]) {
+        hasil[k.key] = this.teksTanggal(hasil[k.key]);
+      }
+    }
+    return hasil;
+  }
+
   simpan(): void {
     if (this.formGroup.invalid || this.isSubmitting || !this.versi) return;
     this.isSubmitting = true;
@@ -281,9 +316,15 @@ export class EmployeeFormComponent implements OnInit {
         if (f.type === 'daftar') {
           // Baris kosong tidak ikut disimpan; orang kerap menambah baris
           // lalu berubah pikiran.
-          jawaban[f.key] = (v[f.key] || []).filter((baris: any) =>
-            Object.values(baris).some((x) => (x ?? '').toString().trim() !== ''),
-          );
+          jawaban[f.key] = (v[f.key] || [])
+            .filter((baris: any) =>
+              Object.values(baris).some(
+                (x) => (x ?? '').toString().trim() !== '',
+              ),
+            )
+            .map((baris: any) => this.seragamkanTanggal(baris, f));
+        } else if (f.type === 'tanggal') {
+          jawaban[f.key] = this.teksTanggal(v[f.key]) || null;
         } else if (f.type === 'ya-tidak') {
           jawaban[f.key] = v[f.key] === true;
         } else if (f.type === 'angka') {

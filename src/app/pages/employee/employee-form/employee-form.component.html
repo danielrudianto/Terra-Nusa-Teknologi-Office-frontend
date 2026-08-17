@@ -121,7 +121,26 @@
                     @if (f.type === "tanggal") {
                       <mat-form-field appearance="outline">
                         <mat-label>{{ f.label }}</mat-label>
-                        <input matInput type="date" [formControlName]="f.key" />
+                        <!--
+                          Datepicker Material, bukan `type="date"` bawaan.
+
+                          Sebagian peramban ponsel menampilkan `type="date"`
+                          sebagai isian teks biasa — dan yang mengetik sendiri
+                          menghasilkan "Mei 2024", "05/2024", "1-5-24" untuk
+                          hal yang sama.
+                        -->
+                        <input
+                          matInput
+                          [matDatepicker]="dpf"
+                          [formControlName]="f.key"
+                          readonly
+                          (click)="dpf.open()"
+                        />
+                        <mat-datepicker-toggle
+                          matIconSuffix
+                          [for]="dpf"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker #dpf></mat-datepicker>
                       </mat-form-field>
                     }
 
@@ -194,7 +213,18 @@
                               } @else if (k.type === "tanggal") {
                                 <mat-form-field appearance="outline">
                                   <mat-label>{{ k.label }}</mat-label>
-                                  <input matInput type="date" [formControlName]="k.key" />
+                                  <input
+                                    matInput
+                                    [matDatepicker]="dpk"
+                                    [formControlName]="k.key"
+                                    readonly
+                                    (click)="dpk.open()"
+                                  />
+                                  <mat-datepicker-toggle
+                                    matIconSuffix
+                                    [for]="dpk"
+                                  ></mat-datepicker-toggle>
+                                  <mat-datepicker #dpk></mat-datepicker>
                                 </mat-form-field>
                               } @else {
                                 <mat-form-field appearance="outline">

@@ -18,9 +18,20 @@
     tanpa penanda, keduanya terlihat sama padahal yang kedua belum menyimpan
     apa pun.
   -->
-  @if (terpilih) {
-    <mat-icon matSuffix class="cla-ok">check_circle</mat-icon>
-  }
+  <!--
+    Selalu tergambar; yang berubah hanya tampak-tidaknya.
+
+    `matSuffix` ditemukan `mat-form-field` lewat proyeksi konten, dan
+    selektornya dinilai atas susunan templat STATIS. Di dalam `@if`,
+    elemennya berada di tampilan tersemat yang tidak terjangkau — sehingga
+    ikonnya jatuh ke dalam kotak isian alih-alih menempel di kanannya.
+  -->
+  <mat-icon
+    matSuffix
+    class="cla-ok"
+    [class.cla-ok--sembunyi]="!terpilih"
+    >check_circle</mat-icon
+  >
 
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="tampilan">
     @for (k of saran; track k.id) {

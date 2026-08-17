@@ -415,8 +415,12 @@
                         [max]="31"
                         [placeholder]="'poH.tgl' | translate"
                       />
-                      @if (cutoffDays.length > 1) {
-                        <button
+                      <!--
+                        Selalu tergambar; `matSuffix` tidak terjangkau
+                        proyeksi konten bila berada di dalam `@if`.
+                      -->
+                      <button
+                          [class.poh-cutoff__x--sembunyi]="cutoffDays.length <= 1"
                           matSuffix
                           mat-icon-button
                           type="button"
@@ -426,7 +430,6 @@
                         >
                           <mat-icon>close</mat-icon>
                         </button>
-                      }
                     </mat-form-field>
                   }
 
