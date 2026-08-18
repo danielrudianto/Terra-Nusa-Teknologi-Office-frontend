@@ -3627,7 +3627,13 @@
     "testAddRow": "Add specification",
     "jenisUjiTanah": "Test type",
     "jenisUjiTanahPlaceholder": "Type or pick from the list",
-    "jenisUjiTanahHint": "Several tests may be written on one line, separated by commas."
+    "jenisUjiTanahHint": "Several tests may be written on one line, separated by commas.",
+    "perpindahanSampel": "Sample transfer",
+    "sampelDikirim": "Sent to the laboratory",
+    "sampelDiambil": "Collected by the laboratory",
+    "alamatPengiriman": "Laboratory address",
+    "alamatPengambilan": "Collection address",
+    "alamatSampelPlaceholder": "Site name, street, city, landmark"
   },
   "agendaPage": {
     "title": "Agenda",

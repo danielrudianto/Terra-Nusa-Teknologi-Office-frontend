@@ -850,3 +850,58 @@ app-wysiwyg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/*
+ * Peringatan satuan berbeda dari master barang.
+ *
+ * Warna waspada, bukan merah: ini bukan kesalahan yang menghalangi
+ * penyimpanan — sebagian pembelian memang memakai satuan berbeda. Merah
+ * membuat yang benar pun ragu.
+ */
+.po-satuan-beda {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: -0.35rem 0 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  font-size: 0.76rem;
+  line-height: 1.45;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+/*
+ * Banner keterangan.
+ *
+ * Dipakai untuk hal yang harus tetap terbaca setelah isiannya disentuh —
+ * berbeda dari hint, yang tertutup daftar usulan begitu autocomplete terbuka.
+ */
+.pof-banner {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: -0.5rem 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #1a3a8f);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}

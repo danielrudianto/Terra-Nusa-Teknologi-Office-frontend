@@ -3627,7 +3627,13 @@
     "testAddRow": "添加规格",
     "jenisUjiTanah": "试验类型",
     "jenisUjiTanahPlaceholder": "输入或从列表中选择",
-    "jenisUjiTanahHint": "多项试验可写在同一行，以逗号分隔。"
+    "jenisUjiTanahHint": "多项试验可写在同一行，以逗号分隔。",
+    "perpindahanSampel": "试样交接方式",
+    "sampelDikirim": "送至实验室",
+    "sampelDiambil": "由实验室取样",
+    "alamatPengiriman": "实验室地址",
+    "alamatPengambilan": "取样地址",
+    "alamatSampelPlaceholder": "现场名称、街道、城市、地标"
   },
   "agendaPage": {
     "title": "日程",

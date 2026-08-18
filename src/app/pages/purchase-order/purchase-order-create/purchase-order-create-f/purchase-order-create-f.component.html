@@ -274,7 +274,12 @@
         itu memang bentuk penawaran laboratorium.
       -->
       @if (formGroup.get("materialType")?.value === "ujitanah") {
-        <mat-form-field appearance="outline" class="pof-span2">
+        <!--
+          Selebar kartu: tidak ada isian lain di sebelahnya, dan nama uji
+          kerap panjang — "Uji kepadatan lapangan (sand cone)" sudah hampir
+          memenuhi setengah lebar.
+        -->
+        <mat-form-field appearance="outline" class="pof-uji">
           <mat-label>{{ "poF.jenisUjiTanah" | translate }}</mat-label>
           <input
             matInput
@@ -289,7 +294,59 @@
               <mat-option [value]="u">{{ u }}</mat-option>
             }
           </mat-autocomplete>
-          <mat-hint>{{ "poF.jenisUjiTanahHint" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <!--
+          Banner, bukan hint.
+
+          Hint tertutup daftar usulan begitu autocomplete-nya terbuka —
+          persis saat keterangan ini paling diperlukan, yaitu ketika orang
+          sedang memilih jenis ujinya.
+        -->
+        <div class="pof-banner">
+          <mat-icon>science</mat-icon>
+          <span>{{ "poF.jenisUjiTanahHint" | translate }}</span>
+        </div>
+      }
+
+      <!--
+        Perpindahan benda uji — menggantikan Franco/Loco pada jasa pengujian.
+
+        Franco dan Loco menyangkut pengiriman BARANG yang dibeli. Pada
+        pengujian tidak ada barang yang berpindah kepemilikan: benda ujinya
+        tetap milik PIHAK PERTAMA, dan yang perlu disebut hanya siapa yang
+        memindahkannya dan ke alamat mana.
+      -->
+      @if (isTestService) {
+        <mat-form-field appearance="outline" class="pof-uji">
+          <mat-label>{{ "poF.perpindahanSampel" | translate }}</mat-label>
+          <mat-select formControlName="sampleMode">
+            <mat-option value="dikirim">{{
+              "poF.sampelDikirim" | translate
+            }}</mat-option>
+            <mat-option value="diambil">{{
+              "poF.sampelDiambil" | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="pof-uji">
+          <mat-label>{{
+            (formGroup.get("sampleMode")?.value === "diambil"
+              ? "poF.alamatPengambilan"
+              : "poF.alamatPengiriman"
+            ) | translate
+          }}</mat-label>
+          <!--
+            Textarea: alamat laboratorium maupun lokasi proyek kerap beberapa
+            baris — nama tempat, jalan, kota, patokan.
+          -->
+          <textarea
+            matInput
+            rows="3"
+            formControlName="sampleAddress"
+            [placeholder]="'poF.alamatSampelPlaceholder' | translate"
+          ></textarea>
         </mat-form-field>
       }
 

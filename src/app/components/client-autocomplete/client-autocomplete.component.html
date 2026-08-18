@@ -50,5 +50,16 @@
     }
   </mat-autocomplete>
 
-  <mat-hint>{{ "client.selectorHint" | translate }}</mat-hint>
 </mat-form-field>
+
+<!--
+  Banner, bukan hint.
+
+  Hint tertutup daftar saran begitu autocomplete-nya terbuka — persis saat
+  keterangan ini paling diperlukan, yaitu ketika orang sedang mengetik dan
+  belum menyadari bahwa mengetik saja tidak menyimpan kliennya.
+-->
+<div class="cla-banner">
+  <mat-icon>info</mat-icon>
+  <span>{{ "client.selectorHint" | translate }}</span>
+</div>

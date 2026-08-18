@@ -58,6 +58,18 @@ export interface ClauseContext {
   testReportDays?: number | string;
   /** Cara penyerahan benda uji ke laboratorium. */
   sampleHandover?: string;
+  /** Jenis uji tanah, diketik pengguna; kosong pada jenis material lain. */
+  soilTestName?: string;
+  /**
+   * Cara sampel berpindah: DIAMBIL laboratorium, atau DIKIRIM ke sana.
+   *
+   * Franco dan Loco tidak berlaku di sini — keduanya istilah pengiriman
+   * BARANG yang dibeli, sedangkan pada pengujian yang berpindah adalah
+   * benda ujinya, dan yang membelinya justru pemiliknya sendiri.
+   */
+  sampleMode?: 'diambil' | 'dikirim';
+  /** Alamat pengambilan atau pengiriman sampel, mengikuti `sampleMode`. */
+  sampleAddress?: string;
   materialType?: string;
   // PO-H: keterangan pekerjaan
   workLocation?: string;
@@ -1453,28 +1465,100 @@ const F_CLAUSES: ClauseTemplate[] = [
       // biasa; besi punya tambahan poin uji tarik & tekuk.
       // Jasa pengujian: bukan pembelian barang, melainkan pekerjaan yang
       // dikerjakan laboratorium independen — dokumennya berbentuk SPK.
-      if (ctx.materialType === 'ujitekan' || ctx.materialType === 'ujibesi') {
+      if (
+        ctx.materialType === 'ujitekan' ||
+        ctx.materialType === 'ujibesi' ||
+        ctx.materialType === 'ujitanah'
+      ) {
         const besi = ctx.materialType === 'ujibesi';
+        const tanah = ctx.materialType === 'ujitanah';
         const lines: string[] = [
-          ctx.sampleCount
-            ? `Lingkup pekerjaan adalah ${
-                besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
-              } sebanyak ${ctx.sampleCount} benda uji ${
-                besi ? 'besi tulangan' : 'silinder beton'
-              }.`
-            : `Lingkup pekerjaan adalah ${
-                besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
-              } benda uji ${
-                besi ? 'besi tulangan' : 'silinder beton'
-              } sesuai rincian pekerjaan.`,
-          `PIHAK KEDUA merupakan laboratorium independen yang tidak terafiliasi dengan pemasok ${
-            besi ? 'besi' : 'beton'
-          } pada proyek ini.`,
-          besi
-            ? 'Pengujian dilakukan mengikuti SNI 2052 tentang baja tulangan beton, meliputi uji tarik dan uji tekuk.'
-            : 'Pengujian dilakukan mengikuti SNI 1974 tentang cara uji kuat tekan beton dengan benda uji silinder.',
+          /*
+           * Uji tanah tidak punya kalimat baku.
+           *
+           * Jenis ujinya berbeda tiap pesanan dan kerap lebih dari satu,
+           * sehingga yang disebut adalah apa yang diketik — bukan kalimat
+           * yang dikarang di sini.
+           */
+          tanah
+            ? ctx.sampleCount
+              ? `Lingkup pekerjaan adalah ${
+                  ctx.soilTestName || 'pengujian tanah'
+                } sebanyak ${ctx.sampleCount} sampel.`
+              : `Lingkup pekerjaan adalah ${
+                  ctx.soilTestName || 'pengujian tanah'
+                } sesuai rincian pekerjaan.`
+            : ctx.sampleCount
+              ? `Lingkup pekerjaan adalah ${
+                  besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
+                } sebanyak ${ctx.sampleCount} benda uji ${
+                  besi ? 'besi tulangan' : 'silinder beton'
+                }.`
+              : `Lingkup pekerjaan adalah ${
+                  besi ? 'pengujian tarik dan tekuk' : 'pengujian kuat tekan'
+                } benda uji ${
+                  besi ? 'besi tulangan' : 'silinder beton'
+                } sesuai rincian pekerjaan.`,
+          /*
+           * Ketidakterafiliasian TIDAK disebut pada uji tanah.
+           *
+           * Yang dijaga pada uji beton dan besi adalah laboratoriumnya bukan
+           * milik pemasok materialnya. Pada uji tanah tidak ada pemasok yang
+           * setara — tanahnya sudah ada di lokasi.
+           */
+          ...(tanah
+            ? []
+            : [
+                `PIHAK KEDUA merupakan laboratorium independen yang tidak terafiliasi dengan pemasok ${
+                  besi ? 'besi' : 'beton'
+                } pada proyek ini.`,
+              ]),
+          /*
+           * Standar uji tanah tidak tunggal.
+           *
+           * Tiap jenis uji punya standarnya sendiri — SNI 3423 untuk analisa
+           * saringan, SNI 1966 untuk batas Atterberg, dan seterusnya.
+           * Menyebut satu standar untuk semuanya membuat dokumen menunjuk
+           * aturan yang tidak berlaku bagi ujinya.
+           */
+          tanah
+            ? 'Pengujian dilakukan mengikuti Standar Nasional Indonesia yang berlaku bagi masing-masing jenis pengujian.'
+            : besi
+              ? 'Pengujian dilakukan mengikuti SNI 2052 tentang baja tulangan beton, meliputi uji tarik dan uji tekuk.'
+              : 'Pengujian dilakukan mengikuti SNI 1974 tentang cara uji kuat tekan beton dengan benda uji silinder.',
           'Seluruh alat uji yang digunakan wajib dalam keadaan terkalibrasi dan bukti kalibrasinya dapat ditunjukkan apabila diminta oleh PIHAK PERTAMA.',
         ];
+
+        /*
+         * Perpindahan sampel — DIAMBIL atau DIKIRIM.
+         *
+         * Menggantikan istilah Franco/Loco, yang tidak berlaku pada
+         * pengujian: keduanya menyangkut pengiriman barang yang dibeli,
+         * sedangkan benda uji tetap milik PIHAK PERTAMA sepanjang waktu.
+         *
+         * Alamatnya disebut pada baris tersendiri, bukan menyambung
+         * kalimatnya — alamat kerap beberapa baris dan patah di tempat yang
+         * tidak disengaja bila disambung.
+         */
+        if (ctx.sampleMode === 'diambil') {
+          lines.push(
+            'Benda uji diambil PIHAK KEDUA di lokasi yang ditentukan PIHAK PERTAMA.',
+          );
+          if (ctx.sampleAddress) {
+            lines.push(
+              `Alamat pengambilan benda uji adalah:\n${ctx.sampleAddress}.`,
+            );
+          }
+        } else if (ctx.sampleMode === 'dikirim') {
+          lines.push(
+            'Benda uji dikirimkan PIHAK PERTAMA ke laboratorium PIHAK KEDUA.',
+          );
+          if (ctx.sampleAddress) {
+            lines.push(
+              `Alamat pengiriman benda uji adalah:\n${ctx.sampleAddress}.`,
+            );
+          }
+        }
 
         if (ctx.sampleHandover) {
           lines.push(`Penyerahan benda uji dilakukan ${ctx.sampleHandover}.`);

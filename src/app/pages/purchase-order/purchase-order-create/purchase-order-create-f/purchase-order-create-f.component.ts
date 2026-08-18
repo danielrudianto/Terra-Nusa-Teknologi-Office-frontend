@@ -407,6 +407,15 @@ export class PurchaseOrderCreateFComponent {
      * lewat `selaraskanValidasi()` seperti `deliveryMethod`.
      */
     soilTestName: new FormControl(''),
+    /*
+     * Cara benda uji berpindah — DIAMBIL laboratorium, atau DIKIRIM ke sana.
+     *
+     * Menggantikan Franco/Loco pada jasa pengujian. Keduanya istilah
+     * pengiriman BARANG yang dibeli; pada pengujian, benda ujinya tetap
+     * milik PIHAK PERTAMA dan yang berpindah hanya penguasaannya sementara.
+     */
+    sampleMode: new FormControl<'diambil' | 'dikirim'>('dikirim'),
+    sampleAddress: new FormControl(''),
     // opsional: hanya dicetak bila diisi
     deliveryDate: new FormControl(''),
     paymentDueDate: new FormControl(''),
@@ -819,6 +828,9 @@ export class PurchaseOrderCreateFComponent {
   private clauseContext() {
     const v = this.formGroup.getRawValue();
     return {
+      soilTestName: this.formGroup.get('soilTestName')?.value || '',
+      sampleMode: this.formGroup.get('sampleMode')?.value || undefined,
+      sampleAddress: this.formGroup.get('sampleAddress')?.value || '',
       materialType: v.materialType,
       deliveryDate: v.deliveryDate,
       paymentDueDate: v.paymentDueDate,
@@ -1041,6 +1053,8 @@ export class PurchaseOrderCreateFComponent {
         materialType: this.formGroup.get('materialType')?.value,
         // Jenis uji tanah; kosong pada jenis material lain.
         soilTestName: this.formGroup.get('soilTestName')?.value || null,
+        sampleMode: this.formGroup.get('sampleMode')?.value || null,
+        sampleAddress: this.formGroup.get('sampleAddress')?.value || null,
         deliveryDate: this.formGroup.get('deliveryDate')?.value,
         sampleCount: Number(this.formGroup.get('sampleCount')?.value) || 0,
         testUnitPrice: Number(this.formGroup.get('testUnitPrice')?.value) || 0,

@@ -3627,7 +3627,13 @@
     "testAddRow": "Tambah spesifikasi",
     "jenisUjiTanah": "Jenis pengujian",
     "jenisUjiTanahPlaceholder": "Ketik atau pilih dari daftar",
-    "jenisUjiTanahHint": "Beberapa uji boleh ditulis dalam satu baris, dipisah koma."
+    "jenisUjiTanahHint": "Beberapa uji boleh ditulis dalam satu baris, dipisah koma.",
+    "perpindahanSampel": "Perpindahan benda uji",
+    "sampelDikirim": "Dikirim ke laboratorium",
+    "sampelDiambil": "Diambil laboratorium",
+    "alamatPengiriman": "Alamat laboratorium",
+    "alamatPengambilan": "Alamat pengambilan benda uji",
+    "alamatSampelPlaceholder": "Nama lokasi, jalan, kota, patokan"
   },
   "agendaPage": {
     "title": "Agenda",
