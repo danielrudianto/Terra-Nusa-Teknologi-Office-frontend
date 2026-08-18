@@ -1474,6 +1474,17 @@ const F_CLAUSES: ClauseTemplate[] = [
         const tanah = ctx.materialType === 'ujitanah';
         const lines: string[] = [
           /*
+           * Larangan mengalihtugaskan — poin PERTAMA.
+           *
+           * Yang dipilih adalah laboratoriumnya, bukan sekadar hasil ujinya:
+           * kalibrasi alat, kompetensi teknisi, dan keberpihakannya sudah
+           * dinilai sebelum ditunjuk. Dialihkan ke pihak lain, seluruh
+           * penilaian itu gugur — dan hasil uji yang dipakai membenarkan
+           * pekerjaan konstruksi berasal dari pihak yang tidak pernah
+           * diperiksa.
+           */
+          'PIHAK KEDUA tidak diizinkan untuk mengalihtugaskan pekerjaan ini kepada pihak lain.',
+          /*
            * Uji tanah tidak punya kalimat baku.
            *
            * Jenis ujinya berbeda tiap pesanan dan kerap lebih dari satu,
@@ -1559,6 +1570,22 @@ const F_CLAUSES: ClauseTemplate[] = [
             );
           }
         }
+
+        /*
+         * Harga sudah termasuk pajak.
+         *
+         * Ditaruh setelah perpindahan benda uji, sebelum ketentuan laporan
+         * dan pembayaran: ia menutup pembicaraan tentang lingkup dan
+         * penyerahan, lalu klausul berikutnya beralih ke hasil dan
+         * penagihannya.
+         *
+         * Perlu disebut karena sebagian laboratorium menawarkan harga
+         * sebelum pajak, dan selisihnya baru muncul di invoice — ketika
+         * pekerjaannya sudah berjalan dan tidak dapat ditawar lagi.
+         */
+        lines.push(
+          'Harga sudah termasuk seluruh biaya perpajakan yang berlaku di Republik Indonesia.',
+        );
 
         if (ctx.sampleHandover) {
           lines.push(`Penyerahan benda uji dilakukan ${ctx.sampleHandover}.`);
