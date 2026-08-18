@@ -72,11 +72,21 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "project.docDpp" | translate }}</mat-label>
-          <input matInput formControlName="dpp"
+          <!--
+            `allowNegativeNumbers` — adendum boleh mengurangi nilai kontrak.
+            
+            Tanpa ini, ngx-mask menolak tanda minus dan pengurangan lingkup
+            kerja tidak dapat dicatat sama sekali. Servernya sudah menerima
+            nilai negatif; yang menghalangi hanya masknya.
+          -->
+          <input
+            matInput
+            formControlName="dpp"
             prefix="Rp. "
             thousandSeparator=" "
             decimalScale="2"
             mask="separator"
+            [allowNegativeNumbers]="true"
           />
           <mat-hint>{{ "project.docDppHint" | translate }}</mat-hint>
         </mat-form-field>

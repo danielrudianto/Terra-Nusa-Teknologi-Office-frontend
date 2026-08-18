@@ -27,12 +27,23 @@
     <div class="prp-kpi" [class.is-berubah]="baruBerubah()">
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.contract" | translate }}</div>
-        <div class="prp-nilai">{{ nilaiKontrak() | number: "1.0-0" }}</div>
+        <!--
+          Nominal dokumen — SUDAH termasuk PPN.
+
+          Disamakan dengan cara tertagih dan biaya ditampilkan: keduanya
+          memakai nilai berikut PPN. Sebelumnya kontraknya sendirian memakai
+          DPP, sehingga membandingkan ketiganya di layar yang sama
+          menghasilkan selisih sebelas persen yang tidak ada sebabnya.
+
+          DPP tetap disebut di bawahnya — ia yang dipakai menghitung margin,
+          dan yang membaca perlu tahu angka mana yang mana.
+        -->
+        <div class="prp-nilai">{{ nominalKontrak() | number: "1.0-0" }}</div>
         <div class="prp-ket">
-          {{ "projectReport.contractDppHint" | translate }}
+          {{ "projectReport.contractGrossHint" | translate }}
           <span *ngIf="nominalKontrak() !== nilaiKontrak()">
-            &middot; {{ "projectReport.grossValue" | translate }}
-            {{ nominalKontrak() | number: "1.0-0" }}
+            &middot; {{ "projectReport.dppValue" | translate }}
+            {{ nilaiKontrak() | number: "1.0-0" }}
           </span>
         </div>
       </div>
@@ -94,7 +105,17 @@
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.billed" | translate }}</div>
         <div class="prp-nilai">{{ tertagih() | number: "1.0-0" }}</div>
-        <div class="prp-ket">{{ "projectReport.billedHint" | translate }}</div>
+        <!--
+          DPP disebut di bawahnya, sama seperti pada nilai kontrak — supaya
+          keduanya dapat dibaca dalam dasar yang sama.
+        -->
+        <div class="prp-ket">
+          {{ "projectReport.billedHint" | translate }}
+          <span *ngIf="tertagihDpp() !== tertagih()">
+            &middot; {{ "projectReport.dppValue" | translate }}
+            {{ tertagihDpp() | number: "1.0-0" }}
+          </span>
+        </div>
       </div>
     </div>
 

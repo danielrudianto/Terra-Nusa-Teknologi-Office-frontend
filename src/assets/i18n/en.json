@@ -3552,7 +3552,9 @@
     "chartOther": "Other purchases",
     "downloadExcel": "Excel",
     "downloadPdf": "PDF",
-    "terpakai": "Contract used"
+    "terpakai": "Contract used",
+    "contractGrossHint": "Document value, including VAT",
+    "dppValue": "Tax base"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",

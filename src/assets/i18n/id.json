@@ -3552,7 +3552,9 @@
     "chartOther": "Pembelian lain",
     "downloadExcel": "Excel",
     "downloadPdf": "PDF",
-    "terpakai": "Kontrak terpakai"
+    "terpakai": "Kontrak terpakai",
+    "contractGrossHint": "Nilai dokumen, termasuk PPN",
+    "dppValue": "DPP"
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",

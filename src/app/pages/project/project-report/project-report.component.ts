@@ -503,6 +503,22 @@ export class ProjectReportComponent implements OnInit {
     return p !== null && p > 100;
   });
 
+  /**
+   * Tertagih tanpa PPN.
+   *
+   * Disandingkan dengan nilai berikut PPN pada layar yang sama, sehingga
+   * ketiga angka — kontrak, biaya, tertagih — dapat dibandingkan dalam
+   * dasar yang sama, dan DPP-nya tetap terlihat bagi yang memerlukannya.
+   */
+  readonly tertagihDpp = computed(() => {
+    const d = this._data();
+    if (!d) return 0;
+    return d.sales_invoices.reduce(
+      (a: number, b: any) => a + Number(b.dpp || 0),
+      0,
+    );
+  });
+
   readonly tertagih = computed(() => {
     const d = this._data();
     if (!d) return 0;

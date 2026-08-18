@@ -3552,7 +3552,9 @@
     "chartOther": "其他采购",
     "downloadExcel": "Excel",
     "downloadPdf": "PDF",
-    "terpakai": "合同已用"
+    "terpakai": "合同已用",
+    "contractGrossHint": "合同金额，含增值税",
+    "dppValue": "税基"
   },
   "employeeStatus": {
     "title": "停用员工",
