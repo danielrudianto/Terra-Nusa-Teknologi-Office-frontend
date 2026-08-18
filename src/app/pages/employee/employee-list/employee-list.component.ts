@@ -64,7 +64,17 @@ export class EmployeeListComponent {
   isLoading: boolean = false;
   employees: any[] = [];
   /** Filter status: 'all' | 'active' | 'inactive' (inactive = punya endDate) */
-  activeFilter: 'all' | 'active' | 'inactive' = 'all';
+  /*
+   * Bawaannya AKTIF, bukan semua.
+   *
+   * Karyawan yang sudah keluar tidak pernah dihapus — jejaknya diperlukan
+   * slip gaji dan dokumen lama. Akibatnya daftarnya terus memanjang, dan
+   * yang mencari orang yang masih bekerja harus memilahnya sendiri setiap
+   * kali membuka layar ini.
+   *
+   * Yang sudah keluar tetap satu ketukan jauhnya lewat saringan di atas.
+   */
+  activeFilter: 'all' | 'active' | 'inactive' = 'active';
   count: number = 0;
 
   displayedColumns: string[] = [
