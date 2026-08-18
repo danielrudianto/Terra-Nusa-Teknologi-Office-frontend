@@ -157,7 +157,9 @@
     "semua": "全部",
     "bersihkan": "清除",
     "dash": "—",
-    "hari": "天"
+    "hari": "天",
+    "more": "更多",
+    "hide": "收起"
   },
   "nav": {
     "pinned": "已固定",
@@ -384,7 +386,10 @@
     "otherValue": "Other value",
     "selaraskanLunas": "同步付款状态",
     "lunasDiselaraskan": "付款状态已重新计算。",
-    "lunasGagal": "同步付款状态失败。"
+    "lunasGagal": "同步付款状态失败。",
+    "belumDibayar": "{{n}} 张采购发票尚未结清",
+    "belumDibayarKet": "尚无到期项，但仍需留意。",
+    "lewatTempoKet": "其中 {{n}} 张已逾期——{{nilai}}"
   },
   "purchaseDraft": {
     "title": "采购草稿",
@@ -3421,7 +3426,8 @@
     "sessionExpired": "您的登录已过期，请重新登录。",
     "saveFailed": "保存失败",
     "actionFailed": "操作未能完成",
-    "rejectSuccess": "采购订单已拒绝"
+    "rejectSuccess": "采购订单已拒绝",
+    "formInvalid": "部分字段填写有误，请检查标红处。"
   },
   "panduan": {
     "title": "指南",
@@ -4344,7 +4350,8 @@
     "biayaLainPlaceholder": "例如：运费、装卸费、材料试验费",
     "ongkosBelumDitaksir": "运费尚未估算",
     "cetakPdf": "打印 PDF",
-    "unduhExcel": "下载 Excel"
+    "unduhExcel": "下载 Excel",
+    "terlaluBanyakCetak": "一页内超过 {{n}} 家供应商难以阅读，数字可能被截断。"
   },
   "rencana": {
     "buatJudul": "资金计划",
@@ -4362,7 +4369,6 @@
     "catatanPlaceholder": "如有需要可补充说明",
     "rekeningOpsional": "若尚未决定从哪个账户支付，账户可留空。",
     "terkunciKet": "该计划已标记为已使用，无法再修改。",
-    "rencanaHariIni": "该日期的资金计划",
     "totalBulanIni": "本月资金计划",
     "katMaterial": "材料",
     "katSubkon": "分包商",
@@ -4395,6 +4401,8 @@
     "katUtang": "偿还债务",
     "terlewatBanner": "{{n}} 项资金计划已逾期",
     "terlewatBannerKet": "已过日期但未标记为已使用；不计入合计。",
-    "lihat": "查看"
+    "lihat": "查看",
+    "rincian": "明细",
+    "dihitungSejak": "自 {{tanggal}} 起计算；已过日期者不计入。"
   }
 }

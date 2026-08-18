@@ -157,7 +157,9 @@
     "semua": "Semua",
     "bersihkan": "Bersihkan",
     "dash": "—",
-    "hari": "hari"
+    "hari": "hari",
+    "more": "Lainnya",
+    "hide": "Sembunyikan"
   },
   "nav": {
     "pinned": "Disematkan",
@@ -384,7 +386,10 @@
     "otherValue": "Other value",
     "selaraskanLunas": "Selaraskan status lunas",
     "lunasDiselaraskan": "Status lunas dihitung ulang.",
-    "lunasGagal": "Gagal menyelaraskan status lunas."
+    "lunasGagal": "Gagal menyelaraskan status lunas.",
+    "belumDibayar": "{{n}} tagihan pembelian belum lunas",
+    "belumDibayarKet": "Belum ada yang jatuh tempo, tetapi tetap perlu dipantau.",
+    "lewatTempoKet": "{{n}} di antaranya sudah lewat jatuh tempo — {{nilai}}"
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -3421,7 +3426,8 @@
     "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
     "saveFailed": "Gagal menyimpan data",
     "actionFailed": "Tindakan gagal dijalankan",
-    "rejectSuccess": "Purchase order ditolak"
+    "rejectSuccess": "Purchase order ditolak",
+    "formInvalid": "Ada isian yang belum benar. Periksa yang bertanda merah."
   },
   "panduan": {
     "title": "Panduan",
@@ -4344,7 +4350,8 @@
     "biayaLainPlaceholder": "Ex. ongkos angkut, bongkar muat, uji material",
     "ongkosBelumDitaksir": "ongkos angkut belum ditaksir",
     "cetakPdf": "Cetak PDF",
-    "unduhExcel": "Unduh Excel"
+    "unduhExcel": "Unduh Excel",
+    "terlaluBanyakCetak": "Lebih dari {{n}} pemasok sulit terbaca dalam satu halaman; angkanya mungkin terpotong."
   },
   "rencana": {
     "buatJudul": "Rencana kas",
@@ -4362,7 +4369,6 @@
     "catatanPlaceholder": "Keterangan tambahan bila perlu",
     "rekeningOpsional": "Rekening boleh dikosongkan bila belum diputuskan dari mana dibayar.",
     "terkunciKet": "Rencana ini sudah ditandai terpakai, sehingga tidak dapat diubah lagi.",
-    "rencanaHariIni": "Rencana kas pada tanggal ini",
     "totalBulanIni": "Rencana kas bulan ini",
     "katMaterial": "Material",
     "katSubkon": "Subkontraktor",
@@ -4395,6 +4401,8 @@
     "katUtang": "Pembayaran utang",
     "terlewatBanner": "{{n}} rencana kas terlewat",
     "terlewatBannerKet": "Tanggalnya sudah lewat tanpa ditandai terpakai; tidak ikut dihitung.",
-    "lihat": "Lihat"
+    "lihat": "Lihat",
+    "rincian": "Rincian",
+    "dihitungSejak": "Dihitung sejak {{tanggal}}; yang tanggalnya sudah lewat tidak ikut."
   }
 }

@@ -52,6 +52,7 @@ import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/pur
 import { AdendumService } from '../../../../services/adendum.service';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
+import { ProjectLookupService } from 'src/app/services/project-lookup.service';
 
 
 /**
@@ -99,6 +100,54 @@ export class PurchaseOrderCreateBComponent implements OnInit {
   private readonly translateSvc = inject(TranslateService);
 
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
+
+  /**
+   * Alamat terakhir yang diisi SISTEM pada tiap baris.
+   *
+   * Yang diketik sendiri tidak boleh ditimpa: sebagian alat ditempatkan di
+   * titik tertentu — area stockpile, gudang, batas lahan — dan itu justru
+   * keterangan yang tidak boleh hilang saat proyeknya diganti.
+   */
+  private lokasiDariSistem = new Map<number, string>();
+
+  /**
+   * Proyek dipilih — lokasi tiap baris alat diisikan.
+   *
+   * Alat disewa untuk dipakai di proyeknya; mengetik alamat yang sama pada
+   * setiap baris berarti menyalin dari layar sebelah, dan yang disalin
+   * tangan cepat atau lambat berbeda dari sumbernya.
+   */
+  onProyekBerubah(): void {
+    const kode = String(this.formGroup.get('projectName')?.value || '');
+    if (!kode) return;
+
+    const proyek: any = this.projectLookup.cari(kode);
+    const alamat = [proyek?.name, proyek?.address]
+      .map((x: any) => String(x || '').trim())
+      .filter((x: string) => !!x)
+      .join(', ');
+    if (!alamat) return;
+
+    this.t.controls.forEach((c, i) => {
+      const kini = String(c.get('location')?.value || '').trim();
+      const dariSistem = (this.lokasiDariSistem.get(i) || '').trim();
+      if (kini && kini !== dariSistem) return;
+      c.get('location')?.setValue(alamat);
+      this.lokasiDariSistem.set(i, alamat);
+    });
+  }
+
+  /** Lokasi bawaan bagi baris yang baru ditambahkan. */
+  private lokasiProyek(): string {
+    const kode = String(this.formGroup.get('projectName')?.value || '');
+    if (!kode) return '';
+    const proyek: any = this.projectLookup.cari(kode);
+    return [proyek?.name, proyek?.address]
+      .map((x: any) => String(x || '').trim())
+      .filter((x: string) => !!x)
+      .join(', ');
+  }
+
   ngOnInit(): void {
     // Bila dibuka sebagai adendum atau koreksi, isinya diambil dari
     // dokumen induknya. Dipanggil di `ngOnInit` — bukan di penangan
@@ -137,6 +186,7 @@ export class PurchaseOrderCreateBComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
+    private projectLookup: ProjectLookupService,
   ) {}
 
   isSubmitting = false;
@@ -311,7 +361,14 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       price: [0, [Validators.required, Validators.min(0)]],
       fromDate: ['', Validators.required],
       toDate: ['', Validators.required],
-      location: ['', Validators.required],
+      /*
+       * Lokasi diisi dari proyeknya bila sudah dipilih.
+       *
+       * Baris yang ditambahkan SETELAH proyeknya dipilih ikut terisi;
+       * tanpa ini, baris pertama terisi sendiri dan sisanya tidak — dan
+       * yang mengisi mengira pengisian otomatisnya rusak.
+       */
+      location: [this.lokasiProyek(), Validators.required],
       /*
        * Mobilisasi dan demobilisasi, melekat pada ALATNYA.
        *

@@ -54,11 +54,18 @@
           ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+        <!--
+          Proyek dipilih -> lokasi tiap baris alat ikut terisi.
+
+          Alat disewa untuk dipakai di proyeknya; mengetik alamat yang sama
+          pada setiap baris berarti menyalin dari layar sebelah.
+        -->
         <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'poB.projectCode' | translate"
-      />
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [label]="'poB.projectCode' | translate"
+          (ngModelChange)="onProyekBerubah()"
+        />
         @if (adendum.memuatDokumenLama) {
           <!--
             Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian

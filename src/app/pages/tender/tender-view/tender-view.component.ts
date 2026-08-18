@@ -19,6 +19,7 @@ import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.servic
 import { TenderQuoteDialogComponent } from '../tender-quote-dialog/tender-quote-dialog.component';
 import {
   DataRekap,
+  MAKS_PEMASOK_CETAK,
   cetakRekapTender,
   unduhRekapTenderExcel,
 } from 'src/app/helpers/tender-rekap.helper';
@@ -444,6 +445,22 @@ export class TenderViewComponent implements OnInit {
         { duration: 3000 },
       );
       return;
+    }
+    /*
+     * Lebih dari sembilan pemasok tidak terbaca dalam satu halaman.
+     *
+     * Tiap kolomnya menyusut di bawah 52pt dan angka rupiah terpotong di
+     * tengah. Diberitahukan, bukan dicegah: yang mencetaknya berhak
+     * memutuskan sendiri, tetapi tidak boleh terkejut setelahnya.
+     */
+    if (this.quotes.length > MAKS_PEMASOK_CETAK) {
+      this.snackBar.open(
+        this.translate.instant('tender.terlaluBanyakCetak', {
+          n: MAKS_PEMASOK_CETAK,
+        }),
+        'Close',
+        { duration: 5000 },
+      );
     }
     cetakRekapTender(this.dataRekap(), 'download');
   }

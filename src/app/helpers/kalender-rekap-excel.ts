@@ -24,6 +24,7 @@ import {
   kepala,
   kop,
   tepi,
+  tepiBlok,
 } from './excel-gaya.helper';
 
 export interface MutasiRekap {
@@ -323,16 +324,42 @@ export function lembarNaskah(
   sheet.getColumn(2).width = 24;
 
   let baris = 4;
+
+  /*
+   * Setiap baris berisi diberi GARIS.
+   *
+   * Tanpa garis, dua kolom angka yang berjauhan sulit dipasangkan dengan
+   * keterangannya — mata melompat baris, dan rekap yang dibaca cepat justru
+   * paling mudah salah baca.
+   *
+   * Baris kosong TIDAK digaris: ia pemisah antar bank, dan menggarisnya
+   * membuat pemisahnya hilang.
+   */
   const tulis = (kiri: string, kanan = '', tebal = false) => {
     const a = sheet.getCell(baris, 1);
     a.value = kiri;
     a.font = { name: 'Arial', size: 10, bold: tebal };
-    a.alignment = { vertical: 'middle' };
+    a.alignment = { vertical: 'middle', indent: 1 };
 
     const b = sheet.getCell(baris, 2);
     b.value = kanan;
     b.font = { name: 'Arial', size: 10, bold: tebal };
-    b.alignment = { horizontal: 'right', vertical: 'middle' };
+    b.alignment = { horizontal: 'right', vertical: 'middle', indent: 1 };
+
+    if (kiri || kanan) {
+      a.border = tepi();
+      b.border = tepi();
+      if (tebal) {
+        const latar: ExcelJS.Fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: BIRU_MUDA },
+        };
+        a.fill = latar;
+        b.fill = latar;
+      }
+    }
+    sheet.getRow(baris).height = 18;
     baris += 1;
   };
 
@@ -513,6 +540,8 @@ export function lembarKalender(
   });
 
   const KOLOM_PER_HARI = 2;
+  // Tinggi terkecil satu pekan; lihat alasannya di bawah.
+  const MIN_BARIS_PEKAN = 5;
   const TOTAL_KOLOM = 7 * KOLOM_PER_HARI;
 
   kop(
@@ -559,51 +588,114 @@ export function lembarKalender(
   let kolomAwal = hariPertama;
 
   while (hari <= totalHari) {
-    const pekan: number[] = [];
+    /*
+     * Kolom tiap tanggal disimpan bersama tanggalnya.
+     *
+     * Sebelumnya dihitung `7 - pekan.length + idx`, yang benar hanya pada
+     * pekan PERTAMA — di pekan terakhir yang juga tidak penuh, rumus itu
+     * mendorong tanggalnya ke kanan: 31 Agustus 2026 jatuh Senin tetapi
+     * tercetak di kolom Minggu.
+     */
+    const pekan: Array<{ hari: number; kolom: number }> = [];
     for (let k = kolomAwal; k < 7 && hari <= totalHari; k++) {
-      pekan.push(hari++);
+      pekan.push({ hari: hari++, kolom: k });
     }
     kolomAwal = 0;
 
+    /*
+     * Tinggi tiap pekan paling sedikit LIMA baris.
+     *
+     * Pekan yang hanya punya satu transaksi menghasilkan sel setipis satu
+     * baris, dan kalender yang tinggi selnya berubah-ubah antar pekan sulit
+     * dibaca — mata kehilangan garis mendatarnya.
+     */
     const maksTrx = Math.max(
-      1,
-      ...pekan.map((d) => perHari[d]?.transaksi.length ?? 0),
+      MIN_BARIS_PEKAN,
+      ...pekan.map((x) => perHari[x.hari]?.transaksi.length ?? 0),
     );
 
-    pekan.forEach((d, idx) => {
-      const kiri = (7 - pekan.length + idx) * KOLOM_PER_HARI + 1;
+    pekan.forEach(({ hari: d, kolom }) => {
+      const kiri = kolom * KOLOM_PER_HARI + 1;
       const isi = perHari[d];
 
-      // Baris tanggal beserta saldo akhirnya.
+      /*
+       * Tiap hari adalah satu BLOK bergaris tebal.
+       *
+       * Garis tipis seragam membuat kisinya menjadi tabel biasa: batas antar
+       * hari tidak lagi terbaca, dan yang mencari satu tanggal harus
+       * menghitung kolom. Yang tebal hanya batas bloknya; di dalamnya tetap
+       * samar supaya angkanya yang menonjol.
+       */
       const cTgl = sheet.getCell(baris, kiri);
       cTgl.value = `${d} ${bulan}`;
       cTgl.font = { name: 'Arial', size: 9, bold: true };
       cTgl.alignment = { vertical: 'middle', indent: 1 };
-      cTgl.border = tepi();
+      cTgl.border = tepiBlok({ kiri: true, atas: true });
+      cTgl.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF2F5FC' },
+      };
 
       const cSaldo = sheet.getCell(baris, kiri + 1);
       cSaldo.value = isi?.saldoAkhir ?? null;
       cSaldo.numFmt = RP2;
       cSaldo.font = { name: 'Arial', size: 8, bold: true, color: { argb: ABU } };
       cSaldo.alignment = { horizontal: 'right', vertical: 'middle' };
-      cSaldo.border = tepi();
+      cSaldo.border = tepiBlok({ kanan: true, atas: true });
+      cSaldo.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF2F5FC' },
+      };
 
       for (let n = 0; n < maksTrx; n++) {
         const t = isi?.transaksi[n];
+        const akhir = n === maksTrx - 1;
+
         const cNama = sheet.getCell(baris + 1 + n, kiri);
         cNama.value = t?.lawan ?? null;
         cNama.font = { name: 'Arial', size: 8 };
         cNama.alignment = { vertical: 'middle', indent: 1, wrapText: true };
-        cNama.border = tepi();
+        cNama.border = tepiBlok({ kiri: true, bawah: akhir });
 
         const cNilai = sheet.getCell(baris + 1 + n, kiri + 1);
         cNilai.value = t ? t.nilai : null;
         cNilai.numFmt = RP2;
         cNilai.font = { name: 'Arial', size: 8 };
         cNilai.alignment = { horizontal: 'right', vertical: 'middle' };
-        cNilai.border = tepi();
+        cNilai.border = tepiBlok({ kanan: true, bawah: akhir });
       }
     });
+
+    /*
+     * Kolom hari DI LUAR bulan diberi latar redup.
+     *
+     * Sel yang benar-benar kosong tanpa garis membuat kisinya terputus di
+     * pekan pertama dan terakhir — dan yang membacanya kehilangan pegangan
+     * tepat di tempat tanggalnya paling mudah salah baca.
+     */
+    const terpakai = new Set(pekan.map((x) => x.kolom));
+    for (let k = 0; k < 7; k++) {
+      if (terpakai.has(k)) continue;
+      const kiri = k * KOLOM_PER_HARI + 1;
+      for (let r = 0; r <= maksTrx; r++) {
+        for (let c = 0; c < KOLOM_PER_HARI; c++) {
+          const sel = sheet.getCell(baris + r, kiri + c);
+          sel.border = tepiBlok({
+            kiri: c === 0,
+            kanan: c === KOLOM_PER_HARI - 1,
+            atas: r === 0,
+            bawah: r === maksTrx,
+          });
+          sel.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFAFAFA' },
+          };
+        }
+      }
+    }
 
     sheet.getRow(baris).height = 20;
     baris += maksTrx + 1;

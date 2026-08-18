@@ -173,7 +173,80 @@
     <strong [class.masuk]="totalRencana >= 0">{{
       totalRencana | shortCurrency: "Rp. "
     }}</strong>
+
+    <!--
+      Rincian per kategori disembunyikan sampai diminta.
+
+      Yang membuka kalender sehari-hari mencari tanggalnya, bukan
+      pengelompokannya; menampilkan enam baris kategori setiap kali membuat
+      angka totalnya justru tenggelam.
+    -->
+    <button
+      type="button"
+      class="cal-plan-total__buka"
+      (click)="ringkasanTerbuka = !ringkasanTerbuka"
+      [attr.aria-expanded]="ringkasanTerbuka"
+    >
+      {{ (ringkasanTerbuka ? "common.hide" : "rencana.rincian") | translate }}
+      <mat-icon>{{
+        ringkasanTerbuka ? "expand_less" : "expand_more"
+      }}</mat-icon>
+    </button>
   </div>
+
+  @if (ringkasanTerbuka && ringkasan) {
+    <div class="cal-kat">
+      @if (ringkasanKategori("masuk").length) {
+        <div class="cal-kat__blok">
+          <span class="cal-kat__judul">{{
+            "rencana.rencanaMasuk" | translate
+          }}</span>
+          @for (k of ringkasanKategori("masuk"); track k.category) {
+            <div class="cal-kat__baris">
+              <mat-icon>{{ ikonKategori(k.category) }}</mat-icon>
+              <span>{{ labelKategori(k.category) | translate }}</span>
+              <small>{{ k.jumlah }}×</small>
+              <strong class="masuk">{{
+                k.total | shortCurrency: "Rp. "
+              }}</strong>
+            </div>
+          }
+        </div>
+      }
+
+      @if (ringkasanKategori("keluar").length) {
+        <div class="cal-kat__blok">
+          <span class="cal-kat__judul">{{
+            "rencana.rencanaKeluar" | translate
+          }}</span>
+          @for (k of ringkasanKategori("keluar"); track k.category) {
+            <div class="cal-kat__baris">
+              <mat-icon>{{ ikonKategori(k.category) }}</mat-icon>
+              <span>{{ labelKategori(k.category) | translate }}</span>
+              <small>{{ k.jumlah }}×</small>
+              <strong>{{ k.total | shortCurrency: "Rp. " }}</strong>
+            </div>
+          }
+        </div>
+      }
+
+      <!--
+        Sejak kapan dihitung.
+
+        Angkanya berbeda dari jumlah baris yang terlihat di kalender karena
+        yang terlewat tidak ikut; tanpa keterangan ini, selisihnya tampak
+        seperti kekeliruan.
+      -->
+      @if (ringkasan.dihitungSejak) {
+        <p class="cal-kat__ket">
+          {{
+            "rencana.dihitungSejak"
+              | translate: { tanggal: ringkasan.dihitungSejak }
+          }}
+        </p>
+      }
+    </div>
+  }
 
   <div class="cal-foot">
     <button

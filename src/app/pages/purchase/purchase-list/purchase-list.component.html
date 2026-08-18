@@ -6,6 +6,59 @@
     (onActionButtonClicked)="createNewPurchase()"
   />
 
+  <!--
+    BANNER: tagihan yang belum lunas.
+
+    Kelalaian yang paling mahal di layar ini bukan salah angka, melainkan
+    tagihan yang tidak pernah dibuka sama sekali: pemasok menagih, tidak ada
+    yang menindaklanjuti, dan yang menemukannya kemudian adalah pemasoknya.
+
+    Angkanya menyangkut SELURUH tagihan, bukan halaman yang sedang tampil.
+  -->
+  @if (belumDibayar?.count) {
+    <div
+      class="pl-alert"
+      [class.pl-alert--tempo]="belumDibayar.lewatTempo"
+    >
+      <mat-icon>{{
+        belumDibayar.lewatTempo ? "running_with_errors" : "receipt_long"
+      }}</mat-icon>
+
+      <div class="pl-alert__teks">
+        <strong>{{
+          "purchase.belumDibayar" | translate: { n: belumDibayar.count }
+        }}</strong>
+        @if (belumDibayar.lewatTempo) {
+          <!--
+            Yang sudah lewat tempo disebut TERPISAH.
+
+            Sepuluh tagihan yang semuanya belum jatuh tempo berbeda sekali
+            mendesaknya dari sepuluh yang sudah lewat; satu angka gabungan
+            menyembunyikan perbedaan itu.
+          -->
+          <span>{{
+            "purchase.lewatTempoKet"
+              | translate
+                : {
+                    n: belumDibayar.lewatTempo,
+                    nilai: belumDibayar.totalLewatTempo | shortCurrency: "Rp. ",
+                  }
+          }}</span>
+        } @else {
+          <span>{{ "purchase.belumDibayarKet" | translate }}</span>
+        }
+      </div>
+
+      <span class="pl-alert__nilai">{{
+        belumDibayar.total | shortCurrency: "Rp. "
+      }}</span>
+
+      <button type="button" class="pl-alert__aksi" (click)="lihatBelumDibayar()">
+        {{ "rencana.lihat" | translate }}
+      </button>
+    </div>
+  }
+
   <!-- Toolbar: filters + search -->
   <div class="pl-toolbar">
     <form [formGroup]="filterFormGroup">

@@ -114,6 +114,12 @@ export function tidakLengkap(d: DataRekap, q: PenawaranRekap): boolean {
   return jumlahDitawar(d, q) < d.items.length;
 }
 
+/** Potong teks yang melebihi panjang tertentu, dengan elipsis. */
+function potong(teks: string, maks: number): string {
+  const t = String(teks || '').trim();
+  return t.length <= maks ? t : t.slice(0, maks - 1) + '…';
+}
+
 function namaPemasok(q: PenawaranRekap): string {
   return `${q.supplierPrefix ?? ''} ${q.supplierName ?? ''}`.trim();
 }
@@ -133,14 +139,42 @@ function kirimTeks(q: PenawaranRekap): string {
 // PDF
 // ----------------------------------------------------------------------
 
+/**
+ * Paling banyak pemasok yang masih terbaca dalam satu halaman.
+ *
+ * Lebih dari ini, tiap kolomnya menyusut di bawah 52pt dan angka rupiah
+ * terpotong di tengah — lebih baik dibagi dua lembar daripada dicetak
+ * menjadi sesuatu yang tidak dapat dibaca.
+ */
+export const MAKS_PEMASOK_CETAK = 9;
+
 export function cetakRekapTender(d: DataRekap, output: 'open' | 'download' = 'open') {
-  const lebar = ['*', ...d.quotes.map(() => 'auto')];
+  /*
+   * Lebar kolom DITENTUKAN, bukan `auto`.
+   *
+   * `auto` melebar mengikuti isinya — dan nama pemasok panjang seperti
+   * "PT Sumber Rezeki Abadi Sentosa" mendorong tabelnya melewati tepi
+   * halaman, memotong kolom terakhir tanpa peringatan.
+   *
+   * Lebar per pemasok dihitung dari ruang yang tersisa: A4 landscape
+   * 841,89pt dikurangi margin 45+45, lalu dikurangi kolom barang.
+   */
+  const LEBAR_HALAMAN = 841.89 - 90;
+  const LEBAR_BARANG = Math.max(140, LEBAR_HALAMAN * 0.28);
+  const lebarPenawaran = Math.max(
+    52,
+    (LEBAR_HALAMAN - LEBAR_BARANG) / Math.max(1, d.quotes.length),
+  );
+  const lebar = [LEBAR_BARANG, ...d.quotes.map(() => lebarPenawaran)];
 
   const kepalaTabel = [
     { text: d.jenis === 'jasa' ? 'Pekerjaan' : 'Barang', style: 'th' },
     ...d.quotes.map((q) => ({
       text: [
-        { text: namaPemasok(q) },
+        // Nama dipotong bila terlalu panjang: kolomnya sudah ditentukan
+        // lebarnya, dan nama yang melimpah menumpuk ke baris berikutnya
+        // sampai kepala tabelnya setinggi setengah halaman.
+        { text: potong(namaPemasok(q), 28) },
         tidakLengkap(d, q)
           ? {
               text: `\n${jumlahDitawar(d, q)}/${d.items.length} baris`,

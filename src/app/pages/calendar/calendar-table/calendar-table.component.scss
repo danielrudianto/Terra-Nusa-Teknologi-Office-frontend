@@ -392,3 +392,102 @@ $brandSoft: var(--brand-soft, #e7ecfb);
 .cal-plan-total strong.masuk {
   color: var(--ok-fg, #1a7f45);
 }
+
+.cal-plan-total__buka {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+
+/*
+ * Rincian per kategori.
+ *
+ * Dua kolom bila muat, satu bila sempit: masuk dan keluar dibaca
+ * berdampingan, bukan berurutan — yang menilai posisi kas membandingkan
+ * keduanya, bukan membaca satu lalu satunya.
+ */
+.cal-kat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+}
+
+.cal-kat__blok {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.cal-kat__judul {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.cal-kat__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    color: var(--muted, #6b7280);
+  }
+
+  span {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    flex: 0 0 auto;
+    font-size: 0.7rem;
+    color: var(--faint, #9aa0ab);
+  }
+
+  strong {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+
+    &.masuk {
+      color: var(--ok-fg, #1a7f45);
+    }
+  }
+}
+
+.cal-kat__ket {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--muted, #6b7280);
+}

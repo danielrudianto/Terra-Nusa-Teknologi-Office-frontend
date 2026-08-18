@@ -471,3 +471,67 @@
 .pl-toolbar > *:nth-child(2) {
   margin-left: auto;
 }
+
+/*
+ * Banner tagihan belum lunas.
+ *
+ * Kuning bila semuanya belum jatuh tempo, merah bila ada yang sudah lewat:
+ * yang kedua bukan lagi pekerjaan yang tertunda melainkan janji yang
+ * terlewat, dan menyamakan warnanya membuat keduanya terbaca sama.
+ */
+.pl-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 1px solid var(--warn, #a2651a);
+  color: var(--warn, #a2651a);
+  font-size: 0.84rem;
+
+  > .mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+}
+
+.pl-alert--tempo {
+  background: var(--bad-bg, #fdecec);
+  border-color: var(--bad-fg, #b3322f);
+  color: var(--bad-fg, #b3322f);
+}
+
+.pl-alert__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  span {
+    font-size: 0.77rem;
+    opacity: 0.9;
+  }
+}
+
+.pl-alert__nilai {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-alert__aksi {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.77rem;
+  font-weight: 600;
+  cursor: pointer;
+}

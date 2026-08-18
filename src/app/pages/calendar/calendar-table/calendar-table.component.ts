@@ -18,7 +18,10 @@ import { ICalendarValue } from 'src/app/models/calendar.model';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PaymentPlanService } from 'src/app/services/payment-plan.service';
+import {
+  PaymentPlanService,
+  cariKategori,
+} from 'src/app/services/payment-plan.service';
 import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { RencanaHariDialogComponent } from '../rencana-hari-dialog/rencana-hari-dialog.component';
@@ -109,6 +112,7 @@ export class CalendarTableComponent {
     // seluruh yang lewat — tetapi dimuat di sini supaya menyegar bersama
     // saringan rekeningnya.
     this.muatTertunda();
+    this.muatRingkasan();
 
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
@@ -290,6 +294,46 @@ export class CalendarTableComponent {
    */
   pembayaranTerlewat: any[] = [];
   nilaiPembayaranTerlewat = 0;
+
+  /**
+   * Ringkasan rencana kas per kategori.
+   *
+   * Menjawab pertanyaan yang berbeda dari kalender: bukan "apa yang terjadi
+   * tanggal berapa", melainkan "ke mana kasnya pergi bulan ini".
+   *
+   * Dihitung SERVER, bukan dijumlahkan dari `rencana` yang sudah dimuat —
+   * yang terlewat dikecualikan di sana, dan menghitungnya ulang di sini
+   * berarti dua tempat yang harus tetap sepakat tentang apa yang dihitung.
+   */
+  ringkasan: any = null;
+  ringkasanTerbuka = false;
+
+  private muatRingkasan(): void {
+    const dd = (n: number) => String(n).padStart(2, '0');
+    const awal = `${this.year}-${dd(this.month + 1)}-01`;
+    const akhirHari = new Date(this.year, this.month + 1, 0).getDate();
+    const akhir = `${this.year}-${dd(this.month + 1)}-${dd(akhirHari)}`;
+
+    this.planService.ringkasan(awal, akhir).subscribe({
+      next: (res: any) => (this.ringkasan = res),
+      error: () => (this.ringkasan = null),
+    });
+  }
+
+  /** Kategori yang benar-benar ada isinya, terbesar lebih dulu. */
+  ringkasanKategori(arah: 'masuk' | 'keluar'): any[] {
+    return (this.ringkasan?.perKategori ?? [])
+      .filter((x: any) => x.planType === arah && Number(x.total) > 0)
+      .sort((a: any, b: any) => Number(b.total) - Number(a.total));
+  }
+
+  labelKategori(nilai: string): string {
+    return cariKategori(nilai)?.label ?? 'rencana.katLain';
+  }
+
+  ikonKategori(nilai: string): string {
+    return cariKategori(nilai)?.ikon ?? 'more_horiz';
+  }
 
   private muatTertunda(): void {
     this.apiService

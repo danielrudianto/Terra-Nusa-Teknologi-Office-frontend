@@ -15,7 +15,10 @@ import ExcelJS from 'exceljs';
 export const BIRU = 'FF1F3864';
 export const BIRU_MUDA = 'FFD9E2F3';
 export const ABU = 'FF7F7F7F';
-export const GARIS = 'FFBFBFBF';
+export const GARIS = 'FF9E9E9E';
+
+/** Garis pembatas blok; lebih gelap supaya kisinya terbaca dari jauh. */
+export const GARIS_TEGAS = 'FF4A4A4A';
 
 /** Rupiah; nilai negatif dalam kurung, nol sebagai tanda hubung. */
 export const RP = '#,##0;(#,##0);"-"';
@@ -25,9 +28,49 @@ export const RP2 = '#,##0.00;(#,##0.00);"-"';
 
 export const TANGGAL = 'dd-mmm-yyyy';
 
-export function tepi(): Partial<ExcelJS.Borders> {
-  const sisi: ExcelJS.Border = { style: 'thin', color: { argb: GARIS } };
-  return { top: sisi, left: sisi, bottom: sisi, right: sisi };
+/**
+ * Garis sel.
+ *
+ * Tiap sisi diberi objeknya SENDIRI, tidak berbagi satu acuan.
+ *
+ * Objek yang dipakai bersama membuat ExcelJS menuliskan `<color auto="1"/>`
+ * alih-alih warnanya — dan `auto` tampil nyaris tak terlihat di sebagian
+ * penampil. Sudah terjadi pada kisi kalender: garisnya terpasang, tetapi
+ * yang membukanya melihat lembar tanpa kotak sama sekali.
+ */
+export function tepi(
+  gaya: 'thin' | 'medium' = 'thin',
+  warna: string = GARIS,
+): Partial<ExcelJS.Borders> {
+  const sisi = (): ExcelJS.Border => ({
+    style: gaya,
+    color: { argb: warna },
+  });
+  return { top: sisi(), left: sisi(), bottom: sisi(), right: sisi() };
+}
+
+/**
+ * Garis pembatas satu blok: tebal di sisi yang diminta, tipis di sisanya.
+ *
+ * Dipakai kisi kalender — batas antar hari harus jelas, sedangkan garis
+ * antar baris transaksi di dalamnya cukup samar.
+ */
+export function tepiBlok(sisiTebal: {
+  kiri?: boolean;
+  kanan?: boolean;
+  atas?: boolean;
+  bawah?: boolean;
+}): Partial<ExcelJS.Borders> {
+  const buat = (tebal?: boolean): ExcelJS.Border => ({
+    style: tebal ? 'medium' : 'thin',
+    color: { argb: tebal ? GARIS_TEGAS : GARIS },
+  });
+  return {
+    left: buat(sisiTebal.kiri),
+    right: buat(sisiTebal.kanan),
+    top: buat(sisiTebal.atas),
+    bottom: buat(sisiTebal.bawah),
+  };
 }
 
 /**

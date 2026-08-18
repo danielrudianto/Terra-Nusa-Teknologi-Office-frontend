@@ -157,7 +157,9 @@
     "semua": "All",
     "bersihkan": "Clear",
     "dash": "—",
-    "hari": "days"
+    "hari": "days",
+    "more": "More",
+    "hide": "Hide"
   },
   "nav": {
     "pinned": "Pinned",
@@ -384,7 +386,10 @@
     "otherValue": "Other value",
     "selaraskanLunas": "Resync paid status",
     "lunasDiselaraskan": "Paid status recalculated.",
-    "lunasGagal": "Failed to resync the paid status."
+    "lunasGagal": "Failed to resync the paid status.",
+    "belumDibayar": "{{n}} purchase invoices not yet settled",
+    "belumDibayarKet": "None are due yet, but they still need watching.",
+    "lewatTempoKet": "{{n}} of them are past due — {{nilai}}"
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -3421,7 +3426,8 @@
     "sessionExpired": "Your session has ended. Please sign in again.",
     "saveFailed": "Failed to save data",
     "actionFailed": "The action could not be completed",
-    "rejectSuccess": "Purchase order rejected"
+    "rejectSuccess": "Purchase order rejected",
+    "formInvalid": "Some fields need attention. Check the ones marked in red."
   },
   "panduan": {
     "title": "Guide",
@@ -4344,7 +4350,8 @@
     "biayaLainPlaceholder": "e.g. freight, unloading, material testing",
     "ongkosBelumDitaksir": "freight not yet estimated",
     "cetakPdf": "Print PDF",
-    "unduhExcel": "Download Excel"
+    "unduhExcel": "Download Excel",
+    "terlaluBanyakCetak": "More than {{n}} suppliers is hard to read on one page; figures may be cut off."
   },
   "rencana": {
     "buatJudul": "Cash plan",
@@ -4362,7 +4369,6 @@
     "catatanPlaceholder": "Extra detail if needed",
     "rekeningOpsional": "The account may be left blank if it has not been decided yet.",
     "terkunciKet": "This plan is marked as used, so it can no longer be changed.",
-    "rencanaHariIni": "Cash plans on this date",
     "totalBulanIni": "Cash plans this month",
     "katMaterial": "Materials",
     "katSubkon": "Subcontractor",
@@ -4395,6 +4401,8 @@
     "katUtang": "Debt repayment",
     "terlewatBanner": "{{n}} cash plan(s) overdue",
     "terlewatBannerKet": "Past their date without being marked as used; not counted.",
-    "lihat": "View"
+    "lihat": "View",
+    "rincian": "Breakdown",
+    "dihitungSejak": "Counted from {{tanggal}}; anything past its date is excluded."
   }
 }

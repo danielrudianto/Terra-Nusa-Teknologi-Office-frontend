@@ -33,6 +33,27 @@ export interface DataGambar {
 const LEBAR = 1080;
 const TEPI = 64;
 
+/*
+ * Tinggi tiap bagian, dipakai perhitungan DAN penggambaran.
+ *
+ * Kanvas tidak dapat diperbesar setelah ada isinya, sehingga tingginya harus
+ * diukur lebih dulu — dan dua angka yang ditulis terpisah pasti menyimpang
+ * begitu salah satunya disesuaikan. Isinya lalu terpotong di bawah, tanpa
+ * satu pun galat.
+ */
+const T_BARIS = 38;
+const T_ITEM = 74;
+const T_KEPALA = 200;
+const T_JUDUL = 90;
+const T_DAFTAR = 70;
+const T_KAKI = 120;
+
+/** Font yang dipakai; disebut sekali supaya ukuran dan gambar sepadan. */
+const F_ITEM = '600 27px system-ui, sans-serif';
+const F_VOLUME = '700 26px system-ui, sans-serif';
+const F_SPEC = '400 23px system-ui, sans-serif';
+const F_TEKS = '400 26px system-ui, sans-serif';
+
 const WARNA = {
   latar: '#ffffff',
   kepala: '#154dec',
@@ -105,13 +126,13 @@ export function gambarPermintaanPenawaran(d: DataGambar): HTMLCanvasElement {
   const barisUraian = d.uraian ? bungkus(ctx, d.uraian, lebarIsi) : [];
   const barisSyarat = d.syarat ? bungkus(ctx, d.syarat, lebarIsi) : [];
 
-  let tinggi = 200; // kepala
-  tinggi += 90; // proyek & tanggal
-  if (barisUraian.length) tinggi += 20 + barisUraian.length * 38;
-  tinggi += 70; // judul daftar
-  tinggi += d.items.length * 74;
-  if (barisSyarat.length) tinggi += 30 + barisSyarat.length * 38;
-  tinggi += 120; // kaki
+  let tinggi = T_KEPALA;
+  tinggi += T_JUDUL;
+  if (barisUraian.length) tinggi += 20 + barisUraian.length * T_BARIS;
+  tinggi += T_DAFTAR;
+  tinggi += d.items.length * T_ITEM;
+  if (barisSyarat.length) tinggi += 30 + barisSyarat.length * T_BARIS;
+  tinggi += T_KAKI;
 
   kanvas.height = tinggi;
 
@@ -194,22 +215,31 @@ export function gambarPermintaanPenawaran(d: DataGambar): HTMLCanvasElement {
     // berpindah baris tanpa disadari.
     if (i % 2 === 1) {
       ctx.fillStyle = WARNA.lembut;
-      ctx.fillRect(TEPI - 16, y - 34, lebarIsi + 32, 68);
+      ctx.fillRect(TEPI - 16, y - 34, lebarIsi + 32, T_ITEM - 6);
     }
 
     ctx.fillStyle = WARNA.redup;
     ctx.font = '700 24px system-ui, sans-serif';
     ctx.fillText(`${i + 1}.`, TEPI, y);
 
-    ctx.fillStyle = WARNA.tinta;
-    ctx.font = '600 27px system-ui, sans-serif';
     const volume =
       it.quantity !== null && it.quantity !== undefined
         ? `${angka(it.quantity)} ${it.unit ?? ''}`.trim()
         : '';
-    const lebarVolume = volume
-      ? ctx.measureText(volume).width + 40
-      : 0;
+
+    /*
+     * Lebar volume diukur dengan font yang BENAR-BENAR dipakai menggambarnya.
+     *
+     * Sebelumnya diukur memakai font baris item, lalu digambar dengan font
+     * volume yang berbeda — sehingga nama barang dipotong berdasar lebar
+     * yang keliru, dan bila volumenya ternyata lebih lebar keduanya
+     * bertumpuk di tengah gambar.
+     */
+    ctx.font = F_VOLUME;
+    const lebarVolume = volume ? ctx.measureText(volume).width + 40 : 0;
+
+    ctx.fillStyle = WARNA.tinta;
+    ctx.font = F_ITEM;
     ctx.fillText(
       teksTerpotong(ctx, it.name, lebarIsi - 60 - lebarVolume),
       TEPI + 46,
@@ -217,14 +247,14 @@ export function gambarPermintaanPenawaran(d: DataGambar): HTMLCanvasElement {
     );
 
     if (volume) {
-      ctx.font = '700 26px system-ui, sans-serif';
+      ctx.font = F_VOLUME;
       const w = ctx.measureText(volume).width;
       ctx.fillText(volume, LEBAR - TEPI - w, y);
     }
 
     if (it.specification) {
       ctx.fillStyle = WARNA.redup;
-      ctx.font = '400 23px system-ui, sans-serif';
+      ctx.font = F_SPEC;
       ctx.fillText(
         teksTerpotong(ctx, it.specification, lebarIsi - 60 - lebarVolume),
         TEPI + 46,
@@ -232,7 +262,7 @@ export function gambarPermintaanPenawaran(d: DataGambar): HTMLCanvasElement {
       );
     }
 
-    y += 74;
+    y += T_ITEM;
   });
 
   // ---- ketentuan ----
@@ -250,6 +280,39 @@ export function gambarPermintaanPenawaran(d: DataGambar): HTMLCanvasElement {
     }
   }
 
+  /*
+   * PENJAGA: isinya tidak boleh melewati garis kaki.
+   *
+   * Tinggi kanvas dihitung sebelum menggambar, dan setiap penyesuaian pada
+   * salah satu sisi dapat membuat keduanya menyimpang. Bila itu terjadi,
+   * isinya terpotong di bawah — dan gambar yang sudah tersebar ke pemasok
+   * tidak dapat ditarik kembali.
+   *
+   * Kanvas DIPERBESAR, bukan dibiarkan terpotong. Gambar yang sedikit lebih
+   * panjang tetap terbaca; yang terpotong kehilangan ketentuannya.
+   */
+  const batasKaki = tinggi - T_KAKI + 40;
+  if (y > batasKaki) {
+    const tambahan = y - batasKaki + 20;
+    const salinan = document.createElement('canvas');
+    salinan.width = LEBAR;
+    salinan.height = tinggi + tambahan;
+    const ctx2 = salinan.getContext('2d')!;
+    ctx2.fillStyle = WARNA.latar;
+    ctx2.fillRect(0, 0, LEBAR, salinan.height);
+    ctx2.drawImage(kanvas, 0, 0);
+    return _gambarKaki(salinan, ctx2, salinan.height);
+  }
+
+  return _gambarKaki(kanvas, ctx, tinggi);
+}
+
+/** Garis dan kalimat penutup; dipisah supaya dapat dipakai ulang. */
+function _gambarKaki(
+  kanvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  tinggi: number,
+): HTMLCanvasElement {
   // ---- kaki ----
   ctx.strokeStyle = WARNA.garis;
   ctx.beginPath();

@@ -32,6 +32,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { SettingsService } from '../../../services/setting.service';
 import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 
 @Component({
   selector: 'app-purchase-list',
@@ -53,6 +54,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatSnackBarModule,
     TranslatePipe,
     RefreshButtonComponent,
+    ShortCurrencyPipe,
   ],
   templateUrl: './purchase-list.component.html',
   styleUrls: ['./purchase-list.component.scss'],
@@ -117,6 +119,9 @@ export class PurchaseListComponent {
   ngOnInit(): void {
     this.loadStateFromQueryParams();
     this.setupQueryParamListeners();
+    // Dimuat SEKALI: angkanya menyangkut seluruh tagihan, bukan halaman
+    // yang sedang tampil, sehingga tidak perlu diulang tiap ganti halaman.
+    this.muatBelumDibayar();
   }
 
   ngOnDestroy(): void {
@@ -281,6 +286,38 @@ export class PurchaseListComponent {
 
     this.updateQueryParams();
     this.fetchData(this.page, this.pageSize);
+  }
+
+
+  /**
+   * Tagihan yang belum lunas.
+   *
+   * Dimuat dari rutenya sendiri, bukan dihitung dari halaman yang sedang
+   * tampil: daftarnya berhalaman, dan menghitung dari sepuluh baris yang
+   * kebetulan terlihat menghasilkan angka yang selalu terlalu kecil.
+   */
+  belumDibayar: any = null;
+
+  private muatBelumDibayar(): void {
+    this.apiService.get('purchases/belum-dibayar', {}).subscribe({
+      next: (res: any) => (this.belumDibayar = res),
+      // Gagal memuat TIDAK mengosongkan daftarnya; bannernya saja yang
+      // tidak muncul.
+      error: () => (this.belumDibayar = null),
+    });
+  }
+
+  /**
+   * Saring daftar ke yang belum lunas.
+   *
+   * Bannernya menyebut jumlahnya; tanpa jalan menuju daftarnya, yang
+   * membacanya harus mencari sendiri saringan mana yang dimaksud.
+   */
+  lihatBelumDibayar(): void {
+    this.filterFormGroup.get('isUnpaid')?.setValue(true);
+    this.filterFormGroup.get('isPaid')?.setValue(false);
+    this.updateQueryParams();
+    this.fetchData(0);
   }
 
   changeSelection(field: string, event: any) {
