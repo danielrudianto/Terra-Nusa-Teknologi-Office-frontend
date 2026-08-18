@@ -1502,7 +1502,11 @@
     "reject": "Reject",
     "confirm": "Confirm",
     "pilihSemua": "全选",
-    "adaInterpaymentDiTanggalIni": "该日期有账户间转账"
+    "adaInterpaymentDiTanggalIni": "该日期有账户间转账",
+    "pembayaranTerlewat": "{{n}} 笔付款已到期但尚未审批",
+    "pembayaranTerlewatKet": "日期已过，但尚未完成审批。",
+    "hariLalu": "天",
+    "totalTerlewat": "逾期合计"
   },
   "calendarAccount": {
     "accountsSelected": "个银行账户已选",
@@ -4343,9 +4347,9 @@
     "unduhExcel": "下载 Excel"
   },
   "rencana": {
-    "buatJudul": "付款计划",
+    "buatJudul": "资金计划",
     "ubahJudul": "修改计划",
-    "sub": "在单据成立之前，先记录将要支出的款项。",
+    "sub": "在单据成立之前，先记录将要发生的资金流动。",
     "tanggal": "日期",
     "nominal": "金额",
     "untukApa": "用途",
@@ -4358,8 +4362,8 @@
     "catatanPlaceholder": "如有需要可补充说明",
     "rekeningOpsional": "若尚未决定从哪个账户支付，账户可留空。",
     "terkunciKet": "该计划已标记为已使用，无法再修改。",
-    "rencanaHariIni": "该日期的付款计划",
-    "totalBulanIni": "本月付款计划",
+    "rencanaHariIni": "该日期的资金计划",
+    "totalBulanIni": "本月资金计划",
     "katMaterial": "材料",
     "katSubkon": "分包商",
     "katGaji": "工资",
@@ -4388,6 +4392,9 @@
     "katUangMuka": "预付款",
     "katRetensi": "质保金退还",
     "katPinjaman": "贷款拨付",
-    "katUtang": "偿还债务"
+    "katUtang": "偿还债务",
+    "terlewatBanner": "{{n}} 项资金计划已逾期",
+    "terlewatBannerKet": "已过日期但未标记为已使用；不计入合计。",
+    "lihat": "查看"
   }
 }

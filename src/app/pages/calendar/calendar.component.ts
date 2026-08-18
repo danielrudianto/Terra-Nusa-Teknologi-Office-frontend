@@ -42,20 +42,39 @@ export class CalendarComponent {
   onCalendarBoxClicked(event: number | null) {
     if (event == null) return;
 
-    this.dialog.open(CalendarDaySelectorComponent, {
-      data: {
-        date: event,
-        month: this.month,
-        year: this.year,
-        bankAccountID: this.bankAccounts.map((x) => {
-          return x;
-        }),
-      },
-      width: '80vw',
-      height: '80vh',
-      maxWidth: '80vw',
-      maxHeight: '80vh',
-    });
+    this.dialog
+      .open(CalendarDaySelectorComponent, {
+        data: {
+          date: event,
+          month: this.month,
+          year: this.year,
+          bankAccountID: this.bankAccounts.map((x) => {
+            return x;
+          }),
+        },
+        width: '80vw',
+        height: '80vh',
+        maxWidth: '80vw',
+        maxHeight: '80vh',
+      })
+      .afterClosed()
+      .subscribe((berubah) => {
+        /*
+         * Kalender dimuat ulang bila ada yang disetujui atau ditolak.
+         *
+         * Bannernya menghitung dari SELURUH bulan lewat rutenya sendiri,
+         * sehingga menyetujui satu pembayaran di dialog tidak membuatnya
+         * hilang — dan yang membacanya mengira tindakannya tidak berhasil.
+         *
+         * Angka bulannya disentuh supaya `ngOnChanges` menyala; itu jalur
+         * yang sudah dipakai saat bulannya berganti, dan menambah jalur
+         * kedua berarti dua tempat yang harus tetap sepakat.
+         */
+        if (!berubah) return;
+        const m = this.month;
+        this.month = -1;
+        setTimeout(() => (this.month = m));
+      });
   }
 
   onMonthChanged(event: any) {

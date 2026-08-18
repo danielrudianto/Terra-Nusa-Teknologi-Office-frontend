@@ -142,7 +142,7 @@ export class PaymentHistoryComponent {
   fetchData() {
     this.isLoading = true;
     this.apiService
-      .get(`payments/${this.data.id}`, {})
+      .get(`outgoing-payments/${this.data.id}`, {})
       .subscribe({
         next: (data: any) => {
           this.metaFormGroup.patchValue({

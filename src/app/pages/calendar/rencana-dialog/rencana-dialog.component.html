@@ -109,9 +109,15 @@
             <mat-option [value]="null">{{
               "rencana.belumDitentukan" | translate
             }}</mat-option>
+            <!--
+              Nomor dan atas nama, mengikuti layar pembayaran lain.
+
+              `bankName` tidak selalu terisi pada jawabannya; yang membedakan
+              satu rekening dari yang lain justru nomornya.
+            -->
             @for (r of rekening; track r.id) {
               <mat-option [value]="r.id">
-                {{ r.bankName }} · {{ r.bankAccountNumber }}
+                {{ r.bankAccountNumber }} — {{ r.bankAccountName }}
               </mat-option>
             }
           </mat-select>

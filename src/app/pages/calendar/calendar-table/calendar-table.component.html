@@ -106,15 +106,73 @@
   </div>
 
   <!--
-    Total rencana bulan ini.
+    BANNER: apa yang tertinggal.
+
+    Ditaruh di bawah kalender, bukan di atas: yang membuka layar ini datang
+    untuk melihat bulannya lebih dulu. Tetapi ia tidak boleh hilang sama
+    sekali — rencana yang terlewat berarti ada pembayaran yang belum
+    dikerjakan atau tagihan yang belum cair, dan keduanya menuntut tindakan.
+  -->
+  <div class="cal-alert" *ngIf="pembayaranTerlewat.length">
+    <mat-icon>schedule</mat-icon>
+    <div class="cal-alert__teks">
+      <strong>{{
+        "calendar.pembayaranTerlewat"
+          | translate: { n: pembayaranTerlewat.length }
+      }}</strong>
+      <span>{{ "calendar.pembayaranTerlewatKet" | translate }}</span>
+    </div>
+    <span class="cal-alert__nilai">{{
+      nilaiPembayaranTerlewat | shortCurrency: "Rp. "
+    }}</span>
+    <button
+      type="button"
+      class="cal-alert__aksi"
+      (click)="lihatPembayaranTerlewat()"
+    >
+      {{ "rencana.lihat" | translate }}
+    </button>
+  </div>
+
+  <div class="cal-alert cal-alert--rencana" *ngIf="rencanaTerlewat.length">
+    <mat-icon>event_busy</mat-icon>
+    <div class="cal-alert__teks">
+      <strong>{{
+        "rencana.terlewatBanner" | translate: { n: rencanaTerlewat.length }
+      }}</strong>
+      <span>{{ "rencana.terlewatBannerKet" | translate }}</span>
+    </div>
+    <button type="button" class="cal-alert__aksi" (click)="bukaTerlewat()">
+      {{ "rencana.lihat" | translate }}
+    </button>
+  </div>
+
+  <!--
+    Total rencana bulan ini, dipisah menurut arahnya.
 
     Di kaki, bukan di dalam sel: yang perlu diketahui sebelum menutup
-    kalender adalah berapa yang akan keluar bulan ini secara keseluruhan.
+    kalender adalah berapa yang akan bergerak bulan ini secara keseluruhan.
+
+    Yang TERLEWAT tidak ikut dihitung di sini — ia sudah punya bannernya
+    sendiri di atas.
   -->
-  <div class="cal-plan-total" *ngIf="totalRencana">
+  <div
+    class="cal-plan-total"
+    *ngIf="totalRencanaKeluar || totalRencanaMasuk"
+  >
     <mat-icon>event_upcoming</mat-icon>
     <span>{{ "rencana.totalBulanIni" | translate }}</span>
-    <strong>{{ totalRencana | shortCurrency: "Rp. " }}</strong>
+    <span class="cal-plan-total__rinci">
+      <span *ngIf="totalRencanaMasuk" class="masuk">
+        + {{ totalRencanaMasuk | shortCurrency: "Rp. " }}
+      </span>
+      <span *ngIf="totalRencanaKeluar">
+        − {{ totalRencanaKeluar | shortCurrency: "Rp. " }}
+      </span>
+    </span>
+    <strong [class.masuk]="totalRencana >= 0">{{
+      totalRencana | shortCurrency: "Rp. "
+    }}</strong>
   </div>
 
   <div class="cal-foot">

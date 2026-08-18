@@ -241,7 +241,7 @@ export class PurchaseListComponent {
    */
   selaraskanLunas(purchaseID: number): void {
     this.apiService
-      .post(`payments-outgoing/selaraskan/purchase/${purchaseID}`, {})
+      .post(`outgoing-payments/selaraskan/purchase/${purchaseID}`, {})
       .subscribe({
         next: () => {
           this.snackBar.open(

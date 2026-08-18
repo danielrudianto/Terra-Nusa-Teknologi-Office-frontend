@@ -1,0 +1,57 @@
+<div class="td">
+  <div class="td-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>schedule</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">
+        {{ "calendar.pembayaranTerlewat" | translate: { n: daftar.length } }}
+      </h2>
+      <span class="dlg__sub">{{
+        "calendar.pembayaranTerlewatKet" | translate
+      }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="td-content">
+    @for (p of daftar; track p.id) {
+      <div class="td-baris">
+        <!--
+          Berapa hari terlewat, bukan tanggalnya saja.
+
+          Urutan penanganannya bergantung pada itu: yang terlewat tiga hari
+          berbeda mendesaknya dari yang terlewat tiga pekan, dan tanggal
+          mentah menuntut yang membacanya menghitung sendiri.
+        -->
+        <span class="td-baris__hari" [class.lama]="hariTerlewat(p) > 14">
+          {{ hariTerlewat(p) }}
+          <small>{{ "calendar.hariLalu" | translate }}</small>
+        </span>
+
+        <div class="td-baris__teks">
+          <span class="td-baris__dok">{{ dokumen(p) }}</span>
+          <span class="td-baris__ket">
+            {{ p.date | date: "d MMM yyyy" }}
+            @if (lawan(p)) {
+              · {{ lawan(p) }}
+            }
+            @if (proyek(p)) {
+              · {{ proyek(p) }}
+            }
+          </span>
+        </div>
+
+        <span class="td-baris__nilai">{{ p.amount | number: "1.0-0" }}</span>
+      </div>
+    }
+
+    <div class="td-ringkas">
+      <span>{{ "calendar.totalTerlewat" | translate }}</span>
+      <strong>{{ total | number: "1.0-0" }}</strong>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="td-actions">
+    <button mat-button type="button" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

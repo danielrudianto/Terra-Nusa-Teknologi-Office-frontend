@@ -17,12 +17,26 @@ import { saveAs } from 'file-saver';
 import { ICalendarValue } from 'src/app/models/calendar.model';
 import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
-import * as xlsx from 'xlsx-js-style';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaymentPlanService } from 'src/app/services/payment-plan.service';
 import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { RencanaHariDialogComponent } from '../rencana-hari-dialog/rencana-hari-dialog.component';
+import { TerlewatDialogComponent } from '../terlewat-dialog/terlewat-dialog.component';
+import ExcelJS from 'exceljs';
+import {
+  AkunRekap,
+  MutasiRekap,
+  RencanaRekap,
+  lembarNaskah,
+  lembarRencana,
+  lembarRincian,
+  lembarSaldo,
+  lembarHarian,
+  lembarKalender,
+  HarianRekap,
+  SelKalender,
+} from 'src/app/helpers/kalender-rekap-excel';
 
 @Component({
   selector: 'app-calendar-table',
@@ -91,6 +105,10 @@ export class CalendarTableComponent {
     // `@Input`, dan pemuatan yang hanya sekali membuat rencana bulan
     // pertama terus ditampilkan pada bulan mana pun.
     this.muatRencana();
+    // Yang tertunda tidak bergantung pada bulan yang dilihat — ia menyangkut
+    // seluruh yang lewat — tetapi dimuat di sini supaya menyegar bersama
+    // saringan rekeningnya.
+    this.muatTertunda();
 
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
@@ -204,9 +222,172 @@ export class CalendarTableComponent {
     return this.rencanaHari(day) > 0;
   }
 
-  /** Total rencana bulan ini; ditampilkan di kaki kalender. */
+  /**
+   * Total rencana bulan ini, DIPISAH menurut arahnya.
+   *
+   * Yang terlewat tidak ikut: rencana yang tanggalnya lewat tanpa pernah
+   * ditandai terpakai praktis tidak terjadi, dan membiarkannya membuat
+   * angkanya menunjukkan uang yang tidak akan bergerak ke mana pun.
+   */
+  private get rencanaDihitung(): any[] {
+    return this.rencana.filter((r) => r.status === 'rencana' && !r.lewat);
+  }
+
+  get totalRencanaKeluar(): number {
+    return this.rencanaDihitung
+      .filter((r) => r.planType !== 'masuk')
+      .reduce((a, r) => a + Number(r.amount || 0), 0);
+  }
+
+  get totalRencanaMasuk(): number {
+    return this.rencanaDihitung
+      .filter((r) => r.planType === 'masuk')
+      .reduce((a, r) => a + Number(r.amount || 0), 0);
+  }
+
   get totalRencana(): number {
-    return this.rencana.reduce((a, r) => a + Number(r.amount || 0), 0);
+    return this.totalRencanaMasuk - this.totalRencanaKeluar;
+  }
+
+  /**
+   * Rencana yang tanggalnya sudah LEWAT tanpa pernah ditandai terpakai.
+   *
+   * Bukan sekadar tidak dihitung — ia perlu DITUNJUKKAN. Rencana yang
+   * terlewat berarti ada pembayaran yang belum dikerjakan atau tagihan yang
+   * belum cair, dan keduanya menuntut tindakan. Menyembunyikannya membuat
+   * angka posisi kas benar tetapi persoalannya tidak pernah terlihat.
+   */
+  get rencanaTerlewat(): any[] {
+    return this.rencana.filter((r) => r.lewat);
+  }
+
+  get nilaiTerlewat(): number {
+    return this.rencanaTerlewat.reduce(
+      (a, r) =>
+        a + (r.planType === 'masuk' ? 1 : -1) * Number(r.amount || 0),
+      0,
+    );
+  }
+
+  /**
+   * Pembayaran yang JATUH TEMPO tetapi belum disetujui.
+   *
+   * Sumbernya berbeda dari rencana — ini dokumen sungguhan yang menunggu
+   * persetujuan, bukan taksiran. Keduanya ditunjukkan berdampingan karena
+   * yang membuka kalender menanyakan hal yang sama: apa yang tertinggal.
+   */
+  /**
+   * Pembayaran yang jatuh temponya lewat tetapi belum disetujui.
+   *
+   * Dimuat dari rutenya SENDIRI, tidak disaring dari `data`.
+   *
+   * Jawaban `GET /calendar` sudah dijumlahkan per tanggal — satu baris per
+   * hari, tanpa nama dokumen dan tanpa status. Menyaringnya dari sana
+   * menghasilkan daftar yang seluruh keterangannya kosong, dan `isApprove`
+   * yang tidak disertakan terbaca sebagai belum disetujui untuk SEMUANYA.
+   *
+   * Batas tanggalnya ditentukan SERVER, bukan jam peramban.
+   */
+  pembayaranTerlewat: any[] = [];
+  nilaiPembayaranTerlewat = 0;
+
+  private muatTertunda(): void {
+    this.apiService
+      .get('calendar/tertunda', {
+        bankAccounts: this.bankAccounts
+          .filter((x) => x.selected)
+          .map((x) => x.id),
+      })
+      .subscribe({
+        next: (res: any) => {
+          this.pembayaranTerlewat = res?.data ?? [];
+          this.nilaiPembayaranTerlewat = Number(res?.total || 0);
+        },
+        // Gagal memuat TIDAK mengosongkan kalendernya; bannernya saja yang
+        // tidak muncul.
+        error: () => {
+          this.pembayaranTerlewat = [];
+          this.nilaiPembayaranTerlewat = 0;
+        },
+      });
+  }
+
+  /**
+   * Keterangan satu mutasi.
+   *
+   * Datanya BERSARANG: satu pembayaran menunjuk tepat satu dokumen, dan yang
+   * tidak terpakai bernilai `null`. Membacanya dari tingkat atas menghasilkan
+   * `undefined` untuk semuanya — seluruh baris tampil sebagai tanda hubung,
+   * dan tidak ada galat yang memberi tahu.
+   *
+   * Dikumpulkan di sini supaya dialog dan unduhan membaca dengan cara yang
+   * sama; dua salinan berarti satu di antaranya pasti tertinggal.
+   */
+  ketMutasi(t: any): string {
+    if (t?.purchase) {
+      return t.purchase.purchaseOrderName || t.purchase.invoiceName || '';
+    }
+    if (t?.expense) {
+      return t.expense.invoiceName || t.expense.description || '';
+    }
+    if (t?.reimbursement) return t.reimbursement.name || '';
+    if (t?.salarySlip) {
+      const b = t.salarySlip.month ?? '';
+      const y = t.salarySlip.year ?? '';
+      return `Slip gaji ${b}/${y} — ${t.salarySlip.name ?? ''}`.trim();
+    }
+    if (t?.loan) return t.loan.description || 'Pembayaran pinjaman';
+    // Transfer antar rekening dan pemasukan memakai bentuk yang lebih datar.
+    return t?.description || t?.name || t?.invoiceName || '';
+  }
+
+  lawanMutasi(t: any): string {
+    return (
+      t?.purchase?.accountName ||
+      t?.expense?.accountName ||
+      t?.reimbursement?.accountName ||
+      t?.salarySlip?.name ||
+      t?.loan?.creditorName ||
+      t?.accountName ||
+      ''
+    );
+  }
+
+  proyekMutasi(t: any): string {
+    return (
+      t?.purchase?.projectName || t?.reimbursement?.projectName || ''
+    );
+  }
+
+  /**
+   * Mutasi yang DIHITUNG.
+   *
+   * Yang dihapus dan yang ditolak dikecualikan: keduanya sudah selesai
+   * urusannya, dan memasukkannya membuat saldo berjalan menunjukkan uang
+   * yang tidak pernah bergerak.
+   */
+  private mutasiSah(t: any): boolean {
+    if (t?.isDelete) return false;
+    if (String(t?.status).toLowerCase() === 'reject') return false;
+    return true;
+  }
+
+  /** Tampilkan pembayaran mana saja yang terlewat. */
+  lihatPembayaranTerlewat(): void {
+    this.dialog.open(TerlewatDialogComponent, {
+      data: { daftar: this.pembayaranTerlewat },
+      width: '640px',
+      maxWidth: '95vw',
+      autoFocus: false,
+    });
+  }
+
+  /** Buka bulan tempat rencana terlewat pertama berada. */
+  bukaTerlewat(): void {
+    const p = this.rencanaTerlewat[0];
+    if (!p) return;
+    const hari = Number(String(p.date).slice(8, 10));
+    this.bukaRencana(hari);
   }
 
   /** Rencana pada satu tanggal, untuk daftar yang dapat disunting. */
@@ -387,671 +568,292 @@ export class CalendarTableComponent {
       })
       .subscribe({
         next: (data: any) => {
-          const workbook = xlsx.utils.book_new();
-
           const month = this.month + 1;
           const year = this.year;
+          const dd = (n: number) => String(n).padStart(2, '0');
+          const totalHari = new Date(year, month, 0).getDate();
+          const namaBulan = new Date(year, month - 1, 1).toLocaleString(
+            'id-ID',
+            { month: 'long' },
+          );
+          // 0 = Senin, mengikuti susunan kolom kalendernya.
+          const hariPertama = (new Date(year, month - 1, 1).getDay() + 6) % 7;
 
-          const firstDate = new Date(year, month - 1, 1);
-          const lastDate = new Date(year, month, 0);
-          const totalDays = lastDate.getDate();
-
-          const convertDay = (jsDay: number) => (jsDay === 0 ? 6 : jsDay - 1);
-
-          const formatLocalDate = (date: Date): string => {
-            const y = date.getFullYear();
-            const m = (date.getMonth() + 1).toString().padStart(2, '0');
-            const d = date.getDate().toString().padStart(2, '0');
-            return `${y}-${m}-${d}`;
-          };
-
-          // [SUMMARY] Kumpulkan semua transaksi dari semua rekening
-          let masterTransactions: any[] = [];
-
-          const border = {
-            top: { style: 'thin' },
-            bottom: { style: 'thin' },
-            left: { style: 'thin' },
-            right: { style: 'thin' },
-          };
-
-          data.bank_accounts.forEach((account: any) => {
-            const sheetName = account.bankAccountNumber;
-            const sheetBankID = account.id;
-
-            const totalCols = 28;
-            const header: any[][] = [];
-
-            header[0] = new Array(totalCols).fill('');
-            header[0][0] = 'Kalender Pembayaran';
-
-            header[1] = new Array(totalCols).fill('');
-            header[1][0] = `Rekening ${account.bankAccountNumber}`;
-
-            header[2] = new Array(totalCols).fill('');
-
-            const worksheet = xlsx.utils.aoa_to_sheet(header);
-
-            // ===============================
-            // STYLE BASE
-            // ===============================
-            worksheet['!freeze'] = { xSplit: 0, ySplit: 3 };
-
-            const center = {
-              alignment: { horizontal: 'center', vertical: 'center' },
-              border,
-            };
-
-            const headerStyle = {
-              font: { bold: true },
-              alignment: { horizontal: 'center', vertical: 'center' },
-              border,
-            };
-
-            const numberStyle = {
-              alignment: { horizontal: 'right', vertical: 'center' },
-              border,
-            };
-
-            const days = [
-              'Senin',
-              'Selasa',
-              'Rabu',
-              'Kamis',
-              'Jumat',
-              'Sabtu',
-              'Minggu',
-            ];
-
-            days.forEach((day, i) => {
-              const cell = xlsx.utils.encode_cell({ r: 2, c: i * 4 });
-              worksheet[cell] = { t: 's', v: day, s: headerStyle };
-            });
-
-            worksheet['!merges'] = [
-              { s: { r: 0, c: 0 }, e: { r: 0, c: 27 } },
-              { s: { r: 1, c: 0 }, e: { r: 1, c: 27 } },
-              ...Array.from({ length: 7 }).map((_, i) => ({
-                s: { r: 2, c: i * 4 },
-                e: { r: 2, c: i * 4 + 3 },
-              })),
-            ];
-
-            worksheet['!cols'] = Array.from({ length: 28 }).map((_, i) => {
-              const mod = i % 4;
-              if (mod === 0) return { wpx: 110 };
-              if (mod === 1) return { wpx: 140 };
-              if (mod === 2) return { wpx: 190 };
-              return { wpx: 120 };
-            });
-
-            worksheet['A1'].s = {
-              font: { bold: true, sz: 14 },
-              alignment: { horizontal: 'center', vertical: 'center' },
-            };
-            worksheet['A2'].s = {
-              font: { bold: true },
-              alignment: { horizontal: 'center', vertical: 'center' },
-            };
-
-            // ===============================
-            // BUILD TRANSACTIONS
-            // ===============================
-            const normalPayments = (data.payments || [])
-              .filter((p: any) => p.bankAccountID === sheetBankID)
-              .map((p: any) => ({
-                date: p.date,
-                documentDate: p.documentDate,
-                documentName: p.documentName || '-',
-                counterparty: p.opponent || p.bankAccountName || '-',
-                nominal:
-                  typeof p.amount === 'object'
-                    ? -Number(p.amount)
-                    : -Number(p.amount),
+          /*
+           * Satu bentuk transaksi untuk SELURUH lembar.
+           *
+           * Sebelumnya masing-masing lembar menyusunnya sendiri dari bidang
+           * yang berbeda-beda — dan yang satu memakai `opponent`, yang lain
+           * `accountName`, sehingga lembar yang sama menampilkan nama yang
+           * berbeda untuk transaksi yang sama.
+           */
+          const mutasiRekening = (bankID: number) => {
+            const bayar = (data.payments || [])
+              .filter(
+                (t: any) => t.bankAccountID === bankID && this.mutasiSah(t),
+              )
+              .map((t: any) => ({
+                date: String(t.date).slice(0, 10),
+                lawan: this.lawanMutasi(t) || t.opponent || '-',
+                keterangan: this.ketMutasi(t) || t.documentName || '',
+                proyek: this.proyekMutasi(t),
+                nilai: -Math.abs(Number(t.amount || 0)),
+                antar: false,
               }));
 
-            const interpayments = (data.interpayments || [])
-              .map((ip: any) => {
-                if (ip.bankAccountIDOrigin === sheetBankID) {
+            const masuk = (data.incomes || [])
+              .filter((t: any) => t.bankAccountID === bankID)
+              .map((t: any) => ({
+                date: String(t.date).slice(0, 10),
+                lawan: t.opponent || '-',
+                keterangan: t.document_name || '',
+                proyek: '',
+                nilai: Math.abs(Number(t.amount || 0)),
+                antar: false,
+              }));
+
+            /*
+             * Transfer antar rekening dicatat DUA KALI — keluar di asal,
+             * masuk di tujuan — dan itu memang benar per rekening.
+             *
+             * Tetapi pada ringkasan gabungan keduanya saling meniadakan dan
+             * tidak boleh dihitung sebagai pemasukan atau pengeluaran; karena
+             * itu ditandai `antar`.
+             */
+            const antar = (data.interpayments || [])
+              .map((t: any) => {
+                if (t.bankAccountIDOrigin === bankID) {
                   return {
-                    date: ip.date,
-                    documentDate: ip.date,
-                    documentName: `INTER-${ip.id}`,
-                    counterparty: ip.destinationBankAccountName,
-                    nominal: -Number(ip.amount),
+                    date: String(t.date).slice(0, 10),
+                    lawan: t.destinationBankAccountName || 'Transfer keluar',
+                    keterangan: `Transfer ke ${t.destinationBankAccountName ?? ''}`,
+                    proyek: '',
+                    nilai: -Math.abs(Number(t.amount || 0)),
+                    antar: true,
                   };
-                } else if (ip.bankAccountIDDestination === sheetBankID) {
+                }
+                if (t.bankAccountIDDestination === bankID) {
                   return {
-                    date: ip.date,
-                    documentDate: ip.date,
-                    documentName: `INTER-${ip.id}`,
-                    counterparty: ip.originBankAccountName,
-                    nominal: Number(ip.amount),
+                    date: String(t.date).slice(0, 10),
+                    lawan: t.originBankAccountName || 'Transfer masuk',
+                    keterangan: `Transfer dari ${t.originBankAccountName ?? ''}`,
+                    proyek: '',
+                    nilai: Math.abs(Number(t.amount || 0)),
+                    antar: true,
                   };
                 }
                 return null;
               })
-              .filter(Boolean);
+              .filter(Boolean) as any[];
 
-            // ===== INCOMES =====
-            const incomes = (data.incomes || [])
-              .filter((inc: any) => inc.bankAccountID === sheetBankID)
-              .map((inc: any) => ({
-                date: inc.date,
-                documentDate: inc.document_date,
-                documentName: inc.document_name || '-',
-                counterparty: inc.opponent || '-',
-                nominal: Number(inc.amount), // positif (pemasukan)
-              }));
-
-            // Gabungkan semua transaksi
-            const allTransactions = [
-              ...normalPayments,
-              ...interpayments,
-              ...incomes,
-            ];
-
-            // [SUMMARY] Tambahkan ke master
-            masterTransactions.push(...allTransactions);
-
-            if (allTransactions.length === 0) {
-              return; // skip sheet kalau kosong
-            }
-
-            const grouped: Record<string, any[]> = Object.create(null);
-
-            allTransactions.forEach((trx: any) => {
-              if (!grouped[trx.date]) grouped[trx.date] = [];
-              grouped[trx.date].push(trx);
-            });
-
-            const openingBalance = this.getOpeningBalance(
-              data.balances,
-              sheetBankID,
+            return [...bayar, ...masuk, ...antar].sort((a, b) =>
+              a.date.localeCompare(b.date),
             );
+          };
 
-            // ===============================
-            // PASS 1: Hitung minggu dan max transaksi per minggu (minimal 5)
-            // ===============================
-            const firstDayIndex = convertDay(firstDate.getDay()); // 0=Senin
-            let weekIndex = 0;
-            let currentCol = firstDayIndex;
-            const weeks: {
-              days: number[];
-              maxTrans: number;
-              startRow?: number;
-            }[] = [];
+          const wb = new ExcelJS.Workbook();
 
-            for (let day = 1; day <= totalDays; day++) {
-              if (!weeks[weekIndex]) {
-                weeks[weekIndex] = { days: [], maxTrans: 0 };
-              }
-              weeks[weekIndex].days.push(day);
+          const akun: AkunRekap[] = [];
+          const rincian: MutasiRekap[] = [];
+          const perTanggal: Record<
+            string,
+            { masuk: number; keluar: number; ketMasuk: string[]; ketKeluar: string[] }
+          > = Object.create(null);
 
-              const dateStr = formatLocalDate(new Date(year, month - 1, day));
-              const transCount = (grouped[dateStr] || []).length;
-              if (transCount > weeks[weekIndex].maxTrans) {
-                weeks[weekIndex].maxTrans = transCount;
-              }
+          for (const a of data.bank_accounts ?? []) {
+            const mutasi = mutasiRekening(a.id);
+            const awal = this.getOpeningBalance(data.balances, a.id);
 
-              currentCol++;
-              if (currentCol > 6) {
-                currentCol = 0;
-                weekIndex++;
-              }
-            }
+            let saldo = awal;
+            const sel: SelKalender[] = [];
+            const harianSaldo: number[] = [];
 
-            weeks.forEach((w) => {
-              w.maxTrans = Math.max(w.maxTrans, 5);
-            });
+            for (let hari = 1; hari <= totalHari; hari++) {
+              const tgl = `${year}-${dd(month)}-${dd(hari)}`;
+              const hariIni = mutasi.filter((t: any) => t.date === tgl);
 
-            const dayToWeekMap: Record<number, any> = {};
-            weeks.forEach((w) => {
-              w.days.forEach((d: number) => {
-                dayToWeekMap[d] = w;
-              });
-            });
+              for (const t of hariIni) {
+                saldo += t.nilai;
+                rincian.push({
+                  date: tgl,
+                  rekening: a.bankAccountNumber,
+                  bank: a.bankName ?? '',
+                  keterangan: t.keterangan,
+                  lawan: t.lawan,
+                  proyek: t.proyek,
+                  nilai: t.nilai,
+                  saldo,
+                });
 
-            let currentRow = 3;
-            for (let w of weeks) {
-              w.startRow = currentRow;
-              currentRow += 3 + w.maxTrans;
-            }
-            let maxRow = currentRow - 1;
-
-            // ===============================
-            // PASS 2: Tulis data per hari
-            // ===============================
-            let previousSaldoAkhirCell = '';
-            let isFirstDay = true;
-
-            for (let day = 1; day <= totalDays; day++) {
-              const currentDate = new Date(year, month - 1, day);
-              const isoDate = formatLocalDate(currentDate);
-
-              const week = dayToWeekMap[day];
-              const weekStartRow = week.startRow!;
-              const maxTrans = week.maxTrans;
-
-              const firstDayOfWeek = week.days[0];
-              const firstDateOfWeek = new Date(year, month - 1, firstDayOfWeek);
-              const firstCol = convertDay(firstDateOfWeek.getDay());
-              const dayIndexInWeek = day - firstDayOfWeek;
-              const colStart = (firstCol + dayIndexInWeek) * 4;
-
-              // Tanggal
-              const tanggalCell = xlsx.utils.encode_cell({
-                r: weekStartRow,
-                c: colStart,
-              });
-              worksheet[tanggalCell] = {
-                t: 's',
-                v: `${day} ${currentDate.toLocaleString('id-ID', { month: 'long' })} ${year}`,
-                s: headerStyle,
-              };
-              worksheet['!merges'].push({
-                s: { r: weekStartRow, c: colStart },
-                e: { r: weekStartRow, c: colStart + 3 },
-              });
-
-              // Saldo label
-              worksheet[
-                xlsx.utils.encode_cell({ r: weekStartRow + 1, c: colStart })
-              ] = { t: 's', v: 'Saldo Awal', s: center };
-              worksheet[
-                xlsx.utils.encode_cell({ r: weekStartRow + 1, c: colStart + 2 })
-              ] = { t: 's', v: 'Saldo Akhir', s: center };
-
-              const saldoAwalCell = xlsx.utils.encode_cell({
-                r: weekStartRow + 1,
-                c: colStart + 1,
-              });
-              const saldoAkhirCell = xlsx.utils.encode_cell({
-                r: weekStartRow + 1,
-                c: colStart + 3,
-              });
-
-              const nominalStart = xlsx.utils.encode_cell({
-                r: weekStartRow + 3,
-                c: colStart + 3,
-              });
-              const nominalEnd = xlsx.utils.encode_cell({
-                r: weekStartRow + 2 + maxTrans,
-                c: colStart + 3,
-              });
-
-              // Saldo awal
-              if (isFirstDay) {
-                worksheet[saldoAwalCell] = {
-                  t: 'n',
-                  v: openingBalance,
-                  z: '#,##0.00',
-                  s: { ...numberStyle, font: { bold: true } },
-                };
-                isFirstDay = false;
-              } else {
-                worksheet[saldoAwalCell] = {
-                  t: 'n',
-                  f: `=${previousSaldoAkhirCell}`,
-                  z: '#,##0.00',
-                  s: { ...numberStyle, font: { bold: true } },
-                };
-              }
-
-              // Saldo akhir
-              worksheet[saldoAkhirCell] = {
-                t: 'n',
-                f: `=${saldoAwalCell}+SUM(${nominalStart}:${nominalEnd})`,
-                z: '#,##0.00',
-                s: { ...numberStyle, font: { bold: true } },
-              };
-
-              // Header tabel
-              const tableHeaders = [
-                'Tanggal',
-                'Nomor Dokumen',
-                'Lawan Transaksi',
-                'Nominal',
-              ];
-              tableHeaders.forEach((val, i) => {
-                worksheet[
-                  xlsx.utils.encode_cell({
-                    r: weekStartRow + 2,
-                    c: colStart + i,
-                  })
-                ] = { t: 's', v: val, s: headerStyle };
-              });
-
-              // Transaksi
-              const transaksi = grouped[isoDate] || [];
-              for (let i = 0; i < maxTrans; i++) {
-                const row = weekStartRow + 3 + i;
-                if (i < transaksi.length) {
-                  const trx = transaksi[i];
-                  const rawDate = trx.documentDate || trx.date || '';
-                  const displayDate = rawDate.substring(0, 10);
-
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: colStart })] = {
-                    t: 's',
-                    v: displayDate,
-                    s: center,
-                  };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 1 })
-                  ] = {
-                    t: 's',
-                    v: trx.documentName,
-                    s: center,
-                  };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 2 })
-                  ] = {
-                    t: 's',
-                    v: trx.counterparty,
-                    s: center,
-                  };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 3 })
-                  ] = {
-                    t: 'n',
-                    v: trx.nominal,
-                    z: '#,##0.00',
-                    s: numberStyle,
-                  };
-                } else {
-                  // Baris kosong
-                  worksheet[xlsx.utils.encode_cell({ r: row, c: colStart })] = {
-                    t: 's',
-                    v: '',
-                    s: center,
-                  };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 1 })
-                  ] = { t: 's', v: '', s: center };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 2 })
-                  ] = { t: 's', v: '', s: center };
-                  worksheet[
-                    xlsx.utils.encode_cell({ r: row, c: colStart + 3 })
-                  ] = { t: 's', v: '', s: numberStyle };
-                }
-              }
-
-              previousSaldoAkhirCell = saldoAkhirCell;
-            }
-
-            // ===============================
-            // BORDER UNTUK SEMUA SEL (A sd AB, baris 0 sd maxRow)
-            // ===============================
-            for (let r = 0; r <= maxRow; r++) {
-              for (let c = 0; c < 28; c++) {
-                const cellRef = xlsx.utils.encode_cell({ r, c });
-                if (!worksheet[cellRef]) {
-                  worksheet[cellRef] = { t: 's', v: '', s: { border } };
-                }
-              }
-            }
-
-            // ===============================
-            // SET PRINT PREVIEW A3 LANDSCAPE
-            // ===============================
-            worksheet['!pageSetup'] = {
-              paperSize: 8, // A3
-              orientation: 'landscape',
-            };
-
-            worksheet['!rows'] = Array.from({ length: maxRow + 1 }).map(() => ({
-              hpx: 22,
-            }));
-
-            worksheet['!ref'] = xlsx.utils.encode_range({
-              s: { r: 0, c: 0 },
-              e: { r: maxRow, c: 27 },
-            });
-
-            xlsx.utils.book_append_sheet(workbook, worksheet, sheetName);
-          });
-
-          // ===============================
-          // [SUMMARY] Buat sheet Ringkasan
-          // ===============================
-          // ===============================
-          // [SUMMARY] Buat sheet Ringkasan
-          // ===============================
-          if (masterTransactions.length > 0) {
-            // Hitung total opening balance dari semua rekening
-            let totalOpeningBalance = 0;
-            data.bank_accounts.forEach((account: any) => {
-              totalOpeningBalance += this.getOpeningBalance(
-                data.balances,
-                account.id,
-              );
-            });
-
-            const summarySheetName = 'Ringkasan';
-            const summaryRows: any[][] = [];
-
-            const monthName = new Date(year, month - 1).toLocaleString(
-              'id-ID',
-              {
-                month: 'long',
-              },
-            );
-            summaryRows.push([`Ringkasan Harian - ${monthName} ${year}`]); // r=0
-            summaryRows.push([]); // r=1
-            summaryRows.push([
-              'Tanggal',
-              'Jumlah Transaksi',
-              'Total Pemasukan',
-              'Total Pengeluaran',
-              'Selisih',
-              'Saldo Gabungan',
-            ]); // r=2
-
-            // Baris saldo awal (r=3)
-            summaryRows.push([
-              'Saldo Awal',
-              '',
-              '',
-              '',
-              '',
-              totalOpeningBalance,
-            ]);
-
-            // Group per tanggal, skip interpayment
-            const summaryGroup: Record<
-              string,
-              { count: number; income: number; expense: number }
-            > = {};
-
-            masterTransactions.forEach((trx: any) => {
-              // Lewati interpayment
-              if (
-                trx.documentName &&
-                typeof trx.documentName === 'string' &&
-                trx.documentName.startsWith('INTER-')
-              ) {
-                return;
-              }
-              const date = trx.date;
-              if (!date) return; // lewati jika tidak ada tanggal
-
-              if (!summaryGroup[date]) {
-                summaryGroup[date] = { count: 0, income: 0, expense: 0 };
-              }
-              summaryGroup[date].count++;
-
-              // Pastikan nominal berupa angka
-              const nominal =
-                typeof trx.nominal === 'number'
-                  ? trx.nominal
-                  : Number(trx.nominal) || 0;
-              if (nominal > 0) {
-                summaryGroup[date].income += nominal;
-              } else {
-                summaryGroup[date].expense += Math.abs(nominal);
-              }
-            });
-
-            const sortedDates = Object.keys(summaryGroup).sort();
-            let totalCount = 0,
-              totalIncome = 0,
-              totalExpense = 0;
-
-            sortedDates.forEach((date) => {
-              const { count, income, expense } = summaryGroup[date];
-              totalCount += count;
-              totalIncome += income;
-              totalExpense += expense;
-              summaryRows.push([
-                date,
-                count,
-                income,
-                expense,
-                income - expense,
-                0,
-              ]); // kolom F diisi 0 sementara
-            });
-
-            // Baris total
-            summaryRows.push([
-              'TOTAL',
-              totalCount,
-              totalIncome,
-              totalExpense,
-              totalIncome - totalExpense,
-              0,
-            ]);
-
-            const summaryWs = xlsx.utils.aoa_to_sheet(summaryRows);
-
-            // Style header kolom (6 kolom)
-            const summaryHeaderStyle = {
-              font: { bold: true },
-              alignment: { horizontal: 'center' },
-              border: border,
-            };
-            for (let c = 0; c < 6; c++) {
-              const cell = xlsx.utils.encode_cell({ r: 2, c });
-              if (summaryWs[cell]) summaryWs[cell].s = summaryHeaderStyle;
-            }
-
-            // Tentukan indeks baris
-            const firstDataRow = 4; // r=4 adalah baris data pertama
-            const lastDataRow = firstDataRow + sortedDates.length - 1;
-            const totalRow = lastDataRow + 1;
-
-            // Set formula untuk kolom Saldo Gabungan di baris data
-            for (let r = firstDataRow; r <= lastDataRow; r++) {
-              const cellF = xlsx.utils.encode_cell({ r, c: 5 });
-              summaryWs[cellF] = {
-                t: 'n',
-                f: `=F${r}+E${r + 1}`, // r 0-based: F4 + E5 untuk baris pertama, dst.
-                z: '#,##0',
-                s: { border: border, alignment: { horizontal: 'right' } },
-              };
-            }
-
-            // Baris total: set formula =F${lastDataRow} (ambil nilai dari baris data terakhir)
-            const totalCellF = xlsx.utils.encode_cell({ r: totalRow, c: 5 });
-            summaryWs[totalCellF] = {
-              t: 'n',
-              f: `=F${lastDataRow}`,
-              z: '#,##0',
-              s: {
-                border: border,
-                alignment: { horizontal: 'right' },
-                font: { bold: true },
-              },
-            };
-
-            // Loop semua sel untuk border dan format angka
-            const lastRow = summaryRows.length - 1;
-            for (let r = 0; r <= lastRow; r++) {
-              for (let c = 0; c < 6; c++) {
-                const cellRef = xlsx.utils.encode_cell({ r, c });
-                if (!summaryWs[cellRef]) {
-                  summaryWs[cellRef] = { t: 's', v: '', s: { border: border } };
-                } else {
-                  if (!summaryWs[cellRef].s) summaryWs[cellRef].s = {};
-                  summaryWs[cellRef].s.border = border;
-
-                  // Untuk baris data (r >= 3), atur alignment dan format number
-                  if (r >= 3) {
-                    if (c === 0) {
-                      summaryWs[cellRef].s.alignment = { horizontal: 'left' };
-                    } else {
-                      summaryWs[cellRef].s.alignment = { horizontal: 'right' };
-                      // Format number untuk kolom 2-5 jika berisi angka
-                      if (c >= 2 && c <= 5 && summaryWs[cellRef].t === 'n') {
-                        summaryWs[cellRef].z = '#,##0';
-                      }
-                    }
+                // Transfer antar rekening TIDAK masuk ringkasan gabungan:
+                // uangnya tidak keluar dari perusahaan, hanya berpindah.
+                if (t.antar) continue;
+                const g = (perTanggal[tgl] ??= {
+                  masuk: 0,
+                  keluar: 0,
+                  ketMasuk: [],
+                  ketKeluar: [],
+                });
+                if (t.nilai > 0) {
+                  g.masuk += t.nilai;
+                  if (t.lawan && !g.ketMasuk.includes(t.lawan)) {
+                    g.ketMasuk.push(t.lawan);
                   }
-
-                  // Baris total bold
-                  if (r === totalRow) {
-                    if (!summaryWs[cellRef].s.font)
-                      summaryWs[cellRef].s.font = {};
-                    summaryWs[cellRef].s.font.bold = true;
+                } else {
+                  g.keluar += Math.abs(t.nilai);
+                  if (t.lawan && !g.ketKeluar.includes(t.lawan)) {
+                    g.ketKeluar.push(t.lawan);
                   }
                 }
               }
+
+              harianSaldo.push(saldo);
+              if (hariIni.length) {
+                sel.push({
+                  hari,
+                  transaksi: hariIni.map((t: any) => ({
+                    lawan: t.lawan,
+                    nilai: t.nilai,
+                  })),
+                  saldoAkhir: saldo,
+                });
+              } else {
+                sel.push({ hari, transaksi: [], saldoAkhir: saldo });
+              }
             }
 
-            // Lebar kolom
-            summaryWs['!cols'] = [
-              { wpx: 120 }, // tanggal
-              { wpx: 100 }, // jumlah
-              { wpx: 150 }, // pemasukan
-              { wpx: 150 }, // pengeluaran
-              { wpx: 150 }, // selisih
-              { wpx: 180 }, // saldo gabungan
-            ];
-
-            // Merge judul
-            summaryWs['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }];
-
-            // Page setup
-            summaryWs['!pageSetup'] = {
-              paperSize: 8,
-              orientation: 'landscape',
-            };
-
-            // Tambahkan sheet
-            xlsx.utils.book_append_sheet(workbook, summaryWs, summarySheetName);
-
-            // Pindahkan ke posisi pertama
-            const sheetNames = workbook.SheetNames;
-            const idx = sheetNames.indexOf(summarySheetName);
-            if (idx > 0) {
-              sheetNames.splice(idx, 1);
-              sheetNames.unshift(summarySheetName);
-            }
+            akun.push({
+              id: a.id,
+              nomor: a.bankAccountNumber,
+              atasNama: a.bankAccountName ?? '',
+              bank: a.bankName ?? '(tanpa nama bank)',
+              saldoAwal: awal,
+              harian: harianSaldo,
+            });
           }
 
-          // Tulis file
-          const excelBuffer = xlsx.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-            cellStyles: true,
-            compression: true,
+          const saldoAwalGabungan = akun.reduce((x, a) => x + a.saldoAwal, 0);
+
+          // Ringkasan harian gabungan: saldonya berjalan lintas rekening.
+          let saldoGabungan = saldoAwalGabungan;
+          const harian: HarianRekap[] = [];
+          for (let hari = 1; hari <= totalHari; hari++) {
+            const tgl = `${year}-${dd(month)}-${dd(hari)}`;
+            const g = perTanggal[tgl];
+            const masuk = g?.masuk ?? 0;
+            const keluar = g?.keluar ?? 0;
+            saldoGabungan += masuk - keluar;
+            harian.push({
+              tanggal: tgl,
+              ketMasuk: (g?.ketMasuk ?? []).join(', '),
+              masuk,
+              ketKeluar: (g?.ketKeluar ?? []).join(', '),
+              keluar,
+              selisih: masuk - keluar,
+              saldoGabungan,
+            });
+          }
+
+          const kini = new Date();
+          const berjalan =
+            kini.getFullYear() === year && kini.getMonth() + 1 === month;
+          const hariRekap = berjalan ? kini.getDate() : totalHari;
+          const tanggalRekap = new Date(
+            year,
+            month - 1,
+            hariRekap,
+          ).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
           });
 
-          this.saveAsExcelFile(excelBuffer, 'Calendar');
+          const rencanaRekap: RencanaRekap[] = (this.rencana ?? []).map(
+            (r: any) => ({
+              date: String(r.date).slice(0, 10),
+              arah: r.planType === 'masuk' ? 'masuk' : 'keluar',
+              keterangan: r.description ?? '',
+              kategori: r.category ?? '',
+              proyek: r.projectName ?? '',
+              rekening: r.bankName ?? '',
+              nilai: Number(r.amount || 0),
+              status: r.lewat ? 'Terlewat' : (r.status ?? 'rencana'),
+            }),
+          );
+
+          /*
+           * Urutan lembar mengikuti seberapa sering dibuka.
+           *
+           * Excel membuka lembar PERTAMA; menaruh kisi kalender di depan
+           * berarti yang membukanya harus menggulir tab lebih dulu setiap
+           * kali, dan jumlah tabnya sebanyak rekeningnya.
+           */
+          lembarNaskah(wb, akun, hariRekap, tanggalRekap, namaBulan, year);
+          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year);
+          lembarSaldo(wb, akun, totalHari, namaBulan, year);
+          lembarRincian(wb, rincian, namaBulan, year);
+          lembarRencana(wb, rencanaRekap, namaBulan, year);
+
+          for (const a of data.bank_accounts ?? []) {
+            const isi = akun.find((x) => x.id === a.id);
+            if (!isi) continue;
+            const mutasi = mutasiRekening(a.id);
+            const sel: SelKalender[] = [];
+            let saldo = isi.saldoAwal;
+            for (let hari = 1; hari <= totalHari; hari++) {
+              const tgl = `${year}-${dd(month)}-${dd(hari)}`;
+              const hariIni = mutasi.filter((t: any) => t.date === tgl);
+              for (const t of hariIni) saldo += t.nilai;
+              sel.push({
+                hari,
+                transaksi: hariIni.map((t: any) => ({
+                  lawan: t.lawan,
+                  nilai: t.nilai,
+                })),
+                saldoAkhir: saldo,
+              });
+            }
+            lembarKalender(
+              wb,
+              a.bankAccountNumber,
+              a.bankAccountName ?? '',
+              isi.saldoAwal,
+              sel,
+              namaBulan,
+              year,
+              hariPertama,
+              totalHari,
+            );
+          }
+
+          wb.xlsx
+            .writeBuffer()
+            .then((buf) => {
+              const blob = new Blob([buf], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `Kalender_Kas_${namaBulan}_${year}.xlsx`;
+              a.click();
+              // Alamat objek dilepas; tanpa ini berkasnya tetap di memori
+              // peramban sampai halamannya ditutup.
+              URL.revokeObjectURL(url);
+            })
+            .finally(() => (this.isDownloading = false));
         },
-      })
-      .add(() => {
-        this.isDownloading = false;
+        error: () => {
+          this.snackBar.open(
+            this.translate.instant('notify.loadFailed'),
+            'Close',
+            { duration: 3000 },
+          );
+          this.isDownloading = false;
+        },
       });
   }
 
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    });
-    saveAs(data, `${fileName}.xlsx`);
-  }
 
   private getOpeningBalance(balances: any[], bankAccountId: number): number {
     const found = balances.find((b) => b.bankaccountid === bankAccountId);

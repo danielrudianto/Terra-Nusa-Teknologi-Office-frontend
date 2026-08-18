@@ -9,6 +9,7 @@ import {
   MAT_DIALOG_DATA,
   MatDialog,
   MatDialogModule,
+  MatDialogRef,
 } from '@angular/material/dialog';
 import { CalendarDayViewComponent } from '../calendar-day-view/calendar-day-view.component';
 import { MatList, MatListModule } from '@angular/material/list';
@@ -76,6 +77,16 @@ interface BankAccountSummary {
 export class CalendarDaySelectorComponent {
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
+
+  /**
+   * Ada tindakan yang mengubah keadaan pembayaran.
+   *
+   * Dikembalikan saat dialog ditutup supaya kalender induknya memuat ulang
+   * SEKALI. Menyetujui atau menolak mengubah daftar yang tertunda — dan
+   * bannernya menghitung dari seluruh bulan, bukan dari hari yang sedang
+   * dibuka, sehingga ia tidak dapat memperbaiki dirinya sendiri.
+   */
+  adaPerubahan = false;
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -89,6 +100,14 @@ export class CalendarDaySelectorComponent {
     private dialog: MatDialog,
     private clipboard: Clipboard,
     private decimalPipe: DecimalPipe,
+    /*
+     * Dipakai mengembalikan `adaPerubahan` saat dialog ditutup.
+     *
+     * Kalender induknya memuat daftar tertunda dari rutenya sendiri, dan
+     * bannernya menghitung dari SELURUH bulan — sehingga ia tidak dapat
+     * memperbaiki dirinya sendiri setelah satu pembayaran disetujui di sini.
+     */
+    private dialogRef: MatDialogRef<CalendarDaySelectorComponent>,
   ) {}
 
   @ViewChild('menuTrigger') menuTrigger: MatMenuTrigger | undefined;
@@ -161,6 +180,11 @@ export class CalendarDaySelectorComponent {
   }
   selectedAmount: number = 0;
 
+
+  /** Tutup dialog, sambil memberi tahu apakah ada yang berubah. */
+  tutup(): void {
+    this.dialogRef.close(this.adaPerubahan);
+  }
   ngOnInit(): void {
     this.fetchDailyData();
   }
@@ -597,6 +621,10 @@ export class CalendarDaySelectorComponent {
                  * tetap seperti sebelum tindakan — dan yang membacanya
                  * mengira tindakannya tidak berhasil.
                  */
+                // Ditandai supaya kalender induknya ikut menyegar saat
+                // dialog ditutup; bannernya menghitung dari seluruh bulan,
+                // bukan dari hari yang sedang dibuka.
+                this.adaPerubahan = true;
                 this.fetchDailyData();
               },
               error: (error) => {
@@ -653,6 +681,10 @@ export class CalendarDaySelectorComponent {
                  * tetap seperti sebelum tindakan — dan yang membacanya
                  * mengira tindakannya tidak berhasil.
                  */
+                // Ditandai supaya kalender induknya ikut menyegar saat
+                // dialog ditutup; bannernya menghitung dari seluruh bulan,
+                // bukan dari hari yang sedang dibuka.
+                this.adaPerubahan = true;
                 this.fetchDailyData();
               },
               error: (error) => {

@@ -1,0 +1,99 @@
+.td-content {
+  padding: 1.5rem !important;
+  max-height: 66vh;
+}
+
+.td-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line, #f0f2f7);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+/*
+ * Berapa hari terlewat.
+ *
+ * Yang lewat dari dua pekan diberi warna lebih keras: pada titik itu
+ * persoalannya bukan lagi keterlambatan biasa, dan menyamakan tampilannya
+ * membuat yang paling mendesak tenggelam di antara yang baru kemarin.
+ */
+.td-baris__hari {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  padding: 0.3rem 0;
+  border-radius: 9px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn, #a2651a);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
+
+  small {
+    font-size: 0.6rem;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  &.lama {
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
+  }
+}
+
+.td-baris__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.td-baris__dok {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-baris__ket {
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+
+.td-baris__nilai {
+  flex: 0 0 auto;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.td-ringkas {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.85rem;
+
+  strong {
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.td-actions {
+  padding: 1rem 1.5rem !important;
+}

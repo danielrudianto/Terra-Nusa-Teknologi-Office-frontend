@@ -169,6 +169,25 @@ export class PurchaseOrderCreate511Component implements OnInit {
    * jatuh tempo, dan menggantinya tanpa sepengetahuan yang mengisi lebih
    * buruk daripada memintanya memilih ulang.
    */
+  /**
+   * Alamat terakhir yang diisi SISTEM, bukan orang.
+   *
+   * Tanpa penanda ini, mengganti metode pengiriman tidak mengubah alamatnya:
+   * bawaannya Franco, sehingga begitu pemasok dipilih alamat proyek sudah
+   * terisi — dan penjagaan "jangan timpa yang sudah diisi" justru menahan
+   * pengisian ulang saat berpindah ke Loco.
+   *
+   * Yang diketik sendiri tetap dijaga.
+   */
+  private alamatDariSistem = '';
+
+  private alamatBolehDiisiUlang(): boolean {
+    const kini = String(
+      this.formGroup.get('deliveryAddress')?.value || '',
+    ).trim();
+    return !kini || kini === this.alamatDariSistem.trim();
+  }
+
   selaraskanTerminLoco(): void {
 
     /*
@@ -218,13 +237,16 @@ export class PurchaseOrderCreate511Component implements OnInit {
      */
     if (!this.isLoco) {
       const v = this.formGroup.getRawValue();
-      if (!String(v.deliveryAddress || '').trim()) {
+      if (this.alamatBolehDiisiUlang()) {
         const proyek = this.projectLookup.cari(String(v.projectName || ''));
         const alamat = [proyek?.name, proyek?.address]
           .map((x: any) => String(x || '').trim())
           .filter((x: string) => !!x)
           .join('\n');
-        if (alamat) this.formGroup.patchValue({ deliveryAddress: alamat });
+        if (alamat) {
+          this.formGroup.patchValue({ deliveryAddress: alamat });
+          this.alamatDariSistem = alamat;
+        }
       }
     }
 
@@ -232,8 +254,8 @@ export class PurchaseOrderCreate511Component implements OnInit {
       const v = this.formGroup.getRawValue();
       const isi: any = {};
 
-      if (!String(v.deliveryAddress || '').trim()) {
-        isi.deliveryAddress = [
+      if (this.alamatBolehDiisiUlang()) {
+        const alamat = [
           v.supplierName,
           v.supplierAddress,
           v.supplierCity,
@@ -241,6 +263,10 @@ export class PurchaseOrderCreate511Component implements OnInit {
           .map((x: any) => String(x || '').trim())
           .filter((x: string) => !!x)
           .join('\n');
+        if (alamat) {
+          isi.deliveryAddress = alamat;
+          this.alamatDariSistem = alamat;
+        }
       }
 
       if (!String(v.supplierPICName || '').trim() && v.supplierName) {

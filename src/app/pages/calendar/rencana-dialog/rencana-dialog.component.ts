@@ -139,8 +139,18 @@ export class RencanaDialogComponent implements OnInit {
   }
 
   private muatRekening(): void {
-    this.api.get('bank-accounts', { page: 1, pageSize: 200 }).subscribe({
-      next: (res: any) => (this.rekening = res?.data ?? res ?? []),
+    /*
+     * `banks/all`, bukan `bank-accounts`.
+     *
+     * Prefix rutenya `/banks`, dan jawabannya LARIK langsung — bukan
+     * `{ data: [...] }`. Alamat yang keliru dijawab 404, dan `res?.data`
+     * pada larik menghasilkan `undefined`; keduanya berakhir sebagai
+     * daftar kosong tanpa satu pun galat di layar.
+     *
+     * Lima layar pembayaran lain sudah memakai alamat ini.
+     */
+    this.api.get('banks/all', {}).subscribe({
+      next: (res: any) => (this.rekening = Array.isArray(res) ? res : []),
       // Gagal memuat tidak menghalangi pengisian: rekeningnya memang boleh
       // dikosongkan.
       error: () => (this.rekening = []),

@@ -1502,7 +1502,11 @@
     "reject": "Reject",
     "confirm": "Confirm",
     "pilihSemua": "Pilih semua",
-    "adaInterpaymentDiTanggalIni": "Ada interpayment di tanggal ini"
+    "adaInterpaymentDiTanggalIni": "Ada interpayment di tanggal ini",
+    "pembayaranTerlewat": "{{n}} pembayaran jatuh tempo belum disetujui",
+    "pembayaranTerlewatKet": "Tanggalnya sudah lewat tetapi persetujuannya belum diberikan.",
+    "hariLalu": "hari",
+    "totalTerlewat": "Total yang tertunda"
   },
   "calendarAccount": {
     "accountsSelected": "Rekening Dipilih",
@@ -4343,9 +4347,9 @@
     "unduhExcel": "Unduh Excel"
   },
   "rencana": {
-    "buatJudul": "Rencana pengeluaran",
+    "buatJudul": "Rencana kas",
     "ubahJudul": "Ubah rencana",
-    "sub": "Uang yang akan keluar, dicatat sebelum dokumennya ada.",
+    "sub": "Uang yang akan bergerak, dicatat sebelum dokumennya ada.",
     "tanggal": "Tanggal",
     "nominal": "Nominal",
     "untukApa": "Untuk apa",
@@ -4358,8 +4362,8 @@
     "catatanPlaceholder": "Keterangan tambahan bila perlu",
     "rekeningOpsional": "Rekening boleh dikosongkan bila belum diputuskan dari mana dibayar.",
     "terkunciKet": "Rencana ini sudah ditandai terpakai, sehingga tidak dapat diubah lagi.",
-    "rencanaHariIni": "Rencana pengeluaran pada tanggal ini",
-    "totalBulanIni": "Rencana pengeluaran bulan ini",
+    "rencanaHariIni": "Rencana kas pada tanggal ini",
+    "totalBulanIni": "Rencana kas bulan ini",
     "katMaterial": "Material",
     "katSubkon": "Subkontraktor",
     "katGaji": "Gaji",
@@ -4388,6 +4392,9 @@
     "katUangMuka": "Uang muka",
     "katRetensi": "Retensi cair",
     "katPinjaman": "Pencairan pinjaman",
-    "katUtang": "Pembayaran utang"
+    "katUtang": "Pembayaran utang",
+    "terlewatBanner": "{{n}} rencana kas terlewat",
+    "terlewatBannerKet": "Tanggalnya sudah lewat tanpa ditandai terpakai; tidak ikut dihitung.",
+    "lihat": "Lihat"
   }
 }

@@ -302,7 +302,14 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="ds-actions">
-    <button type="button" class="ds-close" mat-dialog-close>
+    <!--
+      Ditutup lewat `tutup()`, bukan `mat-dialog-close` telanjang.
+
+      Yang telanjang mengembalikan `undefined`, sehingga kalender induknya
+      tidak pernah tahu ada pembayaran yang disetujui di sini — dan bannernya
+      bertahan seolah tindakannya tidak berhasil.
+    -->
+    <button type="button" class="ds-close" (click)="tutup()">
       {{ "calendarDay.close" | translate }}
     </button>
   </mat-dialog-actions>

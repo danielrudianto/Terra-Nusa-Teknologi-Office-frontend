@@ -1502,7 +1502,11 @@
     "reject": "Reject",
     "confirm": "Confirm",
     "pilihSemua": "Select all",
-    "adaInterpaymentDiTanggalIni": "There is an inter-account transfer on this date"
+    "adaInterpaymentDiTanggalIni": "There is an inter-account transfer on this date",
+    "pembayaranTerlewat": "{{n}} payment(s) past due, not yet approved",
+    "pembayaranTerlewatKet": "Their date has passed but approval has not been given.",
+    "hariLalu": "days",
+    "totalTerlewat": "Total outstanding"
   },
   "calendarAccount": {
     "accountsSelected": "Bank Account(s) Selected",
@@ -4343,9 +4347,9 @@
     "unduhExcel": "Download Excel"
   },
   "rencana": {
-    "buatJudul": "Planned payment",
+    "buatJudul": "Cash plan",
     "ubahJudul": "Edit plan",
-    "sub": "Money that will go out, recorded before the paperwork exists.",
+    "sub": "Money that will move, recorded before the paperwork exists.",
     "tanggal": "Date",
     "nominal": "Amount",
     "untukApa": "What for",
@@ -4358,8 +4362,8 @@
     "catatanPlaceholder": "Extra detail if needed",
     "rekeningOpsional": "The account may be left blank if it has not been decided yet.",
     "terkunciKet": "This plan is marked as used, so it can no longer be changed.",
-    "rencanaHariIni": "Planned payments on this date",
-    "totalBulanIni": "Planned payments this month",
+    "rencanaHariIni": "Cash plans on this date",
+    "totalBulanIni": "Cash plans this month",
     "katMaterial": "Materials",
     "katSubkon": "Subcontractor",
     "katGaji": "Payroll",
@@ -4388,6 +4392,9 @@
     "katUangMuka": "Advance payment",
     "katRetensi": "Retention released",
     "katPinjaman": "Loan disbursement",
-    "katUtang": "Debt repayment"
+    "katUtang": "Debt repayment",
+    "terlewatBanner": "{{n}} cash plan(s) overdue",
+    "terlewatBannerKet": "Past their date without being marked as used; not counted.",
+    "lihat": "View"
   }
 }
