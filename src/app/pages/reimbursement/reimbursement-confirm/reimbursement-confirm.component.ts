@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
@@ -36,7 +36,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     TranslatePipe,
     DialogGeserDirective,
   ],
-  providers: [DatePipe],
+  providers: [provideNgxMask(), DatePipe],
   templateUrl: './reimbursement-confirm.component.html',
   styleUrl: './reimbursement-confirm.component.scss',
 })

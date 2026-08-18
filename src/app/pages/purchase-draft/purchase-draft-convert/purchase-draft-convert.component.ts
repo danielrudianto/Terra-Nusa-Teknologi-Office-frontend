@@ -36,6 +36,7 @@ import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -108,7 +109,11 @@ function bankAccountIDRequired(): ValidatorFn {
     MatDividerModule,
     MatIconModule,
     MatAutocompleteModule,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class PurchaseDraftConvertComponent {
   private readonly serverMessage = inject(ServerMessageService);

@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslatePipe } from '@ngx-translate/core';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
 
 @Component({
@@ -29,6 +29,9 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
     TranslatePipe,
     DialogGeserDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // mengimpor direktifnya saja tidak cukup — masknya diam.
+  providers: [provideNgxMask()],
   templateUrl: './salary-slip-allowance-create.component.html',
   styleUrl: './salary-slip-allowance-create.component.scss',
 })

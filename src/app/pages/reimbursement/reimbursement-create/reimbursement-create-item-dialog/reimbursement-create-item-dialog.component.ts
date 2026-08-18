@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-reimbursement-create-item-dialog',
@@ -27,7 +28,11 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
     MatDatepickerModule,
     TranslatePipe,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class ReimbursementCreateItemDialogComponent {
   constructor(

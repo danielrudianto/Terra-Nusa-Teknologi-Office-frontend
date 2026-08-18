@@ -23,6 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-asset-update',
@@ -43,7 +44,11 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatIconModule,
     TranslatePipe,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class AssetUpdateComponent implements OnInit {
   private readonly translate = inject(TranslateService);

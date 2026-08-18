@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-asset-create',
@@ -39,7 +40,11 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatSelectModule,
     MatDialogModule,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class AssetCreateComponent {
   private readonly serverMessage = inject(ServerMessageService);

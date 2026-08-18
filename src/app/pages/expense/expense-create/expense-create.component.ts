@@ -28,7 +28,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ExpenseCreateAdministrationComponent } from './expense-create-administration/expense-create-administration.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
@@ -55,6 +55,9 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     HeaderTitleComponent,
     NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // mengimpor direktifnya saja tidak cukup — masknya diam.
+  providers: [provideNgxMask()],
   templateUrl: './expense-create.component.html',
   styleUrl: './expense-create.component.scss',
   standalone: true,

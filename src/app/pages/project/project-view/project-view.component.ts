@@ -29,6 +29,7 @@ import { Project, ProjectContract, keadaanProyek } from '../project.model';
 import { PphSelectorComponent } from '../../../components/pph-selector/pph-selector.component';
 import { IPPh } from '../../../utils/pph';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-project-view',
@@ -49,8 +50,9 @@ import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail
     HeaderTitleComponent,
     CanDirective,
     AuditTrailComponent,
+    NgxMaskDirective,
   ],
-  providers: [provideNativeDateAdapter()],
+  providers: [provideNgxMask(), provideNativeDateAdapter()],
   templateUrl: './project-view.component.html',
   styleUrl: './project-view.component.scss',
 })

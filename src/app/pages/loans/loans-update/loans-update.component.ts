@@ -23,6 +23,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 /**
  * Ubah data pinjaman.
@@ -52,7 +53,11 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     MatAutocompleteModule,
     MatIconModule,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
   templateUrl: './loans-update.component.html',
   styleUrl: './loans-update.component.scss',
 })

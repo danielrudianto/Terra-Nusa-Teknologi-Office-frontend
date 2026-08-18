@@ -24,6 +24,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-payment-history',
@@ -42,7 +43,11 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
     AsyncPipe,
     CommonModule,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class PaymentHistoryComponent {
   stepperOrientation: Observable<StepperOrientation>;

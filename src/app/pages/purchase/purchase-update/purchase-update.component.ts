@@ -29,6 +29,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -68,7 +69,11 @@ function bankAccountIDRequired(): ValidatorFn {
     CommonModule,
     MatSlideToggleModule,
     DialogGeserDirective,
+    NgxMaskDirective,
   ],
+  // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
+  // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
+  providers: [provideNgxMask()],
 })
 export class PurchaseUpdateComponent {
   private readonly translate = inject(TranslateService);
