@@ -4338,6 +4338,8 @@
     "biayaLain": "Other cost",
     "biayaLainKet": "What for",
     "biayaLainPlaceholder": "e.g. freight, unloading, material testing",
-    "ongkosBelumDitaksir": "freight not yet estimated"
+    "ongkosBelumDitaksir": "freight not yet estimated",
+    "cetakPdf": "Print PDF",
+    "unduhExcel": "Download Excel"
   }
 }

@@ -17,6 +17,11 @@ import {
 } from 'src/app/helpers/tender-gambar.helper';
 import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.service';
 import { TenderQuoteDialogComponent } from '../tender-quote-dialog/tender-quote-dialog.component';
+import {
+  DataRekap,
+  cetakRekapTender,
+  unduhRekapTenderExcel,
+} from 'src/app/helpers/tender-rekap.helper';
 
 @Component({
   selector: 'app-tender-view',
@@ -401,6 +406,64 @@ export class TenderViewComponent implements OnInit {
           { duration: 3000 },
         ),
       );
+  }
+
+  /**
+   * Data untuk rekap cetak.
+   *
+   * Disusun sekali dan dipakai kedua bentuknya. Menyusunnya terpisah di
+   * masing-masing berarti satu di antaranya pasti tertinggal ketika bidangnya
+   * bertambah — dan yang membandingkan PDF dengan Excel menemukan dua isi
+   * berbeda untuk tender yang sama.
+   */
+  private dataRekap(): DataRekap {
+    return {
+      nomor: this.data?.number ?? null,
+      nama: this.data?.name ?? '',
+      proyek: this.data?.projectName ?? '',
+      jenis: this.isJasa ? 'jasa' : 'barang',
+      tanggal: this.data?.date ?? '',
+      uraian: this.data?.description ?? null,
+      ketentuan: this.data?.requirements ?? null,
+      items: this.items.map((x) => ({
+        id: x.id,
+        name: x.name,
+        specification: x.specification,
+        quantity: x.quantity !== null ? Number(x.quantity) : null,
+        unit: x.unit,
+      })),
+      quotes: this.quotes,
+    };
+  }
+
+  cetakPdf(): void {
+    if (!this.quotes.length) {
+      this.snackBar.open(
+        this.translate.instant('tender.belumAdaPenawaran'),
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    cetakRekapTender(this.dataRekap(), 'download');
+  }
+
+  unduhExcel(): void {
+    if (!this.quotes.length) {
+      this.snackBar.open(
+        this.translate.instant('tender.belumAdaPenawaran'),
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
+    unduhRekapTenderExcel(this.dataRekap()).catch(() =>
+      this.snackBar.open(
+        this.translate.instant('notify.saveFailed'),
+        'Close',
+        { duration: 3000 },
+      ),
+    );
   }
 
   kembali(): void {

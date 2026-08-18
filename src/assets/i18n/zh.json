@@ -4338,6 +4338,8 @@
     "biayaLain": "其他费用",
     "biayaLainKet": "用途",
     "biayaLainPlaceholder": "例如：运费、装卸费、材料试验费",
-    "ongkosBelumDitaksir": "运费尚未估算"
+    "ongkosBelumDitaksir": "运费尚未估算",
+    "cetakPdf": "打印 PDF",
+    "unduhExcel": "下载 Excel"
   }
 }

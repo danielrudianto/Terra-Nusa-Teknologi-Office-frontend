@@ -4338,6 +4338,8 @@
     "biayaLain": "Biaya lain",
     "biayaLainKet": "Untuk apa",
     "biayaLainPlaceholder": "Ex. ongkos angkut, bongkar muat, uji material",
-    "ongkosBelumDitaksir": "ongkos angkut belum ditaksir"
+    "ongkosBelumDitaksir": "ongkos angkut belum ditaksir",
+    "cetakPdf": "Cetak PDF",
+    "unduhExcel": "Unduh Excel"
   }
 }

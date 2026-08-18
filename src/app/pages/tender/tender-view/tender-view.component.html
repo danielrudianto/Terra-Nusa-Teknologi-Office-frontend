@@ -153,6 +153,26 @@
         </div>
       }
 
+      <!--
+        Unduh rekap; hanya muncul bila sudah ada penawaran.
+
+        Layar ini tidak dapat dilampirkan pada permintaan persetujuan dan
+        tidak dapat diarsipkan — yang meninjau keputusan setahun kemudian
+        membaca berkas, bukan membuka aplikasi.
+      -->
+      @if (quotes.length) {
+        <div class="tv-unduh">
+          <button mat-stroked-button type="button" (click)="cetakPdf()">
+            <mat-icon>picture_as_pdf</mat-icon>
+            {{ "tender.cetakPdf" | translate }}
+          </button>
+          <button mat-stroked-button type="button" (click)="unduhExcel()">
+            <mat-icon>table_view</mat-icon>
+            {{ "tender.unduhExcel" | translate }}
+          </button>
+        </div>
+      }
+
       @if (!quotes.length) {
         <p class="tv-kosong">
           <mat-icon>inbox</mat-icon>
