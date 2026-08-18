@@ -4341,5 +4341,30 @@
     "ongkosBelumDitaksir": "freight not yet estimated",
     "cetakPdf": "Print PDF",
     "unduhExcel": "Download Excel"
+  },
+  "rencana": {
+    "buatJudul": "Planned payment",
+    "ubahJudul": "Edit plan",
+    "sub": "Money that will go out, recorded before the paperwork exists.",
+    "tanggal": "Date",
+    "nominal": "Amount",
+    "untukApa": "What for",
+    "untukApaPlaceholder": "e.g. Rebar down payment for A3EXT pile caps",
+    "kategori": "Category",
+    "proyek": "Project",
+    "rekening": "Account",
+    "belumDitentukan": "Not decided yet",
+    "catatan": "Notes",
+    "catatanPlaceholder": "Extra detail if needed",
+    "rekeningOpsional": "The account may be left blank if it has not been decided yet.",
+    "terkunciKet": "This plan is marked as used, so it can no longer be changed.",
+    "rencanaHariIni": "Planned payments on this date",
+    "totalBulanIni": "Planned payments this month",
+    "katMaterial": "Materials",
+    "katSubkon": "Subcontractor",
+    "katGaji": "Payroll",
+    "katOperasional": "Operations",
+    "katPajak": "Tax",
+    "katLain": "Other"
   }
 }

@@ -4341,5 +4341,30 @@
     "ongkosBelumDitaksir": "ongkos angkut belum ditaksir",
     "cetakPdf": "Cetak PDF",
     "unduhExcel": "Unduh Excel"
+  },
+  "rencana": {
+    "buatJudul": "Rencana pengeluaran",
+    "ubahJudul": "Ubah rencana",
+    "sub": "Uang yang akan keluar, dicatat sebelum dokumennya ada.",
+    "tanggal": "Tanggal",
+    "nominal": "Nominal",
+    "untukApa": "Untuk apa",
+    "untukApaPlaceholder": "Ex. DP besi beton untuk pile cap A3EXT",
+    "kategori": "Kategori",
+    "proyek": "Proyek",
+    "rekening": "Rekening",
+    "belumDitentukan": "Belum ditentukan",
+    "catatan": "Catatan",
+    "catatanPlaceholder": "Keterangan tambahan bila perlu",
+    "rekeningOpsional": "Rekening boleh dikosongkan bila belum diputuskan dari mana dibayar.",
+    "terkunciKet": "Rencana ini sudah ditandai terpakai, sehingga tidak dapat diubah lagi.",
+    "rencanaHariIni": "Rencana pengeluaran pada tanggal ini",
+    "totalBulanIni": "Rencana pengeluaran bulan ini",
+    "katMaterial": "Material",
+    "katSubkon": "Subkontraktor",
+    "katGaji": "Gaji",
+    "katOperasional": "Operasional",
+    "katPajak": "Pajak",
+    "katLain": "Lain-lain"
   }
 }

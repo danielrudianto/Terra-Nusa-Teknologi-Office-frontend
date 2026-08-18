@@ -4341,5 +4341,30 @@
     "ongkosBelumDitaksir": "运费尚未估算",
     "cetakPdf": "打印 PDF",
     "unduhExcel": "下载 Excel"
+  },
+  "rencana": {
+    "buatJudul": "付款计划",
+    "ubahJudul": "修改计划",
+    "sub": "在单据成立之前，先记录将要支出的款项。",
+    "tanggal": "日期",
+    "nominal": "金额",
+    "untukApa": "用途",
+    "untukApaPlaceholder": "例如：A3EXT 承台钢筋预付款",
+    "kategori": "类别",
+    "proyek": "项目",
+    "rekening": "账户",
+    "belumDitentukan": "尚未确定",
+    "catatan": "备注",
+    "catatanPlaceholder": "如有需要可补充说明",
+    "rekeningOpsional": "若尚未决定从哪个账户支付，账户可留空。",
+    "terkunciKet": "该计划已标记为已使用，无法再修改。",
+    "rencanaHariIni": "该日期的付款计划",
+    "totalBulanIni": "本月付款计划",
+    "katMaterial": "材料",
+    "katSubkon": "分包商",
+    "katGaji": "工资",
+    "katOperasional": "运营",
+    "katPajak": "税费",
+    "katLain": "其他"
   }
 }

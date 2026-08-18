@@ -206,3 +206,92 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     cursor: default;
   }
 }
+
+/*
+ * Rencana pengeluaran dalam sel kalender.
+ *
+ * Warna dan ukurannya SENGAJA berbeda dari nilai pembayaran di atasnya: yang
+ * satu sudah terjadi, yang satu baru taksiran, dan menyamakan tampilannya
+ * membuat keduanya terbaca sebagai hal yang sama pastinya.
+ */
+.cal-cell__plan {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--warn, #a2651a);
+
+  .mat-icon {
+    width: 12px;
+    height: 12px;
+    font-size: 12px;
+  }
+}
+
+/*
+ * Tombol tambah, muncul saat selnya disorot.
+ *
+ * Selalu tampak membuat sel penuh ikon yang berebut ruang dengan angkanya —
+ * padahal yang dibaca sehari-hari adalah angkanya.
+ */
+.cal-cell__add {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  line-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+
+  .mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+}
+
+.cal-cell {
+  /* Jangkar bagi tombol tambah yang diposisikan mutlak di atas. */
+  position: relative;
+
+  &:hover .cal-cell__add,
+  &:focus-within .cal-cell__add {
+    opacity: 1;
+  }
+}
+
+.cal-plan-total {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn, #a2651a);
+  font-size: 0.82rem;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+
+  strong {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+}

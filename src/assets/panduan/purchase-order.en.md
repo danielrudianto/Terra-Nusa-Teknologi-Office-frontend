@@ -14,6 +14,11 @@ goods arrive and the invoice is issued, the bill is recorded through the
 
 ## Types covered here
 
+This guide covers **eight of the sixteen** PO types. The rest — B, H, 5.1.1.2,
+5.1.2, 6.4.1, 6.4.2, 6.5.1, 6.5.2 — are deliberately left out rather than
+explained halfway; their forms follow the same pattern, and their specific
+fields are labelled on screen.
+
 The first five use the same form; what differs is only the extra fields at
 the end. The last three have a different shape and are explained in their own
 sections.
@@ -116,20 +121,41 @@ it has genuinely been agreed as unnecessary.
 Choose the **Material type** first, because this choice determines which
 agreement points are generated:
 
-| Option | For |
+| Option | Document printed |
 |---|---|
-| Concrete (ready mix) | Concrete supply |
-| Steel | Steel supply |
-| Other material | Anything outside those two |
-| Cylinder compression test | Concrete testing services |
-| Steel tensile & bend test | Steel testing services |
+| Concrete (ready mix) | Purchase Order |
+| Steel | Purchase Order |
+| Other material | Purchase Order |
+| Cylinder compression test | **Work Order (SPK)** |
+| Steel tensile & bend test | **Work Order (SPK)** |
+| Soil test | **Work Order (SPK)** |
 
-**The last two are not purchases of goods but services.** Their document prints
-as a **Work Order (SPK)**, not a Purchase Order. Don't be surprised that the
-title differs — that's intended.
+**The last three are not purchases of goods but services.** Their document
+prints as a **Work Order (SPK)**, and the number itself uses `SPK` rather than
+`PO`. Don't be surprised that the title differs — that's intended.
 
-For testing services the fields are: number of specimens, price per specimen,
-how many days until the report, and specimen handover.
+Before issuing, the confirmation screen shows the **document type in capitals**
+— for example `PURCHASE ORDER — Other material`. Read that line. Picking the
+wrong material type means the vendor signs a document with the wrong title, and
+that can only be corrected in the database.
+
+Once the PO is saved, the **material type cards are locked**. Unselected cards
+appear dimmed and cannot be pressed; the selected one stays readable so it is
+clear which applies.
+
+### Testing service fields
+
+Number of specimens, price per specimen, and how many days until the report.
+
+**Test types are chosen as pills**, not typed comma-separated — type, then pick
+from the list; remove a wrong one via the cross on its pill.
+
+**Specimen transfer** replaces Franco/Loco for testing services: whether the
+laboratory *collects* the specimens or AKN *sends* them. A single address field
+follows that choice.
+
+The unit adjusts itself: **specimen** for concrete and steel tests, **sample**
+for soil tests.
 
 For concrete and steel supply there's a quality-testing tick. When enabled, the
 clause "the seller replaces goods that fail quality testing" is printed. For
@@ -255,6 +281,19 @@ unenforceable.
 
 Because merchandise is goods, the Franco/Loco clause, address, and both
 parties' contacts apply — the same as any other goods procurement.
+
+<a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
+
+## Suggested withholding-tax code
+
+When choosing the withholding-tax code, the **code usually used for that PO
+type appears at the top** of the list, along with the reason. It disappears as
+soon as you start searching, so it never blocks someone looking for a different
+code.
+
+The suggestion is **not a ruling**. The correct code depends on the shape of
+the transaction, not just the PO type — qualified construction services use
+Article 4(2), while other services use Article 23. When unsure, ask FAT.
 
 <a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
 

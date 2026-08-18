@@ -1,0 +1,131 @@
+<div class="rd">
+  <div class="rd-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>event_upcoming</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">
+        {{ (isUbah ? "rencana.ubahJudul" : "rencana.buatJudul") | translate }}
+      </h2>
+      <span class="dlg__sub">{{ "rencana.sub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="rd-content">
+    <!--
+      Rencana yang sudah TERPAKAI hanya dapat dibaca.
+
+      Ia sudah dipakai membandingkan rencana dengan kenyataan; mengubahnya
+      membuat selisihnya menyusut sendiri, dan yang meninjau menyimpulkan
+      perencanaannya lebih tepat daripada yang sebenarnya.
+    -->
+    @if (terkunci) {
+      <div class="rd-banner rd-banner--kunci">
+        <mat-icon>lock</mat-icon>
+        <span>{{ "rencana.terkunciKet" | translate }}</span>
+      </div>
+    }
+
+    <form [formGroup]="formGroup">
+      <div class="rd-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "rencana.tanggal" | translate }}</mat-label>
+          <input matInput [matDatepicker]="pTgl" formControlName="date" />
+          <mat-datepicker-toggle matIconSuffix [for]="pTgl"></mat-datepicker-toggle>
+          <mat-datepicker #pTgl></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "rencana.nominal" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="amount"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+            placeholder="0"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rd-span2">
+          <mat-label>{{ "rencana.untukApa" | translate }}</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            formControlName="description"
+            [placeholder]="'rencana.untukApaPlaceholder' | translate"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "rencana.kategori" | translate }}</mat-label>
+          <mat-select formControlName="category">
+            @for (k of kategori; track k.value) {
+              <mat-option [value]="k.value">
+                <mat-icon class="rd-kat__ikon">{{ k.ikon }}</mat-icon>
+                {{ k.label | translate }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <app-project-selector
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [label]="'rencana.proyek' | translate"
+        />
+
+        <mat-form-field appearance="outline" class="rd-span2">
+          <mat-label>{{ "rencana.rekening" | translate }}</mat-label>
+          <mat-select formControlName="bankAccountID">
+            <mat-option [value]="null">{{
+              "rencana.belumDitentukan" | translate
+            }}</mat-option>
+            @for (r of rekening; track r.id) {
+              <mat-option [value]="r.id">
+                {{ r.bankName }} · {{ r.bankAccountNumber }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rd-span2">
+          <mat-label>{{ "rencana.catatan" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="2"
+            formControlName="notes"
+            [placeholder]="'rencana.catatanPlaceholder' | translate"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!--
+        Rekening boleh dikosongkan, dan itu disengaja.
+
+        Rencana kerap dibuat sebelum diputuskan dari rekening mana dibayar —
+        memaksa memilihnya membuat orang menebak, lalu angka per rekening
+        pada posisi kas menjadi keliru tanpa ada yang menyadarinya.
+      -->
+      <div class="rd-banner">
+        <mat-icon>info</mat-icon>
+        <span>{{ "rencana.rekeningOpsional" | translate }}</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="rd-actions">
+    <button mat-button type="button" (click)="batal()">
+      {{ (terkunci ? "common.close" : "common.cancel") | translate }}
+    </button>
+    @if (!terkunci) {
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="formGroup.invalid"
+        (click)="simpan()"
+      >
+        {{ "common.save" | translate }}
+      </button>
+    }
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,66 @@
+.rd-content {
+  padding: 1.5rem !important;
+}
+
+.rd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+}
+
+.rd-span2 {
+  grid-column: 1 / -1;
+  /* `grid-column` menentukan KOLOM, bukan lebar isian di dalamnya. */
+  width: 100%;
+}
+
+.rd-kat__ikon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+/*
+ * Banner keterangan, bukan hint.
+ *
+ * Menjelaskan mengapa rekening boleh dikosongkan — dan hint tercetak kecil di
+ * bawah kotak lalu hilang begitu isiannya disentuh.
+ */
+.rd-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+/* Terkunci: keadaan, bukan saran — karena itu netral, bukan biru. */
+.rd-banner--kunci {
+  margin: 0 0 1rem;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+}
+
+.rd-actions {
+  padding: 1rem 1.5rem !important;
+}
+
+@media (max-width: 640px) {
+  .rd-grid {
+    grid-template-columns: 1fr;
+  }
+}

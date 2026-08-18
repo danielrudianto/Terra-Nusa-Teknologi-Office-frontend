@@ -19,6 +19,9 @@ import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
 import { ApiService } from 'src/app/services/api.service';
 import * as xlsx from 'xlsx-js-style';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PaymentPlanService } from 'src/app/services/payment-plan.service';
+import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-calendar-table',
@@ -40,6 +43,8 @@ export class CalendarTableComponent {
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
+    private planService: PaymentPlanService,
+    private dialog: MatDialog,
   ) {}
 
   @Input('month') month!: number;
@@ -79,6 +84,13 @@ export class CalendarTableComponent {
   }
 
   generateCalendar() {
+    // Rencana ikut dimuat ulang setiap bulannya berganti.
+    //
+    // Dipasang di sini, bukan di `ngOnInit` saja: bulan diganti lewat
+    // `@Input`, dan pemuatan yang hanya sekali membuat rencana bulan
+    // pertama terus ditampilkan pada bulan mana pun.
+    this.muatRencana();
+
     this.weeks = [];
     const firstDay = new Date(this.year, this.month, 1);
     const daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
@@ -149,6 +161,80 @@ export class CalendarTableComponent {
     if (day == null) return false;
     const d = new Date(this.year, this.month - 1, day).getDay();
     return d === 0 || d === 6;
+  }
+
+  /**
+   * Rencana pengeluaran bulan ini.
+   *
+   * Kalender sudah menampilkan pembayaran yang SUDAH terjadi; yang belum ada
+   * adalah yang AKAN terjadi — dan itu yang menentukan apakah kasnya cukup.
+   *
+   * Dipisahkan dari `data`, tidak digabungkan: keduanya berbeda sifatnya, dan
+   * menjumlahkannya jadi satu angka membuat yang membaca tidak tahu bagian
+   * mana yang sudah pasti.
+   */
+  rencana: any[] = [];
+
+  private muatRencana(): void {
+    const dd = (n: number) => String(n).padStart(2, '0');
+    const awal = `${this.year}-${dd(this.month + 1)}-01`;
+    const akhirHari = new Date(this.year, this.month + 1, 0).getDate();
+    const akhir = `${this.year}-${dd(this.month + 1)}-${dd(akhirHari)}`;
+
+    this.planService.rentang(awal, akhir).subscribe({
+      next: (res: any) => (this.rencana = res?.data ?? []),
+      // Gagal memuat TIDAK mengosongkan kalendernya; pembayaran yang sudah
+      // terjadi tetap tampil seperti biasa.
+      error: () => (this.rencana = []),
+    });
+  }
+
+  /** Jumlah rencana pada satu tanggal; nol bila tidak ada. */
+  rencanaHari(day: number | null): number {
+    if (day == null) return 0;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    const tgl = `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+    return this.rencana
+      .filter((r) => String(r.date).slice(0, 10) === tgl)
+      .reduce((a, r) => a + Number(r.amount || 0), 0);
+  }
+
+  adaRencana(day: number | null): boolean {
+    return this.rencanaHari(day) > 0;
+  }
+
+  /** Total rencana bulan ini; ditampilkan di kaki kalender. */
+  get totalRencana(): number {
+    return this.rencana.reduce((a, r) => a + Number(r.amount || 0), 0);
+  }
+
+  /**
+   * Buka daftar rencana pada satu tanggal, atau buat baru.
+   *
+   * Tanggal yang diklik ikut terbawa: yang menekan sel tanggal 20 bermaksud
+   * membuat rencana pada tanggal itu, bukan hari ini.
+   */
+  buatRencana(day: number | null, event?: Event): void {
+    event?.stopPropagation();
+    if (day == null) return;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    const tgl = `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+
+    this.dialog
+      .open(RencanaDialogComponent, {
+        data: { tanggal: tgl },
+        width: '640px',
+        maxWidth: '95vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil) => {
+        if (!hasil) return;
+        this.planService.buat(hasil).subscribe({
+          next: () => this.muatRencana(),
+          error: () => {},
+        });
+      });
   }
 
   dayIsToday(day: number | null): boolean {

@@ -14,6 +14,11 @@ dengan merujuk nomor PO ini.
 
 ## Jenis yang sudah tercakup
 
+Panduan ini mencakup **delapan dari enam belas** jenis PO. Yang belum
+tercakup — B, H, 5.1.1.2, 5.1.2, 6.4.1, 6.4.2, 6.5.1, 6.5.2 — sengaja tidak
+dijelaskan di sini daripada dijelaskan setengah-setengah; formulirnya
+mengikuti pola yang sama, dan isian khususnya diberi label sendiri di layar.
+
 Lima yang pertama memakai formulir yang sama; yang membedakan hanya isian
 tambahan di bagian akhir. Tiga yang terakhir berbeda bentuknya, dan
 dijelaskan di bagiannya sendiri.
@@ -117,28 +122,52 @@ centangnya hanya kalau memang disepakati tidak diperlukan.
 Pilih **Jenis Material** lebih dulu, karena pilihan ini yang menentukan poin
 perjanjian yang dibuat otomatis:
 
-| Pilihan | Untuk |
+| Pilihan | Dokumen yang tercetak |
 |---|---|
-| Beton (ready mix) | Pengadaan beton |
-| Besi | Pengadaan besi |
-| Material lain | Material di luar keduanya |
-| Uji tekan silinder | Jasa pengujian beton |
-| Uji tarik & tekuk besi | Jasa pengujian besi |
+| Beton (ready mix) | Purchase Order |
+| Besi | Purchase Order |
+| Material lain | Purchase Order |
+| Uji tekan silinder | **Surat Perintah Kerja** |
+| Uji tarik & tekuk besi | **Surat Perintah Kerja** |
+| Uji tanah | **Surat Perintah Kerja** |
 
-**Dua pilihan terakhir bukan pembelian barang, melainkan jasa.** Dokumennya
-tercetak sebagai **Surat Perintah Kerja (SPK)**, bukan Purchase Order. Jangan
-kaget kalau judul dokumennya berbeda — itu memang seharusnya.
+**Tiga pilihan terakhir bukan pembelian barang, melainkan jasa.** Dokumennya
+tercetak sebagai **Surat Perintah Kerja (SPK)**, dan nomornya pun memakai
+`SPK`, bukan `PO`. Jangan kaget kalau judul dokumennya berbeda — itu memang
+seharusnya.
 
-Untuk jasa pengujian, isiannya: jumlah benda uji, harga per benda uji, berapa
-hari laporan terbit, dan penyerahan benda uji.
+Sebelum menerbitkan, layar konfirmasi menampilkan **jenis dokumennya dalam
+huruf besar** — misalnya `PURCHASE ORDER — Material lain`. Baca baris itu.
+Salah pilih jenis material berarti vendor menandatangani dokumen dengan judul
+yang berbeda dari yang seharusnya, dan itu hanya dapat dibetulkan lewat
+basis data.
+
+Setelah PO tersimpan, **kartu jenis material terkunci**. Kartu yang tidak
+terpilih tampak redup dan tidak dapat ditekan; yang terpilih tetap terbaca
+supaya jelas mana yang berlaku.
+
+### Isian jasa pengujian
+
+Jumlah benda uji, harga per benda uji, dan berapa hari laporan terbit.
+
+**Jenis pengujian dipilih sebagai pill**, bukan diketik dipisah koma — ketik
+lalu pilih dari daftar, dan yang keliru dihapus lewat tanda silang pada
+pill-nya.
+
+**Perpindahan benda uji** menggantikan Franco/Loco pada jasa pengujian:
+apakah benda ujinya *diambil* laboratorium atau *dikirim* AKN. Satu isian
+alamat mengikuti pilihan itu.
+
+Satuannya menyesuaikan sendiri: **benda uji** untuk uji beton dan besi,
+**sampel** untuk uji tanah.
 
 Untuk pengadaan beton dan besi, ada centang pengujian mutu. Bila diaktifkan,
 klausul "penjual mengganti barang bila gagal uji mutu" ikut tercetak. Khusus
 beton, ada pilihan **penanggung biaya uji**: pembeli atau penjual. Sepakati
 ini di muka, karena setelah PO terbit sulit dinegosiasikan ulang.
 
-Ada juga dua tanggal opsional: **pengiriman sebelum** dan **pembayaran
-sebelum**. Kosongkan kalau tidak disepakati tanggal pastinya.
+Ada juga tanggal opsional **pengiriman sebelum**. Kosongkan kalau tidak
+disepakati tanggal pastinya.
 
 <a id="tipe-a-jasa-pengiriman"></a>
 
@@ -260,6 +289,18 @@ biasanya justru tidak dapat ditegakkan.
 
 Karena merchandise berupa barang, klausul Franco/Loco, alamat, dan kontak
 kedua pihak ikut berlaku — sama seperti pada pengadaan barang lainnya.
+
+<a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
+
+## Usulan kode PPh
+
+Saat memilih kode PPh, **kode yang biasa dipakai untuk jenis PO itu muncul
+lebih dulu** di atas daftar, lengkap dengan alasannya. Ia hilang begitu
+pencarian diketik, supaya tidak menghalangi yang mencari kode lain.
+
+Usulan itu **bukan penetapan**. Kode yang benar bergantung pada bentuk
+transaksinya, bukan hanya jenis PO-nya — misalnya jasa konstruksi berkualifikasi
+memakai PPh 4(2), sedangkan jasa lain memakai 23. Kalau ragu, tanyakan FAT.
 
 <a id="memeriksa-dokumen-sebelum-diterbitkan"></a>
 

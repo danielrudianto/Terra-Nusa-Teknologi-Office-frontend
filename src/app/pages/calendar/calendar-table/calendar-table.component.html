@@ -46,9 +46,55 @@
           >
             {{ dataForDay(day) | shortCurrency: "Rp. " }}
           </div>
+
+          <!--
+            Rencana pengeluaran pada tanggal ini.
+
+            DIPISAHKAN dari nilai pembayaran di atasnya, tidak dijumlahkan:
+            yang satu sudah terjadi, yang satu baru taksiran — dan menyatukan
+            keduanya jadi satu angka membuat yang membaca tidak tahu bagian
+            mana yang sudah pasti.
+          -->
+          <div
+            class="cal-cell__plan"
+            *ngIf="day != null && adaRencana(day)"
+            [matTooltip]="'rencana.rencanaHariIni' | translate"
+          >
+            <mat-icon>event_upcoming</mat-icon>
+            {{ rencanaHari(day) | shortCurrency: "Rp. " }}
+          </div>
+
+          <!--
+            Tombol tambah; muncul saat sel disorot.
+
+            Selalu tampak membuat sel kalender penuh ikon dan angka yang
+            saling berebut ruang — padahal yang dibaca sehari-hari adalah
+            angkanya, bukan tombolnya.
+          -->
+          <button
+            *ngIf="day != null"
+            type="button"
+            class="cal-cell__add"
+            (click)="buatRencana(day, $event)"
+            [matTooltip]="'rencana.buatJudul' | translate"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
       </ng-container>
     </div>
+  </div>
+
+  <!--
+    Total rencana bulan ini.
+
+    Di kaki, bukan di dalam sel: yang perlu diketahui sebelum menutup
+    kalender adalah berapa yang akan keluar bulan ini secara keseluruhan.
+  -->
+  <div class="cal-plan-total" *ngIf="totalRencana">
+    <mat-icon>event_upcoming</mat-icon>
+    <span>{{ "rencana.totalBulanIni" | translate }}</span>
+    <strong>{{ totalRencana | shortCurrency: "Rp. " }}</strong>
   </div>
 
   <div class="cal-foot">
