@@ -1333,7 +1333,9 @@
     "next": "Next",
     "previous": "Previous",
     "processing": "Processing...",
-    "submitPreview": "Submit & preview"
+    "submitPreview": "Submit & preview",
+    "sudahDitagih": "{{n}} invoice(s) already issued for this project",
+    "sudahDitagihKet": "Check so the same work is not billed twice."
   },
   "clientForm": {
     "createTitle": "Add Client",

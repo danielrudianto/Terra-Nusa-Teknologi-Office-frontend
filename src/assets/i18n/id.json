@@ -1333,7 +1333,9 @@
     "next": "Lanjut",
     "previous": "Kembali",
     "processing": "Memproses...",
-    "submitPreview": "Kirim & pratinjau"
+    "submitPreview": "Kirim & pratinjau",
+    "sudahDitagih": "{{n}} faktur sudah terbit untuk proyek ini",
+    "sudahDitagihKet": "Periksa agar pekerjaan yang sama tidak tertagih dua kali."
   },
   "clientForm": {
     "createTitle": "Tambah Klien",

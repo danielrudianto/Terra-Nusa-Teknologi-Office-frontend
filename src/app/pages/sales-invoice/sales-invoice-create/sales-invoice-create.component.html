@@ -107,10 +107,56 @@
             </mat-form-field>
 
             <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'salesInvoiceCreate.projectName' | translate"
-      />
+              formControlName="projectName"
+              [hanyaAktif]="true"
+              [label]="'salesInvoiceCreate.projectName' | translate"
+              (ngModelChange)="onProyekBerubah($event)"
+            />
+
+            <!--
+              Faktur yang SUDAH terbit untuk proyek ini.
+
+              Tagih ganda adalah kesalahan paling mahal di layar ini:
+              pelanggan membayar dua kali untuk pekerjaan yang sama, dan yang
+              menemukannya biasanya pelanggan — bukan AKN.
+
+              Ditampilkan sebelum nilainya diisi, bukan sesudah: yang hendak
+              dicegah adalah mengetik nilai yang ternyata sudah ditagihkan.
+            -->
+            @if (memuatTagihan) {
+              <div class="sic-tagihan sic-span2 sic-tagihan--memuat">
+                {{ "common.loading" | translate }}
+              </div>
+            } @else if (tagihanLalu.length) {
+              <div class="sic-tagihan sic-span2">
+                <div class="sic-tagihan__kepala">
+                  <mat-icon>receipt_long</mat-icon>
+                  <strong>{{
+                    "salesInvoiceCreate.sudahDitagih"
+                      | translate: { n: tagihanLalu.length }
+                  }}</strong>
+                  <span class="sic-tagihan__total">
+                    Rp {{ totalTagihanLalu | number: "1.0-0" }}
+                  </span>
+                </div>
+                <ul class="sic-tagihan__daftar">
+                  @for (t of tagihanLalu; track t.id) {
+                    <li>
+                      <span class="sic-tagihan__nomor">{{ t.name }}</span>
+                      <span class="sic-tagihan__tanggal">{{
+                        t.date | date: "d MMM yyyy"
+                      }}</span>
+                      <span class="sic-tagihan__nilai">
+                        Rp {{ t.dpp | number: "1.0-0" }}
+                      </span>
+                    </li>
+                  }
+                </ul>
+                <p class="sic-tagihan__kaki">
+                  {{ "salesInvoiceCreate.sudahDitagihKet" | translate }}
+                </p>
+              </div>
+            }
 
             <mat-form-field appearance="outline" class="sic-span2">
               <mat-label>{{
@@ -173,13 +219,34 @@
               <mat-label>{{
                 "salesInvoiceCreate.spkNumber" | translate
               }}</mat-label>
+              <!--
+                Nomor SPK diusulkan dari baris KONTRAK proyeknya.
+
+                Bukan dari faktur lama: faktur menyalin nomor yang diketik,
+                sehingga salah ketik satu kali akan terus diusulkan pada
+                faktur berikutnya — kesalahan yang menyebar sendiri.
+
+                Tetap dapat diketik bebas: sebagian tagihan merujuk dokumen
+                yang belum tercatat sebagai baris kontrak.
+              -->
               <input
                 matInput
                 type="text"
                 id="spkNumber"
                 formControlName="spkNumber"
+                [matAutocomplete]="autoSpk"
                 [placeholder]="'salesInvoiceCreate.spkPlaceholder' | translate"
               />
+              <mat-autocomplete #autoSpk="matAutocomplete">
+                @for (k of nomorSpk; track k.nomor) {
+                  <mat-option [value]="k.nomor">
+                    <span class="sic-spk__nomor">{{ k.nomor }}</span>
+                    <span class="sic-spk__ket">
+                      {{ k.jenis }} &middot; {{ k.tanggal | date: "d MMM yyyy" }}
+                    </span>
+                  </mat-option>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
 

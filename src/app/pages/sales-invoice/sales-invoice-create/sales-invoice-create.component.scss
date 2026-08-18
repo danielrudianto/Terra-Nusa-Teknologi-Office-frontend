@@ -206,3 +206,102 @@ $surface: var(--surface, #ffffff);
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * Faktur yang sudah terbit untuk proyek ini.
+ *
+ * Kuning, bukan biru: ini bukan keterangan melainkan hal yang harus
+ * diperiksa sebelum melanjutkan. Warna yang seragam dengan banner lain
+ * membuatnya terbaca sebagai catatan biasa dan dilewati.
+ */
+.sic-tagihan {
+  margin: -0.25rem 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fff4e5);
+  border: 1px solid var(--warn, #b26a00);
+}
+
+.sic-tagihan--memuat {
+  background: var(--surface-2, #f6f8ff);
+  border-color: var(--line, #e4e9fb);
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+}
+
+.sic-tagihan__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: var(--warn, #b26a00);
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+/* Total didorong ke kanan supaya sejajar dengan nilai tiap barisnya. */
+.sic-tagihan__total {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sic-tagihan__daftar {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+  }
+}
+
+.sic-tagihan__nomor {
+  font-weight: 600;
+}
+
+.sic-tagihan__tanggal {
+  color: var(--muted, #6b7280);
+}
+
+.sic-tagihan__nilai {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.sic-tagihan__kaki {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Usulan nomor SPK.
+ *
+ * Nomor dan keterangannya ditumpuk, bukan sebaris: nomor dokumen panjang dan
+ * mirip satu sama lain — jenis serta tanggalnya yang membedakan, dan itu
+ * harus terbaca tanpa menggeser mata ke kanan.
+ */
+.sic-spk__nomor {
+  display: block;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sic-spk__ket {
+  display: block;
+  font-size: 0.76rem;
+  line-height: 1.3;
+  color: var(--muted, #6b7280);
+}

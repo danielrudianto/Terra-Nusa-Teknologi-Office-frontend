@@ -30,6 +30,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { ProjectLookupService } from 'src/app/services/project-lookup.service';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -63,6 +64,7 @@ export class SalesInvoiceCreateComponent {
     private apiService: ApiService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private projectLookup: ProjectLookupService,
   ) {}
 
   bankAccounts: any[] = [];
@@ -221,6 +223,115 @@ export class SalesInvoiceCreateComponent {
           });
         }
       },
+    );
+  }
+
+  /**
+   * Nomor SPK proyek ini, diambil dari baris KONTRAKNYA.
+   *
+   * Bukan dari faktur lama: faktur menyalin nomor yang diketik, sehingga
+   * salah ketik satu kali akan terus diusulkan pada faktur berikutnya —
+   * kesalahan yang menyebar sendiri. Baris kontrak adalah tempat nomor itu
+   * dicatat pertama kali, dan satu-satunya yang dapat dipercaya.
+   */
+  nomorSpk: Array<{ nomor: string; jenis: string; tanggal: string }> = [];
+
+  /** Faktur yang sudah terbit untuk proyek ini; kosong sebelum proyek dipilih. */
+  tagihanLalu: any[] = [];
+  memuatTagihan = false;
+
+  /**
+   * Proyek dipilih — isi kliennya, lalu tampilkan tagihan yang sudah ada.
+   *
+   * Klien melekat pada proyeknya; mengetik ulang berarti menyalin dari layar
+   * sebelah, dan yang disalin tangan cepat atau lambat berbeda dari
+   * sumbernya — pada faktur, itu berarti NPWP yang tidak cocok dengan yang
+   * dilaporkan.
+   *
+   * Riwayat tagihan ditampilkan karena tagih ganda adalah kesalahan yang
+   * paling mahal di sini: pelanggan membayar dua kali untuk pekerjaan yang
+   * sama, dan yang menemukannya biasanya pelanggan, bukan AKN.
+   */
+  onProyekBerubah(kode: string): void {
+    this.tagihanLalu = [];
+    const proyek: any = this.projectLookup.cari(String(kode || ''));
+
+    if (proyek?.clientID) {
+      /*
+       * Klien TIDAK ditimpa bila sudah diisi sendiri.
+       *
+       * Sebagian faktur ditagihkan ke pihak lain — induk perusahaan, atau
+       * pemberi kerja yang berbeda dari pemilik proyeknya. Menimpanya
+       * menghapus keterangan yang justru disengaja.
+       */
+      if (!this.metaFormGroup.value.clientID) {
+        this.isiKlien(proyek.clientID);
+      }
+    }
+
+    if (kode) {
+      this.muatTagihan(String(kode));
+      if (proyek?.id) this.muatNomorSpk(proyek.id);
+    } else {
+      this.nomorSpk = [];
+    }
+  }
+
+  /** Ambil data klien lalu isikan; dipakai saat proyek dipilih. */
+  private isiKlien(clientID: number): void {
+    this.apiService.get(`clients/${clientID}`).subscribe({
+      next: (c: any) => {
+        if (!c) return;
+        this.metaFormGroup.patchValue({
+          clientID: c.id,
+          clientName: `${c.name}, ${c.prefix}`,
+          clientAddress: `${c.address}, ${c.city}, ${c.province}`,
+          clientNPWP: c.npwp,
+        });
+      },
+      // Gagal memuat TIDAK menghalangi pengisian: kliennya masih dapat
+      // dipilih tangan seperti sebelumnya.
+      error: () => {},
+    });
+  }
+
+  private muatNomorSpk(projectId: number): void {
+    this.apiService.get(`projects/${projectId}`).subscribe({
+      next: (res: any) => {
+        this.nomorSpk = (res?.contracts ?? [])
+          .filter((k: any) => String(k?.documentNumber || '').trim())
+          .map((k: any) => ({
+            nomor: String(k.documentNumber).trim(),
+            jenis: String(k.documentType || ''),
+            tanggal: String(k.date || ''),
+          }));
+      },
+      // Gagal memuat TIDAK menghalangi pengisian: nomornya masih dapat
+      // diketik tangan seperti sebelumnya.
+      error: () => (this.nomorSpk = []),
+    });
+  }
+
+  private muatTagihan(kode: string): void {
+    this.memuatTagihan = true;
+    this.apiService.get(`purchases/report/project/${kode}`).subscribe({
+      next: (res: any) => {
+        this.tagihanLalu = res?.sales_invoices ?? [];
+        this.memuatTagihan = false;
+      },
+      error: () => {
+        this.tagihanLalu = [];
+        this.memuatTagihan = false;
+      },
+    });
+  }
+
+  /** Total yang sudah ditagihkan pada proyek ini, termasuk PPN. */
+  get totalTagihanLalu(): number {
+    return this.tagihanLalu.reduce(
+      (a, b: any) =>
+        a + Number(b.dpp || 0) + (Number(b.ppn || 0) * Number(b.dpp || 0)) / 100,
+      0,
     );
   }
 
