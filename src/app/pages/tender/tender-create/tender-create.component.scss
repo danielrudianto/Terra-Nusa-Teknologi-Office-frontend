@@ -1,0 +1,236 @@
+.tc {
+  padding: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tc-head {
+  margin-bottom: 1rem;
+}
+
+.tc-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.tc-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+.tc-card {
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.tc-section {
+  margin-bottom: 0.85rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.tc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.tc-span2 {
+  grid-column: 1 / -1;
+  /* `grid-column` menentukan KOLOM, bukan lebar isian di dalamnya. */
+  width: 100%;
+}
+
+/* ---- pilihan jenis ---- */
+.tc-jenis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.tc-jn {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.7rem 0.9rem 0.7rem 0.35rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+/*
+ * Tanda terpilih sengaja mencolok: tiga tanda sekaligus.
+ *
+ * Warna saja tidak terbaca oleh sebagian orang, dan garis tebal saja hilang
+ * pada layar kecil.
+ */
+.tc-jn.on {
+  border-color: var(--brand, #154dec);
+  border-width: 2px;
+  background: var(--brand-soft, #e7ecfb);
+  padding: calc(0.7rem - 1px) calc(0.9rem - 1px) calc(0.7rem - 1px)
+    calc(0.35rem - 1px);
+
+  &::after {
+    content: "\2713";
+    position: absolute;
+    top: 0.4rem;
+    right: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--brand, #154dec);
+  }
+}
+
+.tc-jn__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-top: 0.55rem;
+  min-width: 0;
+}
+
+.tc-jn__judul {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.tc-jn__ket {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+}
+
+/* ---- baris permintaan ---- */
+.tc-baris {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line, #f0f2f7);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.tc-baris__no {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  margin-top: 0.9rem;
+  border-radius: 8px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+  display: grid;
+  place-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.tc-baris__isi {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  /*
+   * Nama dan spesifikasi mendapat ruang terbesar; volume dan satuan cukup
+   * sempit. Nama barang konstruksi kerap panjang — "Besi beton ulir BJTS-420B
+   * D16 panjang 12 m" tidak terbaca dalam kolom sempit.
+   */
+  grid-template-columns: 2fr 2fr 1fr 1fr;
+  gap: 0 0.6rem;
+}
+
+.tc-baris__nama,
+.tc-baris__spec,
+.tc-baris__qty,
+.tc-baris__unit {
+  width: 100%;
+}
+
+.tc-katalog,
+.tc-hapus {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+   * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 0;
+  padding: 0;
+}
+
+.tc-hapus {
+  margin-top: 0.85rem;
+  color: var(--faint, #9aa0ab);
+}
+
+.tc-tambah {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  border-style: dashed;
+}
+
+.tc-tambah--bawah {
+  margin: 0.75rem 0 0;
+}
+
+/*
+ * Banner keterangan.
+ *
+ * Bukan hint: hint tercetak kecil di bawah kotak dan hilang begitu isiannya
+ * disentuh, padahal keterangan ini justru menjelaskan mengapa sesuatu boleh
+ * dikosongkan.
+ */
+.tc-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #1a3a8f);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.tc-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 860px) {
+  .tc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tc-baris__isi {
+    grid-template-columns: 1fr 1fr;
+  }
+}

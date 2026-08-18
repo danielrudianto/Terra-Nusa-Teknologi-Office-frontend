@@ -296,6 +296,23 @@ html {
   --on-brand: #ffffff;
   --brand-strong: #0f3fd0;
   --brand-soft: #e7ecfb;
+  /* Warna teks DI ATAS `--brand-soft`.
+  
+     Dipakai delapan komponen sebagai `var(--brand-ink, #1a3a8f)` tetapi tidak
+     pernah didefinisikan — sehingga semuanya jatuh ke cadangan `#1a3a8f`,
+     biru yang jauh lebih gelap daripada banner lain di aplikasi yang sama.
+  
+     Disamakan dengan `--brand-strong`: keduanya dibaca di atas latar lembut
+     yang sama, dan dua nilai berbeda untuk keperluan yang sama hanya membuat
+     banner tampak tidak seragam tanpa sebab yang dapat dijelaskan. */
+  --brand-ink: #0f3fd0;
+
+  /* Dipakai empat komponen; nama pendek dari `--warn-fg` yang sudah ada di
+     bawah. Tanpa definisi ini masing-masing memakai cadangannya sendiri, dan
+     peringatan di dua layar berbeda tampil dengan warna berbeda. */
+  --warn: #a2651a;
+  --ok: #1a7f45;
+  --danger: #b3322f;
   --hover: #f6f8ff;
   --card-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.05);
@@ -358,6 +375,24 @@ html[data-theme="dark"] {
   --on-brand: #16181d;
   --brand-strong: #9db8ff;
   --brand-soft: #22304f;
+  /* Teks DI ATAS `--brand-soft`, pasangan gelap dari yang di `:root`.
+  
+     Latar lembutnya di sini GELAP (#22304f), sehingga tintanya harus terang —
+     nilai terang `#0f3fd0` di atasnya hanya berkontras 1,4:1 dan praktis
+     tidak terbaca. Itu yang membuat seluruh banner tampak gelap di tema
+     gelap, sekalipun variabelnya sudah didefinisikan untuk tema terang.
+  
+     Disamakan dengan `--brand-strong`: keduanya dibaca di atas latar yang
+     sama. */
+  --brand-ink: #9db8ff;
+
+  /* Pasangan gelap dari nama pendek di `:root`; nilainya mengikuti
+     `--warn-fg`, `--ok-fg`, dan `--bad-fg` di bawah, yang memang sudah
+     disetel untuk latar gelap. */
+  --warn: #e0a54e;
+  --ok: #5fd08a;
+  --danger: #e08585;
+
   --hover: #1f2531;
 
   /* Sedikit lebih terang daripada permukaan, bukan putih: cukup untuk

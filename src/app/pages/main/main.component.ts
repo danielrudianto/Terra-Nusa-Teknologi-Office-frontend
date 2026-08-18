@@ -168,6 +168,20 @@ export class MainComponent {
       name: 'nav.menu',
       children: [
         {
+          /*
+           * Tender ditaruh SEBELUM draf pembelian.
+           *
+           * Urutan menu mengikuti urutan pekerjaannya: mencari pemasok lebih
+           * dulu, baru mencatat pembeliannya.
+           *
+           * `price.svg` dipakai karena tender pada dasarnya membandingkan
+           * harga; tidak ada ikon yang lebih tepat di antara yang tersedia.
+           */
+          name: 'nav.tender',
+          icon: 'price.svg',
+          route: '/Tender',
+        },
+        {
           name: 'nav.purchaseDraft',
           icon: 'purchase-invoice.svg',
           route: '/Purchase-draft',

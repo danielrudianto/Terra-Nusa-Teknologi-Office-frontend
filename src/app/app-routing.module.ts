@@ -183,6 +183,68 @@ export const routes: Routes = [
         ],
       },
       {
+        /*
+         * Tender pengadaan.
+         *
+         * Ditaruh berdampingan dengan draf pembelian: keduanya wilayah
+         * procurement, dan alurnya berurutan — tender memilih pemasok,
+         * purchase order menuliskan perjanjiannya.
+         */
+        path: 'Tender',
+        canActivate: [permissionGuard],
+        data: { title: 'Tender', permission: 'tender:read' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                './pages/tender/tender-list/tender-list.component'
+              ).then((m) => m.TenderListComponent),
+            data: { title: 'Tender', permission: 'tender:read' },
+          },
+          {
+            path: 'Create',
+            loadComponent: () =>
+              import(
+                './pages/tender/tender-create/tender-create.component'
+              ).then((m) => m.TenderCreateComponent),
+            data: { title: 'Tender', permission: 'tender:create' },
+          },
+          {
+            /*
+             * Sunting; memakai komponen yang SAMA dengan membuat baru.
+             *
+             * Bentuk formulirnya identik — yang berbeda hanya asal nilainya.
+             * Dua komponen terpisah berarti setiap isian baru harus
+             * ditambahkan dua kali, dan yang satu pasti tertinggal.
+             *
+             * Didaftarkan SETELAH `Create` supaya keduanya tidak menutupi.
+             */
+            path: 'Edit/:id',
+            loadComponent: () =>
+              import(
+                './pages/tender/tender-create/tender-create.component'
+              ).then((m) => m.TenderCreateComponent),
+            data: { title: 'Tender', permission: 'tender:update' },
+          },
+          {
+            /*
+             * Didaftarkan PALING AKHIR.
+             *
+             * `:id` menangkap apa pun, termasuk `Create` dan `Edit` — yang
+             * lebih spesifik harus lebih dulu, atau keduanya tidak pernah
+             * terjangkau.
+             */
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './pages/tender/tender-view/tender-view.component'
+              ).then((m) => m.TenderViewComponent),
+            data: { title: 'Tender', permission: 'tender:read' },
+          },
+        ],
+      },
+      {
         path: 'Activity',
         canActivate: [permissionGuard],
         loadComponent: () =>

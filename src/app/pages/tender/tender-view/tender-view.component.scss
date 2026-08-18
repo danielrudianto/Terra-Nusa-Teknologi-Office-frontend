@@ -1,0 +1,504 @@
+.tv {
+  padding: 1.25rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.tv-memuat {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted, #6b7280);
+}
+
+/* ---- kepala ---- */
+.tv-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/*
+ * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+ * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
+ */
+.tv-back,
+.tv-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  line-height: 0;
+  padding: 0;
+}
+
+/*
+ * Ditulis UTUH, bukan menimpa aturan di atasnya.
+ *
+ * Menimpa `width` saja meninggalkan tombol tanpa pemusatan bila aturan
+ * pertamanya kelak dipisah — dan `tombolikoncek` memang menandainya, karena
+ * dari luar tidak dapat dipastikan keduanya masih bersama.
+ */
+.tv-qbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  line-height: 0;
+  padding: 0;
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+.tv-head__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tv-head__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tv-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.tv-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+.tv-head__aksi {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.tv-status {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+
+  &[data-status="berjalan"] {
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+  }
+
+  &[data-status="selesai"] {
+    background: #e6f5ec;
+    color: #1a7f4b;
+  }
+
+  &[data-status="batal"] {
+    background: #fdecea;
+    color: #c62828;
+  }
+}
+
+/* ---- sebar WhatsApp ---- */
+.tv-sebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  background: #e8f5e9;
+  border: 1px solid #66bb6a;
+}
+
+.tv-sebar__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+
+  strong {
+    color: #1b5e20;
+  }
+
+  span {
+    color: var(--muted, #6b7280);
+  }
+}
+
+.tv-sebar__aksi {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---- kartu ---- */
+.tv-card {
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  border: 0.5px solid var(--border, #e3e6eb);
+}
+
+.tv-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.tv-section {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.tv-section__ket {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+.tv-blok + .tv-blok {
+  margin-top: 0.85rem;
+}
+
+.tv-label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.tv-teks {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* ---- tabel perbandingan ---- */
+.tv-tabel {
+  overflow-x: auto;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 12px;
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 620px;
+  }
+
+  th,
+  td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--line, #e4e9fb);
+    text-align: left;
+    vertical-align: top;
+  }
+}
+
+/*
+ * Kolom barang menempel di kiri.
+ *
+ * Dengan lima pemasok, tabelnya melebihi lebar layar; yang menggulir ke kanan
+ * kehilangan barisnya bila kolom ini ikut bergeser.
+ */
+.tv-th-item,
+.tv-td-item {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 220px;
+  background: var(--surface, #fff);
+  border-right: 1px solid var(--line, #e4e9fb);
+}
+
+.tv-th-item,
+.tv-th-quote {
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.tv-th-quote {
+  min-width: 160px;
+}
+
+.tv-qhead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tv-qhead__nama {
+  font-size: 0.82rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink, #16181d);
+}
+
+.tv-qhead__sebagian {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--warn, #b26a00);
+}
+
+.tv-qhead__aksi {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.tv-item__nama {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tv-item__spec,
+.tv-item__vol {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+
+.tv-td-harga {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tv-harga {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.tv-harga__catatan {
+  display: block;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--muted, #6b7280);
+  text-align: right;
+}
+
+/*
+ * Termurah per baris.
+ *
+ * Ditandai dengan latar DAN tebal, bukan warna saja: sebagian orang tidak
+ * membedakan warnanya, dan kolom angka rapat membuat satu sel berwarna mudah
+ * terlewat.
+ */
+.tv-td-harga.murah {
+  background: #e6f5ec;
+
+  .tv-harga {
+    color: #1a7f4b;
+    font-weight: 700;
+  }
+}
+
+.tv-td-harga.kosong {
+  background: var(--surface-2, #fafbfe);
+}
+
+.tv-tidak {
+  color: var(--faint, #c4c9d4);
+}
+
+.tv-td-total {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  background: var(--surface-2, #f6f8ff);
+
+  strong {
+    font-size: 0.95rem;
+  }
+}
+
+.tv-total__ket {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--warn, #b26a00);
+}
+
+.tv-td-syarat {
+  font-size: 0.8rem;
+  background: var(--surface-2, #f6f8ff);
+}
+
+tfoot .tv-td-item {
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.8rem;
+}
+
+/* ---- banner & kosong ---- */
+.tv-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #1a3a8f);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.tv-banner--warn {
+  margin: 0 0 0.85rem;
+  background: var(--warn-bg, #fff4e5);
+  color: var(--warn, #b26a00);
+}
+
+.tv-kosong {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.9rem;
+}
+
+/*
+ * Termin yang ditawarkan pemasok.
+ *
+ * Ditekankan seperti total, bukan disamakan dengan catatan biasa: AKN sengaja
+ * tidak menetapkan terminnya pada permintaan supaya pemasok mengajukan
+ * sendiri, dan perbandingan yang paling berharga justru muncul di baris ini.
+ */
+.tv-td-termin {
+  text-align: right;
+  background: var(--brand-soft, #e7ecfb);
+  font-size: 0.85rem;
+
+  strong {
+    display: block;
+    color: var(--brand-ink, #0f3fd0);
+  }
+}
+
+.tv-termin__tempo {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+}
+
+/* ---- PPN & biaya sebenarnya ---- */
+.tv-td-ppn {
+  text-align: right;
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tv-ppn__ya {
+  display: block;
+  font-weight: 600;
+}
+
+.tv-ppn__nilai {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Pemasok non-PKP.
+ *
+ * Bukan tanda buruk — sebagian pemasok kecil memang bukan PKP, dan kadang
+ * tetap yang paling masuk akal. Yang perlu terlihat hanya bahwa harganya
+ * TIDAK dapat dikreditkan, sehingga seluruhnya menjadi beban.
+ */
+.tv-ppn__tidak {
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Biaya yang benar-benar ditanggung.
+ *
+ * Baris inilah yang layak dibandingkan; harga tertulis menyesatkan bila
+ * status pajak pemasoknya berbeda. Karena itu ia diberi latar dan tebal,
+ * dan yang terendah ditandai — tetapi hanya di antara penawaran yang LENGKAP.
+ */
+.tv-td-biaya {
+  text-align: right;
+  background: var(--brand-soft, #e7ecfb);
+  font-variant-numeric: tabular-nums;
+
+  strong {
+    font-size: 0.95rem;
+    color: var(--brand-ink, #0f3fd0);
+  }
+
+  &.murah {
+    background: var(--ok-bg, #e6f6ec);
+
+    strong {
+      color: var(--ok-fg, #1a7f45);
+    }
+  }
+}
+
+/*
+ * Penawaran Loco.
+ *
+ * Ditandai karena AKN yang menanggung angkutnya; yang belum ditaksir
+ * ongkosnya diberi pengingat, sebab tanpa itu penawarannya tampak lebih
+ * murah daripada yang sebenarnya.
+ */
+.tv-loco {
+  display: block;
+  font-weight: 600;
+  color: var(--warn, #a2651a);
+}
+
+.tv-loco__ingat {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--warn, #a2651a);
+}
+
+/* Keterangan biaya lain: netral, bukan peringatan. */
+.tv-total__ket--biasa {
+  color: var(--muted, #6b7280);
+  font-weight: 400;
+}

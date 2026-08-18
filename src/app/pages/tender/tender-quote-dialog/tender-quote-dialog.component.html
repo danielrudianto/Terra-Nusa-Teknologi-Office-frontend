@@ -1,0 +1,281 @@
+<div class="tq">
+  <div class="tq-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>request_quote</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">
+        {{ (isUbah ? "tender.ubahPenawaran" : "tender.catatPenawaran") | translate }}
+      </h2>
+      <span class="dlg__sub">{{ "tender.catatPenawaranSub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="tq-content">
+    <form [formGroup]="formGroup">
+      <!--
+        Pemasok DIKUNCI saat menyunting.
+
+        Satu pemasok satu penawaran per tender; mengganti pemasoknya berarti
+        penawaran lain, bukan revisi. Yang keliru dihapus lalu dicatat ulang.
+      -->
+      <mat-form-field appearance="outline" class="tq-full">
+        <mat-label>{{ "tender.pemasok" | translate }}</mat-label>
+        <input
+          matInput
+          readonly
+          formControlName="supplierName"
+          [placeholder]="'tender.pilihPemasok' | translate"
+          (click)="isUbah ? null : pilihPemasok()"
+        />
+        @if (!isUbah) {
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            class="tq-cari"
+            (click)="pilihPemasok()"
+            [attr.aria-label]="'tender.pilihPemasok' | translate"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <div class="tq-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.tanggalPenawaran" | translate }}</mat-label>
+          <input matInput [matDatepicker]="pQ" formControlName="quotedAt" />
+          <mat-datepicker-toggle matIconSuffix [for]="pQ"></mat-datepicker-toggle>
+          <mat-datepicker #pQ></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.terminDitawarkan" | translate }}</mat-label>
+          <mat-select formControlName="paymentTerm">
+            @for (p of pilihanTermin; track p.value) {
+              <mat-option [value]="p.value">{{ p.label | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.tempoHari" | translate }}</mat-label>
+          <input matInput type="number" formControlName="creditTerm" min="0" />
+        </mat-form-field>
+      </div>
+
+      <!--
+        Franco atau Loco.
+
+        Menentukan siapa menanggung angkutnya, dan karena itu ikut menentukan
+        biaya sebenarnya. Penawaran Loco yang tampak lebih murah dapat justru
+        lebih mahal setelah ongkos angkutnya dihitung — dan ongkos itu tidak
+        pernah muncul di surat penawaran mana pun.
+      -->
+      <mat-form-field appearance="outline" class="tq-full">
+        <mat-label>{{ "tender.caraPengiriman" | translate }}</mat-label>
+        <mat-select formControlName="deliveryMethod">
+          <mat-option value="franco">{{
+            "tender.franco" | translate
+          }}</mat-option>
+          <mat-option value="loco">{{ "tender.loco" | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      @if (isLoco) {
+        <div class="tq-banner tq-banner--warn">
+          <mat-icon>local_shipping</mat-icon>
+          <span>{{ "tender.locoKet" | translate }}</span>
+        </div>
+      }
+
+      <!--
+        PPN — sakelar, bukan isian angka.
+
+        Yang perlu diketahui adalah "memungut atau tidak", dan itu pertanyaan
+        ya-tidak. Tarifnya baru muncul setelah dinyalakan, karena pemasok
+        non-PKP tidak punya tarif apa pun untuk diisi.
+      -->
+      <div class="tq-ppn">
+        <mat-slide-toggle formControlName="includePpn" color="primary">
+          {{ "tender.pemungutPpn" | translate }}
+        </mat-slide-toggle>
+
+        @if (pakaiPpn) {
+          <mat-form-field appearance="outline" class="tq-ppn__tarif">
+            <mat-label>{{ "tender.tarifPpn" | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="ppnPercentage"
+              min="0"
+              max="100"
+            />
+            <span matTextSuffix>%</span>
+          </mat-form-field>
+        }
+      </div>
+
+      <div class="tq-banner">
+        <mat-icon>account_balance</mat-icon>
+        <span>{{ "tender.ppnKet" | translate }}</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="tq-full">
+        <mat-label>{{ "tender.keteranganPemasok" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="2"
+          formControlName="notes"
+          [placeholder]="'tender.keteranganPemasokPlaceholder' | translate"
+        ></textarea>
+      </mat-form-field>
+
+      <!--
+        Biaya lain yang DITANGGUNG AKN, di luar harga barangnya.
+
+        Ongkos angkut pada Loco, biaya bongkar, biaya uji — apa pun yang tidak
+        ditagihkan pemasok tetapi tetap keluar. Dicatat terpisah supaya
+        perbandingannya jujur tanpa mengotori harga satuannya.
+      -->
+      <div class="tq-lain">
+        <mat-form-field appearance="outline" class="tq-lain__nilai">
+          <mat-label>{{ "tender.biayaLain" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="otherCost"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+            placeholder="0"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="tq-lain__ket">
+          <mat-label>{{ "tender.biayaLainKet" | translate }}</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            formControlName="otherCostNote"
+            [placeholder]="'tender.biayaLainPlaceholder' | translate"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="tq-section">{{ "tender.hargaPerBaris" | translate }}</div>
+
+      <!--
+        Harga yang KOSONG berarti pemasok tidak menawar baris itu.
+
+        Berbeda dari nol, yang berarti digratiskan. Barisnya tidak akan
+        tersimpan, dan yang tidak menawar tidak terhitung sebagai termurah.
+      -->
+      <div class="tq-banner">
+        <mat-icon>info</mat-icon>
+        <span>{{ "tender.hargaKosongKet" | translate }}</span>
+      </div>
+
+      @for (b of t.controls; track b; let i = $index) {
+        <div class="tq-baris" [formGroup]="barisAt(i)">
+          <div class="tq-baris__kiri">
+            <span class="tq-baris__no">{{ i + 1 }}</span>
+            <div class="tq-baris__teks">
+              <span class="tq-baris__nama">{{ barisAt(i).value._nama }}</span>
+              @if (barisAt(i).value._spesifikasi) {
+                <span class="tq-baris__spec">{{
+                  barisAt(i).value._spesifikasi
+                }}</span>
+              }
+              @if (barisAt(i).value._volume) {
+                <span class="tq-baris__vol">
+                  {{ barisAt(i).value._volume | number: "1.0-2" }}
+                  {{ barisAt(i).value._satuan }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="tq-baris__isi">
+            <mat-form-field appearance="outline" class="tq-baris__harga">
+              <mat-label>{{ "tender.hargaSatuan" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="price"
+                prefix="Rp. "
+                thousandSeparator=" "
+                mask="separator.2"
+                [placeholder]="'tender.tidakMenawar' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="tq-baris__catatan">
+              <mat-label>{{ "tender.catatanBaris" | translate }}</mat-label>
+              <input
+                matInput
+                autocomplete="off"
+                formControlName="notes"
+                [placeholder]="'tender.catatanBarisPlaceholder' | translate"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      }
+
+      <!--
+        Ringkasan memisahkan APA YANG DIBAYAR dari APA YANG DITANGGUNG.
+
+        Keduanya berbeda bila pemasoknya PKP: PPN yang dipungut dikreditkan
+        sebagai pajak masukan, sehingga yang menjadi beban hanya DPP-nya.
+        Yang layak dibandingkan antar penawaran adalah yang kedua.
+      -->
+      <div class="tq-ringkas">
+        <div class="tq-ringkas__baris">
+          <span>
+            {{ "tender.ditawar" | translate: { n: jumlahDitawar, total: t.length } }}
+          </span>
+          <span>Rp {{ total | number: "1.0-0" }}</span>
+        </div>
+
+        @if (pakaiPpn) {
+          <div class="tq-ringkas__baris tq-ringkas__baris--kecil">
+            <span>
+              {{ "tender.ppn" | translate }}
+              {{ formGroup.value.ppnPercentage }}%
+            </span>
+            <span>Rp {{ nilaiPpn | number: "1.0-0" }}</span>
+          </div>
+          <div class="tq-ringkas__baris">
+            <span>{{ "tender.dibayarkan" | translate }}</span>
+            <span>Rp {{ totalDibayar | number: "1.0-0" }}</span>
+          </div>
+        }
+
+        @if (biayaLain) {
+          <div class="tq-ringkas__baris tq-ringkas__baris--kecil">
+            <span>{{ "tender.biayaLain" | translate }}</span>
+            <span>Rp {{ biayaLain | number: "1.0-0" }}</span>
+          </div>
+        }
+
+        <div class="tq-ringkas__baris tq-ringkas__baris--utama">
+          <span>{{ "tender.biayaSebenarnya" | translate }}</span>
+          <strong>Rp {{ biayaSebenarnya | number: "1.0-0" }}</strong>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="tq-actions">
+    <button mat-button type="button" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid"
+      (click)="simpan()"
+    >
+      {{ "common.save" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

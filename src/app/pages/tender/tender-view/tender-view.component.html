@@ -1,0 +1,434 @@
+<div class="tv">
+  @if (isLoading) {
+    <p class="tv-memuat">{{ "common.loading" | translate }}</p>
+  } @else if (data) {
+    <!-- ===== kepala ===== -->
+    <div class="tv-head">
+      <button
+        mat-icon-button
+        type="button"
+        class="tv-back"
+        (click)="kembali()"
+        [attr.aria-label]="'common.back' | translate"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <div class="tv-head__teks">
+        <div class="tv-head__baris">
+          <h1 class="tv-title">{{ data.name }}</h1>
+          <span class="tv-status" [attr.data-status]="data.status">
+            {{ "tender.status" + (data.status | titlecase) | translate }}
+          </span>
+        </div>
+        <p class="tv-sub">
+          {{ data.number ? "No. " + data.number + " · " : "" }}{{ data.projectName }}
+          ·
+          {{ (isJasa ? "tender.jasa" : "tender.barang") | translate }}
+          @if (data.dueDate) {
+            · {{ "tender.batasPenawaran" | translate }}
+            {{ data.dueDate | date: "d MMM yyyy" }}
+          }
+        </p>
+      </div>
+
+      <div class="tv-head__aksi">
+        @if (dapatDisunting) {
+          <button
+            mat-stroked-button
+            type="button"
+            *appCan="'tender:update'"
+            (click)="sunting()"
+          >
+            <mat-icon>edit_note</mat-icon>
+            {{ "common.edit" | translate }}
+          </button>
+        }
+        @if (data.status === "draft") {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            *appCan="'tender:update'"
+            (click)="sebarkan()"
+          >
+            <mat-icon>send</mat-icon>
+            {{ "tender.sebarkan" | translate }}
+          </button>
+        }
+        @if (dapatDisunting) {
+          <button
+            mat-icon-button
+            type="button"
+            class="tv-menu"
+            [matMenuTriggerFor]="menu"
+            [attr.aria-label]="'common.more' | translate"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item type="button" (click)="batalkan()">
+              <mat-icon>block</mat-icon>
+              <span>{{ "tender.batalkan" | translate }}</span>
+            </button>
+          </mat-menu>
+        }
+      </div>
+    </div>
+
+    <!-- ===== sebar lewat WhatsApp ===== -->
+    @if (dapatDisunting) {
+      <div class="tv-sebar">
+        <div class="tv-sebar__teks">
+          <strong>{{ "tender.sebarJudul" | translate }}</strong>
+          <span>{{ "tender.sebarKet" | translate }}</span>
+        </div>
+        <div class="tv-sebar__aksi">
+          <button mat-stroked-button type="button" (click)="unduhGambar()">
+            <mat-icon>image</mat-icon>
+            {{ "tender.unduhGambar" | translate }}
+          </button>
+          <button mat-stroked-button type="button" (click)="salinNaskah()">
+            <mat-icon>content_copy</mat-icon>
+            {{ "tender.salinNaskah" | translate }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ===== keterangan ===== -->
+    @if (data.description || data.requirements) {
+      <div class="tv-card">
+        @if (data.description) {
+          <div class="tv-blok">
+            <span class="tv-label">{{ "tender.uraian" | translate }}</span>
+            <p class="tv-teks">{{ data.description }}</p>
+          </div>
+        }
+        @if (data.requirements) {
+          <div class="tv-blok">
+            <span class="tv-label">{{ "tender.ketentuanLain" | translate }}</span>
+            <p class="tv-teks">{{ data.requirements }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== perbandingan penawaran ===== -->
+    <div class="tv-card">
+      <div class="tv-card__head">
+        <div>
+          <div class="tv-section">{{ "tender.perbandingan" | translate }}</div>
+          <p class="tv-section__ket">
+            {{ "tender.perbandinganKet" | translate }}
+          </p>
+        </div>
+        @if (dapatDisunting) {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            *appCan="'tender:update'"
+            (click)="catatPenawaran()"
+          >
+            <mat-icon>add</mat-icon>
+            {{ "tender.catatPenawaran" | translate }}
+          </button>
+        }
+      </div>
+
+      <!--
+        Berapa penawaran lagi yang ditunggu.
+
+        Pemenang tidak dapat ditetapkan sebelum ada tiga; menyebutnya di sini
+        membuat yang membukanya tahu sebelum menghitung sendiri.
+      -->
+      @if (kurangPenawaran > 0) {
+        <div class="tv-banner tv-banner--warn">
+          <mat-icon>hourglass_top</mat-icon>
+          <span>{{
+            "tender.kurangPenawaran"
+              | translate: { n: kurangPenawaran, minimal: MINIMAL }
+          }}</span>
+        </div>
+      }
+
+      @if (!quotes.length) {
+        <p class="tv-kosong">
+          <mat-icon>inbox</mat-icon>
+          {{ "tender.belumAdaPenawaran" | translate }}
+        </p>
+      } @else {
+        <!--
+          Tabel bergulir mendatar.
+
+          Satu kolom per pemasok; dengan lima pemasok dan sepuluh baris,
+          tabelnya melebihi lebar layar. Kolom barangnya dibuat menempel di
+          kiri supaya yang menggulir tidak kehilangan barisnya.
+        -->
+        <div class="tv-tabel">
+          <table>
+            <thead>
+              <tr>
+                <th class="tv-th-item">
+                  {{ (isJasa ? "tender.uraianJasa" : "tender.namaBarang") | translate }}
+                </th>
+                @for (q of quotes; track q.id) {
+                  <th class="tv-th-quote">
+                    <div class="tv-qhead">
+                      <span class="tv-qhead__nama">
+                        {{ q.supplierPrefix }} {{ q.supplierName }}
+                      </span>
+                      @if (tidakLengkap(q)) {
+                        <!--
+                          Penawaran tidak lengkap DITANDAI.
+
+                          Totalnya tidak sebanding: penawaran atas tiga baris
+                          selalu tampak lebih murah daripada penawaran atas
+                          sepuluh baris.
+                        -->
+                        <span class="tv-qhead__sebagian">
+                          {{
+                            "tender.sebagian"
+                              | translate: { n: jumlahDitawar(q), total: items.length }
+                          }}
+                        </span>
+                      }
+                      @if (dapatDisunting) {
+                        <span class="tv-qhead__aksi">
+                          <button
+                            mat-icon-button
+                            type="button"
+                            class="tv-qbtn"
+                            (click)="catatPenawaran(q)"
+                            [attr.aria-label]="'common.edit' | translate"
+                          >
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button
+                            mat-icon-button
+                            type="button"
+                            class="tv-qbtn"
+                            (click)="hapusPenawaran(q)"
+                            [attr.aria-label]="'common.delete' | translate"
+                          >
+                            <mat-icon>delete_outline</mat-icon>
+                          </button>
+                        </span>
+                      }
+                    </div>
+                  </th>
+                }
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (it of items; track it.id) {
+                <tr>
+                  <td class="tv-td-item">
+                    <span class="tv-item__nama">{{ it.name }}</span>
+                    @if (it.specification) {
+                      <span class="tv-item__spec">{{ it.specification }}</span>
+                    }
+                    @if (it.quantity) {
+                      <span class="tv-item__vol">
+                        {{ it.quantity | number: "1.0-2" }} {{ it.unit }}
+                      </span>
+                    }
+                  </td>
+                  @for (q of quotes; track q.id) {
+                    <td
+                      class="tv-td-harga"
+                      [class.murah]="isTermurah(q, it.id)"
+                      [class.kosong]="harga(q, it.id) === null"
+                    >
+                      @if (harga(q, it.id) !== null) {
+                        <span class="tv-harga">
+                          {{ harga(q, it.id) | number: "1.0-0" }}
+                        </span>
+                        @if (catatanBaris(q, it.id)) {
+                          <span class="tv-harga__catatan">{{
+                            catatanBaris(q, it.id)
+                          }}</span>
+                        }
+                      } @else {
+                        <span class="tv-tidak">—</span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td class="tv-td-item">{{ "tender.subtotal" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-total">
+                    {{ total(q) | number: "1.0-0" }}
+                    @if (tidakLengkap(q)) {
+                      <span class="tv-total__ket">{{
+                        "tender.totalSebagian" | translate
+                      }}</span>
+                    }
+                  </td>
+                }
+              </tr>
+
+              <!--
+                Status PPN, lalu biaya yang benar-benar ditanggung.
+
+                Keduanya perlu karena harga tertulis MENYESATKAN bila status
+                pajak pemasoknya berbeda: PPN yang dipungut PKP dikreditkan
+                sebagai pajak masukan, sehingga yang menjadi beban hanya
+                DPP-nya. Rp 105 tanpa PPN lebih mahal daripada Rp 100 + PPN,
+                sekalipun angkanya lebih kecil.
+              -->
+              <!--
+                Cara pengiriman.
+
+                Loco berarti AKN yang menjemput, dan ongkosnya tidak pernah
+                muncul di surat penawaran — sehingga penawaran Loco tampak
+                lebih murah daripada yang sebenarnya.
+              -->
+              <tr>
+                <td class="tv-td-item">{{ "tender.caraPengiriman" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-syarat">
+                    @if (q.deliveryMethod === "loco") {
+                      <span class="tv-loco">{{ "tender.loco" | translate }}</span>
+                      @if (locoTanpaOngkos(q)) {
+                        <span class="tv-loco__ingat">{{
+                          "tender.ongkosBelumDitaksir" | translate
+                        }}</span>
+                      }
+                    } @else if (q.deliveryMethod === "franco") {
+                      {{ "tender.franco" | translate }}
+                    } @else {
+                      —
+                    }
+                  </td>
+                }
+              </tr>
+
+              <tr>
+                <td class="tv-td-item">{{ "tender.ppn" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-ppn">
+                    @if (q.includePpn) {
+                      <span class="tv-ppn__ya">
+                        {{ q.ppnPercentage | number: "1.0-2" }}%
+                      </span>
+                      <span class="tv-ppn__nilai">
+                        {{ nilaiPpn(q) | number: "1.0-0" }}
+                      </span>
+                    } @else {
+                      <span class="tv-ppn__tidak">{{
+                        "tender.nonPkp" | translate
+                      }}</span>
+                    }
+                  </td>
+                }
+              </tr>
+
+              <tr>
+                <td class="tv-td-item">{{ "tender.dibayarkan" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-total">
+                    {{ dibayarkan(q) | number: "1.0-0" }}
+                  </td>
+                }
+              </tr>
+
+              <tr>
+                <td class="tv-td-item">{{ "tender.biayaLain" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-total">
+                    @if (biayaLain(q)) {
+                      {{ biayaLain(q) | number: "1.0-0" }}
+                      @if (q.otherCostNote) {
+                        <span class="tv-total__ket tv-total__ket--biasa">{{
+                          q.otherCostNote
+                        }}</span>
+                      }
+                    } @else {
+                      —
+                    }
+                  </td>
+                }
+              </tr>
+
+              <tr>
+                <td class="tv-td-item">
+                  <strong>{{ "tender.biayaSebenarnya" | translate }}</strong>
+                </td>
+                @for (q of quotes; track q.id) {
+                  <td
+                    class="tv-td-biaya"
+                    [class.murah]="isBiayaTerendah(q)"
+                  >
+                    <strong>{{ biayaSebenarnya(q) | number: "1.0-0" }}</strong>
+                    @if (tidakLengkap(q)) {
+                      <span class="tv-total__ket">{{
+                        "tender.totalSebagian" | translate
+                      }}</span>
+                    }
+                  </td>
+                }
+              </tr>
+              <!--
+                Termin DITEKANKAN, bukan sekadar dicatat.
+
+                AKN sengaja tidak menetapkan terminnya pada permintaan, supaya
+                pemasok mengajukan sendiri — dan justru di baris inilah
+                perbandingan yang paling berharga muncul: "lebih murah tetapi
+                tunai" versus "beda tipis tetapi tempo 30 hari".
+
+                Karena itu barisnya diberi latar dan tebal seperti total,
+                bukan disamakan dengan catatan biasa di bawahnya.
+              -->
+              <tr>
+                <td class="tv-td-item">
+                  <strong>{{ "tender.terminDitawarkan" | translate }}</strong>
+                </td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-termin">
+                    <strong>{{ q.paymentTerm || "—" }}</strong>
+                    @if (q.creditTerm) {
+                      <span class="tv-termin__tempo">
+                        {{ q.creditTerm }} {{ "tender.hari" | translate }}
+                      </span>
+                    }
+                  </td>
+                }
+              </tr>
+              <tr>
+                <td class="tv-td-item">{{ "tender.keteranganPemasok" | translate }}</td>
+                @for (q of quotes; track q.id) {
+                  <td class="tv-td-syarat">{{ q.notes || "—" }}</td>
+                }
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!--
+          Termurah per baris ditandai, TOTAL tidak.
+
+          Yang termurah keseluruhan belum tentu yang dipilih: waktu kirim,
+          garansi, dan riwayat pemasok ikut menentukan. Menandai totalnya
+          membuat keputusan tampak sudah diambil sistem.
+        -->
+        <div class="tv-banner">
+          <mat-icon>account_balance</mat-icon>
+          <span>{{ "tender.biayaSebenarnyaKet" | translate }}</span>
+        </div>
+
+        <div class="tv-banner">
+          <mat-icon>info</mat-icon>
+          <span>{{ "tender.termurahKet" | translate }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

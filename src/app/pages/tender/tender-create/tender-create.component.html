@@ -1,0 +1,268 @@
+<div class="tc">
+  <form [formGroup]="formGroup" class="tc-form">
+    <div class="tc-head">
+      <h1 class="tc-title">
+        {{ (tenderId ? "tender.ubahJudul" : "tender.buatJudul") | translate }}
+      </h1>
+      <p class="tc-sub">{{ "tender.buatKet" | translate }}</p>
+    </div>
+
+    <!-- ===== 1. Keterangan tender ===== -->
+    <div class="tc-card">
+      <div class="tc-section">{{ "tender.keterangan" | translate }}</div>
+
+      <!--
+        Jenis menentukan BENTUK barisnya, karena itu dipilih paling awal.
+
+        Barang diambil dari katalog dengan satuan dan volume; jasa ditulis
+        bebas sebagai uraian pekerjaan. Kartu, bukan radio polos: perbedaan
+        keduanya tidak terlihat sama sekali dari lingkaran.
+      -->
+      <mat-radio-group
+        formControlName="tenderType"
+        class="tc-jenis"
+        (change)="onJenisBerubah()"
+      >
+        <label class="tc-jn" [class.on]="!isJasa">
+          <mat-radio-button value="barang" color="primary" />
+          <span class="tc-jn__teks">
+            <span class="tc-jn__judul">{{ "tender.barang" | translate }}</span>
+            <span class="tc-jn__ket">{{ "tender.barangKet" | translate }}</span>
+          </span>
+        </label>
+        <label class="tc-jn" [class.on]="isJasa">
+          <mat-radio-button value="jasa" color="primary" />
+          <span class="tc-jn__teks">
+            <span class="tc-jn__judul">{{ "tender.jasa" | translate }}</span>
+            <span class="tc-jn__ket">{{ "tender.jasaKet" | translate }}</span>
+          </span>
+        </label>
+      </mat-radio-group>
+
+      <div class="tc-grid">
+        <mat-form-field appearance="outline" class="tc-span2">
+          <mat-label>{{ "tender.nama" | translate }}</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            formControlName="name"
+            [placeholder]="'tender.namaPlaceholder' | translate"
+          />
+        </mat-form-field>
+
+        <app-project-selector
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [label]="'tender.proyek' | translate"
+        />
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.tanggal" | translate }}</mat-label>
+          <input matInput [matDatepicker]="pickerTgl" formControlName="date" />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerTgl"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerTgl></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.batasPenawaran" | translate }}</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerDue"
+            formControlName="dueDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerDue"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerDue></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="tc-span2">
+          <mat-label>{{ "tender.uraian" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="2"
+            formControlName="description"
+            [placeholder]="'tender.uraianPlaceholder' | translate"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ===== 2. Baris permintaan ===== -->
+    <div class="tc-card">
+      <div class="tc-section">
+        {{ (isJasa ? "tender.daftarJasa" : "tender.daftarBarang") | translate }}
+      </div>
+
+      <!--
+        Tombol tambah di ATAS dan di bawah daftar.
+
+        Daftar panjang menuntut menggulir sampai bawah hanya untuk menambah
+        satu baris, lalu menggulir kembali ke atas untuk mengisinya.
+      -->
+      <button
+        mat-stroked-button
+        type="button"
+        class="tc-tambah"
+        (click)="tambahBaris()"
+      >
+        <mat-icon>add</mat-icon>
+        {{ (isJasa ? "tender.tambahJasa" : "tender.tambahBarang") | translate }}
+      </button>
+
+      @for (b of t.controls; track b; let i = $index) {
+        <div class="tc-baris" [formGroup]="barisAt(i)">
+          <div class="tc-baris__no">{{ i + 1 }}</div>
+
+          <div class="tc-baris__isi">
+            <mat-form-field appearance="outline" class="tc-baris__nama">
+              <mat-label>
+                {{ (isJasa ? "tender.uraianJasa" : "tender.namaBarang") | translate }}
+              </mat-label>
+              <input
+                matInput
+                autocomplete="off"
+                formControlName="name"
+                [placeholder]="
+                  (isJasa ? 'tender.uraianJasaPlaceholder' : 'tender.namaBarangPlaceholder')
+                    | translate
+                "
+              />
+              <!--
+                Tombol katalog hanya pada tender BARANG.
+
+                Jasa tidak ada di master item; menawarkan tombolnya membuat
+                orang menekannya lalu menemukan daftar yang tidak berhubungan.
+              -->
+              @if (!isJasa) {
+                <button
+                  matSuffix
+                  mat-icon-button
+                  type="button"
+                  class="tc-katalog"
+                  (click)="pilihBarang(i)"
+                  [attr.aria-label]="'tender.dariKatalog' | translate"
+                >
+                  <mat-icon>inventory_2</mat-icon>
+                </button>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="tc-baris__spec">
+              <mat-label>{{ "tender.spesifikasi" | translate }}</mat-label>
+              <input
+                matInput
+                autocomplete="off"
+                formControlName="specification"
+                [placeholder]="'tender.spesifikasiPlaceholder' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="tc-baris__qty">
+              <mat-label>{{ "tender.volume" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="quantity"
+                mask="separator.2"
+                thousandSeparator=" "
+                placeholder="0"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="tc-baris__unit">
+              <mat-label>{{ "tender.satuan" | translate }}</mat-label>
+              <mat-select formControlName="unit">
+                @for (u of satuan; track u) {
+                  <mat-option [value]="u">{{ u }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="tc-hapus"
+            (click)="hapusBaris(i)"
+            [attr.aria-label]="'common.delete' | translate"
+          >
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      }
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="tc-tambah tc-tambah--bawah"
+        (click)="tambahBaris()"
+      >
+        <mat-icon>add</mat-icon>
+        {{ (isJasa ? "tender.tambahJasa" : "tender.tambahBarang") | translate }}
+      </button>
+
+      <!--
+        Volume boleh kosong, dan itu disengaja.
+
+        Sebagian permintaan memang belum pasti volumenya; memaksa mengisinya
+        membuat orang mengarang angka yang kemudian dikira sudah pasti.
+      -->
+      <div class="tc-banner">
+        <mat-icon>info</mat-icon>
+        <span>{{ "tender.volumeOpsional" | translate }}</span>
+      </div>
+    </div>
+
+    <!-- ===== 3. Syarat yang diminta ===== -->
+    <div class="tc-card">
+      <div class="tc-section">{{ "tender.syarat" | translate }}</div>
+
+      <!--
+        Termin pembayaran TIDAK diminta di sini.
+
+        Menyebutkannya lebih dulu membuat pemasok hanya menjawab harga, dan
+        justru menghilangkan hal yang paling berharga dari tender: "lebih
+        murah tetapi tunai" versus "beda tipis tetapi tempo 30 hari" adalah
+        pertimbangan yang tidak muncul bila terminnya sudah ditetapkan.
+
+        Termin dicatat pada PENAWARAN masing-masing pemasok, dan dibandingkan
+        berdampingan di layar perbandingan.
+      -->
+      <div class="tc-grid">
+        <mat-form-field appearance="outline" class="tc-span2">
+          <mat-label>{{ "tender.ketentuanLain" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            formControlName="requirements"
+            [placeholder]="'tender.ketentuanLainPlaceholder' | translate"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="tc-banner">
+        <mat-icon>gavel</mat-icon>
+        <span>{{ "tender.terminDariPemasok" | translate }}</span>
+      </div>
+    </div>
+
+    <div class="tc-actions">
+      <button mat-button type="button" (click)="batal()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isSubmitting"
+        (click)="simpan()"
+      >
+        {{ (isSubmitting ? "common.saving" : "common.save") | translate }}
+      </button>
+    </div>
+  </form>
+</div>

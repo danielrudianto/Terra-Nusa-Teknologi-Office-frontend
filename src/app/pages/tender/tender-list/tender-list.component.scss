@@ -1,0 +1,123 @@
+.tl {
+  padding: 1.25rem;
+}
+
+.tl-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tl-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.tl-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+.tl-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.tl-search {
+  min-width: 260px;
+}
+
+.tl-table {
+  width: 100%;
+  background: var(--surface, #fff);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.tl-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-2, #f6f8ff);
+  }
+}
+
+/*
+ * Banyaknya penawaran.
+ *
+ * Yang belum cukup ditandai dengan pembaginya — "2 / 3" langsung memberi tahu
+ * berapa lagi yang ditunggu, sedangkan angka telanjang menuntut yang
+ * membacanya mengingat batasnya sendiri.
+ */
+.tl-jumlah {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+
+  &.kurang {
+    color: var(--warn, #b26a00);
+  }
+}
+
+.tl-jumlah__min {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.tl-status {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+
+  &[data-status="berjalan"] {
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+  }
+
+  &[data-status="selesai"] {
+    background: #e6f5ec;
+    color: #1a7f4b;
+  }
+
+  &[data-status="batal"] {
+    background: #fdecea;
+    color: #c62828;
+  }
+}
+
+.tl-open {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+   * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 0;
+  padding: 0;
+  color: var(--faint, #9aa0ab);
+}
+
+.tl-kosong {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.9rem;
+}

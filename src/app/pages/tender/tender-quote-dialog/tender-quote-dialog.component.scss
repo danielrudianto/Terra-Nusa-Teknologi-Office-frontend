@@ -1,0 +1,244 @@
+.tq-content {
+  padding: 1.5rem !important;
+  max-height: 70vh;
+}
+
+.tq-full {
+  width: 100%;
+}
+
+.tq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0 0.75rem;
+}
+
+.tq-cari {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+   * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 0;
+  padding: 0;
+}
+
+.tq-section {
+  margin: 0.5rem 0 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Banner keterangan, bukan hint.
+ *
+ * Menjelaskan mengapa harga boleh dikosongkan — dan hint tercetak kecil di
+ * bawah kotak lalu hilang begitu isiannya disentuh.
+ */
+.tq-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #1a3a8f);
+  font-size: 0.8rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+/* ---- baris harga ---- */
+.tq-baris {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line, #f0f2f7);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.tq-baris__kiri {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.tq-baris__no {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.tq-baris__teks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.tq-baris__nama {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tq-baris__spec,
+.tq-baris__vol {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+}
+
+.tq-baris__isi {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0 0.6rem;
+  padding-left: 1.75rem;
+}
+
+.tq-baris__harga,
+.tq-baris__catatan {
+  width: 100%;
+}
+
+/*
+ * Ringkasan penawaran.
+ *
+ * Menempel di bawah daftar supaya totalnya terlihat tanpa menggulir kembali —
+ * dan jumlah baris yang ditawar disebut di sebelahnya, karena total dari dua
+ * baris tidak sebanding dengan total dari sepuluh.
+ */
+.tq-ringkas {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.85rem;
+
+  strong {
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tq-actions {
+  padding: 1rem 1.5rem !important;
+}
+
+@media (max-width: 700px) {
+  .tq-baris__isi {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+  }
+}
+
+/*
+ * PPN — sakelar beserta tarifnya.
+ *
+ * Sakelar, bukan kotak centang: mengikuti kebiasaan yang sudah dipakai di
+ * aplikasi ini untuk pertanyaan ya-tidak yang mengubah perhitungan.
+ */
+.tq-ppn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0.25rem 0 0.85rem;
+}
+
+.tq-ppn__tarif {
+  width: 140px;
+}
+
+.tq-ringkas__baris {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tq-ringkas__baris--kecil {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Biaya sebenarnya ditekankan.
+ *
+ * Inilah angka yang layak dibandingkan antar penawaran — yang tertulis pada
+ * surat penawaran justru menyesatkan bila pemasoknya berbeda status pajak.
+ */
+.tq-ringkas__baris--utama {
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line, #e4e9fb);
+
+  strong {
+    font-size: 1rem;
+    color: var(--brand-ink, #0f3fd0);
+  }
+}
+
+/*
+ * Biaya lain yang ditanggung AKN.
+ *
+ * Nilai dan keterangannya bersebelahan: angka tanpa keterangan tidak dapat
+ * ditinjau siapa pun kelak, dan yang membacanya harus menebak dari mana
+ * asalnya.
+ */
+.tq-lain {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 0 0.75rem;
+}
+
+.tq-lain__nilai,
+.tq-lain__ket {
+  width: 100%;
+}
+
+/*
+ * Peringatan Loco.
+ *
+ * Kuning, bukan biru: ini bukan keterangan melainkan hal yang harus
+ * ditindaklanjuti — ongkos angkutnya perlu ditaksir dan diisikan.
+ */
+.tq-banner--warn {
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn, #a2651a);
+}
+
+@media (max-width: 700px) {
+  .tq-lain {
+    grid-template-columns: 1fr;
+  }
+}

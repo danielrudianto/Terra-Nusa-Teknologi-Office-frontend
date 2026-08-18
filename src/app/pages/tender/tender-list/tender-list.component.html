@@ -1,0 +1,146 @@
+<div class="tl">
+  <div class="tl-head">
+    <div>
+      <h1 class="tl-title">{{ "tender.judul" | translate }}</h1>
+      <p class="tl-sub">{{ "tender.subjudul" | translate }}</p>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      *appCan="'tender:create'"
+      (click)="buat()"
+    >
+      <mat-icon>add</mat-icon>
+      {{ "tender.buatBaru" | translate }}
+    </button>
+  </div>
+
+  <div class="tl-toolbar">
+    <mat-chip-listbox
+      class="tl-filters"
+      [value]="saring"
+      (change)="pilihSaring($event.value)"
+    >
+      <mat-chip-option value="">{{ "tender.semua" | translate }}</mat-chip-option>
+      <mat-chip-option value="draft">{{
+        "tender.statusDraft" | translate
+      }}</mat-chip-option>
+      <mat-chip-option value="berjalan">{{
+        "tender.statusBerjalan" | translate
+      }}</mat-chip-option>
+      <mat-chip-option value="selesai">{{
+        "tender.statusSelesai" | translate
+      }}</mat-chip-option>
+      <mat-chip-option value="batal">{{
+        "tender.statusBatal" | translate
+      }}</mat-chip-option>
+    </mat-chip-listbox>
+
+    <mat-form-field
+      subscriptSizing="dynamic"
+      appearance="outline"
+      class="tl-search"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        autocomplete="off"
+        type="search"
+        [formControl]="pencarian"
+      />
+    </mat-form-field>
+  </div>
+
+  <table mat-table [dataSource]="tenders" class="tl-table">
+    <ng-container matColumnDef="number">
+      <th mat-header-cell *matHeaderCellDef>{{ "tender.nomor" | translate }}</th>
+      <td mat-cell *matCellDef="let t">{{ t.number || "—" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ "tender.nama" | translate }}</th>
+      <td mat-cell *matCellDef="let t">{{ t.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="projectName">
+      <th mat-header-cell *matHeaderCellDef>{{ "tender.proyek" | translate }}</th>
+      <td mat-cell *matCellDef="let t">{{ t.projectName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="tenderType">
+      <th mat-header-cell *matHeaderCellDef>{{ "tender.jenis" | translate }}</th>
+      <td mat-cell *matCellDef="let t">
+        {{ (t.tenderType === "jasa" ? "tender.jasa" : "tender.barang") | translate }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="quoteCount">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ "tender.penawaran" | translate }}
+      </th>
+      <td mat-cell *matCellDef="let t">
+        <!--
+          Ditandai bila belum cukup untuk memutuskan.
+
+          Pemenang tidak dapat ditetapkan sebelum ada tiga penawaran; menandai
+          di daftar membuat yang membukanya tahu mana yang masih menunggu
+          tanpa perlu masuk satu per satu.
+        -->
+        <span class="tl-jumlah" [class.kurang]="belumCukup(t)">
+          {{ t.quoteCount ?? 0 }}
+          @if (belumCukup(t)) {
+            <span class="tl-jumlah__min">/ {{ MINIMAL }}</span>
+          }
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ "tender.status" | translate }}</th>
+      <td mat-cell *matCellDef="let t">
+        <span class="tl-status" [attr.data-status]="t.status">
+          {{ "tender.status" + (t.status | titlecase) | translate }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let t">
+        <button
+          mat-icon-button
+          class="tl-open"
+          type="button"
+          (click)="buka(t.id)"
+          [attr.aria-label]="'tender.buka' | translate"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="kolom"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: kolom"
+      class="tl-row"
+      (click)="buka(row.id)"
+    ></tr>
+  </table>
+
+  @if (!isLoading && !tenders.length) {
+    <p class="tl-kosong">
+      <mat-icon>inbox</mat-icon>
+      {{ "tender.kosong" | translate }}
+    </p>
+  }
+
+  <mat-paginator
+    [length]="count"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="muat()"
+  ></mat-paginator>
+</div>
