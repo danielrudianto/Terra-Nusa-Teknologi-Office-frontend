@@ -4387,7 +4387,7 @@
     "katTagihan": "Project invoice",
     "katUangMuka": "Advance payment",
     "katRetensi": "Retention released",
-    "katRestitusi": "Tax refund",
-    "katPinjaman": "Loan disbursement"
+    "katPinjaman": "Loan disbursement",
+    "katUtang": "Debt repayment"
   }
 }

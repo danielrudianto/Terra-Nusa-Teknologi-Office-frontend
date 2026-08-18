@@ -9,6 +9,7 @@ export type KategoriKeluar =
   | 'gaji'
   | 'operasional'
   | 'pajak'
+  | 'utang'
   | 'lain';
 
 /** Pengelompokan pemasukan. */
@@ -16,7 +17,6 @@ export type KategoriMasuk =
   | 'tagihan'
   | 'uangmuka'
   | 'retensi'
-  | 'restitusi'
   | 'pinjaman'
   | 'lain';
 
@@ -55,6 +55,14 @@ export const KATEGORI_KELUAR: PilihanKategori[] = [
   { value: 'gaji', label: 'rencana.katGaji', ikon: 'payments' },
   { value: 'operasional', label: 'rencana.katOperasional', ikon: 'store' },
   { value: 'pajak', label: 'rencana.katPajak', ikon: 'receipt_long' },
+  /*
+   * Tandingan dari `pinjaman` di sisi pemasukan.
+   *
+   * Uang yang masuk sebagai pencairan keluar lagi sebagai angsuran; tanpa
+   * kategorinya sendiri ia tertimbun di "lain-lain" — padahal justru itu
+   * yang perlu terlihat saat menilai apakah kasnya cukup.
+   */
+  { value: 'utang', label: 'rencana.katUtang', ikon: 'credit_score' },
   { value: 'lain', label: 'rencana.katLain', ikon: 'more_horiz' },
 ];
 
@@ -69,7 +77,6 @@ export const KATEGORI_MASUK: PilihanKategori[] = [
   { value: 'tagihan', label: 'rencana.katTagihan', ikon: 'request_quote' },
   { value: 'uangmuka', label: 'rencana.katUangMuka', ikon: 'savings' },
   { value: 'retensi', label: 'rencana.katRetensi', ikon: 'lock_open' },
-  { value: 'restitusi', label: 'rencana.katRestitusi', ikon: 'assured_workload' },
   { value: 'pinjaman', label: 'rencana.katPinjaman', ikon: 'account_balance' },
   { value: 'lain', label: 'rencana.katLain', ikon: 'more_horiz' },
 ];
