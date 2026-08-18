@@ -479,6 +479,17 @@ export class PurchaseOrderCreateCComponent {
             supplierAddress: data.address,
             supplierPhone: data.phoneNumber || '',
           });
+
+          /*
+           * Kontak PIC diisi SETELAH pemasoknya masuk.
+           *
+           * `selaraskanTerminLoco()` yang mengisinya, dan sebelumnya
+           * ia hanya dipanggil ketika metode pengiriman diubah —
+           * sehingga yang memilih pemasok lalu langsung mengisi baris
+           * barang tidak pernah melihat nama dan nomornya terisi,
+           * walaupun keduanya sudah tersimpan di data pemasok.
+           */
+          this.selaraskanTerminLoco();
         }
       });
   }
