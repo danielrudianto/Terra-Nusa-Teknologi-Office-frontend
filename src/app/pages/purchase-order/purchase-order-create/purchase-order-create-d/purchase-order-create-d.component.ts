@@ -1004,6 +1004,23 @@ export class PurchaseOrderCreateDComponent {
          * sudah disepakati pada dokumen induk tidak pernah terbawa — dan
          * yang membaca adendumnya menganggap poin itu memang tidak ada.
          */
+        /*
+         * Rincian pekerjaan staf ikut diwarisi.
+         *
+         * Disimpan di `customData.jobDescriptions`, bukan sebagai baris
+         * pekerjaan — sehingga `barisInduk()` tidak menyentuhnya. Tanpa ini,
+         * adendum atas SPK yang memuat rincian tugas kehilangan seluruhnya,
+         * dan seksi itu tidak tercetak sama sekali.
+         */
+        const tugasInduk = this.adendum.larikCustom(induk, 'jobDescriptions');
+        this.jobDescriptions.clear();
+        for (const teks of tugasInduk) {
+          this.addJobDescription();
+          this.jobDescriptions
+            .at(this.jobDescriptions.length - 1)
+            .setValue(teks ?? '');
+        }
+
         const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
         this.additionalClauses.clear();
         for (const teks of klausulInduk) {

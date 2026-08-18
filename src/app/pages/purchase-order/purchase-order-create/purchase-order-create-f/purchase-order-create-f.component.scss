@@ -908,3 +908,55 @@ app-wysiwyg {
     font-size: 18px;
   }
 }
+
+/*
+ * Daftar jenis uji yang sudah dipilih.
+ *
+ * Ditaruh DI ATAS kotak pencariannya, bukan di bawah: yang menambah uji
+ * berikutnya perlu melihat apa yang sudah ada tanpa matanya berpindah
+ * melewati kotak yang sedang ia ketik.
+ */
+.pof-pill {
+  margin: 0 0 0.75rem;
+}
+
+/*
+ * Kartu jenis material yang TIDAK dapat dipilih.
+ *
+ * Berlaku saat menyunting atau mengadendum: jenis material mengikat dokumen
+ * pada perjanjian induknya, dan servernya menolak bila berbeda.
+ *
+ * Menonaktifkan radio-nya saja tidak cukup — Material hanya memudarkan
+ * lingkarannya, sedangkan kartunya tetap berwarna penuh dan kursornya tetap
+ * berbentuk tangan. Yang membukanya mengira masih dapat memilih, menekan
+ * beberapa kali, lalu menyimpulkan layarnya rusak.
+ */
+.pof-mat.mati {
+  /* Kursor terlarang: tanda paling cepat terbaca bahwa ia tidak dapat ditekan. */
+  cursor: not-allowed;
+  background: var(--surface-2, #f6f8ff);
+  border-color: var(--line, #e4e9fb);
+  opacity: 0.6;
+
+  .pof-mat__judul,
+  .pof-mat__dok {
+    color: var(--muted, #9aa1b1);
+  }
+
+  /*
+   * Yang TERPILIH tetap terbaca jelas.
+   *
+   * Ia satu-satunya keterangan tentang jenis dokumen ini; memudarkannya
+   * sama rata dengan yang lain membuat yang membacanya harus menebak mana
+   * yang berlaku.
+   */
+  &.on {
+    opacity: 0.85;
+    background: var(--brand-soft, #e7ecfb);
+    border-color: var(--brand, #154dec);
+
+    .pof-mat__judul {
+      color: var(--ink, #16181d);
+    }
+  }
+}

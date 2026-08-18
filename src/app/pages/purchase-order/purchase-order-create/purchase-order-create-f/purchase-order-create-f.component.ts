@@ -48,6 +48,7 @@ import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
 import { ProjectLookupService } from '../../../../services/project-lookup.service';
 import { PicAutocompleteComponent } from '../../../../components/pic-autocomplete/pic-autocomplete.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-purchase-order-create-f',
@@ -73,6 +74,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     SupplierTerkunciComponent,
     PicAutocompleteComponent,
     MatAutocompleteModule,
+    MatChipsModule,
   ],
   templateUrl: './purchase-order-create-f.component.html',
   styleUrl: './purchase-order-create-f.component.scss',
@@ -527,6 +529,43 @@ export class PurchaseOrderCreateFComponent {
          * tidak mencoba lalu ditolak setelah mengisi seluruh formulirnya.
          */
         this.adendum.kunciIsian(this.formGroup);
+
+        /*
+         * Baris PENGUJIAN dimuat ke `testItems`, bukan `purchase_order`.
+         *
+         * Pada jasa uji, barisnya disimpan sebagai `items` dengan `task`
+         * berisi "Judul pengujian — spesifikasi" — bentuk yang berbeda dari
+         * baris barang. Memuatnya ke `this.t` membuat layar uji tampil
+         * KOSONG, sedangkan baris barangnya terisi hal yang tidak pernah
+         * ditampilkan.
+         *
+         * Akibatnya adendum atas SPK pengujian terbit tanpa satu pun baris
+         * pekerjaan — dan nilainya nol.
+         */
+        if (this.isTestService) {
+          this.uji.clear();
+          for (const x of this.adendum.barisInduk(induk)) {
+            /*
+             * Spesifikasi dipisahkan kembali dari judulnya.
+             *
+             * Disimpan sebagai satu teks "Pengujian kuat tekan — K-300";
+             * yang dipakai layar hanya bagian setelah tanda pisah. Bila
+             * tandanya tidak ditemukan, seluruh teks dipakai apa adanya —
+             * lebih baik terbaca panjang daripada hilang.
+             */
+            const task = String((x as any).task || '');
+            const pisah = task.lastIndexOf(' — ');
+            this.uji.push(this.barisUji());
+            this.uji.at(this.uji.length - 1).patchValue({
+              spec: pisah === -1 ? task : task.slice(pisah + 3),
+              // Volume dikosongkan pada adendum — ia memuat SELISIH.
+              quantity: this.isUbah ? Number((x as any).quantity) || 0 : null,
+              price: Number((x as any).price) || 0,
+            });
+          }
+          this.selaraskanRingkasanUji();
+        }
+
         this.t.clear();
         this.adendum
           .barisInduk(induk)
@@ -955,37 +994,57 @@ export class PurchaseOrderCreateFComponent {
 
   /** Usulan yang cocok dengan yang sedang diketik. */
   /**
-   * Potongan yang sedang diketik — SETELAH koma terakhir.
+   * Jenis uji yang sudah dipilih, sebagai daftar.
    *
-   * Isian ini boleh memuat beberapa uji dipisah koma. Menyaring dengan
-   * seluruh isi kotak membuat usulan berhenti muncul begitu koma pertama
-   * diketik: "Analisa saringan, kons" tidak cocok dengan usulan mana pun,
-   * padahal yang sedang dicari jelas "konsolidasi".
+   * Disimpan sebagai teks dipisah koma pada `soilTestName` — bentuk yang
+   * sudah dipakai dokumen dan klausulnya. Yang berubah hanya cara
+   * mengisinya: dahulu diketik langsung dengan koma, sekarang lewat pill.
+   *
+   * Alasan berpindah: mengetik koma lalu memilih usulan membuat Material
+   * menimpa SELURUH isi kotak dengan pilihan barusan, sehingga yang sudah
+   * dipilih sebelumnya hilang. Pill memisahkan "yang sudah dipilih" dari
+   * "yang sedang diketik", dan tidak ada lagi yang dapat saling menimpa.
    */
-  private get potonganAktif(): string {
-    const v = String(this.formGroup.get('soilTestName')?.value || '');
-    const i = v.lastIndexOf(',');
-    return (i === -1 ? v : v.slice(i + 1)).trim();
+  get ujiTerpilih(): string[] {
+    return String(this.formGroup.get('soilTestName')?.value || '')
+      .split(',')
+      .map((x) => x.trim())
+      .filter((x) => !!x);
   }
+
+  private setUji(daftar: string[]): void {
+    this.formGroup.get('soilTestName')?.setValue(daftar.join(', '));
+  }
+
+  /** Yang sedang diketik pada kotak pencarian; bukan bagian dari nilainya. */
+  ketikanUji = '';
 
   get usulanTersaring(): string[] {
-    const q = this.potonganAktif.toLowerCase();
-    if (!q) return this.usulanUjiTanah;
-    return this.usulanUjiTanah.filter((x) => x.toLowerCase().includes(q));
+    const q = this.ketikanUji.trim().toLowerCase();
+    const sudah = new Set(this.ujiTerpilih.map((x) => x.toLowerCase()));
+    return this.usulanUjiTanah.filter(
+      // Yang sudah dipilih tidak ditawarkan lagi: memilihnya dua kali
+      // menghasilkan baris kembar pada dokumen.
+      (x) => !sudah.has(x.toLowerCase()) && (!q || x.toLowerCase().includes(q)),
+    );
   }
 
-  /**
-   * Usulan yang dipilih MENGGANTI potongan terakhir, bukan seluruh isinya.
-   *
-   * Tanpa ini, memilih usulan kedua menghapus uji yang sudah diketik lebih
-   * dulu — dan yang menyadarinya baru setelah dokumen tercetak.
-   */
-  pilihUsulanUji(nilai: string): void {
-    const c = this.formGroup.get('soilTestName');
-    const v = String(c?.value || '');
-    const i = v.lastIndexOf(',');
-    c?.setValue(i === -1 ? nilai : `${v.slice(0, i + 1)} ${nilai}`);
+  tambahUji(nilai: string): void {
+    const teks = String(nilai || '').trim();
+    if (!teks) return;
+    const sudah = this.ujiTerpilih;
+    if (sudah.some((x) => x.toLowerCase() === teks.toLowerCase())) {
+      this.ketikanUji = '';
+      return;
+    }
+    this.setUji([...sudah, teks]);
+    this.ketikanUji = '';
   }
+
+  hapusUji(nilai: string): void {
+    this.setUji(this.ujiTerpilih.filter((x) => x !== nilai));
+  }
+
 
   /** Susun data cetak dari isian form. */
   /**

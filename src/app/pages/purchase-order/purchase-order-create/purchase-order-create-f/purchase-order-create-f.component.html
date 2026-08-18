@@ -143,9 +143,18 @@
       -->
       <mat-radio-group formControlName="materialType" class="pof-material">
         @for (m of pilihanMaterial; track m.value) {
+          <!--
+            Kartu ikut menandai dirinya MATI.
+
+            `mat-radio-button` yang dinonaktifkan hanya memudarkan
+            lingkarannya; kartunya tetap berwarna penuh dan kursornya tetap
+            berbentuk tangan. Yang membukanya mengira masih dapat memilih,
+            menekan beberapa kali, lalu menyimpulkan layarnya rusak.
+          -->
           <label
             class="pof-mat"
             [class.on]="formGroup.get('materialType')?.value === m.value"
+            [class.mati]="formGroup.get('materialType')?.disabled"
           >
             <mat-radio-button [value]="m.value" color="primary" />
             <span class="pof-mat__teks">
@@ -267,31 +276,46 @@
       -->
       @if (formGroup.get("materialType")?.value === "ujitanah") {
         <!--
-          Selebar kartu: tidak ada isian lain di sebelahnya, dan nama uji
-          kerap panjang — "Uji kepadatan lapangan (sand cone)" sudah hampir
-          memenuhi setengah lebar.
+          PILL, bukan teks dipisah koma.
+
+          Mengetik koma lalu memilih usulan membuat Material menimpa seluruh
+          isi kotak dengan pilihan barusan — yang sudah dipilih sebelumnya
+          hilang tanpa peringatan. Pill memisahkan "yang sudah dipilih" dari
+          "yang sedang diketik", sehingga tidak ada yang dapat saling menimpa.
+
+          Nilai tersimpannya TETAP teks dipisah koma; yang berubah hanya cara
+          mengisinya, sehingga dokumen dan klausulnya tidak perlu disesuaikan.
         -->
-        <mat-form-field appearance="outline" class="pof-uji pof-span2">
+        @if (ujiTerpilih.length) {
+          <div class="pof-pill pof-span2">
+            <mat-chip-set>
+              @for (u of ujiTerpilih; track u) {
+                <mat-chip [removable]="true" (removed)="hapusUji(u)">
+                  {{ u }}
+                  <button matChipRemove [attr.aria-label]="'common.delete' | translate">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="pof-span2">
           <mat-label>{{ "poF.jenisUjiTanah" | translate }}</mat-label>
           <input
             matInput
             autocomplete="off"
             type="search"
-            formControlName="soilTestName"
+            [(ngModel)]="ketikanUji"
+            [ngModelOptions]="{ standalone: true }"
             [matAutocomplete]="autoUji"
+            (keydown.enter)="tambahUji(ketikanUji); $event.preventDefault()"
             [placeholder]="'poF.jenisUjiTanahPlaceholder' | translate"
           />
-          <!--
-            `[value]` sengaja isi kotak yang sudah ada, bukan usulannya.
-
-            Material menulis `[value]` ke isian begitu dipilih — dan itu akan
-            MENIMPA uji yang sudah diketik sebelumnya. Penyambungannya
-            dikerjakan `pilihUsulanUji`, sehingga yang dipilih menambah, bukan
-            mengganti.
-          -->
           <mat-autocomplete
             #autoUji="matAutocomplete"
-            (optionSelected)="pilihUsulanUji($event.option.value)"
+            (optionSelected)="tambahUji($event.option.value)"
           >
             @for (u of usulanTersaring; track u) {
               <mat-option [value]="u">{{ u }}</mat-option>
@@ -299,13 +323,6 @@
           </mat-autocomplete>
         </mat-form-field>
 
-        <!--
-          Banner, bukan hint.
-
-          Hint tertutup daftar usulan begitu autocomplete-nya terbuka —
-          persis saat keterangan ini paling diperlukan, yaitu ketika orang
-          sedang memilih jenis ujinya.
-        -->
         <div class="pof-banner">
           <mat-icon>science</mat-icon>
           <span>{{ "poF.jenisUjiTanahHint" | translate }}</span>

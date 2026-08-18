@@ -1126,6 +1126,15 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         formOrigin: 'H',
         billingDocuments: this.billingDocumentValues,
         kewajiban: this.kewajibanPreview,
+        /*
+         * Poin kewajiban TAMBAHAN disimpan terpisah dari hasil hitungannya.
+         *
+         * `kewajiban` di atas sudah memuat gabungan baku + tambahan, dan itu
+         * yang dicetak. Tetapi yang DIKETIK pengguna hanya bagian tambahannya
+         * — dan tanpa menyimpannya sendiri, adendum tidak dapat memuatnya
+         * kembali ke isian tanpa ikut menyalin yang baku.
+         */
+        kewajibanTambahan: this.kewajibanTambahanValues,
         keterangan: this.pasal4Preview,
         subcontractorType: this.subType,
         isBusinessEntity: this.isEntity,
@@ -1584,6 +1593,25 @@ export class PurchaseOrderCreateHComponent implements OnInit {
             name: x.name ?? '',
             idCard: x.idCard ?? '',
           });
+        }
+
+        /*
+         * Poin kewajiban tambahan ikut diwarisi.
+         *
+         * Yang dicetak adalah gabungan baku + tambahan, tetapi yang boleh
+         * disunting hanya tambahannya. Memuat gabungannya akan menggandakan
+         * poin baku setiap kali diadendum.
+         */
+        const kewajibanInduk = this.adendum.larikCustom(
+          induk,
+          'kewajibanTambahan',
+        );
+        this.kewajibanTambahan.clear();
+        for (const teks of kewajibanInduk) {
+          this.addKewajibanTambahan();
+          this.kewajibanTambahan
+            .at(this.kewajibanTambahan.length - 1)
+            .setValue(teks ?? '');
         }
 
         const klausulInduk = this.adendum.larikCustom(induk, 'additionalClauses');
