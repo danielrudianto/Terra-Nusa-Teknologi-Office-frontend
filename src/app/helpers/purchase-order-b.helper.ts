@@ -88,6 +88,14 @@ export interface IPurchaseOrderB {
   supplierNpwp?: string;
   /** Penanggung jawab dari pihak vendor. */
   supplierPIC?: string;
+  /**
+   * Jabatan penanggung jawab vendor.
+   *
+   * Boleh kosong: sebagian vendor tidak menyebutkannya, dan yang kosong
+   * tercetak sebagai penunjuk abu-abu "Jabatan" — sama seperti sisi AKN,
+   * bukan dibiarkan hampa.
+   */
+  supplierPICPosition?: string;
   items: IPurchaseOrderBItem[];
   includePpn: boolean;
   templateVersion?: string;
@@ -307,11 +315,25 @@ function signatureColumns(data: IPurchaseOrderB) {
       {
         width: '*',
         stack: [
-          { text: 'PIHAK KEDUA,' },
-          { text: vendor },
-          { text: '\n\n\n' },
-          // Jabatan pihak kedua tidak diasumsikan.
-          { text: data.supplierPIC || vendor, bold: true },
+          // Seluruh kolom kanan diratakan ke kanan, bukan hanya bagian
+          // tanda tangannya: judul dan nama badan usaha yang tertinggal di
+          // kiri membuat blok itu terbaca seperti dua bagian terpisah.
+          { text: 'PIHAK KEDUA,', alignment: 'right' as Alignment },
+          { text: vendor, alignment: 'right' as Alignment },
+          /*
+           * Bentuknya disamakan dengan PIHAK PERTAMA lewat `signerLines`.
+           *
+           * Sebelumnya sisi ini menulis nama vendor DUA KALI: sekali sebagai
+           * badan usaha di atas, sekali lagi sebagai penanda tangan di bawah
+           * — karena `supplierPIC` kosong dan cadangan yang dipakai adalah
+           * nama vendornya sendiri.
+           *
+           * Cadangannya dibuang. Yang belum diisi tercetak sebagai penunjuk
+           * abu-abu "Nama" dan "Jabatan", sama seperti sisi AKN — sehingga
+           * yang menandatangani tahu apa yang harus ditulis, bukan menemukan
+           * namanya sendiri sudah tercetak di tempat tanda tangannya.
+           */
+          ...signerLines(data.supplierPIC, data.supplierPICPosition, true),
         ],
       },
     ],

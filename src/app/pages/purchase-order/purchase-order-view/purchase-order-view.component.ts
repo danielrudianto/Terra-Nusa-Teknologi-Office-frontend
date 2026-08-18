@@ -713,22 +713,36 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
          */
         const bagian: ClauseSection[] = [];
 
+        /*
+         * Nomor pasal DIHITUNG, bukan ditulis tetap.
+         *
+         * Sebelumnya tertulis 'Pasal 1', 'Pasal 3', 'Pasal 4', 'Pasal 5' —
+         * dan Pasal 2 memang tidak pernah disusun di sini karena isinya
+         * tabel pekerjaan, yang sudah tampil di bagian Daftar Barang di
+         * atas. Yang membacanya melihat urutan melompat dari 1 ke 3 dan
+         * menyimpulkan ada bagian dokumen yang hilang.
+         *
+         * Dokumen tercetak tetap memakai lima pasal beserta tabelnya di
+         * Pasal 2; yang berbeda hanya di layar ini. Karena itu judulnya
+         * disertai NAMA ISINYA — supaya nomor di layar dan nomor pada
+         * dokumen yang ditandatangani tidak tertukar begitu saja.
+         */
+        const tambah = (nama: string, isi: (string | string[])[]) => {
+          if (!isi.length) return;
+          bagian.push({ title: `Pasal ${bagian.length + 1} — ${nama}`, items: isi });
+        };
+
         const pasal1 = buildClauseLines(
           'H',
           { ...custom, paymentTerm: custom.paymentTerm ?? this.data.payment_term },
           this.data.templateVersion,
           tambahan,
         );
-        if (pasal1.length) bagian.push({ title: 'Pasal 1', items: pasal1 });
-
-        const kewajiban = custom.kewajiban || [];
-        if (kewajiban.length) bagian.push({ title: 'Pasal 3', items: kewajiban });
-
-        const keterangan = custom.keterangan || [];
-        if (keterangan.length) bagian.push({ title: 'Pasal 4', items: keterangan });
-
-        const pasal5 = buildPasal5(custom, custom.billingDocuments);
-        if (pasal5.length) bagian.push({ title: 'Pasal 5', items: pasal5 });
+        tambah('Lingkup dan Waktu Pekerjaan', pasal1);
+        tambah('Kewajiban', custom.kewajiban || []);
+        tambah('Keterangan', custom.keterangan || []);
+        tambah('Penagihan dan Pembayaran',
+               buildPasal5(custom, custom.billingDocuments));
 
         return bagian;
       }

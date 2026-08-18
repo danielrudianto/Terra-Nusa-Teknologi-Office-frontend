@@ -90,6 +90,8 @@ export interface IPurchaseOrderA {
   supplierNpwp?: string;
   /** Penanggung jawab tingkat kontrak; opsional karena PIC melekat per baris. */
   supplierPIC?: string;
+  /** Jabatan penanggung jawab vendor; kosong tercetak sebagai penunjuk. */
+  supplierPICPosition?: string;
   shipments: IPurchaseOrderAShipment[];
   includePpn: boolean;
   /**
@@ -353,11 +355,19 @@ function signatureColumns(data: IPurchaseOrderA) {
       {
         width: '*',
         stack: [
-          { text: 'PIHAK KEDUA,' },
-          { text: vendor },
-          { text: '\n\n\n' },
-          // Jabatan pihak kedua tidak diasumsikan.
-          { text: data.supplierPIC || vendor, bold: true },
+          { text: 'PIHAK KEDUA,', alignment: 'right' as Alignment },
+          { text: vendor, alignment: 'right' as Alignment },
+          /*
+           * Bentuknya disamakan dengan PIHAK PERTAMA lewat `signerLines`.
+           *
+           * Sebelumnya nama vendor tercetak DUA KALI: sekali sebagai badan
+           * usaha, sekali lagi sebagai penanda tangan — karena `supplierPIC`
+           * kosong dan cadangannya nama vendornya sendiri.
+           *
+           * Cadangannya dibuang. Yang belum diisi tercetak sebagai penunjuk
+           * abu-abu, sehingga yang menandatangani tahu apa yang harus ditulis.
+           */
+          ...signerLines(data.supplierPIC, data.supplierPICPosition, true),
         ],
       },
     ],

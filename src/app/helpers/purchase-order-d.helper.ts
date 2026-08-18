@@ -189,10 +189,19 @@ function signatureColumns(data: IPurchaseOrderD) {
       {
         width: '*',
         stack: [
-          { text: 'PIHAK KEDUA,' },
-          { text: workerName },
-          { text: '\n\n\n' },
-          { text: data.workerName, bold: true },
+          { text: 'PIHAK KEDUA,', alignment: 'right' as Alignment },
+          { text: workerName, alignment: 'right' as Alignment },
+          /*
+           * Bentuknya disamakan dengan PIHAK PERTAMA lewat `signerLines`.
+           *
+           * Sebelumnya nama pekerja tercetak DUA KALI — sekali sebagai pihak
+           * dalam perjanjian, sekali lagi sebagai penanda tangan.
+           *
+           * Pada SPK tenaga kerja keduanya memang orang yang sama, tetapi
+           * baris kedua itu tempat TANDA TANGAN dibubuhkan: mencetak namanya
+           * di situ menghilangkan garis dan ruang tandanya sekaligus.
+           */
+          ...signerLines(data.workerName, undefined, true),
         ],
       },
     ],

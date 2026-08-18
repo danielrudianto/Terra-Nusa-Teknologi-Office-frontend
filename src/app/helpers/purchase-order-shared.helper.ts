@@ -267,11 +267,25 @@ const LEBAR_GARIS_TTD = 170;
 /** Abu-abu penunjuk; cukup terbaca, tetapi jelas bukan isi dokumen. */
 const ABU_PENUNJUK = '#B8BCC4';
 
+/**
+ * Lebar satu kolom tanda tangan pada susunan dua kolom.
+ *
+ * A4 tegak 595,28pt dikurangi margin kiri-kanan 45+45, dibagi dua, lalu
+ * dikurangi jarak antar kolom bawaan pdfmake. Dihitung sekali di sini karena
+ * `canvas` TIDAK menghormati `alignment` — garisnya selalu digambar dari tepi
+ * kiri kolomnya, dan meratakannya ke kanan hanya bisa lewat margin.
+ */
+const LEBAR_KOLOM_TTD = (595.28 - 90) / 2 - 10;
+
 export function signerLines(
   approvedByName?: string | null,
   approvedByPosition?: string | null,
+  rataKanan = false,
 ) {
   const nama = (approvedByName || '').trim();
+  // Perataan yang sama dipakai seluruh baris blok ini, supaya nama, garis,
+  // dan jabatannya tidak pernah tercecer ke sisi yang berbeda.
+  const rata = (rataKanan ? 'right' : 'left') as Alignment;
   const jabatan = (approvedByPosition || '').trim();
   const belumSetuju = !nama;
 
@@ -286,6 +300,7 @@ export function signerLines(
      */
     {
       text: belumSetuju ? 'Sign Here' : ' ',
+      alignment: rata,
       color: ABU_PENUNJUK,
       fontSize: 9,
       italics: true,
@@ -302,8 +317,14 @@ export function signerLines(
      * di baris yang salah.
      */
     belumSetuju
-      ? { text: 'Nama', color: ABU_PENUNJUK, fontSize: 9, italics: true }
-      : { text: nama, bold: true },
+      ? {
+          text: 'Nama',
+          alignment: rata,
+          color: ABU_PENUNJUK,
+          fontSize: 9,
+          italics: true,
+        }
+      : { text: nama, alignment: rata, bold: true },
 
     // Garis digambar, bukan garis bawah pada teks: teks kosong tidak
     // menghasilkan garis bawah, sedangkan panjangnya harus tetap sama pada
@@ -320,13 +341,27 @@ export function signerLines(
           lineColor: '#16181D',
         },
       ],
-      margin: [0, 2, 0, 4] as Margins,
+      // Garis digeser ke kanan lewat margin: `canvas` tidak menghormati
+      // `alignment`, sehingga tanpa ini ia tetap menempel di tepi kiri
+      // sementara nama di atasnya sudah pindah ke kanan.
+      margin: [
+        rataKanan ? LEBAR_KOLOM_TTD - LEBAR_GARIS_TTD : 0,
+        2,
+        0,
+        4,
+      ] as Margins,
     },
 
     // Jabatan, di bawah garis. Penunjuknya juga abu-abu bila belum diisi.
     belumSetuju || !jabatan
-      ? { text: 'Jabatan', color: ABU_PENUNJUK, fontSize: 9, italics: true }
-      : { text: jabatan },
+      ? {
+          text: 'Jabatan',
+          alignment: rata,
+          color: ABU_PENUNJUK,
+          fontSize: 9,
+          italics: true,
+        }
+      : { text: jabatan, alignment: rata },
   ];
 }
 

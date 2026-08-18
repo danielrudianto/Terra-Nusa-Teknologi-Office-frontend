@@ -1,69 +1,68 @@
-.tl {
-  padding: 1.25rem;
-}
-
-.tl-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.tl-title {
-  margin: 0;
-  font-size: 1.35rem;
-  font-weight: 700;
-}
-
-.tl-sub {
-  margin: 0.2rem 0 0;
-  font-size: 0.85rem;
-  color: var(--muted, #6b7280);
-}
-
 .tl-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.85rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
 }
 
 .tl-search {
-  min-width: 260px;
+  width: 100%;
+  max-width: 400px;
 }
 
-.tl-table {
-  width: 100%;
-  background: var(--surface, #fff);
-  border-radius: 14px;
+.tl-card {
+  position: relative;
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
   overflow: hidden;
 }
 
-.tl-row {
-  cursor: pointer;
-
-  &:hover {
-    background: var(--surface-2, #f6f8ff);
+.tl-loadingbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--brand-soft, #e7ecfb);
+  overflow: hidden;
+  z-index: 5;
+  span {
+    position: absolute;
+    height: 100%;
+    width: 40%;
+    background: var(--brand, #154dec);
+    animation: tl-indeterminate 1.1s infinite ease-in-out;
   }
 }
 
+.tl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+
 /*
- * Banyaknya penawaran.
+ * Gaya khusus tender.
  *
- * Yang belum cukup ditandai dengan pembaginya — "2 / 3" langsung memberi tahu
- * berapa lagi yang ditunggu, sedangkan angka telanjang menuntut yang
- * membacanya mengingat batasnya sendiri.
+ * Kerangkanya disalin dari daftar draf pembelian supaya seluruh daftar di
+ * aplikasi ini terlihat sama — yang berbeda hanya kolomnya, bukan bentuk
+ * papan, bilah pencarian, dan penyaringnya.
  */
+
+/* Banyaknya penawaran; yang belum cukup ditandai dengan pembaginya —
+   "2 / 3" langsung memberi tahu berapa lagi yang ditunggu, sedangkan
+   angka telanjang menuntut yang membacanya mengingat batasnya sendiri. */
 .tl-jumlah {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 
   &.kurang {
-    color: var(--warn, #b26a00);
+    color: var(--warn, #a2651a);
   }
 }
 
@@ -87,21 +86,19 @@
   }
 
   &[data-status="selesai"] {
-    background: #e6f5ec;
-    color: #1a7f4b;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
 
   &[data-status="batal"] {
-    background: #fdecea;
-    color: #c62828;
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
   }
 }
 
 .tl-open {
-  /*
-   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
-   * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
-   */
+  /* Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+     ikonnya turun ke bawah. Lihat `tombolikoncek.py`. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +109,7 @@
   color: var(--faint, #9aa0ab);
 }
 
-.tl-kosong {
+.tl-empty {
   display: flex;
   align-items: center;
   justify-content: center;

@@ -85,6 +85,8 @@ export interface IPurchaseOrder641 {
   supplierCity?: string;
   supplierNpwp?: string;
   supplierPIC?: string;
+  /** Jabatan penanggung jawab vendor; kosong tercetak sebagai penunjuk. */
+  supplierPICPosition?: string;
   /** Baris jasa; menjadi dasar PPN. */
   items: IPurchaseOrder641Item[];
   /** Perkiraan biaya resmi; di luar dasar PPN. */
@@ -357,11 +359,19 @@ function signatureColumns(data: IPurchaseOrder641) {
       {
         width: '*',
         stack: [
-          { text: 'PIHAK KEDUA,' },
-          { text: vendor },
-          { text: '\n\n\n' },
-          // Jabatan pihak kedua tidak diasumsikan.
-          { text: data.supplierPIC || vendor, bold: true },
+          // Seluruh kolom kanan diratakan ke kanan, bukan hanya bagian
+          // tanda tangannya: judul yang tertinggal di kiri membuat blok itu
+          // terbaca seperti dua bagian terpisah.
+          { text: 'PIHAK KEDUA,', alignment: 'right' as Alignment },
+          { text: vendor, alignment: 'right' as Alignment },
+          /*
+           * Bentuknya disamakan dengan PIHAK PERTAMA lewat `signerLines`.
+           *
+           * Sebelumnya nama vendor tercetak DUA KALI: sekali sebagai badan
+           * usaha, sekali lagi sebagai penanda tangan — karena `supplierPIC`
+           * kosong dan cadangannya nama vendornya sendiri.
+           */
+          ...signerLines(data.supplierPIC, data.supplierPICPosition, true),
         ],
       },
     ],

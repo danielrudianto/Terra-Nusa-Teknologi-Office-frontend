@@ -577,6 +577,15 @@ export class PurchaseOrderCreate512Component implements OnInit {
           this.formGroup.patchValue({
             supplierID: data.id,
             supplierName: data.name,
+            /*
+             * `supplierPrefix` WAJIB ikut.
+             *
+             * `vendorDisplayName()` menyusun nama pada dokumen dari nama dan
+             * prefiksnya; tanpa prefiks ia mencetak "Sumber Rezeki" saja,
+             * bukan "PT. Sumber Rezeki" — pada blok tanda tangan dokumen
+             * yang mengikat kedua pihak. Tidak menghasilkan galat apa pun.
+             */
+            supplierPrefix: data.prefix || '',
             supplierAddress: data.address,
             /*
              * Dua bentuk nama diterima.

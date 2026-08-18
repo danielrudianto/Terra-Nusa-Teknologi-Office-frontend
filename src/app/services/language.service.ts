@@ -1,5 +1,22 @@
+import { registerLocaleData } from '@angular/common';
+import localeEn from '@angular/common/locales/en';
+import localeId from '@angular/common/locales/id';
+import localeZh from '@angular/common/locales/zh';
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
+/*
+ * Data lokal Angular didaftarkan saat modulnya dimuat.
+ *
+ * Tanpa ini, pipe `date` selalu memakai `en-US` — dan layar berbahasa
+ * Indonesia menampilkan "Tuesday, 18 August 2026". Teksnya diterjemahkan
+ * ngx-translate, tanggalnya tidak: keduanya sistem yang terpisah, dan
+ * menerjemahkan salah satunya saja menghasilkan campuran yang justru lebih
+ * membingungkan daripada seluruhnya berbahasa Inggris.
+ */
+registerLocaleData(localeId, 'id');
+registerLocaleData(localeEn, 'en');
+registerLocaleData(localeZh, 'zh');
 
 export type AppLang = 'en' | 'id' | 'zh';
 
@@ -64,5 +81,17 @@ export class LanguageService {
   use(lang: AppLang): void {
     localStorage.setItem(this.STORAGE_KEY, lang);
     this.translate.use(lang);
+    /*
+     * Halaman DIMUAT ULANG setelah bahasa diganti.
+     *
+     * `LOCALE_ID` Angular disuntikkan sekali saat aplikasi mulai dan tidak
+     * dapat diubah saat berjalan. Tanpa memuat ulang, teksnya berganti
+     * seketika sementara tanggalnya tetap pada bahasa sebelumnya — persis
+     * campuran yang hendak dihilangkan.
+     *
+     * Diberi jeda sesaat supaya nilai yang baru sempat tersimpan sebelum
+     * halamannya dimuat ulang.
+     */
+    setTimeout(() => window.location.reload(), 50);
   }
 }

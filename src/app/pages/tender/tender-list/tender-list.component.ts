@@ -14,8 +14,9 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime } from 'rxjs';
 
-import { CanDirective } from 'src/app/directives/can.directive';
 import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.service';
+import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-tender-list',
@@ -32,7 +33,8 @@ import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.servic
     MatMenuModule,
     MatChipsModule,
     TranslateModule,
-    CanDirective,
+    HeaderTitleComponent,
+    RefreshButtonComponent,
   ],
   templateUrl: './tender-list.component.html',
   styleUrl: './tender-list.component.scss',

@@ -1,4 +1,4 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -158,6 +158,26 @@ export const MY_FORMATS = {
      * Pemberitahuan versi saja tidak cukup: banner itu mengarahkan ke
      * Pengaturan, dan menuju Pengaturan justru memuat potongan yang hilang.
      */
+    /*
+     * Lokal Angular mengikuti bahasa yang dipilih pengguna.
+     *
+     * Tanpa ini, pipe `date` selalu memakai `en-US` — layar berbahasa
+     * Indonesia menampilkan "Tuesday, 18 August 2026". Teks diterjemahkan
+     * ngx-translate, tanggal oleh Angular: dua sistem terpisah, dan
+     * menyetel salah satunya saja menghasilkan campuran.
+     *
+     * Dibaca LANGSUNG dari penyimpanan, bukan lewat `LanguageService`:
+     * `LOCALE_ID` diperlukan sebelum layanan apa pun sempat dibuat.
+     */
+    {
+      provide: LOCALE_ID,
+      useFactory: () => {
+        const tersimpan = localStorage.getItem('app_lang');
+        return ['id', 'en', 'zh'].includes(tersimpan ?? '')
+          ? (tersimpan as string)
+          : 'id';
+      },
+    },
     { provide: ErrorHandler, useClass: ChunkErrorHandler },
     provideNgxMask(),
     {

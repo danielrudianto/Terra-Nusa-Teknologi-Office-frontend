@@ -65,6 +65,8 @@ export interface IPurchaseOrderH {
   supplierCity?: string;
   supplierNpwp?: string;
   supplierPIC?: string;
+  /** Jabatan penanggung jawab vendor; kosong tercetak sebagai penunjuk. */
+  supplierPICPosition?: string;
 
   /** Pasal 1 — dirakit dari template klausul H. */
   pasal1: (string | string[])[];
@@ -294,12 +296,19 @@ function signatureColumns(data: IPurchaseOrderH) {
       {
         width: '*',
         stack: [
-          { text: 'PIHAK KEDUA,' },
-          { text: vendor },
-          { text: '\n\n\n' },
-          // Jabatan pihak kedua tidak diasumsikan — bisa perorangan,
-          // direktur, atau jabatan lain.
-          { text: data.supplierPIC || vendor, bold: true },
+          { text: 'PIHAK KEDUA,', alignment: 'right' as Alignment },
+          { text: vendor, alignment: 'right' as Alignment },
+          /*
+           * Bentuknya disamakan dengan PIHAK PERTAMA lewat `signerLines`.
+           *
+           * Sebelumnya nama vendor tercetak DUA KALI: sekali sebagai badan
+           * usaha, sekali lagi sebagai penanda tangan — karena `supplierPIC`
+           * kosong dan cadangannya nama vendornya sendiri.
+           *
+           * Jabatan tetap TIDAK diasumsikan; yang belum diisi tercetak
+           * sebagai penunjuk abu-abu, bukan ditebak.
+           */
+          ...signerLines(data.supplierPIC, data.supplierPICPosition, true),
         ],
       },
     ],
