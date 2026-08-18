@@ -6,18 +6,34 @@ melanjutkan pengembangannya, termasuk sesi percakapan baru.
 Seluruh angka dan klaim di sini **diverifikasi terhadap kode**, bukan diingat.
 Bila menemukan yang tidak cocok, percayai kodenya dan perbarui dokumen ini.
 
-Terakhir diperiksa: **14 Agustus 2026**
+Terakhir diperiksa: **18 Agustus 2026**
+
+---
+
+## Hal terpenting yang harus dibaca lebih dulu
+
+**Tidak ada manusia lain yang memahami sistem ini selain pemiliknya.**
+
+Kode ditulis oleh sesi-sesi asisten yang tidak saling mengingat. Setiap sesi
+baru mulai tanpa ingatan apa pun tentang keputusan yang sudah diambil — mengapa
+level 4 tidak boleh menyetujui dokumennya sendiri, mengapa `PUSAT` harus selalu
+ada di pemilih proyek, mengapa HDD dicabut dari situs.
+
+Dokumen inilah satu-satunya yang bertahan di antara sesi. Ia bukan catatan untuk
+pengembang berikutnya; ia **ingatan sistem ini**. Memperbaruinya bukan
+kerapian, melainkan syarat agar pekerjaan berikutnya tidak mengulang atau
+membatalkan yang sudah benar.
 
 ---
 
 ## Tumpukan teknologi
 
 **Frontend** — Angular 20, komponen standalone dengan NgModule di akarnya.
-Angular Material 20 (tema M3), ngx-translate v17, pdfmake untuk dokumen,
-ExcelJS untuk rekap.
+Angular Material 20 (tema M3), ngx-translate v17, ngx-mask, pdfmake untuk
+dokumen, ExcelJS untuk rekap.
 
 **Backend** — FastAPI + Python, SQLAlchemy Core dengan pustaka `databases`
-(asinkron), MySQL.
+(asinkron), MySQL. Redis untuk pembatas laju, Meilisearch untuk pencarian.
 
 **Repo** — `Terra-Nusa-Teknologi-Office-frontend` dan
 `Terra-Nusa-Teknologi-Office`.
@@ -29,6 +45,8 @@ bukan `dict`. Ia **tidak punya `.get()`** — memanggilnya melempar
 `AttributeError` dengan jejak tumpukan yang tidak menyebut sebabnya. Sudah
 pernah menjatuhkan satu endpoint. Pakai `user["kolom"]`, dan bungkus dengan
 `try/except` bila kolomnya mungkin tidak ada.
+
+**Divisi tidak ada di objek `require()`.** Baca lewat `await _departments(user_id)`.
 
 **Default kolom sisi-Python tidak pernah berlaku.** `Column(..., default=dt.now)`
 dievaluasi mesin SQLAlchemy saat eksekusi; `databases` mengeksekusi kueri yang
@@ -42,11 +60,11 @@ itu, jangan mengandalkan default.
 
 | | |
 |---|---|
-| Uji backend | **127 lolos**, 1 dilewati |
-| Kunci i18n | **3.302**, tiga bahasa selaras |
-| Panduan | **21 topik × 3 bahasa** (63 berkas) |
+| Uji backend | **355 lolos**, 1 dilewati |
+| Kunci i18n | **3.896**, tiga bahasa selaras |
+| Panduan | **24 topik x 3 bahasa** (72 berkas) |
 | Varian PO | 16, semuanya punya pratinjau |
-| Teks keras di layar | **0** (di luar `pages/engineering`) |
+| CORS | berdaftar (`_asal_diizinkan()`), bukan `*` |
 
 ---
 
@@ -54,25 +72,36 @@ itu, jangan mengandalkan default.
 
 Ini bukan preferensi gaya; masing-masing lahir dari kesalahan nyata.
 
-**Tar delta, bukan tar penuh.** Pernah menimpa kerjaan Koko dua kali. Setiap
-kiriman hanya berisi perubahan sejak kiriman terakhir, diuji merge lebih dulu.
-`env/` dan `data.ms/` tidak pernah ikut.
+**Tar delta, bukan tar penuh.** Setiap kiriman hanya berisi perubahan sejak
+kiriman terakhir, diuji merge lebih dulu. `env/` dan `data.ms/` tidak pernah ikut.
 
 **Tarik sebelum membangun.** Jangan melaporkan sesuatu selesai tanpa memastikan
-string atau fungsinya benar-benar ada di repo.
+string atau fungsinya benar-benar ada **di repo pemiliknya**, bukan di salinan
+kerja sendiri. Ini pernah keliru: pemeriksaan dilakukan terhadap cabang sendiri
+yang sudah memuat perbaikannya, lalu disimpulkan "sudah beres" padahal repo
+pemiliknya belum — dan build gagal untuk kedua kalinya.
 
-**Periksa, jangan menebak.** Bila sebuah klaim bisa diverifikasi ke kode,
-verifikasi. Beberapa bug di dokumen ini ditemukan justru karena pemeriksaan
-ulang, bukan karena dilaporkan.
+**Periksa, jangan menebak.** Bila sebuah nama bisa dibaca dari kode, baca. Dalam
+satu sesi, lima kali nama metode, larik, atau kelas ditebak dan kelimanya salah:
+`JENIS_PERTANGGUNGAN` (yang benar `insuranceTypes`), `departmentCode`
+(`department`), `utils.log` (`utils.logger_utils`), dan dua lainnya. Menebak
+menghabiskan lebih banyak waktu daripada membaca.
 
-**Verifikasi harus bisa gagal.** `tsc --noResolve` pernah membuat seluruh galat
-lintas-berkas tidak terlihat, dan laporan "typecheck bersih" ternyata tidak
-memeriksa apa pun. Bila membuat pemeriksa, uji dulu dengan kerusakan buatan —
-pemeriksa yang tidak pernah menemukan apa-apa mungkin memang buta.
+**Sapu seluruhnya, jangan perbaiki satu-satu.** Ketika satu varian PO
+bermasalah, periksa keenam belasnya sebelum memperbaiki. Pola sebaliknya —
+memperbaiki yang dilaporkan lalu menunggu laporan berikutnya — pernah membuat
+pemilik menemukan kesalahan yang sama tiga kali berturut-turut di varian
+berbeda, dan itu wajar membuat marah.
 
-**Bandingkan ke remote, bukan ke hitungan absolut.** Menghitung tag pembuka dan
-penutup menghasilkan positif palsu di mana-mana. Yang berarti adalah
-*perubahan* dibanding versi remote.
+**Verifikasi harus bisa gagal.** Setiap pemeriksa diuji dengan kerusakan buatan
+lebih dulu: dirusak harus menyala, dipulihkan harus bersih. Pemeriksa yang tidak
+pernah menemukan apa-apa mungkin memang buta — dua kali dalam satu sesi, uji
+"berhasil" ternyata tidak menguji apa pun karena kerusakan buatannya tidak
+mengenai sasaran.
+
+**Pemeriksa yang tidak bekerja lebih buruk daripada tidak ada.** Satu pemeriksa
+backtick dibuang setelah terbukti tidak dapat menangkap kasusnya; `tipecek`
+sudah menutupinya.
 
 **SQL diberikan langsung di percakapan**, bukan sebagai berkas.
 
@@ -86,28 +115,40 @@ huruf, atau elemen tambahan tanpa diminta.
 ## Keputusan rancangan yang tidak boleh dibalik tanpa berpikir
 
 **Dokumen cetak tetap berbahasa Indonesia.** Purchase order, slip gaji, dan
-rekap Excel mengikuti bahasa dokumen resminya, bukan bahasa aplikasi. Karena
-itu nama bulan punya dua sebutan: `key` untuk layar, `nama` untuk dokumen.
-Menyamakannya membuat slip gaji tercetak "Periode January 2026".
+rekap Excel mengikuti bahasa dokumen resminya, bukan bahasa aplikasi. Karena itu
+nama bulan punya dua sebutan: `key` untuk layar, `nama` untuk dokumen.
 
 **Nilai pilihan bukan label.** Klausul dokumen membaca `value` (`'alat-berat'`),
 bukan labelnya — sehingga label boleh diterjemahkan tanpa mengubah isi SPK.
-Kecuali pada slip gaji, yang justru menyimpan teksnya sendiri sebagai nilai.
 
 **Nama bahasa tidak diterjemahkan.** "Indonesia", "English", "中文" tetap dalam
-bahasanya sendiri, supaya pengguna Mandarin dapat menemukannya di aplikasi
-berbahasa Indonesia.
+bahasanya sendiri.
 
-**Yang membuat tidak boleh menyetujui.** Berlaku pada pembayaran keluar.
+**Yang membuat tidak boleh menyetujui.** Berlaku pada pembayaran keluar dan
+pemeriksaan PO. Level 4 tidak boleh menyetujui dokumennya sendiri; level 5 boleh.
 
-**Akses gaji tidak mengikuti tangga level** — hanya divisi FAT dan HRD. Karena
-itu daftar aktivitas menyeluruh hanya untuk level 5: jejak audit memuat
-perubahan gaji beserta angkanya, dan membukanya untuk level 4 akan menjadikan
-halaman itu pintu belakang.
+**Akses gaji tidak mengikuti tangga level** — hanya divisi FAT dan HRD.
 
-**Status disimpulkan, bukan disetel.** `isPaid` pada pinjaman dihitung ulang
-dari utang dan pembayaran; ia sengaja tidak ada di daftar kolom yang boleh
-disunting.
+**Status disimpulkan, bukan disetel.** `isPaid` pada pinjaman dihitung ulang dari
+utang dan pembayaran.
+
+**Adendum tidak boleh mengubah bentuk dokumennya.** Jenis PO, jenis subkontraktor
+(H1/H2), mode pekerjaan, jalur penutupan asuransi, lingkup pekerjaan, dan
+pemasok semuanya dikunci saat menyunting atau mengadendum. Alasannya dari
+pemilik: *"kalau udah sampai ubah tipe PO mah mendingan batalin aja"* — dokumen
+yang berubah bentuk bukan adendum lagi, melainkan perjanjian lain yang kebetulan
+bernomor turunan.
+
+**Volume pada adendum dikosongkan, pada koreksi disalin.** Adendum memuat
+SELISIH; menyalin volume induk membuat yang mengisi tinggal menekan simpan dan
+menggandakan seluruh pekerjaan tanpa menyadarinya.
+
+**Timer ujian dihitung server.** Waktu dari layar dapat diubah lewat DevTools.
+`startedAt` yang sudah ada tidak pernah ditimpa — menutup peramban lalu
+membukanya kembali tidak memberi tambahan waktu.
+
+**Alamat pakai textarea, bukan input satu baris.** Berlaku di seluruh aplikasi;
+`alamatcek` menjaganya.
 
 ---
 
@@ -117,75 +158,126 @@ disunting.
 
 `A B C D F G H 511 5112 512 516 63 641 642 651 652`
 
-Semuanya berbagi pola: `buildPrintData(nomor)` menyusun data, `printPurchaseOrderX()`
-mencetak. Semua punya tombol **Pratinjau** dan konfirmasi *"sudah membaca"*
-sebelum penerbitan — dokumennya ditampilkan memakai komponen halaman lihat,
-bukan PDF, sehingga yang dilihat sebelum terbit sama dengan sesudahnya.
+Semuanya berbagi pola: `buildPrintData(nomor)` menyusun data,
+`printPurchaseOrderX()` mencetak. Semua punya **Pratinjau** dan konfirmasi
+*"sudah membaca"* sebelum penerbitan.
 
-**PO-F menentukan jenis dokumen:**
+**`remarks_1`-`remarks_6` BERBEDA ARTI tiap varian.** Pada PO-A `remarks_1`
+adalah lokasi asal; pada PO-B tanggal mulai sewa; pada PO-511 catatan barang.
+Tidak ada satu pemetaan bersama yang benar — `terapkanNilaiBaris` yang lama
+menghasilkan baris tertukar isi tanpa galat apa pun.
 
-| Jenis material | Dokumen |
+Dua berkas menyimpan pemetaannya:
+
+- `constants/balik-baris-po.ts` — dari baris dokumen ke isian formulir
+  (dipakai saat memuat adendum)
+- `constants/baris-tampil-po.ts` — dari baris dokumen ke keterangan terbaca
+  (dipakai dialog lihat, supaya tidak perlu membuka PDF)
+
+Keduanya disusun langsung dari `formatData()` masing-masing varian. **Bila
+`formatData()` berubah, keduanya harus ikut berubah.**
+
+**Sebagian varian menyimpan lariknya di `customData`, bukan `items`:**
+`coverages` dan `premiums` (642), `officialFees` (641), `workers` dan `subType`
+(H), `additionalClauses` (semua). `barisInduk()` hanya membaca `items` — larik
+itu harus dibaca sendiri lewat `larikCustom()`.
+
+**PO-F menentukan jenis dokumen:** beton/besi/material lain → PURCHASE ORDER;
+uji tekan silinder dan uji tarik & tekuk besi → SURAT PERINTAH KERJA. Kedua
+jenis uji harus disebut di **setiap** tempat yang memutuskan ini.
+
+**PO tipe G tidak menerima kode proyek `PUSAT`.**
+
+**PO-D**: `isFieldStaff` menambah seksi "Waktu Bekerja" (8 poin) dan mengubah
+bentuk lembur — bagi staf lapangan, melewati jam batas diganti uang makan satu
+hari, bukan dihitung per jam. Jamnya dapat disetel; bawaannya 20:00, 08:00-17:00,
+Sabtu 08:00-15:00, cuti 7 hari, resign 30 hari.
+
+**PENTING:** PO-D punya DUA penyusun klausul. `D_CLAUSES` **tidak dipakai siapa
+pun**; yang dipakai cetakan, pratinjau, dan dialog lihat adalah
+`buildManpowerClauses`. Pernah memperbaiki yang salah.
+
+**G, 5.1.1, dan 5.1.6 berbagi `G_CLAUSES`**; 6.3.2 membangun di atasnya. Satu
+perubahan menutup keempatnya — itu disengaja.
+
+### Rekrutmen HR
+
+Modul `hr_recruitment`, hanya HRD dan pemilik. Bank soal, pelamar, dan
+pengerjaan ujian.
+
+**Rute ujian TERBUKA tanpa akun** — pelamar bukan karyawan. Seluruh penjagaan
+ada di server; tidak ada satu pun yang boleh bergantung pada layar.
+
+`GET /employees/pilihan-pic` sengaja dijaga `purchase_order:create`, **bukan**
+`employees:read`. Modul `employees` termasuk `MODUL_WILAYAH_MUTLAK` — isinya
+susunan keluarga, riwayat kesehatan, gaji. Rute ini hanya mengembalikan nama,
+telepon, dan jabatan karyawan **aktif**.
+
+### Proyek
+
+Kolom `address` (TEXT) menyimpan alamat lokasi; dipakai mengisi alamat
+pengiriman PO **Franco** secara otomatis. Loco mengisi dari alamat pemasok.
+Kontak PIC pemasok diisi pada **kedua** metode.
+
+**15 proyek aktif belum diisi alamatnya** (per 18 Agu 2026). Sekali kerja lewat
+layar Proyek → Ubah.
+
+---
+
+## Rute terbuka — seluruhnya, per 18 Agu 2026
+
+```
+POST /                          masuk
+POST /refresh                   perpanjang sesi
+GET  /isi/{token}               pengisian formulir karyawan
+PUT  /isi/{token}
+GET  /exam/{token}              periksa token ujian (tanpa soal)
+POST /exam/{token}/mulai        mulai; soal baru dikirim di sini
+PUT  /exam/{token}/jawaban      simpan berkala
+POST /exam/{token}/kirim        kirim akhir
+```
+
+Setiap penambahan rute terbuka akan menggagalkan
+`test/hr_soal_test.py::test_seluruh_rute_dijaga_modul_rekrutmen` sampai
+disebutkan di daftarnya. **Itu disengaja** — supaya rute terbuka berikutnya
+tidak lolos diam-diam.
+
+Semuanya berpembatas laju, mencatat percobaan gagal, dan menjawab tiga jenis
+kegagalan dengan pesan yang sama.
+
+---
+
+## Alat pemeriksa — RISIKO TERBESAR SAAT INI
+
+Selama pengembangan dibangun **66 pemeriksa**, masing-masing setelah satu kelas
+kesalahan lolos ke produksi. Semuanya berada di `/tmp` pada mesin sesi, dan
+**nol di antaranya ada di repo**.
+
+Artinya: setiap kelas kesalahan yang pernah ditemukan **tidak dijaga apa pun** di
+luar sesi yang membangunnya. Ini pekerjaan pertama yang layak dikerjakan
+berikutnya — memindahkannya ke `scripts/` dan menjalankannya sebelum setiap push.
+
+Yang menangkap kesalahan nyata, dan sebabnya:
+
+| Pemeriksa | Menangkap |
 |---|---|
-| Beton, besi, material lain | **PURCHASE ORDER** (helper G) |
-| Uji tekan silinder, uji tarik & tekuk besi | **SURAT PERINTAH KERJA** (helper B) |
+| `metodetemplatcek` | metode dipanggil templat tetapi tidak ada di komponen — **penyebab build gagal**, dan `tipecek` tidak menangkapnya karena hanya membaca berkas TypeScript |
+| `warisancek` | larik `customData` yang tidak ikut diwarisi saat adendum |
+| `adendumcek` | `muatAdendum()` dipanggil dari penangan tombol, bukan `ngOnInit` |
+| `pemilihcek` | layar pemilih muncul lagi saat menyunting dokumen lama |
+| `namabarangcek` | nama barang kosong karena server melabelinya `item_description` |
+| `maskcek` | isian bermask bertipe `number` — masknya tidak pernah tampak |
+| `muatancek` | isian formulir yang tidak ikut dikirim ke server |
+| `alamatcek` | isian alamat memakai input satu baris |
+| `navcek` | navigasi ke rute yang tidak terdaftar |
+| `tampilcek` | varian PO tanpa keterangan baris pada dialog lihat |
+| `svgcek` | ikon menu menunjuk berkas di direktori yang salah |
+| `dialogcek` | dialog menyimpang dari pola bersama |
+| `kuncicek` | kunci i18n dirujuk tetapi tidak ada terjemahannya |
+| `blokcek` | blok `@if`/`@for` tidak seimbang |
 
-Kedua jenis uji harus disebut di **setiap** tempat yang memutuskan ini —
-formulir pembuatan dan cetak ulang dari daftar. Pernah hanya `ujitekan` yang
-diperiksa, sehingga uji besi tercetak ulang dengan judul berbeda dari yang
-ditandatangani vendor.
-
-Pada jasa pengujian, `deliveryMethod` **tidak wajib** dan disembunyikan —
-validatornya disesuaikan lewat `selaraskanValidasi()`. Sebelumnya kolom wajib
-yang tak tertampil membuat formulir selamanya tidak sah tanpa satu pun kolom
-merah.
-
-**PO-B tipe A** menerima alat berat **dan** kendaraan. Operator vendor hanya
-dinyalakan otomatis untuk alat berat.
-
-**PO-D** punya jadwal upah *dua kali sebulan* — cut-off tanggal X dan akhir
-bulan, dibayar pada hari tertentu di pekan berikutnya. Tanggal bayarnya sengaja
-tidak ditulis sebagai angka.
-
-**PO tipe G** tidak menerima kode proyek `PUSAT`.
-
-### Pembelian
-
-`PUT /purchases/update` — kolom yang boleh diubah **didaftar di repository**,
-bukan disalin dari muatan. Nilai dokumen (`dpp`, `ppn`, `pbbkb`, `otherValue`,
-`pphPercentage`) dikunci bila pembayarannya sudah ada; hanya level 4 ke atas
-yang boleh.
-
-### Pinjaman
-
-Nilai `debt` dan `received` dapat disunting, tetapi `debt` **tidak boleh turun
-di bawah jumlah yang sudah dibayarkan** (toleransi 5 rupiah, sama seperti pada
-persetujuan pembayaran). Status lunas dihitung ulang dua arah setiap kali
-nilainya berubah.
-
-### Aktivitas
-
-Terbuka untuk semua level; **isinya** yang dibatasi. Di bawah level 5, `userID`
-dipaksa ke pengguna sendiri **di rutenya** — bukan disembunyikan di layar, agar
-tidak dapat dilewati lewat alamat langsung. Level 5 dapat menyaring sampai
-**5 pengguna** sekaligus.
-
-### Agenda
-
-`GET /agenda/range?start=&end=` untuk kalender bulanan, dibatasi 62 hari.
-Ulang tahun karyawan **nonaktif tidak ditampilkan** — penentunya `endDate`
-terisi. Halaman ini tidak ada di menu samping; jalan masuknya lewat kartu
-Dashboard.
-
-### Tampilan
-
-Warna aksen pengguna diteruskan ke **69 token Material** (`--mat-*`, bukan
-`--mdc-*` — awalan itu berubah sejak Material 20). Warna teks di atas aksen
-dihitung dari luminansi WCAG lewat `--on-brand`; nilai bawaannya **wajib ada di
-`styles.scss`**, karena berkas itu berlaku sebelum SettingsService berjalan.
-
-`box-sizing` **tidak** disetel global. Petak tujuh kolom karena itu memerlukan
-`border-box` lokal dan `minmax(0, 1fr)` — tanpa keduanya, padding tiap sel
-menambah lebar dan kolom terakhir terpotong.
+Catatan: `tsc --noResolve` **tidak** memeriksa lintas berkas, dan `tipecek`
+**tidak** memeriksa templat. Keduanya bukan bukti kebenaran.
 
 ---
 
@@ -193,86 +285,116 @@ menambah lebar dan kolom terakhir terpotong.
 
 Urut menurut kepentingan.
 
-### 1. CORS masih `*`
+### 1. 66 pemeriksa tidak ada di repo
 
-`main.py` masih `allow_origins=["*"]`. Situs mana pun dapat memanggil API
-dengan kredensial pengguna yang sedang login. Perbaikannya satu baris; yang
-dibutuhkan hanya daftar domain produksinya.
+Lihat bagian di atas. Ini yang paling menentukan.
 
-### 2. `env/` dan `data.ms/` ter-commit
-
-**10.496 dari 10.731 berkas** terlacak di repo backend adalah keduanya — 98%.
-`env/` berpotensi memuat kredensial. Perlu diperiksa isinya, dimasukkan
-`.gitignore`, lalu dikeluarkan dari riwayat bila memang ada rahasia di sana.
-
-### 3. Halaman posisi keuangan
-
-`GET /finance-status` sudah ada, izinnya `finance_status:read` level 4 dan
-dipetakan ke divisi FAT. **Layarnya belum dibuat**, jadi quick ratio, umur
-piutang, dan utang jatuh tempo belum terlihat di mana pun. Menunggu keputusan
-di mana halaman ini ditempatkan.
-
-### 4. Cadangan belum pernah diuji pulih
+### 2. Cadangan belum pernah diuji pulih
 
 Skripnya ada. Bila belum pernah dicoba memulihkan, itu asumsi — bukan cadangan.
+Dan yang ketahuan saat benar-benar diperlukan adalah waktu paling buruk untuk
+mengetahuinya.
 
-### 5. Tiga berkas yatim rusak
+### 3. Client secret Azure kedaluwarsa
 
-`pages/bank/supplier/supplier-list`, `pages/engineering/supplier/supplier-list`,
-dan `pages/engineering/dashboard/dashboard-body` mengimpor komponen yang tidak
-ada. Tidak dirujuk routing sehingga tidak ikut dibangun — tetapi begitu ada yang
-menautkannya, build langsung gagal.
+Seluruh pengiriman surel gagal dengan `invalid_client`. Perbaikannya di Azure
+Portal → App registrations → Certificates & secrets → buat secret baru, salin
+**Value** (bukan Secret ID), ganti `MICROSOFT_CLIENT_SECRET` di `.env`, hidupkan
+ulang backend, lalu otorisasi ulang token sekali.
 
-### 6. `pages/engineering` sengaja tidak disentuh
+Undangan yang tokennya sudah terbit **tetap sah** — tautannya dapat disalin dan
+dikirim lewat jalan lain.
 
-Atas permintaan pemilik. Di dalamnya masih ada 11 teks keras dan berkas rusak
-di atas.
+### 4. Unggah berkas pada ujian
 
-### 7. `optimization: true` pada konfigurasi development
+Soal berkategori `drawing` meminta gambar, tetapi unggahan belum ada. Layarnya
+menyebut hal itu terus terang. Batas 10 MB sudah diputuskan; **jenis berkasnya
+belum** — dan rute ini terbuka tanpa akun, sehingga menerima apa pun berarti
+seseorang dapat menyimpan berkas sembarang di server.
 
-Membuat `ng serve` mengoptimasi setiap build. Bila tidak disengaja, kembalikan
-ke `false` — bedanya terasa pada setiap penyimpanan berkas.
+### 5. Layar penilaian HRD
 
-### 8. `moment` dipakai 21 berkas
+Jawaban sudah tersimpan tetapi belum dapat dinilai. Perlu juga penghapusan
+berkas setelah keputusan diambil.
 
-37 pemanggilan, 25 di antaranya hanya `.format('YYYY-MM-DD')` — yang sudah
-dilakukan `tanggalLokal()`. Tetapi `provideMomentDateAdapter` menjadikannya
-tulang punggung seluruh datepicker Material, sehingga membuangnya berarti
-mengganti adaptor tanggal. Bukan pekerjaan sela; kerjakan tersendiri bila mau.
+### 6. Halaman posisi keuangan
 
-### 9. Panduan PO baru mencakup 5 dari 16 varian
+`GET /finance-status` sudah ada, izinnya `finance_status:read` level 4. Layarnya
+belum dibuat.
 
-`C F G 5.1.1 5.1.6`. Sisanya sengaja tidak didokumentasikan agar panduannya
-tidak menyesatkan.
+### 7. 16 dialog belum seragam
+
+Kepala berikon dan `appDialogGeser`. Daftar: `delete-confirmation`,
+`fleet-info-dialog`, `salary-payment-create`, `pph-selector`,
+`supplier-selector`, `calendar-day-selector`, `employee-update`, `expense-view`,
+`loans-view`, `purchase-draft-view`, `purchase-view`, `reimbursement-view`,
+`salary-slip-view`, `sales-invoice-view`, `supplier-update`.
+
+Gaya bersamanya sudah ada di `styles.scss` (`.dlg__head`). **Kerjakan satu per
+satu dengan tangan** — bentuk kepala keenam belasnya berbeda-beda, dan satu
+skrip yang menyeragamkan semuanya pernah merusak berkas: kepala lama tersisip di
+dalam yang baru dan `appDialogGeser` hilang.
+
+### 8. `pages/engineering` sengaja tidak disentuh
+
+Atas permintaan pemilik. Di dalamnya masih ada teks keras dan berkas yatim yang
+mengimpor komponen tidak ada — tidak dirujuk routing, tetapi begitu ditautkan,
+build langsung gagal.
+
+### 9. `moment` dipakai 21 berkas
+
+`provideMomentDateAdapter` menjadikannya tulang punggung seluruh datepicker
+Material. Membuangnya berarti mengganti adaptor tanggal — bukan pekerjaan sela.
 
 ---
 
-## Alat pemeriksa
+## Kesalahan yang pernah terjadi — jangan diulang
 
-Dibuat selama pengembangan, masing-masing setelah satu kelas kesalahan lolos.
-Jalankan sebelum menyatakan sesuatu selesai.
+**Memeriksa cabang sendiri, bukan repo pemiliknya.** Disimpulkan "sudah beres"
+padahal `origin/main` belum memuatnya; build gagal untuk kedua kalinya.
 
-| Pemeriksa | Menangkap |
-|---|---|
-| kunci i18n | kunci dirujuk kode tetapi tidak ada terjemahannya |
-| template | nilai ikatan properti tercemar, atribut hilang dibanding remote |
-| sintaks | kurung timpang, ternary tanpa `:`, kata kunci deklarasi diikuti komentar |
-| properti | nama properti objek berubah tanpa sengaja |
-| impor lintas berkas | simbol diimpor tetapi tidak diekspor berkas tujuannya |
-| kontras | pasangan latar/teks di bawah 4,5:1 |
+**Memperbaiki satu varian ketika enam belas bermasalah.** Pemilik menemukan
+kesalahan yang sama berulang kali di varian berbeda. Audit satu perintah sudah
+cukup untuk melihat seluruhnya sejak awal.
 
-Catatan: `tsc --noResolve` **tidak** memeriksa lintas berkas. Jangan memakainya
-sebagai bukti kebenaran.
+**Menebak nama alih-alih membacanya.** Lima kali dalam satu sesi.
+
+**Uji yang tidak menguji apa pun.** Kerusakan buatan tidak mengenai sasaran,
+sehingga "pemeriksa tidak menangkap" disalahartikan sebagai pemeriksanya rusak.
+Uji ulang dengan berkas buatan yang dikendalikan penuh.
+
+**`toISOString()` di WIB memundurkan tanggal sehari.** Selalu susun dari bagian
+waktu setempat.
+
+**Backtick di dalam komentar CSS pada templat literal** menutup literalnya lebih
+awal; galatnya muncul sebagai `',' expected` di baris yang tidak berhubungan.
+
+**Muatan simpan yang menyebut kolom satu per satu** tidak membawa isian baru
+dengan sendirinya. Alamat proyek tersimpan sebagai `NULL` karenanya.
+
+**Berkas isi tanpa hash nama** (`assets/i18n/`, `assets/panduan/`) harus
+`no-cache` di nginx. Yang kena cache 30 hari membuat topik panduan baru tidak
+dikenali, dan panelnya terbuka di daftar topik alih-alih halaman yang dibuka.
+
+**`type="number"` melumpuhkan ngx-mask.** Atributnya terbaca benar di kode,
+tetapi peramban menolak teks berformat sehingga masknya tidak pernah tampak.
 
 ---
 
 ## Catatan operasional
 
-**ACCURATE** adalah pembukuan resmi AKN; TerraBot tidak menggantikannya.
-Standar akuntansi yang berlaku **SAK ETAP**, bukan PSAK penuh.
+**ACCURATE** adalah pembukuan resmi AKN; TerraBot tidak menggantikannya. Standar
+yang berlaku **SAK ETAP**, bukan PSAK penuh.
+
+**Uji backend:** `pytest test/ -q` dari akar backend, 355 uji di bawah 3 detik.
+Jalankan sebelum setiap push.
+
+**Deploy:** `./scripts/deploy.sh` dan `./scripts/deploy-fe.sh` dari repo backend.
+Backend dulu bila keduanya berubah — frontend yang memanggil rute belum ada
+hanya menghasilkan layar kosong tanpa sebab yang terlihat.
 
 Bila build gagal setelah menerapkan perubahan, curigai **cache Angular** lebih
-dulu — sudah tiga kali menyebabkan gejala yang tampak seperti bug:
+dulu:
 
 ```bash
 rm -rf .angular/cache node_modules/.vite && ng serve

@@ -129,8 +129,54 @@ export class VersiService {
     this.periksa();
   }
 
-  /** Muat ulang halaman ke build terbaru. */
-  muatUlang(): void {
-    window.location.reload();
+  /**
+   * Muat ulang halaman ke build terbaru.
+   *
+   * `location.reload()` saja TIDAK cukup. Ia memuat ulang tanpa melewati
+   * singgahan, sehingga peramban menyajikan `index.html` yang sama — yang
+   * menunjuk chunk lama, yang sudah tidak ada di server. Hasilnya halaman
+   * macet, dan satu-satunya jalan keluar adalah `Ctrl+Shift+R`.
+   *
+   * Karena itu singgahan aplikasinya dibersihkan lebih dulu, lalu alamatnya
+   * dibuka dengan penanda waktu supaya `index.html` benar-benar diambil ulang
+   * dari server.
+   */
+  async muatUlang(): Promise<void> {
+    /*
+     * Singgahan Cache API dan service worker dibersihkan bila ada.
+     *
+     * Dibungkus `try` masing-masing: peramban lama tidak punya `caches`, dan
+     * kegagalan membersihkan tidak boleh menghalangi pemuatan ulang — yang
+     * penting halamannya berganti, pembersihan hanya menolong.
+     */
+    try {
+      if ('caches' in window) {
+        const nama = await caches.keys();
+        await Promise.all(nama.map((n) => caches.delete(n)));
+      }
+    } catch {
+      // Diabaikan; pemuatan ulang tetap dilanjutkan.
+    }
+
+    try {
+      if ('serviceWorker' in navigator) {
+        const daftar = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(daftar.map((r) => r.unregister()));
+      }
+    } catch {
+      // Diabaikan; pemuatan ulang tetap dilanjutkan.
+    }
+
+    /*
+     * Dibuka lewat alamat baru, bukan `reload()`.
+     *
+     * Penanda waktu memaksa peramban meminta `index.html` ke server alih-alih
+     * menjawab dari singgahannya. Penanda lama dibuang lebih dulu supaya
+     * alamatnya tidak menumpuk `?_v=` setiap kali diperbarui.
+     */
+    const u = new URL(window.location.href);
+    u.searchParams.delete('_v');
+    u.searchParams.set('_v', String(Date.now()));
+    window.location.replace(u.toString());
   }
 }
