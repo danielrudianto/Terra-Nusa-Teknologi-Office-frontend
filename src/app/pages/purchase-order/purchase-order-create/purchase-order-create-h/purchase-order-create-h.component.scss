@@ -1186,6 +1186,19 @@ app-wysiwyg {
   -moz-appearance: textfield;
 }
 :host ::ng-deep .poh-cutoff__x {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri.
+   *
+   * Material menghitung letak ikon dari ukuran bawaannya (24px di dalam
+   * tombol 40px). Mengecilkan tombolnya tanpa menyetel ulang pemusatannya
+   * membuat ikonnya turun ke bawah — terlihat meleset dari tombolnya.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Dinolkan: `line-height` bawaan ikut menggeser isi tombol ke bawah. */
+  line-height: 0;
+  padding: 0;
   width: 28px;
   height: 28px;
   line-height: 28px;

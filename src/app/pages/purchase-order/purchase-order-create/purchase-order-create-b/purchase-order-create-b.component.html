@@ -199,6 +199,25 @@
                     "common.lumpSumLocked" | translate
                   }}</mat-hint>
                 </mat-form-field>
+
+                @if (satuanBerbeda(i)) {
+                  <!--
+                    Peringatan, bukan larangan.
+
+                    Sebagian sewa memang memakai satuan berbeda dari
+                    katalognya. Yang berbahaya bukan perbedaannya, melainkan
+                    tidak menyadarinya: alat bertarif harian diisi bersatuan
+                    `jam` menghasilkan nilai yang melenceng dua puluh empat
+                    kali lipat, dan tidak ada galat yang muncul.
+                  -->
+                  <div class="po-satuan-beda">
+                    <mat-icon>warning_amber</mat-icon>
+                    <span>{{
+                      "poForm.satuanBerbedaMaster"
+                        | translate: { satuan: satuanMaster(i) }
+                    }}</span>
+                  </div>
+                }
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "poB.unitPrice" | translate }}</mat-label>
                   <input
@@ -256,13 +275,24 @@
                 -->
                 <mat-form-field appearance="outline" class="pob-span3">
                   <mat-label>{{ "poB.workLocation" | translate }}</mat-label>
-                  <input
+                  <!--
+              Textarea, bukan isian satu baris.
+
+              Alamat dan lokasi kerja kerap beberapa baris: nama
+              tempat, jalan, kota, patokan. Isian satu baris
+              memaksa semuanya berdesak dalam larik yang harus
+              digulir mendatar untuk dibaca ulang.
+
+              Diseragamkan dengan isian alamat lain di seluruh
+              aplikasi; sebelumnya hanya empat isian ini yang
+              menyimpang.
+            -->
+            <textarea rows="2"
                     matInput
                     formControlName="location"
                     [placeholder]="
                       'poField.lokasiPenempatanEquipment' | translate
-                    "
-                  />
+                    "></textarea>
                 </mat-form-field>
 
                 <!--

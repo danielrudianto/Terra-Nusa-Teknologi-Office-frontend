@@ -69,8 +69,7 @@ export class MasterEquipmentCreateComponent implements OnInit {
         category: this.data.category ?? '',
         capacity: this.data.capacity ?? '',
         brand: this.data.brand ?? '',
-        description: this.data.description ?? '',
-        unit: this.data.unit ?? '',
+          unit: this.data.unit ?? '',
       });
     }
   }
@@ -91,7 +90,6 @@ export class MasterEquipmentCreateComponent implements OnInit {
     category: new FormControl('', Validators.required),
     capacity: new FormControl(''),
     brand: new FormControl(''),
-    description: new FormControl(''),
     unit: new FormControl('hari', Validators.required),
   });
 
@@ -107,7 +105,6 @@ export class MasterEquipmentCreateComponent implements OnInit {
       category: this.formGroup.value.category,
       capacity: this.formGroup.value.capacity || null,
       brand: this.formGroup.value.brand || null,
-      description: this.formGroup.value.description || null,
       unit: this.formGroup.value.unit,
     };
 

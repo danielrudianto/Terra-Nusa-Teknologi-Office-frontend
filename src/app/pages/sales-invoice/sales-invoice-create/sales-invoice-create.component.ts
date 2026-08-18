@@ -240,7 +240,11 @@ export class SalesInvoiceCreateComponent {
 
   openPphSelector() {
     this.dialog
-      .open(PphSelectorComponent, {})
+      .open(PphSelectorComponent, {
+        // AKN penyedia jasa konstruksi; kode yang biasa dipakai diusulkan
+        // lebih dulu, daftar lengkapnya tetap tersedia di bawahnya.
+        data: { purchaseType: 'SALES' },
+      })
       .afterClosed()
       .subscribe((result) => {
         /*

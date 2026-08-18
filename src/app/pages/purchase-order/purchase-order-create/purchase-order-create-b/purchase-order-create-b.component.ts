@@ -245,6 +245,29 @@ export class PurchaseOrderCreateBComponent implements OnInit {
   get t() {
     return this.formGroup.get('rentals') as FormArray;
   }
+  /**
+   * Satuan yang dipilih berbeda dari satuan katalognya.
+   *
+   * Peringatan, bukan larangan: sebagian sewa memang memakai satuan berbeda.
+   * Yang berbahaya bukan perbedaannya, melainkan tidak menyadarinya — alat
+   * bertarif harian diisi bersatuan `jam` menghasilkan nilai yang melenceng
+   * dua puluh empat kali lipat, dan tidak ada galat yang muncul.
+   */
+  satuanBerbeda(i: number): boolean {
+    const g = this.getFormGroupAt(i);
+    const master = String(g?.get('unitMaster')?.value || '').trim();
+    const dipakai = String(g?.get('unit')?.value || '').trim();
+    if (!master || !dipakai) return false;
+    return master.toLowerCase() !== dipakai.toLowerCase();
+  }
+
+  /** Satuan menurut katalog; dipakai pada teks peringatan. */
+  satuanMaster(i: number): string {
+    return String(
+      this.getFormGroupAt(i)?.get('unitMaster')?.value || '',
+    ).trim();
+  }
+
   getFormGroupAt(i: number) {
     return this.t.at(i) as FormGroup;
   }
@@ -275,6 +298,16 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       capacity: [dariKatalog ? sumber.type || '' : sumber.capacity],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unit: [sumber.unit || 'hari', Validators.required],
+      /*
+       * Satuan menurut katalognya, disimpan untuk PEMBANDING.
+       *
+       * Tidak dikirim ke server dan tidak tercetak — hanya dipakai
+       * memperingatkan bila satuan yang dipilih berbeda. Alat sewa memang
+       * kerap disewa harian maupun jam, tetapi menukar keduanya tanpa
+       * menyadarinya membuat nilai kontraknya melenceng dua puluh empat
+       * kali lipat.
+       */
+      unitMaster: [sumber.unit || ''],
       price: [0, [Validators.required, Validators.min(0)]],
       fromDate: ['', Validators.required],
       toDate: ['', Validators.required],

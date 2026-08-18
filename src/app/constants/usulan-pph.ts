@@ -155,6 +155,31 @@ export const USULAN_PPH: Record<string, UsulanPPh[]> = {
     },
   ],
 
+  /*
+   * FAKTUR PENJUALAN — yang dipotong PELANGGAN dari tagihan AKN.
+   *
+   * Arahnya terbalik dari purchase order: di sini AKN yang dipotong, dan
+   * salah kode membuat bukti potong dari pelanggan tidak cocok dengan yang
+   * dilaporkan AKN — selisihnya baru ketahuan saat rekonsiliasi tahunan.
+   *
+   * AKN penyedia jasa konstruksi, sehingga hampir selalu PPh 4(2). Tarifnya
+   * bergantung KUALIFIKASI AKN sendiri, bukan besar pekerjaannya.
+   */
+  SALES: [
+    {
+      code: '28-409-22',
+      alasan: 'Pekerjaan konstruksi — AKN berkualifikasi usaha',
+    },
+    {
+      code: '28-409-24',
+      alasan: 'Konstruksi terintegrasi — AKN berkualifikasi usaha',
+    },
+    {
+      code: '24-100-02',
+      alasan: 'Bila yang ditagihkan sewa alat, bukan pekerjaan',
+    },
+  ],
+
   /* PO-5.1.12 — perangkat lunak. */
   '5112': [
     {

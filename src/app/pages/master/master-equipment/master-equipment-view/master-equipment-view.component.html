@@ -42,22 +42,7 @@
       </div>
     </div>
 
-    <div class="mev-desc">
-      <span class="mev-desc__label">{{
-        "masterEquipmentView.description" | translate
-      }}</span>
-      <p class="mev-desc__text" *ngIf="equipment.description">
-        {{ equipment.description }}
-      </p>
-      <p
-        class="mev-desc__text mev-desc__text--empty"
-        *ngIf="!equipment.description"
-      >
-        {{ "masterEquipmentView.noDescription" | translate }}
-      </p>
-    </div>
-    <div class="audit-divider"></div>
-    <app-audit-trail
+        <app-audit-trail
       entity="master_equipment"
       [entityId]="data.equipment.id"
     ></app-audit-trail>

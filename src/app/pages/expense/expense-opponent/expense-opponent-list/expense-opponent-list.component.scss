@@ -127,18 +127,44 @@ table {
   gap: 2px;
 }
 .eol-copy {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri.
+   *
+   * Material menghitung letak ikon dari ukuran bawaannya (24px di dalam
+   * tombol 40px). Mengecilkan tombolnya menjadi 30px tanpa menyetel ulang
+   * pemusatannya membuat ikonnya turun ke bawah — terlihat seperti meleset
+   * dari tombolnya, dan itu persis yang terjadi di sini.
+   *
+   * `display: inline-flex` beserta `place-items` mengambil alih perhitungan
+   * itu, sehingga ikon berukuran berapa pun tetap di tengah.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
-  line-height: 30px;
+  /* Dinolkan: `line-height` bawaan ikut menggeser isi tombol ke bawah. */
+  line-height: 0;
+  padding: 0;
   color: var(--faint, #9aa0ab);
 
-  mat-icon {
+  .mat-icon {
+    display: block;
     font-size: 16px;
     width: 16px;
     height: 16px;
+    /* Ikut dinolkan; tanpa ini glyph-nya sendiri masih menyisakan ruang. */
+    line-height: 16px;
   }
-  &:hover {
-    color: var(--brand, #154dec);
+
+  /*
+   * Material 20 membungkus isi tombol dalam `.mat-mdc-button-touch-target`
+   * dan `.mdc-icon-button__ripple` yang ukurannya tetap. Keduanya dibiarkan
+   * mengikuti tombolnya supaya area sentuh tidak melenceng dari yang terlihat.
+   */
+  .mat-mdc-button-touch-target {
+    width: 30px;
+    height: 30px;
   }
 }
 
