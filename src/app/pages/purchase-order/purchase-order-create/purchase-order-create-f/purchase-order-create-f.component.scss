@@ -52,6 +52,9 @@
 }
 .pof-span2 {
   grid-column: 1 / -1;
+  /* Lebar ikut disetel: `grid-column` menentukan KOLOM, bukan lebar
+     isian di dalamnya. */
+  width: 100%;
 }
 :host ::ng-deep .pof-grid .mat-mdc-form-field {
   width: 100%;

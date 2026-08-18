@@ -415,10 +415,8 @@ export class PurchaseOrderCreateFComponent {
      * milik PIHAK PERTAMA dan yang berpindah hanya penguasaannya sementara.
      */
     sampleMode: new FormControl<'diambil' | 'dikirim'>('dikirim'),
-    sampleAddress: new FormControl(''),
     // opsional: hanya dicetak bila diisi
     deliveryDate: new FormControl(''),
-    paymentDueDate: new FormControl(''),
     /*
      * Jasa pengujian: satu baris per spesifikasi benda uji.
      *
@@ -434,7 +432,6 @@ export class PurchaseOrderCreateFComponent {
     sampleCount: new FormControl(0, [Validators.min(0)]),
     testUnitPrice: new FormControl(0, [Validators.min(0)]),
     testReportDays: new FormControl(0, [Validators.min(0)]),
-    sampleHandover: new FormControl(''),
     additionalClauses: new FormArray([]),
     steelTestRequired: new FormControl(true),
     // Ketentuan uji kuat tekan beton. Bila dimatikan, poinnya tetap tercetak
@@ -830,13 +827,16 @@ export class PurchaseOrderCreateFComponent {
     return {
       soilTestName: this.formGroup.get('soilTestName')?.value || '',
       sampleMode: this.formGroup.get('sampleMode')?.value || undefined,
-      sampleAddress: this.formGroup.get('sampleAddress')?.value || '',
       materialType: v.materialType,
-      deliveryDate: v.deliveryDate,
-      paymentDueDate: v.paymentDueDate,
+      /*
+       * Tanggal dari datepicker berupa `Date`; klausul memerlukan TEKS.
+       *
+       * Disusun dari bagian waktu SETEMPAT — `toISOString()` mengubahnya ke
+       * UTC lebih dulu, dan bagi WIB itu memundurkan tanggalnya sehari.
+       */
+      deliveryDate: this.tanggalTeks(v.deliveryDate),
       sampleCount: v.sampleCount,
       testReportDays: v.testReportDays,
-      sampleHandover: v.sampleHandover,
       // Hanya relevan untuk besi; bila tidak dicentang, poin ujinya tetap
       // dicetak namun dicoret (bukan dihilangkan).
       materialTestRequired: !!v.steelTestRequired,
@@ -946,6 +946,33 @@ export class PurchaseOrderCreateFComponent {
   }
 
   /** Susun data cetak dari isian form. */
+  /**
+   * Tanggal terbaca untuk klausul: "5 Mei 2026".
+   *
+   * Disusun dari bagian waktu SETEMPAT. `toISOString()` mengubahnya ke UTC
+   * lebih dulu, dan bagi WIB itu memundurkan tanggalnya sehari — dokumen
+   * yang dibuat pukul 05.00 menyebut tanggal kemarin.
+   */
+  private tanggalTeks(v: any): string {
+    if (!v) return '';
+    const t = v instanceof Date ? v : new Date(v);
+    if (isNaN(t.getTime())) return String(v);
+    const B = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+    ];
+    return `${t.getDate()} ${B[t.getMonth()]} ${t.getFullYear()}`;
+  }
+
+  /** Tanggal untuk disimpan: YYYY-MM-DD, waktu setempat. */
+  private tanggalIso(v: any): string | null {
+    if (!v) return null;
+    const t = v instanceof Date ? v : new Date(v);
+    if (isNaN(t.getTime())) return null;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${t.getFullYear()}-${dd(t.getMonth() + 1)}-${dd(t.getDate())}`;
+  }
+
   private buildPrintData(purchaseOrderName: string) {
     const v = this.formGroup.getRawValue();
     return {
@@ -1054,14 +1081,12 @@ export class PurchaseOrderCreateFComponent {
         // Jenis uji tanah; kosong pada jenis material lain.
         soilTestName: this.formGroup.get('soilTestName')?.value || null,
         sampleMode: this.formGroup.get('sampleMode')?.value || null,
-        sampleAddress: this.formGroup.get('sampleAddress')?.value || null,
-        deliveryDate: this.formGroup.get('deliveryDate')?.value,
+        deliveryDate: this.tanggalIso(this.formGroup.get('deliveryDate')?.value),
         sampleCount: Number(this.formGroup.get('sampleCount')?.value) || 0,
         testUnitPrice: Number(this.formGroup.get('testUnitPrice')?.value) || 0,
         testReportDays:
           Number(this.formGroup.get('testReportDays')?.value) || 0,
-        sampleHandover: this.formGroup.get('sampleHandover')?.value,
-        paymentDueDate: this.formGroup.get('paymentDueDate')?.value,
+        // `paymentDueDate` DIBUANG: termin pembayaran sudah mengaturnya.
         materialTestRequired: !!this.formGroup.get('steelTestRequired')?.value,
         concreteTestRequired: !!this.formGroup.get('concreteTestRequired')
           ?.value,

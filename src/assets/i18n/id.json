@@ -3635,7 +3635,8 @@
     "sampelDiambil": "Diambil laboratorium",
     "alamatPengiriman": "Alamat laboratorium",
     "alamatPengambilan": "Alamat pengambilan benda uji",
-    "alamatSampelPlaceholder": "Nama lokasi, jalan, kota, patokan"
+    "alamatSampelPlaceholder": "Nama lokasi, jalan, kota, patokan",
+    "alamatDiambilHint": "Benda uji diambil PIHAK KEDUA dari alamat ini."
   },
   "agendaPage": {
     "title": "Agenda",

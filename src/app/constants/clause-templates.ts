@@ -68,8 +68,6 @@ export interface ClauseContext {
    * benda ujinya, dan yang membelinya justru pemiliknya sendiri.
    */
   sampleMode?: 'diambil' | 'dikirim';
-  /** Alamat pengambilan atau pengiriman sampel, mengikuti `sampleMode`. */
-  sampleAddress?: string;
   materialType?: string;
   // PO-H: keterangan pekerjaan
   workLocation?: string;
@@ -1555,18 +1553,18 @@ const F_CLAUSES: ClauseTemplate[] = [
           lines.push(
             'Benda uji diambil PIHAK KEDUA di lokasi yang ditentukan PIHAK PERTAMA.',
           );
-          if (ctx.sampleAddress) {
+          if (ctx.deliveryAddress) {
             lines.push(
-              `Alamat pengambilan benda uji adalah:\n${ctx.sampleAddress}.`,
+              `Alamat pengambilan benda uji adalah:\n${ctx.deliveryAddress}.`,
             );
           }
         } else if (ctx.sampleMode === 'dikirim') {
           lines.push(
             'Benda uji dikirimkan PIHAK PERTAMA ke laboratorium PIHAK KEDUA.',
           );
-          if (ctx.sampleAddress) {
+          if (ctx.deliveryAddress) {
             lines.push(
-              `Alamat pengiriman benda uji adalah:\n${ctx.sampleAddress}.`,
+              `Alamat pengiriman benda uji adalah:\n${ctx.deliveryAddress}.`,
             );
           }
         }

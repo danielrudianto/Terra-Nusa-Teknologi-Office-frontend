@@ -3635,7 +3635,8 @@
     "sampelDiambil": "Collected by the laboratory",
     "alamatPengiriman": "Laboratory address",
     "alamatPengambilan": "Collection address",
-    "alamatSampelPlaceholder": "Site name, street, city, landmark"
+    "alamatSampelPlaceholder": "Site name, street, city, landmark",
+    "alamatDiambilHint": "The SECOND PARTY collects the samples from this address."
   },
   "agendaPage": {
     "title": "Agenda",

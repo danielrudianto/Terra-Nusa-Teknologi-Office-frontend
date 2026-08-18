@@ -3635,7 +3635,8 @@
     "sampelDiambil": "由实验室取样",
     "alamatPengiriman": "实验室地址",
     "alamatPengambilan": "取样地址",
-    "alamatSampelPlaceholder": "现场名称、街道、城市、地标"
+    "alamatSampelPlaceholder": "现场名称、街道、城市、地标",
+    "alamatDiambilHint": "由乙方从此地址取样。"
   },
   "agendaPage": {
     "title": "日程",

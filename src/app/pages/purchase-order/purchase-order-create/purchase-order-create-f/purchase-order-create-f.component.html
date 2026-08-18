@@ -251,15 +251,7 @@
             />
             <span matSuffix>&nbsp;{{ "poForm.workDays" | translate }}</span>
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.sampleHandover" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="sampleHandover"
-              [placeholder]="'poForm.sampleHandoverPlaceholder' | translate"
-            />
-            <mat-hint>{{ "poForm.sampleHandoverHint" | translate }}</mat-hint>
-          </mat-form-field>
+
         </div>
       }
 
@@ -279,7 +271,7 @@
           kerap panjang — "Uji kepadatan lapangan (sand cone)" sudah hampir
           memenuhi setengah lebar.
         -->
-        <mat-form-field appearance="outline" class="pof-uji">
+        <mat-form-field appearance="outline" class="pof-uji pof-span2">
           <mat-label>{{ "poF.jenisUjiTanah" | translate }}</mat-label>
           <input
             matInput
@@ -307,47 +299,6 @@
           <mat-icon>science</mat-icon>
           <span>{{ "poF.jenisUjiTanahHint" | translate }}</span>
         </div>
-      }
-
-      <!--
-        Perpindahan benda uji — menggantikan Franco/Loco pada jasa pengujian.
-
-        Franco dan Loco menyangkut pengiriman BARANG yang dibeli. Pada
-        pengujian tidak ada barang yang berpindah kepemilikan: benda ujinya
-        tetap milik PIHAK PERTAMA, dan yang perlu disebut hanya siapa yang
-        memindahkannya dan ke alamat mana.
-      -->
-      @if (isTestService) {
-        <mat-form-field appearance="outline" class="pof-uji">
-          <mat-label>{{ "poF.perpindahanSampel" | translate }}</mat-label>
-          <mat-select formControlName="sampleMode">
-            <mat-option value="dikirim">{{
-              "poF.sampelDikirim" | translate
-            }}</mat-option>
-            <mat-option value="diambil">{{
-              "poF.sampelDiambil" | translate
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="pof-uji">
-          <mat-label>{{
-            (formGroup.get("sampleMode")?.value === "diambil"
-              ? "poF.alamatPengambilan"
-              : "poF.alamatPengiriman"
-            ) | translate
-          }}</mat-label>
-          <!--
-            Textarea: alamat laboratorium maupun lokasi proyek kerap beberapa
-            baris — nama tempat, jalan, kota, patokan.
-          -->
-          <textarea
-            matInput
-            rows="3"
-            formControlName="sampleAddress"
-            [placeholder]="'poF.alamatSampelPlaceholder' | translate"
-          ></textarea>
-        </mat-form-field>
       }
 
       @if (formGroup.get("materialType")?.value === "beton") {
@@ -383,22 +334,31 @@
       }
 
       @if (formGroup.get("materialType")?.value !== "beton") {
+        <!--
+          "Pembayaran sebelum" DIBUANG.
+
+          Termin pembayaran sudah mengatur kapan dibayar — tunai, tempo,
+          atau di muka — dan tanggal terpisah di sini menghasilkan dua
+          ketentuan yang dapat saling bertentangan pada satu dokumen.
+
+          "Pengiriman sebelum" memakai DATEPICKER, bukan teks bebas.
+          Sebelumnya diketik sendiri, sehingga satu dokumen menulis
+          "5 Mei 2026" dan yang lain "05/05/26" untuk hal yang sama — dan
+          tidak satu pun dapat dibandingkan atau diurutkan.
+        -->
         <div class="pof-grid">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="pof-span2">
             <mat-label>{{ "poForm.deliveryDateOpt" | translate }}</mat-label>
             <input
               matInput
+              [matDatepicker]="pickerKirim"
               formControlName="deliveryDate"
-              [placeholder]="'poForm.dateOptPlaceholder' | translate"
             />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ "poForm.paymentDueDateOpt" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="paymentDueDate"
-              [placeholder]="'poForm.dateOptPlaceholder' | translate"
-            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="pickerKirim"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerKirim></mat-datepicker>
           </mat-form-field>
         </div>
       }
@@ -421,17 +381,58 @@
 
       @if (isTestService) {
         <div class="pof-grid">
+          <!--
+            Siapa yang memindahkan benda ujinya — DIAMBIL atau DIKIRIM.
+
+            Sebelumnya hanya alamat, dengan keterangan yang mengandaikan
+            PIHAK PERTAMA selalu mengantar. Sebagian laboratorium justru
+            mengambil sendiri ke lokasi, dan dokumennya menyebut kewajiban
+            yang tidak disepakati.
+
+            Selebar kartu, satu baris sendiri: label pilihannya panjang dan
+            terpotong bila berbagi baris dengan isian lain.
+          -->
           <mat-form-field appearance="outline" class="pof-span2">
-            <mat-label>{{ "poF.labAddress" | translate }}</mat-label>
+            <mat-label>{{ "poF.perpindahanSampel" | translate }}</mat-label>
+            <mat-select formControlName="sampleMode">
+              <mat-option value="dikirim">{{
+                "poF.sampelDikirim" | translate
+              }}</mat-option>
+              <mat-option value="diambil">{{
+                "poF.sampelDiambil" | translate
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="pof-span2">
+            <mat-label>{{
+              (formGroup.get("sampleMode")?.value === "diambil"
+                ? "poF.alamatPengambilan"
+                : "poF.labAddress"
+              ) | translate
+            }}</mat-label>
             <textarea
               matInput
               formControlName="deliveryAddress"
-              rows="2"
-              style="resize: none"
+              rows="3"
               [placeholder]="'poF.labAddressPlaceholder' | translate"
             ></textarea>
-            <mat-hint>{{ "poF.labAddressHint" | translate }}</mat-hint>
           </mat-form-field>
+
+          <!--
+            Banner, bukan hint — keterangannya berganti mengikuti pilihan di
+            atas, dan yang membacanya perlu melihatnya bersamaan dengan
+            alamat yang sedang diisi.
+          -->
+          <div class="pof-banner">
+            <mat-icon>science</mat-icon>
+            <span>{{
+              (formGroup.get("sampleMode")?.value === "diambil"
+                ? "poF.alamatDiambilHint"
+                : "poF.labAddressHint"
+              ) | translate
+            }}</span>
+          </div>
         </div>
       } @else {
         <div class="pof-grid">
