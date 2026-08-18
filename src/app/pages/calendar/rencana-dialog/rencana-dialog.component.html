@@ -25,6 +25,36 @@
     }
 
     <form [formGroup]="formGroup">
+      <!--
+        Arah kas dipilih PALING AWAL.
+
+        Ia mengubah arti seluruh isian di bawahnya: nominal yang sama berarti
+        hal yang berlawanan tergantung pilihan ini, dan menaruhnya di tengah
+        formulir membuat orang mengisi separuh sebelum menyadarinya.
+      -->
+      <div class="rd-arah">
+        <label class="rd-ar" [class.on]="!isMasuk">
+          <input
+            type="radio"
+            formControlName="planType"
+            value="keluar"
+            (change)="onArahBerubah()"
+          />
+          <mat-icon>north_east</mat-icon>
+          {{ "rencana.uangKeluar" | translate }}
+        </label>
+        <label class="rd-ar rd-ar--masuk" [class.on]="isMasuk">
+          <input
+            type="radio"
+            formControlName="planType"
+            value="masuk"
+            (change)="onArahBerubah()"
+          />
+          <mat-icon>south_west</mat-icon>
+          {{ "rencana.uangMasuk" | translate }}
+        </label>
+      </div>
+
       <div class="rd-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "rencana.tanggal" | translate }}</mat-label>

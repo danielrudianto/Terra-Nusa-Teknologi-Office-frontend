@@ -1,4 +1,23 @@
 <div class="cal">
+  <!--
+    Tombol tambah rencana, di ATAS kalender.
+
+    Tombol pada sel hanya muncul saat selnya disorot — cukup bagi yang sudah
+    tahu ia ada, tetapi tidak bagi yang baru membuka layar ini. Yang di atas
+    selalu terlihat, dan tanggalnya dipilih di dalam formulirnya.
+  -->
+  <div class="cal-actions">
+    <button
+      mat-stroked-button
+      type="button"
+      class="cal-add-plan"
+      (click)="buatRencana(null)"
+    >
+      <mat-icon>event_upcoming</mat-icon>
+      {{ "rencana.tambahRencana" | translate }}
+    </button>
+  </div>
+
   <!-- Header dan kisi dibungkus satu papan: sel yang berdiri sendiri
        terbaca sebagai kartu terpisah, bukan sebagai kalender. -->
   <div class="cal-board">
@@ -58,7 +77,8 @@
           <div
             class="cal-cell__plan"
             *ngIf="day != null && adaRencana(day)"
-            [matTooltip]="'rencana.rencanaHariIni' | translate"
+            (click)="bukaRencana(day, $event)"
+            [matTooltip]="'rencana.klikUntukUbah' | translate"
           >
             <mat-icon>event_upcoming</mat-icon>
             {{ rencanaHari(day) | shortCurrency: "Rp. " }}

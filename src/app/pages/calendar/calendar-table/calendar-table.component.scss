@@ -295,3 +295,19 @@ $brandSoft: var(--brand-soft, #e7ecfb);
     font-variant-numeric: tabular-nums;
   }
 }
+
+/*
+ * Tindakan di atas kalender.
+ *
+ * Tombol pada sel hanya muncul saat selnya disorot — cukup bagi yang sudah
+ * tahu ia ada, tetapi tidak bagi yang baru membuka layar ini.
+ */
+.cal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.6rem;
+}
+
+.cal-add-plan {
+  border-style: dashed;
+}

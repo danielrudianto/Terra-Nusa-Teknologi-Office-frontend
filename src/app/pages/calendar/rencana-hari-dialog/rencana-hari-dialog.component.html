@@ -1,0 +1,140 @@
+<div class="rh">
+  <div class="rh-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>event_note</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">{{ tanggal | date: "d MMMM yyyy" }}</h2>
+      <span class="dlg__sub">{{ "rencana.daftarSub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="rh-content">
+    @for (r of daftar; track r.id) {
+      <!--
+        Baris rencana.
+
+        Seluruh barisnya dapat ditekan untuk disunting — termasuk MEMINDAHKAN
+        tanggalnya, yang paling sering berubah: pembayaran digeser sepekan,
+        termin mundur, tagihan datang lebih awal.
+      -->
+      <div
+        class="rh-baris"
+        [class.batal]="r.status === 'batal'"
+        [class.terpakai]="r.status === 'terpakai'"
+        [class.lewat]="r.lewat"
+        (click)="sunting(r)"
+      >
+        <span class="rh-baris__ikon" [class.masuk]="r.planType === 'masuk'">
+          <mat-icon>{{
+            r.planType === "masuk" ? "south_west" : ikonKategori(r.category, r.planType)
+          }}</mat-icon>
+        </span>
+
+        <div class="rh-baris__teks">
+          <span class="rh-baris__nama">{{ r.description }}</span>
+          <span class="rh-baris__ket">
+            {{ labelKategori(r.category, r.planType) | translate }}
+            @if (r.projectName) {
+              · {{ r.projectName }}
+            }
+            @if (r.bankName) {
+              · {{ r.bankName }}
+            }
+          </span>
+          @if (r.status === "terpakai") {
+            <span class="rh-baris__tanda">{{
+              "rencana.sudahTerpakai" | translate
+            }}</span>
+          } @else if (r.status === "batal") {
+            <span class="rh-baris__tanda">{{
+              "rencana.sudahBatal" | translate
+            }}</span>
+          } @else if (r.lewat) {
+            <!--
+              Terlewat: tetap TERLIHAT, tetapi berhenti ikut dihitung.
+
+              Rencana yang tanggalnya lewat tanpa pernah ditandai terpakai
+              adalah sinyal — ada yang perlu ditindaklanjuti, bukan dihapus
+              diam-diam.
+            -->
+            <span class="rh-baris__tanda rh-baris__tanda--lewat">{{
+              "rencana.terlewat" | translate
+            }}</span>
+          }
+        </div>
+
+        <span class="rh-baris__nilai" [class.masuk]="r.planType === 'masuk'">
+          {{ r.planType === "masuk" ? "+" : "−" }}
+          {{ r.amount | number: "1.0-0" }}
+        </span>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="rh-menu"
+          [matMenuTriggerFor]="menu"
+          (click)="$event.stopPropagation()"
+          [attr.aria-label]="'common.more' | translate"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item type="button" (click)="sunting(r)">
+            <mat-icon>edit_calendar</mat-icon>
+            <span>{{ "rencana.ubahAtauGeser" | translate }}</span>
+          </button>
+          @if (r.status === "rencana") {
+            <button mat-menu-item type="button" (click)="tandaiTerpakai(r)">
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ "rencana.tandaiTerpakai" | translate }}</span>
+            </button>
+            <button mat-menu-item type="button" (click)="batalkan(r)">
+              <mat-icon>block</mat-icon>
+              <span>{{ "rencana.batalkan" | translate }}</span>
+            </button>
+            <button mat-menu-item type="button" (click)="hapus(r)">
+              <mat-icon>delete_outline</mat-icon>
+              <span>{{ "common.delete" | translate }}</span>
+            </button>
+          }
+        </mat-menu>
+      </div>
+    }
+
+    <button
+      mat-stroked-button
+      type="button"
+      class="rh-tambah"
+      (click)="tambah()"
+    >
+      <mat-icon>add</mat-icon>
+      {{ "rencana.tambahDiTanggalIni" | translate }}
+    </button>
+
+    <div class="rh-ringkas">
+      @if (totalMasuk) {
+        <div class="rh-ringkas__baris">
+          <span>{{ "rencana.rencanaMasuk" | translate }}</span>
+          <span class="masuk">+ {{ totalMasuk | number: "1.0-0" }}</span>
+        </div>
+      }
+      @if (totalKeluar) {
+        <div class="rh-ringkas__baris">
+          <span>{{ "rencana.rencanaKeluar" | translate }}</span>
+          <span>− {{ totalKeluar | number: "1.0-0" }}</span>
+        </div>
+      }
+      <div class="rh-ringkas__baris rh-ringkas__baris--utama">
+        <span>{{ "rencana.selisih" | translate }}</span>
+        <strong [class.masuk]="totalMasuk - totalKeluar >= 0">
+          {{ totalMasuk - totalKeluar | number: "1.0-0" }}
+        </strong>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="rh-actions">
+    <button mat-button type="button" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

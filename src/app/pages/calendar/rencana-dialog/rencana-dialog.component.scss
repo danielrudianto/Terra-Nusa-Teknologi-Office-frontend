@@ -64,3 +64,60 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * Arah kas: keluar atau masuk.
+ *
+ * Radio asli disembunyikan dan kartunya yang menjadi sasaran tekan — target
+ * lingkaran radio hanya ~16px, di bawah ambang 24px yang nyaman disentuh.
+ */
+.rd-arah {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.rd-ar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  input {
+    /* Disembunyikan tanpa `display: none`, supaya tetap terjangkau papan
+       ketik dan pembaca layar. */
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  &.on {
+    border-width: 2px;
+    padding: calc(0.65rem - 1px) calc(0.5rem - 1px);
+    border-color: var(--warn, #a2651a);
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn, #a2651a);
+  }
+}
+
+.rd-ar--masuk.on {
+  border-color: var(--ok-fg, #1a7f45);
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+}

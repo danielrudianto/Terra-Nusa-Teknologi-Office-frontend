@@ -22,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaymentPlanService } from 'src/app/services/payment-plan.service';
 import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { RencanaHariDialogComponent } from '../rencana-hari-dialog/rencana-hari-dialog.component';
 
 @Component({
   selector: 'app-calendar-table',
@@ -208,6 +209,49 @@ export class CalendarTableComponent {
     return this.rencana.reduce((a, r) => a + Number(r.amount || 0), 0);
   }
 
+  /** Rencana pada satu tanggal, untuk daftar yang dapat disunting. */
+  rencanaPada(day: number | null): any[] {
+    if (day == null) return [];
+    const dd = (n: number) => String(n).padStart(2, '0');
+    const tgl = `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+    return this.rencana.filter((r) => String(r.date).slice(0, 10) === tgl);
+  }
+
+  /**
+   * Buka daftar rencana pada satu tanggal.
+   *
+   * Dipisahkan dari membuat baru: sel yang sudah berisi rencana lebih sering
+   * dibuka untuk MENGUBAH — tanggal digeser, nominalnya disesuaikan — daripada
+   * untuk menambah rencana kedua di hari yang sama.
+   */
+  bukaRencana(day: number | null, event?: Event): void {
+    event?.stopPropagation();
+    if (day == null) return;
+    const isi = this.rencanaPada(day);
+    if (!isi.length) {
+      this.buatRencana(day);
+      return;
+    }
+    this.dialog
+      .open(RencanaHariDialogComponent, {
+        data: { tanggal: this.tanggalIso(day), rencana: isi },
+        width: '620px',
+        maxWidth: '95vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((perlu) => {
+        // Dialog mengurus penyimpanannya sendiri; yang dikembalikan hanya
+        // penanda bahwa ada yang berubah dan kalendernya perlu dimuat ulang.
+        if (perlu) this.muatRencana();
+      });
+  }
+
+  private tanggalIso(day: number): string {
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+  }
+
   /**
    * Buka daftar rencana pada satu tanggal, atau buat baru.
    *
@@ -216,9 +260,25 @@ export class CalendarTableComponent {
    */
   buatRencana(day: number | null, event?: Event): void {
     event?.stopPropagation();
-    if (day == null) return;
+
+    /*
+     * `day` boleh KOSONG.
+     *
+     * Dari tombol di atas kalender, tanggalnya belum ditentukan — formulirnya
+     * yang menanyakan. Dari sel, tanggalnya ikut terbawa karena yang menekan
+     * sel tanggal 20 memang bermaksud tanggal itu.
+     *
+     * Bila kosong, tanggal awalnya diarahkan ke bulan yang SEDANG DILIHAT,
+     * bukan hari ini — yang membuka November lalu menekan tambah bermaksud
+     * merencanakan November.
+     */
     const dd = (n: number) => String(n).padStart(2, '0');
-    const tgl = `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+    const hariIni = new Date();
+    const bulanIniYangDilihat =
+      hariIni.getFullYear() === this.year && hariIni.getMonth() === this.month;
+    const hari =
+      day ?? (bulanIniYangDilihat ? hariIni.getDate() : 1);
+    const tgl = `${this.year}-${dd(this.month + 1)}-${dd(hari)}`;
 
     this.dialog
       .open(RencanaDialogComponent, {

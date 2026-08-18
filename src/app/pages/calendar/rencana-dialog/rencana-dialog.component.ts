@@ -18,7 +18,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ProjectSelectorComponent } from 'src/app/components/project-selector/project-selector.component';
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { ApiService } from 'src/app/services/api.service';
-import { KATEGORI_RENCANA } from 'src/app/services/payment-plan.service';
+import { kategoriUntuk } from 'src/app/services/payment-plan.service';
 
 @Component({
   selector: 'app-rencana-dialog',
@@ -46,10 +46,21 @@ export class RencanaDialogComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly api = inject(ApiService);
 
-  readonly kategori = KATEGORI_RENCANA;
+  /**
+   * Kategori yang berlaku bagi arah kas yang sedang dipilih.
+   *
+   * Daftarnya BERBEDA, bukan disaring dari satu daftar: uang masuk tidak
+   * dibelanjakan untuk material atau gaji, ia datang dari tagihan proyek,
+   * uang muka, atau retensi.
+   */
+  get kategori() {
+    return kategoriUntuk(this.formGroup?.get('planType')?.value ?? 'keluar');
+  }
   rekening: any[] = [];
 
   formGroup: FormGroup = this.formBuilder.group({
+    // `keluar` atau `masuk`; menentukan tandanya pada perhitungan kas.
+    planType: ['keluar'],
     date: [new Date(), Validators.required],
     amount: [null, [Validators.required, Validators.min(1)]],
     description: ['', [Validators.required, Validators.maxLength(255)]],
@@ -70,6 +81,22 @@ export class RencanaDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<RencanaDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public input: any,
   ) {}
+
+  get isMasuk(): boolean {
+    return this.formGroup.get('planType')?.value === 'masuk';
+  }
+
+  /**
+   * Arah kas berubah — kategorinya disetel ulang.
+   *
+   * Kategori lama tidak berlaku di daftar yang baru; membiarkannya membuat
+   * isian tampak terisi padahal nilainya tidak ada di antara pilihannya, dan
+   * server menolaknya saat disimpan.
+   */
+  onArahBerubah(): void {
+    const pertama = this.kategori[0]?.value ?? null;
+    this.formGroup.patchValue({ category: pertama }, { emitEvent: false });
+  }
 
   get isUbah(): boolean {
     return !!this.input?.rencana?.id;
@@ -93,6 +120,7 @@ export class RencanaDialogComponent implements OnInit {
     const r = this.input?.rencana;
     if (r) {
       this.formGroup.patchValue({
+        planType: r.planType ?? 'keluar',
         date: r.date ? new Date(r.date) : new Date(),
         amount: r.amount ?? null,
         description: r.description ?? '',
@@ -136,6 +164,7 @@ export class RencanaDialogComponent implements OnInit {
     }
     const v = this.formGroup.getRawValue();
     this.dialogRef.close({
+      planType: v.planType || 'keluar',
       date: this.tanggalIso(v.date),
       amount: Number(v.amount),
       description: v.description,

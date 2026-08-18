@@ -1,0 +1,161 @@
+.rh-content {
+  padding: 1.5rem !important;
+  max-height: 66vh;
+}
+
+.rh-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+/*
+ * Yang sudah selesai atau dibatalkan diredupkan, tidak disembunyikan.
+ *
+ * Ia bagian dari riwayat perencanaan; menghilangkannya membuat yang membuka
+ * tanggal itu mengira memang tidak pernah ada rencana apa pun.
+ */
+.rh-baris.terpakai,
+.rh-baris.batal {
+  opacity: 0.55;
+}
+
+.rh-baris.batal .rh-baris__nama,
+.rh-baris.batal .rh-baris__nilai {
+  text-decoration: line-through;
+}
+
+.rh-baris__ikon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn, #a2651a);
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+
+  /* Uang masuk memakai warna berbeda: arahnya berlawanan, dan menyamakan
+     warnanya membuat keduanya terbaca sebagai hal yang sama. */
+  &.masuk {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+  }
+}
+
+.rh-baris__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.rh-baris__nama {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rh-baris__ket {
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+
+.rh-baris__tanda {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+
+.rh-baris__tanda--lewat {
+  color: var(--warn, #a2651a);
+}
+
+.rh-baris__nilai {
+  flex: 0 0 auto;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+  &.masuk {
+    color: var(--ok-fg, #1a7f45);
+  }
+}
+
+.rh-menu {
+  /*
+   * Tombol ikon yang dikecilkan HARUS memusatkan isinya sendiri; tanpa ini
+   * ikonnya turun ke bawah. Lihat `tombolikoncek.py`.
+   */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  line-height: 0;
+  padding: 0;
+  flex: 0 0 auto;
+  color: var(--faint, #9aa0ab);
+}
+
+.rh-tambah {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-style: dashed;
+}
+
+.rh-ringkas {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  font-size: 0.82rem;
+}
+
+.rh-ringkas__baris {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-variant-numeric: tabular-nums;
+
+  .masuk {
+    color: var(--ok-fg, #1a7f45);
+  }
+}
+
+.rh-ringkas__baris--utama {
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line, #e4e9fb);
+
+  strong {
+    font-size: 0.95rem;
+    color: var(--warn, #a2651a);
+
+    &.masuk {
+      color: var(--ok-fg, #1a7f45);
+    }
+  }
+}
+
+.rh-actions {
+  padding: 1rem 1.5rem !important;
+}

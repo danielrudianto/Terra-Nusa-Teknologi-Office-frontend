@@ -2,14 +2,25 @@ import { Injectable, inject } from '@angular/core';
 
 import { ApiService } from './api.service';
 
-/** Pengelompokan pengeluaran; dipakai ringkasan bulanan. */
-export type KategoriRencana =
+/** Pengelompokan pengeluaran. */
+export type KategoriKeluar =
   | 'material'
   | 'subkon'
   | 'gaji'
   | 'operasional'
   | 'pajak'
   | 'lain';
+
+/** Pengelompokan pemasukan. */
+export type KategoriMasuk =
+  | 'tagihan'
+  | 'uangmuka'
+  | 'retensi'
+  | 'restitusi'
+  | 'pinjaman'
+  | 'lain';
+
+export type KategoriRencana = KategoriKeluar | KategoriMasuk;
 
 export type StatusRencana = 'rencana' | 'terpakai' | 'batal';
 
@@ -26,17 +37,19 @@ export interface RencanaPengeluaran {
   status?: StatusRencana;
 }
 
+interface PilihanKategori {
+  value: KategoriRencana;
+  label: string;
+  ikon: string;
+}
+
 /**
- * Kategori beserta ikonnya.
+ * Kategori PENGELUARAN.
  *
  * Dikumpulkan di sini, bukan disalin ke setiap layar: kategori baru kelak
  * ditambahkan sekali, dan yang menampilkannya ikut sendiri.
  */
-export const KATEGORI_RENCANA: Array<{
-  value: KategoriRencana;
-  label: string;
-  ikon: string;
-}> = [
+export const KATEGORI_KELUAR: PilihanKategori[] = [
   { value: 'material', label: 'rencana.katMaterial', ikon: 'inventory_2' },
   { value: 'subkon', label: 'rencana.katSubkon', ikon: 'engineering' },
   { value: 'gaji', label: 'rencana.katGaji', ikon: 'payments' },
@@ -44,6 +57,41 @@ export const KATEGORI_RENCANA: Array<{
   { value: 'pajak', label: 'rencana.katPajak', ikon: 'receipt_long' },
   { value: 'lain', label: 'rencana.katLain', ikon: 'more_horiz' },
 ];
+
+/**
+ * Kategori PEMASUKAN — daftar yang berbeda sama sekali.
+ *
+ * Uang masuk tidak dibelanjakan untuk material atau gaji; ia DATANG dari
+ * tagihan proyek, uang muka, atau retensi yang dicairkan. Memakai satu daftar
+ * untuk keduanya membuat layar menawarkan "gaji" sebagai sumber pemasukan.
+ */
+export const KATEGORI_MASUK: PilihanKategori[] = [
+  { value: 'tagihan', label: 'rencana.katTagihan', ikon: 'request_quote' },
+  { value: 'uangmuka', label: 'rencana.katUangMuka', ikon: 'savings' },
+  { value: 'retensi', label: 'rencana.katRetensi', ikon: 'lock_open' },
+  { value: 'restitusi', label: 'rencana.katRestitusi', ikon: 'assured_workload' },
+  { value: 'pinjaman', label: 'rencana.katPinjaman', ikon: 'account_balance' },
+  { value: 'lain', label: 'rencana.katLain', ikon: 'more_horiz' },
+];
+
+/** Daftar yang berlaku bagi satu arah kas. */
+export function kategoriUntuk(arah: string): PilihanKategori[] {
+  return arah === 'masuk' ? KATEGORI_MASUK : KATEGORI_KELUAR;
+}
+
+/**
+ * Cari satu kategori tanpa perlu tahu arahnya.
+ *
+ * Dipakai layar yang hanya MENAMPILKAN — daftar harian tidak menyimpan arah
+ * pada tiap barisnya saat mencari ikonnya.
+ */
+export function cariKategori(
+  value: string,
+  arah?: string,
+): PilihanKategori | undefined {
+  const daftar = arah ? kategoriUntuk(arah) : [...KATEGORI_KELUAR, ...KATEGORI_MASUK];
+  return daftar.find((k) => k.value === value);
+}
 
 @Injectable({ providedIn: 'root' })
 export class PaymentPlanService {
