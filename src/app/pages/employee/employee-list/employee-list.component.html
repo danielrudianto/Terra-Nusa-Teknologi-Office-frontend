@@ -194,14 +194,27 @@
                 berarti memberi seseorang kuasa mengubah datanya sendiri,
                 dan itu setara dengan mengisikannya atas namanya.
               -->
-              <button
-                mat-menu-item
-                *appCan="'employee_form:update'"
-                (click)="kirimUndangan(element)"
-              >
-                <mat-icon>outgoing_mail</mat-icon
-                ><span>{{ "employeeForm.kirimUndangan" | translate }}</span>
-              </button>
+              <!--
+                DISEMBUNYIKAN bagi yang sudah keluar.
+
+                Karyawan yang berhenti tidak pernah dihapus — jejaknya
+                diperlukan slip gaji dan dokumen lama — sehingga ia tetap
+                muncul di daftar saat saringan "Semua" dipilih.
+
+                Servernya juga menolak, tetapi tombol yang tampak dapat
+                ditekan lalu gagal membuat orang mengira sistemnya rusak.
+                Lebih baik tidak menawarkan sama sekali.
+              -->
+              @if (!element.endDate) {
+                <button
+                  mat-menu-item
+                  *appCan="'employee_form:update'"
+                  (click)="kirimUndangan(element)"
+                >
+                  <mat-icon>outgoing_mail</mat-icon
+                  ><span>{{ "employeeForm.kirimUndangan" | translate }}</span>
+                </button>
+              }
               <button
                 mat-menu-item
                 *appCan="'employees:update'"

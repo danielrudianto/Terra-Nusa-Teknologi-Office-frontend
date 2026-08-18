@@ -191,6 +191,21 @@ export class EmployeeListComponent {
    * menyampaikannya lewat jalan lain tanpa menerbitkan tautan kedua.
    */
   kirimUndangan(employee: any): void {
+    /*
+     * Penjaga kedua, di sisi fungsi.
+     *
+     * Tombolnya sudah disembunyikan bagi yang keluar, tetapi fungsi ini
+     * dapat terpanggil dari tempat lain kelak — dan yang menambahkannya
+     * belum tentu tahu batasan ini.
+     */
+    if (employee?.endDate) {
+      this.snackBar.open(
+        this.translate.instant('employeeForm.karyawanSudahKeluar'),
+        'Close',
+        { duration: 3000 },
+      );
+      return;
+    }
     this.apiService
       .post(`employee-forms/${employee.id}/undang`, {})
       .subscribe({

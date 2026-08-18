@@ -1249,7 +1249,8 @@
     "kirimUndangan": "Send fill-in link",
     "undanganTerkirim": "Link for {{nama}} created and copied. Valid for 3 days.",
     "undanganGagal": "Failed to create link",
-    "undanganTautanSaja": "Link for {{nama}} created and copied, but THE EMAIL FAILED TO SEND. Please share the link manually."
+    "undanganTautanSaja": "Link for {{nama}} created and copied, but THE EMAIL FAILED TO SEND. Please share the link manually.",
+    "karyawanSudahKeluar": "This employee is no longer active; the form link cannot be sent."
   },
   "master": {
     "title": "Master Data",
