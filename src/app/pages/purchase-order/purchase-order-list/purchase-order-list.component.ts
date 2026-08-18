@@ -1207,17 +1207,34 @@ export class PurchaseOrderListComponent {
             supplierAddress: data.supplierAddress ?? '',
             supplierCity: data.supplierCity ?? '',
             supplierNpwp: data.supplierNpwp ?? '',
-            items: (data.items || []).map((it: any) => ({
-              name:
-                it.equipment_name || it.item_description || it.task || '',
-              // Periode sewa (remarks_1/2) dan lokasi (remarks_3)
-              // dirangkai ulang agar cetak ulang sama dengan dokumen
-              // yang keluar saat PO dibuat.
-              remarks: this.periodeLokasiSewa(it),
-              quantity: Number(it.quantity) || 0,
-              unit: it.unit,
-              price: Number(it.price) || 0,
-            })),
+            /*
+             * Mobilisasi DIPEKARKAN, sama seperti saat dokumennya pertama
+             * kali dicetak.
+             *
+             * Tanpa ini, cetak ulang kehilangan baris mobilisasi dan
+             * demobilisasi — dan subtotalnya lebih kecil daripada dokumen
+             * yang sudah ditandatangani vendor. Selisihnya tampak seperti
+             * kesalahan hitung pada lembar yang seharusnya identik.
+             *
+             * `remarks_4` dan `remarks_5` HARUS ikut diteruskan; tanpa
+             * keduanya `perluasItemMobilisasi` tidak menemukan nilainya dan
+             * diam-diam tidak memekarkan apa pun.
+             */
+            items: perluasItemMobilisasi(
+              (data.items || []).map((it: any) => ({
+                name:
+                  it.equipment_name || it.item_description || it.task || '',
+                // Periode sewa (remarks_1/2) dan lokasi (remarks_3)
+                // dirangkai ulang agar cetak ulang sama dengan dokumen
+                // yang keluar saat PO dibuat.
+                remarks: this.periodeLokasiSewa(it),
+                quantity: Number(it.quantity) || 0,
+                unit: it.unit,
+                price: Number(it.price) || 0,
+                remarks_4: it.remarks_4,
+                remarks_5: it.remarks_5,
+              })),
+            ),
             includePpn: Number(data.ppn) > 0,
             templateVersion: data.templateVersion,
             // Lembar penagihan mengikuti bentuk pekerjaannya: pada
