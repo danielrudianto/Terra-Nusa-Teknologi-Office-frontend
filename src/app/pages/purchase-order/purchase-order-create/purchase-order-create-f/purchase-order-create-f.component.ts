@@ -47,6 +47,7 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
 import { BALIK_BARIS } from '../../../../constants/balik-baris-po';
 import { ProjectLookupService } from '../../../../services/project-lookup.service';
 import { PicAutocompleteComponent } from '../../../../components/pic-autocomplete/pic-autocomplete.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-purchase-order-create-f',
@@ -71,6 +72,7 @@ import { PicAutocompleteComponent } from '../../../../components/pic-autocomplet
     NgxMaskDirective,
     SupplierTerkunciComponent,
     PicAutocompleteComponent,
+    MatAutocompleteModule,
   ],
   templateUrl: './purchase-order-create-f.component.html',
   styleUrl: './purchase-order-create-f.component.scss',
@@ -398,6 +400,13 @@ export class PurchaseOrderCreateFComponent {
     // auto-surfaced clause when a steel ("besi") item is in the order
     // Beton dan material lain memakai rangkaian klausul yang berbeda
     materialType: new FormControl('beton', Validators.required),
+    /*
+     * Jenis uji tanah, diketik dengan bantuan usulan.
+     *
+     * Tidak wajib pada jenis material lain; validatornya disesuaikan
+     * lewat `selaraskanValidasi()` seperti `deliveryMethod`.
+     */
+    soilTestName: new FormControl(''),
     // opsional: hanya dicetak bila diisi
     deliveryDate: new FormControl(''),
     paymentDueDate: new FormControl(''),
@@ -443,6 +452,20 @@ export class PurchaseOrderCreateFComponent {
     { value: 'lain', label: 'poForm.materialOther', dok: 'poF.docPO' },
     { value: 'ujitekan', label: 'poForm.materialTest', dok: 'poF.docSPK' },
     { value: 'ujibesi', label: 'poForm.materialTestSteel', dok: 'poF.docSPK' },
+    /*
+     * Uji tanah — SATU pilihan, bukan satu per jenis ujinya.
+     *
+     * Uji tanah keluarga besar: analisa saringan, batas Atterberg, kadar
+     * air, berat jenis, kepadatan, geser langsung, konsolidasi, CBR, dan
+     * yang lapangan seperti sondir dan SPT. Menambahkannya satu per satu
+     * menghasilkan daftar pilihan yang tidak pernah selesai — dan yang
+     * belum ada tetap tidak dapat dipesan.
+     *
+     * Jenis ujinya diketik pada baris pekerjaan, dengan usulan yang dapat
+     * dipilih. Satu SPK karena itu dapat memuat beberapa uji sekaligus,
+     * dan itu memang yang terjadi di laboratorium.
+     */
+    { value: 'ujitanah', label: 'poForm.materialTestSoil', dok: 'poF.docSPK' },
   ];
 
   /** True bila layar ini membuat ADENDUM, bukan dokumen baru. */
@@ -850,14 +873,64 @@ export class PurchaseOrderCreateFComponent {
    */
   get isTestService(): boolean {
     const v = this.formGroup.get('materialType')?.value;
-    return v === 'ujitekan' || v === 'ujibesi';
+    return v === 'ujitekan' || v === 'ujibesi' || v === 'ujitanah';
   }
 
   /** Judul pekerjaan pada rincian SPK, mengikuti jenis pengujian. */
   get testItemName(): string {
-    return this.formGroup.get('materialType')?.value === 'ujibesi'
-      ? 'Pengujian tarik dan tekuk besi tulangan'
-      : 'Pengujian kuat tekan silinder beton';
+    const v = this.formGroup.get('materialType')?.value;
+    if (v === 'ujibesi') return 'Pengujian tarik dan tekuk besi tulangan';
+    /*
+     * Uji tanah tidak punya judul tetap.
+     *
+     * Jenis ujinya berbeda tiap pesanan dan kerap lebih dari satu, sehingga
+     * yang tercetak adalah apa yang diketik — bukan judul yang dikarang di
+     * sini. Judul umum hanya dipakai bila belum diisi sama sekali.
+     */
+    if (v === 'ujitanah') {
+      const teks = String(
+        this.formGroup.get('soilTestName')?.value || '',
+      ).trim();
+      return teks || 'Pengujian tanah';
+    }
+    return 'Pengujian kuat tekan silinder beton';
+  }
+
+  /**
+   * Usulan jenis uji tanah.
+   *
+   * Daftar ini BANTUAN, bukan batasan: laboratorium menawarkan uji yang
+   * tidak ada di sini, dan yang mengetik nama lain tetap dapat menyimpannya.
+   * Menutupnya berarti pesanan yang sah tidak dapat dibuat sama sekali.
+   */
+  readonly usulanUjiTanah: string[] = [
+    'Analisa saringan (sieve analysis)',
+    'Analisa hidrometer',
+    'Batas-batas Atterberg',
+    'Kadar air',
+    'Berat jenis tanah',
+    'Berat isi tanah',
+    'Uji kepadatan standar (Proctor)',
+    'Uji kepadatan lapangan (sand cone)',
+    'Uji CBR laboratorium',
+    'Uji CBR lapangan',
+    'Uji geser langsung (direct shear)',
+    'Uji triaksial',
+    'Uji konsolidasi',
+    'Uji kuat tekan bebas (UCS)',
+    'Uji permeabilitas',
+    'Sondir (CPT)',
+    'Standard Penetration Test (SPT)',
+    'Bor mesin dan pengambilan sampel',
+  ];
+
+  /** Usulan yang cocok dengan yang sedang diketik. */
+  get usulanTersaring(): string[] {
+    const q = String(this.formGroup.get('soilTestName')?.value || '')
+      .trim()
+      .toLowerCase();
+    if (!q) return this.usulanUjiTanah;
+    return this.usulanUjiTanah.filter((x) => x.toLowerCase().includes(q));
   }
 
   /** Susun data cetak dari isian form. */
@@ -966,6 +1039,8 @@ export class PurchaseOrderCreateFComponent {
           }),
       customData: {
         materialType: this.formGroup.get('materialType')?.value,
+        // Jenis uji tanah; kosong pada jenis material lain.
+        soilTestName: this.formGroup.get('soilTestName')?.value || null,
         deliveryDate: this.formGroup.get('deliveryDate')?.value,
         sampleCount: Number(this.formGroup.get('sampleCount')?.value) || 0,
         testUnitPrice: Number(this.formGroup.get('testUnitPrice')?.value) || 0,

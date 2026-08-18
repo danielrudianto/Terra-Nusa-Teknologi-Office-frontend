@@ -51,6 +51,8 @@ const NAMA_ARMADA: Record<number, string> = {
   19: 'CDD Long Bak',
   20: 'Self Loader',
   21: 'Dolly',
+  // MPV yang dipakai mengangkut barang; lihat `fleet.ts`.
+  22: 'MPV (Avanza/Xenia)',
 };
 
 /** Buang nilai kosong supaya tidak ada baris rincian yang hanya berisi pemisah. */

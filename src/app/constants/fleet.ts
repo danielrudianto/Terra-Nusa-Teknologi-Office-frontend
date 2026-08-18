@@ -19,6 +19,42 @@ export interface FleetOption {
 
 export const FLEET_OPTIONS: FleetOption[] = [
   {
+    /*
+     * MPV — Avanza, Xenia, dan sejenisnya, dipakai MENGANGKUT BARANG.
+     *
+     * Bukan kendaraan barang, tetapi nyata dipakai untuk kiriman kecil dan
+     * mendesak: contoh uji ke laboratorium, suku cadang, dokumen berukuran
+     * besar. Tanpa pilihan ini, yang mengisi terpaksa memilih Blind Van dan
+     * dokumennya menyebut kendaraan yang tidak pernah datang.
+     *
+     * `id: 22` — nomor BARU, bukan menyisipkan di antara yang ada.
+     * Dokumen lama menyimpan nomornya, bukan namanya; menggeser nomor
+     * membuat setiap SPK lama menyebut kendaraan yang berbeda dari yang
+     * ditandatangani.
+     *
+     * DIMENSI — sebagian bersumber, sebagian turunan:
+     *
+     *   bersumber : kapasitas bagasi 1.456 liter dengan kedua baris kursi
+     *               dilipat rata; tinggi ruang 675-855 mm
+     *   turunan   : 1600 x 1200 x 760 mm menghasilkan 1.459 liter, sepadan
+     *               dengan angka itu
+     *   perkiraan : muatan 500 kg — dihitung dari bobot maksimum dikurangi
+     *               bobot kosong dan satu pengemudi, DIBULATKAN KE BAWAH
+     *
+     * Angka muatan sengaja konservatif: yang memesan berpatokan padanya, dan
+     * kelebihan muatan pada kendaraan penumpang lebih berbahaya daripada
+     * pada truk yang memang dirancang untuk itu.
+     */
+    id: 22,
+    name: 'MPV (Avanza/Xenia)',
+    icon: 'van',
+    maxWidth: 1200,
+    maxHeight: 760,
+    maxLength: 1600,
+    maxLoad: 500,
+    wheelCount: 4,
+  },
+  {
     id: 1,
     name: 'Blind Van',
     icon: 'van',

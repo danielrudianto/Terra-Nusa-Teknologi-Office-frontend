@@ -263,6 +263,36 @@
         </div>
       }
 
+      <!--
+        Jenis uji tanah — autocomplete, bukan daftar tertutup.
+
+        Laboratorium menawarkan uji yang tidak ada di daftar usulan, dan
+        menutupnya berarti pesanan yang sah tidak dapat dibuat sama sekali.
+        Usulan hanya mempercepat yang sudah sering dipesan.
+
+        Beberapa uji dalam satu SPK ditulis dalam satu baris, dipisah koma —
+        itu memang bentuk penawaran laboratorium.
+      -->
+      @if (formGroup.get("materialType")?.value === "ujitanah") {
+        <mat-form-field appearance="outline" class="pof-span2">
+          <mat-label>{{ "poF.jenisUjiTanah" | translate }}</mat-label>
+          <input
+            matInput
+            autocomplete="off"
+            type="search"
+            formControlName="soilTestName"
+            [matAutocomplete]="autoUji"
+            [placeholder]="'poF.jenisUjiTanahPlaceholder' | translate"
+          />
+          <mat-autocomplete #autoUji="matAutocomplete">
+            @for (u of usulanTersaring; track u) {
+              <mat-option [value]="u">{{ u }}</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>{{ "poF.jenisUjiTanahHint" | translate }}</mat-hint>
+        </mat-form-field>
+      }
+
       @if (formGroup.get("materialType")?.value === "beton") {
         <mat-checkbox formControlName="concreteTestRequired" color="primary">{{ "poF.berlakukanKetentuanUjiKuatTekan" | translate }}</mat-checkbox>
         <p class="pof-material__hint">{{ "po63.bilaDimatikanPoinnyaTetapTercetak" | translate }}</p>

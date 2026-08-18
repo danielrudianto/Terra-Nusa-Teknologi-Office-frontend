@@ -1945,7 +1945,8 @@
     "mungkinDuplikatKet": "{{nomor}} dibuat oleh {{pembuat}} untuk pemasok dan proyek yang sama, senilai Rp {{nilai}}. Pastikan ini bukan pengiriman kedua.",
     "pemasokTerkunci": "Tidak bisa dirubah pada saat proses sunting",
     "satuanBerbedaMaster": "Satuan di master barang adalah {{satuan}}. Pastikan volume yang diisi memang dalam satuan yang dipilih.",
-    "picHint": "Pilih dari daftar karyawan, atau ketik nama lain."
+    "picHint": "Pilih dari daftar karyawan, atau ketik nama lain.",
+    "materialTestSoil": "Uji tanah"
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -3623,7 +3624,10 @@
     "testSubtotal": "Subtotal",
     "testSpecPlaceholder": "mis. D25, K-300",
     "testEmpty": "Belum ada benda uji. Tambahkan satu baris per spesifikasi — tarifnya berbeda tiap diameter atau mutu.",
-    "testAddRow": "Tambah spesifikasi"
+    "testAddRow": "Tambah spesifikasi",
+    "jenisUjiTanah": "Jenis pengujian",
+    "jenisUjiTanahPlaceholder": "Ketik atau pilih dari daftar",
+    "jenisUjiTanahHint": "Beberapa uji boleh ditulis dalam satu baris, dipisah koma."
   },
   "agendaPage": {
     "title": "Agenda",
