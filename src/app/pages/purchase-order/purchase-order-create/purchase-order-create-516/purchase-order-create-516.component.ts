@@ -464,7 +464,16 @@ export class PurchaseOrderCreate516Component {
               .filter((x: string) => !!x)
               .join(', '),
             supplierAddress: data.address,
-            supplierPhone: data.phoneNumber || '',
+            /*
+             * Dua bentuk nama diterima.
+             *
+             * Kolomnya bernama `phoneNumber`, tetapi jawaban dari sebagian
+             * jalur — dan dokumen lama — memakai `phone_number`. Membaca satu
+             * bentuk saja membuat nomornya hilang tanpa galat: `undefined`
+             * menjadi teks kosong, dan isian PIC tetap kosong walaupun
+             * datanya jelas ada.
+             */
+            supplierPhone: data.phoneNumber || data.phone_number || '',
           });
 
           /*

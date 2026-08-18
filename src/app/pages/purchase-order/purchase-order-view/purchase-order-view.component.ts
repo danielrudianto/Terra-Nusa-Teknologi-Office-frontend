@@ -517,6 +517,28 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
      * ke dalam nilai dokumen.
      */
     if (String(this.data?.purchaseType || '').toUpperCase() !== 'B') return 0;
+
+    /*
+     * NOL bila barisnya sudah DIPEKARKAN.
+     *
+     * `perluasItemMobilisasi` menyisipkan mobilisasi dan demobilisasi sebagai
+     * baris pekerjaan tersendiri — dan baris alatnya TETAP membawa nilainya
+     * di `remarks_4` dan `remarks_5`. Menjumlahkan keduanya membuat setiap
+     * mobilisasi terhitung DUA KALI: sekali menempel pada alatnya, sekali
+     * sebagai barisnya sendiri.
+     *
+     * Gejalanya: baris alat bernilai lebih besar daripada `volume x harga`
+     * satuannya, dan subtotalnya melampaui yang tertera di layar pengisian.
+     *
+     * Pemekaran dikenali dari adanya baris yang menyebut alat ini — bukan
+     * dari penanda tersendiri, karena baris hasil pemekaran tidak menyimpan
+     * apa pun yang membedakannya selain namanya.
+     */
+    const dipekarkan = (this.data?.items || []).some((x: any) =>
+      /^(Mobilisasi|Demobilisasi)\b/.test(String(x?.name || '')),
+    );
+    if (dipekarkan) return 0;
+
     return (Number(item?.remarks_4) || 0) + (Number(item?.remarks_5) || 0);
   }
 

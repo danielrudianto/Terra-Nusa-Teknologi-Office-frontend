@@ -536,7 +536,16 @@ export class PurchaseOrderCreate63Component {
             supplierID: data.id,
             supplierName: data.name,
             supplierAddress: data.address,
-            supplierPhone: data.phoneNumber || '',
+            /*
+             * Dua bentuk nama diterima.
+             *
+             * Kolomnya bernama `phoneNumber`, tetapi jawaban dari sebagian
+             * jalur — dan dokumen lama — memakai `phone_number`. Membaca satu
+             * bentuk saja membuat nomornya hilang tanpa galat: `undefined`
+             * menjadi teks kosong, dan isian PIC tetap kosong walaupun
+             * datanya jelas ada.
+             */
+            supplierPhone: data.phoneNumber || data.phone_number || '',
             // Diambil hanya bila terisi; vendor perorangan kerap
             // belum ber-NPWP, dan baris kosong pada dokumen resmi
             // lebih mengganggu daripada tidak ada barisnya.
