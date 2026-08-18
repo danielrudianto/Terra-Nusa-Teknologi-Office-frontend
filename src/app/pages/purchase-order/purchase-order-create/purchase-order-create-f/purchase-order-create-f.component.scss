@@ -454,13 +454,46 @@ app-wysiwyg {
   transition:
     border-color 0.15s ease,
     background 0.15s ease;
+  /* Untuk menempatkan tanda centang saat terpilih. */
+  position: relative;
 }
 .pof-mat:hover {
   border-color: var(--brand);
 }
 .pof-mat.on {
-  border-color: var(--brand);
-  background: var(--brand-soft);
+  /*
+   * Tanda terpilih SENGAJA mencolok.
+   *
+   * Sebelumnya bedanya hanya warna latar tipis — dan pada layar terang atau
+   * mata yang lelah, kartu terpilih hampir tidak dapat dibedakan dari
+   * tetangganya. Salah klik di sini tidak menghasilkan galat apa pun:
+   * dokumennya terbit dengan klausul yang keliru.
+   *
+   * Tiga tanda sekaligus, bukan satu: warna saja tidak terbaca oleh sebagian
+   * orang, dan garis tebal saja hilang pada layar kecil.
+   */
+  border-color: var(--brand, #154dec);
+  border-width: 2px;
+  background: var(--brand-soft, #e7ecfb);
+
+  /* Padding dikurangi 1px supaya kartunya tidak bergeser saat dipilih. */
+  padding: calc(0.6rem - 1px) calc(0.75rem - 1px) calc(0.6rem - 1px)
+    calc(0.35rem - 1px);
+
+  .pof-mat__judul {
+    color: var(--brand-ink, #1a3a8f);
+  }
+
+  /* Tanda centang di pojok: terbaca tanpa bergantung pada warna. */
+  &::after {
+    content: "\2713";
+    position: absolute;
+    top: 0.4rem;
+    right: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--brand, #154dec);
+  }
 }
 
 .pof-mat__teks {

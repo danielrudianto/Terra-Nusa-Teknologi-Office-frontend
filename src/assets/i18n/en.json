@@ -1946,7 +1946,8 @@
     "pemasokTerkunci": "Cannot be changed while editing",
     "satuanBerbedaMaster": "The master item unit is {{satuan}}. Make sure the quantity matches the unit you selected.",
     "picHint": "Pick from the employee list, or type another name.",
-    "materialTestSoil": "Soil testing"
+    "materialTestSoil": "Soil testing",
+    "akanTerbitSebagai": "Will be issued as"
   },
   "menu": {
     "editAsset": "Edit asset",
@@ -3102,7 +3103,9 @@
     "notFound": "Tax code not found.",
     "noPphClose": "No withholding tax & close",
     "skb": "SKB",
-    "rateZero": "0% rate"
+    "rateZero": "0% rate",
+    "biasaDipakai": "Commonly used for this type",
+    "usulanKet": "If the transaction differs, pick from the full list below."
   },
   "incomeTax": {
     "title": "Withholding tax slip",

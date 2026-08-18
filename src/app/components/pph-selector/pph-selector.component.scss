@@ -172,3 +172,50 @@ $line: var(--line, #eef0f3);
   color: $brand !important;
   border-radius: 10px;
 }
+
+/*
+ * Bagian usulan.
+ *
+ * Dibedakan dari daftar lengkapnya dengan latar sendiri: yang membukanya
+ * perlu tahu bahwa ini bukan seluruh pilihan, melainkan yang biasa dipakai.
+ */
+.pp-usul {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.5rem 0.5rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+}
+
+.pp-usul__judul {
+  padding: 0 0.5rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-ink, #1a3a8f);
+}
+
+.pp-row--usul {
+  background: var(--surface, #fff);
+}
+
+/*
+ * Alasan diusulkan.
+ *
+ * Inilah yang sebenarnya menolong: kode dan nama objek pajaknya sudah ada di
+ * daftar bawah, tetapi tidak satu pun memberi tahu KAPAN ia dipakai.
+ */
+.pp-usul__alasan {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--brand, #154dec);
+}
+
+.pp-usul__kaki {
+  padding: 0.45rem 0.5rem 0;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}

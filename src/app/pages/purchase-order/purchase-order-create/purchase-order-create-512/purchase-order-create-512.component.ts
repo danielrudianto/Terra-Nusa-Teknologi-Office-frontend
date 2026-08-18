@@ -232,7 +232,9 @@ export class PurchaseOrderCreate512Component implements OnInit {
 
   openPphSelector() {
     this.dialog
-      .open(PphSelectorComponent, {})
+      .open(PphSelectorComponent, {
+        // Jenis PO menentukan kode yang diusulkan lebih dulu.
+        data: { purchaseType: '512' },})
       .afterClosed()
       .subscribe((data: any) => {
         /*

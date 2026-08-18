@@ -1946,7 +1946,8 @@
     "pemasokTerkunci": "编辑过程中不可更改",
     "satuanBerbedaMaster": "主数据中的单位为 {{satuan}}。请确认所填数量与所选单位一致。",
     "picHint": "从员工列表中选择，或输入其他姓名。",
-    "materialTestSoil": "土工试验"
+    "materialTestSoil": "土工试验",
+    "akanTerbitSebagai": "将签发为"
   },
   "menu": {
     "editAsset": "编辑资产",
@@ -3102,7 +3103,9 @@
     "notFound": "未找到税代码。",
     "noPphClose": "无预扣税并关闭",
     "skb": "免税证明",
-    "rateZero": "税率0%"
+    "rateZero": "税率0%",
+    "biasaDipakai": "此类型常用代码",
+    "usulanKet": "若交易性质不同，请从下方完整列表中选择。"
   },
   "incomeTax": {
     "title": "预扣税凭证",

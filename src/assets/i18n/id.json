@@ -1946,7 +1946,8 @@
     "pemasokTerkunci": "Tidak bisa dirubah pada saat proses sunting",
     "satuanBerbedaMaster": "Satuan di master barang adalah {{satuan}}. Pastikan volume yang diisi memang dalam satuan yang dipilih.",
     "picHint": "Pilih dari daftar karyawan, atau ketik nama lain.",
-    "materialTestSoil": "Uji tanah"
+    "materialTestSoil": "Uji tanah",
+    "akanTerbitSebagai": "Akan terbit sebagai"
   },
   "menu": {
     "editAsset": "Ubah aset",
@@ -3102,7 +3103,9 @@
     "notFound": "Kode PPh tidak ditemukan.",
     "noPphClose": "Tanpa PPh & Tutup",
     "skb": "SKB",
-    "rateZero": "tarif 0%"
+    "rateZero": "tarif 0%",
+    "biasaDipakai": "Biasa dipakai untuk jenis ini",
+    "usulanKet": "Bila transaksinya berbeda, pilih dari daftar lengkap di bawah."
   },
   "incomeTax": {
     "title": "Bukti potong PPh",

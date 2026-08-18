@@ -54,6 +54,38 @@
       </div>
     </div>
 
+    <!--
+      Yang biasa dipakai untuk jenis PO ini, di ATAS daftar lengkapnya.
+
+      Kode objek pajak lebih dari seratus, dan yang memilihnya di lapangan
+      bukan orang perpajakan. Kode saja tidak memberi tahu apakah ia tepat —
+      karena itu alasannya ikut disebut.
+
+      Daftar lengkapnya TETAP ada di bawah. Menutup pilihan justru berbahaya:
+      transaksi di luar kebiasaan pasti ada, dan yang tidak menemukan kodenya
+      akan memilih yang paling mirip.
+    -->
+    @if (usulan.length) {
+      <div class="pp-usul">
+        <div class="pp-usul__judul">
+          {{ "pph.biasaDipakai" | translate }}
+        </div>
+        @for (u of usulan; track u.pph.code) {
+          <button type="button" class="pp-row pp-row--usul" (click)="selectPph(u.pph)">
+            <span class="pp-code">{{ u.pph.code }}</span>
+            <span class="pp-obj">
+              {{ u.pph.taxObjectName }}
+              <span class="pp-usul__alasan">{{ u.alasan }}</span>
+            </span>
+            <span class="pp-tariff" [class.pp-tariff--zero]="SKBFormControl.value">
+              {{ SKBFormControl.value ? 0 : (u.pph.tariff | number: "1.0-2") }}%
+            </span>
+          </button>
+        }
+        <div class="pp-usul__kaki">{{ "pph.usulanKet" | translate }}</div>
+      </div>
+    }
+
     <div class="pp-list">
       <button
         type="button"

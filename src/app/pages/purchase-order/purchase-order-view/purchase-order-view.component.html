@@ -253,6 +253,32 @@
       diperlukan bukan menghentikan orang, melainkan menyodorkan angka
       pembandingnya beserta nomor dokumennya.
     -->
+    <!--
+      Penegasan JENIS DOKUMEN, tepat sebelum penerbitan.
+
+      Jenis material dipilih pada kartu di layar pengisian, dan bedanya di
+      sana hanya warna latar tipis. Salah klik tidak menghasilkan galat apa
+      pun — dokumennya terbit dengan klausul yang keliru, dan baru ketahuan
+      ketika vendor menagih dengan syarat yang tidak disepakati.
+      
+      Sudah terjadi: material besi dipilih sebagai "material lain".
+
+      Disebut BESAR dan terpisah, bukan diselipkan ke dalam dokumen: yang
+      hendak dicegah adalah orang yang menggulir cepat, dan teks yang seragam
+      dengan sekitarnya justru terlewat oleh orang seperti itu.
+    -->
+    @if (isPratinjau && input.konfirmasi) {
+      <div class="pov-tegas">
+        <mat-icon>fact_check</mat-icon>
+        <div>
+          <span class="pov-tegas__ket">{{
+            "poForm.akanTerbitSebagai" | translate
+          }}</span>
+          <strong class="pov-tegas__nilai">{{ jenisDokumenTegas }}</strong>
+        </div>
+      </div>
+    }
+
     @if (isPratinjau && input.konfirmasi && peringatan) {
       @if (peringatan.harga; as h) {
         <div class="pov-waspada">

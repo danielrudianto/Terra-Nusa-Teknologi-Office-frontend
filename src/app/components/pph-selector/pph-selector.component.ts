@@ -1,13 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Inject, Optional } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslatePipe } from '@ngx-translate/core';
 import { availablePPhSearch, IPPh, availablePPh } from 'src/app/utils/pph';
+import { usulanPPhUntuk } from 'src/app/constants/usulan-pph';
 import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 
 @Component({
@@ -29,7 +34,38 @@ import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
   standalone: true,
 })
 export class PphSelectorComponent {
-  constructor(private dialog: MatDialogRef<PphSelectorComponent>) {}
+  constructor(
+    private dialog: MatDialogRef<PphSelectorComponent>,
+    @Inject(MAT_DIALOG_DATA) @Optional() public input: any,
+  ) {}
+
+  /**
+   * Kode yang biasa dipakai untuk jenis PO ini.
+   *
+   * Ditampilkan terpisah di atas daftar, beserta ALASANNYA — yang memilihnya
+   * di lapangan bukan orang perpajakan, dan kode saja tidak memberi tahu
+   * apakah ia tepat.
+   *
+   * Bukan pembatasan: daftar lengkapnya tetap ada di bawahnya. Menutup
+   * pilihan justru berbahaya — transaksi di luar kebiasaan pasti ada, dan
+   * yang tidak menemukan kodenya akan memilih yang paling mirip.
+   */
+  get usulan(): Array<{ pph: IPPh; alasan: string }> {
+    // Tidak ditampilkan saat mencari: yang sedang mengetik sudah tahu apa
+    // yang dicarinya, dan usulan di atas hasil pencarian hanya mengganggu.
+    if (String(this.pphSearchFormControl.value || '').trim()) return [];
+
+    const hasil: Array<{ pph: IPPh; alasan: string }> = [];
+    for (const u of usulanPPhUntuk(this.input?.purchaseType)) {
+      const pph = availablePPh.find((x) => x.code === u.code);
+      // Kode yang tidak ditemukan DILEWATI diam-diam.
+      //
+      // Daftar kode dapat berubah mengikuti peraturan; usulan yang menunjuk
+      // kode terhapus tidak boleh menggagalkan seluruh pemilihnya.
+      if (pph) hasil.push({ pph, alasan: u.alasan });
+    }
+    return hasil;
+  }
 
   pphList: IPPh[] = [];
   pphSearchFormControl: FormControl = new FormControl('');

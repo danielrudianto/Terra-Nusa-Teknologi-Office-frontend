@@ -770,7 +770,9 @@ export class PurchaseOrderCreateBComponent implements OnInit {
    */
   openPphSelector() {
     this.dialog
-      .open(PphSelectorComponent, {})
+      .open(PphSelectorComponent, {
+        // Jenis PO menentukan kode yang diusulkan lebih dulu.
+        data: { purchaseType: 'B' },})
       .afterClosed()
       .subscribe((data: any) => {
         /*

@@ -767,6 +767,38 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Jenis dokumen yang benar-benar akan terbit, dalam kalimat penuh.
+   *
+   * Menyebut BENTUKNYA (Purchase Order / Surat Perintah Kerja) dan ISINYA
+   * (jenis material atau jasa) sekaligus — keduanya diputuskan pada kartu
+   * pilihan yang bedanya hanya warna latar tipis, dan salah klik di sana
+   * tidak menghasilkan galat apa pun.
+   *
+   * Diambil dari `customData`, bukan dari isian layar: yang perlu
+   * ditegaskan adalah apa yang AKAN TERSIMPAN, bukan apa yang tampak.
+   */
+  get jenisDokumenTegas(): string {
+    const c = this.data?.customData || {};
+    const jenis = String(c.materialType || '');
+
+    const nama: Record<string, string> = {
+      beton: 'Beton (ready mix)',
+      besi: 'Besi',
+      lain: 'Material lain',
+      ujitekan: 'Uji tekan silinder beton',
+      ujibesi: 'Uji tarik & tekuk besi',
+      ujitanah: 'Uji tanah',
+    };
+
+    const uji = ['ujitekan', 'ujibesi', 'ujitanah'].includes(jenis);
+    const bentuk = uji ? 'SURAT PERINTAH KERJA' : 'PURCHASE ORDER';
+
+    // Jenis yang tidak dikenali tidak dikarang: lebih baik menyebut
+    // bentuknya saja daripada menampilkan nama yang salah.
+    return nama[jenis] ? `${bentuk} — ${nama[jenis]}` : bentuk;
+  }
+
   isSubList(x: string | string[]): boolean {
     return Array.isArray(x);
   }

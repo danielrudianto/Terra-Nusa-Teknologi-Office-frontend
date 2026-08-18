@@ -329,7 +329,9 @@ export class PurchaseOrderCreate651Component {
 
   openPphSelector() {
     this.dialog
-      .open(PphSelectorComponent, {})
+      .open(PphSelectorComponent, {
+        // Jenis PO menentukan kode yang diusulkan lebih dulu.
+        data: { purchaseType: '651' },})
       .afterClosed()
       .subscribe((data: any) => {
         /*

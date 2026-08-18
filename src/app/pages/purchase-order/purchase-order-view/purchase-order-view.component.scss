@@ -546,3 +546,42 @@
   color: var(--muted, #8a90a0);
   word-break: break-word;
 }
+
+/*
+ * Penegasan jenis dokumen sebelum penerbitan.
+ *
+ * Sengaja mencolok dan terpisah dari isi dokumennya: yang hendak dicegah
+ * adalah orang yang menggulir cepat, dan teks yang seragam dengan sekitarnya
+ * justru terlewat oleh orang seperti itu.
+ */
+.pov-tegas {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 0.5rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 1px solid var(--brand, #154dec);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    color: var(--brand, #154dec);
+  }
+}
+
+.pov-tegas__ket {
+  display: block;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+}
+
+.pov-tegas__nilai {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--brand-ink, #1a3a8f);
+}
