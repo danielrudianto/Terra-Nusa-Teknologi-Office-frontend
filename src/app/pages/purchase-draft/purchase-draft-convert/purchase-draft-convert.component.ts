@@ -37,6 +37,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -116,6 +117,9 @@ function bankAccountIDRequired(): ValidatorFn {
   providers: [provideNgxMask()],
 })
 export class PurchaseDraftConvertComponent {
+  /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
+  readonly jenisNilaiLain = JENIS_NILAI_LAIN;
+
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(

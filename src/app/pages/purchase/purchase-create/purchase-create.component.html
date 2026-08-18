@@ -3,13 +3,14 @@
   description="Create new purchase"
 ></app-header-title>
 
-<mat-stepper #stepper>
-  <mat-step [stepControl]="metaFormGroup">
+  <div class="pc-card">
+    <div class="pc-cardhead">
+      <div class="pc-section__title">
+        <mat-icon>description</mat-icon>
+        {{ "purchaseCreate.stepMeta" | translate }}
+      </div>
+    </div>
     <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-      <ng-template matStepLabel>{{
-        "purchaseCreate.stepMeta" | translate
-      }}</ng-template>
-
       <div class="row">
         <div class="col-12">
           <mat-form-field appearance="outline" class="w-100">
@@ -119,12 +120,77 @@
         </div>
         <div class="col-6">
           <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'purchaseCreate.project' | translate"
-      />
+            formControlName="projectName"
+            [hanyaAktif]="true"
+            [label]="'purchaseCreate.project' | translate"
+          />
         </div>
       </div>
+
+      <!--
+        Riwayat tagihan atas purchase order yang dirujuk.
+
+        Pemasok menagih beberapa kali atas satu PO — bertahap, per pengiriman
+        — dan tidak ada yang mencegah tagihan kesekian melewati nilai PO-nya.
+        Yang menemukannya biasanya baru saat rekonsiliasi, berbulan kemudian.
+
+        Ditampilkan SEBELUM nilainya diisi: yang hendak dicegah adalah
+        mengetik angka yang ternyata membuat totalnya melampaui.
+      -->
+      @if (memuatTagihanPo) {
+        <div class="pc-tagihan pc-tagihan--memuat">
+          {{ "common.loading" | translate }}
+        </div>
+      } @else if (tagihanPo.length) {
+        <div class="pc-tagihan" [class.lampaui]="melampauiPo">
+          <div class="pc-tagihan__kepala">
+            <mat-icon>{{
+              melampauiPo ? "warning" : "receipt_long"
+            }}</mat-icon>
+            <strong>{{
+              "purchaseCreate.sudahDitagih"
+                | translate: { n: tagihanPo.length }
+            }}</strong>
+            <span class="pc-tagihan__nilai">
+              {{ totalTagihanPo | number: "1.0-0" }}
+            </span>
+          </div>
+
+          <ul class="pc-tagihan__daftar">
+            @for (t of tagihanPo; track t.id) {
+              <li>
+                <span class="pc-tagihan__inv">{{ t.invoiceName || "—" }}</span>
+                <span class="pc-tagihan__tgl">{{
+                  t.date | date: "d MMM yyyy"
+                }}</span>
+                <span class="pc-tagihan__jml">
+                  {{ t.dpp | number: "1.0-0" }}
+                </span>
+              </li>
+            }
+          </ul>
+
+          @if (nilaiPo) {
+            <div class="pc-tagihan__sisa">
+              <span>{{ "purchaseCreate.nilaiPo" | translate }}</span>
+              <span>{{ nilaiPo | number: "1.0-0" }}</span>
+            </div>
+            <div class="pc-tagihan__sisa pc-tagihan__sisa--utama">
+              <span>{{ "purchaseCreate.sisaPo" | translate }}</span>
+              <strong>{{ sisaPo | number: "1.0-0" }}</strong>
+            </div>
+          }
+
+          <p class="pc-tagihan__kaki">
+            {{
+              (melampauiPo
+                ? "purchaseCreate.melampauiPo"
+                : "purchaseCreate.sudahDitagihKet"
+              ) | translate
+            }}
+          </p>
+        </div>
+      }
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.taxInvoiceName" | translate }}</mat-label>
@@ -137,29 +203,43 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseCreate.documentType" | translate }}</mat-label>
-        <mat-select formControlName="documentType">
-          <mat-option [value]="'goods'">{{
-            "purchaseCreate.goodsPurchase" | translate
-          }}</mat-option>
-          <mat-option [value]="'other'">{{
-            "purchaseCreate.otherPurchase" | translate
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="pc-pilih">
+        <div class="pc-pilih__judul">{{ "purchaseCreate.documentType" | translate }}</div>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanJenisDokumen; track $index) {
+            <label
+              class="pc-kartu"
+              [class.on]="metaFormGroup.get('documentType')?.value === o.value"
+            >
+              <input type="radio" formControlName="documentType" [value]="o.value" hidden />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
 
-      <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>{{ "purchaseCreate.documentStatus" | translate }}</mat-label>
-        <mat-select formControlName="lastStatus">
-          <mat-option value="draft">{{
-            "purchaseCreate.statusWaiting" | translate
-          }}</mat-option>
-          <mat-option value="ready">{{
-            "purchaseCreate.statusReady" | translate
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="pc-pilih">
+        <div class="pc-pilih__judul">{{ "purchaseCreate.documentStatus" | translate }}</div>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanKelengkapan; track $index) {
+            <label
+              class="pc-kartu"
+              [class.on]="metaFormGroup.get('lastStatus')?.value === o.value"
+            >
+              <input type="radio" formControlName="lastStatus" [value]="o.value" hidden />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.documentType" | translate }}</mat-label>
@@ -176,27 +256,35 @@
         >{{ "purchaseDraft.descriptionIsRequiredAndMust" | translate }}</mat-hint>
       </mat-form-field>
 
-      <mat-slide-toggle formControlName="isInternal" color="primary"
-        >{{ "purchaseDraft.internalPurchase" | translate }}</mat-slide-toggle
-      >
+      <div class="pc-pilih">
+        <div class="pc-pilih__judul">{{ "purchaseCreate.lingkupTitle" | translate }}</div>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanLingkup; track $index) {
+            <label
+              class="pc-kartu"
+              [class.on]="metaFormGroup.get('isInternal')?.value === o.value"
+            >
+              <input type="radio" formControlName="isInternal" [value]="o.value" hidden />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
     </form>
+  </div>
 
-    <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      mat-stroked-button
-      matStepperNext
-      [disabled]="metaFormGroup.invalid"
-    >
-      {{ "purchaseCreate.next" | translate }}
-    </button>
-  </mat-step>
-  <mat-step [stepControl]="valueFormGroup">
+  <div class="pc-card">
+    <div class="pc-cardhead">
+      <div class="pc-section__title">
+        <mat-icon>calculate</mat-icon>
+        {{ "purchaseCreate.stepValue" | translate }}
+      </div>
+    </div>
     <form [formGroup]="valueFormGroup">
-      <ng-template matStepLabel>{{
-        "purchaseCreate.stepValue" | translate
-      }}</ng-template>
-
       <mat-form-field appearance="outline" class="w-100 mt-3">
         <mat-label>{{ "purchaseCreate.dpp" | translate }}</mat-label>
         <input
@@ -213,14 +301,24 @@
 
       <div class="row">
         <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseCreate.ppnPercent" | translate }}</mat-label>
-            <mat-select formControlName="ppn">
-              <mat-option [value]="0">0%</mat-option>
-              <mat-option [value]="1.1">1.1%</mat-option>
-              <mat-option [value]="11">11%</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="pc-pilih">
+        <div class="pc-pilih__judul">{{ "purchaseCreate.ppnPercent" | translate }}</div>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanPpn; track $index) {
+            <label
+              class="pc-kartu pc-kartu--kecil"
+              [class.on]="valueFormGroup.get('ppn')?.value === o.value"
+            >
+              <input type="radio" formControlName="ppn" [value]="o.value" hidden />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
         </div>
         <div class="col-6">
           <mat-form-field appearance="outline" class="w-100">
@@ -340,19 +438,17 @@
               "purchaseCreate.otherValueNote" | translate
             }}</mat-label>
             <mat-select formControlName="otherValueNote">
-              <mat-option value="">{{
-                "purchaseCreate.select" | translate
-              }}</mat-option>
-              <mat-option value="delivery">{{
-                "purchaseCreate.deliveryFee" | translate
-              }}</mat-option>
-              <mat-option value="packing">{{
-                "purchaseCreate.packingFee" | translate
-              }}</mat-option>
-              <mat-option value="packing">{{ "purchaseDraft.pph22" | translate }}</mat-option>
-              <mat-option value="administrative">{{
-                "purchaseCreate.administrationFee" | translate
-              }}</mat-option>
+              <mat-option value="">{{ "purchaseCreate.select" | translate }}</mat-option>
+              <!--
+                Daftar jenis dikumpulkan di `jenis-nilai-lain.ts`.
+
+                Sebelumnya tiap layar menulisnya sendiri, dan keempatnya
+                berbeda: `administrative` hanya ada di satu, dan PPh 22
+                tersimpan dengan nilai `packing`.
+              -->
+              @for (j of jenisNilaiLain; track j.value) {
+                <mat-option [value]="j.value">{{ j.label | translate }}</mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
@@ -381,31 +477,16 @@
         </button>
       </mat-form-field>
     </form>
+  </div>
 
-    <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      class="me-2"
-      mat-button
-      matStepperPrevious
-    >
-      {{ "purchaseCreate.previous" | translate }}
-    </button>
-    <button
-      matStepperNext
-      style="letter-spacing: 0"
-      mat-stroked-button
-      [disabled]="valueFormGroup.invalid || !isFinal"
-    >
-      {{ "purchaseCreate.next" | translate }}
-    </button>
-  </mat-step>
-  <mat-step [stepControl]="attachmentFormGroup">
+  <div class="pc-card">
+    <div class="pc-cardhead">
+      <div class="pc-section__title">
+        <mat-icon>attach_file</mat-icon>
+        {{ "purchaseCreate.stepAttachments" | translate }}
+      </div>
+    </div>
     <form [formGroup]="attachmentFormGroup">
-      <ng-template matStepLabel>{{
-        "purchaseCreate.stepAttachments" | translate
-      }}</ng-template>
-
       <mat-slide-toggle
         color="primary"
         class="my-2"
@@ -446,31 +527,16 @@
       >
       <br />
     </form>
+  </div>
 
-    <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      class="me-2"
-      mat-button
-      matStepperPrevious
-    >
-      {{ "purchaseCreate.previous" | translate }}
-    </button>
-    <button
-      style="letter-spacing: 0"
-      mat-stroked-button
-      matStepperNext
-      [disabled]="attachmentFormGroup.invalid"
-    >
-      {{ "purchaseCreate.next" | translate }}
-    </button>
-  </mat-step>
-  <mat-step [stepControl]="paymentFormGroup">
+  <div class="pc-card">
+    <div class="pc-cardhead">
+      <div class="pc-section__title">
+        <mat-icon>account_balance_wallet</mat-icon>
+        {{ "purchaseCreate.stepPayment" | translate }}
+      </div>
+    </div>
     <form [formGroup]="paymentFormGroup">
-      <ng-template matStepLabel>{{
-        "purchaseCreate.stepPayment" | translate
-      }}</ng-template>
-
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.bankName" | translate }}</mat-label>
         <input
@@ -505,20 +571,24 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseCreate.paymentMethod" | translate }}</mat-label>
-        <mat-select formControlName="paymentMethod">
-          <mat-option value="bank">{{
-            "purchaseCreate.bankTransfer" | translate
-          }}</mat-option>
-          <mat-option value="va">{{
-            "purchaseCreate.virtualAccount" | translate
-          }}</mat-option>
-          <mat-option value="cash">{{
-            "purchaseCreate.cheque" | translate
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="pc-pilih">
+        <div class="pc-pilih__judul">{{ "purchaseCreate.paymentMethod" | translate }}</div>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanCaraBayar; track $index) {
+            <label
+              class="pc-kartu pc-kartu--kecil"
+              [class.on]="paymentFormGroup.get('paymentMethod')?.value === o.value"
+            >
+              <input type="radio" formControlName="paymentMethod" [value]="o.value" hidden />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{
@@ -598,15 +668,6 @@
       </mat-slide-toggle>
     </form>
 
-    <mat-divider class="my-3"></mat-divider>
-    <button
-      style="letter-spacing: 0"
-      mat-button
-      class="me-2"
-      matStepperPrevious
-    >
-      {{ "purchaseCreate.previous" | translate }}
-    </button>
     <button
       class="btn"
       (click)="onSubmit()"
@@ -614,5 +675,5 @@
     >
       {{ "purchaseCreate.submit" | translate }}
     </button>
-  </mat-step>
-</mat-stepper>
+  </div>
+

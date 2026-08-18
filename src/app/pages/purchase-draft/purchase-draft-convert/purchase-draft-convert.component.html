@@ -305,16 +305,17 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "draftConvert.otherValueNote" | translate }}</mat-label>
         <mat-select formControlName="otherValueNote">
-          <mat-option value="">{{
-            "purchaseDraft.select" | translate
-          }}</mat-option>
-          <mat-option value="delivery">{{
-            "purchaseDraft.deliveryFee" | translate
-          }}</mat-option>
-          <mat-option value="packing">{{
-            "purchaseDraft.packingFee" | translate
-          }}</mat-option>
-          <mat-option value="packing">{{ "purchaseDraft.pph22" | translate }}</mat-option>
+          <mat-option value="">{{ "purchaseDraft.select" | translate }}</mat-option>
+          <!--
+            Daftar jenis dikumpulkan di `jenis-nilai-lain.ts`.
+
+            Sebelumnya tiap layar menulisnya sendiri, dan keempatnya
+            berbeda: `administrative` hanya ada di satu, dan PPh 22
+            tersimpan dengan nilai `packing`.
+          -->
+          @for (j of jenisNilaiLain; track j.value) {
+            <mat-option [value]="j.value">{{ j.label | translate }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 

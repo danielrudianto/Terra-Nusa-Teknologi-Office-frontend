@@ -181,3 +181,225 @@ $line: var(--line, #eef0f3);
     padding-bottom: 2rem;
   }
 }
+
+/*
+ * Riwayat tagihan atas purchase order yang dirujuk.
+ *
+ * Kuning, bukan biru: ini bukan keterangan melainkan hal yang harus
+ * diperiksa sebelum melanjutkan. Merah bila totalnya melampaui nilai PO —
+ * pada titik itu persoalannya bukan lagi kehati-hatian.
+ */
+.pc-tagihan {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 1px solid var(--warn, #a2651a);
+  color: var(--warn, #a2651a);
+
+  &.lampaui {
+    background: var(--bad-bg, #fdecec);
+    border-color: var(--bad-fg, #b3322f);
+    color: var(--bad-fg, #b3322f);
+  }
+}
+
+.pc-tagihan--memuat {
+  background: var(--surface-2, #f6f8ff);
+  border-color: var(--line, #e4e9fb);
+  color: var(--muted, #6b7280);
+  font-size: 0.82rem;
+}
+
+.pc-tagihan__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.pc-tagihan__nilai {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-tagihan__daftar {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+  }
+}
+
+.pc-tagihan__inv {
+  font-weight: 600;
+}
+
+.pc-tagihan__tgl {
+  opacity: 0.85;
+}
+
+.pc-tagihan__jml {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-tagihan__sisa {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sisa PO ditekankan: itu angka yang menentukan boleh-tidaknya melanjutkan. */
+.pc-tagihan__sisa--utama {
+  padding-top: 0.35rem;
+  border-top: 1px solid currentColor;
+
+  strong {
+    font-size: 0.95rem;
+  }
+}
+
+.pc-tagihan__kaki {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/*
+ * Kerangka kartu — disalin dari formulir purchase order.
+ *
+ * Formulir ini dibuat lebih dulu dan memakai stepper polos tanpa gaya;
+ * berdampingan dengan PO ia terbaca seperti bagian aplikasi yang berbeda.
+ * Yang disamakan bentuk papan, judul seksi, dan petaknya — bukan isinya.
+ */
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+
+/* Judul seksi berikut ikonnya. */
+.pc-section__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+/*
+ * Pilihan berbentuk kartu.
+ *
+ * Menggantikan `mat-select` pada pilihan yang MENGUBAH perilaku dokumen.
+ * Daftar tarik-turun menyembunyikan akibatnya: "Menunggu dokumen" tampak
+ * setara dengan "Dokumen siap", padahal yang satu menyimpannya sebagai draf
+ * yang belum dapat dibayar.
+ */
+.pc-pilih {
+  margin-bottom: 1.1rem;
+}
+
+.pc-pilih__judul {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+  margin-bottom: 0.6rem;
+}
+
+.pc-pilih__kartu {
+  display: grid;
+  /* Membungkus sendiri saat sempit; tanpa `minmax` kartunya menyusut sampai
+     keterangannya tidak terbaca. */
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.6rem;
+}
+
+.pc-kartu {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 0.9rem;
+  border: 1.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    // `--brand` diredupkan lewat opasitas garisnya, bukan variabel baru:
+    // menambah token warna berarti menambah pasangan gelapnya juga.
+    border-color: var(--brand, #154dec);
+    opacity: 0.85;
+  }
+
+  /* Yang terpilih ditandai GARIS dan LATAR, bukan warna teks saja: pada
+     tema gelap perbedaan warna teks nyaris tidak terlihat. */
+  &.on {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #eef2fe);
+  }
+
+  > .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+    color: var(--muted, #6b7280);
+  }
+
+  &.on > .mat-icon {
+    color: var(--brand, #154dec);
+  }
+}
+
+.pc-kartu--kecil {
+  padding: 0.6rem 0.75rem;
+}
+
+.pc-kartu__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.pc-kartu__judul {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.pc-kartu__hint {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}

@@ -13,7 +13,6 @@ import {
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
@@ -39,6 +38,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
+import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
+import {
+  PILIHAN_CARA_BAYAR,
+  PILIHAN_JENIS_DOKUMEN,
+  PILIHAN_KELENGKAPAN,
+  PILIHAN_LINGKUP,
+  PILIHAN_PPN,
+} from 'src/app/constants/pilihan-pembelian';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -100,7 +107,6 @@ function bankAccountIDRequired(): ValidatorFn {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatStepperModule,
     MatIconModule,
     HeaderTitleComponent,
     MatDatepickerModule,
@@ -116,6 +122,23 @@ function bankAccountIDRequired(): ValidatorFn {
   standalone: true,
 })
 export class PurchaseCreateComponent {
+  /*
+   * Pilihan berbentuk kartu.
+   *
+   * Sebagian di antaranya MENGUBAH perilaku dokumen, bukan sekadar
+   * melabelinya — "Menunggu dokumen" menyimpannya sebagai draf yang belum
+   * dapat dibayar, dan "Pembelian internal" mengeluarkannya dari biaya
+   * proyek. Dari daftar tarik-turun, akibat itu tidak terlihat.
+   */
+  readonly pilihanJenisDokumen = PILIHAN_JENIS_DOKUMEN;
+  readonly pilihanKelengkapan = PILIHAN_KELENGKAPAN;
+  readonly pilihanLingkup = PILIHAN_LINGKUP;
+  readonly pilihanPpn = PILIHAN_PPN;
+  readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;
+
+  /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
+  readonly jenisNilaiLain = JENIS_NILAI_LAIN;
+
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(
@@ -125,7 +148,6 @@ export class PurchaseCreateComponent {
     private clipboard: Clipboard,
   ) {}
 
-  @ViewChild('stepper') stepper: MatStepper | undefined;
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
 
   filteredOptions: IBank[] = [];
@@ -320,6 +342,71 @@ export class PurchaseCreateComponent {
    * bahwa dokumen inilah acuannya; membiarkan isian lama bertahan justru
    * meninggalkan campuran dua sumber yang tidak dapat ditelusuri.
    */
+  /**
+   * Tagihan yang SUDAH masuk atas purchase order yang sedang dirujuk.
+   *
+   * Pemasok menagih beberapa kali atas satu PO — bertahap, per pengiriman —
+   * dan tidak ada yang mencegah tagihan kesekian melewati nilai PO-nya.
+   * Yang menemukannya biasanya baru saat rekonsiliasi, berbulan kemudian.
+   *
+   * Ditampilkan SEBELUM nilainya diisi: yang hendak dicegah adalah mengetik
+   * angka yang ternyata membuat totalnya melampaui.
+   */
+  tagihanPo: any[] = [];
+  nilaiPo = 0;
+  memuatTagihanPo = false;
+
+  private muatTagihanPo(nomor: string): void {
+    if (!nomor) {
+      this.tagihanPo = [];
+      return;
+    }
+    this.memuatTagihanPo = true;
+    this.apiService
+      .get(`purchases/purchase-order/${nomor}`, {})
+      .subscribe({
+        next: (res: any) => (this.tagihanPo = res?.data ?? []),
+        // Gagal memuat TIDAK menghalangi pengisian; hanya bandingannya yang
+        // tidak muncul.
+        error: () => (this.tagihanPo = []),
+      })
+      .add(() => (this.memuatTagihanPo = false));
+  }
+
+  /** Nilai satu tagihan, memakai rumus yang sama dengan dokumennya. */
+  private nilaiTagihan(x: any): number {
+    const dpp = Number(x?.dpp || 0);
+    return (
+      dpp +
+      (Number(x?.ppn || 0) * dpp) / 100 +
+      Number(x?.pbbkb || 0) +
+      Number(x?.otherValue || 0) -
+      (Number(x?.pphPercentage || 0) * dpp) / 100
+    );
+  }
+
+  get totalTagihanPo(): number {
+    return this.tagihanPo.reduce((a, x) => a + this.nilaiTagihan(x), 0);
+  }
+
+  /** Sisa nilai PO yang belum tertagih; negatif berarti sudah melampaui. */
+  get sisaPo(): number {
+    return this.nilaiPo - this.totalTagihanPo;
+  }
+
+  /**
+   * Tagihan yang sedang diisi membuat totalnya MELAMPAUI nilai PO.
+   *
+   * Diperingatkan, bukan dicegah: adendum dan pekerjaan tambahan memang
+   * dapat melebihi, dan menolaknya justru menghalangi hal yang sah. Yang
+   * dijaga hanya agar tidak terjadi tanpa disadari.
+   */
+  get melampauiPo(): boolean {
+    if (!this.nilaiPo) return false;
+    const kini = Number(this.valueFormGroup?.get('total')?.value || 0);
+    return this.totalTagihanPo + kini > this.nilaiPo + 5;
+  }
+
   bukaPemilihPO(): void {
     this.dialog
       .open(PurchaseOrderPickerComponent, {
@@ -329,6 +416,11 @@ export class PurchaseCreateComponent {
       .afterClosed()
       .subscribe((po: any) => {
         if (!po) return;
+
+        // Riwayat tagihan atas PO ini dimuat bersamaan; tanpa itu
+        // bandingannya baru muncul setelah nilainya terlanjur diisi.
+        this.muatTagihanPo(po.purchaseOrderName);
+        this.nilaiPo = this.nilaiTagihan(po);
 
         this.metaFormGroup.patchValue({
           purchaseOrderName: po.purchaseOrderName,
@@ -647,7 +739,13 @@ export class PurchaseCreateComponent {
                     proxyPayment: false,
                   });
 
-                  this.stepper!.selectedIndex = 0;
+    /*
+     * Digulir ke ATAS, bukan dikembalikan ke langkah pertama.
+     *
+     * Formulirnya kini satu halaman; yang perlu terjadi setelah tersimpan
+     * adalah pandangan kembali ke awal, bukan berpindah langkah.
+     */
+    window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
                 error: (error) => {
                   this.snackBar.open(
@@ -735,7 +833,13 @@ export class PurchaseCreateComponent {
               proxyPayment: false,
             });
 
-            this.stepper!.selectedIndex = 0;
+    /*
+     * Digulir ke ATAS, bukan dikembalikan ke langkah pertama.
+     *
+     * Formulirnya kini satu halaman; yang perlu terjadi setelah tersimpan
+     * adalah pandangan kembali ke awal, bukan berpindah langkah.
+     */
+    window.scrollTo({ top: 0, behavior: 'smooth' });
           },
           error: (error) => {
             this.snackBar.open(

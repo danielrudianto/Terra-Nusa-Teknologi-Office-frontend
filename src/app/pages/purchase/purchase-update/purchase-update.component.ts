@@ -30,6 +30,7 @@ import { ProjectSelectorComponent } from '../../../components/project-selector/p
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -76,6 +77,9 @@ function bankAccountIDRequired(): ValidatorFn {
   providers: [provideNgxMask()],
 })
 export class PurchaseUpdateComponent {
+  /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
+  readonly jenisNilaiLain = JENIS_NILAI_LAIN;
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },

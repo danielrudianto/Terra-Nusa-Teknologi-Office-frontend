@@ -23,6 +23,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 
 @Component({
   selector: 'app-purchase-update-status',
@@ -48,6 +49,9 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
 })
 export class PurchaseUpdateStatusComponent {
+  /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
+  readonly jenisNilaiLain = JENIS_NILAI_LAIN;
+
   private readonly translate = inject(TranslateService);
   constructor(
     private route: ActivatedRoute,
