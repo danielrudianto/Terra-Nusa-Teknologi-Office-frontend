@@ -888,6 +888,23 @@ export class PurchaseOrderCreateFComponent {
     return v === 'ujitekan' || v === 'ujibesi' || v === 'ujitanah';
   }
 
+  /**
+   * Satuan pada baris pekerjaan pengujian.
+   *
+   * "Benda uji" adalah istilah beton dan besi — yang diuji memang benda yang
+   * dicetak atau dipotong khusus untuk itu. Pada uji tanah yang dikirim
+   * adalah SAMPEL tanah, dan sebagian ujinya bahkan dikerjakan di lapangan
+   * per titik, bukan per benda.
+   *
+   * Menulisnya tetap membuat dokumen menyebut "12 benda uji" untuk sondir —
+   * dan yang membacanya di laboratorium tidak tahu apa yang diminta.
+   */
+  get satuanUji(): string {
+    return this.formGroup.get('materialType')?.value === 'ujitanah'
+      ? 'sampel'
+      : 'benda uji';
+  }
+
   /** Judul pekerjaan pada rincian SPK, mengikuti jenis pengujian. */
   get testItemName(): string {
     const v = this.formGroup.get('materialType')?.value;
@@ -937,12 +954,37 @@ export class PurchaseOrderCreateFComponent {
   ];
 
   /** Usulan yang cocok dengan yang sedang diketik. */
+  /**
+   * Potongan yang sedang diketik — SETELAH koma terakhir.
+   *
+   * Isian ini boleh memuat beberapa uji dipisah koma. Menyaring dengan
+   * seluruh isi kotak membuat usulan berhenti muncul begitu koma pertama
+   * diketik: "Analisa saringan, kons" tidak cocok dengan usulan mana pun,
+   * padahal yang sedang dicari jelas "konsolidasi".
+   */
+  private get potonganAktif(): string {
+    const v = String(this.formGroup.get('soilTestName')?.value || '');
+    const i = v.lastIndexOf(',');
+    return (i === -1 ? v : v.slice(i + 1)).trim();
+  }
+
   get usulanTersaring(): string[] {
-    const q = String(this.formGroup.get('soilTestName')?.value || '')
-      .trim()
-      .toLowerCase();
+    const q = this.potonganAktif.toLowerCase();
     if (!q) return this.usulanUjiTanah;
     return this.usulanUjiTanah.filter((x) => x.toLowerCase().includes(q));
+  }
+
+  /**
+   * Usulan yang dipilih MENGGANTI potongan terakhir, bukan seluruh isinya.
+   *
+   * Tanpa ini, memilih usulan kedua menghapus uji yang sudah diketik lebih
+   * dulu — dan yang menyadarinya baru setelah dokumen tercetak.
+   */
+  pilihUsulanUji(nilai: string): void {
+    const c = this.formGroup.get('soilTestName');
+    const v = String(c?.value || '');
+    const i = v.lastIndexOf(',');
+    c?.setValue(i === -1 ? nilai : `${v.slice(0, i + 1)} ${nilai}`);
   }
 
   /** Susun data cetak dari isian form. */
@@ -998,7 +1040,7 @@ export class PurchaseOrderCreateFComponent {
           (this.uji.getRawValue() || []).map((x: any) => ({
             name: `${this.testItemName} — ${x.spec}`,
             quantity: Number(x.quantity) || 0,
-            unit: 'benda uji',
+            unit: this.satuanUji,
             price: Number(x.price) || 0,
           }))
         : this.t.controls.map((c) => {
@@ -1056,7 +1098,7 @@ export class PurchaseOrderCreateFComponent {
           (this.uji.getRawValue() || []).map((x: any) => ({
             task: `${this.testItemName} — ${x.spec}`,
             quantity: Number(x.quantity) || 0,
-            unit: 'benda uji',
+            unit: this.satuanUji,
             price: Number(x.price) || 0,
           }))
         : this.t.controls.map((c) => {

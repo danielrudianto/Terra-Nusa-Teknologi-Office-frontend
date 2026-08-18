@@ -281,7 +281,18 @@
             [matAutocomplete]="autoUji"
             [placeholder]="'poF.jenisUjiTanahPlaceholder' | translate"
           />
-          <mat-autocomplete #autoUji="matAutocomplete">
+          <!--
+            `[value]` sengaja isi kotak yang sudah ada, bukan usulannya.
+
+            Material menulis `[value]` ke isian begitu dipilih — dan itu akan
+            MENIMPA uji yang sudah diketik sebelumnya. Penyambungannya
+            dikerjakan `pilihUsulanUji`, sehingga yang dipilih menambah, bukan
+            mengganti.
+          -->
+          <mat-autocomplete
+            #autoUji="matAutocomplete"
+            (optionSelected)="pilihUsulanUji($event.option.value)"
+          >
             @for (u of usulanTersaring; track u) {
               <mat-option [value]="u">{{ u }}</mat-option>
             }
