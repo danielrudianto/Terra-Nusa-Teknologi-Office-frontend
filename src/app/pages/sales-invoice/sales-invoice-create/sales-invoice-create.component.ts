@@ -279,7 +279,7 @@ export class SalesInvoiceCreateComponent {
 
   /** Ambil data klien lalu isikan; dipakai saat proyek dipilih. */
   private isiKlien(clientID: number): void {
-    this.apiService.get(`clients/${clientID}`).subscribe({
+    this.apiService.get(`clients/${clientID}`, {}).subscribe({
       next: (c: any) => {
         if (!c) return;
         this.metaFormGroup.patchValue({
@@ -296,7 +296,7 @@ export class SalesInvoiceCreateComponent {
   }
 
   private muatNomorSpk(projectId: number): void {
-    this.apiService.get(`projects/${projectId}`).subscribe({
+    this.apiService.get(`projects/${projectId}`, {}).subscribe({
       next: (res: any) => {
         this.nomorSpk = (res?.contracts ?? [])
           .filter((k: any) => String(k?.documentNumber || '').trim())
@@ -314,7 +314,7 @@ export class SalesInvoiceCreateComponent {
 
   private muatTagihan(kode: string): void {
     this.memuatTagihan = true;
-    this.apiService.get(`purchases/report/project/${kode}`).subscribe({
+    this.apiService.get(`purchases/report/project/${kode}`, {}).subscribe({
       next: (res: any) => {
         this.tagihanLalu = res?.sales_invoices ?? [];
         this.memuatTagihan = false;
