@@ -3798,7 +3798,8 @@
     "ubah": "编辑",
     "hapus": "删除",
     "buatPengingat": "Buat pengingat",
-    "tindakan": "Tindakan"
+    "tindakan": "Tindakan",
+    "pasanganDari": "{{nama}} 的配偶"
   },
   "reminder": {
     "tampilDiAgendaPadaTanggal": "在所选日期显示于日程",

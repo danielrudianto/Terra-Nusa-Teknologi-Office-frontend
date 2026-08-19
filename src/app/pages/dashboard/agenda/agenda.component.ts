@@ -95,7 +95,7 @@ export class AgendaComponent {
             jenis: 'birthday' as const,
             daysUntil: b.daysUntil,
             judul: b.name,
-            keterangan: this.tanggalUltah(b),
+            keterangan: this.keteranganUltah(b),
           }));
 
           const pengingat: BarisAgenda[] = (r?.reminders ?? []).map((p) => ({
@@ -136,6 +136,26 @@ export class AgendaComponent {
 
   private tanggalUltah(b: Birthday): string {
     return `${b.day} ${this.BULAN[b.month] ?? ''}`;
+  }
+
+  /**
+   * Keterangan satu baris ulang tahun.
+   *
+   * Pada pasangan, HUBUNGANNYA disebut lebih dulu: satu nama tanpa keterangan
+   * apa pun di agenda kantor membuat yang membacanya menebak-nebak siapa —
+   * dan sebagian orang tidak dikenal seluruh kantor. "Pasangan Budi · 12 Mei"
+   * terbaca sekali lihat.
+   *
+   * `kind` yang tidak terisi diperlakukan sebagai karyawan: jawaban backend
+   * lama tidak memuatnya, dan pada masa antara dua penyebaran seluruh entri
+   * harus tetap terbaca wajar.
+   */
+  private keteranganUltah(b: Birthday): string {
+    const tanggal = this.tanggalUltah(b);
+    if (b.kind !== 'spouse' || !b.employeeName) return tanggal;
+    return `${this.translate.instant('agenda.pasanganDari', {
+      nama: b.employeeName,
+    })} · ${tanggal}`;
   }
 
   private keteranganPengingat(p: Reminder): string {

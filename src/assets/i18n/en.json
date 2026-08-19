@@ -3798,7 +3798,8 @@
     "ubah": "Edit",
     "hapus": "Delete",
     "buatPengingat": "Buat pengingat",
-    "tindakan": "Tindakan"
+    "tindakan": "Tindakan",
+    "pasanganDari": "Partner of {{nama}}"
   },
   "reminder": {
     "tampilDiAgendaPadaTanggal": "Appears on the agenda on the selected date",

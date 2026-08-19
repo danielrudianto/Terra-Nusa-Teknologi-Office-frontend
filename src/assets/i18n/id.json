@@ -3798,7 +3798,8 @@
     "ubah": "Ubah",
     "hapus": "Hapus",
     "buatPengingat": "Buat pengingat",
-    "tindakan": "Tindakan"
+    "tindakan": "Tindakan",
+    "pasanganDari": "Pasangan {{nama}}"
   },
   "reminder": {
     "tampilDiAgendaPadaTanggal": "Tampil di agenda pada tanggal yang dipilih",

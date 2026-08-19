@@ -4,11 +4,32 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
 export interface Birthday {
+  /**
+   * Id KARYAWANNYA.
+   *
+   * Pada ulang tahun pasangan pun yang disebut tetap id karyawan: pasangan
+   * tidak punya baris sendiri, dan yang dituju saat barisnya ditekan memang
+   * karyawannya.
+   */
   id: number;
+  /** Nama orang yang berulang tahun — karyawan atau pasangannya. */
   name: string;
   day: number;
   month: number;
   daysUntil: number;
+  /**
+   * Siapa yang berulang tahun.
+   *
+   * Tanpa penanda ini layar tidak dapat membedakan "Budi ulang tahun" dari
+   * "istri Budi ulang tahun", dan keduanya menuntut kalimat yang berbeda.
+   *
+   * Opsional: jawaban dari backend yang belum diperbarui tidak memuatnya,
+   * dan pada keadaan itu seluruh entri diperlakukan sebagai karyawan —
+   * persis perilaku sebelumnya.
+   */
+  kind?: 'employee' | 'spouse';
+  /** Nama karyawannya; hanya terisi bila `kind` bernilai `spouse`. */
+  employeeName?: string | null;
 }
 
 export interface ReminderTarget {

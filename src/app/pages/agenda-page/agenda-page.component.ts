@@ -135,12 +135,28 @@ export class AgendaPageComponent implements OnInit {
           };
 
           for (const b of r?.birthdays ?? []) {
+            /*
+             * Ulang tahun pasangan memakai kalimat yang BERBEDA.
+             *
+             * Usianya tidak dikirim untuk pasangan — untuk mengucapkan
+             * selamat, tanggal dan bulan sudah cukup, dan orangnya bukan
+             * karyawan perusahaan ini. Memakai kalimat yang sama menghasilkan
+             * "Ulang tahun ke-undefined", yang terbaca seperti data rusak.
+             *
+             * Hubungannya disebut, bukan sekadar namanya: satu nama asing di
+             * kalender kantor membuat yang membacanya menebak-nebak siapa.
+             */
+            const pasangan = b.kind === 'spouse' && b.employeeName;
             tambah(tanggalLokal(b.date), {
               jenis: 'birthday',
               judul: b.name,
-              keterangan: this.translate.instant('agendaPage.birthdayOf', {
-                age: b.age,
-              }),
+              keterangan: pasangan
+                ? this.translate.instant('agenda.pasanganDari', {
+                    nama: b.employeeName,
+                  })
+                : this.translate.instant('agendaPage.birthdayOf', {
+                    age: b.age,
+                  }),
             });
           }
           for (const p of r?.reminders ?? []) {
