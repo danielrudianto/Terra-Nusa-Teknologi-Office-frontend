@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -38,6 +39,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
+import { PurchaseOrderRingkasComponent } from '../../../components/purchase-order-ringkas/purchase-order-ringkas.component';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 import {
   PILIHAN_CARA_BAYAR,
@@ -324,6 +326,105 @@ export class PurchaseCreateComponent {
         }
       },
     );
+
+    /*
+     * Nomor purchase order menentukan dua hal lain.
+     *
+     * Jenis pembeliannya mengikuti jenis dokumennya — PO menyertai barang,
+     * SPK dan PKS menyertai pekerjaan — dan id yang tersimpan hanya berlaku
+     * selama nomornya masih nomor yang dipilih. Nomor yang diketik tangan
+     * mengosongkan id, sehingga tombol lihat tidak membuka dokumen lain.
+     */
+    const nomorPo = this.metaFormGroup.controls['purchaseOrderName'].valueChanges;
+
+    /*
+     * SEKETIKA: apa pun yang menempel pada nomor sebelumnya dilepas.
+     *
+     * Riwayat tagihan yang tertinggal adalah yang paling berbahaya di antara
+     * ketiganya. Ia berbunyi "1 tagihan sudah masuk atas PO ini" sambil
+     * menunjuk dokumen yang sudah tidak dirujuk lagi — dan yang membacanya
+     * justru sedang memutuskan boleh-tidaknya menagih lagi. Salah baca di
+     * situ berarti tagihan kedua atas purchase order yang belum pernah
+     * ditagih, atau sebaliknya.
+     *
+     * Dikosongkan lebih dulu, bukan menunggu jawaban permintaan berikutnya:
+     * di antara keduanya ada jeda yang cukup untuk dibaca.
+     */
+    nomorPo.subscribe((nomor) => {
+      if (String(nomor || '') !== this.poTerpilihNomor) {
+        this.poTerpilihId = null;
+        this.poTerpilihNomor = '';
+        this.tagihanPo = [];
+        this.nilaiPo = 0;
+        this.memuatTagihanPo = false;
+      }
+      this.terapkanJenisDariNomor(nomor);
+    });
+
+    /*
+     * SESUDAH BERHENTI MENGETIK: dokumennya dicari, lalu bandingannya dimuat.
+     *
+     * Nomor yang diketik tangan sebelumnya tidak memuat apa pun — riwayat
+     * tagihan hanya terisi lewat pencarian — sehingga yang mengetik nomornya
+     * sendiri tidak pernah diperingatkan bahwa purchase order itu sudah
+     * pernah ditagih.
+     *
+     * Ditunda 500 ms dan hanya untuk nomor yang sudah SAH menurut polanya:
+     * tanpa keduanya, satu nomor yang diketik menghasilkan belasan
+     * permintaan yang seluruhnya pasti tidak menemukan apa-apa.
+     */
+    nomorPo
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((nomor) => {
+        const teks = String(nomor || '').trim();
+        if (!teks || teks === this.poTerpilihNomor) return;
+        if (this.metaFormGroup.controls['purchaseOrderName'].invalid) return;
+        this.selaraskanDenganPoTertulis(teks);
+      });
+  }
+
+  /**
+   * Temukan purchase order dari nomor yang diketik, lalu muat bandingannya.
+   *
+   * Yang diambil dari dokumennya HANYA id dan nilainya — id agar tombol lihat
+   * dapat membukanya, nilai agar sisa purchase order dapat dihitung. Isian
+   * lain sengaja tidak ikut diisi: yang mengetik nomornya sendiri boleh jadi
+   * sudah mengisi pemasok dan angkanya dengan sengaja, dan menimpanya di
+   * tengah pengetikan menghapus pekerjaan yang tidak ia minta dihapus.
+   *
+   * Yang tidak ditemukan meninggalkan bandingan kosong, bukan bandingan lama.
+   */
+  private selaraskanDenganPoTertulis(nomor: string): void {
+    this.apiService
+      .get('purchase-orders', { keyword: nomor, page: 1, page_size: 10 })
+      .subscribe({
+        next: (res: any) => {
+          const daftar: any[] = res?.data ?? [];
+          // Cocok PERSIS, bukan sekadar mengandung: pencariannya memakai
+          // `LIKE %nomor%`, sehingga "0412-PO-ALPHA-B" ikut mengembalikan
+          // dokumen lain yang nomornya memuat potongan yang sama.
+          const cocok = daftar.find(
+            (d) =>
+              String(d?.name || '').toUpperCase() === nomor.toUpperCase(),
+          );
+          if (!cocok) {
+            this.tagihanPo = [];
+            this.nilaiPo = 0;
+            return;
+          }
+
+          this.poTerpilihId = cocok.id ?? null;
+          this.poTerpilihNomor = String(cocok.name || '');
+          this.nilaiPo = this.nilaiTagihan(cocok);
+          this.muatTagihanPo(cocok.name);
+        },
+        // Gagal mencari TIDAK menghalangi pengisian; hanya bandingannya yang
+        // tidak muncul.
+        error: () => {
+          this.tagihanPo = [];
+          this.nilaiPo = 0;
+        },
+      });
   }
 
   ngAfterViewInit() {
@@ -486,6 +587,68 @@ export class PurchaseCreateComponent {
     return cocok ? String(cocok.value) : String(angka);
   }
 
+  /**
+   * Id purchase order yang sedang dirujuk.
+   *
+   * Disimpan terpisah dari nomornya karena rute yang memuat satu dokumen
+   * menerima id. Dikosongkan seketika ketika nomornya berubah — yang
+   * tersimpan di sini belum tentu dokumen yang sedang ditulis nomornya, dan
+   * membuka yang keliru lebih menyesatkan daripada tidak membuka apa pun —
+   * lalu diisi kembali oleh `selaraskanDenganPoTertulis` bila nomor yang
+   * diketik ternyata memang ada.
+   */
+  poTerpilihId: number | null = null;
+
+  /**
+   * Nomor dokumen yang id-nya tersimpan di atas.
+   *
+   * Dipakai membedakan perubahan nomor yang datang DARI pemilihan — yang
+   * memang menyertakan id — dengan yang diketik tangan. Tanpa pembanding ini,
+   * `patchValue` dari pemilihannya sendiri ikut memicu pengosongan, dan
+   * tombol lihat mati tepat setelah dokumennya dipilih.
+   */
+  private poTerpilihNomor = '';
+
+  /**
+   * Jenis pembelian, disimpulkan dari nomor dokumennya.
+   *
+   * Aturannya sudah pasti dan tidak perlu ditanyakan: PO menyertai barang,
+   * SPK dan PKS menyertai pekerjaan. Menanyakannya kembali kepada yang
+   * mengisi hanya menambah satu kesempatan untuk salah — dan salahnya tidak
+   * terlihat sampai PPh-nya tidak dipotong.
+   *
+   * Mengembalikan '' bila nomornya belum mengandung salah satu penanda,
+   * sehingga pilihan yang sudah ada tidak dihapus oleh nomor setengah jadi.
+   */
+  private jenisDokumenDariNomor(nomor: unknown): string {
+    const teks = String(nomor || '').toUpperCase();
+    if (teks.includes('-PO-')) return 'goods';
+    if (teks.includes('-SPK-') || teks.includes('-PKS-')) return 'other';
+    return '';
+  }
+
+  private terapkanJenisDariNomor(nomor: unknown): void {
+    const jenis = this.jenisDokumenDariNomor(nomor);
+    if (!jenis) return;
+    if (this.metaFormGroup.controls['documentType'].value === jenis) return;
+    this.metaFormGroup.controls['documentType'].setValue(jenis);
+  }
+
+  /**
+   * Buka isi purchase order yang dirujuk, untuk dibandingkan dengan faktur.
+   *
+   * Tersedia begitu dokumennya dikenali — baik lewat pencarian maupun lewat
+   * nomor yang diketik dan ternyata ada.
+   */
+  lihatPurchaseOrder(): void {
+    if (!this.poTerpilihId) return;
+    this.dialog.open(PurchaseOrderRingkasComponent, {
+      data: { id: this.poTerpilihId },
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
+  }
+
   bukaPemilihPO(): void {
     this.dialog
       .open(PurchaseOrderPickerComponent, {
@@ -500,6 +663,12 @@ export class PurchaseCreateComponent {
         // bandingannya baru muncul setelah nilainya terlanjur diisi.
         this.muatTagihanPo(po.purchaseOrderName);
         this.nilaiPo = this.nilaiTagihan(po);
+        this.poTerpilihId = po.id ?? null;
+        this.poTerpilihNomor = String(po.purchaseOrderName || '');
+
+        // Jenis pembelian mengikuti jenis dokumennya; lihat
+        // `jenisDokumenDariNomor`.
+        this.terapkanJenisDariNomor(po.purchaseOrderName);
 
         this.metaFormGroup.patchValue({
           purchaseOrderName: po.purchaseOrderName,

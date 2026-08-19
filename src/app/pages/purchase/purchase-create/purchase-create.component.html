@@ -29,6 +29,62 @@
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
 
+          <!--
+            Nomor purchase order ditaruh SEGERA setelah tanggal.
+
+            Memilihnya mengisi pemasok, alamat, proyek, jenis biaya, DPP, dan
+            tarif pajaknya sekaligus — sehingga isian di bawahnya sudah
+            terjawab sebelum sempat diketik. Sebelumnya ia berada di bawah
+            enam isian lain, dan yang mengisi baru menemukannya setelah
+            mengetik ulang separuh dokumen.
+          -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>{{ "purchaseCreate.poName" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="purchaseOrderName"
+              [placeholder]="'purchaseCreate.poName' | translate"
+              oninput="this.value = this.value.toUpperCase()"
+            />
+            <!--
+              Cari purchase order alih-alih mengetik nomornya.
+
+              Dokumen pembelian mengulang hampir seluruh isi purchase
+              order-nya. Mengetiknya ulang bukan hanya lambat — angka yang
+              diketik ulang dapat berbeda dari dokumen yang ditandatangani,
+              dan selisihnya baru ketahuan saat rekonsiliasi.
+            -->
+            <button
+              matSuffix
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'poPicker.judul' | translate"
+              [matTooltip]="'poPicker.judul' | translate"
+              (click)="bukaPemilihPO()"
+            >
+              <mat-icon>search</mat-icon>
+            </button>
+            <!--
+              Muncul begitu dokumennya DIKENALI — dipilih dari pencarian, atau
+              nomornya diketik dan ternyata ada. Selama belum dikenali ia
+              hilang sama sekali: membuka dokumen yang keliru lebih
+              menyesatkan daripada tidak membuka apa pun.
+            -->
+            @if (poTerpilihId) {
+              <button
+                matSuffix
+                mat-icon-button
+                type="button"
+                [attr.aria-label]="'poRingkas.judul' | translate"
+                [matTooltip]="'poRingkas.judul' | translate"
+                (click)="lihatPurchaseOrder()"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>{{ "purchaseCreate.dueDate" | translate }}</mat-label>
             <input
@@ -87,36 +143,6 @@
               formControlName="receiptName"
               [placeholder]="'purchaseCreate.receiptName' | translate"
             />
-          </mat-form-field>
-        </div>
-        <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseCreate.poName" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="purchaseOrderName"
-              [placeholder]="'purchaseCreate.poName' | translate"
-              oninput="this.value = this.value.toUpperCase()"
-            />
-            <!--
-              Cari purchase order alih-alih mengetik nomornya.
-
-              Dokumen pembelian mengulang hampir seluruh isi purchase
-              order-nya. Mengetiknya ulang bukan hanya lambat — angka yang
-              diketik ulang dapat berbeda dari dokumen yang ditandatangani,
-              dan selisihnya baru ketahuan saat rekonsiliasi.
-            -->
-            <button
-              matSuffix
-              mat-icon-button
-              type="button"
-              [attr.aria-label]="'poPicker.judul' | translate"
-              [matTooltip]="'poPicker.judul' | translate"
-              (click)="bukaPemilihPO()"
-            >
-              <mat-icon>search</mat-icon>
-            </button>
           </mat-form-field>
         </div>
         <div class="col-6">

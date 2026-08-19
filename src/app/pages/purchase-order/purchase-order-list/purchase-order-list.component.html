@@ -146,12 +146,12 @@
           <td mat-cell *matCellDef="let po">
             <div class="pol-sup">
               <span class="pol-avatar">{{
-                (po.supplier_name || "?").charAt(0)
+                (po.supplierName || "?").charAt(0)
               }}</span>
               <div class="pol-sup__text">
-                <span class="pol-primary">{{ po.supplier_name || "—" }}</span>
-                <span class="pol-secondary" *ngIf="po.supplier_prefix">{{
-                  po.supplier_prefix
+                <span class="pol-primary">{{ po.supplierName || "—" }}</span>
+                <span class="pol-secondary" *ngIf="po.supplierPrefix">{{
+                  po.supplierPrefix
                 }}</span>
               </div>
             </div>

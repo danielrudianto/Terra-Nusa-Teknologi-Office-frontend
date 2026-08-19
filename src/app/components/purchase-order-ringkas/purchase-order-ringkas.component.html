@@ -1,0 +1,111 @@
+<div class="por">
+  <div class="por-head" mat-dialog-title appDialogGeser>
+    <span class="por-badge"><mat-icon>receipt_long</mat-icon></span>
+    <div class="por-head__text">
+      <h2 class="por-title">{{ po?.name || ("poRingkas.judul" | translate) }}</h2>
+      <span class="por-sub">{{ "poRingkas.sub" | translate }}</span>
+    </div>
+    @if (po) {
+      <span class="por-status" [class]="'por-status--' + keadaan">
+        {{ "poRingkas." + keadaan | translate }}
+      </span>
+    }
+  </div>
+
+  <mat-dialog-content class="por-content">
+    @if (isLoading) {
+      <div class="por-state"><mat-spinner diameter="30"></mat-spinner></div>
+    } @else if (gagal) {
+      <div class="por-state por-state--kosong">
+        {{ "poRingkas.gagal" | translate }}
+      </div>
+    } @else {
+      <div class="por-grup">
+        <div class="por-grup__judul">{{ "poRingkas.dokumen" | translate }}</div>
+        <dl class="por-baris">
+          <dt>{{ "poRingkas.tanggal" | translate }}</dt>
+          <dd>{{ (po.date | date: "d MMM yyyy") || "—" }}</dd>
+
+          <dt>{{ "poRingkas.proyek" | translate }}</dt>
+          <dd>{{ po.projectName || "—" }}</dd>
+
+          <dt>{{ "poRingkas.jenis" | translate }}</dt>
+          <dd>{{ po.purchaseType || "—" }}</dd>
+        </dl>
+      </div>
+
+      <div class="por-grup">
+        <div class="por-grup__judul">{{ "poRingkas.pemasok" | translate }}</div>
+        <dl class="por-baris">
+          <dt>{{ "poRingkas.nama" | translate }}</dt>
+          <dd>{{ pemasok }}</dd>
+
+          <dt>{{ "poRingkas.npwp" | translate }}</dt>
+          <dd>{{ po.supplierNpwp || "—" }}</dd>
+
+          <dt>{{ "poRingkas.alamat" | translate }}</dt>
+          <dd>{{ po.supplierAddress || "—" }}</dd>
+        </dl>
+      </div>
+
+      <!--
+        Nilai dokumen, disusun seperti pada cetakannya: DPP, PPN, lalu
+        jumlahnya. Urutan yang sama memudahkan menelusurinya baris demi baris
+        terhadap faktur yang sedang dipegang.
+      -->
+      <div class="por-grup">
+        <div class="por-grup__judul">{{ "poRingkas.nilai" | translate }}</div>
+        <dl class="por-baris por-baris--angka">
+          <dt>{{ "poRingkas.dpp" | translate }}</dt>
+          <dd>Rp {{ angka(po.dpp) | number: "1.0-2" }}</dd>
+
+          <dt>
+            {{ "poRingkas.ppn" | translate }}
+            <span class="por-tarif">{{ angka(po.ppn) | number: "1.0-2" }}%</span>
+          </dt>
+          <dd>Rp {{ nilaiPpn | number: "1.0-2" }}</dd>
+
+          <dt class="por-total">{{ "poRingkas.total" | translate }}</dt>
+          <dd class="por-total">Rp {{ nilaiDokumen | number: "1.0-2" }}</dd>
+        </dl>
+      </div>
+
+      @if (po.pphCode || angka(po.pphPercentage)) {
+        <div class="por-grup">
+          <div class="por-grup__judul">{{ "poRingkas.pph" | translate }}</div>
+          <dl class="por-baris">
+            <dt>{{ "poRingkas.pphKode" | translate }}</dt>
+            <dd>
+              {{ po.pphCode || "—" }}
+              <span class="por-tarif"
+                >{{ angka(po.pphPercentage) | number: "1.0-2" }}%</span
+              >
+            </dd>
+
+            <dt>{{ "poRingkas.pphObjek" | translate }}</dt>
+            <dd>{{ po.pphTaxObject || "—" }}</dd>
+          </dl>
+        </div>
+      }
+
+      <!--
+        Dokumen DRAF tetap ditampilkan, tetapi ditandai.
+        Tagihan kerap datang sebelum persetujuan internal selesai, dan
+        menyembunyikannya hanya memaksa pencatat menebak.
+      -->
+      @if (keadaan !== "disetujui") {
+        <div class="por-catatan">
+          <mat-icon>info</mat-icon>
+          <span>{{ "poRingkas.belumDisetujui" | translate }}</span>
+        </div>
+      }
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="por-foot">
+    <span class="por-spacer"></span>
+    <button type="button" class="por-close" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

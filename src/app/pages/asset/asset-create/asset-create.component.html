@@ -37,7 +37,7 @@
           <mat-label>{{ "asset.assetDescription" | translate }}</mat-label>
           <textarea
             matInput
-            formControlName="deacription"
+            formControlName="description"
             [placeholder]="'asset.assetDescPlaceholder' | translate"
           ></textarea>
         </mat-form-field>
@@ -93,12 +93,12 @@
               }}</mat-option>
             </mat-optgroup>
             <mat-optgroup label="Buildings">
-              <mat-option [value]="20"
-                >{{ "common.20YearsPermanentBuilding" | translate }}</mat-option
-              >
-              <mat-option [value]="10"
-                >{{ "common.10YearsNonPermanentBuilding" | translate }}</mat-option
-              >
+              <mat-option [value]="20">{{
+                "common.20YearsPermanentBuilding" | translate
+              }}</mat-option>
+              <mat-option [value]="10">{{
+                "common.10YearsNonPermanentBuilding" | translate
+              }}</mat-option>
             </mat-optgroup>
           </mat-select>
         </mat-form-field>

@@ -129,6 +129,10 @@ export class PurchaseOrderPickerComponent implements OnInit {
      * adalah tanggal terbit dokumennya, bukan tanggal faktur pemasok.
      */
     this.dialogRef.close({
+      // Id ikut dibawa agar dokumennya dapat dibuka kembali dari formulir
+      // pembelian untuk diperiksa. Nomornya tidak cukup: rute yang memuat
+      // satu purchase order menerima id, bukan nomor.
+      id: po?.id ?? null,
       purchaseOrderName: po?.name ?? '',
       supplierID: po?.supplierID ?? null,
       supplierName: po?.supplierName ?? '',

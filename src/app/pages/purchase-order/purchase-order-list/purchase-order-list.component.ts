@@ -311,7 +311,7 @@ export class PurchaseOrderListComponent {
 
   supplierLabel(po: any): string {
     return (
-      [po.supplier_prefix, po.supplier_name].filter(Boolean).join(' ') || '—'
+      [po.supplierPrefix, po.supplierName].filter(Boolean).join(' ') || '—'
     );
   }
 
