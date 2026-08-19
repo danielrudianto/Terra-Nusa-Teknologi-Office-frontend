@@ -45,6 +45,7 @@ import {
   PILIHAN_KELENGKAPAN,
   PILIHAN_LINGKUP,
   PILIHAN_PPN,
+  PILIHAN_PROXY,
 } from 'src/app/constants/pilihan-pembelian';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
@@ -135,6 +136,7 @@ export class PurchaseCreateComponent {
   readonly pilihanLingkup = PILIHAN_LINGKUP;
   readonly pilihanPpn = PILIHAN_PPN;
   readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;
+  readonly pilihanProxy = PILIHAN_PROXY;
 
   /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
   readonly jenisNilaiLain = JENIS_NILAI_LAIN;
@@ -243,7 +245,19 @@ export class PurchaseCreateComponent {
         Validators.min(0),
       ]),
       proxyPayment: new FormControl(false),
-      createPayment: new FormControl(false),
+      /*
+       * Menyala sejak awal.
+       *
+       * Slip pembayaran hampir selalu dibuat; yang lupa mencentangnya baru
+       * sadar ketika pembayarannya tidak muncul di mana pun, dan menambahkan
+       * belakangan berarti mengetik ulang seluruh nilainya. Kebalikannya —
+       * slip yang terlanjur dibuat padahal tidak perlu — masih dapat dibatalkan.
+       *
+       * Akibatnya `bankAccountID` ikut wajib sejak awal, lewat
+       * `bankAccountIDRequired()`. Itu memang yang dikehendaki: slip tanpa
+       * rekening asal tidak dapat dibuat.
+       */
+      createPayment: new FormControl(true),
       bankAccountID: new FormControl(''),
     },
     {
@@ -262,9 +276,54 @@ export class PurchaseCreateComponent {
           pphCode: '',
           pphTaxObject: '',
           pphPercentage: 0,
+          /*
+           * `pphValue` ikut dikosongkan.
+           *
+           * Tarifnya sudah dinolkan sejak dulu, tetapi rupiahnya tidak —
+           * `calculateTotal()` menghitungnya sebagai variabel lokal dan tidak
+           * pernah menuliskannya kembali ke kolom ini. Nilai lama bertahan,
+           * dan sejak isiannya disembunyikan pada pembelian barang, ia
+           * bertahan tanpa terlihat siapa pun.
+           */
+          pphValue: 0,
         });
       }
     });
+
+    /*
+     * Alasan menunggu dikosongkan begitu statusnya kembali "Siap".
+     *
+     * Isiannya disembunyikan pada status itu, dan nilai yang tertinggal di
+     * baliknya tetap ikut terkirim — dokumen yang sudah lengkap akhirnya
+     * tersimpan dengan keterangan menunggu berkas yang sebenarnya sudah ada.
+     */
+    this.metaFormGroup.controls['lastStatus'].valueChanges.subscribe(
+      (status) => {
+        if (status !== 'draft') {
+          this.metaFormGroup.controls['lastStatusDescription'].setValue('');
+        }
+      },
+    );
+
+    /*
+     * Rekening asal dikosongkan begitu slip pembayaran dimatikan.
+     *
+     * Isiannya disembunyikan pada keadaan itu, dan rekening yang tertinggal
+     * di baliknya membuat `bankAccountIDRequired()` melihat isian yang sudah
+     * terisi — sehingga menyalakan kembali sakelarnya tidak lagi menuntut
+     * rekening dipilih ulang, padahal yang terakhir dipilih tidak pernah
+     * terlihat lagi oleh yang mengisi.
+     *
+     * Dikosongkan ke '' dan BUKAN null: validatornya memanggil
+     * `.toString()` atas nilainya.
+     */
+    this.paymentFormGroup.controls['createPayment'].valueChanges.subscribe(
+      (aktif) => {
+        if (aktif !== true) {
+          this.paymentFormGroup.controls['bankAccountID'].setValue('');
+        }
+      },
+    );
   }
 
   ngAfterViewInit() {
@@ -407,6 +466,26 @@ export class PurchaseCreateComponent {
     return this.totalTagihanPo + kini > this.nilaiPo + 5;
   }
 
+  /**
+   * Tarif PPN dari purchase order, dipetakan ke nilai kartu pilihannya.
+   *
+   * Kartunya membandingkan dengan `===` terhadap nilai bertipe teks ('11',
+   * '1.1', '0'), sedangkan kolom `ppn` di basis data DECIMAL — jawabannya
+   * sampai sebagai angka. `11 === '11'` bernilai salah, sehingga sesudah
+   * memilih purchase order tidak ada satu pun kartu yang tersorot dan
+   * tarifnya tampak belum terisi, padahal sudah.
+   */
+  private tarifPpnSebagaiPilihan(tarif: unknown): string {
+    const angka = Number(tarif);
+    if (isNaN(angka)) return '';
+    const cocok = this.pilihanPpn.find(
+      (o) => Number(o.value) === angka,
+    );
+    // Tarif di luar ketiga pilihan tetap dipasang apa adanya: menolaknya akan
+    // mengosongkan nilai yang sah pada dokumen lama.
+    return cocok ? String(cocok.value) : String(angka);
+  }
+
   bukaPemilihPO(): void {
     this.dialog
       .open(PurchaseOrderPickerComponent, {
@@ -426,13 +505,20 @@ export class PurchaseCreateComponent {
           purchaseOrderName: po.purchaseOrderName,
           supplierID: po.supplierID,
           supplierName: po.supplierName,
+          supplierAddress: po.supplierAddress,
           projectName: po.projectName,
           purchaseType: po.purchaseType,
         });
 
+        // Pemasok yang terbawa dari purchase order tetap perlu rekening yang
+        // biasa dipakai; jalur pencarian pemasok biasa sudah memuatnya.
+        if (po.supplierID) {
+          this.fetchFrequentPaymentBySupplierID(po.supplierID);
+        }
+
         this.valueFormGroup.patchValue({
           dpp: po.dpp,
-          ppn: po.ppn,
+          ppn: this.tarifPpnSebagaiPilihan(po.ppn),
           pphCode: po.pphCode,
           pphTaxObject: po.pphTaxObject,
           pphPercentage: po.pphPercentage,

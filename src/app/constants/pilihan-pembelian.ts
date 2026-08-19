@@ -59,16 +59,20 @@ export const PILIHAN_KELENGKAPAN: KartuPilihan[] = [
 ];
 
 /**
- * Pembelian internal atau untuk proyek.
+ * Pembelian internal atau eksternal.
  *
  * Internal tidak masuk perhitungan biaya proyek mana pun — dan salah pilih
  * membuat biaya kantor terbebankan ke proyek, atau sebaliknya.
+ *
+ * Pasangannya disebut "eksternal", bukan "untuk proyek": lawan kata internal
+ * adalah eksternal, dan penamaan yang tidak sejajar membuat kedua kartu
+ * terbaca seperti jawaban atas dua pertanyaan yang berbeda.
  */
 export const PILIHAN_LINGKUP: KartuPilihan[] = [
   {
     value: false,
-    label: 'purchaseCreate.lingkupProyek',
-    hint: 'purchaseCreate.lingkupProyekHint',
+    label: 'purchaseCreate.lingkupEksternal',
+    hint: 'purchaseCreate.lingkupEksternalHint',
     icon: 'foundation',
   },
   {
@@ -98,6 +102,29 @@ export const PILIHAN_PPN: KartuPilihan[] = [
     label: 'purchaseCreate.ppn0',
     hint: 'purchaseCreate.ppn0Hint',
     icon: 'money_off',
+  },
+];
+
+/**
+ * Ke mana dananya ditransfer.
+ *
+ * Bukan label melainkan alur yang berbeda: lewat perantara berarti dana masuk
+ * ke rekening pribadi staf yang kemudian meneruskannya, dan menuntut surat
+ * pengalihan pembayaran sebagai dasar tertulisnya. Sebagai sakelar bernama
+ * "Pembayaran Proxy", tidak satu pun dari itu terbaca.
+ */
+export const PILIHAN_PROXY: KartuPilihan[] = [
+  {
+    value: false,
+    label: 'purchaseCreate.proxyLangsung',
+    hint: 'purchaseCreate.proxyLangsungHint',
+    icon: 'trending_flat',
+  },
+  {
+    value: true,
+    label: 'purchaseCreate.proxyPerantara',
+    hint: 'purchaseCreate.proxyPerantaraHint',
+    icon: 'alt_route',
   },
 ];
 

@@ -3,6 +3,7 @@
   description="Create new purchase"
 ></app-header-title>
 
+<div class="pc">
   <div class="pc-card">
     <div class="pc-cardhead">
       <div class="pc-section__title">
@@ -241,20 +242,41 @@
         </div>
       </div>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseCreate.documentType" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="lastStatusDescription"
-          [readonly]="metaFormGroup.controls['lastStatus'].value != 'draft'"
-        /><mat-hint
-          *ngIf="
-            metaFormGroup.hasError('lastStatusDescriptionRequired') &&
-            metaFormGroup.get('lastStatus')?.value === 'draft'
-          "
-        >{{ "purchaseDraft.descriptionIsRequiredAndMust" | translate }}</mat-hint>
-      </mat-form-field>
+      <!--
+        Alasan menunggu.
+
+        Hanya ada saat statusnya "Menunggu". Pada dokumen yang sudah siap
+        tidak ada yang ditunggu, dan isian mati di sebelahnya terbaca seperti
+        sesuatu yang lupa diisi — bukan sebagai isian yang memang tidak
+        berlaku.
+
+        Labelnya sebelumnya "Tipe dokumen", tersalin dari isian di atasnya.
+        Isinya wajib 10–99 aksara bila statusnya Menunggu; `maxlength`
+        mengikuti batas itu supaya formulir tidak bisa sampai ke keadaan
+        terisi-penuh-tapi-tetap-ditolak.
+      -->
+      @if (metaFormGroup.get('lastStatus')?.value === 'draft') {
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{
+            "purchaseCreate.waitingReason" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="lastStatusDescription"
+            [placeholder]="
+              'purchaseCreate.waitingReasonPlaceholder' | translate
+            "
+            maxlength="99"
+          />
+          <mat-hint>{{
+            "purchaseCreate.waitingReasonHint" | translate
+          }}</mat-hint>
+          <mat-error>{{
+            "purchaseCreate.waitingReasonError" | translate
+          }}</mat-error>
+        </mat-form-field>
+      }
 
       <div class="pc-pilih">
         <div class="pc-pilih__judul">{{ "purchaseCreate.lingkupTitle" | translate }}</div>
@@ -299,17 +321,40 @@
         />
       </mat-form-field>
 
-      <div class="row">
-        <div class="col-6">
-          <div class="pc-pilih">
-        <div class="pc-pilih__judul">{{ "purchaseCreate.ppnPercent" | translate }}</div>
+      <!--
+        Nilai PPN ditampilkan sebagai TEKS, bukan isian.
+
+        Angkanya dihitung dari DPP dan tarif yang dipilih; tidak ada yang
+        dapat mengubahnya di sini. Isian yang hanya bisa dibaca tetap tampak
+        seperti sesuatu yang menunggu diisi — dan berdampingan dengan kartu
+        tarif, keduanya terbaca seolah dua hal yang harus dipilih.
+      -->
+      <div class="pc-pilih">
+        <div class="pc-pilih__kepala">
+          <div class="pc-pilih__judul">
+            {{ "purchaseCreate.ppnPercent" | translate }}
+          </div>
+          <div class="pc-nilai">
+            <span class="pc-nilai__label">{{
+              "purchaseCreate.ppnRp" | translate
+            }}</span>
+            <span class="pc-nilai__angka">
+              Rp {{ valueFormGroup.get("ppnValue")?.value | number: "1.0-2" }}
+            </span>
+          </div>
+        </div>
         <div class="pc-pilih__kartu">
           @for (o of pilihanPpn; track $index) {
             <label
               class="pc-kartu pc-kartu--kecil"
               [class.on]="valueFormGroup.get('ppn')?.value === o.value"
             >
-              <input type="radio" formControlName="ppn" [value]="o.value" hidden />
+              <input
+                type="radio"
+                formControlName="ppn"
+                [value]="o.value"
+                hidden
+              />
               <mat-icon>{{ o.icon }}</mat-icon>
               <span class="pc-kartu__teks">
                 <span class="pc-kartu__judul">{{ o.label | translate }}</span>
@@ -317,24 +362,6 @@
               </span>
             </label>
           }
-        </div>
-      </div>
-        </div>
-        <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseCreate.ppnRp" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="ppnValue"
-              [placeholder]="'purchaseCreate.ppnRp' | translate"
-              prefix="Rp. "
-              thousandSeparator=" "
-              decimalScale="2"
-              mask="separator"
-              readonly
-            />
-          </mat-form-field>
         </div>
       </div>
 
@@ -352,69 +379,90 @@
         />
       </mat-form-field>
 
-      <div class="row">
-        <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseCreate.pph" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="pphCode"
-              [placeholder]="'purchaseCreate.pphCode' | translate"
-            />
-            <button
-              mat-icon-button
-              matPrefix
-              type="button"
-              (click)="openPPHSelector()"
-            >
-              <mat-icon>search</mat-icon>
-            </button>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseCreate.pphPercentage" | translate
-            }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="pphPercentage"
-              [placeholder]="'purchaseCreate.pphPercentage' | translate"
-              readonly
-            />
-          </mat-form-field>
-        </div>
-        <div class="col-6">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseCreate.pphObjectName" | translate
-            }}</mat-label>
-            <textarea
-              matInput
-              type="text"
-              formControlName="pphTaxObject"
-              [placeholder]="'purchaseCreate.pphObjectName' | translate"
-              readonly
-              rows="4"
-            ></textarea>
-          </mat-form-field>
-        </div>
-      </div>
+      <!--
+        PPh hanya berlaku atas pembelian JASA.
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseCreate.pphRp" | translate }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="pphValue"
-          [placeholder]="'expense.pphValue' | translate"
-          readonly
-          prefix="Rp. "
-          thousandSeparator=" "
-          decimalScale="2"
-          mask="separator"
-        />
-      </mat-form-field>
+        Pada pembelian barang isiannya bukan sekadar kosong — memang tidak ada
+        yang boleh diisi, dan `openPPHSelector()` sudah menolak membukanya.
+        Empat isian mati yang tetap terpampang membuat orang mengiranya lupa
+        diisi, lalu mencari alasan kenapa pencariannya tidak mau terbuka.
+
+        Yang menggantikannya keterangan, bukan ruang kosong: hilang begitu
+        saja menyisakan pertanyaan ke mana perginya.
+      -->
+      @if (metaFormGroup.get("documentType")?.value === "other") {
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ "purchaseCreate.pph" | translate }}</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="pphCode"
+                [placeholder]="'purchaseCreate.pphCode' | translate"
+              />
+              <button
+                mat-icon-button
+                matPrefix
+                type="button"
+                (click)="openPPHSelector()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "purchaseCreate.pphPercentage" | translate
+              }}</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="pphPercentage"
+                [placeholder]="'purchaseCreate.pphPercentage' | translate"
+                readonly
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{
+                "purchaseCreate.pphObjectName" | translate
+              }}</mat-label>
+              <textarea
+                matInput
+                type="text"
+                formControlName="pphTaxObject"
+                [placeholder]="'purchaseCreate.pphObjectName' | translate"
+                readonly
+                rows="4"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseCreate.pphRp" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphValue"
+            [placeholder]="'expense.pphValue' | translate"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="2"
+            mask="separator"
+          />
+        </mat-form-field>
+      } @else if (metaFormGroup.get("documentType")?.value === "goods") {
+        <div class="pc-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <strong>{{ "purchaseCreate.pphBarangJudul" | translate }}</strong>
+            <span>{{ "purchaseCreate.pphBarangKet" | translate }}</span>
+          </div>
+        </div>
+      }
 
       <div class="row">
         <div class="col-6">
@@ -454,6 +502,31 @@
         </div>
       </div>
 
+      <!--
+        Menghitung total adalah TINDAKAN, bukan hiasan isiannya.
+
+        Sebagai ikon di dalam kotak total ia terbaca seperti lambang satuan,
+        dan yang mengisi formulir tidak menemukannya — lalu menyimpulkan
+        totalnya terhitung sendiri dan mengirim dokumen bernilai nol.
+      -->
+      <div class="pc-hitung">
+        <button
+          type="button"
+          class="pc-hitung__btn"
+          [disabled]="isFinal || !isNumberValid"
+          (click)="calculateTotal()"
+        >
+          <mat-icon>calculate</mat-icon>
+          {{ "purchaseCreate.hitungTotal" | translate }}
+        </button>
+        <span class="pc-hitung__ket">{{
+          (isFinal
+            ? "purchaseCreate.hitungTotalSudah"
+            : "purchaseCreate.hitungTotalKet"
+          ) | translate
+        }}</span>
+      </div>
+
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.total" | translate }}</mat-label>
         <input
@@ -467,14 +540,6 @@
           decimalScale="2"
           mask="separator"
         />
-        <button
-          mat-icon-button
-          matPrefix
-          [disabled]="isFinal || !isNumberValid"
-          (click)="calculateTotal()"
-        >
-          <mat-icon>calculate</mat-icon>
-        </button>
       </mat-form-field>
     </form>
   </div>
@@ -627,53 +692,101 @@
         />
       </mat-form-field>
 
-      <mat-slide-toggle
-        color="primary"
-        class="mb-3"
-        formControlName="proxyPayment"
-      >
-        <div class="d-flex align-items-center justify-content-between">
-          <span>{{ "purchaseCreate.proxyPayment" | translate }}</span>
-          <button
-            type="button"
-            mat-icon-button
-            [matTooltip]="'purchaseDraft.proxyPaymentIsUsedWhen' | translate"
-          >
-            <mat-icon>help</mat-icon>
-          </button>
-        </div>
-      </mat-slide-toggle>
+      <!--
+        Pembayaran proxy sebagai PILIHAN, bukan sakelar.
 
-      <app-bank-account-selector
-        formControlName="bankAccountID"
-        [label]="'purchaseCreate.bankAccountOrigin' | translate"
-        class="w-100"
-      />
-
-      <mat-slide-toggle
-        color="primary"
-        class="mb-3"
-        formControlName="createPayment"
-      >
-        <div class="d-flex align-items-center justify-content-between">
-          <span>{{ "purchaseCreate.createPaymentSlip" | translate }}</span>
-          <button
-            type="button"
-            mat-icon-button
-            [matTooltip]="'purchaseDraft.createPaymentSlipAutomaticallyInst' | translate"
-          >
-            <mat-icon>help</mat-icon>
-          </button>
+        "Pembayaran Proxy" tidak menyebutkan apa pun tentang ke mana uangnya
+        pergi, dan keterangannya bersembunyi di balik tooltip — yang tidak ada
+        di layar sentuh. Dua kartu berdampingan menyebut akibat masing-masing:
+        satunya masuk ke rekening pemasok, satunya ke rekening staf yang
+        meneruskan.
+      -->
+      <div class="pc-pilih">
+        <div class="pc-pilih__judul">
+          {{ "purchaseCreate.proxyTitle" | translate }}
         </div>
-      </mat-slide-toggle>
+        <div class="pc-pilih__kartu">
+          @for (o of pilihanProxy; track $index) {
+            <label
+              class="pc-kartu"
+              [class.on]="paymentFormGroup.get('proxyPayment')?.value === o.value"
+            >
+              <input
+                type="radio"
+                formControlName="proxyPayment"
+                [value]="o.value"
+                hidden
+              />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="pc-kartu__teks">
+                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
+                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
+
+      @if (paymentFormGroup.get("proxyPayment")?.value === true) {
+        <div class="pc-banner">
+          <mat-icon>assignment</mat-icon>
+          <div>
+            <strong>{{ "purchaseCreate.proxySuratJudul" | translate }}</strong>
+            <span>{{ "purchaseCreate.proxySuratKet" | translate }}</span>
+          </div>
+        </div>
+      }
+
+      <!--
+        Keterangannya di layar, bukan di tooltip: tooltip tidak muncul pada
+        layar sentuh, dan sakelar ini menentukan apakah pembayarannya tercatat
+        sama sekali.
+      -->
+      <div class="pc-sakelar">
+        <mat-slide-toggle color="primary" formControlName="createPayment">
+          {{ "purchaseCreate.createPaymentSlip" | translate }}
+        </mat-slide-toggle>
+        <span class="pc-sakelar__ket">{{
+          "purchaseCreate.createPaymentSlipKet" | translate
+        }}</span>
+      </div>
+
+      <!--
+        Rekening asal MENGIKUTI sakelar di atasnya, dan berada di bawahnya.
+
+        Nilainya hanya terbaca di dalam cabang `createPayment === true` pada
+        `onSubmit()`; ia bukan bagian dari dokumen pembeliannya sendiri. Tanpa
+        slip, isian ini tidak pernah sampai ke mana pun — tetapi tetap tampak
+        seperti sesuatu yang harus dijawab.
+
+        Ditaruh SESUDAH sakelarnya karena urutannya adalah sebabnya: yang di
+        atas menentukan apakah yang di bawah ada sama sekali.
+      -->
+      @if (paymentFormGroup.get("createPayment")?.value === true) {
+        <app-bank-account-selector
+          formControlName="bankAccountID"
+          [label]="'purchaseCreate.bankAccountOrigin' | translate"
+          class="w-100"
+        />
+      }
     </form>
 
-    <button
-      class="btn"
-      (click)="onSubmit()"
-      [disabled]="!isValid || isSubmitting"
-    >
-      {{ "purchaseCreate.submit" | translate }}
-    </button>
+    <!--
+      `btn` polos milik Bootstrap tidak punya warna apa pun — tombol kirimnya
+      tampil seperti teks biasa. Bentuknya disamakan dengan `poa-submit` pada
+      formulir purchase order.
+    -->
+    <div class="pc-actions">
+      <span class="pc-spacer"></span>
+      <button
+        type="button"
+        class="pc-submit"
+        (click)="onSubmit()"
+        [disabled]="!isValid || isSubmitting"
+      >
+        {{ "purchaseCreate.submit" | translate }}
+      </button>
+    </div>
   </div>
+</div>
 

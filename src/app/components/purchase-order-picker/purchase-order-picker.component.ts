@@ -72,7 +72,11 @@ export class PurchaseOrderPickerComponent implements OnInit {
       .get('purchase-orders/', {
         keyword: (this.searchBar.value || '').trim(),
         page: halaman + 1,
-        pageSize: 10,
+        // `page_size`, bukan `pageSize`. FastAPI mencocokkan nama persis dan
+        // membuang yang tidak dikenal tanpa galat — nilainya diam-diam jatuh
+        // ke bawaan 10, sehingga mengubah angka di sini tidak berpengaruh apa
+        // pun.
+        page_size: 10,
       })
       .subscribe({
         next: (res: any) => {
@@ -93,7 +97,11 @@ export class PurchaseOrderPickerComponent implements OnInit {
   pemasok(po: any): string {
     // `vendorDisplayName` menangani awalan ganda ("PT. PT Adhimix"), titik
     // berlebih, dan prefiks non-entitas seperti "Pribadi".
-    const hasil = vendorDisplayName(po?.supplier_name, po?.supplier_prefix);
+    // `supplierName`/`supplierPrefix`, bukan `supplier_name`. Jawaban
+    // `purchase-orders/` disaring lewat `PurchaseOrderResponse`, dan seluruh
+    // bidangnya camelCase — nama bergaris bawah selalu `undefined`, sehingga
+    // kolom pemasok pada daftar ini selalu terbaca "—".
+    const hasil = vendorDisplayName(po?.supplierName, po?.supplierPrefix);
     return hasil === '-' ? '—' : hasil;
   }
 
@@ -123,7 +131,11 @@ export class PurchaseOrderPickerComponent implements OnInit {
     this.dialogRef.close({
       purchaseOrderName: po?.name ?? '',
       supplierID: po?.supplierID ?? null,
-      supplierName: po?.supplier_name ?? '',
+      supplierName: po?.supplierName ?? '',
+      // Alamat ikut dibawa: dokumen pembelian mencetaknya, dan pemilihan
+      // lewat pencarian pemasok biasa sudah mengisinya. Tanpa ini, pembelian
+      // yang dibuat dari purchase order tercetak tanpa alamat.
+      supplierAddress: po?.supplierAddress ?? '',
       projectName: po?.projectName ?? '',
       purchaseType: po?.purchaseType ?? '',
       dpp: this.angka(po?.dpp),

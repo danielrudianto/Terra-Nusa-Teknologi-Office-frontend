@@ -1,186 +1,296 @@
-$brand: var(--brand, #154dec);
-$brand-soft: var(--brand-soft, #e7ecfb);
-$ink: var(--ink, #16181d);
-$muted: var(--muted, #6b7280);
-$faint: var(--faint, #9aa0ab);
-$line: var(--line, #eef0f3);
+/*
+ * Formulir pembelian.
+ *
+ * Bentuknya mengikuti formulir purchase order (`poa-*`): papan kartu, judul
+ * seksi kecil huruf besar, dan petak isian yang sama. Keduanya dikerjakan
+ * berurutan oleh orang yang sama dalam satu hari; tampil berbeda membuatnya
+ * terbaca seperti dua aplikasi.
+ *
+ * Seluruh warna lewat token `--*`, bukan nilai tetap: tema gelap mengganti
+ * token yang sama, dan warna yang ditulis langsung tidak ikut berganti.
+ */
 
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
-  max-width: 880px;
+  /* Ditegaskan di sini karena kartu di bawah menyediakan latarnya sendiri;
+     tanpa ini isinya mewarisi warna halaman, yang belum tentu sepasang. */
+  color: var(--ink, #16181d);
+}
+
+/* ============ KERANGKA ============ */
+
+.pc {
+  width: 100%;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 0.5rem 0 3rem;
-  color: $ink;
+  padding-bottom: 2rem;
 }
 
-/* ============ STEPPER SHELL ============ */
-:host ::ng-deep .mat-stepper-horizontal {
-  background: transparent;
-  font-family: "Montserrat", sans-serif;
-}
-
-/* header row -> clean progress bar inside a card */
-:host ::ng-deep .mat-horizontal-stepper-header-container {
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 16px;
-  padding: 0.4rem 0.6rem;
-  margin-bottom: 1.25rem;
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
-}
-
-:host ::ng-deep .mat-step-header {
-  border-radius: 12px;
-  padding: 0.6rem 0.9rem;
-
-  &:hover {
-    background: var(--hover, #f6f8ff);
-  }
-  .mat-step-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: $muted;
-  }
-  .mat-step-label-selected {
-    color: $brand;
-    font-weight: 600;
-  }
-}
-
-/* step number bubbles */
-:host ::ng-deep .mat-step-icon {
-  background-color: var(--surface-2, #eef1f6);
-  color: $muted;
-  font-weight: 600;
-}
-:host ::ng-deep .mat-step-icon-selected,
-:host ::ng-deep .mat-step-icon-state-edit,
-:host ::ng-deep .mat-step-icon-state-done {
-  background-color: $brand !important;
-  color: #fff !important;
-}
-
-/* connector line between steps */
-:host ::ng-deep .mat-stepper-horizontal-line {
-  border-top-color: var(--border, #e3e6eb);
-}
-
-/* step body -> white card */
-:host ::ng-deep .mat-horizontal-content-container {
+/*
+ * Kartu.
+ *
+ * Kelas ini dipakai templat sejak stepper-nya dilepas, tetapi tidak pernah
+ * ditulis — sehingga seluruh formulir tampil tanpa papan sama sekali, dan
+ * pada tema gelap teksnya seolah mengambang di latar halaman.
+ */
+.pc-card {
   background: var(--surface, #ffffff);
   border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
-  padding: 1.75rem 1.75rem 1.25rem;
-  box-shadow:
+  box-shadow: var(
+    --card-shadow,
     0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
+    0 4px 16px rgba(16, 24, 40, 0.05)
+  );
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-/* ============ FORM FIELDS ============ */
+.pc-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/*
+ * Judul seksi.
+ *
+ * Kecil, huruf besar, dan redup — sama seperti `poa-section__title`. Sebagai
+ * teks biasa ia mewarisi `--ink`, yang pada tema gelap nyaris putih dan
+ * membacanya sebagai judul halaman, bukan penanda seksi.
+ */
+.pc-section__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+/* ============ ISIAN ============ */
+
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
   --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
   --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
   --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
   --mdc-outlined-text-field-label-text-font: "Montserrat", sans-serif;
   --mdc-outlined-text-field-input-text-font: "Montserrat", sans-serif;
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
-/* tighten default Material field spacing a touch */
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
   min-height: 1rem;
 }
 
-/* section spacing helpers already present in template (.mt-3, .my-3) get rhythm */
 :host ::ng-deep .row {
   margin-bottom: 0.15rem;
 }
 
-/* divider */
 :host ::ng-deep .mat-divider {
-  border-top-color: $line;
+  border-top-color: var(--line, #eef0f3);
   margin: 1.1rem 0;
 }
 
-/* ============ BUTTONS ============ */
-/* primary actions (Next / Create / triggers) */
-:host ::ng-deep .mat-mdc-raised-button.mat-primary,
-:host ::ng-deep .mat-mdc-raised-button:not([disabled]):not(.mat-warn) {
-  --mdc-protected-button-container-color: #{$brand};
-  --mdc-protected-button-label-text-color: #fff;
-  border-radius: 12px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  letter-spacing: 0;
-  box-shadow: none !important;
-  height: 42px;
-}
-
-/* secondary / back buttons */
-:host ::ng-deep .mat-mdc-button:not(.mat-primary) {
-  border-radius: 12px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  color: $muted;
-  height: 42px;
-}
-
-:host ::ng-deep .mat-mdc-outlined-button {
-  border-radius: 12px;
-  --mdc-outlined-button-outline-color: var(--border, #dfe3ea);
-  font-weight: 600;
-  height: 42px;
-}
-
-/* warn (delete-ish) stays red but rounded */
-:host ::ng-deep .mat-mdc-raised-button.mat-warn {
-  border-radius: 12px;
-  box-shadow: none !important;
-}
-
-/* action button rows: neat right-aligned footer */
-:host ::ng-deep .mat-horizontal-content-container form > button,
-:host ::ng-deep .mat-horizontal-content-container > button {
-  margin-top: 0.25rem;
-}
-
-/* ============ CHECKBOXES (attachments step) ============ */
 :host ::ng-deep .mat-mdc-checkbox {
-  --mdc-checkbox-selected-icon-color: #{$brand};
-  --mdc-checkbox-selected-focus-icon-color: #{$brand};
-  --mdc-checkbox-selected-hover-icon-color: #{$brand};
-  --mdc-checkbox-selected-pressed-icon-color: #{$brand};
-  --mdc-checkbox-selected-container-color: #{$brand};
+  --mdc-checkbox-selected-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-focus-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-hover-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-pressed-icon-color: var(--brand, #154dec);
+  --mdc-checkbox-selected-container-color: var(--brand, #154dec);
 
   display: block;
   padding: 0.15rem 0;
+
   .mdc-form-field label {
     font-size: 0.9rem;
-    color: $ink;
+    color: var(--ink, #16181d);
     font-family: "Montserrat", sans-serif;
   }
 }
 
-/* ============ SELECT / OPTIONS ============ */
 :host ::ng-deep .mat-mdc-select-value {
   font-family: "Montserrat", sans-serif;
 }
 
-/* ============ RESPONSIVE ============ */
-@media (max-width: 600px) {
-  :host ::ng-deep .mat-horizontal-content-container {
-    padding: 1.25rem 1rem 1rem;
+/* Sakelar lampiran berdiri sendiri-sendiri; tanpa jarak keduanya berdempet. */
+:host ::ng-deep .mat-mdc-slide-toggle {
+  margin: 0.15rem 0;
+}
+
+/* ============ TOMBOL KIRIM ============ */
+
+.pc-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line, #eef0f3);
+}
+
+.pc-spacer {
+  flex: 1;
+}
+
+.pc-submit {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.6rem;
+  cursor: pointer;
+  border: none;
+  background: var(--brand, #154dec);
+  /*
+   * `--on-brand`, bukan `#fff`. Aksen tema gelap sengaja terang, dan putih di
+   * atasnya hanya berkontras 2,5:1 — aturan yang sudah ditulis di styles.scss.
+   */
+  color: var(--on-brand, #ffffff);
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
   }
-  :host {
-    padding-bottom: 2rem;
+
+  &:disabled {
+    background: var(--surface-2, #e6e9ee);
+    color: var(--faint, #9aa0ab);
+    cursor: default;
   }
 }
+
+/* ============ KETERANGAN & TINDAKAN ============ */
+
+/*
+ * Keterangan bernada netral: menjelaskan keadaan, tidak menuntut apa pun.
+ *
+ * Dibedakan dari `.pc-tagihan` yang kuning — yang itu harus diperiksa sebelum
+ * melanjutkan, yang ini cukup dibaca sekali.
+ */
+.pc-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  /* Teks DI ATAS `--brand-soft`; pada tema gelap latarnya gelap dan
+     `--brand-strong` adalah pasangan terangnya. */
+  color: var(--brand-strong, #0f3fd0);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+}
+
+/* Tombol hitung total beserta keterangannya. */
+.pc-hitung {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.35rem 0 0.9rem;
+}
+
+.pc-hitung__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border: 0.5px solid var(--border, #d7deea);
+  background: var(--surface, #ffffff);
+  color: var(--brand, #154dec);
+  border-radius: 10px;
+  padding: 0.5rem 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--hover, #f3f6ff);
+  }
+
+  &:disabled {
+    color: var(--faint, #9aa0ab);
+    cursor: default;
+  }
+}
+
+.pc-hitung__ket {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+  min-width: 0;
+}
+
+/* Sakelar beserta keterangan yang terbaca tanpa harus menyorot apa pun. */
+.pc-sakelar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.pc-sakelar__ket {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+  /*
+   * Rata kiri, tidak dijorokkan mengikuti label sakelarnya.
+   *
+   * Lebar tuas Material ditentukan tokennya sendiri dan berubah antar versi;
+   * jarak tetap apa pun yang ditulis di sini akan meleset pada versi
+   * berikutnya, dan melesetnya tidak terlihat sampai ada yang membukanya.
+   */
+}
+
+/* ============ RIWAYAT TAGIHAN ============ */
 
 /*
  * Riwayat tagihan atas purchase order yang dirujuk.
@@ -285,36 +395,9 @@ $line: var(--line, #eef0f3);
   opacity: 0.9;
 }
 
-/*
- * Kerangka kartu — disalin dari formulir purchase order.
- *
- * Formulir ini dibuat lebih dulu dan memakai stepper polos tanpa gaya;
- * berdampingan dengan PO ia terbaca seperti bagian aplikasi yang berbeda.
- * Yang disamakan bentuk papan, judul seksi, dan petaknya — bukan isinya.
- */
-
-:host {
-  display: block;
-  font-family: "Montserrat", sans-serif;
-}
-
-
-/* Judul seksi berikut ikonnya. */
-.pc-section__title {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-
-  .mat-icon {
-    width: 17px;
-    height: 17px;
-    font-size: 17px;
-  }
-}
+/* ============ PILIHAN BERBENTUK KARTU ============ */
 
 /*
- * Pilihan berbentuk kartu.
- *
  * Menggantikan `mat-select` pada pilihan yang MENGUBAH perilaku dokumen.
  * Daftar tarik-turun menyembunyikan akibatnya: "Menunggu dokumen" tampak
  * setara dengan "Dokumen siap", padahal yang satu menyimpannya sebagai draf
@@ -331,6 +414,59 @@ $line: var(--line, #eef0f3);
   text-transform: uppercase;
   color: var(--faint, #9aa0ab);
   margin-bottom: 0.6rem;
+}
+
+/*
+ * Baris judul yang membawa angka hasil hitungan di ujung kanan.
+ *
+ * Angkanya sejajar dengan deret kartu di bawahnya, bukan berdampingan sebagai
+ * kolom tersendiri: yang di bawah adalah pilihan, yang di sini akibatnya.
+ */
+.pc-pilih__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+
+  .pc-pilih__judul {
+    margin-bottom: 0;
+  }
+}
+
+.pc-nilai {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.pc-nilai__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+}
+
+.pc-nilai__angka {
+  font-size: 0.95rem;
+  font-weight: 700;
+  /* Angka rata lebarnya; tanpa ini digit berpindah tempat setiap kali
+     nilainya berubah, dan perubahannya sulit diikuti mata. */
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #16181d);
+  white-space: nowrap;
+}
+
+/* Pada layar sempit angkanya turun ke baris sendiri, tetap rata kiri dengan
+   judulnya — bukan terjepit sampai terpotong. */
+@media (max-width: 520px) {
+  .pc-pilih__kepala {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
 }
 
 .pc-pilih__kartu {
@@ -402,4 +538,17 @@ $line: var(--line, #eef0f3);
   font-size: 0.74rem;
   line-height: 1.45;
   color: var(--muted, #6b7280);
+}
+
+/* ============ LAYAR KECIL ============ */
+
+@media (max-width: 600px) {
+  .pc-card {
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+  }
+
+  .pc {
+    padding-bottom: 1.5rem;
+  }
 }
