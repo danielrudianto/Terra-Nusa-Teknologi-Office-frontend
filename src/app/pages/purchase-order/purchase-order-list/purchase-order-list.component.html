@@ -144,15 +144,20 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let po">
+            <!--
+              Nama pemasok dibaca lewat `supplierLabel`, bukan langsung dari
+              bidangnya.
+
+              Templat ini dulu menyebut `po.supplierName` sementara berkas
+              `.ts` di sebelahnya menyusunnya dari `supplier_name` — dua
+              bentuk untuk satu hal. Ketika label kueri backend berganti,
+              yang satu ikut dan yang lain tertinggal, dan seluruh kolom ini
+              berubah menjadi "—" berikut lencana "?" tanpa satu pun galat.
+            -->
             <div class="pol-sup">
-              <span class="pol-avatar">{{
-                (po.supplierName || "?").charAt(0)
-              }}</span>
+              <span class="pol-avatar">{{ inisialPemasok(po) }}</span>
               <div class="pol-sup__text">
-                <span class="pol-primary">{{ po.supplierName || "—" }}</span>
-                <span class="pol-secondary" *ngIf="po.supplierPrefix">{{
-                  po.supplierPrefix
-                }}</span>
+                <span class="pol-primary">{{ supplierLabel(po) }}</span>
               </div>
             </div>
           </td>

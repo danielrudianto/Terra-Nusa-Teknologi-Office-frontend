@@ -12,7 +12,7 @@ import { debounceTime } from 'rxjs';
 
 import { DialogGeserDirective } from '../../directives/dialog-geser.directive';
 import { ApiService } from '../../services/api.service';
-import { vendorDisplayName } from '../../helpers/purchase-order-shared.helper';
+import { namaPemasokBaris } from '../../helpers/purchase-order-shared.helper';
 
 /**
  * Pilih purchase order yang akan ditagih, lalu salin datanya ke pembelian.
@@ -113,18 +113,16 @@ export class PurchaseOrderPickerComponent implements OnInit {
       });
   }
 
-  /** Nama pemasok beserta awalannya, seperti tercetak pada dokumen. */
+  /**
+   * Nama pemasok beserta awalannya, seperti tercetak pada dokumen.
+   *
+   * Nama bidangnya TIDAK disebut di sini. `namaPemasokBaris` yang
+   * mengetahuinya, dan ia satu-satunya yang mengetahuinya — sebab penamaan
+   * itu pernah berbeda antara kueri daftar dan kueri satu dokumen, dan
+   * perbedaannya hanya terlihat sebagai kolom kosong.
+   */
   pemasok(po: any): string {
-    // `vendorDisplayName` menangani awalan ganda ("PT. PT Adhimix"), titik
-    // berlebih, dan prefiks non-entitas seperti "Pribadi".
-    // `supplier_name`/`supplier_prefix`, MENGIKUTI label kueri daftarnya.
-    //
-    // `PurchaseOrderResponse` mencantumkan kedua nama bergaris bawah itu
-    // secara tersendiri, persis agar hasil join pada daftar lolos penyaring
-    // `response_model`. Memakai bentuk camelCase di sini membuat namanya
-    // selalu `undefined` dan seluruh baris terbaca "—" — dan itu tidak
-    // menimbulkan galat apa pun, hanya kolom yang kosong.
-    const hasil = vendorDisplayName(po?.supplier_name, po?.supplier_prefix);
+    const hasil = namaPemasokBaris(po);
     return hasil === '-' ? '—' : hasil;
   }
 
@@ -158,7 +156,7 @@ export class PurchaseOrderPickerComponent implements OnInit {
       id: po?.id ?? null,
       purchaseOrderName: po?.name ?? '',
       supplierID: po?.supplierID ?? null,
-      supplierName: po?.supplier_name ?? '',
+      supplierName: po?.supplierName ?? po?.supplier_name ?? '',
       // Alamat ikut dibawa: dokumen pembelian mencetaknya, dan pemilihan
       // lewat pencarian pemasok biasa sudah mengisinya. Tanpa ini, pembelian
       // yang dibuat dari purchase order tercetak tanpa alamat.

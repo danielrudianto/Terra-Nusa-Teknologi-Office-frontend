@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../directives/can.directive';
 import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
+import { namaPemasokBaris } from '../../../helpers/purchase-order-shared.helper';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -310,10 +311,31 @@ export class PurchaseOrderListComponent {
     this.fetch(event.pageIndex + 1);
   }
 
+  /**
+   * Nama pemasok pada satu baris daftar.
+   *
+   * Nama bidangnya dibaca `namaPemasokBaris`, satu-satunya tempat yang
+   * mengetahuinya. Sebelumnya fungsi ini menyusunnya sendiri dari
+   * `supplier_prefix`/`supplier_name` sementara templat di sebelahnya membaca
+   * `supplierName` — dua bentuk berbeda untuk satu hal, di dalam satu berkas
+   * yang sama. Ketika kueri backend berganti bentuk, satu ikut dan satu
+   * tertinggal, dan yang tertinggal berubah menjadi "—" tanpa galat.
+   */
   supplierLabel(po: any): string {
-    return (
-      [po.supplier_prefix, po.supplier_name].filter(Boolean).join(' ') || '—'
-    );
+    const hasil = namaPemasokBaris(po);
+    return hasil === '-' ? '—' : hasil;
+  }
+
+  /**
+   * Huruf pertama nama pemasok, untuk lencana bundar di sebelah kiri baris.
+   *
+   * Diambil dari nama yang SUDAH disusun, bukan dari bidangnya langsung —
+   * kalau tidak, lencananya bisa menunjukkan "?" sementara namanya di
+   * sebelahnya terbaca dengan benar, atau sebaliknya.
+   */
+  inisialPemasok(po: any): string {
+    const nama = this.supplierLabel(po);
+    return nama === '—' ? '?' : nama.charAt(0).toUpperCase();
   }
 
   /**

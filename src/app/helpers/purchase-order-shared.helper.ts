@@ -628,3 +628,27 @@ export function vendorDisplayName(name?: string, prefix?: string): string {
   if (bersih.toLowerCase().startsWith(p.toLowerCase())) return bersih;
   return `${p} ${bersih}`.trim();
 }
+
+/**
+ * Nama pemasok dari SATU BARIS jawaban purchase order.
+ *
+ * Ada karena penamaannya pernah berbeda antara kueri daftar dan kueri satu
+ * dokumen: yang satu `supplierName`, yang lain `supplier_name`. Perbedaan itu
+ * tidak menimbulkan galat apa pun — bidang yang salah nama hanya bernilai
+ * `undefined`, dan seluruh kolom pemasok berubah menjadi "—" berikut lencana
+ * "?" seolah datanya yang hilang.
+ *
+ * Backend kini seragam camelCase dan dijaga pengujian di sana. Bentuk
+ * bergaris bawah tetap dibaca di sini sebagai jaring pengaman: backend dan
+ * frontend disebar terpisah, dan di antara kedua penyebaran itu jawaban lama
+ * masih beredar.
+ *
+ * Satu fungsi untuk seluruh layar — daftar, pemilih, cetak — supaya nama
+ * bidangnya hanya disebut di SATU tempat.
+ */
+export function namaPemasokBaris(po: any): string {
+  return vendorDisplayName(
+    po?.supplierName ?? po?.supplier_name,
+    po?.supplierPrefix ?? po?.supplier_prefix,
+  );
+}
