@@ -93,6 +93,43 @@
             >− Rp {{ valueFormGroup.get("pph")?.value | number: "1.0-0" }}</span
           >
         </div>
+
+        <!--
+          Kode objek PPh, sama seperti pada layar lihat.
+
+          DITAMPILKAN selama kodenya ada, tidak bergantung pada nominalnya.
+          Tarif nol memang sah — `21-100-35` bertarif nol — dan justru di situ
+          kodenya paling perlu terbaca: tanpa kodenya, potongan "Rp 0" tidak
+          dapat dibedakan dari "belum ditentukan".
+
+          Yang membayar memeriksa kode ini terhadap bukti potong yang akan
+          diterbitkan; memaksanya membuka layar lain untuk itu membuat
+          pemeriksaannya kerap dilewati.
+        -->
+        @if (valueFormGroup.get("pphCode")?.value) {
+          <div class="pph-kode">
+            <div class="pph-kode__teks">
+              <span class="pph-kode__kode">{{
+                valueFormGroup.get("pphCode")?.value
+              }}</span>
+              @if (valueFormGroup.get("pphTaxObject")?.value) {
+                <span class="pph-kode__nama">{{
+                  valueFormGroup.get("pphTaxObject")?.value
+                }}</span>
+              }
+            </div>
+            <button
+              mat-icon-button
+              type="button"
+              class="pph-kode__salin"
+              (click)="salinKodePph()"
+              [attr.aria-label]="'purchase.viewCopyPphObject' | translate"
+            >
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        }
+
         <div class="epc-money__row epc-money__row--total">
           <span>{{ "common.totalBill" | translate }}</span
           ><span

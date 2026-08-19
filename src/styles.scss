@@ -984,3 +984,62 @@ html[data-density="compact"] {
     gap: 0.25rem;
   }
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Kode objek PPh
+ * ---------------------------------------------------------------------------
+ *
+ * Kode dan nama objek pajak, ditampilkan berdampingan dengan nominal
+ * potongannya. Bentuknya diangkat dari layar lihat pembelian (`.pv-pph`) agar
+ * dialog pembayaran menampilkan hal yang sama persis — yang membayar dan yang
+ * memeriksa membaca dokumen yang sama, dan dua bentuk berbeda untuk satu
+ * keterangan membuat orang ragu apakah datanya juga berbeda.
+ *
+ * DITAMPILKAN selama kodenya ada, tidak peduli nominalnya nol. Tarif nol
+ * memang sah — `21-100-35` bertarif nol — dan justru pada keadaan itu kodenya
+ * paling perlu terbaca: tanpa kodenya, potongan nol tidak dapat dibedakan
+ * dari "belum ditentukan".
+ */
+.pph-kode {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0.65rem 0 0.25rem;
+  padding: 0.85rem 0.6rem 0.85rem 1rem;
+  background: var(--brand-soft, #f3f6ff);
+  border: 0.5px solid var(--border, #e0e7fb);
+  border-radius: 12px;
+}
+
+.pph-kode__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pph-kode__kode {
+  align-self: flex-start;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+  background: var(--brand-soft, #e2e9fd);
+  border-radius: 6px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.pph-kode__nama {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+  word-break: break-word;
+}
+
+.pph-kode__salin {
+  flex: 0 0 auto;
+  color: var(--brand, #154dec) !important;
+}

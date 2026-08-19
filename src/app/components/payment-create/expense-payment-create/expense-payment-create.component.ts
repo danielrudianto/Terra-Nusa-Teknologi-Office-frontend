@@ -25,6 +25,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-expense-payment-create',
@@ -46,10 +48,12 @@ import { MatIconModule } from '@angular/material/icon';
     TranslatePipe,
     DialogGeserDirective,
     MatIconModule,
+    MatButtonModule,
   ],
 })
 export class ExpensePaymentCreateComponent {
   private readonly translate = inject(TranslateService);
+  private readonly clipboard = inject(Clipboard);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
@@ -86,6 +90,26 @@ export class ExpensePaymentCreateComponent {
     pbbkb: new FormControl('', Validators.required),
     total: new FormControl('', Validators.required),
   });
+
+
+  /**
+   * Salin kode objek PPh beserta namanya.
+   *
+   * Bentuknya sama persis dengan layar lihat pembelian — `[kode] nama` —
+   * karena yang menyalinnya menempelkannya ke tempat yang sama: keterangan
+   * bukti potong. Dua bentuk berbeda untuk satu keterangan membuat yang
+   * menerimanya harus merapikan sendiri.
+   */
+  salinKodePph(): void {
+    const kode = this.valueFormGroup.get('pphCode')?.value;
+    const nama = this.valueFormGroup.get('pphTaxObject')?.value;
+    if (!kode && !nama) return;
+
+    this.clipboard.copy(`[${kode || '-'}] ${nama || ''}`.trim());
+    this.snackBar.open(this.translate.instant('notify.copied'), 'Close', {
+      duration: 3000,
+    });
+  }
 
   formGroup: FormGroup = new FormGroup({
     dueDate: new FormControl(''),
