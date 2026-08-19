@@ -37,8 +37,25 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
  * dan `pdf.worker.min.js` tidak ada lagi. Nama yang salah TIDAK menggagalkan
  * build: entri `assets` sekadar tidak menyalin apa pun, dan halaman PDF baru
  * gagal ketika seseorang membukanya.
+ *
+ * Berawalan GARIS MIRING. `'assets/pdf.worker.min.mjs'` tanpa garis miring
+ * adalah "bare specifier" bagi ES module.
+ *
+ * Selama worker aslinya berhasil dimuat, bedanya tidak terasa: `new Worker()`
+ * memakai aturan URL biasa, dan yang relatif diselesaikan terhadap
+ * `<base href="/">`. Tetapi ketika pemuatan worker GAGAL — misalnya berkasnya
+ * disajikan dengan tipe MIME yang keliru — pdfjs beralih ke "fake worker" dan
+ * menjalankan `import(this.workerSrc)` (pdf.mjs:15672). Di situ aturannya
+ * berbeda: penentu modul yang tidak diawali `/`, `./`, atau `../` harus
+ * dipetakan lewat import map, dan tanpa itu peramban menolaknya:
+ *
+ *   Failed to resolve module specifier 'assets/pdf.worker.min.mjs'
+ *
+ * Galat itu tidak menyebut worker aslinya sama sekali, sehingga yang
+ * membacanya mengira persoalannya pada berkas worker — padahal sebabnya ada
+ * pada jawaban server satu langkah sebelumnya.
  */
-pdfjslib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.mjs';
+pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 
 /**
  * Satu coretan pada halaman.
