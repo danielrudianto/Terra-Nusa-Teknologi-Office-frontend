@@ -294,7 +294,7 @@ export class PurchaseOrderListComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal memuat purchase order',
+            this.serverMessage.terjemahkan(err, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );
@@ -312,7 +312,7 @@ export class PurchaseOrderListComponent {
 
   supplierLabel(po: any): string {
     return (
-      [po.supplierPrefix, po.supplierName].filter(Boolean).join(' ') || '—'
+      [po.supplier_prefix, po.supplier_name].filter(Boolean).join(' ') || '—'
     );
   }
 
@@ -1510,7 +1510,7 @@ export class PurchaseOrderListComponent {
           },
           error: (err) => {
             this.snackBar.open(
-              err?.error?.detail || 'Gagal menghapus',
+              this.serverMessage.terjemahkan(err, 'notify.deleteFailed'),
               'Close',
               { duration: 3000 },
             );

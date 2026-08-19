@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { CanDirective } from '../../../directives/can.directive';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -51,6 +52,8 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
 })
 export class EmployeeListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
 
@@ -236,8 +239,7 @@ export class EmployeeListComponent {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('employeeForm.undanganGagal'),
+            this.serverMessage.terjemahkan(err, 'employeeForm.undanganGagal'),
             'Tutup',
             { duration: 4000 },
           ),

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import {
   FormControl,
@@ -42,6 +43,8 @@ import { PermissionService } from 'src/app/services/permission.service';
   styleUrl: './master-item-update.component.scss',
 })
 export class MasterItemUpdateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -211,7 +214,7 @@ export class MasterItemUpdateComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal memperbarui master item',
+            this.serverMessage.terjemahkan(err, 'notify.updateFailed'),
             'Close',
             { duration: 3000 },
           );

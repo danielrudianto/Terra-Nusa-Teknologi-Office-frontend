@@ -178,7 +178,7 @@ export class MasterItemListComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal memuat data',
+            this.serverMessage.terjemahkan(err, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );
@@ -289,7 +289,7 @@ export class MasterItemListComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal import CSV',
+            this.serverMessage.terjemahkan(err, 'notify.createFailed'),
             'Close',
             { duration: 4000 },
           );
@@ -402,7 +402,7 @@ export class MasterItemListComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal menghapus item',
+            this.serverMessage.terjemahkan(err, 'notify.deleteFailed'),
             'Close',
             { duration: 3000 },
           );

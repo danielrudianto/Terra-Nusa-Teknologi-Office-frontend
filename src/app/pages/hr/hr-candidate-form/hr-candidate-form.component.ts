@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -47,6 +48,8 @@ interface Baris {
   styleUrl: './hr-candidate-form.component.scss',
 })
 export class HrCandidateFormComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly apiService = inject(ApiService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -150,8 +153,7 @@ export class HrCandidateFormComponent {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('hrCandidate.gagalDaftar'),
+            this.serverMessage.terjemahkan(err, 'hrCandidate.gagalDaftar'),
             this.translate.instant('common.close'),
             { duration: 4000 },
           ),

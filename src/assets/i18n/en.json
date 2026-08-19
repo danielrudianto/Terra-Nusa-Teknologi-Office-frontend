@@ -3446,6 +3446,7 @@
     "hapusIzinKhusus": "Remove special permission"
   },
   "notify": {
+    "pembelianGagalDicatat": "The document was created, but the purchase could not be recorded.",
     "createSuccess": "Created successfully",
     "updateSuccess": "Updated successfully",
     "deleteSuccess": "Deleted successfully",

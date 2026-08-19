@@ -3446,6 +3446,7 @@
     "hapusIzinKhusus": "删除特殊权限"
   },
   "notify": {
+    "pembelianGagalDicatat": "单据已创建，但采购未能登记。",
     "createSuccess": "创建成功",
     "updateSuccess": "更新成功",
     "deleteSuccess": "删除成功",

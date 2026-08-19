@@ -258,7 +258,7 @@ export class IncomeListComponent {
           },
           error: (error) => {
             this.snackBar.open(
-              error?.error?.detail || 'Failed to delete income',
+              this.serverMessage.terjemahkan(error, 'notify.actionFailed'),
               'Close',
               { duration: 3000 },
             );

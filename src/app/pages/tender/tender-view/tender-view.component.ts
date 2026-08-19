@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -39,6 +40,8 @@ import {
   styleUrl: './tender-view.component.scss',
 })
 export class TenderViewComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly service = inject(TenderService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -247,7 +250,7 @@ export class TenderViewComponent implements OnInit {
         this.muat();
       },
       error: (e: any) =>
-        this.snackBar.open(e?.error?.detail || 'Gagal', 'Close', {
+        this.snackBar.open(this.serverMessage.terjemahkan(e, 'notify.actionFailed'), 'Close', {
           duration: 4000,
         }),
     });
@@ -270,7 +273,7 @@ export class TenderViewComponent implements OnInit {
         this.service.batalkan(this.tenderId).subscribe({
           next: () => this.muat(),
           error: (e: any) =>
-            this.snackBar.open(e?.error?.detail || 'Gagal', 'Close', {
+            this.snackBar.open(this.serverMessage.terjemahkan(e, 'notify.actionFailed'), 'Close', {
               duration: 4000,
             }),
         });
@@ -301,7 +304,7 @@ export class TenderViewComponent implements OnInit {
             this.muat();
           },
           error: (e: any) =>
-            this.snackBar.open(e?.error?.detail || 'Gagal', 'Close', {
+            this.snackBar.open(this.serverMessage.terjemahkan(e, 'notify.actionFailed'), 'Close', {
               duration: 4000,
             }),
         });
@@ -327,7 +330,7 @@ export class TenderViewComponent implements OnInit {
         this.service.hapusPenawaran(this.tenderId, quote.id).subscribe({
           next: () => this.muat(),
           error: (e: any) =>
-            this.snackBar.open(e?.error?.detail || 'Gagal', 'Close', {
+            this.snackBar.open(this.serverMessage.terjemahkan(e, 'notify.actionFailed'), 'Close', {
               duration: 4000,
             }),
         });

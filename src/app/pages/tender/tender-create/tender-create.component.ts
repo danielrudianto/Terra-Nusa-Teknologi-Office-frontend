@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, inject } from '@angular/core';
 import {
   FormArray,
@@ -46,6 +47,8 @@ import { TenderService } from 'src/app/services/tender.service';
   styleUrl: './tender-create.component.scss',
 })
 export class TenderCreateComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly service = inject(TenderService);
   private readonly dialog = inject(MatDialog);
@@ -257,7 +260,7 @@ export class TenderCreateComponent implements OnInit {
       },
       error: (e: any) => {
         this.snackBar.open(
-          e?.error?.detail || this.translate.instant('notify.saveFailed'),
+          this.serverMessage.terjemahkan(e, 'notify.saveFailed'),
           'Close',
           { duration: 4000 },
         );

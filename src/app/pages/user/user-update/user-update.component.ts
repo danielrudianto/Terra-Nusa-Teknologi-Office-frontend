@@ -1,3 +1,5 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { inject } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -42,6 +44,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   ],
 })
 export class UserUpdateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private apiService: ApiService,
@@ -80,7 +84,7 @@ export class UserUpdateComponent {
       },
       error: (error) => {
         this.snackBar.open(
-          error.error?.detail || 'Error',
+          this.serverMessage.terjemahkan(error, 'notify.actionFailed'),
           this.translate.instant('user.close'),
           { duration: 3000 },
         );

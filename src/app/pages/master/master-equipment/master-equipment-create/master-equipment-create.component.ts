@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, OnInit, Optional, inject } from '@angular/core';
 import {
   FormControl,
@@ -40,6 +41,8 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
   styleUrl: './master-equipment-create.component.scss',
 })
 export class MasterEquipmentCreateComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -134,10 +137,10 @@ export class MasterEquipmentCreateComponent implements OnInit {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant(
-                this.isUbah ? 'notify.updateFailed' : 'notify.createFailed',
-              ),
+            this.serverMessage.terjemahkan(
+              err,
+              this.isUbah ? 'notify.updateFailed' : 'notify.createFailed',
+            ),
             'Close',
             { duration: 3000 },
           ),

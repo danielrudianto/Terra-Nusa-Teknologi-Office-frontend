@@ -3446,6 +3446,7 @@
     "hapusIzinKhusus": "Hapus izin khusus"
   },
   "notify": {
+    "pembelianGagalDicatat": "Dokumen berhasil dibuat, tetapi pembelian gagal dicatat.",
     "createSuccess": "Data berhasil dibuat",
     "updateSuccess": "Data berhasil diperbarui",
     "deleteSuccess": "Data berhasil dihapus",

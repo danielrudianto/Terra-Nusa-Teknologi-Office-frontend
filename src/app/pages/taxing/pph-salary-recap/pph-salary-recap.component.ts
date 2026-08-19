@@ -1,5 +1,6 @@
 import { DatePipe, CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
@@ -38,6 +39,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   ],
 })
 export class PphSalaryRecapComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   // period passed from the tax hub (select month/year once, reused everywhere)
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
@@ -346,7 +349,7 @@ export class PphSalaryRecapComponent {
         },
         error: (error: any) => {
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal mengambil data PPh gaji',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );

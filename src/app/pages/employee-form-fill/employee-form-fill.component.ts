@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -49,6 +50,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
   styleUrl: './employee-form-fill.component.scss',
 })
 export class EmployeeFormFillComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
@@ -334,8 +337,7 @@ export class EmployeeFormFillComponent implements OnInit {
       error: (err) => {
         this.isSaving = false;
         this.snackBar.open(
-          err?.error?.detail ||
-            this.translate.instant('formFill.gagalSimpan'),
+          this.serverMessage.terjemahkan(err, 'formFill.gagalSimpan'),
           this.translate.instant('common.close'),
           { duration: 4000 },
         );

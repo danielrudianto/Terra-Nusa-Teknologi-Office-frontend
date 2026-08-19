@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -65,6 +66,8 @@ interface Pengecualian {
   styleUrl: './user-access.component.scss',
 })
 export class UserAccessComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -197,7 +200,7 @@ export class UserAccessComponent {
         },
         error: (e) => {
           this.snackBar.open(
-            e?.error?.detail || 'Gagal menyimpan akses pengguna',
+            this.serverMessage.terjemahkan(e, 'notify.updateFailed'),
             'Close',
             { duration: 4000 },
           );

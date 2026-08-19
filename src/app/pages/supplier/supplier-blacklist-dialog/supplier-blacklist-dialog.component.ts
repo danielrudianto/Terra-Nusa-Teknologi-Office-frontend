@@ -1,4 +1,6 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { inject } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,6 +38,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   styleUrl: './supplier-blacklist-dialog.component.scss',
 })
 export class SupplierBlacklistDialogComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   isSubmitting = false;
 
   /** true = currently blacklisted, so this dialog will REMOVE it */
@@ -93,7 +97,7 @@ export class SupplierBlacklistDialogComponent {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail || 'Gagal memperbarui status blacklist',
+            this.serverMessage.terjemahkan(err, 'notify.updateFailed'),
             'Close',
             { duration: 3500 },
           ),

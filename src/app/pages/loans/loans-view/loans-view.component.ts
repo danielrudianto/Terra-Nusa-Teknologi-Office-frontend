@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import {
@@ -32,6 +33,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   styleUrl: './loans-view.component.scss',
 })
 export class LoansViewComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -71,7 +74,7 @@ export class LoansViewComponent implements OnInit {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal memuat data loan',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );

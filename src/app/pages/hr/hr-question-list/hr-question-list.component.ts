@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -67,6 +68,8 @@ interface Soal {
   styleUrl: './hr-question-list.component.scss',
 })
 export class HrQuestionListComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly apiService = inject(ApiService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -110,8 +113,7 @@ export class HrQuestionListComponent implements OnInit {
         next: (res: any) => (this.soal = res || []),
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('hrQuestion.gagalMuat'),
+            this.serverMessage.terjemahkan(err, 'hrQuestion.gagalMuat'),
             this.translate.instant('common.close'),
             { duration: 4000 },
           ),
@@ -201,8 +203,7 @@ export class HrQuestionListComponent implements OnInit {
           },
           error: (err) =>
             this.snackBar.open(
-              err?.error?.detail ||
-                this.translate.instant('hrQuestion.gagalHapus'),
+              this.serverMessage.terjemahkan(err, 'hrQuestion.gagalHapus'),
               this.translate.instant('common.close'),
               { duration: 4000 },
             ),

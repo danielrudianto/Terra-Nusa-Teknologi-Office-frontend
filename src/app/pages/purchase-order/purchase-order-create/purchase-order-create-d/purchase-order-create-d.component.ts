@@ -429,16 +429,29 @@ export class PurchaseOrderCreateDComponent {
         // yang sama — keduanya ditulis dari daftar yang sama saat disimpan.
         const j = jadwalTugas[i] || {};
         const w = this.buildWage();
+
+        /*
+         * Yang TIDAK tersimpan dibiarkan memakai bawaan isiannya, bukan
+         * ditimpa `null`.
+         *
+         * Isian yang bernilai `null` tampil kosong sekaligus tidak sah,
+         * sementara kalimat klausulnya tetap memakai bawaannya sendiri —
+         * sehingga yang terlihat di layar dan yang tercetak berbeda pada
+         * dokumen yang sama. Untuk dokumen lama yang jadwalnya memang hilang,
+         * keduanya sama-sama menunjukkan bawaan, dan itu yang harus dibetulkan
+         * orangnya.
+         */
+        const jadwalAda = (k: string) => j[k] !== undefined && j[k] !== null;
         w.patchValue({
           label: j.label || x?.remarks_3 || 'Upah harian',
           amount: Number(x?.price) || 0,
           unit: x?.unit || 'hari',
-          scheduleType: j.scheduleType || 'weekly',
-          payDay: j.payDay ?? 'Sabtu',
-          payDate: j.payDate ?? null,
-          cutoffDay: j.cutoffDay ?? null,
-          cutoffDate: j.cutoffDate ?? null,
-          cutoffFirst: j.cutoffFirst ?? 15,
+          ...(jadwalAda('scheduleType') ? { scheduleType: j.scheduleType } : {}),
+          ...(jadwalAda('payDay') ? { payDay: j.payDay } : {}),
+          ...(jadwalAda('payDate') ? { payDate: j.payDate } : {}),
+          ...(jadwalAda('cutoffDay') ? { cutoffDay: j.cutoffDay } : {}),
+          ...(jadwalAda('cutoffDate') ? { cutoffDate: j.cutoffDate } : {}),
+          ...(jadwalAda('cutoffFirst') ? { cutoffFirst: j.cutoffFirst } : {}),
         });
         upah.push(w);
       });

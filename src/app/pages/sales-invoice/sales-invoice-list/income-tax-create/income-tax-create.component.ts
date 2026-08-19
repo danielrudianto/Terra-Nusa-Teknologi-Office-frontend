@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -41,6 +42,8 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
   styleUrl: './income-tax-create.component.scss',
 })
 export class IncomeTaxCreateComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -99,7 +102,7 @@ export class IncomeTaxCreateComponent implements OnInit {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal menyimpan bukti potong',
+            this.serverMessage.terjemahkan(error, 'notify.updateFailed'),
             'Close',
             { duration: 3000 },
           );

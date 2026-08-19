@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -48,6 +49,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   styleUrl: './expense-view.component.scss',
 })
 export class ExpenseViewComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -196,7 +199,7 @@ export class ExpenseViewComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal memuat data expense',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );

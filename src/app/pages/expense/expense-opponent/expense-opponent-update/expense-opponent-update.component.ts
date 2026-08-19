@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -43,6 +44,8 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
   ],
 })
 export class ExpenseOpponentUpdateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -82,7 +85,7 @@ export class ExpenseOpponentUpdateComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Failed to load data',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );
@@ -112,7 +115,7 @@ export class ExpenseOpponentUpdateComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Failed to save',
+            this.serverMessage.terjemahkan(error, 'notify.actionFailed'),
             'Close',
             { duration: 3000 },
           );

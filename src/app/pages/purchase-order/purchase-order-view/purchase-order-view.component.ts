@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
 import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { inject } from '@angular/core';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
@@ -78,6 +80,8 @@ const ADENDUM_ROUTES: Record<string, string> = {
   styleUrl: './purchase-order-view.component.scss',
 })
 export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
+  private readonly serverMessage = inject(ServerMessageService);
+
   isLoading = true;
   /*
    * `clauseSections` disusun sekali saat data tiba, bukan lewat getter.
@@ -402,8 +406,7 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
         },
         error: (error: any) => {
           this.snackBar.open(
-            error?.error?.detail ??
-              this.translate.instant('purchaseOrder.viewFailed'),
+            this.serverMessage.terjemahkan(error, 'purchaseOrder.viewFailed'),
             'Close',
             { duration: 3000 },
           );

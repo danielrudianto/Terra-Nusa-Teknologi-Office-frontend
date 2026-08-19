@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -42,6 +43,8 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
   styleUrl: './bank-mutation-download.component.scss',
 })
 export class BankMutationDownloadComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private datePipe: DatePipe,
@@ -157,7 +160,7 @@ export class BankMutationDownloadComponent {
         },
         error: (error: any) => {
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal mengambil data mutasi',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );

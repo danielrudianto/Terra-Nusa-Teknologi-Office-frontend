@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -69,6 +70,8 @@ interface Pelamar {
   styleUrl: './hr-candidate-list.component.scss',
 })
 export class HrCandidateListComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly apiService = inject(ApiService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -113,8 +116,7 @@ export class HrCandidateListComponent implements OnInit {
         next: (res: any) => (this.pelamar = res || []),
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('hrCandidate.gagalMuat'),
+            this.serverMessage.terjemahkan(err, 'hrCandidate.gagalMuat'),
             this.translate.instant('common.close'),
             { duration: 4000 },
           ),

@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -51,6 +52,8 @@ import { ApiService } from '../../../services/api.service';
   styleUrl: './employee-status.component.scss',
 })
 export class EmployeeStatusComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly api = inject(ApiService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -128,8 +131,7 @@ export class EmployeeStatusComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail ??
-              this.translate.instant('notify.saveFailed'),
+            this.serverMessage.terjemahkan(err, 'notify.saveFailed'),
             'Close',
             { duration: 4000 },
           );

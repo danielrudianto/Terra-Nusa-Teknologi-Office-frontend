@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import {
   FormControl,
@@ -41,6 +42,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   ],
 })
 export class SupplierCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -150,10 +153,14 @@ export class SupplierCreateComponent {
           this.dialog.close(true);
         },
         error: (error) => {
-          console.error(`Error: ${error.error.detail}`);
-          this.snackBar.open('Error: ' + error.error.detail, 'Close', {
-            duration: 3000,
-          });
+          // Galat aslinya tetap ke konsol untuk ditelusuri; yang ke layar
+          // kalimat yang dapat dibaca penggunanya.
+          console.error('Gagal menyimpan pemasok:', error?.error?.detail);
+          this.snackBar.open(
+            this.serverMessage.terjemahkan(error, 'notify.createFailed'),
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {

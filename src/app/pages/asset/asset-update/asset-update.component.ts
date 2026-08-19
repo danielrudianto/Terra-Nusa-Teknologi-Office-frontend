@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -51,6 +52,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   providers: [provideNgxMask()],
 })
 export class AssetUpdateComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -102,7 +105,7 @@ export class AssetUpdateComponent implements OnInit {
       },
       error: (error) => {
         this.snackBar.open(
-          error?.error?.detail || 'Gagal memuat data asset',
+          this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
           'Close',
           { duration: 3000 },
         );
@@ -149,7 +152,7 @@ export class AssetUpdateComponent implements OnInit {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal memperbarui asset',
+            this.serverMessage.terjemahkan(error, 'notify.updateFailed'),
             'Close',
             { duration: 3000 },
           );

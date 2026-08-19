@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { vendorDisplayName } from 'src/app/helpers/purchase-order-shared.helper';
 import { proxyPaymentContent } from 'src/app/helpers/proxy-payment.helper';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import {
   FormArray,
@@ -80,6 +81,8 @@ const ROMAN = [
   styleUrl: './invoice.component.scss',
 })
 export class InvoiceComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private dialog: MatDialog,
@@ -662,8 +665,18 @@ export class InvoiceComponent {
         },
         error: (error: any) => {
           this.snackBar.open(
-            error?.error?.detail ??
-              'Dokumen berhasil dibuat, tetapi pembelian gagal dicatat',
+            /*
+             * Cadangannya BUKAN kalimat umum.
+             *
+             * Yang gagal di sini hanya pencatatan pembeliannya; dokumennya
+             * sendiri sudah terbit. "Tindakan gagal dijalankan" membuat yang
+             * membacanya mengira seluruhnya batal, lalu mengulang dari awal —
+             * dan dokumen keduanya terbit dengan nomor baru.
+             */
+            this.serverMessage.terjemahkan(
+              error,
+              'notify.pembelianGagalDicatat',
+            ),
             'Close',
             { duration: 5000 },
           );

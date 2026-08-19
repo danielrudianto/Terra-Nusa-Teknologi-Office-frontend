@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -49,6 +50,8 @@ import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive'
   styleUrl: './hr-question-form.component.scss',
 })
 export class HrQuestionFormComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly apiService = inject(ApiService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -158,8 +161,7 @@ export class HrQuestionFormComponent {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('hrQuestion.gagalSimpan'),
+            this.serverMessage.terjemahkan(err, 'hrQuestion.gagalSimpan'),
             this.translate.instant('common.close'),
             { duration: 4000 },
           ),

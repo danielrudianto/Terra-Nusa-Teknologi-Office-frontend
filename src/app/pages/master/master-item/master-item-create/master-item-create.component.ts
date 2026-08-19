@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import {
   FormControl,
@@ -38,6 +39,8 @@ import { DialogGeserDirective } from '../../../../directives/dialog-geser.direct
   styleUrl: './master-item-create.component.scss',
 })
 export class MasterItemCreateComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -133,7 +136,7 @@ export class MasterItemCreateComponent {
         },
         error: (err) => {
           this.snackBar.open(
-            err?.error?.detail || 'Gagal membuat master item',
+            this.serverMessage.terjemahkan(err, 'notify.createFailed'),
             'Close',
             { duration: 3000 },
           );

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -36,6 +37,8 @@ import { RencanaDialogComponent } from '../rencana-dialog/rencana-dialog.compone
   styleUrl: './rencana-hari-dialog.component.scss',
 })
 export class RencanaHariDialogComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly service = inject(PaymentPlanService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -208,7 +211,7 @@ export class RencanaHariDialogComponent {
 
   private gagal(e: any): void {
     this.snackBar.open(
-      e?.error?.detail || this.translate.instant('notify.saveFailed'),
+      this.serverMessage.terjemahkan(e, 'notify.saveFailed'),
       'Close',
       { duration: 4000 },
     );

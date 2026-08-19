@@ -1,3 +1,5 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
+import { inject } from '@angular/core';
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -64,6 +66,8 @@ interface BarisDokumen {
   styleUrl: './supplier-report.component.scss',
 })
 export class SupplierReportComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   isLoading = false;
 
   ringkasan: Ringkasan = {
@@ -173,8 +177,7 @@ export class SupplierReportComponent implements OnInit {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail ||
-              this.translate.instant('supplierReport.gagalMuat'),
+            this.serverMessage.terjemahkan(err, 'supplierReport.gagalMuat'),
             'Close',
             { duration: 3000 },
           ),

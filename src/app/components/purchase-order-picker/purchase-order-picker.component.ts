@@ -97,11 +97,14 @@ export class PurchaseOrderPickerComponent implements OnInit {
   pemasok(po: any): string {
     // `vendorDisplayName` menangani awalan ganda ("PT. PT Adhimix"), titik
     // berlebih, dan prefiks non-entitas seperti "Pribadi".
-    // `supplierName`/`supplierPrefix`, bukan `supplier_name`. Jawaban
-    // `purchase-orders/` disaring lewat `PurchaseOrderResponse`, dan seluruh
-    // bidangnya camelCase — nama bergaris bawah selalu `undefined`, sehingga
-    // kolom pemasok pada daftar ini selalu terbaca "—".
-    const hasil = vendorDisplayName(po?.supplierName, po?.supplierPrefix);
+    // `supplier_name`/`supplier_prefix`, MENGIKUTI label kueri daftarnya.
+    //
+    // `PurchaseOrderResponse` mencantumkan kedua nama bergaris bawah itu
+    // secara tersendiri, persis agar hasil join pada daftar lolos penyaring
+    // `response_model`. Memakai bentuk camelCase di sini membuat namanya
+    // selalu `undefined` dan seluruh baris terbaca "—" — dan itu tidak
+    // menimbulkan galat apa pun, hanya kolom yang kosong.
+    const hasil = vendorDisplayName(po?.supplier_name, po?.supplier_prefix);
     return hasil === '-' ? '—' : hasil;
   }
 
@@ -135,7 +138,7 @@ export class PurchaseOrderPickerComponent implements OnInit {
       id: po?.id ?? null,
       purchaseOrderName: po?.name ?? '',
       supplierID: po?.supplierID ?? null,
-      supplierName: po?.supplierName ?? '',
+      supplierName: po?.supplier_name ?? '',
       // Alamat ikut dibawa: dokumen pembelian mencetaknya, dan pemilihan
       // lewat pencarian pemasok biasa sudah mengisinya. Tanpa ini, pembelian
       // yang dibuat dari purchase order tercetak tanpa alamat.

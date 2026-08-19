@@ -3,6 +3,7 @@ import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.
 import { TranslateService } from '@ngx-translate/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -34,6 +35,8 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
   styleUrl: './interpayment-view.component.scss',
 })
 export class InterpaymentViewComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
@@ -60,7 +63,7 @@ export class InterpaymentViewComponent {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal memuat data interpayment',
+            this.serverMessage.terjemahkan(error, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           );

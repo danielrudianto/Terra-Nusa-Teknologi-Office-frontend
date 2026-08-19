@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../../directives/can.directive';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +49,8 @@ import { RefreshButtonComponent } from '../../../../components/refresh-button/re
   styleUrl: './master-equipment-list.component.scss',
 })
 export class MasterEquipmentListComponent {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translate = inject(TranslateService);
   constructor(
     private apiService: ApiService,
@@ -93,7 +96,7 @@ export class MasterEquipmentListComponent {
         },
         error: (err) =>
           this.snackBar.open(
-            err?.error?.detail || 'Gagal memuat data',
+            this.serverMessage.terjemahkan(err, 'notify.loadFailed'),
             'Close',
             { duration: 3000 },
           ),
@@ -173,7 +176,7 @@ export class MasterEquipmentListComponent {
           },
           error: (err) =>
             this.snackBar.open(
-              err?.error?.detail || 'Gagal menghapus',
+              this.serverMessage.terjemahkan(err, 'notify.deleteFailed'),
               'Close',
               { duration: 3000 },
             ),
