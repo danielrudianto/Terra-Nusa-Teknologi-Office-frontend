@@ -3624,7 +3624,8 @@
     "downloadPdf": "PDF",
     "terpakai": "合同已用",
     "contractGrossHint": "合同金额，含增值税",
-    "dppValue": "税基"
+    "dppValue": "税基",
+    "belumAdaCatatan": "该项目尚无采购、销售或报销记录。"
   },
   "employeeStatus": {
     "title": "停用员工",

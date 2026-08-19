@@ -24,6 +24,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
 
 import { ApiService } from '../../../services/api.service';
+import { ProjectLookupService } from '../../../services/project-lookup.service';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { CanDirective } from '../../../directives/can.directive';
 import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
@@ -103,6 +104,7 @@ export class ProjectViewComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
+    private lookup: ProjectLookupService,
   ) {}
 
   isLoading = true;
@@ -251,6 +253,27 @@ export class ProjectViewComponent implements OnInit {
       });
   }
 
+  /**
+   * Tandai daftar proyek bersama sebagai USANG.
+   *
+   * `ProjectLookupService` memuat seluruh proyek SEKALI per sesi, beserta
+   * `contractDpp` dan `contractValue`-nya. Laporan proyek membaca nilai
+   * kontrak dari sana — bukan dari layar ini.
+   *
+   * Akibatnya, menambah SPK atau adendum memperbarui basis data dan layar ini
+   * (yang memuat ulang dirinya sendiri), tetapi TIDAK menyentuh angka yang
+   * dipegang layanan itu. Laporan proyek karena itu tetap menunjukkan nilai
+   * kontrak yang lama sampai halamannya dimuat ulang dari awal — dan yang
+   * membacanya menyimpulkan kontraknya belum tersimpan.
+   *
+   * Sebelumnya `segarkan()` hanya dipanggil dari daftar proyek, yaitu ketika
+   * PROYEKNYA dibuat, diubah, atau dihapus — bukan ketika kontraknya berubah.
+   * Padahal justru kontraknya yang menentukan angka pada laporan.
+   */
+  private segarkanDaftarProyek(): void {
+    this.lookup.segarkan();
+  }
+
   get keadaan(): string {
     return this.project ? keadaanProyek(this.project) : 'berjalan';
   }
@@ -371,6 +394,7 @@ export class ProjectViewComponent implements OnInit {
           );
           this.sedangTambah = false;
           this.fetch(this.project!.id);
+          this.segarkanDaftarProyek();
         },
         error: () => {
           this.snackBar.open(
@@ -404,6 +428,9 @@ export class ProjectViewComponent implements OnInit {
               { duration: 3000 },
             );
             this.fetch(this.project!.id);
+            // Menghapus kontrak sama menentukannya dengan menambah: nilainya
+            // ikut berubah, dan laporan membacanya dari daftar bersama.
+            this.segarkanDaftarProyek();
           },
           error: () => {
             this.snackBar.open(

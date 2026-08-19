@@ -29,7 +29,10 @@ import {
 import { ProjectViewComponent } from './project-view.component';
 
 function komponen(): ProjectViewComponent {
+  // Tujuh layanan; `ProjectLookupService` ikut sejak penyegaran cache
+  // ditambahkan. Tidak satu pun dipanggil oleh aturan yang diuji di sini.
   return new ProjectViewComponent(
+    null as any,
     null as any,
     null as any,
     null as any,

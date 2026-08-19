@@ -22,6 +22,21 @@
 
   <p class="prp-galat" *ngIf="galat() && !memuat()">{{ galat() }}</p>
 
+  <!--
+    Belum ada catatan sama sekali — KETERANGAN, bukan galat.
+
+    Sebelumnya keadaan ini muncul sebagai spanduk merah "No purchases found"
+    yang datang dari server, dan spanduk itu menggantikan SELURUH laporan.
+    Proyek yang sudah menagih tetapi belum berbelanja karena itu tampak tidak
+    punya data apa pun.
+  -->
+  <p
+    class="prp-kosong"
+    *ngIf="kode() && belumAdaCatatan() && !memuat() && !galat()"
+  >
+    {{ "projectReport.belumAdaCatatan" | translate }}
+  </p>
+
   <ng-container *ngIf="kode() && adaData() && !memuat() && !galat()">
     <!-- ===== ringkasan angka ===== -->
     <div class="prp-kpi" [class.is-berubah]="baruBerubah()">

@@ -553,6 +553,33 @@ export class ProjectReportComponent implements OnInit {
 
   readonly adaData = computed(() => this._data() !== null);
 
+  /**
+   * Proyek ini belum punya SATU PUN catatan — bukan sekadar belum berbelanja.
+   *
+   * Dibedakan dengan sengaja. Sebelumnya server menjawab 404 "No purchases
+   * found" begitu pembeliannya kosong, dan seluruh laporan gugur bersamanya:
+   * proyek KBPDP yang sudah menagih Rp 240 juta tanpa satu pun pembelian
+   * hanya menampilkan spanduk merah, dan penjualannya ikut hilang.
+   *
+   * Keadaan itu biasa, dan ada di kedua arah — sudah menagih tetapi belum
+   * berbelanja, atau sudah berbelanja sebelum SPK-nya terbit. Keduanya harus
+   * tetap menampilkan angkanya.
+   *
+   * Yang benar-benar kosong tetap diberi keterangan, tetapi sebagai
+   * KETERANGAN — bukan galat merah yang membuat orang mengira laporannya
+   * rusak.
+   */
+  readonly belumAdaCatatan = computed(() => {
+    const d = this._data();
+    if (!d) return false;
+    return (
+      (d.purchases?.length ?? 0) === 0 &&
+      (d.purchase_drafts?.length ?? 0) === 0 &&
+      (d.reimbursements?.length ?? 0) === 0 &&
+      (d.sales_invoices?.length ?? 0) === 0
+    );
+  });
+
   /*
    * Unduhan Laporan Proyek.
    *

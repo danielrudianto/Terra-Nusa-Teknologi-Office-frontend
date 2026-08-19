@@ -3624,7 +3624,8 @@
     "downloadPdf": "PDF",
     "terpakai": "Contract used",
     "contractGrossHint": "Document value, including VAT",
-    "dppValue": "Tax base"
+    "dppValue": "Tax base",
+    "belumAdaCatatan": "No purchases, invoices, or reimbursements recorded for this project yet."
   },
   "employeeStatus": {
     "title": "Deactivate Employee",

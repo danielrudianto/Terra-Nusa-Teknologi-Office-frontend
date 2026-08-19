@@ -3624,7 +3624,8 @@
     "downloadPdf": "PDF",
     "terpakai": "Kontrak terpakai",
     "contractGrossHint": "Nilai dokumen, termasuk PPN",
-    "dppValue": "DPP"
+    "dppValue": "DPP",
+    "belumAdaCatatan": "Proyek ini belum punya catatan pembelian, penjualan, maupun reimbursement."
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",
