@@ -70,34 +70,64 @@
           </mat-select>
         </mat-form-field>
 
+        <!--
+          Menambah atau mengurangi — DIPILIH, bukan diketik sebagai minus.
+
+          Tanda minus yang diketik menuntut tiga hal berjalan diam-diam benar:
+          lolos dari mask pemisah ribuan, terbaca kembali saat dokumen dibuka,
+          dan tetap benar ketika disunting ulang. Yang lebih menentukan, minus
+          tidak menyatakan MAKSUD — "-25.000.000" tidak menyebutkan apa yang
+          dikurangi.
+
+          Bentuknya sama dengan pilihan berkartu pada formulir pembelian:
+          keduanya pilihan yang MENGUBAH arti dokumen, bukan sekadar
+          melabelinya.
+        -->
+        <div class="kartu-pilih pv-span2">
+          <div class="kartu-pilih__judul">
+            {{ "project.arahJudul" | translate }}
+          </div>
+          <div class="kartu-pilih__daftar">
+            @for (o of pilihanArah; track o.value) {
+              <label
+                class="kartu kartu--kecil"
+                [class.on]="formGroup.get('arah')?.value === o.value"
+              >
+                <input
+                  type="radio"
+                  formControlName="arah"
+                  [value]="o.value"
+                  hidden
+                />
+                <mat-icon>{{ o.icon }}</mat-icon>
+                <span class="kartu__teks">
+                  <span class="kartu__judul">{{ o.label | translate }}</span>
+                  <span class="kartu__hint">{{ o.hint | translate }}</span>
+                </span>
+              </label>
+            }
+          </div>
+          @if (formGroup.get("arah")?.hasError("kurangHanyaAdendum")) {
+            <div class="pv-arah__galat">
+              {{ "project.arahKurangHanyaAdendum" | translate }}
+            </div>
+          }
+        </div>
+
         <mat-form-field appearance="outline">
           <mat-label>{{ "project.docDpp" | translate }}</mat-label>
           <!--
-            `allowNegativeNumbers` — adendum boleh mengurangi nilai kontrak.
-            
-            Tanpa ini, ngx-mask menolak tanda minus dan pengurangan lingkup
-            kerja tidak dapat dicatat sama sekali. Servernya sudah menerima
-            nilai negatif; yang menghalangi hanya masknya.
+            Diisi POSITIF selalu; tandanya dari pilihan di atas.
           -->
           <input
             matInput
             formControlName="dpp"
             prefix="Rp. "
             thousandSeparator=" "
-            decimalScale="2"
+            decimalScale="4"
             mask="separator"
-            [allowNegativeNumbers]="true"
           />
           <mat-hint>{{ "project.docDppHint" | translate }}</mat-hint>
-          <!--
-            Ditolaknya SPK bernilai minus DIKATAKAN, bukan sekadar membuat
-            tombol simpan mati. Keterangan di atas mengajak mengisi negatif;
-            tanpa pesan ini, yang mengikutinya pada dokumen pertama menghadapi
-            formulir yang menolak tanpa menyebut sebabnya.
-          -->
-          @if (formGroup.get("dpp")?.hasError("spkNegatif")) {
-            <mat-error>{{ "project.docDppSpkNegatif" | translate }}</mat-error>
-          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">

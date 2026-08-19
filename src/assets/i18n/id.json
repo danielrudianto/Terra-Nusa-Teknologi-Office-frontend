@@ -3561,7 +3561,7 @@
     "selectorPlaceholder": "Ketik kode atau nama proyek",
     "unknownCode": "Kode ini belum terdaftar sebagai proyek.",
     "docDpp": "DPP",
-    "docDppHint": "Isi negatif bila adendum mengurangi lingkup kerja.",
+    "docDppHint": "Isi angka positif; tandanya mengikuti pilihan di atas.",
     "docPpn": "PPN",
     "docPpnValue": "PPN (Rp.)",
     "docTotal": "Nilai dokumen",
@@ -3573,7 +3573,12 @@
     "address": "Alamat lokasi proyek",
     "addressPlaceholder": "Nama lokasi, jalan, kota, patokan",
     "addressHint": "Dipakai mengisi alamat pengiriman pada PO Franco.",
-    "docDppSpkNegatif": "SPK tidak boleh bernilai minus. Hanya adendum yang dapat mengurangi nilai kontrak."
+    "arahJudul": "Pengaruh pada nilai kontrak",
+    "arahTambah": "Menambah nilai",
+    "arahTambahHint": "Pekerjaan baru atau tambahan",
+    "arahKurang": "Mengurangi nilai",
+    "arahKurangHint": "Pekerjaan dibatalkan atau lingkupnya dikurangi",
+    "arahKurangHanyaAdendum": "Hanya adendum yang dapat mengurangi nilai. Dokumen pertama belum punya apa pun untuk dikurangi."
   },
   "projectReport": {
     "title": "Laporan Proyek",
@@ -4109,7 +4114,9 @@
     "tertagih": "Tertagih",
     "belumTertagih": "Belum tertagih",
     "sertakanInternal": "Termasuk pembelian internal",
-    "internalHint": "Pembelian dari perusahaan dalam grup. Dimatikan bila ingin melihat uang yang benar-benar keluar dari grup."
+    "internalHint": "Pembelian dari perusahaan dalam grup. Dimatikan bila ingin melihat uang yang benar-benar keluar dari grup.",
+    "belumAdaKontrak": "belum ada kontrak",
+    "belumDitagih": "belum ditagih"
   },
   "employeeView": {
     "menu": "Lihat data lengkap",

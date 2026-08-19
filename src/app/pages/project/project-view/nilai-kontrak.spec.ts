@@ -1,31 +1,35 @@
 /**
- * Nilai dokumen kontrak proyek: kapan boleh minus, kapan tidak.
+ * Arah nilai dokumen kontrak proyek: menambah atau mengurangi.
  *
- * Adendum yang mengurangi lingkup kerja BERNILAI NEGATIF — itu satu-satunya
+ * Adendum yang mengurangi lingkup kerja bernilai NEGATIF — itu satu-satunya
  * cara mencatat pekerjaan yang dibatalkan sesudah kontraknya berjalan.
  *
- * Sebelumnya isian ini memakai `Validators.min(0)`, dan itu bertentangan
- * dengan seluruh bagian lain yang sudah menyiapkannya: masknya sudah memakai
- * `allowNegativeNumbers`, keterangan di bawah isiannya berbunyi "Isi negatif
- * bila adendum mengurangi lingkup kerja", dan skema server hanya menolak nol.
+ * Nilainya tidak lagi diketik sebagai minus. Angkanya selalu positif, dan
+ * tandanya ditentukan pilihan berkartu. Sebabnya dua:
  *
- * Gejalanya menyesatkan: angka minus DAPAT diketik dan tampak wajar, lalu
- * tombol simpannya tidak pernah menyala — tanpa satu pun pesan yang menyebut
- * sebabnya.
+ *   1. Minus yang diketik harus lolos dari mask pemisah ribuan, terbaca
+ *      kembali saat dokumen dibuka, dan tetap benar ketika disunting ulang —
+ *      tiga tempat yang masing-masing gagal tanpa suara. Percobaan
+ *      sebelumnya, yang hanya melonggarkan validatornya, memang tidak jalan.
+ *   2. Minus tidak menyatakan MAKSUD. "-25.000.000" pada layar tidak
+ *      menyebutkan apa yang dikurangi.
  *
- * Diuji lewat FormGroup yang bentuknya sama, bukan lewat komponennya:
- * komponen itu menuntut rute, dialog, dan ApiService, dan menyiapkan
- * ketiganya di sini berarti menguji kerangka pengujiannya — bukan aturan yang
- * pernah keliru.
+ * Diuji lewat FormGroup komponennya, bukan lewat komponen yang dirender:
+ * merendernya menuntut rute, dialog, dan ApiService — dan yang diuji di sini
+ * aturannya, bukan kerangka pengujiannya.
  */
 
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
+import {
+  arahDariNilai,
+  besaranDariNilai,
+  nilaiBerarah,
+} from '../../../constants/arah-nilai-kontrak';
 import { ProjectViewComponent } from './project-view.component';
 
-/** Formulir kontrak, dirakit dengan validator yang sama seperti komponennya. */
-function formulir(): FormGroup {
-  const asli = new ProjectViewComponent(
+function komponen(): ProjectViewComponent {
+  return new ProjectViewComponent(
     null as any,
     null as any,
     null as any,
@@ -33,109 +37,141 @@ function formulir(): FormGroup {
     null as any,
     null as any,
   );
-  return asli.formGroup as unknown as FormGroup;
 }
 
-describe('nilai dokumen kontrak proyek', () => {
-  it('ADENDUM boleh bernilai minus', () => {
-    /*
-     * Yang diperiksa KESAHANNYA, bukan sekadar tidak adanya `spkNegatif`.
-     *
-     * Percobaan pertama pengujian ini hanya memastikan `spkNegatif` tidak
-     * terpasang — dan itu tetap lolos ketika `Validators.min(0)` dikembalikan,
-     * sebab yang menahannya galat `min`, bukan galat ini. Penjaga yang
-     * meluluskan keadaan yang hendak dijaganya sama saja dengan tidak ada.
-     *
-     * Yang benar-benar dirasakan penggunanya: isiannya sah, sehingga
-     * tombol simpannya menyala.
-     */
-    const f = formulir();
-    f.patchValue({ documentType: 'adendum', dpp: -25_000_000 });
+function formulir(): FormGroup {
+  return komponen().formGroup as unknown as FormGroup;
+}
 
-    expect(f.get('dpp')?.valid)
-      .withContext('adendum minus harus sah — tombol simpan menyala')
-      .toBeTrue();
-    expect(f.get('dpp')?.hasError('min'))
-      .withContext('tidak boleh ada Validators.min(0) di isian ini')
-      .toBeFalse();
-    expect(f.get('dpp')?.hasError('spkNegatif')).toBeFalse();
+describe('arah nilai kontrak', () => {
+  describe('tanda yang dikirim ke server', () => {
+    it('"menambah" mengirim nilai positif', () => {
+      expect(nilaiBerarah(25_000_000, 'tambah')).toBe(25_000_000);
+    });
+
+    it('"mengurangi" mengirim nilai negatif', () => {
+      expect(nilaiBerarah(25_000_000, 'kurang')).toBe(-25_000_000);
+    });
+
+    it('angka yang terlanjur negatif tidak membalik artinya', () => {
+      /*
+       * `Math.abs` dipakai dengan sengaja. Bila tandanya sekadar dibiarkan,
+       * memilih "mengurangi" atas angka yang sudah minus justru menghasilkan
+       * PENAMBAHAN — dan angkanya tampak benar di layar.
+       */
+      expect(nilaiBerarah(-25_000_000, 'kurang')).toBe(-25_000_000);
+      expect(nilaiBerarah(-25_000_000, 'tambah')).toBe(25_000_000);
+    });
+
+    it('isian kosong menghasilkan nol, bukan NaN', () => {
+      // NaN yang terkirim tersimpan sebagai nilai tak terduga tanpa galat.
+      expect(nilaiBerarah(null, 'tambah')).toBe(0);
+      expect(nilaiBerarah('', 'kurang')).toBe(0);
+      expect(nilaiBerarah('bukan angka', 'tambah')).toBe(0);
+    });
   });
 
-  it('SPK TIDAK boleh bernilai minus', () => {
-    // Dokumen pertama: belum ada pekerjaan yang bisa dikurangi.
-    const f = formulir();
-    f.patchValue({ documentType: 'spk', dpp: -25_000_000 });
+  describe('membaca dokumen yang sudah tersimpan', () => {
+    it('nilai negatif terbaca sebagai "mengurangi"', () => {
+      expect(arahDariNilai(-25_000_000)).toBe('kurang');
+      expect(besaranDariNilai(-25_000_000)).toBe(25_000_000);
+    });
 
-    expect(f.get('dpp')?.hasError('spkNegatif')).toBeTrue();
+    it('nilai positif terbaca sebagai "menambah"', () => {
+      expect(arahDariNilai(25_000_000)).toBe('tambah');
+      expect(besaranDariNilai(25_000_000)).toBe(25_000_000);
+    });
   });
 
-  it('adendum bernilai positif tetap sah', () => {
-    const f = formulir();
-    f.patchValue({ documentType: 'adendum', dpp: 25_000_000 });
-    expect(f.get('dpp')?.hasError('spkNegatif')).toBeFalse();
-    expect(f.get('dpp')?.valid).toBeTrue();
-  });
-
-  it('galatnya HILANG begitu jenisnya dipindah ke adendum', () => {
-    /*
-     * Validator yang memasang galat tetapi tidak pernah membersihkannya
-     * membuat formulir tetap tertolak sesudah dibetulkan — dan yang
-     * membetulkannya tidak menemukan apa lagi yang salah.
-     */
-    const f = formulir();
-    f.patchValue({ documentType: 'spk', dpp: -1_000 });
-    expect(f.get('dpp')?.hasError('spkNegatif')).toBeTrue();
-
-    f.patchValue({ documentType: 'adendum' });
-    expect(f.get('dpp')?.hasError('spkNegatif')).toBeFalse();
-    expect(f.get('dpp')?.valid).toBeTrue();
-  });
-
-  it('membersihkan galatnya TIDAK ikut menghapus `required`', () => {
-    /*
-     * Validator gabungan ini memasang galat pada kendali anaknya. Bila
-     * pembersihannya memakai `setErrors(null)` begitu saja, `required` dari
-     * kendali itu sendiri ikut terhapus — dan isian kosong lolos tanpa satu
-     * pun tanda, yang jauh lebih sulit terlihat daripada tombol yang mati.
-     */
-    const f = formulir();
-    f.patchValue({ documentType: 'adendum', dpp: null });
-
-    expect(f.get('dpp')?.hasError('required')).toBeTrue();
-    expect(f.get('dpp')?.valid).toBeFalse();
-  });
-
-  it('isian nol ditolak untuk kedua jenis', () => {
-    // Server pun menolaknya; nilai nol bukan dokumen.
-    for (const jenis of ['spk', 'adendum']) {
+  describe('aturan pada formulir', () => {
+    it('adendum boleh mengurangi', () => {
       const f = formulir();
-      f.patchValue({ documentType: jenis, dpp: 0 });
-      // Nol bukan negatif, jadi bukan validator ini yang menahannya —
-      // melainkan pemeriksaan tersendiri saat menyimpan.
-      expect(f.get('dpp')?.hasError('spkNegatif')).toBeFalse();
-    }
+      f.patchValue({ documentType: 'adendum', arah: 'kurang', dpp: 25_000_000 });
+
+      expect(f.get('arah')?.valid)
+        .withContext('adendum mengurangi harus sah')
+        .toBeTrue();
+      expect(f.get('dpp')?.valid).toBeTrue();
+    });
+
+    it('SPK TIDAK boleh mengurangi', () => {
+      // Dokumen pertama belum punya apa pun untuk dikurangi.
+      const f = formulir();
+      f.patchValue({ documentType: 'spk', arah: 'kurang', dpp: 25_000_000 });
+
+      expect(f.get('arah')?.hasError('kurangHanyaAdendum')).toBeTrue();
+    });
+
+    it('galatnya hilang begitu jenisnya dipindah ke adendum', () => {
+      const f = formulir();
+      f.patchValue({ documentType: 'spk', arah: 'kurang', dpp: 1_000 });
+      expect(f.get('arah')?.hasError('kurangHanyaAdendum')).toBeTrue();
+
+      f.patchValue({ documentType: 'adendum' });
+      expect(f.get('arah')?.hasError('kurangHanyaAdendum')).toBeFalse();
+      expect(f.get('arah')?.valid).toBeTrue();
+    });
+
+    it('membersihkan galatnya TIDAK ikut menghapus `required`', () => {
+      /*
+       * Validator gabungan ini memasang galat pada kendali anaknya. Bila
+       * pembersihannya memakai `setErrors(null)` begitu saja, `required`
+       * kendali itu ikut terhapus — dan isian kosong lolos tanpa satu pun
+       * tanda, yang jauh lebih sulit terlihat daripada tombol yang mati.
+       */
+      const f = formulir();
+      f.patchValue({ documentType: 'adendum', arah: null });
+      expect(f.get('arah')?.hasError('required')).toBeTrue();
+    });
+
+    it('besarannya tidak boleh negatif — minus tidak lagi diketik', () => {
+      const f = formulir();
+      f.patchValue({ documentType: 'adendum', arah: 'kurang', dpp: -1 });
+      expect(f.get('dpp')?.hasError('min')).toBeTrue();
+    });
+
+    it('bawaannya "menambah"', () => {
+      // Mengurangi selalu pilihan yang disengaja.
+      expect(formulir().get('arah')?.value).toBe('tambah');
+    });
+
+    it('PPN tetap dibatasi nol sampai seratus', () => {
+      const f = formulir();
+      f.patchValue({ ppn: -1 });
+      expect(f.get('ppn')?.hasError('min')).toBeTrue();
+      f.patchValue({ ppn: 101 });
+      expect(f.get('ppn')?.hasError('max')).toBeTrue();
+    });
   });
 
-  it('PPN tetap dibatasi nol sampai seratus', () => {
-    // Tarif tidak ikut dilonggarkan; yang berubah hanya nilai dokumennya.
-    const f = formulir();
-    f.patchValue({ ppn: -1 });
-    expect(f.get('ppn')?.hasError('min')).toBeTrue();
+  describe('angka turunan di layar', () => {
+    it('ringkasan mengikuti arah, bukan besarannya saja', () => {
+      /*
+       * Bila turunannya dihitung dari besaran tanpa tanda, layar menunjukkan
+       * PENAMBAHAN sementara yang tersimpan pengurangan — dan tidak ada yang
+       * membandingkan keduanya sampai laporan margin terbit.
+       */
+      const c = komponen();
+      c.formGroup.patchValue({
+        documentType: 'adendum',
+        arah: 'kurang',
+        dpp: 10_000_000,
+        ppn: 11,
+      });
 
-    f.patchValue({ ppn: 101 });
-    expect(f.get('ppn')?.hasError('max')).toBeTrue();
+      expect(c.nilaiDpp).toBe(-10_000_000);
+      expect(c.nilaiPpn).toBe(-1_100_000);
+      expect(c.nilaiDokumen).toBe(-11_100_000);
+    });
   });
 });
 
 /** Penjaga bagi penjaganya: bentuk formulirnya memang seperti yang diuji. */
 describe('bentuk formulir kontrak', () => {
-  it('memakai kendali yang sama seperti yang diuji di atas', () => {
+  it('memuat kendali arah beserta yang lain', () => {
     const f = formulir();
-    for (const nama of ['documentType', 'dpp', 'ppn', 'documentNumber']) {
-      expect(f.get(nama))
-        .withContext(nama)
-        .toEqual(jasmine.any(FormControl));
+    for (const nama of ['documentType', 'arah', 'dpp', 'ppn', 'documentNumber']) {
+      expect(f.get(nama)).withContext(nama).toEqual(jasmine.any(FormControl));
     }
-    expect(f.get('dpp')?.hasValidator(Validators.required)).toBeTrue();
   });
 });

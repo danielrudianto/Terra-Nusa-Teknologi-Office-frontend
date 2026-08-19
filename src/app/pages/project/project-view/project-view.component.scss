@@ -297,3 +297,21 @@
   width: 20px;
   height: 20px;
 }
+
+/*
+ * Pilihan arah nilai kontrak.
+ *
+ * Bentuk kartunya sendiri ada di `styles.scss` (`.kartu-pilih`), dipakai
+ * bersama formulir pembelian. Yang di sini hanya penempatannya pada petak
+ * formulir ini, dan pesan galatnya.
+ */
+.pv-span2 {
+  grid-column: 1 / -1;
+}
+
+.pv-arah__galat {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--bad-fg, #b3322f);
+}

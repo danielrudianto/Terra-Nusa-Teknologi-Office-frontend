@@ -32,40 +32,40 @@ import { PphSelectorComponent } from '../../../components/pph-selector/pph-selec
 import { IPPh } from '../../../utils/pph';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import {
+  ArahNilai,
+  PILIHAN_ARAH_KONTRAK,
+  arahDariNilai,
+  besaranDariNilai,
+  nilaiBerarah,
+} from '../../../constants/arah-nilai-kontrak';
 
 
 /**
- * SPK tidak boleh bernilai minus; adendum boleh.
+ * "Mengurangi" hanya berlaku untuk ADENDUM.
  *
- * Adendum yang mengurangi lingkup kerja memang bernilai negatif — itu
- * satu-satunya cara mencatat pekerjaan yang dibatalkan sesudah kontraknya
- * berjalan. Tetapi dokumen PERTAMA bernilai minus tidak berarti apa pun:
- * tidak ada pekerjaan yang dikurangi karena belum ada yang disepakati, dan
- * nilai proyeknya langsung terbaca terbalik.
+ * Dokumen pertama tidak dapat mengurangi apa pun — belum ada yang disepakati
+ * untuk dikurangi, dan nilai proyeknya langsung terbaca terbalik.
  *
- * Galatnya dipasang pada `dpp`, bukan pada grupnya, supaya pesannya muncul di
- * bawah isian yang bersangkutan — bukan sebagai formulir yang menolak simpan
- * tanpa menunjuk apa yang salah. Bentuk ini sama dengan validator gabungan
- * lain di aplikasi ini.
+ * Galatnya dipasang pada `arah`, bukan pada grupnya, supaya pesannya muncul
+ * tepat di bawah pilihan yang salah — bukan sebagai formulir yang menolak
+ * simpan tanpa menunjuk apa pun.
  */
-function nilaiKontrakSah(g: AbstractControl): ValidationErrors | null {
+function arahKontrakSah(g: AbstractControl): ValidationErrors | null {
   const jenis = g.get('documentType')?.value;
-  const dpp = g.get('dpp');
-  const nilai = Number(dpp?.value);
+  const arah = g.get('arah');
 
-  if (jenis !== 'adendum' && isFinite(nilai) && nilai < 0) {
-    dpp?.setErrors({ ...(dpp.errors ?? {}), spkNegatif: true });
-    return { spkNegatif: true };
+  if (jenis !== 'adendum' && arah?.value === 'kurang') {
+    arah.setErrors({ ...(arah.errors ?? {}), kurangHanyaAdendum: true });
+    return { kurangHanyaAdendum: true };
   }
 
-  // Hanya galat YANG DIPASANG DI SINI yang dibersihkan.
-  //
-  // Menghapus seluruh galat akan ikut menghapus `required` dari validator
-  // kendalinya sendiri, sehingga isian kosong lolos tanpa satu pun tanda.
-  if (dpp?.hasError('spkNegatif')) {
-    const sisa = { ...(dpp.errors ?? {}) };
-    delete sisa['spkNegatif'];
-    dpp.setErrors(Object.keys(sisa).length ? sisa : null);
+  // Hanya galat YANG DIPASANG DI SINI yang dibersihkan; menghapus seluruhnya
+  // akan ikut membuang `required` milik kendalinya sendiri.
+  if (arah?.hasError('kurangHanyaAdendum')) {
+    const sisa = { ...(arah.errors ?? {}) };
+    delete sisa['kurangHanyaAdendum'];
+    arah.setErrors(Object.keys(sisa).length ? sisa : null);
   }
   return null;
 }
@@ -119,22 +119,23 @@ export class ProjectViewComponent implements OnInit {
     ]),
     documentType: new FormControl<'spk' | 'adendum'>('spk', Validators.required),
     /*
-     * Nilainya BOLEH negatif pada adendum.
+     * Besarannya selalu POSITIF; tandanya ditentukan `arah`.
      *
-     * Adendum yang mengurangi lingkup kerja memang bernilai minus, dan itu
-     * satu-satunya cara mencatat pengurangan pekerjaan.
+     * Sebelumnya nilai negatif diketik langsung, dan itu menuntut tanda minus
+     * lolos dari mask pemisah ribuan, terbaca kembali saat dokumen dibuka,
+     * dan tetap benar ketika disunting ulang — tiga tempat yang masing-masing
+     * gagal tanpa suara.
      *
-     * Sebelumnya di sini ada `Validators.min(0)`, dan itu bertentangan dengan
-     * seluruh bagian lain yang sudah menyiapkannya: masknya sudah memakai
-     * `allowNegativeNumbers`, keterangan di bawah isiannya berbunyi "Isi
-     * negatif bila adendum mengurangi lingkup kerja", dan skema server hanya
-     * menolak nol. Yang menghalangi tinggal validator ini — angka minus dapat
-     * diketik, tampak wajar, lalu tombol simpannya tidak pernah menyala.
-     *
-     * Yang tersisa dijaga `nilaiKontrakSah`: SPK — dokumen pertama, bukan
-     * perubahannya — tetap tidak boleh minus.
+     * Yang lebih menentukan: minus tidak menyatakan MAKSUD. "-25.000.000"
+     * pada layar tidak menyebutkan apa yang dikurangi, sedangkan kartu
+     * "Mengurangi nilai kontrak" menyebutkannya.
      */
-    dpp: new FormControl<number | null>(null, [Validators.required]),
+    dpp: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
+    /** Menambah atau mengurangi nilai kontrak; lihat `nilaiBerarah`. */
+    arah: new FormControl<ArahNilai>('tambah', Validators.required),
     ppn: new FormControl<number>(11, [
       Validators.required,
       Validators.min(0),
@@ -146,7 +147,7 @@ export class ProjectViewComponent implements OnInit {
     date: new FormControl<Date | null>(null, Validators.required),
       description: new FormControl('', Validators.maxLength(500)),
     },
-    { validators: nilaiKontrakSah },
+    { validators: arahKontrakSah },
   );
 
   /*
@@ -155,8 +156,22 @@ export class ProjectViewComponent implements OnInit {
    * boleh dikirim dari sini, nominal dokumen bisa tidak cocok dengan
    * komponennya dan tidak ada yang tahu mana yang benar.
    */
+  /** Pilihan kartu menambah/mengurangi. */
+  readonly pilihanArah = PILIHAN_ARAH_KONTRAK;
+
+  /**
+   * DPP BERTANDA, sesuai arah yang dipilih.
+   *
+   * Dipakai seluruh angka turunan di layar — PPN, nilai dokumen, PPh, dan
+   * nilai diterima — supaya ringkasan yang tampil sama dengan yang disimpan.
+   * Menghitungnya dari besaran tanpa tanda membuat layar menunjukkan
+   * penambahan sementara yang tersimpan pengurangan.
+   */
   get nilaiDpp(): number {
-    return Number(this.formGroup.value.dpp ?? 0);
+    return nilaiBerarah(
+      this.formGroup.value.dpp,
+      (this.formGroup.value.arah as ArahNilai) ?? 'tambah',
+    );
   }
 
   get nilaiPpn(): number {
@@ -304,6 +319,8 @@ export class ProjectViewComponent implements OnInit {
     this.formGroup.reset({
       documentNumber: '',
       documentType: this.contracts.length === 0 ? 'spk' : 'adendum',
+      // Bawaannya menambah; mengurangi selalu pilihan yang disengaja.
+      arah: 'tambah',
       dpp: null,
       ppn: 11,
       pphCode: null,
@@ -336,7 +353,8 @@ export class ProjectViewComponent implements OnInit {
       .post(`projects/${this.project.id}/contracts`, {
         documentNumber: v.documentNumber,
         documentType: v.documentType,
-        dpp: Number(v.dpp),
+        // Tandanya dari `arah`, bukan dari angka yang diketik.
+        dpp: nilaiBerarah(v.dpp, (v.arah as ArahNilai) ?? 'tambah'),
         ppn: Number(v.ppn ?? 0),
         pphCode: v.pphCode || null,
         pphTaxObject: v.pphTaxObject || null,

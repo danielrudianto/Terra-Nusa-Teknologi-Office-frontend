@@ -169,35 +169,63 @@
                   }}</span>
                 }
                 <span class="pml-nama">{{ p.name }}</span>
+                <!--
+                  Penanda keadaan, MENGGANTIKAN penyembunyian baris.
+
+                  Keduanya keadaan yang sah dan sering terjadi berbarengan
+                  dengan angka yang tetap perlu dibaca — karena itu ditandai,
+                  bukan disembunyikan.
+                -->
+                @if (tanpaKontrak(p)) {
+                  <span class="pml-tanda pml-tanda--kontrak">{{
+                    "projectMargin.belumAdaKontrak" | translate
+                  }}</span>
+                }
+                @if (belumTertagihSamaSekali(p)) {
+                  <span class="pml-tanda pml-tanda--tagih">{{
+                    "projectMargin.belumDitagih" | translate
+                  }}</span>
+                }
               </td>
 
-              @if (tanpaKontrak(p)) {
-                <!--
-                  Nilai kontrak belum diisi; marginnya tidak dapat dihitung.
-                  Satu sel melintang, bukan empat sel berisi nol.
-                -->
-                <td class="pml-num pml-kosong" colspan="6">
-                  {{ "projectMargin.tanpaKontrak" | translate }}
-                </td>
-              } @else {
-                <td class="pml-num">{{ p.kontrak | number: "1.0-0" }}</td>
-                <td class="pml-num">{{ tertagih(p) | number: "1.0-0" }}</td>
-                <!--
-                  Belum tertagih: pekerjaan yang sudah disepakati tetapi belum
-                  difakturkan. Angka besar pada proyek yang hampir selesai
-                  adalah tanda ada yang lupa ditagihkan.
-                -->
-                <td class="pml-num pml-belum">
-                  {{ belumTertagih(p) | number: "1.0-0" }}
-                </td>
-                <td class="pml-num">{{ biaya(p) | number: "1.0-0" }}</td>
-                <td class="pml-num" [class.pml-rugi]="margin(p) < 0">
-                  {{ margin(p) | number: "1.0-0" }}
-                </td>
-                <td class="pml-num pml-persen" [class.pml-rugi]="margin(p) < 0">
-                  {{ persen(p) | number: "1.1-1" }}%
-                </td>
-              }
+              <!--
+                Angkanya SELALU ditampilkan, apa pun keadaannya.
+
+                Sebelumnya baris tanpa tagihan diciutkan menjadi satu sel
+                melintang — dan biaya yang sudah keluar ikut hilang bersamanya.
+                Padahal justru pada keadaan itu angkanya paling perlu dilihat:
+                pekerjaan yang dikerjakan lebih dulu sementara SPK-nya menyusul
+                memang bertagihan nol dan berbiaya berjalan.
+
+                Yang belum dapat DIHITUNG hanya persentasenya; itu ditulis
+                "—", dan itu berbeda artinya dari 0,0%.
+              -->
+              <td class="pml-num">{{ p.kontrak | number: "1.0-0" }}</td>
+              <td class="pml-num">{{ tertagih(p) | number: "1.0-0" }}</td>
+              <!--
+                Belum tertagih: pekerjaan yang sudah disepakati tetapi belum
+                difakturkan. Angka besar pada proyek yang hampir selesai
+                adalah tanda ada yang lupa ditagihkan.
+              -->
+              <td class="pml-num pml-belum">
+                {{ belumTertagih(p) | number: "1.0-0" }}
+              </td>
+              <td class="pml-num">{{ biaya(p) | number: "1.0-0" }}</td>
+              <td
+                class="pml-num"
+                [class.pml-rugi]="!belumTertagihSamaSekali(p) && margin(p) < 0"
+              >
+                {{ margin(p) | number: "1.0-0" }}
+              </td>
+              <td class="pml-num pml-persen">
+                @if (persenTakTerhitung(p)) {
+                  <span class="pml-kosong">—</span>
+                } @else {
+                  <span [class.pml-rugi]="margin(p) < 0">
+                    {{ persen(p) | number: "1.1-1" }}%
+                  </span>
+                }
+              </td>
             </tr>
           }
         </tbody>

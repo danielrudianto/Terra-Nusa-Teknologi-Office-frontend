@@ -3561,7 +3561,7 @@
     "selectorPlaceholder": "Type a project code or name",
     "unknownCode": "This code is not registered as a project yet.",
     "docDpp": "Tax base (DPP)",
-    "docDppHint": "Enter a negative amount if the addendum reduces the scope.",
+    "docDppHint": "Enter a positive amount; the choice above sets the sign.",
     "docPpn": "VAT",
     "docPpnValue": "VAT amount",
     "docTotal": "Document value",
@@ -3573,7 +3573,12 @@
     "address": "Project site address",
     "addressPlaceholder": "Site name, street, city, landmark",
     "addressHint": "Used to fill the delivery address on Franco POs.",
-    "docDppSpkNegatif": "A first contract (SPK) cannot be negative. Only an addendum may reduce the value."
+    "arahJudul": "Effect on contract value",
+    "arahTambah": "Adds value",
+    "arahTambahHint": "New or additional work",
+    "arahKurang": "Reduces value",
+    "arahKurangHint": "Work cancelled or scope reduced",
+    "arahKurangHanyaAdendum": "Only an addendum can reduce the value. The first contract has nothing to reduce yet."
   },
   "projectReport": {
     "title": "Project Report",
@@ -4109,7 +4114,9 @@
     "tertagih": "Billed",
     "belumTertagih": "Unbilled",
     "sertakanInternal": "Include internal purchases",
-    "internalHint": "Purchases from companies within the group. Turn off to see only money leaving the group."
+    "internalHint": "Purchases from companies within the group. Turn off to see only money leaving the group.",
+    "belumAdaKontrak": "no contract yet",
+    "belumDitagih": "not invoiced yet"
   },
   "employeeView": {
     "menu": "View full record",

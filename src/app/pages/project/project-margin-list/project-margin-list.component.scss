@@ -213,3 +213,34 @@
 .pml-toggle--awal {
   margin-left: auto;
 }
+
+/*
+ * Penanda keadaan pada kolom nama.
+ *
+ * Menggantikan penyembunyian baris: keadaannya tetap terbaca, tetapi angkanya
+ * tidak lagi hilang bersamanya.
+ *
+ * Warnanya redup dengan sengaja — ini keterangan, bukan peringatan. Proyek
+ * yang belum ditagih pada bulan pertamanya adalah hal yang biasa, dan
+ * mewarnainya merah membuat daftar ini menakut-nakuti tanpa sebab.
+ */
+.pml-tanda {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.pml-tanda--kontrak {
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn, #a2651a);
+}
+
+.pml-tanda--tagih {
+  background: var(--surface-2, #eef1f6);
+  color: var(--muted, #6b7280);
+}

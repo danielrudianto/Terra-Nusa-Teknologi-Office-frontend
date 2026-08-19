@@ -219,21 +219,37 @@ export class ProjectMarginListComponent implements OnInit {
   }
 
   /**
-   * Nilai kontraknya belum diisi.
-   *
-   * Ditandai tersendiri, bukan ditampilkan sebagai margin negatif: yang belum
-   * diketahui berbeda dari yang sudah diketahui buruk, dan menyamakannya
-   * membuat daftar ini menakut-nakuti tanpa sebab.
-   */
-  /**
    * Belum ada satu pun tagihan.
    *
-   * Marginnya belum dapat dinilai — bukan nol, dan bukan pula rugi sebesar
-   * biayanya: biaya yang sudah keluar memang akan ditagihkan, hanya belum.
-   * Menampilkannya sebagai angka merah besar membuat daftar ini
-   * menakut-nakuti setiap kali ada proyek baru dimulai.
+   * DITANDAI, bukan disembunyikan. Sebelumnya baris seperti ini diciutkan
+   * menjadi satu sel "tanpa kontrak" selebar enam kolom — dan biaya yang
+   * sudah keluar ikut hilang bersamanya.
+   *
+   * Padahal justru itu yang perlu terbaca. Yang biasa terjadi: pemilik minta
+   * pekerjaan kecil di sebelah proyek yang sedang berjalan, dikerjakan dulu,
+   * SPK-nya terbit belakangan. Di antara keduanya pembelian sudah berjalan
+   * tanpa satu rupiah pun tertagih — dan pada masa itulah angkanya paling
+   * perlu dilihat, bukan disembunyikan.
+   *
+   * Kebalikannya juga ada: kontrak sudah terbit dan belum ada pembelian sama
+   * sekali. Sama-sama keadaan yang sah, sama-sama harus terbaca.
    */
+  belumTertagihSamaSekali(p: BarisMargin): boolean {
+    return this.tertagih(p) <= 0;
+  }
+
+  /** Nilai kontraknya memang belum diisi — berbeda dari belum ditagih. */
   tanpaKontrak(p: BarisMargin): boolean {
+    return this.angka(p.kontrak) <= 0;
+  }
+
+  /**
+   * Persentase margin tidak dapat dihitung tanpa tagihan.
+   *
+   * Dibedakan dari nol: nol berarti impas, sedangkan ini berarti belum
+   * diketahui. Layar menuliskannya sebagai "—".
+   */
+  persenTakTerhitung(p: BarisMargin): boolean {
     return this.tertagih(p) <= 0;
   }
 

@@ -3561,7 +3561,7 @@
     "selectorPlaceholder": "输入项目代号或名称",
     "unknownCode": "该代号尚未登记为项目。",
     "docDpp": "计税基础 (DPP)",
-    "docDppHint": "若补充协议减少工作范围，请填写负数。",
+    "docDppHint": "请填写正数；正负由上方选择决定。",
     "docPpn": "增值税",
     "docPpnValue": "增值税金额",
     "docTotal": "单据金额",
@@ -3573,7 +3573,12 @@
     "address": "项目现场地址",
     "addressPlaceholder": "现场名称、街道、城市、地标",
     "addressHint": "用于在 Franco 采购单中填写送货地址。",
-    "docDppSpkNegatif": "首份合同（SPK）不得为负值。只有补充协议才能减少合同金额。"
+    "arahJudul": "对合同金额的影响",
+    "arahTambah": "增加金额",
+    "arahTambahHint": "新增或追加工作",
+    "arahKurang": "减少金额",
+    "arahKurangHint": "工作取消或范围缩减",
+    "arahKurangHanyaAdendum": "只有补充协议才能减少金额。首份合同尚无可减少的内容。"
   },
   "projectReport": {
     "title": "项目报表",
@@ -4109,7 +4114,9 @@
     "tertagih": "已开票",
     "belumTertagih": "未开票",
     "sertakanInternal": "含集团内部采购",
-    "internalHint": "向集团内公司的采购。关闭后仅显示实际流出集团的资金。"
+    "internalHint": "向集团内公司的采购。关闭后仅显示实际流出集团的资金。",
+    "belumAdaKontrak": "尚无合同",
+    "belumDitagih": "尚未开票"
   },
   "employeeView": {
     "menu": "查看完整资料",
