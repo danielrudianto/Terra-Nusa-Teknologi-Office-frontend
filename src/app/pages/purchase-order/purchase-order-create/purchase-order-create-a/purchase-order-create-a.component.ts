@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -85,6 +86,8 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
   styleUrl: './purchase-order-create-a.component.scss',
 })
 export class PurchaseOrderCreateAComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translateSvc = inject(TranslateService);
 
 
@@ -960,7 +963,7 @@ export class PurchaseOrderCreateAComponent implements OnInit {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal membuat purchase order',
+            this.serverMessage.terjemahkan(error),
             'Close',
             { duration: 3000 },
           );

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import {
   FormArray,
@@ -79,6 +80,8 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
   styleUrl: './purchase-order-create-642.component.scss',
 })
 export class PurchaseOrderCreate642Component {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translateSvc = inject(TranslateService);
 
 
@@ -747,7 +750,7 @@ export class PurchaseOrderCreate642Component {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail || 'Gagal membuat purchase order',
+            this.serverMessage.terjemahkan(error),
             'Close',
             { duration: 3000 },
           );

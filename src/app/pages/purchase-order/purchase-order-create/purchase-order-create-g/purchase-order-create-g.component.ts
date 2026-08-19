@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -71,6 +72,8 @@ import { PicAutocompleteComponent } from '../../../../components/pic-autocomplet
   styleUrl: './purchase-order-create-g.component.scss',
 })
 export class PurchaseOrderCreateGComponent implements OnInit {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly projectLookup = inject(ProjectLookupService);
   private readonly translate = inject(TranslateService);
 
@@ -857,7 +860,7 @@ export class PurchaseOrderCreateGComponent implements OnInit {
         },
         error: (error) => {
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal membuat purchase order',
+            this.serverMessage.terjemahkan(error),
             'Close',
             { duration: 3000 },
           );

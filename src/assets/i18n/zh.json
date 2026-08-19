@@ -2755,6 +2755,7 @@
     "createdOn": "单据创建于"
   },
   "audit": {
+    "sisaPerubahan": "…以及另外 {{n}} 项变更",
     "title": "变更记录",
     "empty": "尚无变更记录。",
     "loadFailed": "无法加载记录。",
@@ -3633,6 +3634,7 @@
     "reactivated": "员工已恢复在职。"
   },
   "serverError": {
+    "PO_EDIT_FORBIDDEN": "此采购订单只能由其创建人或级别 4 及以上人员修改。",
     "SALARY_SLIP_EXISTS": "该员工与期间的工资单已存在。",
     "REMINDER_NOT_FOUND": "未找到提醒。",
     "REMINDER_NOT_OWNER": "只有创建者可以修改此提醒。",

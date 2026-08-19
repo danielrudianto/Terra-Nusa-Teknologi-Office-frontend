@@ -53,12 +53,26 @@
               }
               <ul class="at-changes">
                 @for (c of changeList(e); track c.field) {
-                  <li>
-                    <span class="at-changes__field">{{ c.field }}</span>
-                    <span class="at-changes__from">{{ c.from }}</span>
-                    <mat-icon class="at-changes__arrow">arrow_forward</mat-icon>
-                    <span class="at-changes__to">{{ c.to }}</span>
-                  </li>
+                  @if (c.sisa) {
+                    <!--
+                      Yang dipotong disebutkan. Daftar yang diam-diam berhenti
+                      terbaca sebagai daftar yang lengkap.
+                    -->
+                    <li class="at-changes__sisa">
+                      {{ "audit.sisaPerubahan" | translate: { n: c.sisa } }}
+                    </li>
+                  } @else {
+                    <li>
+                      <span class="at-changes__field">{{ c.field }}</span>
+                      <span class="at-changes__nilai">
+                        <span class="at-changes__from">{{ c.from }}</span>
+                        <mat-icon class="at-changes__arrow"
+                          >arrow_forward</mat-icon
+                        >
+                        <span class="at-changes__to">{{ c.to }}</span>
+                      </span>
+                    </li>
+                  }
                 }
               </ul>
             }

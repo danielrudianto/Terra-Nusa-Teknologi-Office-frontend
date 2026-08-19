@@ -110,6 +110,15 @@
 }
 
 /* rincian kolom yang berubah */
+/*
+ * Daftar perubahan.
+ *
+ * Seluruh isinya HARUS dapat dipatahkan peramban. Nilai JSON yang panjang
+ * dulu satu untaian tanpa spasi, dan untaian semacam itu tidak punya tempat
+ * untuk patah — sehingga ia mendorong lebar induknya sampai dialognya sendiri
+ * melebar dan muncul penggulung mendatar. Yang terlihat pengguna adalah
+ * layar yang rusak, bukan nilai yang panjang.
+ */
 .at-changes {
   list-style: none;
   margin: 6px 0 0;
@@ -117,37 +126,75 @@
   border-radius: 10px;
   background: var(--surface-2, #fafbfc);
   border: 0.5px solid var(--border, #e3e6eb);
+  /* Tanpa ini, isi yang melebar tetap mendorong induknya walaupun tiap
+     nilainya sudah boleh patah. */
+  min-width: 0;
+  overflow-wrap: anywhere;
 
   li {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 6px;
     flex-wrap: wrap;
     font-size: 0.76rem;
     line-height: 1.7;
+    min-width: 0;
   }
 
   &__field {
     font-weight: 600;
     color: var(--ink, #16181d);
     min-width: 96px;
+    /* Jalur bersarang seperti `customData.additionalClauses[2]` lebih panjang
+       daripada nama kolom biasa; ia boleh patah, bukan mendorong nilainya
+       keluar baris. */
+    overflow-wrap: anywhere;
+  }
+
+  /*
+   * Nilai lama dan barunya dibungkus satu wadah.
+   *
+   * Dengan begitu keduanya berpindah baris BERSAMA ketika sempit — bukan
+   * nilai lama tertinggal di baris atas dan nilai barunya sendirian di bawah,
+   * yang membuat panah di antaranya menunjuk ke tempat kosong.
+   */
+  &__nilai {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   &__from {
     color: var(--muted, #6b7280);
     text-decoration: line-through;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   &__to {
     color: var(--brand, #154dec);
     font-weight: 600;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   &__arrow {
     font-size: 14px;
     width: 14px;
     height: 14px;
+    flex: 0 0 auto;
     color: var(--faint, #9aa0ab);
+    /* Ikon Material duduk di garis dasar yang berbeda dari teks di sampingnya;
+       tanpa ini ia tampak melayang setengah baris di atas. */
+    transform: translateY(2px);
+  }
+
+  &__sisa {
+    color: var(--muted, #6b7280);
+    font-style: italic;
   }
 }
 

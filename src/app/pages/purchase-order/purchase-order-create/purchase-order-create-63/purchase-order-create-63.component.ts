@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -82,6 +83,8 @@ import { PicAutocompleteComponent } from '../../../../components/pic-autocomplet
   styleUrl: './purchase-order-create-63.component.scss',
 })
 export class PurchaseOrderCreate63Component {
+  private readonly serverMessage = inject(ServerMessageService);
+
   // Dipakai mengisi alamat pengiriman Franco dari lokasi proyek.
   private readonly projectLookup = inject(ProjectLookupService);
 
@@ -965,7 +968,7 @@ export class PurchaseOrderCreate63Component {
         },
         error: (error) =>
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal membuat purchase order',
+            this.serverMessage.terjemahkan(error),
             'Close',
             { duration: 3000 },
           ),

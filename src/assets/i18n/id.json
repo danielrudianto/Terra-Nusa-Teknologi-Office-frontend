@@ -2755,6 +2755,7 @@
     "createdOn": "Dokumen dibuat pada"
   },
   "audit": {
+    "sisaPerubahan": "…dan {{n}} perubahan lain",
     "title": "Riwayat perubahan",
     "empty": "Belum ada perubahan tercatat.",
     "loadFailed": "Riwayat gagal dimuat.",
@@ -3633,6 +3634,7 @@
     "reactivated": "Karyawan diaktifkan kembali."
   },
   "serverError": {
+    "PO_EDIT_FORBIDDEN": "Purchase order ini hanya dapat diubah oleh pembuatnya, atau oleh level 4 ke atas.",
     "SALARY_SLIP_EXISTS": "Slip gaji untuk karyawan dan periode ini sudah pernah dibuat.",
     "REMINDER_NOT_FOUND": "Pengingat tidak ditemukan.",
     "REMINDER_NOT_OWNER": "Hanya pembuatnya yang dapat mengubah pengingat ini.",

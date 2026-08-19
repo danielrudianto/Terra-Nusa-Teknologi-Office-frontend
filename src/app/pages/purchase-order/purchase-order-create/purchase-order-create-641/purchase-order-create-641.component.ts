@@ -1,3 +1,4 @@
+import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -88,6 +89,8 @@ import { SupplierTerkunciComponent } from '../../../../components/supplier-terku
   styleUrl: './purchase-order-create-641.component.scss',
 })
 export class PurchaseOrderCreate641Component {
+  private readonly serverMessage = inject(ServerMessageService);
+
   private readonly translateSvc = inject(TranslateService);
 
   /** Kode jenis PO, dipakai pada pill di kepala halaman. */
@@ -739,7 +742,7 @@ export class PurchaseOrderCreate641Component {
         },
         error: (error) =>
           this.snackBar.open(
-            error?.error?.detail ?? 'Gagal membuat purchase order',
+            this.serverMessage.terjemahkan(error),
             'Close',
             { duration: 3000 },
           ),

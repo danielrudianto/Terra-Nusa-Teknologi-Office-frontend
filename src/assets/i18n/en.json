@@ -2755,6 +2755,7 @@
     "createdOn": "Document created on"
   },
   "audit": {
+    "sisaPerubahan": "…and {{n}} more changes",
     "title": "Change history",
     "empty": "No changes recorded yet.",
     "loadFailed": "Could not load history.",
@@ -3633,6 +3634,7 @@
     "reactivated": "Employee reactivated."
   },
   "serverError": {
+    "PO_EDIT_FORBIDDEN": "This purchase order can only be changed by the person who created it, or by level 4 and above.",
     "SALARY_SLIP_EXISTS": "A salary slip already exists for this employee and period.",
     "REMINDER_NOT_FOUND": "Reminder not found.",
     "REMINDER_NOT_OWNER": "Only the author can change this reminder.",
