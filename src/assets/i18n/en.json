@@ -3855,6 +3855,9 @@
     "red": "Red"
   },
   "employeeProfile": {
+    "riwayat": "Change history",
+    "riwayatKosong": "Never changed since it was first filled in.",
+    "riwayatDaftar": "{{n}} entries",
     "menu": "Personal profile",
     "title": "Employee personal profile",
     "firstTime": "This employee has no profile yet. The fields below are empty — fill in what you can; it need not be complete at once.",

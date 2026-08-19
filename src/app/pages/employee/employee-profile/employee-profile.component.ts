@@ -79,6 +79,59 @@ export class EmployeeProfileComponent implements OnInit {
   baru = false;
 
   /*
+   * Riwayat perubahan profil.
+   *
+   * Dimuat HANYA ketika diminta, bukan bersama profilnya. Sebagian besar
+   * pembukaan dialog ini adalah pengisian atau pembacaan biasa, dan riwayat
+   * yang ikut ditarik setiap kali menambah satu permintaan berisi data
+   * pribadi yang tidak ada yang membacanya.
+   */
+  riwayat: any[] = [];
+  riwayatDibuka = false;
+  memuatRiwayat = false;
+
+  bukaRiwayat(): void {
+    this.riwayatDibuka = !this.riwayatDibuka;
+    if (!this.riwayatDibuka || this.riwayat.length || this.memuatRiwayat) {
+      return;
+    }
+
+    this.memuatRiwayat = true;
+    this.apiService
+      .get(`employee-profiles/${this.input.id}/riwayat`, {})
+      .subscribe({
+        next: (r: any) => (this.riwayat = Array.isArray(r) ? r : []),
+        // Gagal memuat riwayat TIDAK menghalangi penyuntingan; hanya
+        // pembandingnya yang tidak muncul.
+        error: () => (this.riwayat = []),
+      })
+      .add(() => (this.memuatRiwayat = false));
+  }
+
+  /** Kunci terjemahan nama kolom; sama dengan yang dipakai isian formulirnya. */
+  labelKolom(kolom: string): string {
+    return `employeeProfile.${kolom}`;
+  }
+
+  /**
+   * Nilai sebuah kolom pada keadaan sebelum perubahan.
+   *
+   * Daftar berulang — pendidikan, susunan keluarga — dirangkum jumlahnya saja.
+   * Membentangkannya di dalam riwayat membuat satu perubahan alamat tenggelam
+   * di antara dua puluh baris yang tidak berubah.
+   */
+  nilaiLama(entri: any, kolom: string): string {
+    const nilai = entri?.snapshot?.[kolom];
+    if (nilai === null || nilai === undefined || nilai === '') return '—';
+    if (Array.isArray(nilai)) {
+      return this.translate.instant('employeeProfile.riwayatDaftar', {
+        n: nilai.length,
+      });
+    }
+    return String(nilai);
+  }
+
+  /*
    * Bagian yang dapat dibuka-tutup, disusun sendiri.
    *
    * Formulirnya panjang — dua puluh isian ditambah dua daftar berulang.

@@ -231,17 +231,22 @@
                 tidak muncul bagi yang akan ditolak servernya.
               -->
               <!--
-                Profil pribadi hanya untuk PENGISIAN PERTAMA.
-                
-                Sesudah terisi, perubahan berjalan lewat pembaruan data —
-                yang mencatat riwayatnya. Membiarkan keduanya terbuka berarti
-                dua jalur menulis kolom yang sama, dan penyuntingan langsung
-                di profil tidak meninggalkan jejak siapa mengubah apa.
+                Profil pribadi, dapat dibuka kapan saja.
+
+                Sebelumnya menu ini HILANG begitu profilnya terisi, karena
+                penyuntingan langsung tidak meninggalkan jejak siapa mengubah
+                apa. Akibatnya satu typo yang lolos tidak dapat dibetulkan
+                dari mana pun — dan yang terjadi bukan "koreksi jadi jarang",
+                melainkan koreksinya berpindah ke pesan pribadi, yang tidak
+                berjejak sama sekali.
+
+                Sekarang keadaan sebelum tiap perubahan tersimpan di
+                `employee_profile_history` dan riwayatnya terbaca di dalam
+                dialognya, sehingga alasan menutupnya tidak berlaku lagi.
               -->
               <button
                 mat-menu-item
                 *appCan="'employee_profile:read'"
-                [style.display]="element.hasProfile ? 'none' : null"
                 (click)="openProfile(element)"
               >
                 <mat-icon>badge</mat-icon

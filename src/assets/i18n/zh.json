@@ -3855,6 +3855,9 @@
     "red": "红色"
   },
   "employeeProfile": {
+    "riwayat": "修改记录",
+    "riwayatKosong": "自首次填写后从未修改。",
+    "riwayatDaftar": "{{n}} 条",
     "menu": "个人档案",
     "title": "员工个人档案",
     "firstTime": "该员工尚无档案。下方各项为空——可先填写已知内容，无需一次填全。",

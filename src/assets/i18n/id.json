@@ -3855,6 +3855,9 @@
     "red": "Merah"
   },
   "employeeProfile": {
+    "riwayat": "Riwayat perubahan",
+    "riwayatKosong": "Belum pernah diubah sejak pertama diisi.",
+    "riwayatDaftar": "{{n}} baris",
     "menu": "Profil pribadi",
     "title": "Profil pribadi karyawan",
     "firstTime": "Karyawan ini belum punya profil. Isian di bawah masih kosong — lengkapi seperlunya, tidak harus sekaligus.",

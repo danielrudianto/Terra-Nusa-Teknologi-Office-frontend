@@ -634,6 +634,56 @@
           </div>
         }
       </form>
+
+      <!--
+        Riwayat perubahan.
+        Yang tersimpan adalah keadaan SEBELUM tiap penyimpanan, sehingga
+        koreksi yang keliru dapat dikembalikan — dan yang lebih sering
+        diperlukan: dapat dibuktikan nilainya memang pernah begitu.
+      -->
+      @if (!baru) {
+        <div class="epf-riwayat">
+          <button
+            type="button"
+            class="epf-riwayat__tombol"
+            (click)="bukaRiwayat()"
+          >
+            <mat-icon>{{
+              riwayatDibuka ? "expand_less" : "expand_more"
+            }}</mat-icon>
+            {{ "employeeProfile.riwayat" | translate }}
+          </button>
+
+          @if (riwayatDibuka) {
+            @if (memuatRiwayat) {
+              <div class="epf-riwayat__kosong">
+                {{ "common.loading" | translate }}
+              </div>
+            } @else if (!riwayat.length) {
+              <div class="epf-riwayat__kosong">
+                {{ "employeeProfile.riwayatKosong" | translate }}
+              </div>
+            } @else {
+              @for (entri of riwayat; track entri.id) {
+                <div class="epf-riwayat__entri">
+                  <div class="epf-riwayat__kepala">
+                    <strong>{{ entri.changedByName || "—" }}</strong>
+                    <span>{{
+                      entri.changedAt | date: "d MMM yyyy, HH:mm"
+                    }}</span>
+                  </div>
+                  <dl class="ringkas-baris">
+                    @for (kolom of entri.changedFields; track kolom) {
+                      <dt>{{ labelKolom(kolom) | translate }}</dt>
+                      <dd>{{ nilaiLama(entri, kolom) }}</dd>
+                    }
+                  </dl>
+                </div>
+              }
+            }
+          }
+        </div>
+      }
     }
   </mat-dialog-content>
 

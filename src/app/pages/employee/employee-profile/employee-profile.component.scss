@@ -458,3 +458,65 @@
   margin: 0;
   white-space: nowrap;
 }
+
+/*
+ * Riwayat perubahan.
+ *
+ * Ditutup secara bawaan: yang membuka dialog ini hampir selalu hendak membaca
+ * atau menyunting, bukan menelusuri. Yang menelusuri tahu ia sedang mencari
+ * apa, dan satu ketukan tidak menghalanginya.
+ */
+.epf-riwayat {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line, #eef0f3);
+}
+
+.epf-riwayat__tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  color: var(--brand, #154dec);
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.epf-riwayat__kosong {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  padding: 0.6rem 0 0.2rem;
+}
+
+.epf-riwayat__entri {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface-2, #fafbfc);
+}
+
+.epf-riwayat__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+
+  span {
+    color: var(--muted, #6b7280);
+    font-size: 0.74rem;
+    white-space: nowrap;
+  }
+}
