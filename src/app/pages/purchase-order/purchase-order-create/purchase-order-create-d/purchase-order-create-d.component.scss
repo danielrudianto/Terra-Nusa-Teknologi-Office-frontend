@@ -1329,3 +1329,19 @@ app-wysiwyg {
   border-radius: 12px;
   background: transparent;
 }
+
+/*
+ * Tombol pencari kode PPh di ujung isiannya.
+ *
+ * Bentuknya sama dengan PO-B dan PO-H: kodenya dipilih dari daftar, tidak
+ * diketik, sehingga isiannya sendiri hanya-baca dan tombol inilah jalan
+ * masuknya.
+ */
+.pod-pphbtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted, #6b7280);
+  display: inline-flex;
+  align-items: center;
+}

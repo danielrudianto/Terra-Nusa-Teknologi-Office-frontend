@@ -30,6 +30,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SupplierSelectorComponent } from '../../../../components/supplier-selector/supplier-selector.component';
+import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
 import { HeaderTitleComponent } from '../../../../components/header-title/header-title.component';
 import { ApiService } from '../../../../services/api.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -128,6 +129,47 @@ export class PurchaseOrderCreateDComponent {
     private snackBar: MatSnackBar,
   ) {}
 
+  /**
+   * Pilih kode objek PPh atas upah pekerja.
+   *
+   * Kodenya dipilih dari daftar, tidak diketik: tarifnya mengikuti kode objek
+   * pajak, sehingga angka pada dokumen selalu sejalan dengan kodenya.
+   *
+   * `purchaseType: 'D'` membuat dua kode yang biasa dipakai muncul lebih
+   * dulu — dan keduanya sama dengan yang ditawarkan layar faktur atas SPK
+   * ini, supaya bukti potong cocok dengan dokumennya.
+   */
+  openPphSelector(): void {
+    this.dialog
+      .open(PphSelectorComponent, {
+        data: { purchaseType: 'D' },
+      })
+      .afterClosed()
+      .subscribe((data: any) => {
+        /*
+         * "Tanpa PPh" MENGHAPUS pilihan, berbeda dari membatalkan.
+         *
+         * Keduanya menutup dialog tanpa nilai; tanpa penanda `hapus`,
+         * keduanya diperlakukan sebagai batal dan PPh yang terlanjur dipilih
+         * tidak pernah bisa dikosongkan lagi.
+         */
+        if (data?.hapus) {
+          this.formGroup.patchValue({
+            pphCode: '',
+            pphTaxObject: '',
+            pphPercentage: 0,
+          });
+          return;
+        }
+        if (!data) return;
+        this.formGroup.patchValue({
+          pphCode: data.code,
+          pphTaxObject: data.taxObjectName,
+          pphPercentage: data.tariff,
+        });
+      });
+  }
+
   ngOnInit(): void {
     this.ensureWorker();
 
@@ -158,6 +200,23 @@ export class PurchaseOrderCreateDComponent {
     includeHomeLeave: new FormControl(false),
     includeEquipmentEscort: new FormControl(false),
     purchaseType: new FormControl('D'),
+
+    /*
+     * PPh atas upah pekerja.
+     *
+     * Yang dibayar orang perseorangan, bukan badan — sehingga pemotongannya
+     * PPh 21, bukan PPh 23 seperti pada sewa alat atau subkontraktor.
+     *
+     * Tidak wajib diisi. Sebagian pekerja berpenghasilan di bawah batas dan
+     * tidak dipotong sama sekali; mewajibkannya membuat SPK yang benar tidak
+     * dapat diterbitkan. Dua kode yang biasa dipakai diusulkan lebih dulu
+     * oleh pemilihnya — lihat `USULAN_PPH['D']`, dan keduanya sama dengan
+     * yang ditawarkan layar faktur atas SPK ini.
+     */
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
+    pphPercentage: new FormControl(0),
+
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
     supplierPrefix: new FormControl(''),
@@ -541,6 +600,11 @@ export class PurchaseOrderCreateDComponent {
       // SPK pekerja tidak memakai termin vendor; jadwalnya ada di
       // tiap komponen upah.
       payment_term: '',
+      // Dikirim `null` bila kosong, bukan '' — kolomnya nullable, dan teks
+      // kosong terbaca sebagai kode yang pernah dipilih lalu dihapus.
+      pphCode: this.formGroup.get('pphCode')?.value || null,
+      pphTaxObject: this.formGroup.get('pphTaxObject')?.value || null,
+      pphPercentage: Number(this.formGroup.get('pphPercentage')?.value) || 0,
       templateVersion: this.templateVersion,
       billing_requirements: {},
       // manpower lines -> purchase_order_items

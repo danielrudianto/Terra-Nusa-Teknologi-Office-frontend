@@ -74,17 +74,26 @@ export const USULAN_PPH: Record<string, UsulanPPh[]> = {
   /*
    * PO-D — tenaga kerja harian.
    *
-   * Bukan PPh 23: yang dibayar orang perseorangan, bukan badan. Dua kode
-   * berbeda menurut kesinambungannya.
+   * Bukan PPh 23: yang dibayar orang perseorangan, bukan badan.
+   *
+   * Kedua kode di bawah SAMA dengan yang ditawarkan layar faktur
+   * (`INVOICE_PPH_CODES`). Itu disengaja: faktur atas SPK tenaga kerja
+   * menagihkan pekerjaan yang sama, dan menawarkan pasangan kode yang
+   * berbeda di dua layar membuat bukti potong tidak cocok dengan
+   * dokumennya — selisihnya baru ketahuan saat pelaporan.
+   *
+   * Sebelumnya di sini `21-100-09` dan `21-100-03`; keduanya masuk akal
+   * secara peraturan, tetapi bukan yang dipakai di lapangan, dan bukan yang
+   * dipakai layar faktur.
    */
   D: [
     {
-      code: '21-100-09',
-      alasan: 'Pekerja lepas, tidak berkesinambungan',
+      code: '21-100-35',
+      alasan: 'Upah pegawai tidak tetap yang dibayarkan bulanan',
     },
     {
-      code: '21-100-03',
-      alasan: 'Pekerja tidak tetap yang menerima upah berkala',
+      code: '21-100-20',
+      alasan: 'Imbalan kepada pemberi jasa, bukan pegawai',
     },
   ],
 

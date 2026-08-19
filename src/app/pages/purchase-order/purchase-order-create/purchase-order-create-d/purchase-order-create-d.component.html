@@ -525,6 +525,42 @@
           <mat-hint>{{ "poD.bilaDikosongkanDokumenMemakaiNama" | translate }}</mat-hint>
         </mat-form-field>
 
+        <!--
+          PPh atas upah pekerja — SATU untuk seluruh dokumen.
+
+          Bukan per komponen upah: pemotongan berlaku atas penghasilan
+          orangnya, bukan atas gaji pokok dan uang makan sendiri-sendiri. Satu
+          SPK tetap satu bukti potong.
+
+          Boleh dikosongkan. Sebagian pekerja berpenghasilan di bawah batas
+          dan memang tidak dipotong; mewajibkannya membuat SPK yang benar
+          tidak dapat diterbitkan.
+        -->
+        <mat-form-field appearance="outline" class="pod-span2">
+          <mat-label>{{ "poH.pphCode" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="pphCode"
+            readonly
+            (click)="openPphSelector()"
+            [placeholder]="'poField.pilihKodePph' | translate"
+          />
+          <button
+            matSuffix
+            type="button"
+            class="pod-pphbtn"
+            (click)="openPphSelector()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          @if (formGroup.value.pphTaxObject) {
+            <mat-hint>
+              {{ formGroup.value.pphPercentage }}% —
+              {{ formGroup.value.pphTaxObject }}
+            </mat-hint>
+          }
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>{{ "poField.mulaiBerlaku" | translate }}</mat-label>
           <input

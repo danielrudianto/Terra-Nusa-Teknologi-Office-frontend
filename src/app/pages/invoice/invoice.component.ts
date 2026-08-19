@@ -35,14 +35,25 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { tanggalLokal } from '../../utils/tanggal';
 import { konteksKlausulTenagaKerja } from '../../helpers/klausul-tenaga-kerja.helper';
+import { usulanPPhUntuk } from '../../constants/usulan-pph';
 
 /**
  * Kode PPh yang berlaku untuk invoice tenaga kerja.
  *
- * Dibatasi dua pilihan agar tidak salah pilih; nama objek dan tarifnya tetap
- * diambil dari katalog `availablePPh` supaya tidak ada dua sumber data.
+ * Dibatasi agar tidak salah pilih; nama objek dan tarifnya tetap diambil dari
+ * katalog `availablePPh` supaya tidak ada dua sumber data.
+ *
+ * Kodenya DITURUNKAN dari usulan SPK tenaga kerja (`USULAN_PPH['D']`), bukan
+ * ditulis ulang di sini. Faktur ini menagihkan pekerjaan pada SPK itu juga,
+ * sehingga keduanya harus menawarkan kode yang sama — kalau berbeda, bukti
+ * potong tidak cocok dengan dokumennya, dan selisihnya baru ketahuan saat
+ * pelaporan.
+ *
+ * Dulu keduanya ditulis terpisah: daftar di sini dan usulan di sana, dengan
+ * isi yang memang sempat berbeda. Tidak ada satu pun yang menghubungkan
+ * keduanya, sehingga mengubah salah satunya tidak pernah menyentuh yang lain.
  */
-const INVOICE_PPH_CODES = ['21-100-35', '21-100-20'];
+const INVOICE_PPH_CODES = usulanPPhUntuk('D').map((u) => u.code);
 
 /** Angka bulan -> angka Romawi, dipakai pada penomoran dokumen. */
 const ROMAN = [
