@@ -20,6 +20,7 @@ import {
   signatureBlock,
   vendorDisplayName,
   draftWatermark,
+  namaProyekCetak,
 } from './purchase-order-shared.helper';
 
 // Font TIDAK didaftarkan lewat variabel global pdfMake.vfs — helper PDF
@@ -230,7 +231,10 @@ export function printPurchaseOrderG(
         style: 'docSubTitle',
       },
       {
-        text: `Proyek: ${data.projectName}`,
+        // Nama PANJANG proyeknya, bukan kodenya. Kode itu sudah tercetak di
+        // dalam nomor dokumen tepat di atas baris ini; mengulangnya tidak
+        // menambah keterangan apa pun. Lihat `namaProyekCetak`.
+        text: `Proyek: ${namaProyekCetak(data.projectName)}`,
         style: 'docSubTitle',
         margin: [0, 0, 0, 14] as Margins,
       },

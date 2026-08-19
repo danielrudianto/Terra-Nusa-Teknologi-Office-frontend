@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { nilaiUang } from '../../../utils/angka';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -274,7 +275,7 @@ export class PurchaseDraftConvertComponent {
         const pphPercentage =
           this.valueFormGroup.controls['pphPercentage'].value;
         const pphValue = (value * pphPercentage) / 100;
-        this.valueFormGroup.controls['pphValue'].setValue(pphValue.toFixed(2));
+        this.valueFormGroup.controls['pphValue'].setValue(nilaiUang(pphValue));
       } else {
         this.valueFormGroup.controls['ppnValue'].setValue(0);
       }
@@ -346,7 +347,7 @@ export class PurchaseDraftConvertComponent {
             const dpp = this.valueFormGroup.controls['dpp'].value;
             const pphValue = (dpp * pphPercentage) / 100;
             this.valueFormGroup.controls['pphValue'].setValue(
-              pphValue.toFixed(2),
+              nilaiUang(pphValue),
             );
           } else {
             this.valueFormGroup.patchValue({
@@ -371,11 +372,11 @@ export class PurchaseDraftConvertComponent {
     const otherValue = Number(this.valueFormGroup.controls['otherValue'].value);
 
     this.valueFormGroup.patchValue({
-      total: (total + otherValue).toFixed(2),
+      total: nilaiUang(total + otherValue),
     });
 
     this.paymentFormGroup.patchValue({
-      paymentTotal: (total + otherValue - pphValue).toFixed(2),
+      paymentTotal: nilaiUang(total + otherValue - pphValue),
     });
 
     this.isFinal = true;

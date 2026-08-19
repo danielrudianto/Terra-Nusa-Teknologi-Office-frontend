@@ -1,4 +1,5 @@
 import { TranslatePipe } from '@ngx-translate/core';
+import { nilaiUang } from '../../../utils/angka';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
@@ -69,7 +70,7 @@ export class PurchaseDraftCreateComponent {
     this.metaFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
       if (value) {
         this.metaFormGroup.controls['ppnValue'].setValue(
-          ((this.metaFormGroup.controls['dpp'].value * value) / 100).toFixed(2),
+          nilaiUang((this.metaFormGroup.controls['dpp'].value * value) / 100),
         );
       } else {
         this.metaFormGroup.controls['ppnValue'].setValue(0);
@@ -79,7 +80,7 @@ export class PurchaseDraftCreateComponent {
     this.metaFormGroup.controls['dpp'].valueChanges.subscribe((value) => {
       if (value) {
         this.metaFormGroup.controls['ppnValue'].setValue(
-          ((this.metaFormGroup.controls['ppn'].value * value) / 100).toFixed(2),
+          nilaiUang((this.metaFormGroup.controls['ppn'].value * value) / 100),
         );
       } else {
         this.metaFormGroup.controls['ppnValue'].setValue(0);

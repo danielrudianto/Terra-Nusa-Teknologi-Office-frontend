@@ -16,6 +16,7 @@ import {
   vendorDisplayName,
   signerLines,
   draftWatermark,
+  namaProyekCetak,
 } from './purchase-order-shared.helper';
 
 /**
@@ -392,7 +393,10 @@ export function printPurchaseOrderA(
       { text: 'SURAT PERINTAH KERJA', style: 'docTitle' },
       { text: `No.: ${data.purchaseOrderName}`, style: 'docSubTitle' },
       {
-        text: `Proyek: ${data.projectName}`,
+        // Nama PANJANG proyeknya, bukan kodenya. Kode itu sudah tercetak di
+        // dalam nomor dokumen tepat di atas baris ini; mengulangnya tidak
+        // menambah keterangan apa pun. Lihat `namaProyekCetak`.
+        text: `Proyek: ${namaProyekCetak(data.projectName)}`,
         style: 'docSubTitle',
         margin: [0, 0, 0, 14] as Margins,
       },

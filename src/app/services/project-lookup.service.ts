@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { ApiService } from './api.service';
+import { daftarkanNamaProyek } from '../helpers/purchase-order-shared.helper';
 
 export interface ProyekRingkas {
   id: number;
@@ -90,10 +91,9 @@ export class ProjectLookupService {
       this.api.get('projects', { page: 1, pageSize: 500 }).subscribe({
         next: (res: any) => {
           this._proyek.set(
-
             ProjectLookupService.denganPusat(res?.data ?? []),
-
           );
+          this.serahkanKeCetakan();
           this._dimuat.set(true);
           selesai();
         },
@@ -112,6 +112,7 @@ export class ProjectLookupService {
           // Bahkan saat gagal, PUSAT tetap tersedia: ia tidak berasal dari server.
 
           this._proyek.set([KODE_PUSAT]);
+          this.serahkanKeCetakan();
           selesai();
         },
       });
@@ -120,6 +121,29 @@ export class ProjectLookupService {
     });
 
     return this.berjalan;
+  }
+
+  /**
+   * Serahkan peta kode->nama kepada pembuat PDF.
+   *
+   * Pembuat PDF adalah fungsi murni tanpa suntikan layanan; ia tidak dapat
+   * memanggil layanan ini sendiri. Daripada menambahkan nama panjang ke objek
+   * data pada dua puluh lebih tempat yang merakitnya — dan satu yang terlewat
+   * mencetak kode sementara yang lain mencetak nama — petanya didaftarkan
+   * sekali di sini.
+   *
+   * Dipanggil juga saat pemuatan GAGAL. Petanya menjadi kosong, dan pembuat
+   * PDF kembali mencetak kodenya seperti sebelum ada fitur ini — bukan
+   * mencetak kosong.
+   */
+  private serahkanKeCetakan(): void {
+    const peta = new Map<string, string>();
+    for (const p of this._proyek()) {
+      const kode = (p.code ?? '').trim().toUpperCase();
+      const nama = (p.name ?? '').trim();
+      if (kode && nama) peta.set(kode, nama);
+    }
+    daftarkanNamaProyek(peta);
   }
 
   /** Apakah kode ini terdaftar. Kode kosong dianggap belum diisi, bukan salah. */

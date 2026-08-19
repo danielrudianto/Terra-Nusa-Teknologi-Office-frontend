@@ -1,3 +1,5 @@
+import { namaProyekCetak } from '../helpers/purchase-order-shared.helper';
+
 /**
  * Versioned agreement-clause templates, kept on the frontend.
  *
@@ -989,7 +991,14 @@ export function buildManpowerClauses(
    */
   const umum: string[] = [];
 
-  const lokasi = ctx.workLocation || ctx.projectName;
+  /*
+   * Nama proyek dipakai sebagai lokasi HANYA bila lokasi kerja kosong — dan
+   * kalau begitu, yang tercetak harus nama panjangnya.
+   *
+   * "Pekerjaan dilaksanakan di BPBP" bukan kalimat perjanjian; empat huruf
+   * itu tidak menunjuk tempat mana pun bagi yang membacanya di lapangan.
+   */
+  const lokasi = ctx.workLocation || namaProyekCetak(ctx.projectName);
   if (lokasi) {
     umum.push(`Pekerjaan dilaksanakan di ${lokasi}.`);
   }
@@ -2166,7 +2175,7 @@ export function buildBuangLumpurClauses(
     'Keterangan pekerjaan:',
     [
       `Jadwal Pekerjaan: ${ctx.scheduleText || '—'}`,
-      `Nama Proyek: ${ctx.projectName || '—'}`,
+      `Nama Proyek: ${namaProyekCetak(ctx.projectName) || '—'}`,
       `Lokasi Pekerjaan: ${ctx.workLocation || '—'}`,
       `Nama Wakil PIHAK PERTAMA: ${ctx.officePICName || '—'}`,
       `Nomor Telepon: ${ctx.officePICPhoneNumber || '—'}`,

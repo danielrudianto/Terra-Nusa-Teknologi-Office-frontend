@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { nilaiUang } from '../../../utils/angka';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, inject } from '@angular/core';
 import {
@@ -169,12 +170,12 @@ export class PurchaseUpdateStatusComponent {
         this.valueFormGroup.patchValue({
           dpp: data.dpp,
           ppn: data.ppn,
-          ppnValue: ((data.ppn * data.dpp) / 100).toFixed(2),
+          ppnValue: nilaiUang((data.ppn * data.dpp) / 100),
           pbbkb: data.pbbkb,
           pphCode: data.pphCode,
           pphTaxObject: data.pphTaxObjectName,
           pphPercentage: data.pphPercentage,
-          pphValue: ((data.pphPercentage * data.dpp) / 100).toFixed(2),
+          pphValue: nilaiUang((data.pphPercentage * data.dpp) / 100),
           otherValue: data.otherValue,
           otherValueNote: data.otherValueNote,
           total: total,
@@ -193,7 +194,7 @@ export class PurchaseUpdateStatusComponent {
           bankAccountName: data.bankAccountName,
           bankAccountNumber: data.bankAccountNumber,
           paymentMethod: data.paymentMethod,
-          paymentTotal: paymentTotal.toFixed(2),
+          paymentTotal: nilaiUang(paymentTotal),
         });
       },
       error: (error) => {

@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { nilaiUang } from '../../../utils/angka';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -143,12 +144,12 @@ export class ExpenseCreateComponent {
         const pphPercentage =
           this.valueFormGroup.controls['pphPercentage'].value;
         const pphValue = (value * pphPercentage) / 100;
-        this.valueFormGroup.controls['pphValue'].setValue(pphValue.toFixed(2));
+        this.valueFormGroup.controls['pphValue'].setValue(nilaiUang(pphValue));
 
         // Nilai PPN ikut berubah: persennya tetap, dasarnya yang bergeser.
         const ppn = Number(this.valueFormGroup.controls['ppn'].value) || 0;
         this.valueFormGroup.controls['ppnValue'].setValue(
-          ((value * ppn) / 100).toFixed(2),
+          nilaiUang((value * ppn) / 100),
         );
       }
 
@@ -158,7 +159,7 @@ export class ExpenseCreateComponent {
     this.valueFormGroup.controls['ppn'].valueChanges.subscribe((value) => {
       const dpp = Number(this.valueFormGroup.controls['dpp'].value) || 0;
       this.valueFormGroup.controls['ppnValue'].setValue(
-        value ? ((dpp * Number(value)) / 100).toFixed(2) : 0,
+        value ? nilaiUang((dpp * Number(value)) / 100) : 0,
       );
       this.isFinal = false;
     });
@@ -218,7 +219,7 @@ export class ExpenseCreateComponent {
           const dpp = this.valueFormGroup.controls['dpp'].value;
           const pphValue = (dpp * pphPercentage) / 100;
           this.valueFormGroup.controls['pphValue'].setValue(
-            pphValue.toFixed(2),
+            nilaiUang(pphValue),
           );
         } else {
           this.valueFormGroup.patchValue({
@@ -271,7 +272,7 @@ export class ExpenseCreateComponent {
     });
 
     this.paymentFormGroup.patchValue({
-      paymentTotal: (total - pphValue).toFixed(2),
+      paymentTotal: nilaiUang(total - pphValue),
     });
 
     this.isFinal = true;

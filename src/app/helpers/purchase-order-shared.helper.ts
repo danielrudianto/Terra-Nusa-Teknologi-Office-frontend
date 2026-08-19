@@ -652,3 +652,53 @@ export function namaPemasokBaris(po: any): string {
     po?.supplierPrefix ?? po?.supplier_prefix,
   );
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * Nama proyek pada dokumen cetak
+ * ---------------------------------------------------------------------------
+ *
+ * Dokumen menyimpan KODE proyek — empat sampai lima aksara seperti `BPBP`.
+ * Kode itu memang perlu, sebab ia bagian dari nomor dokumennya sendiri
+ * (`035-SPK-BPBP-D`), tetapi mencetaknya lagi pada baris "Proyek:" tidak
+ * menambah keterangan apa pun: yang menerima lembar ini di lapangan membaca
+ * empat huruf yang sama dua kali.
+ *
+ * Nama panjangnya ada di tabel `projects`, kolom `name`. Persoalannya, pembuat
+ * PDF adalah fungsi murni tanpa suntikan layanan — ia menerima objek data dan
+ * mengembalikan docDefinition. Menambahkan nama panjang ke objek itu berarti
+ * menyentuh dua puluh lebih tempat yang merakitnya, dan satu yang terlewat
+ * mencetak kode sementara yang lain mencetak nama.
+ *
+ * Karena itu petanya didaftarkan SEKALI, di sini. `ProjectLookupService`
+ * sudah memuat seluruh proyek untuk kebutuhan pemilih kode; ia pula yang
+ * menyerahkan petanya begitu selesai. Pembuat PDF cukup bertanya.
+ */
+
+/** kode proyek (huruf besar) -> nama panjangnya. */
+let _namaProyek = new Map<string, string>();
+
+/**
+ * Daftarkan peta kode->nama; dipanggil `ProjectLookupService` setelah memuat.
+ *
+ * Menggantikan seluruh isinya, bukan menambah: daftar yang disegarkan setelah
+ * proyek dihapus harus benar-benar kehilangan entri itu.
+ */
+export function daftarkanNamaProyek(peta: Map<string, string>): void {
+  _namaProyek = peta;
+}
+
+/**
+ * Nama proyek sebagaimana DICETAK.
+ *
+ * Kembali ke kodenya bila tidak dikenal — dan itu keadaan yang wajar, bukan
+ * kesalahan: dokumen lama memuat kode proyek yang sudah dihapus, dan
+ * daftarnya boleh saja belum selesai dimuat saat dokumen dicetak. Mencetak
+ * kode masih terbaca; mencetak kosong menghilangkan keterangannya sama
+ * sekali.
+ */
+export function namaProyekCetak(kode?: string | null): string {
+  const k = String(kode ?? '').trim();
+  if (!k) return '';
+  return _namaProyek.get(k.toUpperCase()) || k;
+}
