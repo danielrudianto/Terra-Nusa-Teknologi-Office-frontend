@@ -14,12 +14,13 @@ import {
   documentFooter,
   documentHeader,
   formatDate,
-  rupiah,
   vendorDisplayName,
   workIntroSentence,
   signerLines,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
+  angkaSatuan,
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderBItem {
@@ -237,17 +238,17 @@ function buildItemTable(data: IPurchaseOrderB) {
           : item.name || '-',
       },
       {
-        text: rupiah(item.quantity),
+        text: angkaSatuan(item.quantity),
         style: 'td',
         alignment: 'center' as Alignment,
       },
       { text: item.unit || '-', style: 'td', alignment: 'center' as Alignment },
       {
-        text: rupiah(item.price),
+        text: rupiahDokumen(item.price),
         style: 'td',
         alignment: 'right' as Alignment,
       },
-      { text: rupiah(amount), style: 'td', alignment: 'right' as Alignment },
+      { text: rupiahDokumen(amount), style: 'td', alignment: 'right' as Alignment },
     ];
   });
 
@@ -276,7 +277,7 @@ function buildItemTable(data: IPurchaseOrderB) {
     {},
     {},
     {},
-    { text: rupiah(value), style: 'td', alignment: 'right' as Alignment, bold },
+    { text: rupiahDokumen(value), style: 'td', alignment: 'right' as Alignment, bold },
   ];
 
   return {

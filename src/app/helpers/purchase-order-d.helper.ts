@@ -16,12 +16,12 @@ import {
   documentFooter,
   documentHeader,
   formatDate,
-  rupiah,
   vendorDisplayName,
   workIntroSentence,
   signerLines,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
 } from './purchase-order-shared.helper';
 
 /** Satu komponen upah (gaji pokok, uang makan, insentif, dst). */
@@ -152,7 +152,7 @@ function buildWageTable(data: IPurchaseOrderD) {
     { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
     { text: item.label || '-', style: 'td' },
     {
-      text: rupiah(item.amount),
+      text: rupiahDokumen(item.amount),
       style: 'td',
       alignment: 'right' as Alignment,
     },

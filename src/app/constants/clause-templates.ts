@@ -1,4 +1,7 @@
-import { namaProyekCetak } from '../helpers/purchase-order-shared.helper';
+import {
+  namaProyekCetak,
+  rupiahDokumen,
+} from '../helpers/purchase-order-shared.helper';
 
 /**
  * Versioned agreement-clause templates, kept on the frontend.
@@ -730,9 +733,19 @@ const MAINTENANCE_CLAUSES: ClauseTemplate[] = [
 
 // ---- PO-D: SPK tenaga kerja harian --------------------------------------
 
+/**
+ * Nominal DI DALAM kalimat perjanjian.
+ *
+ * Dua desimal, sama seperti tabel nominalnya — keduanya tercetak pada lembar
+ * yang sama, dan angka yang sama ditulis dengan dua bentuk berbeda di satu
+ * dokumen membuat yang membacanya ragu mana yang mengikat.
+ *
+ * Sebelumnya memakai `toLocaleString('id-ID')` tanpa pengaturan: bawaannya
+ * nol sampai TIGA desimal, sehingga upah lembur Rp 25.000 tercetak "25.000"
+ * sementara Rp 25.000,50 tercetak "25.000,5" — satu desimal, bukan dua.
+ */
 function rupiah(value?: number): string {
-  const n = Number(value) || 0;
-  return 'Rp. ' + n.toLocaleString('id-ID');
+  return 'Rp. ' + rupiahDokumen(value);
 }
 
 const D_CLAUSES: ClauseTemplate[] = [

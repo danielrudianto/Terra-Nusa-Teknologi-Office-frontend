@@ -12,11 +12,12 @@ import {
   documentFooter,
   documentHeader,
   formatDate,
-  rupiah,
   vendorDisplayName,
   signerLines,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
+  angkaSatuan,
 } from './purchase-order-shared.helper';
 
 /**
@@ -274,11 +275,11 @@ function buildShipmentTable(data: IPurchaseOrderA) {
           })),
         ],
       },
-      { text: rupiah(qty), style: 'td', alignment: 'center' as Alignment },
+      { text: angkaSatuan(qty), style: 'td', alignment: 'center' as Alignment },
       { text: s.unit || '-', style: 'td', alignment: 'center' as Alignment },
-      { text: rupiah(price), style: 'td', alignment: 'right' as Alignment },
+      { text: rupiahDokumen(price), style: 'td', alignment: 'right' as Alignment },
       {
-        text: rupiah(qty * price),
+        text: rupiahDokumen(qty * price),
         style: 'td',
         alignment: 'right' as Alignment,
       },
@@ -316,7 +317,7 @@ function buildShipmentTable(data: IPurchaseOrderA) {
     {},
     {},
     {},
-    { text: rupiah(value), style: 'td', alignment: 'right' as Alignment, bold },
+    { text: rupiahDokumen(value), style: 'td', alignment: 'right' as Alignment, bold },
   ];
 
   return {

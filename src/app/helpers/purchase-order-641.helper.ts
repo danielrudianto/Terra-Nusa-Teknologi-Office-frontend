@@ -12,11 +12,12 @@ import {
   documentFooter,
   documentHeader,
   formatDate,
-  rupiah,
   vendorDisplayName,
   signerLines,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
+  angkaSatuan,
 } from './purchase-order-shared.helper';
 
 /**
@@ -218,11 +219,11 @@ function buildServiceTable(data: IPurchaseOrder641) {
           })),
         ],
       },
-      { text: rupiah(qty), style: 'td', alignment: 'center' as Alignment },
+      { text: angkaSatuan(qty), style: 'td', alignment: 'center' as Alignment },
       { text: x.unit || '-', style: 'td', alignment: 'center' as Alignment },
-      { text: rupiah(price), style: 'td', alignment: 'right' as Alignment },
+      { text: rupiahDokumen(price), style: 'td', alignment: 'right' as Alignment },
       {
-        text: rupiah(qty * price),
+        text: rupiahDokumen(qty * price),
         style: 'td',
         alignment: 'right' as Alignment,
       },
@@ -244,7 +245,7 @@ function buildServiceTable(data: IPurchaseOrder641) {
     {},
     {},
     {},
-    { text: rupiah(value), style: 'td', alignment: 'right' as Alignment, bold },
+    { text: rupiahDokumen(value), style: 'td', alignment: 'right' as Alignment, bold },
   ];
 
   return {
@@ -290,7 +291,7 @@ function buildOfficialFeeTable(fees: IPurchaseOrder641Fee[]) {
       ],
     },
     {
-      text: rupiah(Number(x.amount) || 0),
+      text: rupiahDokumen(Number(x.amount) || 0),
       style: 'td',
       alignment: 'right' as Alignment,
     },
@@ -320,7 +321,7 @@ function buildOfficialFeeTable(fees: IPurchaseOrder641Fee[]) {
             },
             {},
             {
-              text: rupiah(total),
+              text: rupiahDokumen(total),
               style: 'td',
               alignment: 'right' as Alignment,
               bold: true,

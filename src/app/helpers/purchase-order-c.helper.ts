@@ -16,11 +16,12 @@ import {
   documentHeader,
   formatDate,
   isTempoTerm,
-  rupiah,
   signatureBlock,
   vendorDisplayName,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
+  angkaSatuan,
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderCItem {
@@ -131,17 +132,17 @@ function buildItemTable(data: IPurchaseOrderC) {
         ],
       },
       {
-        text: rupiah(item.quantity),
+        text: angkaSatuan(item.quantity),
         style: 'td',
         alignment: 'center' as Alignment,
       },
       { text: item.unit || '-', style: 'td', alignment: 'center' as Alignment },
       {
-        text: rupiah(item.price),
+        text: rupiahDokumen(item.price),
         style: 'td',
         alignment: 'right' as Alignment,
       },
-      { text: rupiah(amount), style: 'td', alignment: 'right' as Alignment },
+      { text: rupiahDokumen(amount), style: 'td', alignment: 'right' as Alignment },
     ];
   });
 
@@ -169,7 +170,7 @@ function buildItemTable(data: IPurchaseOrderC) {
     {},
     {},
     {},
-    { text: rupiah(value), style: 'td', alignment: 'right' as Alignment, bold },
+    { text: rupiahDokumen(value), style: 'td', alignment: 'right' as Alignment, bold },
   ];
 
   const body: any[] = [

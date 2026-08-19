@@ -121,6 +121,50 @@ export function rupiah(value: number): string {
   });
 }
 
+/**
+ * NOMINAL pada dokumen purchase order — selalu dua desimal.
+ *
+ * `rupiah()` membulatkan ke rupiah penuh. Itu tidak terlihat selama nilainya
+ * memang bulat, dan berhenti tidak terlihat sejak PPN 11%: sebelas persen
+ * dari angka yang bulat hampir tidak pernah bulat, sehingga PPN yang tercetak
+ * selalu meleset dari perkaliannya sendiri. Yang menerima dokumennya
+ * mengalikan DPP dengan sebelas persen, mendapat angka lain, dan menanyakan
+ * mana yang benar.
+ *
+ * Selalu DUA, bukan "dua bila ada". Kolom nominal yang sebagian barisnya
+ * berdesimal dan sebagian tidak sulit dibandingkan sekilas — dan pada
+ * dokumen yang ditandatangani, dibandingkan sekilas itulah yang terjadi.
+ *
+ * Berlaku untuk dokumen purchase order. Faktur penjualan, rekap tender, dan
+ * unduhan laporan proyek masih memakai `rupiah()`.
+ */
+export function rupiahDokumen(value: unknown): string {
+  return (Number(value) || 0).toLocaleString('id-ID', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+/**
+ * VOLUME dan satuan — desimalnya mengikuti angkanya sendiri.
+ *
+ * Berbeda dari nominal, dan sengaja: 10 set tetap ditulis "10", bukan
+ * "10,00". Volume yang berdesimal palsu terbaca seperti ketelitian yang tidak
+ * ada — dan pada satuan seperti "set" atau "unit", pecahan memang mustahil.
+ *
+ * Yang benar-benar berdesimal tetap ditulis apa adanya: 2,5 m3 tercetak
+ * "2,5". Empat desimal cukup untuk satuan mana pun yang dipakai di lapangan.
+ *
+ * Sebelumnya volume ikut melewati `rupiah()` — pemformat NOMINAL — sehingga
+ * 2,5 m3 tercetak "3" pada dokumen yang mengikat vendor.
+ */
+export function angkaSatuan(value: unknown): string {
+  return (Number(value) || 0).toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  });
+}
+
 /** Baris tabel barang + baris Sub Total / PPN / Total. */
 
 /**

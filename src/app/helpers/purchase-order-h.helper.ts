@@ -13,11 +13,12 @@ import {
   documentFooter,
   documentHeader,
   formatDate,
-  rupiah,
   vendorDisplayName,
   signerLines,
   draftWatermark,
   namaProyekCetak,
+  rupiahDokumen,
+  angkaSatuan,
 } from './purchase-order-shared.helper';
 
 /**
@@ -183,7 +184,7 @@ function scopeTable(data: IPurchaseOrderH) {
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
       { text: s.task || '-', style: 'td' },
       {
-        text: rupiah(s.quantity),
+        text: angkaSatuan(s.quantity),
         style: 'td',
         alignment: 'center' as Alignment,
       },
@@ -192,9 +193,9 @@ function scopeTable(data: IPurchaseOrderH) {
     if (lump) return base;
     return [
       ...base,
-      { text: rupiah(s.price), style: 'td', alignment: 'right' as Alignment },
+      { text: rupiahDokumen(s.price), style: 'td', alignment: 'right' as Alignment },
       {
-        text: rupiah((Number(s.quantity) || 0) * (Number(s.price) || 0)),
+        text: rupiahDokumen((Number(s.quantity) || 0) * (Number(s.price) || 0)),
         style: 'td',
         alignment: 'right' as Alignment,
       },
@@ -224,7 +225,7 @@ function scopeTable(data: IPurchaseOrderH) {
     ];
     for (let i = 1; i < span; i++) cells.push({});
     cells.push({
-      text: rupiah(value),
+      text: rupiahDokumen(value),
       style: 'td',
       alignment: 'right' as Alignment,
       bold,
