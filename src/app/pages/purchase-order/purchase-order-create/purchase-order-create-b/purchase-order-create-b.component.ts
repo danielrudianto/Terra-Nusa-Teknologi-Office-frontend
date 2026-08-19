@@ -52,6 +52,13 @@ import { firstValueFrom } from 'rxjs';
 import { PurchaseOrderViewComponent } from '../../../../pages/purchase-order/purchase-order-view/purchase-order-view.component';
 import { AdendumService } from '../../../../services/adendum.service';
 import { PphSelectorComponent } from '../../../../components/pph-selector/pph-selector.component';
+import {
+  SATUAN_ALAT,
+  bacaJumlahAlat,
+  rincianSewa,
+  simpanJumlahAlat,
+  volumeCetak,
+} from '../../../../constants/unit-sewa';
 import { SupplierTerkunciComponent } from '../../../../components/supplier-terkunci/supplier-terkunci.component';
 import { ProjectLookupService } from 'src/app/services/project-lookup.service';
 
@@ -202,6 +209,15 @@ export class PurchaseOrderCreateBComponent implements OnInit {
    */
   units: string[] = ['jam', 'shift', 'hari', 'bulan', 'LS'];
 
+  /*
+   * Satuan JUMLAH ALAT, bukan durasi.
+   *
+   * Dipisahkan karena keduanya pengali yang berbeda: sepuluh SET selama
+   * satu BULAN. Daftar di atas menghitung waktu, daftar ini menghitung
+   * bendanya.
+   */
+  readonly satuanAlat = SATUAN_ALAT;
+
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
     /*
@@ -349,6 +365,17 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       name: [dariKatalog ? sumber.description : sumber.name],
       category: [dariKatalog ? sumber.brand || '' : sumber.category],
       capacity: [dariKatalog ? sumber.type || '' : sumber.capacity],
+      /*
+       * Jumlah alat, TERPISAH dari durasinya.
+       *
+       * `quantity` menghitung waktu (3 bulan), `jumlahUnit` menghitung
+       * bendanya (10 set). Nilai barisnya hasil kali keduanya.
+       *
+       * Bawaannya satu, sehingga baris yang hanya menyewa satu alat diisi
+       * persis seperti sebelum kolom ini ada.
+       */
+      jumlahUnit: [1, [Validators.required, Validators.min(0.01)]],
+      satuanUnit: ['set'],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unit: [sumber.unit || 'hari', Validators.required],
       /*
@@ -463,6 +490,9 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       location: x?.remarks_3 ?? '',
       mobilisasi: Number(x?.remarks_4) || 0,
       demobilisasi: Number(x?.remarks_5) || 0,
+      // Dokumen lama tidak menyimpannya; `bacaJumlahAlat` mengembalikan satu,
+      // sehingga dokumen itu terbuka persis seperti sebelum kolom ini ada.
+      ...bacaJumlahAlat(x?.remarks_6),
     });
     return g;
   }
@@ -485,11 +515,23 @@ export class PurchaseOrderCreateBComponent implements OnInit {
   onUnitChange(i: number) {
     const g = this.getFormGroupAt(i);
     const qty = g.get('quantity');
+    const jumlah = g.get('jumlahUnit');
     if (g.get('unit')?.value === 'LS') {
       qty?.setValue(1);
       qty?.disable();
+      /*
+       * Jumlah alat ikut dikunci pada borongan.
+       *
+       * Nilai borongan disepakati untuk SELURUH pekerjaan; mengalikannya
+       * dengan jumlah alat mengubah harga yang sudah disepakati. Bila
+       * isiannya dibiarkan hidup, angka yang terlanjur diketik diam-diam
+       * melipatgandakan nilai dokumennya.
+       */
+      jumlah?.setValue(1);
+      jumlah?.disable();
     } else {
       qty?.enable();
+      jumlah?.enable();
     }
   }
 
@@ -498,7 +540,7 @@ export class PurchaseOrderCreateBComponent implements OnInit {
     // Mobilisasi dan demobilisasi ikut nilai barisnya, dan karena itu ikut
     // DPP — sehingga ikut kena PPN seperti nilai sewa lainnya.
     return (
-      (Number(g.price) || 0) * (Number(g.quantity) || 0) +
+      this.nilaiSewaBaris(g) +
       (Number(g.mobilisasi) || 0) +
       (Number(g.demobilisasi) || 0)
     );
@@ -506,8 +548,23 @@ export class PurchaseOrderCreateBComponent implements OnInit {
 
   /** Nilai sewa saja, tanpa mobilisasi; dipakai rincian di layar. */
   lineSewa(i: number): number {
-    const g = this.getFormGroupAt(i).getRawValue();
-    return (Number(g.price) || 0) * (Number(g.quantity) || 0);
+    return this.nilaiSewaBaris(this.getFormGroupAt(i).getRawValue());
+  }
+
+  /**
+   * Nilai sewa satu baris: jumlah alat × durasi × harga satuan.
+   *
+   * DUA pengali, bukan satu. Sepuluh set scaffolding selama tiga bulan
+   * bernilai 10 × 3 × harga per set per bulan — dan harga satuannya tetap
+   * harga per set per bulan, bukan harga yang sudah dikalikan diam-diam.
+   *
+   * Satu tempat untuk perkalian ini, dipakai `lineSewa` maupun `lineTotal`:
+   * bila keduanya menghitung sendiri-sendiri, satu yang tertinggal saat
+   * rumusnya berubah membuat rincian di layar tidak sama dengan totalnya.
+   */
+  private nilaiSewaBaris(g: any): number {
+    const alat = Number(g.jumlahUnit) || 1;
+    return (Number(g.price) || 0) * (Number(g.quantity) || 0) * alat;
   }
 
   /** Total mobilisasi ditambah demobilisasi pada satu baris. */
@@ -656,6 +713,22 @@ export class PurchaseOrderCreateBComponent implements OnInit {
    * kredit tercetak 0 padahal sudah diisi.
    */
   /** Keterangan periode dan lokasi untuk satu baris sewa. */
+  /**
+   * Keterangan di bawah nama alat: rincian sewa, periode, dan lokasi.
+   *
+   * Rinciannya disebut LEBIH DULU. Yang membaca baris "30 set-bulan" perlu
+   * tahu itu sepuluh set selama tiga bulan sebelum tanggalnya berarti apa
+   * pun.
+   *
+   * Pada baris yang menyewa satu alat, rinciannya kosong dan yang tercetak
+   * persis sama dengan sebelum kolom jumlah alat ada.
+   */
+  private keteranganBaris(x: any): string {
+    const rincian = rincianSewa(x.jumlahUnit, x.satuanUnit, x.quantity, x.unit);
+    const periode = this.periodeLokasi(x);
+    return [rincian, periode].filter(Boolean).join(' · ');
+  }
+
   private periodeLokasi(x: any): string {
     const bagian: string[] = [];
     const mulai = this.tanggalPanjang(x.fromDate);
@@ -961,6 +1034,18 @@ export class PurchaseOrderCreateBComponent implements OnInit {
            */
           remarks_4: String(Number(x.mobilisasi) || 0), // mobilisasi
           remarks_5: String(Number(x.demobilisasi) || 0), // demobilisasi
+          /*
+           * Jumlah alat beserta satuannya, mis. `10|set`.
+           *
+           * Kolom keterangan terakhir yang belum terpakai pada varian ini,
+           * mengikuti kebiasaan yang sama seperti mobilisasi di atas.
+           *
+           * `quantity` tetap DURASI dan tidak dikalikan di sini. Mengalikan
+           * keduanya sebelum disimpan membuat dokumen tersimpan sebagai
+           * "30 bulan" — angkanya benar, tetapi sepuluh setnya hilang dan
+           * tidak dapat dipulihkan saat dokumennya dibuka kembali.
+           */
+          remarks_6: simpanJumlahAlat(x.jumlahUnit, x.satuanUnit),
         };
       }),
       customData: {
@@ -1029,8 +1114,24 @@ export class PurchaseOrderCreateBComponent implements OnInit {
           // memang menyebut kewajiban selama masa sewa, tetapi tidak satu
           // pun menyebut tanggalnya — sehingga dokumen yang terbit tidak
           // menyatakan sampai kapan alat itu disewa.
-            remarks: this.periodeLokasi(x),
-            quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
+            remarks: this.keteranganBaris(x),
+            /*
+             * Volume yang DICETAK hasil kali kedua pengali.
+             *
+             * Tabelnya berkolom `Volume | Satuan | Harga Satuan | Jumlah`,
+             * dan vendor yang memeriksanya mengalikan volume dengan harga
+             * satuan lalu mencocokkannya dengan jumlah. Mencetak volume 10
+             * untuk sepuluh set selama tiga bulan membuat perkalian itu tidak
+             * pernah cocok, dan yang memeriksa menyangka ada salah hitung.
+             *
+             * Rinciannya — "10 set × 3 bulan" — dicetak di bawah nama alat
+             * lewat `keteranganBaris`, tempat periode dan lokasi sudah
+             * tercetak.
+             */
+            quantity:
+              x.unit === 'LS'
+                ? 1
+                : volumeCetak(x.jumlahUnit, x.quantity, x.unit).volume,
             unit: x.unit,
             price: Number(x.price) || 0,
             remarks_4: String(Number(x.mobilisasi) || 0),

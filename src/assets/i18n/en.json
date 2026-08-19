@@ -3078,7 +3078,10 @@
     "addItem": "Add item",
     "jam": "hours",
     "shiftQuotaHint": "Length of one shift; sets the per-shift quota in the clauses.",
-    "operatorByVendorTitle": "Decides whether operator terms appear"
+    "operatorByVendorTitle": "Decides whether operator terms appear",
+    "jumlahAlat": "Qty of units",
+    "satuanAlat": "Unit type",
+    "volumeHint": "Rental duration"
   },
   "poD": {
     "fieldStaff": "Field staff (e.g. staff engineer)",
@@ -3569,7 +3572,8 @@
     "description": "Description",
     "address": "Project site address",
     "addressPlaceholder": "Site name, street, city, landmark",
-    "addressHint": "Used to fill the delivery address on Franco POs."
+    "addressHint": "Used to fill the delivery address on Franco POs.",
+    "docDppSpkNegatif": "A first contract (SPK) cannot be negative. Only an addendum may reduce the value."
   },
   "projectReport": {
     "title": "Project Report",

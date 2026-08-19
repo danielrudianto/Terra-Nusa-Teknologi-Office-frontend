@@ -3078,7 +3078,10 @@
     "addItem": "Tambah barang",
     "jam": "jam",
     "shiftQuotaHint": "Panjang satu shift; menentukan kuota per shift pada klausul.",
-    "operatorByVendorTitle": "Menentukan ada tidaknya ketentuan operator"
+    "operatorByVendorTitle": "Menentukan ada tidaknya ketentuan operator",
+    "jumlahAlat": "Jumlah alat",
+    "satuanAlat": "Satuan alat",
+    "volumeHint": "Lama sewa"
   },
   "poD": {
     "fieldStaff": "Staf lapangan (mis. staff engineer)",
@@ -3569,7 +3572,8 @@
     "description": "Keterangan",
     "address": "Alamat lokasi proyek",
     "addressPlaceholder": "Nama lokasi, jalan, kota, patokan",
-    "addressHint": "Dipakai mengisi alamat pengiriman pada PO Franco."
+    "addressHint": "Dipakai mengisi alamat pengiriman pada PO Franco.",
+    "docDppSpkNegatif": "SPK tidak boleh bernilai minus. Hanya adendum yang dapat mengurangi nilai kontrak."
   },
   "projectReport": {
     "title": "Laporan Proyek",

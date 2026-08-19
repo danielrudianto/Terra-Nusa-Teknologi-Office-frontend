@@ -16,6 +16,8 @@
  * keduanya tetap sepadan.
  */
 
+import { bacaJumlahAlat } from './unit-sewa';
+
 /** Satu baris `items` sebagaimana dikembalikan server. */
 export interface BarisDokumen {
   item_id?: number | null;
@@ -149,6 +151,9 @@ export const BALIK_BARIS: Record<
     location: x.remarks_3 ?? '',
     mobilisasi: Number(x.remarks_4) || 0,
     demobilisasi: Number(x.remarks_5) || 0,
+    // Jumlah alat, terpisah dari durasinya; `remarks_6` berisi `10|set`.
+    // Dokumen lama tidak memuatnya dan dibaca sebagai satu.
+    ...bacaJumlahAlat(x.remarks_6),
   }),
 
   /**

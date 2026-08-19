@@ -89,6 +89,15 @@
             [allowNegativeNumbers]="true"
           />
           <mat-hint>{{ "project.docDppHint" | translate }}</mat-hint>
+          <!--
+            Ditolaknya SPK bernilai minus DIKATAKAN, bukan sekadar membuat
+            tombol simpan mati. Keterangan di atas mengajak mengisi negatif;
+            tanpa pesan ini, yang mengikutinya pada dokumen pertama menghadapi
+            formulir yang menolak tanpa menyebut sebabnya.
+          -->
+          @if (formGroup.get("dpp")?.hasError("spkNegatif")) {
+            <mat-error>{{ "project.docDppSpkNegatif" | translate }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">

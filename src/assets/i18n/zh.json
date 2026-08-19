@@ -3078,7 +3078,10 @@
     "addItem": "添加物品",
     "jam": "小时",
     "shiftQuotaHint": "一个班次的时长；决定条款中的每班配额。",
-    "operatorByVendorTitle": "决定是否载明操作员条款"
+    "operatorByVendorTitle": "决定是否载明操作员条款",
+    "jumlahAlat": "设备数量",
+    "satuanAlat": "设备单位",
+    "volumeHint": "租期"
   },
   "poD": {
     "fieldStaff": "现场员工（如工程师）",
@@ -3569,7 +3572,8 @@
     "description": "说明",
     "address": "项目现场地址",
     "addressPlaceholder": "现场名称、街道、城市、地标",
-    "addressHint": "用于在 Franco 采购单中填写送货地址。"
+    "addressHint": "用于在 Franco 采购单中填写送货地址。",
+    "docDppSpkNegatif": "首份合同（SPK）不得为负值。只有补充协议才能减少合同金额。"
   },
   "projectReport": {
     "title": "项目报表",

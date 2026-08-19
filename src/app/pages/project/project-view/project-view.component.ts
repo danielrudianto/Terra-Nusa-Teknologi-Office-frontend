@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -30,6 +32,43 @@ import { PphSelectorComponent } from '../../../components/pph-selector/pph-selec
 import { IPPh } from '../../../utils/pph';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+
+
+/**
+ * SPK tidak boleh bernilai minus; adendum boleh.
+ *
+ * Adendum yang mengurangi lingkup kerja memang bernilai negatif — itu
+ * satu-satunya cara mencatat pekerjaan yang dibatalkan sesudah kontraknya
+ * berjalan. Tetapi dokumen PERTAMA bernilai minus tidak berarti apa pun:
+ * tidak ada pekerjaan yang dikurangi karena belum ada yang disepakati, dan
+ * nilai proyeknya langsung terbaca terbalik.
+ *
+ * Galatnya dipasang pada `dpp`, bukan pada grupnya, supaya pesannya muncul di
+ * bawah isian yang bersangkutan — bukan sebagai formulir yang menolak simpan
+ * tanpa menunjuk apa yang salah. Bentuk ini sama dengan validator gabungan
+ * lain di aplikasi ini.
+ */
+function nilaiKontrakSah(g: AbstractControl): ValidationErrors | null {
+  const jenis = g.get('documentType')?.value;
+  const dpp = g.get('dpp');
+  const nilai = Number(dpp?.value);
+
+  if (jenis !== 'adendum' && isFinite(nilai) && nilai < 0) {
+    dpp?.setErrors({ ...(dpp.errors ?? {}), spkNegatif: true });
+    return { spkNegatif: true };
+  }
+
+  // Hanya galat YANG DIPASANG DI SINI yang dibersihkan.
+  //
+  // Menghapus seluruh galat akan ikut menghapus `required` dari validator
+  // kendalinya sendiri, sehingga isian kosong lolos tanpa satu pun tanda.
+  if (dpp?.hasError('spkNegatif')) {
+    const sisa = { ...(dpp.errors ?? {}) };
+    delete sisa['spkNegatif'];
+    dpp.setErrors(Object.keys(sisa).length ? sisa : null);
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-project-view',
@@ -72,18 +111,30 @@ export class ProjectViewComponent implements OnInit {
   contracts: ProjectContract[] = [];
   sedangTambah = false;
 
-  formGroup = new FormGroup({
+  formGroup = new FormGroup(
+    {
     documentNumber: new FormControl('', [
       Validators.required,
       Validators.maxLength(100),
     ]),
     documentType: new FormControl<'spk' | 'adendum'>('spk', Validators.required),
-    // Nilai kontrak tidak boleh negatif: kontrak bernilai minus tidak
-    // berarti apa pun, dan margin proyeknya ikut salah tanpa galat.
-    dpp: new FormControl<number | null>(null, [
-      Validators.required,
-      Validators.min(0),
-    ]),
+    /*
+     * Nilainya BOLEH negatif pada adendum.
+     *
+     * Adendum yang mengurangi lingkup kerja memang bernilai minus, dan itu
+     * satu-satunya cara mencatat pengurangan pekerjaan.
+     *
+     * Sebelumnya di sini ada `Validators.min(0)`, dan itu bertentangan dengan
+     * seluruh bagian lain yang sudah menyiapkannya: masknya sudah memakai
+     * `allowNegativeNumbers`, keterangan di bawah isiannya berbunyi "Isi
+     * negatif bila adendum mengurangi lingkup kerja", dan skema server hanya
+     * menolak nol. Yang menghalangi tinggal validator ini — angka minus dapat
+     * diketik, tampak wajar, lalu tombol simpannya tidak pernah menyala.
+     *
+     * Yang tersisa dijaga `nilaiKontrakSah`: SPK — dokumen pertama, bukan
+     * perubahannya — tetap tidak boleh minus.
+     */
+    dpp: new FormControl<number | null>(null, [Validators.required]),
     ppn: new FormControl<number>(11, [
       Validators.required,
       Validators.min(0),
@@ -93,8 +144,10 @@ export class ProjectViewComponent implements OnInit {
     pphTaxObject: new FormControl<string | null>(null),
     pphPercentage: new FormControl<number | null>(null),
     date: new FormControl<Date | null>(null, Validators.required),
-    description: new FormControl('', Validators.maxLength(500)),
-  });
+      description: new FormControl('', Validators.maxLength(500)),
+    },
+    { validators: nilaiKontrakSah },
+  );
 
   /*
    * Nilai dokumen dan potongan dihitung ulang di layar agar terlihat
