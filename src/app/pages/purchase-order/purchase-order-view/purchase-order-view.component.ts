@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
 import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {
@@ -690,11 +691,17 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
           tambahan,
         );
       case 'D':
+        /*
+         * Konteksnya disusun penyusun BERSAMA.
+         *
+         * Sebelumnya `customData` diteruskan apa adanya: tanggalnya masih
+         * ISO, sehingga kalimat jangka waktu perjanjian tidak pernah
+         * terbentuk, dan jadwal upahnya tidak ada sama sekali. Yang membuka
+         * pratinjau melihat dokumen yang lebih sedikit isinya daripada yang
+         * baru saja ia isi di formulir.
+         */
         return buildManpowerClauses(
-          {
-            ...custom,
-            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-          },
+          konteksKlausulTenagaKerja(custom, this.data),
           tambahan,
         );
       case 'H': {

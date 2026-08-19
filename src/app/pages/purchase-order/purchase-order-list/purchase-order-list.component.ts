@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../directives/can.directive';
+import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -1285,6 +1286,16 @@ export class PurchaseOrderListComponent {
           },
               output);
         } else if (data.purchaseType === 'D') {
+          /*
+           * Konteks klausulnya disusun ulang, TIDAK memakai `printData`.
+           *
+           * `printData.clauseContext` hanya memuat lokasi kerja dan jangka
+           * waktu. Seluruh hak dan kewajiban pekerja — lembur, jam shift,
+           * kebijakan hari Minggu, tempat tinggal, jadwal upah — tidak ada di
+           * dalamnya, sehingga PDF yang dicetak ulang dari daftar ini jauh
+           * lebih sedikit isinya daripada yang dicetak sesaat setelah dibuat.
+           * Dan yang dicetak ulang itulah yang biasanya sampai ke pekerja.
+           */
           // SPK tenaga kerja: satu baris item = satu komponen upah
           return printPurchaseOrderD({
               isApproved,
@@ -1305,7 +1316,7 @@ export class PurchaseOrderListComponent {
               unit: it.unit,
             })),
             templateVersion: data.templateVersion,
-            clauseContext: printData.clauseContext,
+            clauseContext: konteksKlausulTenagaKerja(custom, data),
             additionalClauses: printData.additionalClauses,
           },
               output);

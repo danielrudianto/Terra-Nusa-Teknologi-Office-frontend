@@ -1,4 +1,9 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import {
+  kalimatJadwalUpah,
+  kalimatJadwalUpahPertama,
+  tanggalPanjang as tanggalPanjangBersama,
+} from '../../../../helpers/klausul-tenaga-kerja.helper';
 import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -347,85 +352,19 @@ export class PurchaseOrderCreateDComponent {
   }
 
   /**
-   * Dua kalimat per komponen upah: jadwal pembayaran + periode perhitungannya.
-   * Nomor rincian mengacu ke urutan komponen upah pada PO ini.
+   * Dua kalimat per komponen upah.
+   *
+   * Susunannya ada di `klausul-tenaga-kerja.helper.ts` dan dipakai bersama
+   * halaman lihat serta cetak ulang — disalin, ketiganya akan berbeda kalimat
+   * untuk dokumen yang sama, dan itulah yang sudah terjadi sebelumnya.
    */
   wageSentences(w: any, index: number): string[] {
-    const label = (w.label || 'Upah').trim();
-    const ref = `${label}, sebagaimana disebutkan pada rincian pekerjaan ${
-      index + 1
-    },`;
-
-    switch (w.scheduleType) {
-      case 'sameMonth': {
-        // "Akhir bulan" tidak punya angka tetap; kalimatnya menyebutnya
-        // apa adanya dan periodenya dimulai tanggal 1.
-        if (w.cutoffDate === 'end') {
-          return [
-            `${ref} akan dibayarkan setiap bulan pada tanggal ${
-              w.payDate || 10
-            } pada bulan yang sama.`,
-            `Periode perhitungan ${label.toLowerCase()} dimulai tanggal 1 dan berakhir (cut-off) pada akhir bulan.`,
-          ];
-        }
-        const cut = Number(w.cutoffDate) || 15;
-        const start = cut >= 28 ? 1 : cut + 1;
-        return [
-          `${ref} akan dibayarkan setiap bulan pada tanggal ${
-            w.payDate || 10
-          } pada bulan yang sama.`,
-          `Periode perhitungan ${label.toLowerCase()} dimulai tanggal ${start} dan berakhir (cut-off) pada tanggal ${cut}.`,
-        ];
-      }
-      case 'semiMonthly': {
-        /*
-         * Dua kali sebulan: cut-off tanggal X dan akhir bulan, dibayar pada
-         * hari tertentu di pekan berikutnya.
-         *
-         * Pola ini dipakai antara lain untuk operator alat. Tidak dapat
-         * dinyatakan dengan `sameMonth` maupun `weekly`: yang pertama hanya
-         * mengenal satu cut-off per bulan, yang kedua tidak mengenal tanggal
-         * sama sekali.
-         *
-         * Tanggal bayarnya sengaja TIDAK ditetapkan sebagai angka. Jatuhnya
-         * bergantung pada hari apa cut-off itu jatuh tiap bulan, dan
-         * menuliskan satu tanggal tetap di SPK akan meleset hampir setiap
-         * bulan.
-         */
-        const c1 = w.cutoffFirst ?? 15;
-        const hari = w.payDay || 'Jumat';
-        return [
-          `${ref} dihitung dua kali dalam sebulan, dengan cut-off pada tanggal ${c1} dan pada akhir bulan.`,
-          `Pembayaran ${label.toLowerCase()} dilakukan pada hari ${hari} di pekan berikutnya setelah masing-masing cut-off.`,
-        ];
-      }
-      case 'nextMonth':
-        return [
-          `${ref} akan dibayarkan setiap bulan pada tanggal ${
-            w.payDate || 10
-          } di bulan berikutnya.`,
-          `Periode perhitungan ${label.toLowerCase()} dimulai pada awal bulan dan berakhir (cut-off) pada akhir bulan.`,
-        ];
-      default: {
-        const cutoff = w.cutoffDay || 'Rabu';
-        return [
-          `${ref} akan dibayarkan setiap minggu pada hari ${
-            w.payDay || 'Sabtu'
-          }.`,
-          `Periode perhitungan ${label.toLowerCase()} dimulai hari ${this.dayAfter(
-            cutoff,
-          )} dan berakhir (cut-off) pada hari ${cutoff}.`,
-        ];
-      }
-    }
+    return kalimatJadwalUpah(w, index);
   }
 
   /** Jadwal upah dari pekerja pertama — dipakai untuk preview poin perjanjian. */
   private get wageSchedules(): string[] {
-    const first = this.t.at(0);
-    if (!first) return [];
-    const wages = (first.get('wages')?.value as any[]) || [];
-    return wages.flatMap((w, idx) => this.wageSentences(w, idx));
+    return kalimatJadwalUpahPertama(this.t.getRawValue() as any[]);
   }
 
   /**
@@ -445,6 +384,27 @@ export class PurchaseOrderCreateDComponent {
     const items: any[] = Array.isArray(induk?.items) ? induk.items : [];
     if (!items.length) return;
 
+    /*
+     * Jadwal upah dibaca dari `customData.wageSchedules`.
+     *
+     * Baris item TIDAK pernah memuatnya: jadwalnya dikirim sebagai `schedule`
+     * per baris, dan `purchase_order_items` tidak punya kolom itu, sehingga
+     * backend membuangnya tanpa galat. Yang dibaca di bawah — `x.payDay`,
+     * `x.cutoffDay` — karena itu selalu kosong, dan setiap dokumen yang
+     * dibuka kembali kehilangan jadwalnya lalu kembali ke bawaan.
+     *
+     * Dokumen yang dibuat SEBELUM perbaikan ini memang tidak punya
+     * `wageSchedules`; jadwalnya sudah hilang dan tidak dapat dipulihkan dari
+     * mana pun. Yang seperti itu tetap jatuh ke bawaan.
+     */
+    const jadwal: any[] = Array.isArray(induk?.customData?.wageSchedules)
+      ? induk.customData.wageSchedules
+      : [];
+    const jadwalPerTugas = new Map<string, any[]>();
+    for (const j of jadwal) {
+      jadwalPerTugas.set(String(j?.task ?? ''), (j?.wages as any[]) || []);
+    }
+
     // Urutan pekerjaan dipertahankan seperti pada dokumennya; `Map` menjaga
     // urutan penyisipan, sehingga cetakannya tidak berubah susunan.
     const perTugas = new Map<string, any[]>();
@@ -463,20 +423,25 @@ export class PurchaseOrderCreateDComponent {
 
       const upah = g.get('wages') as FormArray;
       upah.clear();
-      for (const x of baris) {
+      const jadwalTugas = jadwalPerTugas.get(tugas) || [];
+      baris.forEach((x, i) => {
+        // Nilainya dari baris item, jadwalnya dari `customData` pada urutan
+        // yang sama — keduanya ditulis dari daftar yang sama saat disimpan.
+        const j = jadwalTugas[i] || {};
         const w = this.buildWage();
         w.patchValue({
-          label: x?.remarks_3 || 'Upah harian',
+          label: j.label || x?.remarks_3 || 'Upah harian',
           amount: Number(x?.price) || 0,
           unit: x?.unit || 'hari',
-          scheduleType: x?.type || 'weekly',
-          payDay: x?.payDay ?? 'Sabtu',
-          payDate: x?.payDate ?? null,
-          cutoffDay: x?.cutoffDay ?? null,
-          cutoffDate: x?.cutoffDate ?? null,
+          scheduleType: j.scheduleType || 'weekly',
+          payDay: j.payDay ?? 'Sabtu',
+          payDate: j.payDate ?? null,
+          cutoffDay: j.cutoffDay ?? null,
+          cutoffDate: j.cutoffDate ?? null,
+          cutoffFirst: j.cutoffFirst ?? 15,
         });
         upah.push(w);
-      }
+      });
       if (!upah.length) upah.push(this.buildWage());
 
       larik.push(g);
@@ -634,6 +599,34 @@ export class PurchaseOrderCreateDComponent {
         includeEquipmentEscort: !!this.formGroup.get('includeEquipmentEscort')
           ?.value,
         jobDescriptions: this.jobDescriptionValues,
+        /*
+         * Jadwal upah disimpan DI SINI, bukan pada baris itemnya.
+         *
+         * Sebelumnya tiap baris item membawa `schedule`, dan
+         * `purchase_order_items` tidak punya kolom itu — backend membuangnya
+         * tanpa galat. Akibatnya seluruh tata cara pembayaran runtuh menjadi
+         * satu kalimat "Upah dibayarkan sesuai kesepakatan" pada setiap
+         * dokumen yang dibaca kembali, termasuk yang dicetak dan
+         * ditandatangani.
+         *
+         * Yang disimpan DATA jadwalnya, bukan kalimatnya: kalimat dirakit
+         * ulang saat dibaca, sehingga memperbaiki susunannya tidak menuntut
+         * dokumen lama ikut ditulis ulang.
+         */
+        wageSchedules: (this.t.getRawValue() as any[]).map((w) => ({
+          task: w?.task ?? '',
+          wages: ((w?.wages as any[]) || []).map((u) => ({
+            label: u?.label ?? '',
+            scheduleType: u?.scheduleType ?? 'weekly',
+            payDay: u?.payDay ?? null,
+            payDate: u?.payDate ?? null,
+            cutoffDay: u?.cutoffDay ?? null,
+            cutoffDate: u?.cutoffDate ?? null,
+            // Ikut disimpan; tanpa ini jadwal dua kali sebulan selalu kembali
+            // ke tanggal 15 saat dokumennya dibuka lagi.
+            cutoffFirst: u?.cutoffFirst ?? null,
+          })),
+        })),
         includeSundayPolicy: !!this.formGroup.get('includeSundayPolicy')?.value,
         // poin custom yang memang diketik sendiri oleh user
         additionalClauses: (this.additionalClauses.value as string[])
@@ -918,17 +911,9 @@ export class PurchaseOrderCreateDComponent {
     };
   }
 
-  /** Tanggal dalam penulisan panjang, mis. "1 September 2026". */
+  /** Tanggal dalam penulisan panjang; susunannya dipakai bersama. */
   private tanggalPanjang(nilai: any): string {
-    if (!nilai) return '';
-    const d = new Date(nilai);
-    return isNaN(d.getTime())
-      ? ''
-      : d.toLocaleDateString('id-ID', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        });
+    return tanggalPanjangBersama(nilai);
   }
 
   /**
