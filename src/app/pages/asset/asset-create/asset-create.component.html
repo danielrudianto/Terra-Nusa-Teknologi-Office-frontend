@@ -35,6 +35,19 @@
 
         <mat-form-field appearance="outline" class="w-100 ac-span2">
           <mat-label>{{ "asset.assetDescription" | translate }}</mat-label>
+          <!--
+            `description`, bukan `deacription`.
+
+            Nama yang tidak ada di FormGroup membuat direktifnya memegang
+            `null`, lalu Angular melempar
+
+              Cannot read properties of null (reading '_rawValidators')
+
+            saat merakit formulirnya — dan seluruh layar berhenti di situ.
+            Galatnya tidak menyebut nama isian yang salah sama sekali,
+            sehingga yang membacanya menduga persoalannya pada izin atau pada
+            data, bukan pada satu huruf yang tertukar.
+          -->
           <textarea
             matInput
             formControlName="description"
@@ -93,12 +106,12 @@
               }}</mat-option>
             </mat-optgroup>
             <mat-optgroup label="Buildings">
-              <mat-option [value]="20">{{
-                "common.20YearsPermanentBuilding" | translate
-              }}</mat-option>
-              <mat-option [value]="10">{{
-                "common.10YearsNonPermanentBuilding" | translate
-              }}</mat-option>
+              <mat-option [value]="20"
+                >{{ "common.20YearsPermanentBuilding" | translate }}</mat-option
+              >
+              <mat-option [value]="10"
+                >{{ "common.10YearsNonPermanentBuilding" | translate }}</mat-option
+              >
             </mat-optgroup>
           </mat-select>
         </mat-form-field>
