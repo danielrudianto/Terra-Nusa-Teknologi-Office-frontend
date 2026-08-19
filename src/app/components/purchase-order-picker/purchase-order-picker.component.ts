@@ -58,6 +58,24 @@ export class PurchaseOrderPickerComponent implements OnInit {
   page = 0;
   isLoading = false;
 
+  /** Sepuluh baris per halaman; dikirim sebagai `page_size`. */
+  readonly ukuranHalaman = 10;
+
+  /** Nomor baris pertama pada halaman ini, dihitung dari satu. */
+  get awalBaris(): number {
+    return this.jumlah === 0 ? 0 : this.page * this.ukuranHalaman + 1;
+  }
+
+  /**
+   * Nomor baris terakhir.
+   *
+   * Dibatasi `jumlah`: pada halaman terakhir isinya biasanya kurang dari
+   * sepuluh, dan menulis "51–60 dari 54" membuat angkanya tidak dipercaya.
+   */
+  get akhirBaris(): number {
+    return Math.min((this.page + 1) * this.ukuranHalaman, this.jumlah);
+  }
+
   ngOnInit(): void {
     this.cari(0);
     this.searchBar.valueChanges
@@ -66,17 +84,19 @@ export class PurchaseOrderPickerComponent implements OnInit {
   }
 
   cari(halaman: number): void {
-    this.page = halaman;
+    // Dijaga agar tidak negatif: tombol sebelumnya dimatikan pada halaman
+    // pertama, tetapi `cari()` juga dipanggil dari tempat lain.
+    this.page = Math.max(0, halaman);
     this.isLoading = true;
     this.apiService
       .get('purchase-orders/', {
         keyword: (this.searchBar.value || '').trim(),
-        page: halaman + 1,
+        page: this.page + 1,
         // `page_size`, bukan `pageSize`. FastAPI mencocokkan nama persis dan
         // membuang yang tidak dikenal tanpa galat — nilainya diam-diam jatuh
         // ke bawaan 10, sehingga mengubah angka di sini tidak berpengaruh apa
         // pun.
-        page_size: 10,
+        page_size: this.ukuranHalaman,
       })
       .subscribe({
         next: (res: any) => {

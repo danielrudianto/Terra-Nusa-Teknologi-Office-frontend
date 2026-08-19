@@ -529,6 +529,9 @@ export class PurchaseDraftConvertComponent {
                     lastStatus: 'ready',
                     lastStatusDescription: '',
                     isInternal: false,
+                    // Ikut disebut: `reset()` memberi `null` kepada kendali
+                    // yang tidak disebut, dan `documentType` wajib diisi.
+                    documentType: '',
                   });
 
                   this.valueFormGroup.reset({
@@ -560,6 +563,11 @@ export class PurchaseDraftConvertComponent {
                     paymentMethod: '',
                     paymentTotal: 0,
                     proxyPayment: false,
+                    // Lihat keterangan pada jalur di bawah: `bankAccountID`
+                    // yang menjadi `null` melempar TypeError pada
+                    // validatornya.
+                    createPayment: false,
+                    bankAccountID: '',
                   });
 
                   this.stepper!.selectedIndex = 0;
@@ -626,6 +634,9 @@ export class PurchaseDraftConvertComponent {
               lastStatus: 'ready',
               lastStatusDescription: '',
               isInternal: false,
+              // Ikut disebut: `reset()` memberi `null` kepada kendali yang
+              // tidak disebut, dan `documentType` wajib diisi.
+              documentType: '',
             });
 
             this.valueFormGroup.reset({
@@ -657,6 +668,16 @@ export class PurchaseDraftConvertComponent {
               paymentMethod: '',
               paymentTotal: 0,
               proxyPayment: false,
+              /*
+               * `bankAccountID` WAJIB disebut.
+               *
+               * Tanpa ini nilainya menjadi `null`, sedangkan
+               * `bankAccountIDRequired()` memanggil `.toString()` atasnya —
+               * menyalakan sakelar slip pembayaran sesudah satu berkas
+               * tersimpan melempar TypeError dan formulirnya berhenti.
+               */
+              createPayment: false,
+              bankAccountID: '',
             });
 
             this.stepper!.selectedIndex = 0;

@@ -3943,7 +3943,15 @@
     "licenseNumber": "Nomor SIM",
     "noLicense": "Belum ada SIM tercatat.",
     "gpaTidakAda": "Tidak menerbitkan IPK",
-    "bloodTypeTidakTahu": "Tidak tahu golongan darah"
+    "bloodTypeTidakTahu": "Tidak tahu golongan darah",
+    "heightCm": "Tinggi badan",
+    "weightKg": "Berat badan",
+    "drivingLicenses": "SIM",
+    "bpjsKesehatan": "BPJS Kesehatan",
+    "bpjsKetenagakerjaan": "BPJS Ketenagakerjaan",
+    "formalEducation": "Pendidikan formal",
+    "workExperience": "Pengalaman kerja",
+    "riwayatGagal": "Riwayat perubahan gagal dimuat. Isian di atas tidak terpengaruh."
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",
@@ -4072,7 +4080,10 @@
     "sub": "Pilih dokumen, isian di bawah terisi otomatis",
     "cari": "Cari nomor PO, nama pemasok, atau proyek",
     "kosong": "Tidak ada purchase order yang cocok.",
-    "draf": "DRAF"
+    "draf": "DRAF",
+    "halaman": "{{a}}–{{b}} dari {{n}}",
+    "sebelumnya": "Sebelumnya",
+    "berikutnya": "Berikutnya"
   },
   "projectMargin": {
     "judul": "Margin proyek",

@@ -90,6 +90,29 @@ export class EmployeeProfileComponent implements OnInit {
   riwayatDibuka = false;
   memuatRiwayat = false;
 
+  /**
+   * Pemuatannya GAGAL — dibedakan dari riwayat yang memang kosong.
+   *
+   * Keduanya sama-sama menghasilkan daftar kosong, tetapi yang dikatakan
+   * kepada yang membaca berbeda jauh: "belum pernah diubah" adalah pernyataan
+   * TENTANG catatannya, dan pada layar audit pernyataan itu tidak boleh
+   * diucapkan hanya karena satu permintaan gagal.
+   */
+  gagalRiwayat = false;
+
+  /**
+   * Entri yang benar-benar punya isi.
+   *
+   * Backend menyimpan satu baris setiap kali profil disimpan, termasuk
+   * penyimpanan yang tidak mengubah apa pun — dan `changedFields`-nya kosong.
+   * Tanpa saringan ini, menekan Simpan tanpa menyunting apa pun melahirkan
+   * kartu berisi nama dan jam saja: catatan audit yang menyatakan ada
+   * perubahan, padahal tidak ada.
+   */
+  get riwayatBerisi(): any[] {
+    return this.riwayat.filter((e) => e?.changedFields?.length);
+  }
+
   bukaRiwayat(): void {
     this.riwayatDibuka = !this.riwayatDibuka;
     if (!this.riwayatDibuka || this.riwayat.length || this.memuatRiwayat) {
@@ -97,13 +120,18 @@ export class EmployeeProfileComponent implements OnInit {
     }
 
     this.memuatRiwayat = true;
+    this.gagalRiwayat = false;
     this.apiService
       .get(`employee-profiles/${this.input.id}/riwayat`, {})
       .subscribe({
         next: (r: any) => (this.riwayat = Array.isArray(r) ? r : []),
         // Gagal memuat riwayat TIDAK menghalangi penyuntingan; hanya
-        // pembandingnya yang tidak muncul.
-        error: () => (this.riwayat = []),
+        // pembandingnya yang tidak muncul — dan kegagalannya dikatakan apa
+        // adanya, bukan disamarkan sebagai "belum pernah diubah".
+        error: () => {
+          this.riwayat = [];
+          this.gagalRiwayat = true;
+        },
       })
       .add(() => (this.memuatRiwayat = false));
   }

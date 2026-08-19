@@ -239,10 +239,25 @@ export class ProjectViewComponent implements OnInit {
 
   bukaTambah(): void {
     this.sedangTambah = true;
+    /*
+     * Seluruh kendali disebut, termasuk yang memang dikosongkan.
+     *
+     * `reset()` memberi `null` kepada yang TIDAK disebut — bukan
+     * mengembalikannya ke nilai bawaannya. Di sini akibatnya ringan, sebab
+     * bawaan keenam kendali itu memang kosong; yang berubah hanya isian teks
+     * yang berakhir `null` alih-alih `''`. Ditulis lengkap supaya yang
+     * membaca tidak perlu menebak mana yang disengaja.
+     */
     this.formGroup.reset({
+      documentNumber: '',
       documentType: this.contracts.length === 0 ? 'spk' : 'adendum',
+      dpp: null,
       ppn: 11,
+      pphCode: null,
+      pphTaxObject: null,
+      pphPercentage: null,
       date: new Date(),
+      description: '',
     });
   }
 

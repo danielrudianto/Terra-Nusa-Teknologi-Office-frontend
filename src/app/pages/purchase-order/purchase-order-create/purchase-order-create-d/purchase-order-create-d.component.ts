@@ -900,6 +900,16 @@ export class PurchaseOrderCreateDComponent {
       includeShiftClause: !!this.formGroup.get('includeShiftClause')?.value,
       includePlacementClause: !!this.formGroup.get('includePlacementClause')
         ?.value,
+      /*
+       * Ikut disertakan meski sudah tersimpan ke `customData`.
+       *
+       * Pembangun klausul memeriksanya dengan `!== false`, sehingga yang
+       * TIDAK disebutkan di sini terbaca sebagai "nyala". Akibatnya klausul
+       * mes tetap tercetak walau kotaknya sengaja dilepas — dan hanya pada
+       * pratinjau, karena dokumen yang dibaca kembali merakit konteksnya dari
+       * `customData` yang memang menyimpannya.
+       */
+      includeHousingClause: !!this.formGroup.get('includeHousingClause')?.value,
       overtimeRate: v.overtimeRate,
       overtimeUnit: v.overtimeUnit || 'jam',
       overtimeAfter: v.overtimeAfter,

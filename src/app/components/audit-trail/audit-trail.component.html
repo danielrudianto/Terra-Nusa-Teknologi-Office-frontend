@@ -44,13 +44,25 @@
               {{ e.createdAt | date: "dd MMM yyyy HH:mm" }}
             </div>
 
+            <!--
+              Penanda "disetujui oleh pembuatnya sendiri" berdiri SENDIRI,
+              tidak lagi di dalam syarat daftar perubahan.
+
+              Persetujuan kerap tercatat tanpa satu pun bidang yang berubah —
+              dan justru pada catatan seperti itulah penandanya paling perlu
+              terlihat. Sebelumnya ia ikut tersembunyi bersama daftar yang
+              kosong.
+            -->
+            @if (disetujuiSendiri(e)) {
+              <div class="at-selfapproved">
+                <mat-icon>info</mat-icon>
+                <span>{{
+                  "audit.disetujuiOlehPembuatnyaSendiri" | translate
+                }}</span>
+              </div>
+            }
+
             @if (changeList(e).length) {
-              @if (disetujuiSendiri(e)) {
-                <div class="at-selfapproved">
-                  <mat-icon>info</mat-icon>
-                  <span>{{ "audit.disetujuiOlehPembuatnyaSendiri" | translate }}</span>
-                </div>
-              }
               <ul class="at-changes">
                 @for (c of changeList(e); track c.field) {
                   @if (c.sisa) {

@@ -62,6 +62,41 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="pop-foot">
+    <!--
+      Penelusuran halaman.
+
+      Permintaannya SUDAH berhalaman sejak awal — `page` dan `page_size`
+      dikirim, `count` diterima — tetapi tanpa kendali ini hanya sepuluh
+      dokumen teratas yang pernah dapat dipilih. Purchase order yang lebih
+      lama hanya terjangkau lewat kata kunci, dan yang tidak tahu nomornya
+      tidak punya jalan sama sekali.
+    -->
+    @if (jumlah > ukuranHalaman) {
+      <div class="pop-pager">
+        <button
+          type="button"
+          class="pop-pager__nav"
+          [disabled]="page === 0 || isLoading"
+          [attr.aria-label]="'poPicker.sebelumnya' | translate"
+          (click)="cari(page - 1)"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="pop-pager__teks">{{
+          "poPicker.halaman"
+            | translate: { a: awalBaris, b: akhirBaris, n: jumlah }
+        }}</span>
+        <button
+          type="button"
+          class="pop-pager__nav"
+          [disabled]="akhirBaris >= jumlah || isLoading"
+          [attr.aria-label]="'poPicker.berikutnya' | translate"
+          (click)="cari(page + 1)"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    }
     <span class="pop-spacer"></span>
     <button type="button" class="pop-close" (click)="tutup()">
       {{ "common.cancel" | translate }}

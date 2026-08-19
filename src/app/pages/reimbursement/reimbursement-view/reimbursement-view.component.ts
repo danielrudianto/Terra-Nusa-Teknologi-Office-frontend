@@ -103,8 +103,16 @@ export class ReimbursementViewComponent {
               data.reimbursement.date,
               'dd MMMM yyyy',
             ),
+            /*
+             * `dueDate`, bukan `date`.
+             *
+             * Keduanya kolom tersendiri, dan yang tercetak di sini selama ini
+             * tanggal pengajuannya — sehingga setiap pengajuan tampak jatuh
+             * tempo pada hari ia diajukan. Layar konfirmasi sudah dibetulkan;
+             * yang ini terlewat, dan keduanya membaca dokumen yang sama.
+             */
             dueDate: this.datePipe.transform(
-              data.reimbursement.date,
+              data.reimbursement.dueDate,
               'dd MMMM yyyy',
             ),
             createdAt: this.datePipe.transform(

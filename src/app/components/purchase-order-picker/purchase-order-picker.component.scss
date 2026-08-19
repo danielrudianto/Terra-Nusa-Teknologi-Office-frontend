@@ -129,6 +129,45 @@
 .pop-spacer {
   flex: 1 1 auto;
 }
+
+.pop-pager {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pop-pager__teks {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+  min-width: 6.5rem;
+  text-align: center;
+}
+
+.pop-pager__nav {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 9px;
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  cursor: pointer;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  /* Dimatikan lewat opasitas SEKALIGUS kursor: tanpa kursornya, tombol yang
+     mati masih terasa dapat ditekan. */
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
 .pop-close {
   height: 36px;
   padding: 0 1rem;

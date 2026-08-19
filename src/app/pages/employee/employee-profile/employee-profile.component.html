@@ -659,12 +659,16 @@
               <div class="epf-riwayat__kosong">
                 {{ "common.loading" | translate }}
               </div>
-            } @else if (!riwayat.length) {
+            } @else if (gagalRiwayat) {
+              <div class="epf-riwayat__kosong">
+                {{ "employeeProfile.riwayatGagal" | translate }}
+              </div>
+            } @else if (!riwayatBerisi.length) {
               <div class="epf-riwayat__kosong">
                 {{ "employeeProfile.riwayatKosong" | translate }}
               </div>
             } @else {
-              @for (entri of riwayat; track entri.id) {
+              @for (entri of riwayatBerisi; track entri.id) {
                 <div class="epf-riwayat__entri">
                   <div class="epf-riwayat__kepala">
                     <strong>{{ entri.changedByName || "—" }}</strong>

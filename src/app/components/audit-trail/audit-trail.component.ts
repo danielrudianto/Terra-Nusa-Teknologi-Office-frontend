@@ -158,10 +158,23 @@ export class AuditTrailComponent implements OnChanges {
         continue;
       }
 
+      /*
+       * Nilai datar pun dibandingkan UTUH lebih dulu.
+       *
+       * Backend memang hanya mencatat kolom yang berubah, sehingga baris ini
+       * hampir selalu terpakai. Yang dijaga keadaan sisanya: dua nilai
+       * panjang yang berbeda hanya pada bagian akhirnya akan tercetak sebagai
+       * "X… → X…" — dua sisi yang tampak persis sama, dan itu terbaca seperti
+       * kekeliruan sistem.
+       */
+      const kiri = this.utuh(dari);
+      const kanan = this.utuh(ke);
+      if (kiri === kanan) continue;
+
       hasil.push({
         field,
-        from: this.asText(dari),
-        to: this.asText(ke),
+        from: this.potong(kiri),
+        to: this.potong(kanan),
       });
     }
 
@@ -226,9 +239,21 @@ export class AuditTrailComponent implements OnChanges {
     const jalur = Array.from(new Set([...a.keys(), ...b.keys()])).sort();
     const hasil: BarisPerubahan[] = [];
     for (const j of jalur) {
-      const kiri = this.asText(a.get(j));
-      const kanan = this.asText(b.get(j));
-      if (kiri !== kanan) hasil.push({ field: j, from: kiri, to: kanan });
+      /*
+       * Dibandingkan UTUH, dipotong hanya untuk ditampilkan.
+       *
+       * Sebelumnya keduanya dipotong lebih dulu, sehingga dua nilai yang
+       * seratus enam puluh aksara pertamanya sama dianggap tidak berubah.
+       * Pada catatan dan klausul tambahan PO-D — keduanya paragraf bebas —
+       * membetulkan kalimat TERAKHIR tidak menghasilkan satu baris pun; dan
+       * bila itu satu-satunya yang berubah, seluruh daftar ikut disembunyikan
+       * oleh `@if (changeList(e).length)`. Catatannya lalu berbunyi "Ubah",
+       * oleh siapa, dan pada jam berapa — tanpa menyebut apa yang diubah.
+       */
+      const kiri = this.utuh(a.get(j));
+      const kanan = this.utuh(b.get(j));
+      if (kiri === kanan) continue;
+      hasil.push({ field: j, from: this.potong(kiri), to: this.potong(kanan) });
     }
     return hasil;
   }
@@ -250,21 +275,25 @@ export class AuditTrailComponent implements OnChanges {
   /** Panjang satu nilai sebelum dipotong; yang dipotong ditandai dengan elipsis. */
   private readonly BATAS_AKSARA = 160;
 
-  private asText(value: unknown): string {
+  /** Nilai sebagai teks UTUH; inilah yang dibandingkan. */
+  private utuh(value: unknown): string {
     if (value === null || value === undefined || value === '') return '—';
     if (typeof value === 'boolean') return value ? 'Ya' : 'Tidak';
+    return typeof value === 'object' ? JSON.stringify(value) : String(value);
+  }
 
-    const teks =
-      typeof value === 'object' ? JSON.stringify(value) : String(value);
-
-    // Nilai yang sangat panjang tetap dipotong.
-    //
-    // Perbandingan sampai daun sudah membuat kasus ini jarang, tetapi satu
-    // klausa kontrak yang panjangnya satu paragraf masih mungkin — dan dua
-    // paragraf berdampingan di dalam entri riwayat membuat entri lain di
-    // bawahnya tidak terlihat sama sekali.
+  /**
+   * Potong untuk DITAMPILKAN saja.
+   *
+   * Perbandingan sampai daun sudah membuat nilai panjang jarang, tetapi satu
+   * klausa kontrak sepanjang paragraf masih mungkin — dan dua paragraf
+   * berdampingan di dalam satu entri membuat entri di bawahnya tidak terlihat
+   * sama sekali.
+   */
+  private potong(teks: string): string {
     return teks.length > this.BATAS_AKSARA
       ? `${teks.slice(0, this.BATAS_AKSARA)}…`
       : teks;
   }
+
 }

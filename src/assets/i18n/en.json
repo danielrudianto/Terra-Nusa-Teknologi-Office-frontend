@@ -3943,7 +3943,15 @@
     "licenseNumber": "Licence number",
     "noLicense": "No driving licence recorded yet.",
     "gpaTidakAda": "Does not issue a GPA",
-    "bloodTypeTidakTahu": "Blood type unknown"
+    "bloodTypeTidakTahu": "Blood type unknown",
+    "heightCm": "Height",
+    "weightKg": "Weight",
+    "drivingLicenses": "Driving licence",
+    "bpjsKesehatan": "BPJS Health",
+    "bpjsKetenagakerjaan": "BPJS Employment",
+    "formalEducation": "Formal education",
+    "workExperience": "Work experience",
+    "riwayatGagal": "Couldn't load the change history. The record itself is unaffected."
   },
   "hardcoded": {
     "approveInvoice": "Approve invoice",
@@ -4072,7 +4080,10 @@
     "sub": "Pick a document; the fields below fill in automatically",
     "cari": "Search by PO number, supplier name, or project",
     "kosong": "No matching purchase order.",
-    "draf": "DRAFT"
+    "draf": "DRAFT",
+    "halaman": "{{a}}–{{b}} of {{n}}",
+    "sebelumnya": "Previous",
+    "berikutnya": "Next"
   },
   "projectMargin": {
     "judul": "Project margin",

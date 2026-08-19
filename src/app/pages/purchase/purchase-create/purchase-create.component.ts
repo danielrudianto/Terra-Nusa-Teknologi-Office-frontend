@@ -290,6 +290,18 @@ export class PurchaseCreateComponent {
           pphValue: 0,
         });
       }
+
+      /*
+       * Perhitungannya ditandai USANG.
+       *
+       * Berganti jenis mengubah ada-tidaknya potongan PPh, dan karenanya
+       * mengubah nilai pembayaran. Tanpa baris ini `isFinal` tetap `true`:
+       * tombol hitung tampak mati seolah angkanya sudah benar, padahal nilai
+       * pembayaran yang tersimpan masih memuat potongan dari jenis yang
+       * sebelumnya. Kolom PPh sendiri tidak mengubah `isFinal` — hanya dpp,
+       * ppn, pbbkb, dan nilai lain yang melakukannya.
+       */
+      this.isFinal = false;
     });
 
     /*
@@ -563,8 +575,28 @@ export class PurchaseCreateComponent {
    */
   get melampauiPo(): boolean {
     if (!this.nilaiPo) return false;
-    const kini = Number(this.valueFormGroup?.get('total')?.value || 0);
-    return this.totalTagihanPo + kini > this.nilaiPo + 5;
+    return this.totalTagihanPo + this.nilaiTagihanKini > this.nilaiPo + 5;
+  }
+
+  /**
+   * Nilai tagihan yang SEDANG diisi, dengan rumus yang sama seperti tagihan
+   * lain.
+   *
+   * Sebelumnya dipakai kolom `total`, dan itu membandingkan dua besaran yang
+   * berbeda: `nilaiTagihan()` mengurangkan PPh, `total` tidak. Pada pembelian
+   * jasa selisihnya sebesar potongan PPh — cukup untuk memunculkan peringatan
+   * melampaui pada tagihan yang sebenarnya masih di bawah nilai purchase
+   * order, atau sebaliknya menahannya pada tagihan yang sudah melampaui.
+   */
+  private get nilaiTagihanKini(): number {
+    const v = this.valueFormGroup?.getRawValue?.() ?? {};
+    return this.nilaiTagihan({
+      dpp: v.dpp,
+      ppn: v.ppn,
+      pbbkb: v.pbbkb,
+      otherValue: v.otherValue,
+      pphPercentage: v.pphPercentage,
+    });
   }
 
   /**
@@ -666,10 +698,6 @@ export class PurchaseCreateComponent {
         this.poTerpilihId = po.id ?? null;
         this.poTerpilihNomor = String(po.purchaseOrderName || '');
 
-        // Jenis pembelian mengikuti jenis dokumennya; lihat
-        // `jenisDokumenDariNomor`.
-        this.terapkanJenisDariNomor(po.purchaseOrderName);
-
         this.metaFormGroup.patchValue({
           purchaseOrderName: po.purchaseOrderName,
           supplierID: po.supplierID,
@@ -692,6 +720,21 @@ export class PurchaseCreateComponent {
           pphTaxObject: po.pphTaxObject,
           pphPercentage: po.pphPercentage,
         });
+
+        /*
+         * Jenis pembelian ditetapkan SESUDAH nilainya dipasang, bukan
+         * sebelum.
+         *
+         * Jenis "barang" memicu pengosongan PPh lewat langganan
+         * `documentType`. Bila dijalankan lebih dulu, PPh dari purchase
+         * order-nya dipasang kembali sesudah dikosongkan — dan karena
+         * isiannya memang disembunyikan pada pembelian barang, potongan itu
+         * tetap ikut mengurangi nilai pembayaran tanpa terlihat siapa pun.
+         *
+         * Urutan ini juga yang membuat `isFinal` berakhir `false`, sehingga
+         * tombol hitung tetap dapat ditekan.
+         */
+        this.terapkanJenisDariNomor(po.purchaseOrderName);
 
         // Nilai turunan dihitung ulang dari yang baru dipasang; tanpa ini
         // total dan nilai pembayaran masih memakai angka sebelumnya.
@@ -961,6 +1004,9 @@ export class PurchaseCreateComponent {
                     lastStatus: 'ready',
                     lastStatusDescription: '',
                     isInternal: false,
+                    // Ikut disebut: `reset()` memberi `null` kepada kendali
+                    // yang tidak disebut, dan `documentType` wajib diisi.
+                    documentType: '',
                   });
 
                   this.valueFormGroup.reset({
@@ -992,6 +1038,26 @@ export class PurchaseCreateComponent {
                     paymentMethod: '',
                     paymentTotal: 0,
                     proxyPayment: false,
+                    /*
+                     * `createPayment` dan `bankAccountID` WAJIB ikut disebut.
+                     *
+                     * `reset()` memberi `null` kepada setiap kolom yang tidak
+                     * disebut — bukan mengembalikannya ke nilai bawaan.
+                     * Akibatnya dua hal, keduanya tanpa satu pun galat yang
+                     * terlihat:
+                     *
+                     * 1. `createPayment` menjadi `null`, sedangkan
+                     *    pemeriksaannya memakai `=== true`. Pembelian
+                     *    BERIKUTNYA tersimpan tanpa slip pembayaran —
+                     *    padahal sakelarnya sengaja dibuat menyala sejak awal
+                     *    justru agar tidak terlewat.
+                     * 2. `bankAccountID` menjadi `null`, sedangkan
+                     *    `bankAccountIDRequired()` memanggil `.toString()`
+                     *    atas nilainya. Menyalakan kembali sakelarnya melempar
+                     *    TypeError dan formulirnya berhenti di situ.
+                     */
+                    createPayment: true,
+                    bankAccountID: '',
                   });
 
     /*
@@ -1055,6 +1121,10 @@ export class PurchaseCreateComponent {
               lastStatus: 'ready',
               lastStatusDescription: '',
               isInternal: false,
+              // Ikut disebut: `reset()` memberi `null` kepada kendali yang
+              // tidak disebut, dan `documentType` wajib diisi — kartu jenis
+              // pembelian berakhir tanpa satu pun yang tersorot.
+              documentType: '',
             });
 
             this.valueFormGroup.reset({
@@ -1086,6 +1156,10 @@ export class PurchaseCreateComponent {
               paymentMethod: '',
               paymentTotal: 0,
               proxyPayment: false,
+              // Lihat keterangan pada jalur di atas: yang tidak disebut di
+              // sini menjadi `null`, bukan kembali ke bawaannya.
+              createPayment: true,
+              bankAccountID: '',
             });
 
     /*

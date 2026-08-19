@@ -34,6 +34,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { tanggalLokal } from '../../utils/tanggal';
+import { konteksKlausulTenagaKerja } from '../../helpers/klausul-tenaga-kerja.helper';
 
 /**
  * Kode PPh yang berlaku untuk invoice tenaga kerja.
@@ -470,7 +471,23 @@ export class InvoiceComponent {
         amount: Number(it.price) || 0,
         unit: it.unit ?? '',
       })),
-      clauseContext: custom,
+      /*
+       * Konteks klausul DIRAKIT, bukan diteruskan mentah.
+       *
+       * `customData.wageSchedules` menyimpan DATA jadwal — larik objek
+       * `{task, wages[]}` — sedangkan pembangun klausul menyisipkan isi
+       * `wageSchedules` langsung sebagai poin perjanjian, dan tiap poin
+       * melewati `stripHtmlTags()` yang memanggil `.replace()` atas nilainya.
+       * Objek yang sampai ke sana melempar "replace is not a function" dan
+       * SELURUH pencetakan berhenti.
+       *
+       * `konteksKlausulTenagaKerja` merakit kalimatnya dari data itu, persis
+       * seperti pada daftar purchase order. Ia pula yang menurunkan
+       * `paymentTerm`, nama proyek, dan tanggal panjang dari dokumennya bila
+       * tidak tersimpan di `customData` — itulah sebab pratinjau dan hasil
+       * cetak sempat berbeda.
+       */
+      clauseContext: konteksKlausulTenagaKerja(custom, po ?? {}),
       templateVersion: po?.templateVersion ?? '1.0',
       additionalClauses: custom.additionalClauses ?? [],
     };

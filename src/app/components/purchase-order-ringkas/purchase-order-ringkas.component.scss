@@ -96,6 +96,21 @@
   color: var(--muted, #6b7280);
 }
 
+/*
+ * Petak keterangan.
+ *
+ * Judulnya sudah bergaya sejak awal, petaknya belum — keempat kelompok
+ * (dokumen, pemasok, nilai, PPh) menempel tanpa jeda dan terbaca sebagai satu
+ * daftar panjang.
+ */
+.por-grup {
+  margin-bottom: 1.1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
 .por-grup__judul {
   font-size: 0.72rem;
   font-weight: 700;

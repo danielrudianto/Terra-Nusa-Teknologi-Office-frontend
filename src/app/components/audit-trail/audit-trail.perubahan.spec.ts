@@ -97,6 +97,40 @@ describe('AuditTrailComponent.changeList', () => {
     expect(hasil[0].to.endsWith('…')).toBe(true);
   });
 
+  /*
+   * Perbandingan dilakukan atas nilai UTUH, pemotongan hanya untuk tampilan.
+   *
+   * Dulu keduanya dipotong lebih dulu, sehingga dua paragraf yang seratus
+   * enam puluh aksara pertamanya sama dianggap tidak berubah. Pada catatan
+   * dan klausul tambahan PO-D — keduanya paragraf bebas — membetulkan kalimat
+   * TERAKHIR tidak menghasilkan satu baris pun, dan entri riwayatnya berbunyi
+   * "Ubah, oleh Daniel, jam sekian" tanpa menyebut apa yang diubah.
+   */
+  it('menemukan perubahan pada bagian AKHIR nilai yang panjang', () => {
+    const awalan = 'x'.repeat(300);
+    const hasil = komponen().changeList(
+      entri({
+        customData: {
+          from: { notes: `${awalan} kalimat lama.` },
+          to: { notes: `${awalan} kalimat baru.` },
+        },
+      }),
+    );
+
+    expect(hasil.length).toBe(1);
+    expect(hasil[0].field).toBe('customData.notes');
+    // Tetap dipotong saat ditampilkan; yang berubah hanya kapan ia dipotong.
+    expect(hasil[0].to.endsWith('…')).toBeTrue();
+  });
+
+  it('menemukan perubahan akhir pada nilai datar yang panjang', () => {
+    const awalan = 'y'.repeat(300);
+    const hasil = komponen().changeList(
+      entri({ note: { from: `${awalan} satu`, to: `${awalan} dua` } }),
+    );
+    expect(hasil.length).toBe(1);
+  });
+
   it('nilai sederhana tetap tampil apa adanya', () => {
     const hasil = komponen().changeList(
       entri({ isApproved: { from: false, to: true } }),

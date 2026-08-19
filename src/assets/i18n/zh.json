@@ -3943,7 +3943,15 @@
     "licenseNumber": "驾照号码",
     "noLicense": "尚未登记驾照。",
     "gpaTidakAda": "不提供绩点",
-    "bloodTypeTidakTahu": "血型不详"
+    "bloodTypeTidakTahu": "血型不详",
+    "heightCm": "身高",
+    "weightKg": "体重",
+    "drivingLicenses": "驾驶执照",
+    "bpjsKesehatan": "BPJS 医疗",
+    "bpjsKetenagakerjaan": "BPJS 就业",
+    "formalEducation": "正规教育",
+    "workExperience": "工作经历",
+    "riwayatGagal": "无法加载修改记录。上方内容不受影响。"
   },
   "hardcoded": {
     "approveInvoice": "批准发票",
@@ -4072,7 +4080,10 @@
     "sub": "选择文件后，下方字段自动填入",
     "cari": "按采购订单编号、供应商名称或项目搜索",
     "kosong": "没有匹配的采购订单。",
-    "draf": "草稿"
+    "draf": "草稿",
+    "halaman": "第 {{a}}–{{b}} 项，共 {{n}} 项",
+    "sebelumnya": "上一页",
+    "berikutnya": "下一页"
   },
   "projectMargin": {
     "judul": "项目毛利",

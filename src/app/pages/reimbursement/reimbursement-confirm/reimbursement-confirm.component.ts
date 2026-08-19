@@ -25,6 +25,7 @@ import {
   PILIHAN_CARA_BAYAR,
 } from 'src/app/constants/pilihan-pembelian';
 import { PILIHAN_JENIS_BEBAN } from 'src/app/constants/pilihan-reimbursement';
+import { ServerMessageService } from 'src/app/services/server-message.service';
 
 @Component({
   selector: 'app-reimbursement-confirm',
@@ -54,6 +55,7 @@ export class ReimbursementConfirmComponent {
     private datePipe: DatePipe,
     private formBuilder: FormBuilder,
     private dialog: MatDialogRef<ReimbursementConfirmComponent>,
+    private serverMessage: ServerMessageService,
   ) {}
 
   formGroup: FormGroup = new FormGroup({
@@ -172,16 +174,38 @@ export class ReimbursementConfirmComponent {
       });
   }
 
+  /*
+   * `isSubmitting` DINYALAKAN, bukan hanya dipadamkan.
+   *
+   * Tombolnya sudah lama memakai `[disabled]="isSubmitting"`, tetapi nilainya
+   * tidak pernah menjadi `true` — hanya dikembalikan ke `false` di `.add()`.
+   * Selama permintaannya berjalan tombolnya tetap hidup, dan klik kedua
+   * mengirim persetujuan kedua atas dokumen yang sama.
+   *
+   * Kegagalannya juga dikatakan. Tanpa penangan galat, persetujuan yang
+   * DITOLAK server tidak menghasilkan apa pun di layar: dialognya tetap
+   * terbuka, tidak ada pesan, dan yang menekan menyangka sudah tersetujui.
+   */
   approve() {
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
     this.apiService
       .put('reimbursements/approve/' + this.data.id, {})
       .subscribe({
-        next: (data: any) => {
+        next: (_) => {
           this.snackBar.open(
-      this.translate.instant('notify.approveSuccess'), 'Close', {
-            duration: 3000,
-          });
+            this.translate.instant('notify.approveSuccess'),
+            'Close',
+            { duration: 3000 },
+          );
           this.dialog.close('approve');
+        },
+        error: (galat) => {
+          this.snackBar.open(
+            this.serverMessage.terjemahkan(galat),
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {
@@ -189,16 +213,27 @@ export class ReimbursementConfirmComponent {
       });
   }
 
+  /** Sama seperti `approve()`: dijaga dari klik ganda, galatnya dikatakan. */
   reject() {
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
     this.apiService
       .put('reimbursements/reject/' + this.data.id, {})
       .subscribe({
-        next: (data: any) => {
+        next: (_) => {
           this.snackBar.open(
-      this.translate.instant('notify.updateSuccess'), 'Close', {
-            duration: 3000,
-          });
+            this.translate.instant('notify.updateSuccess'),
+            'Close',
+            { duration: 3000 },
+          );
           this.dialog.close('reject');
+        },
+        error: (galat) => {
+          this.snackBar.open(
+            this.serverMessage.terjemahkan(galat),
+            'Close',
+            { duration: 3000 },
+          );
         },
       })
       .add(() => {
