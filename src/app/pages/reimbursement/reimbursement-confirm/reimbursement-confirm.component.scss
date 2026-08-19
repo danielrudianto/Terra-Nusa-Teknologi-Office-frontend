@@ -60,40 +60,33 @@ $line: var(--line, #eef0f3);
   background: var(--surface, #ffffff);
 }
 
-.rcf-section__title {
-  font-size: 0.78rem;
+/*
+ * Kelompok ringkasan.
+ *
+ * Bentuk baris label-nilainya ada di `styles.scss` sebagai `.ringkas-baris`,
+ * dipakai bersama dengan ringkasan purchase order.
+ */
+.rcf-grup {
+  margin-bottom: 1.25rem;
+}
+
+.rcf-grup:last-of-type {
+  margin-bottom: 0;
+}
+
+.rcf-grup__judul {
+  font-size: 0.72rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: $muted;
-  margin: 0.25rem 0 0.85rem;
-}
-.rcf-section__title--mt {
-  margin-top: 1.4rem;
+  color: var(--faint, #9aa0ab);
+  margin-bottom: 0.6rem;
 }
 
-.rcf-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 0.9rem;
-}
-.rcf-span2 {
-  grid-column: 1 / -1;
-}
-
-:host ::ng-deep .rcf .mat-mdc-form-field {
-  width: 100%;
-  --mdc-outlined-text-field-container-shape: 12px;
-  --mdc-outlined-text-field-focus-outline-color: #{$brand};
-  --mdc-outlined-text-field-caret-color: #{$brand};
-  --mdc-outlined-text-field-focus-label-text-color: #{$brand};
-  --mdc-outlined-text-field-hover-outline-color: var(--faint, #b9c2d0);
-  --mdc-outlined-text-field-outline-color: var(--border, #dfe3ea);
-  --mdc-outlined-text-field-label-text-font: "Montserrat", sans-serif;
-  --mdc-outlined-text-field-input-text-font: "Montserrat", sans-serif;
-}
-:host ::ng-deep .rcf .mat-mdc-form-field .mat-mdc-form-field-subscript-wrapper {
-  min-height: 0.6rem;
+.rcf-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ---------- items table ---------- */
@@ -145,42 +138,54 @@ $line: var(--line, #eef0f3);
   gap: 0.5rem;
 }
 
-:host ::ng-deep .rcf-approve {
-  --mdc-text-button-label-text-color: #fff;
-  background: $brand;
-  color: #fff;
-  border-radius: 12px !important;
+/*
+ * Tombol biasa, bukan `mat-button`.
+ *
+ * Yang sebelumnya dipakai memerlukan penimpaan token Material — dan token
+ * tombol berubah nama antar versi, sehingga penyesuaiannya diam-diam berhenti
+ * berlaku tanpa satu pun galat. Bentuknya kini sama dengan tombol kirim pada
+ * formulirnya.
+ */
+.rcf-approve,
+.rcf-reject {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  letter-spacing: 0;
-  height: 42px;
-  padding: 0 1.4rem;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
 
-  &:hover {
-    filter: brightness(0.95);
-  }
-  &[disabled] {
+  &:disabled {
     opacity: 0.55;
+    cursor: default;
   }
 }
 
-:host ::ng-deep .rcf-reject {
-  border-radius: 12px !important;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  letter-spacing: 0;
-  height: 42px;
-  padding: 0 1.4rem;
-  color: var(--bad-fg, #b3322f);
-  border: 1px solid var(--bad-bg, #f3d0cf);
+.rcf-approve {
+  border: none;
+  background: $brand;
+  /* `--on-brand`, bukan `#fff`: aksen tema gelap terang, dan putih di atasnya
+     hanya berkontras 2,5:1. */
+  color: var(--on-brand, #ffffff);
 
-  &:hover {
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+}
+
+.rcf-reject {
+  background: transparent;
+  color: var(--bad-fg, #b3322f);
+  border: 1px solid var(--bad-fg, #b3322f);
+
+  &:hover:not(:disabled) {
     background: var(--bad-bg, #fdecec);
   }
 }
 
 @media (max-width: 600px) {
-  .rcf-grid {
-    grid-template-columns: 1fr;
+  .rcf-content {
+    padding: 1.15rem 1rem !important;
   }
 }

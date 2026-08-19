@@ -230,38 +230,38 @@
         />
       </mat-form-field>
 
-      <div class="pc-pilih">
-        <div class="pc-pilih__judul">{{ "purchaseCreate.documentType" | translate }}</div>
-        <div class="pc-pilih__kartu">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">{{ "purchaseCreate.documentType" | translate }}</div>
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanJenisDokumen; track $index) {
             <label
-              class="pc-kartu"
+              class="kartu"
               [class.on]="metaFormGroup.get('documentType')?.value === o.value"
             >
               <input type="radio" formControlName="documentType" [value]="o.value" hidden />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }
         </div>
       </div>
 
-      <div class="pc-pilih">
-        <div class="pc-pilih__judul">{{ "purchaseCreate.documentStatus" | translate }}</div>
-        <div class="pc-pilih__kartu">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">{{ "purchaseCreate.documentStatus" | translate }}</div>
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanKelengkapan; track $index) {
             <label
-              class="pc-kartu"
+              class="kartu"
               [class.on]="metaFormGroup.get('lastStatus')?.value === o.value"
             >
               <input type="radio" formControlName="lastStatus" [value]="o.value" hidden />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }
@@ -304,19 +304,19 @@
         </mat-form-field>
       }
 
-      <div class="pc-pilih">
-        <div class="pc-pilih__judul">{{ "purchaseCreate.lingkupTitle" | translate }}</div>
-        <div class="pc-pilih__kartu">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">{{ "purchaseCreate.lingkupTitle" | translate }}</div>
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanLingkup; track $index) {
             <label
-              class="pc-kartu"
+              class="kartu"
               [class.on]="metaFormGroup.get('isInternal')?.value === o.value"
             >
               <input type="radio" formControlName="isInternal" [value]="o.value" hidden />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }
@@ -355,24 +355,24 @@
         seperti sesuatu yang menunggu diisi — dan berdampingan dengan kartu
         tarif, keduanya terbaca seolah dua hal yang harus dipilih.
       -->
-      <div class="pc-pilih">
-        <div class="pc-pilih__kepala">
-          <div class="pc-pilih__judul">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__kepala">
+          <div class="kartu-pilih__judul">
             {{ "purchaseCreate.ppnPercent" | translate }}
           </div>
-          <div class="pc-nilai">
-            <span class="pc-nilai__label">{{
+          <div class="nilai-teks">
+            <span class="nilai-teks__label">{{
               "purchaseCreate.ppnRp" | translate
             }}</span>
-            <span class="pc-nilai__angka">
+            <span class="nilai-teks__angka">
               Rp {{ valueFormGroup.get("ppnValue")?.value | number: "1.0-2" }}
             </span>
           </div>
         </div>
-        <div class="pc-pilih__kartu">
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanPpn; track $index) {
             <label
-              class="pc-kartu pc-kartu--kecil"
+              class="kartu kartu--kecil"
               [class.on]="valueFormGroup.get('ppn')?.value === o.value"
             >
               <input
@@ -382,9 +382,9 @@
                 hidden
               />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }
@@ -662,19 +662,19 @@
         />
       </mat-form-field>
 
-      <div class="pc-pilih">
-        <div class="pc-pilih__judul">{{ "purchaseCreate.paymentMethod" | translate }}</div>
-        <div class="pc-pilih__kartu">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">{{ "purchaseCreate.paymentMethod" | translate }}</div>
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanCaraBayar; track $index) {
             <label
-              class="pc-kartu pc-kartu--kecil"
+              class="kartu kartu--kecil"
               [class.on]="paymentFormGroup.get('paymentMethod')?.value === o.value"
             >
               <input type="radio" formControlName="paymentMethod" [value]="o.value" hidden />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }
@@ -727,14 +727,14 @@
         satunya masuk ke rekening pemasok, satunya ke rekening staf yang
         meneruskan.
       -->
-      <div class="pc-pilih">
-        <div class="pc-pilih__judul">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">
           {{ "purchaseCreate.proxyTitle" | translate }}
         </div>
-        <div class="pc-pilih__kartu">
+        <div class="kartu-pilih__daftar">
           @for (o of pilihanProxy; track $index) {
             <label
-              class="pc-kartu"
+              class="kartu"
               [class.on]="paymentFormGroup.get('proxyPayment')?.value === o.value"
             >
               <input
@@ -744,9 +744,9 @@
                 hidden
               />
               <mat-icon>{{ o.icon }}</mat-icon>
-              <span class="pc-kartu__teks">
-                <span class="pc-kartu__judul">{{ o.label | translate }}</span>
-                <span class="pc-kartu__hint">{{ o.hint | translate }}</span>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
               </span>
             </label>
           }

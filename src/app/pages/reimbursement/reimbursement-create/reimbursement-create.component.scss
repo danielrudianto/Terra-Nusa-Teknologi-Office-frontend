@@ -7,9 +7,6 @@ $line: var(--line, #eef0f3);
 :host {
   display: block;
   font-family: "Montserrat", sans-serif;
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 0.5rem 0 3rem;
   color: $ink;
 }
 
@@ -19,41 +16,55 @@ $line: var(--line, #eef0f3);
   margin-bottom: 1rem;
 }
 
-/* ---------- card ---------- */
+/* ---------- kerangka ---------- */
+.rc {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/*
+ * Satu papan per bagian, sama seperti formulir pembelian.
+ *
+ * Sebelumnya ketiga bagian berada dalam satu papan, dan yang mengisinya tidak
+ * dapat melihat sudah sampai bagian mana.
+ */
 .rc-card {
   background: var(--surface, #ffffff);
   border: 0.5px solid var(--border, #e3e6eb);
   border-radius: 18px;
-  padding: 1.75rem;
-  box-shadow:
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(
+    --card-shadow,
     0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
+    0 4px 16px rgba(16, 24, 40, 0.05)
+  );
 }
 
-/* ---------- sections ---------- */
-.rc-section {
-  margin-bottom: 1.5rem;
-}
-.rc-section:last-of-type {
-  margin-bottom: 0.5rem;
+.rc-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .rc-section__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: $faint;
-  margin-bottom: 0.9rem;
-}
-.rc-section__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.9rem;
 
-  .rc-section__title {
-    margin-bottom: 0;
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
   }
 }
 
@@ -82,20 +93,36 @@ $line: var(--line, #eef0f3);
   --mat-select-focused-arrow-color: #{$brand};
 }
 
-/* ---------- add-item button ---------- */
+/* ---------- tombol tambah item ---------- */
+/*
+ * Tombol biasa, bukan `mat-stroked-button`: bentuknya disamakan dengan
+ * `poa-add` pada formulir purchase order, dan token Material untuk tombol
+ * bergaris berubah antar versi sehingga penyesuaiannya harus ditulis ulang
+ * setiap kali paketnya naik.
+ */
 .rc-additem {
-  border-radius: 10px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  letter-spacing: 0;
-  --mdc-outlined-button-outline-color: #c3d0f7;
-  color: $brand !important;
+  font-size: 0.82rem;
+  border: 0.5px solid var(--border, #d7deea);
+  background: var(--surface, #ffffff);
+  color: $brand;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
 
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    vertical-align: middle;
+  .mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+
+  &:hover {
+    background: var(--hover, #f3f6ff);
   }
 }
 
@@ -176,36 +203,56 @@ $line: var(--line, #eef0f3);
   }
 }
 
-/* ---------- footer ---------- */
-.rc-footer {
+/* ---------- kaki ---------- */
+.rc-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid $line;
 }
+
+.rc-spacer {
+  flex: 1;
+}
+
 .rc-submit {
-  --mdc-filled-button-container-color: #{$brand};
-  --mdc-filled-button-label-text-color: #fff;
-  border-radius: 12px !important;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  letter-spacing: 0;
-  height: 44px;
-  min-width: 140px;
+  font-size: 0.88rem;
+  border-radius: 11px;
+  padding: 0.7rem 1.6rem;
+  cursor: pointer;
+  border: none;
+  background: $brand;
+  /*
+   * `--on-brand`, bukan `#fff`. Aksen tema gelap sengaja terang, dan putih di
+   * atasnya hanya berkontras 2,5:1 — aturan yang sudah ditulis di styles.scss.
+   */
+  color: var(--on-brand, #ffffff);
+  transition: background 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
 
   &:disabled {
-    --mdc-filled-button-disabled-container-color: var(--line, #e6e9ee);
-    --mdc-filled-button-disabled-label-text-color: var(--faint, #9aa0ab);
+    background: var(--surface-2, #e6e9ee);
+    color: $faint;
+    cursor: default;
   }
 }
 
-/* ---------- responsive ---------- */
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .rc-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 600px) {
   .rc-card {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
   }
 }

@@ -773,3 +773,214 @@ html[data-density="compact"] {
   font-size: 0.82rem;
   color: var(--muted, #6b7280);
 }
+
+
+/*
+ * ===================================================================
+ * PILIHAN BERBENTUK KARTU
+ * ===================================================================
+ *
+ * Menggantikan `mat-select` pada pilihan yang MENGUBAH perilaku dokumen.
+ * Daftar tarik-turun menyembunyikan akibatnya: "Menunggu dokumen" tampak
+ * setara dengan "Dokumen siap", padahal yang satu menyimpannya sebagai draf
+ * yang belum dapat dibayar. Keterangan pada tiap kartu itulah yang
+ * membedakannya dari daftar biasa.
+ *
+ * Ditaruh di gaya global, bukan disalin ke tiap komponen: bentuknya sama di
+ * pembelian dan reimbursement, dan menyalinnya berarti perubahan berikutnya
+ * harus dikerjakan dua kali — lalu satu tertinggal.
+ */
+.kartu-pilih {
+  margin-bottom: 1.1rem;
+}
+
+.kartu-pilih__judul {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+  margin-bottom: 0.6rem;
+}
+
+/*
+ * Baris judul yang membawa angka hasil hitungan di ujung kanan.
+ *
+ * Angkanya sejajar dengan deret kartu di bawahnya, bukan berdampingan sebagai
+ * kolom tersendiri: yang di bawah adalah pilihan, yang di sini akibatnya.
+ */
+.kartu-pilih__kepala {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+
+  .kartu-pilih__judul {
+    margin-bottom: 0;
+  }
+}
+
+.kartu-pilih__daftar {
+  display: grid;
+  /* Membungkus sendiri saat sempit; tanpa `minmax` kartunya menyusut sampai
+     keterangannya tidak terbaca. */
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.6rem;
+}
+
+.kartu {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 0.9rem;
+  border: 1.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    /* `--brand` diredupkan lewat opasitas garisnya, bukan variabel baru:
+       menambah token warna berarti menambah pasangan gelapnya juga. */
+    border-color: var(--brand, #154dec);
+    opacity: 0.85;
+  }
+
+  /* Yang terpilih ditandai GARIS dan LATAR, bukan warna teks saja: pada
+     tema gelap perbedaan warna teks nyaris tidak terlihat. */
+  &.on {
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #eef2fe);
+  }
+
+  > .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+    color: var(--muted, #6b7280);
+  }
+
+  &.on > .mat-icon {
+    color: var(--brand, #154dec);
+  }
+}
+
+.kartu--kecil {
+  padding: 0.6rem 0.75rem;
+}
+
+.kartu__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.kartu__judul {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.kartu__hint {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}
+
+/*
+ * Angka hasil hitungan yang ditampilkan sebagai TEKS, bukan isian.
+ *
+ * Isian yang hanya bisa dibaca tetap tampak seperti sesuatu yang menunggu
+ * diisi — dan berdampingan dengan isian sungguhan, keduanya terbaca seolah
+ * sama-sama harus dijawab.
+ */
+.nilai-teks {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.nilai-teks__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+}
+
+.nilai-teks__angka {
+  font-size: 0.95rem;
+  font-weight: 700;
+  /* Angka rata lebarnya; tanpa ini digit berpindah tempat setiap kali
+     nilainya berubah, dan perubahannya sulit diikuti mata. */
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #16181d);
+  white-space: nowrap;
+}
+
+/*
+ * Ringkasan label-nilai dua kolom.
+ *
+ * Dipakai layar yang MENAMPILKAN dokumen, bukan yang mengisinya: ringkasan
+ * purchase order dan konfirmasi reimbursement. Keduanya sempat memakai isian
+ * `readonly` untuk itu, dan hasilnya formulir yang tidak dapat diisi — bentuk
+ * yang menjanjikan sesuatu yang tidak pernah terjadi.
+ */
+.ringkas-baris {
+  display: grid;
+  grid-template-columns: minmax(90px, 34%) 1fr;
+  gap: 0.35rem 0.9rem;
+  margin: 0;
+
+  dt {
+    font-size: 0.78rem;
+    color: var(--muted, #6b7280);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+}
+
+.ringkas-baris--angka {
+  /*
+   * Jarak antar kolom dibuat NOL, digantikan padding pada labelnya.
+   *
+   * Garis pemisah di atas baris jumlah digambar pada kedua sel, dan jarak
+   * kolom memutusnya di tengah — hasilnya dua penggal garis yang terbaca
+   * seperti cacat tampilan, bukan sebagai satu pemisah.
+   */
+  column-gap: 0;
+
+  dt {
+    padding-right: 0.9rem;
+  }
+
+  dd {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.ringkas-total {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line, #eef0f3);
+  font-weight: 700;
+  color: var(--ink, #16181d);
+}
+
+@media (max-width: 520px) {
+  .kartu-pilih__kepala {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

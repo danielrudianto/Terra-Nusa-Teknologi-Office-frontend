@@ -106,61 +106,14 @@
 }
 
 /*
- * Dua kolom: label di kiri, isi di kanan.
- *
- * Lebar label dipatok agar nilainya rata satu sama lain — angka yang tidak
- * rata harus dibaca satu per satu, dan yang membandingkannya dengan faktur di
- * tangan kehilangan barisnya.
+ * Bentuk ringkasan label-nilai ada di `styles.scss` sebagai
+ * `.ringkas-baris`; konfirmasi reimbursement memakai bentuk yang sama.
  */
-.por-baris {
-  display: grid;
-  grid-template-columns: minmax(90px, 34%) 1fr;
-  gap: 0.35rem 0.9rem;
-  margin: 0;
-
-  dt {
-    font-size: 0.78rem;
-    color: var(--muted, #6b7280);
-  }
-
-  dd {
-    margin: 0;
-    font-size: 0.85rem;
-    word-break: break-word;
-  }
-}
-
-.por-baris--angka {
-  /*
-   * Jarak antar kolom dibuat NOL, digantikan padding pada labelnya.
-   *
-   * Garis pemisah di atas baris jumlah digambar pada kedua sel, dan jarak
-   * kolom memutusnya di tengah — hasilnya dua penggal garis yang terbaca
-   * seperti cacat tampilan, bukan sebagai satu pemisah.
-   */
-  column-gap: 0;
-
-  dt {
-    padding-right: 0.9rem;
-  }
-
-  dd {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-}
 
 .por-tarif {
   font-size: 0.72rem;
   color: var(--faint, #9aa0ab);
   margin-left: 0.3rem;
-}
-
-.por-total {
-  padding-top: 0.4rem;
-  border-top: 1px solid var(--line, #eef0f3);
-  font-weight: 700;
-  color: var(--ink, #16181d);
 }
 
 .por-catatan {

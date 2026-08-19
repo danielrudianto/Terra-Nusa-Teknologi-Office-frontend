@@ -22,7 +22,7 @@
     } @else {
       <div class="por-grup">
         <div class="por-grup__judul">{{ "poRingkas.dokumen" | translate }}</div>
-        <dl class="por-baris">
+        <dl class="ringkas-baris">
           <dt>{{ "poRingkas.tanggal" | translate }}</dt>
           <dd>{{ (po.date | date: "d MMM yyyy") || "—" }}</dd>
 
@@ -36,7 +36,7 @@
 
       <div class="por-grup">
         <div class="por-grup__judul">{{ "poRingkas.pemasok" | translate }}</div>
-        <dl class="por-baris">
+        <dl class="ringkas-baris">
           <dt>{{ "poRingkas.nama" | translate }}</dt>
           <dd>{{ pemasok }}</dd>
 
@@ -55,7 +55,7 @@
       -->
       <div class="por-grup">
         <div class="por-grup__judul">{{ "poRingkas.nilai" | translate }}</div>
-        <dl class="por-baris por-baris--angka">
+        <dl class="ringkas-baris ringkas-baris--angka">
           <dt>{{ "poRingkas.dpp" | translate }}</dt>
           <dd>Rp {{ angka(po.dpp) | number: "1.0-2" }}</dd>
 
@@ -65,15 +65,15 @@
           </dt>
           <dd>Rp {{ nilaiPpn | number: "1.0-2" }}</dd>
 
-          <dt class="por-total">{{ "poRingkas.total" | translate }}</dt>
-          <dd class="por-total">Rp {{ nilaiDokumen | number: "1.0-2" }}</dd>
+          <dt class="ringkas-total">{{ "poRingkas.total" | translate }}</dt>
+          <dd class="ringkas-total">Rp {{ nilaiDokumen | number: "1.0-2" }}</dd>
         </dl>
       </div>
 
       @if (po.pphCode || angka(po.pphPercentage)) {
         <div class="por-grup">
           <div class="por-grup__judul">{{ "poRingkas.pph" | translate }}</div>
-          <dl class="por-baris">
+          <dl class="ringkas-baris">
             <dt>{{ "poRingkas.pphKode" | translate }}</dt>
             <dd>
               {{ po.pphCode || "—" }}

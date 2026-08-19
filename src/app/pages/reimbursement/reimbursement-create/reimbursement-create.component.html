@@ -1,19 +1,29 @@
-<div class="rc">
-  <app-header-title
-    [title]="'reimbursement.title' | translate"
-    [description]="'reimbursement.createNew' | translate"
-  ></app-header-title>
+<app-header-title
+  [title]="'reimbursement.title' | translate"
+  [description]="'reimbursement.createNew' | translate"
+></app-header-title>
 
-  <form
-    [formGroup]="formGroup"
-    (ngSubmit)="onSubmitConfirmation()"
-    class="rc-card"
-  >
+<!--
+  Bentuknya mengikuti formulir pembelian: satu papan per bagian, judul seksi
+  kecil berikut ikonnya, dan pilihan berbentuk kartu untuk yang menentukan
+  perlakuan dokumennya.
+
+  Sebelumnya seluruh isian berada dalam SATU papan dengan tiga seksi di
+  dalamnya. Yang mengisinya tidak dapat melihat sudah sampai bagian mana, dan
+  layar sebelah — pembelian — memisahkannya. Dua alur yang dikerjakan orang
+  yang sama dalam satu hari sebaiknya tidak berbeda bentuk.
+-->
+<div class="rc">
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmitConfirmation()">
     <!-- ===== Detail ===== -->
-    <section class="rc-section">
-      <div class="rc-section__title">
-        {{ "reimbursementCreate.sectionDetail" | translate }}
+    <div class="rc-card">
+      <div class="rc-cardhead">
+        <div class="rc-section__title">
+          <mat-icon>description</mat-icon>
+          {{ "reimbursementCreate.sectionDetail" | translate }}
+        </div>
       </div>
+
       <div class="rc-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "reimbursementCreate.date" | translate }}</mat-label>
@@ -45,42 +55,64 @@
           <mat-datepicker #dueDatePicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{
-            "reimbursementCreate.expenseType" | translate
-          }}</mat-label>
-          <mat-select formControlName="purchaseType">
-            <mat-option *ngFor="let type of expenseTypes" [value]="type.code">{{
-              type.nameKey | translate
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'reimbursementCreate.projectName' | translate"
-      />
+          class="rc-span2"
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [label]="'reimbursementCreate.projectName' | translate"
+        />
       </div>
-    </section>
 
-    <!-- ===== Bank & payment ===== -->
-    <section class="rc-section">
-      <div class="rc-section__title">
-        {{ "reimbursementCreate.sectionBankPayment" | translate }}
+      <!--
+        Jenis beban menentukan ke pos mana pengeluaran ini masuk, bukan
+        sekadar melabelinya. Dari daftar tarik-turun ketiganya tampak setara.
+      -->
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">
+          {{ "reimbursementCreate.expenseType" | translate }}
+        </div>
+        <div class="kartu-pilih__daftar">
+          @for (o of pilihanJenisBeban; track $index) {
+            <label
+              class="kartu"
+              [class.on]="formGroup.get('purchaseType')?.value === o.value"
+            >
+              <input
+                type="radio"
+                formControlName="purchaseType"
+                [value]="o.value"
+                hidden
+              />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
       </div>
+    </div>
+
+    <!-- ===== Rekening & pembayaran ===== -->
+    <div class="rc-card">
+      <div class="rc-cardhead">
+        <div class="rc-section__title">
+          <mat-icon>account_balance_wallet</mat-icon>
+          {{ "reimbursementCreate.sectionBankPayment" | translate }}
+        </div>
+      </div>
+
       <div class="rc-grid">
         <mat-form-field appearance="outline" class="rc-span2">
           <mat-label>{{
             "reimbursementCreate.bankName" | translate
           }}</mat-label>
           <input
-        autocomplete="off"
+            autocomplete="off"
             #input
             type="search"
-            [placeholder]="
-              'reimbursementCreate.bankNamePlaceholder' | translate
-            "
+            [placeholder]="'reimbursementCreate.bankNamePlaceholder' | translate"
             matInput
             formControlName="bankName"
             [matAutocomplete]="auto"
@@ -134,41 +166,45 @@
             "
           />
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="rc-span2">
-          <mat-label>{{
-            "reimbursementCreate.paymentMethod" | translate
-          }}</mat-label>
-          <mat-select formControlName="paymentMethod">
-            <mat-option value="bank">{{
-              "reimbursementCreate.bankTransfer" | translate
-            }}</mat-option>
-            <mat-option value="va">{{
-              "reimbursementCreate.virtualAccount" | translate
-            }}</mat-option>
-            <mat-option value="cash">{{
-              "reimbursementCreate.cheque" | translate
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
       </div>
-    </section>
 
-    <!-- ===== Items ===== -->
-    <section class="rc-section">
-      <div class="rc-section__head">
+      <div class="kartu-pilih">
+        <div class="kartu-pilih__judul">
+          {{ "reimbursementCreate.paymentMethod" | translate }}
+        </div>
+        <div class="kartu-pilih__daftar">
+          @for (o of pilihanCaraBayar; track $index) {
+            <label
+              class="kartu kartu--kecil"
+              [class.on]="formGroup.get('paymentMethod')?.value === o.value"
+            >
+              <input
+                type="radio"
+                formControlName="paymentMethod"
+                [value]="o.value"
+                hidden
+              />
+              <mat-icon>{{ o.icon }}</mat-icon>
+              <span class="kartu__teks">
+                <span class="kartu__judul">{{ o.label | translate }}</span>
+                <span class="kartu__hint">{{ o.hint | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Item ===== -->
+    <div class="rc-card">
+      <div class="rc-cardhead">
         <div class="rc-section__title">
+          <mat-icon>receipt_long</mat-icon>
           {{ "reimbursementCreate.sectionItems" | translate }}
         </div>
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="addItem()"
-          class="rc-additem"
-        >
-          <mat-icon>add</mat-icon>&nbsp;{{
-            "reimbursementCreate.addItem" | translate
-          }}
+        <button type="button" class="rc-additem" (click)="addItem()">
+          <mat-icon>add</mat-icon>
+          {{ "reimbursementCreate.addItem" | translate }}
         </button>
       </div>
 
@@ -234,18 +270,18 @@
           }
         </table>
       </div>
-    </section>
 
-    <div class="rc-footer">
-      <button
-        mat-flat-button
-        type="button"
-        (click)="onSubmitConfirmation()"
-        [disabled]="formGroup.invalid"
-        class="rc-submit"
-      >
-        {{ "reimbursementCreate.submit" | translate }}
-      </button>
+      <div class="rc-actions">
+        <span class="rc-spacer"></span>
+        <button
+          type="button"
+          class="rc-submit"
+          (click)="onSubmitConfirmation()"
+          [disabled]="formGroup.invalid"
+        >
+          {{ "reimbursementCreate.submit" | translate }}
+        </button>
+      </div>
     </div>
   </form>
 </div>

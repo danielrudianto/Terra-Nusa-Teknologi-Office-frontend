@@ -31,6 +31,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
+import { PILIHAN_CARA_BAYAR } from 'src/app/constants/pilihan-pembelian';
+import { PILIHAN_JENIS_BEBAN } from 'src/app/constants/pilihan-reimbursement';
 
 @Component({
   selector: 'app-reimbursement-create',
@@ -78,20 +80,21 @@ export class ReimbursementCreateComponent {
   options: IBank[] = banks;
   file: File | undefined;
 
-  expenseTypes: any[] = [
-    {
-      nameKey: 'reimbursementType.transport',
-      code: 'A',
-    },
-    {
-      nameKey: 'reimbursementType.consumption',
-      code: 'E',
-    },
-    {
-      nameKey: 'reimbursementType.document',
-      code: '5.1.6',
-    },
-  ];
+  /*
+   * Pilihan berbentuk kartu, sama seperti formulir pembelian.
+   *
+   * Jenis beban menentukan ke pos mana pengeluaran itu masuk, dan cara bayar
+   * menentukan ke mana dananya dikirim. Dari daftar tarik-turun keduanya
+   * tampak sekadar label, dan yang salah pilih baru ketahuan saat rekap.
+   *
+   * `PILIHAN_CARA_BAYAR` DIPAKAI BERSAMA dengan pembelian: nilainya sama
+   * ('bank', 'va', 'cash'), dan dua daftar terpisah untuk nilai yang sama
+   * berarti dua tempat yang harus diubah bersamaan — sesuatu yang sudah
+   * terbukti tidak terjadi. Sebelumnya 'cash' di layar ini berlabel "Cek",
+   * sementara di pembelian "Tunai"; nilainya sendiri selalu 'cash'.
+   */
+  readonly pilihanJenisBeban = PILIHAN_JENIS_BEBAN;
+  readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
