@@ -33,29 +33,69 @@ POLA = re.compile(
 DIKECUALIKAN = {"src/app/helpers/nilai-baris.helper.ts"}
 
 
-def main() -> int:
-    temuan: list[str] = []
-    diperiksa = 0
+#: Penanda formulir yang MEMANG menerima jumlah tertulis.
+#:
+#: Yang dicari pemakaian `pembulatanSah()`, bukan sekadar adanya isian
+#: bernama `amount`: beberapa layar lain memakai nama itu untuk nominalnya
+#: sendiri, dan menandai mereka membuat pemeriksa ini melaporkan angka yang
+#: tidak sesuai dengan yang sebenarnya dijaganya.
+#:
+#: Formulir tanpa penanda ini belum mengenal pembetulan pembulatan sama
+#: sekali, dan perkalian di dalamnya masih benar. Yang PUNYA penanda ini
+#: tidak boleh lagi mengalikan sendiri di mana pun — termasuk pada total
+#: dokumennya.
+PENANDA_FORMULIR = "pembulatanSah("
 
+
+def _berkas_diperiksa():
+    """Helper cetak, DAN formulir yang menerima jumlah tertulis.
+
+    Formulirnya ikut sejak versi ini. Sebelumnya hanya helper yang dipindai,
+    dan justru di formulirlah kekeliruannya bersembunyi: baris G menampilkan
+    Rp 300.000 sesuai yang diketik sementara `rawTotal` di berkas yang sama
+    menjumlahkan Rp 299.999,70. Helper cetaknya bersih, pemeriksanya hijau,
+    dan dokumennya tetap memuat dua angka yang bertentangan.
+    """
     for f in sorted((AKAR / "src/app").rglob("*.ts")):
         rel = str(f.relative_to(AKAR))
         if rel in DIKECUALIKAN or rel.endswith(".spec.ts"):
             continue
-        # Hanya helper cetak dan pembangun dokumen: formulir memang menghitung
-        # sendiri saat mengisi, dan angkanya tidak pernah sampai ke kertas.
-        if "/helpers/" not in rel:
+        if "/helpers/" in rel:
+            yield rel, f.read_text()
             continue
-        diperiksa += 1
         isi = f.read_text()
+        if PENANDA_FORMULIR in isi:
+            yield rel, isi
+
+
+def main() -> int:
+    temuan: list[str] = []
+    diperiksa = 0
+    formulir = 0
+
+    for rel, isi in _berkas_diperiksa():
+        diperiksa += 1
+        if "/helpers/" not in rel:
+            formulir += 1
         for baris_no, baris in enumerate(isi.split("\n"), 1):
             if baris.lstrip().startswith(("*", "//")):
                 continue
             if POLA.search(baris):
                 temuan.append(f"{rel}:{baris_no}: {baris.strip()[:80]}")
 
-    print(f"nilaibariscek: {diperiksa} helper diperiksa")
+    print(
+        f"nilaibariscek: {diperiksa} berkas diperiksa "
+        f"({formulir} formulir berjumlah tertulis)"
+    )
     if diperiksa < 5:
         print("\nGAGAL MEMBACA: terlalu sedikit berkas; perbaiki pemeriksanya.")
+        return 2
+    if formulir < 1:
+        print(
+            "\nGAGAL MEMBACA: tidak satu pun formulir berjumlah tertulis terbaca.\n"
+            f"Penandanya `{PENANDA_FORMULIR}`; bila namanya berubah, "
+            "perbaiki pemeriksanya."
+        )
         return 2
     if not temuan:
         print("bersih — seluruhnya lewat `nilaiBaris()`.")

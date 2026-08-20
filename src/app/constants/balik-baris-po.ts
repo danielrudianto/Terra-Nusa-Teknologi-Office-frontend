@@ -31,6 +31,18 @@ export interface BarisDokumen {
   quantity?: number | null;
   unit?: string | null;
   price?: number | null;
+  /**
+   * Jumlah baris yang DITULIS — pembetulan pembulatan, bukan harga.
+   *
+   * Kosong pada hampir seluruh baris; hanya terisi bila volume kali harga
+   * tidak pernah bulat pada empat desimal. Lihat `nilai-baris.helper.ts`.
+   *
+   * Sebagian varian — PO-A, 6.4.1, 6.4.2 — memakai nama isian `amount`
+   * untuk hal yang BERBEDA (nominalnya sendiri). Karena itu kolom ini tidak
+   * dipulihkan di `dasar()` melainkan disebut satu per satu pada varian
+   * yang memang memakainya begini.
+   */
+  amount?: number | null;
   remarks_1?: string | null;
   remarks_2?: string | null;
   remarks_3?: string | null;
@@ -99,16 +111,32 @@ export const BALIK_BARIS: Record<
   (x: BarisDokumen, isUbah: boolean) => Record<string, unknown>
 > = {
   // --- barang: catatan di remarks_1 ---
-  '511': (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
+  '511': (x, u) => ({
+    ...dasar(x, u),
+    item_id: x.item_id,
+    remarks: x.remarks_1 ?? '',
+    amount: x.amount ?? null,
+  }),
   '5112': (x, u) => ({ ...dasar(x, u), remarks: x.remarks_1 ?? '' }),
-  '516': (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
+  '516': (x, u) => ({
+    ...dasar(x, u),
+    item_id: x.item_id,
+    remarks: x.remarks_1 ?? '',
+    amount: x.amount ?? null,
+  }),
   c: (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
-  g: (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
+  g: (x, u) => ({
+    ...dasar(x, u),
+    item_id: x.item_id,
+    remarks: x.remarks_1 ?? '',
+    amount: x.amount ?? null,
+  }),
 
   // --- barang ATAU jasa: `task` terisi hanya pada jasa ---
   '512': (x, u) => ({
     ...dasar(x, u),
     item_id: x.item_id,
+    amount: x.amount ?? null,
     task: x.task ?? '',
     note: x.remarks_1 ?? '',
     asset: x.remarks_2 ?? '',

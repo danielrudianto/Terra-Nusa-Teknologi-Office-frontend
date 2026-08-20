@@ -1,5 +1,6 @@
 import {
   TOLERANSI_PEMBULATAN,
+  jumlahBaris,
   nilaiBaris,
   nilaiHitung,
   pembulatanSah,
@@ -551,12 +552,17 @@ export class PurchaseOrderCreateGComponent implements OnInit {
   }
 
   // ----- live summary (read-only, safe getters) -----
+  /**
+   * Total dokumen — lewat `jumlahBaris()`, BUKAN perkalian sendiri.
+   *
+   * Sempat dihitung di sini sebagai `price * quantity`, dan itu membatalkan
+   * seluruh gunanya jumlah tertulis: barisnya menampilkan Rp 300.000 sesuai
+   * yang diketik, sementara totalnya menjumlahkan Rp 299.999,70 — dua angka
+   * yang bertentangan pada satu lembar yang sama, dan yang tercetak
+   * mengikuti helper cetaknya sehingga formulirnya sendiri yang berbeda.
+   */
   get rawTotal(): number {
-    return this.t.value.reduce(
-      (acc: number, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+    return jumlahBaris(this.t.getRawValue());
   }
 
   /**
@@ -651,11 +657,7 @@ export class PurchaseOrderCreateGComponent implements OnInit {
 
   formatData() {
     // Harga yang diisi = DPP; PPN disimpan sebagai persentase (11 atau 0).
-    const dpp = this.t.value.reduce(
-      (acc: any, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+    const dpp = this.rawTotal;
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {
@@ -739,6 +741,7 @@ export class PurchaseOrderCreateGComponent implements OnInit {
           quantity: Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
+          amount: x.amount ?? null,
           // Catatan per baris ikut dicetak di bawah nama barang.
           remarks: x.remarks,
         };
@@ -845,6 +848,26 @@ export class PurchaseOrderCreateGComponent implements OnInit {
    * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit.
    */
   async onSubmit(): Promise<void> {
+    /*
+     * Jumlah yang menyimpang dihentikan DI SINI.
+     *
+     * Server membuang jumlah tertulis yang di luar batas tanpa menolak
+     * dokumennya (`_clean_item`) — barisnya diam-diam kembali ke volume kali
+     * harga. Tanpa penjagaan ini, yang mengetik Rp 350.000 pada baris
+     * bernilai Rp 299.999,70 menyimpan dengan lega, tidak diberi tahu apa
+     * pun, dan baru mengetahuinya dari lembar di tangan vendor.
+     */
+    if (this.adaJumlahMenyimpang) {
+      this.snackBar.open(
+        this.translate.instant('poForm.jumlahMenyimpangCegah', {
+          batas: TOLERANSI_PEMBULATAN,
+        }),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
     const setuju = await firstValueFrom(
       this.dialog
         .open(PurchaseOrderViewComponent, {

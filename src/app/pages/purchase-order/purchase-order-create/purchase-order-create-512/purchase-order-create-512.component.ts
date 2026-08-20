@@ -1,3 +1,10 @@
+import {
+  TOLERANSI_PEMBULATAN,
+  jumlahBaris,
+  nilaiBaris,
+  nilaiHitung,
+  pembulatanSah,
+} from '../../../../helpers/nilai-baris.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -492,6 +499,8 @@ export class PurchaseOrderCreate512Component implements OnInit {
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unit: ['LS', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
+      // Jumlah yang DITULIS; kosong berarti volume kali harga.
+      amount: [null as number | null],
       note: [''],
     });
   }
@@ -526,6 +535,8 @@ export class PurchaseOrderCreate512Component implements OnInit {
        */
       unitMaster: [item.unit || ''],
       price: [0, [Validators.required, Validators.min(0)]],
+      // Jumlah yang DITULIS; kosong berarti volume kali harga.
+      amount: [null as number | null],
       note: [''],
     });
   }
@@ -565,8 +576,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
   }
 
   lineTotal(i: number): number {
-    const g = this.getFormGroupAt(i).getRawValue();
-    return (Number(g.price) || 0) * (Number(g.quantity) || 0);
+    return nilaiBaris(this.getFormGroupAt(i).getRawValue());
   }
   get rawTotal(): number {
     return this.t.controls.reduce((acc, _c, i) => acc + this.lineTotal(i), 0);
@@ -580,6 +590,31 @@ export class PurchaseOrderCreate512Component implements OnInit {
   }
   get grandTotal(): number {
     return this.subTotal + this.ppnAmount;
+  }
+
+
+  readonly TOLERANSI = TOLERANSI_PEMBULATAN;
+
+  /** Volume kali harga, tanpa pembetulan — dipakai sebagai pembanding. */
+  hitungBaris(i: number): number {
+    return nilaiHitung(this.getFormGroupAt(i).getRawValue());
+  }
+
+  /**
+   * Jumlah yang ditulis menyimpang terlalu jauh.
+   *
+   * Di luar batas ini yang salah bukan pembulatannya melainkan harga
+   * satuannya — dan membiarkannya membuat dokumen menyatakan nilai yang
+   * tidak dapat dicocokkan dengan volume kali harganya.
+   */
+  jumlahMenyimpang(i: number): boolean {
+    const v = this.getFormGroupAt(i).getRawValue();
+    return !pembulatanSah(v.amount, v);
+  }
+
+  /** Ada baris yang jumlah tertulisnya menyimpang; dokumen belum boleh terbit. */
+  get adaJumlahMenyimpang(): boolean {
+    return this.t.controls.some((_c, i) => this.jumlahMenyimpang(i));
   }
 
   openSupplierSelector() {
@@ -751,6 +786,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
           task: this.isGoods ? null : x.task,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
+          amount: x.amount ?? null,
           unit: x.unit,
           remarks_1: x.note, // catatan
           remarks_2: x.asset, // aset yang dirawat / diperbaiki
@@ -815,6 +851,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
+          amount: x.amount ?? null,
         };
       }),
       includePpn: !!v.includePPN,
@@ -921,6 +958,26 @@ export class PurchaseOrderCreate512Component implements OnInit {
    * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit.
    */
   async onSubmit(): Promise<void> {
+    /*
+     * Jumlah yang menyimpang dihentikan DI SINI.
+     *
+     * Server membuang jumlah tertulis yang di luar batas tanpa menolak
+     * dokumennya (`_clean_item`) — barisnya diam-diam kembali ke volume kali
+     * harga. Tanpa penjagaan ini, yang mengetik Rp 350.000 pada baris
+     * bernilai Rp 299.999,70 menyimpan dengan lega, tidak diberi tahu apa
+     * pun, dan baru mengetahuinya dari lembar di tangan vendor.
+     */
+    if (this.adaJumlahMenyimpang) {
+      this.snackBar.open(
+        this.translate.instant('poForm.jumlahMenyimpangCegah', {
+          batas: TOLERANSI_PEMBULATAN,
+        }),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
     const setuju = await firstValueFrom(
       this.dialog
         .open(PurchaseOrderViewComponent, {

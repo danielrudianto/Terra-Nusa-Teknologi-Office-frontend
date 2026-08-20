@@ -347,6 +347,33 @@
                       placeholder="0"
                     />
                   </mat-form-field>
+                  <!--
+                    Jumlah baris yang DITULIS.
+                    Kosong berarti dihitung biasa. Ada karena harga satuan tersimpan empat
+                    desimal, dan sebagian pekerjaan tidak pernah bulat pada ketelitian itu:
+                    7.000 liter seharga Rp 300.000 berarti Rp 42,857142… per liter, dan yang
+                    tersimpan 42,8571 — dokumennya tercetak Rp 299.999,70.
+                    Selisihnya dibatasi. Yang ditulis hanya boleh membetulkan pembulatan,
+                    bukan menggantikan perkaliannya.
+                  -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.jumlahBaris" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="amount"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      [placeholder]="(hitungBaris(i) | number: '1.0-2') ?? ''"
+                    />
+                    <span matPrefix>Rp&nbsp;</span>
+                    @if (jumlahMenyimpang(i)) {
+                      <mat-error>{{
+                        "poForm.jumlahMenyimpang" | translate: { batas: TOLERANSI }
+                      }}</mat-error>
+                    } @else {
+                      <mat-hint>{{ "poForm.jumlahBarisKet" | translate }}</mat-hint>
+                    }
+                  </mat-form-field>
 
                   <mat-form-field
                     appearance="outline"
