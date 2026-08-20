@@ -1,0 +1,4 @@
+@use '../mobile' as m;
+
+@include m.kartu-daftar('mrb');
+@include m.panel-rincian('mrb');

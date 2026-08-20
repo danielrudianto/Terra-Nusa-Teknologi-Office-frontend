@@ -1,0 +1,96 @@
+<h1 class="mhp-judul">{{ "mobile.pembelian.judul" | translate }}</h1>
+<p class="mhp-sub">{{ "mobile.pembelian.sub" | translate }}</p>
+
+<mat-form-field appearance="outline" class="mhp-cari">
+  <mat-label>{{ "mobile.pembelian.cari" | translate }}</mat-label>
+  <input matInput [formControl]="pencarian" />
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+
+@if (sedangMemuat) {
+  <div class="mhp-muat"><mat-spinner diameter="32" /></div>
+} @else if (!sudahMencari) {
+  <!--
+    Layar ini TIDAK menampilkan daftar dengan sendirinya.
+    Yang membukanya tanpa maksud menghapus apa pun tidak disodori deretan
+    dokumen yang masing-masing satu ketukan dari hilang.
+  -->
+  <div class="mhp-kosong">
+    <mat-icon>search</mat-icon>
+    <div>{{ "mobile.pembelian.mulai" | translate }}</div>
+  </div>
+} @else if (!daftar.length) {
+  <div class="mhp-kosong">
+    <mat-icon>inbox</mat-icon>
+    <div>{{ "mobile.pembelian.takAda" | translate }}</div>
+  </div>
+} @else {
+  @for (p of daftar; track p.id) {
+    <button type="button" class="mhp-kartu" (click)="buka(p)">
+      <div class="mhp-baris1">
+        <span class="mhp-nomor">{{ p.invoiceName || p.id }}</span>
+        <span class="mhp-nilai">{{ nilai(p) | number: "1.0-0" }}</span>
+      </div>
+      <div class="mhp-baris2">
+        <span class="mhp-nama">{{ p.supplier_name || p.supplierName || "\u2014" }}</span>
+        <span>{{ p.date }}</span>
+      </div>
+    </button>
+  }
+}
+
+@if (dipilih) {
+  <div class="mhp-tirai" (click)="tutup()">
+    <div class="mhp-panel" (click)="$event.stopPropagation()">
+      <div class="mhp-tarik"></div>
+
+      <h2 class="mhp-judul">{{ dipilih.invoiceName || dipilih.id }}</h2>
+      <p class="mhp-sub">
+        {{ dipilih.supplier_name || dipilih.supplierName || "\u2014" }}
+      </p>
+
+      <dl class="mhp-rinci">
+        <dt>{{ "mobile.pembelian.tanggal" | translate }}</dt>
+        <dd>{{ dipilih.date }}</dd>
+
+        <dt>{{ "mobile.pembelian.proyek" | translate }}</dt>
+        <dd>{{ dipilih.projectName || "\u2014" }}</dd>
+
+        <dt>{{ "mobile.pembelian.po" | translate }}</dt>
+        <dd>{{ dipilih.purchaseOrderName || "\u2014" }}</dd>
+
+        <dt>{{ "mobile.pembelian.total" | translate }}</dt>
+        <dd>{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+      </dl>
+
+      <div class="mhp-peringatan">
+        <mat-icon>warning</mat-icon>
+        <span>{{ "mobile.pembelian.peringatan" | translate }}</span>
+      </div>
+
+      <!--
+        Konfirmasi kedua, dan tombolnya mati sampai ditandai.
+        Menyetujui masih dapat dicabut; menghapus tidak.
+      -->
+      <label class="mhp-yakin">
+        <input type="checkbox" [checked]="yakin" (change)="yakin = !yakin" />
+        <span>{{ "mobile.pembelian.yakin" | translate }}</span>
+      </label>
+
+      <div class="mhp-aksi">
+        <button
+          mat-flat-button
+          color="warn"
+          type="button"
+          [disabled]="!yakin || sedangKirim"
+          (click)="hapus(dipilih)"
+        >
+          {{ "mobile.pembelian.hapus" | translate }}
+        </button>
+        <button mat-button type="button" (click)="tutup()">
+          {{ "mobile.batal" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

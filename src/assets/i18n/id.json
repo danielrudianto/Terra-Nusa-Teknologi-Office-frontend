@@ -4610,5 +4610,70 @@
     "retribusiHint": "PNBP, retribusi, atau iuran lembaga yang hanya dititipkan.",
     "lain": "Lain-lain",
     "lainHint": "Sebutkan jenisnya pada keterangan agar dapat ditinjau kemudian."
+  },
+  "mobile": {
+    "tanda": "Mobile",
+    "level": "Level",
+    "batal": "Batal",
+    "nav": {
+      "beranda": "Beranda",
+      "po": "Purchase Order",
+      "reimbursement": "Reimbursement",
+      "pembelian": "Pembelian",
+      "proyek": "Proyek"
+    },
+    "beranda": {
+      "judul": "Yang menunggu keputusan",
+      "sub": "Hanya persetujuan dan laporan. Selebihnya di aplikasi desktop.",
+      "menunggu": "menunggu persetujuan",
+      "laporan": "Laporan margin per proyek",
+      "hapus": "Cari lalu hapus pembelian"
+    },
+    "po": {
+      "judul": "Persetujuan Purchase Order",
+      "sub": "Yang sudah diperiksa dan menunggu keputusan.",
+      "kosong": "Tidak ada yang menunggu persetujuan.",
+      "tanggal": "Tanggal",
+      "proyek": "Proyek",
+      "dpp": "DPP",
+      "ppn": "PPN",
+      "total": "Total",
+      "diperiksa": "Diperiksa oleh",
+      "setujui": "Setujui",
+      "tolak": "Tolak",
+      "disetujui": "{{nomor}} disetujui",
+      "ditolak": "{{nomor}} ditolak",
+      "buatanSendiri": "Dokumen ini buatan Anda sendiri, jadi tidak dapat Anda setujui. Mintakan kepada pengguna lain.",
+      "diperiksaSendiri": "Anda yang memeriksa dokumen ini. Pemeriksa dan penyetuju sengaja dua orang berbeda."
+    },
+    "reimbursement": {
+      "judul": "Persetujuan Reimbursement",
+      "sub": "Pengajuan penggantian yang menunggu keputusan.",
+      "kosong": "Tidak ada pengajuan yang menunggu.",
+      "tanggal": "Tanggal",
+      "proyek": "Proyek",
+      "bank": "Bank",
+      "nominal": "Nominal",
+      "setujui": "Setujui",
+      "tolak": "Tolak",
+      "disetujui": "{{nomor}} disetujui",
+      "ditolak": "{{nomor}} ditolak",
+      "ajuanSendiri": "Pengajuan ini milik Anda sendiri, jadi tidak dapat Anda setujui."
+    },
+    "pembelian": {
+      "judul": "Hapus Pembelian",
+      "sub": "Cari dokumennya dulu. Menghapus tidak dapat dibatalkan.",
+      "cari": "Cari nomor faktur atau pemasok",
+      "mulai": "Ketik untuk mencari pembelian.",
+      "takAda": "Tidak ada pembelian yang cocok.",
+      "tanggal": "Tanggal",
+      "proyek": "Proyek",
+      "po": "Nomor PO",
+      "total": "Total",
+      "hapus": "Hapus pembelian",
+      "peringatan": "Menghapus tidak dapat dibatalkan. Pembelian yang sudah disetujui hanya dapat dihapus pemilik.",
+      "yakin": "Saya sudah memeriksa dokumennya dan yakin ingin menghapusnya.",
+      "terhapus": "{{nomor}} dihapus"
+    }
   }
 }

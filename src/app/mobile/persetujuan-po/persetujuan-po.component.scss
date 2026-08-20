@@ -1,0 +1,4 @@
+@use '../mobile' as m;
+
+@include m.kartu-daftar('mpo');
+@include m.panel-rincian('mpo');

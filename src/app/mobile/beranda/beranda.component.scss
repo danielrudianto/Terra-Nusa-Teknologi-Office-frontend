@@ -1,0 +1,79 @@
+.mbr-judul {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+}
+
+.mbr-sub {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  margin: 0 0 1rem;
+}
+
+.mbr-petak {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 64px;
+  border: 1px solid var(--border, #e3e6ea);
+  border-radius: 12px;
+  background: var(--surface-1, #fff);
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.65rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:active {
+    background: var(--surface-2, #f7f8fa);
+  }
+
+  > mat-icon {
+    color: var(--brand, #3f6ad8);
+    flex: none;
+  }
+}
+
+/* Menghapus dibedakan warnanya dari menyetujui: keduanya berdampingan di
+   satu layar, dan yang satu tidak dapat dibatalkan. */
+.mbr-petak--awas > mat-icon {
+  color: var(--bad-fg, #b3322f);
+}
+
+.mbr-petak__teks {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.mbr-petak__judul {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.mbr-petak__ket {
+  font-size: 0.72rem;
+  color: var(--muted, #6b7280);
+}
+
+.mbr-petak__angka {
+  flex: none;
+  min-width: 2rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--brand, #3f6ad8);
+
+  &.nol {
+    color: var(--muted, #9aa1ad);
+    font-weight: 500;
+  }
+}
+
+.mbr-petak__panah {
+  flex: none;
+  color: var(--muted, #9aa1ad);
+}

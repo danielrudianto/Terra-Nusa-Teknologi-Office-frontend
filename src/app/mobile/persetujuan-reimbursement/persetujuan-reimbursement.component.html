@@ -1,0 +1,82 @@
+<h1 class="mrb-judul">{{ "mobile.reimbursement.judul" | translate }}</h1>
+<p class="mrb-sub">{{ "mobile.reimbursement.sub" | translate }}</p>
+
+@if (sedangMemuat) {
+  <div class="mrb-muat"><mat-spinner diameter="32" /></div>
+} @else if (!daftar.length) {
+  <div class="mrb-kosong">
+    <mat-icon>task_alt</mat-icon>
+    <div>{{ "mobile.reimbursement.kosong" | translate }}</div>
+  </div>
+} @else {
+  @for (r of daftar; track r.id) {
+    <button type="button" class="mrb-kartu" (click)="buka(r)">
+      <div class="mrb-baris1">
+        <span class="mrb-nomor">{{ r.name || r.id }}</span>
+        <span class="mrb-nilai">{{ nilai(r) | number: "1.0-0" }}</span>
+      </div>
+      <div class="mrb-baris2">
+        <span class="mrb-nama">{{ r.bankAccountName || "\u2014" }}</span>
+        <span>{{ r.date }}</span>
+      </div>
+    </button>
+  }
+}
+
+@if (dipilih) {
+  <div class="mrb-tirai" (click)="tutup()">
+    <div class="mrb-panel" (click)="$event.stopPropagation()">
+      <div class="mrb-tarik"></div>
+
+      <h2 class="mrb-judul">{{ dipilih.name || dipilih.id }}</h2>
+      <p class="mrb-sub">{{ dipilih.bankAccountName || "\u2014" }}</p>
+
+      <dl class="mrb-rinci">
+        <dt>{{ "mobile.reimbursement.tanggal" | translate }}</dt>
+        <dd>{{ dipilih.date }}</dd>
+
+        <dt>{{ "mobile.reimbursement.proyek" | translate }}</dt>
+        <dd>{{ dipilih.projectName || "\u2014" }}</dd>
+
+        <dt>{{ "mobile.reimbursement.bank" | translate }}</dt>
+        <dd>{{ dipilih.bankName || "\u2014" }}</dd>
+
+        <dt>{{ "mobile.reimbursement.nominal" | translate }}</dt>
+        <dd>{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+      </dl>
+
+      @if (ajuanSendiri(dipilih)) {
+        <div class="mrb-peringatan">
+          <mat-icon>info</mat-icon>
+          <span>{{ "mobile.reimbursement.ajuanSendiri" | translate }}</span>
+        </div>
+      }
+
+      <div class="mrb-aksi">
+        @if (!ajuanSendiri(dipilih)) {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="sedangKirim"
+            (click)="setujui(dipilih)"
+          >
+            {{ "mobile.reimbursement.setujui" | translate }}
+          </button>
+        }
+        <button
+          mat-stroked-button
+          color="warn"
+          type="button"
+          [disabled]="sedangKirim"
+          (click)="tolak(dipilih)"
+        >
+          {{ "mobile.reimbursement.tolak" | translate }}
+        </button>
+        <button mat-button type="button" (click)="tutup()">
+          {{ "mobile.batal" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

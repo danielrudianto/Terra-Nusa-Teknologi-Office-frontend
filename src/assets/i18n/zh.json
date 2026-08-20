@@ -4610,5 +4610,70 @@
     "retribusiHint": "仅代收代付的国家规费或机构费用。",
     "lain": "其他",
     "lainHint": "请在备注中说明种类，以便日后核查。"
+  },
+  "mobile": {
+    "tanda": "移动版",
+    "level": "级别",
+    "batal": "取消",
+    "nav": {
+      "beranda": "首页",
+      "po": "采购订单",
+      "reimbursement": "报销",
+      "pembelian": "采购",
+      "proyek": "项目"
+    },
+    "beranda": {
+      "judul": "等待您决定",
+      "sub": "仅审批与报告，其余请用桌面版。",
+      "menunggu": "等待审批",
+      "laporan": "各项目毛利报告",
+      "hapus": "搜索后删除采购"
+    },
+    "po": {
+      "judul": "采购订单审批",
+      "sub": "已审核、等待决定的单据。",
+      "kosong": "没有等待审批的单据。",
+      "tanggal": "日期",
+      "proyek": "项目",
+      "dpp": "税基",
+      "ppn": "增值税",
+      "total": "合计",
+      "diperiksa": "审核人",
+      "setujui": "批准",
+      "tolak": "拒绝",
+      "disetujui": "{{nomor}} 已批准",
+      "ditolak": "{{nomor}} 已拒绝",
+      "buatanSendiri": "此单据由您创建，不能由您批准，请交由他人。",
+      "diperiksaSendiri": "此单据由您审核。审核人与批准人须为两人。"
+    },
+    "reimbursement": {
+      "judul": "报销审批",
+      "sub": "等待决定的报销申请。",
+      "kosong": "没有等待处理的申请。",
+      "tanggal": "日期",
+      "proyek": "项目",
+      "bank": "银行",
+      "nominal": "金额",
+      "setujui": "批准",
+      "tolak": "拒绝",
+      "disetujui": "{{nomor}} 已批准",
+      "ditolak": "{{nomor}} 已拒绝",
+      "ajuanSendiri": "这是您自己的申请，不能由您批准。"
+    },
+    "pembelian": {
+      "judul": "删除采购",
+      "sub": "请先查找单据。删除无法撤销。",
+      "cari": "搜索发票号或供应商",
+      "mulai": "输入以搜索采购单。",
+      "takAda": "没有匹配的采购单。",
+      "tanggal": "日期",
+      "proyek": "项目",
+      "po": "采购订单号",
+      "total": "合计",
+      "hapus": "删除采购",
+      "peringatan": "删除无法撤销。已批准的采购仅所有者可删除。",
+      "yakin": "我已核对单据并确认删除。",
+      "terhapus": "{{nomor}} 已删除"
+    }
   }
 }

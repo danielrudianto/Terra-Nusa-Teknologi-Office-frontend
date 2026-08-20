@@ -1,0 +1,25 @@
+@use '../mobile' as m;
+
+@include m.kartu-daftar('mhp');
+@include m.panel-rincian('mhp');
+
+.mhp-cari {
+  width: 100%;
+}
+
+.mhp-yakin {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  margin-bottom: 0.9rem;
+
+  input {
+    /* Kotak centang bawaan diperbesar: sasaran sentuh, bukan hiasan. */
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin-top: 0.1rem;
+  }
+}

@@ -1,0 +1,18 @@
+/*
+ * Konfigurasi TypeScript untuk sasaran build MOBILE.
+ *
+ * Berkas tersendiri, bukan menambahkan `src/main.mobile.ts` ke
+ * `tsconfig.app.json`: menaruh dua titik masuk pada satu program membuat
+ * SELURUH pohon komponen desktop ikut dikompilasi ke dalam berkas mobile —
+ * dan yang dihasilkan bukan aplikasi kecil lagi, melainkan aplikasi desktop
+ * dengan rute yang berbeda.
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/mobile",
+    "types": []
+  },
+  "files": ["src/main.mobile.ts"],
+  "include": ["src/**/*.d.ts"]
+}

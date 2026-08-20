@@ -96,6 +96,81 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "mobile": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kb",
+                  "maximumError": "30kb"
+                }
+              ],
+              "outputHashing": "all",
+              "browser": "src/main.mobile.ts",
+              "index": "src/index.mobile.html",
+              "outputPath": {
+                "base": "dist/terrabot-mobile"
+              },
+              "tsConfig": "tsconfig.mobile.json",
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                  "output": "/assets/"
+                },
+                {
+                  "glob": "pdf.worker.min.mjs",
+                  "input": "node_modules/pdfjs-dist/build/",
+                  "output": "/assets/"
+                }
+              ],
+              "styles": [
+                "src/styles.scss"
+              ],
+              "scripts": []
+            },
+            "mobile-development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "browser": "src/main.mobile.ts",
+              "index": "src/index.mobile.html",
+              "outputPath": {
+                "base": "dist/terrabot-mobile"
+              },
+              "tsConfig": "tsconfig.mobile.json",
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                  "output": "/assets/"
+                },
+                {
+                  "glob": "pdf.worker.min.mjs",
+                  "input": "node_modules/pdfjs-dist/build/",
+                  "output": "/assets/"
+                }
+              ],
+              "styles": [
+                "src/styles.scss"
+              ],
+              "scripts": []
             }
           },
           "defaultConfiguration": "production"

@@ -1,0 +1,54 @@
+<div class="mkr">
+  <header class="mkr-atas">
+    <div class="mkr-merek">
+      <span class="mkr-merek__nama">TerraBot</span>
+      <span class="mkr-merek__tanda">{{ "mobile.tanda" | translate }}</span>
+    </div>
+
+    <button type="button" class="mkr-akun" (click)="keluar()">
+      <span class="mkr-akun__bulat">{{ inisial }}</span>
+      <span class="mkr-akun__teks">
+        <span class="mkr-akun__nama">{{ nama }}</span>
+        <span class="mkr-akun__level"
+          >{{ "mobile.level" | translate }} {{ level }}</span
+        >
+      </span>
+      <mat-icon>logout</mat-icon>
+    </button>
+  </header>
+
+  <main class="mkr-isi">
+    <router-outlet />
+  </main>
+
+  <!--
+    Navigasi DI BAWAH.
+
+    Ponsel dipegang satu tangan; yang terjangkau ibu jari hanya sepertiga
+    bawah layar. Menu di atas memaksa menggeser pegangan tiap kali berpindah,
+    dan pegangan yang bergeser itulah yang membuat orang salah tekan — pada
+    layar yang isinya menyetujui dan menghapus.
+  -->
+  <nav class="mkr-bawah">
+    <a routerLink="/" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">
+      <mat-icon>home</mat-icon>
+      <span>{{ "mobile.nav.beranda" | translate }}</span>
+    </a>
+    <a routerLink="/Persetujuan" routerLinkActive="on">
+      <mat-icon>fact_check</mat-icon>
+      <span>{{ "mobile.nav.po" | translate }}</span>
+    </a>
+    <a routerLink="/Reimbursement" routerLinkActive="on">
+      <mat-icon>receipt_long</mat-icon>
+      <span>{{ "mobile.nav.reimbursement" | translate }}</span>
+    </a>
+    <a routerLink="/Pembelian" routerLinkActive="on">
+      <mat-icon>delete_sweep</mat-icon>
+      <span>{{ "mobile.nav.pembelian" | translate }}</span>
+    </a>
+    <a routerLink="/Proyek" routerLinkActive="on">
+      <mat-icon>insights</mat-icon>
+      <span>{{ "mobile.nav.proyek" | translate }}</span>
+    </a>
+  </nav>
+</div>

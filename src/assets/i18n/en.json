@@ -4610,5 +4610,70 @@
     "retribusiHint": "State levies or agency dues merely passed through.",
     "lain": "Other",
     "lainHint": "State the kind in the note so it can be reviewed later."
+  },
+  "mobile": {
+    "tanda": "Mobile",
+    "level": "Level",
+    "batal": "Cancel",
+    "nav": {
+      "beranda": "Home",
+      "po": "Purchase Order",
+      "reimbursement": "Reimbursement",
+      "pembelian": "Purchase",
+      "proyek": "Project"
+    },
+    "beranda": {
+      "judul": "Waiting for your decision",
+      "sub": "Approvals and reports only. Everything else is on desktop.",
+      "menunggu": "awaiting approval",
+      "laporan": "Margin report per project",
+      "hapus": "Search then delete a purchase"
+    },
+    "po": {
+      "judul": "Purchase Order Approval",
+      "sub": "Checked documents awaiting a decision.",
+      "kosong": "Nothing is awaiting approval.",
+      "tanggal": "Date",
+      "proyek": "Project",
+      "dpp": "DPP",
+      "ppn": "VAT",
+      "total": "Total",
+      "diperiksa": "Checked by",
+      "setujui": "Approve",
+      "tolak": "Reject",
+      "disetujui": "{{nomor}} approved",
+      "ditolak": "{{nomor}} rejected",
+      "buatanSendiri": "You created this document, so you cannot approve it. Ask someone else.",
+      "diperiksaSendiri": "You checked this document. Checker and approver are deliberately two different people."
+    },
+    "reimbursement": {
+      "judul": "Reimbursement Approval",
+      "sub": "Claims awaiting a decision.",
+      "kosong": "No claims are waiting.",
+      "tanggal": "Date",
+      "proyek": "Project",
+      "bank": "Bank",
+      "nominal": "Amount",
+      "setujui": "Approve",
+      "tolak": "Reject",
+      "disetujui": "{{nomor}} approved",
+      "ditolak": "{{nomor}} rejected",
+      "ajuanSendiri": "This is your own claim, so you cannot approve it."
+    },
+    "pembelian": {
+      "judul": "Delete Purchase",
+      "sub": "Find the document first. Deleting cannot be undone.",
+      "cari": "Search invoice number or supplier",
+      "mulai": "Type to search for a purchase.",
+      "takAda": "No matching purchase.",
+      "tanggal": "Date",
+      "proyek": "Project",
+      "po": "PO number",
+      "total": "Total",
+      "hapus": "Delete purchase",
+      "peringatan": "Deleting cannot be undone. Approved purchases can only be deleted by the owner.",
+      "yakin": "I have checked the document and want to delete it.",
+      "terhapus": "{{nomor}} deleted"
+    }
   }
 }

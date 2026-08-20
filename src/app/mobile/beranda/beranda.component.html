@@ -1,0 +1,40 @@
+<h1 class="mbr-judul">{{ "mobile.beranda.judul" | translate }}</h1>
+<p class="mbr-sub">{{ "mobile.beranda.sub" | translate }}</p>
+
+<button type="button" class="mbr-petak" (click)="ke('/Persetujuan')">
+  <mat-icon>fact_check</mat-icon>
+  <span class="mbr-petak__teks">
+    <span class="mbr-petak__judul">{{ "mobile.nav.po" | translate }}</span>
+    <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
+  </span>
+  <span class="mbr-petak__angka" [class.nol]="jumlahPo === 0">{{ jumlahPo }}</span>
+</button>
+
+<button type="button" class="mbr-petak" (click)="ke('/Reimbursement')">
+  <mat-icon>receipt_long</mat-icon>
+  <span class="mbr-petak__teks">
+    <span class="mbr-petak__judul">{{ "mobile.nav.reimbursement" | translate }}</span>
+    <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
+  </span>
+  <span class="mbr-petak__angka" [class.nol]="jumlahReimbursement === 0">{{
+    jumlahReimbursement
+  }}</span>
+</button>
+
+<button type="button" class="mbr-petak" (click)="ke('/Proyek')">
+  <mat-icon>insights</mat-icon>
+  <span class="mbr-petak__teks">
+    <span class="mbr-petak__judul">{{ "mobile.nav.proyek" | translate }}</span>
+    <span class="mbr-petak__ket">{{ "mobile.beranda.laporan" | translate }}</span>
+  </span>
+  <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
+</button>
+
+<button type="button" class="mbr-petak mbr-petak--awas" (click)="ke('/Pembelian')">
+  <mat-icon>delete_sweep</mat-icon>
+  <span class="mbr-petak__teks">
+    <span class="mbr-petak__judul">{{ "mobile.nav.pembelian" | translate }}</span>
+    <span class="mbr-petak__ket">{{ "mobile.beranda.hapus" | translate }}</span>
+  </span>
+  <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
+</button>
