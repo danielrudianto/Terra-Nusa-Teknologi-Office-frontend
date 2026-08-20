@@ -17,6 +17,7 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -32,7 +33,15 @@ function komponen(): any {
     providers: [
       {
         provide: ApiService,
-        useValue: { get: () => ({ subscribe: () => ({ add: () => {} }) }) },
+        /*
+         * Mengembalikan Observable SUNGGUHAN, bukan tiruan ber-`subscribe`.
+         *
+         * Laporan ini menggabungkan beberapa proyek dengan `forkJoin` dan
+         * menahan kegagalan tiap proyek lewat `catchError` — keduanya
+         * memerlukan `pipe`. Tiruan lama hanya punya `subscribe`, dan
+         * pengujiannya gagal karena kerangkanya, bukan karena aturannya.
+         */
+        useValue: { get: () => of(null) },
       },
       { provide: Router, useValue: { navigate: () => {} } },
       { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },

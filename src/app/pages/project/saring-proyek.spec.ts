@@ -19,61 +19,88 @@
 
 import { ProjectListComponent } from './project-list/project-list.component';
 
-function komponen(saringAwal: any = 'berjalan'): any {
+function komponen(tambahan: string[] = []): any {
   const c: any = Object.create(ProjectListComponent.prototype);
-  c.saring = saringAwal;
+  c.tambahan = tambahan;
   c.dimuat = 0;
   c.fetch = () => (c.dimuat += 1);
   return c;
 }
 
-describe('memilih saringan', () => {
-  it('nilai yang SAMA tidak memuat ulang apa pun', () => {
+describe('keadaan yang ikut ditampilkan', () => {
+  it('bawaannya HANYA yang berjalan', () => {
     /*
-     * Inilah penjaganya. Peristiwa yang menyala sendiri saat layar dibuka
-     * membawa nilai yang sama dengan saringan bawaannya; menanggapinya
-     * dengan pembatalan adalah awal dari kedipan tanpa henti.
+     * Proyek selesai dan batal tidak pernah dihapus — biayanya tetap harus
+     * dapat ditinjau — sehingga daftarnya terus memanjang setiap tahun.
      */
-    const c = komponen('berjalan');
-    c.pilihSaring('berjalan');
-    expect(c.saring).toBe('berjalan');
-    expect(c.dimuat).toBe(0);
+    const c = komponen();
+    expect(c.keadaanDiminta).toBe('berjalan');
   });
 
-  it('nilai lain menggantinya dan memuat sekali', () => {
-    const c = komponen('berjalan');
-    c.pilihSaring('retensi');
-    expect(c.saring).toBe('retensi');
+  it('yang berjalan SELALU ikut, apa pun yang dicentang', () => {
+    // Kepingnya menambah, bukan mengganti. Bentuk sebelumnya mengganti —
+    // yang ingin melihat keduanya harus membukanya bergantian.
+    expect(komponen(['selesai']).keadaanDiminta).toBe('berjalan,selesai');
+    expect(komponen(['batal']).keadaanDiminta).toBe('berjalan,batal');
+  });
+
+  it('urutannya tetap, tidak mengikuti urutan penekanan', () => {
+    // Alamat dan penyimpanan lain membandingkan untai ini apa adanya.
+    const c = komponen(['batal', 'retensi']);
+    expect(c.keadaanDiminta).toBe('berjalan,retensi,batal');
+  });
+
+  it('ketiganya sekaligus', () => {
+    expect(komponen(['retensi', 'selesai', 'batal']).keadaanDiminta).toBe(
+      'berjalan,retensi,selesai,batal',
+    );
+  });
+});
+
+describe('menekan keping', () => {
+  it('menyalakan satu keadaan dan memuat sekali', () => {
+    const c = komponen();
+    c.ubahTambahan(['retensi']);
+    expect(c.tambahan).toEqual(['retensi']);
     expect(c.dimuat).toBe(1);
   });
 
-  it('nilai kosong berarti semua', () => {
-    // Menekan keping yang sedang terpilih membuat daftarnya mengirim nilai
-    // kosong; itulah cara membatalkan pilihan.
-    const c = komponen('berjalan');
-    c.pilihSaring(undefined);
-    expect(c.saring).toBeNull();
-    expect(c.dimuat).toBe(1);
-  });
-
-  it('nilai yang tidak dikenal jatuh ke semua, bukan diteruskan', () => {
-    const c = komponen('berjalan');
-    c.pilihSaring('ngawur');
-    expect(c.saring).toBeNull();
-  });
-
-  it('membatalkan dua kali tidak memuat dua kali', () => {
-    const c = komponen(null);
-    c.pilihSaring(null);
-    c.pilihSaring(undefined);
+  it('pilihan yang SAMA tidak memuat ulang apa pun', () => {
+    /*
+     * Penjaga terhadap kedipan. Peristiwa yang menyala sendiri saat layar
+     * dibuka membawa pilihan yang sama dengan keadaan sekarang; menanggapinya
+     * dengan pemuatan ulang adalah awal dari tembakan tanpa henti.
+     */
+    const c = komponen(['selesai']);
+    c.ubahTambahan(['selesai']);
     expect(c.dimuat).toBe(0);
   });
 
-  it('keempat keadaan diterima', () => {
-    for (const k of ['berjalan', 'retensi', 'selesai', 'batal']) {
-      const c = komponen(null);
-      c.pilihSaring(k);
-      expect(c.saring).withContext(k).toBe(k);
-    }
+  it('urutan yang berbeda tetap dianggap sama', () => {
+    const c = komponen(['retensi', 'selesai']);
+    c.ubahTambahan(['selesai', 'retensi']);
+    expect(c.dimuat).toBe(0);
+  });
+
+  it('mengosongkan pilihan kembali ke yang berjalan saja', () => {
+    const c = komponen(['selesai']);
+    c.ubahTambahan([]);
+    expect(c.tambahan).toEqual([]);
+    expect(c.keadaanDiminta).toBe('berjalan');
+    expect(c.dimuat).toBe(1);
+  });
+
+  it('nilai kosong tidak melemparkan apa pun', () => {
+    const c = komponen(['selesai']);
+    c.ubahTambahan(null);
+    expect(c.tambahan).toEqual([]);
+  });
+
+  it('keadaan yang tidak dikenal diabaikan', () => {
+    // Bukan diteruskan ke server: nama asing di sana hanya menghasilkan
+    // daftar kosong tanpa sebab yang terbaca.
+    const c = komponen();
+    c.ubahTambahan(['ngawur', 'selesai']);
+    expect(c.tambahan).toEqual(['selesai']);
   });
 });

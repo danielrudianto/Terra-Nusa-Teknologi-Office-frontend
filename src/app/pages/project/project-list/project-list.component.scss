@@ -335,3 +335,26 @@ tr[mat-row]:hover {
 }
 
 
+
+/*
+ * Baris penyaring: dasarnya disebut, kepingnya menambah.
+ *
+ * Tanpa label "Berjalan" di depannya, keping bertanda "+" tidak menyatakan
+ * ditambahkan KE APA — dan daftar yang menampilkan proyek berjalan saja
+ * terbaca seperti daftar tanpa saringan sama sekali.
+ */
+.prl-saring {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.prl-saring__label {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+  font-size: 0.78rem;
+  font-weight: 600;
+}

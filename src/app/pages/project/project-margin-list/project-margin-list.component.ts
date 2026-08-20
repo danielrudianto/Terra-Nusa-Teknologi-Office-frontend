@@ -17,6 +17,7 @@ interface BarisMargin {
   code: string;
   name: string;
   isActive: boolean;
+  isRetention?: boolean;
   isCancelled: boolean;
   kontrak: number;
   tertagih: number;
@@ -87,6 +88,16 @@ export class ProjectMarginListComponent implements OnInit {
 
   /** Tampilkan proyek yang sudah selesai. */
   sertakanSelesai = false;
+
+  /**
+   * Tampilkan proyek yang menunggu retensi.
+   *
+   * Terpisah dari "selesai", dan itu disengaja: proyek pada masa retensi
+   * BELUM selesai — sebagian nilai kontraknya masih ditahan dan perbaikan
+   * yang timbul masih membebaninya. Menggabungkannya dengan yang selesai
+   * membuat margin yang masih dapat berubah terbaca sebagai margin akhir.
+   */
+  sertakanRetensi = false;
 
   urut: Urut = 'persen';
   naik = false;
@@ -266,7 +277,16 @@ export class ProjectMarginListComponent implements OnInit {
     const kata = (this.cari.value ?? '').trim().toLowerCase();
 
     let hasil = this.semua.filter((p) => {
+      /*
+       * Tiga keadaan, dua sakelar.
+       *
+       * Proyek retensi tetap `isActive` — masa pemeliharaannya masih
+       * berjalan. Karena itu ia harus disaring lewat penandanya sendiri;
+       * tanpa baris di bawah ini, ia selalu ikut tampil dan sakelarnya tidak
+       * mengendalikan apa pun.
+       */
       if (!this.sertakanSelesai && !p.isActive) return false;
+      if (!this.sertakanRetensi && p.isRetention) return false;
       if (!kata) return true;
       return (
         (p.code ?? '').toLowerCase().includes(kata) ||

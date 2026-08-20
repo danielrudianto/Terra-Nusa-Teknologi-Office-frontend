@@ -3612,7 +3612,10 @@
     "tanpaInduk": "独立项目",
     "gabungAnak": "合并子项目",
     "gabungAnakKet": "整个项目族的成本与开票金额将合并计算。",
-    "proyekDigabung": "已合并的项目"
+    "proyekDigabung": "已合并的项目",
+    "termasukRetensi": "+ 保固期",
+    "termasukSelesai": "+ 已完成",
+    "termasukBatal": "+ 已取消"
   },
   "projectReport": {
     "title": "项目报表",
@@ -4178,7 +4181,8 @@
     "sertakanInternal": "含集团内部采购",
     "internalHint": "向集团内公司的采购。关闭后仅显示实际流出集团的资金。",
     "belumAdaKontrak": "尚无合同",
-    "belumDitagih": "尚未开票"
+    "belumDitagih": "尚未开票",
+    "sertakanRetensi": "包含保固期项目"
   },
   "employeeView": {
     "menu": "查看完整资料",

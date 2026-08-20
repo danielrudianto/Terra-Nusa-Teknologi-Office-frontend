@@ -8,42 +8,40 @@
 
   <div class="prl-toolbar">
     <!--
-      Keadaan dipilih di TINGKAT DAFTAR, bukan per keping.
-      Bentuk sebelumnya memasangkan `[selected]` dengan `(selectionChange)`
-      pada tiap keping. Selama tidak ada keping yang terpilih sejak awal, itu
-      tidak pernah bermasalah. Begitu saringan bawaan menjadi "Berjalan",
-      keping itu terpilih saat layar dibuka, `selectionChange` ikut menyala
-      tanpa ada yang menekannya, penanganya menganggapnya penekanan kedua
-      lalu MEMBATALKAN pilihan — yang membuat `[selected]` berubah lagi, dan
-      menyalakan peristiwa itu lagi. Daftarnya berkedip dan menembak server
-      tanpa henti.
-      Satu peristiwa di tingkat daftar tidak dapat berbalas begitu: `[value]`
-      hanya membaca, dan `(change)` hanya menyala oleh penekanan orang.
-    -->
-    <mat-chip-listbox
-      [disabled]="isLoading"
-      [value]="saring"
-      (change)="pilihSaring($event.value)"
-    >
-      <mat-chip-option class="prl-fchip prl-fchip--jalan" value="berjalan">{{
-        "project.state.berjalan" | translate
-      }}</mat-chip-option>
-      <!--
-        Tunggu retensi: antara BAST 1 dan BAST 2.
+      Keping "termasuk …", bukan pilihan yang saling meniadakan.
 
-        Pekerjaannya sudah diserahkan, tetapi masa pemeliharaannya masih
-        berjalan dan sebagian nilai kontrak masih ditahan.
-      -->
-      <mat-chip-option class="prl-fchip prl-fchip--retensi" value="retensi">{{
-        "project.state.retensi" | translate
-      }}</mat-chip-option>
-      <mat-chip-option class="prl-fchip prl-fchip--selesai" value="selesai">{{
-        "project.state.selesai" | translate
-      }}</mat-chip-option>
-      <mat-chip-option class="prl-fchip prl-fchip--batal" value="batal">{{
-        "project.state.batal" | translate
-      }}</mat-chip-option>
-    </mat-chip-listbox>
+      Yang berjalan SELALU tampil; kepingnya MENAMBAH. Bentuk sebelumnya
+      mengganti daftarnya, sehingga yang ingin melihat proyek berjalan berikut
+      yang menunggu retensi harus membukanya bergantian dan menjumlahkan
+      sendiri di kepala.
+
+      `multiple` dan `[value]` di tingkat daftar, bukan `[selected]` per
+      keping: pasangan `[selected]` + `(selectionChange)` pernah membuat
+      daftar ini berkedip tanpa henti — kepingnya menyalakan peristiwanya
+      sendiri saat layar dibuka, penanganya membatalkannya, dan keduanya
+      saling menyalakan.
+    -->
+    <div class="prl-saring">
+      <span class="prl-saring__label">{{
+        "project.state.berjalan" | translate
+      }}</span>
+      <mat-chip-listbox
+        multiple
+        [disabled]="isLoading"
+        [value]="tambahan"
+        (change)="ubahTambahan($event.value)"
+      >
+        <mat-chip-option class="prl-fchip prl-fchip--retensi" value="retensi">{{
+          "project.termasukRetensi" | translate
+        }}</mat-chip-option>
+        <mat-chip-option class="prl-fchip prl-fchip--selesai" value="selesai">{{
+          "project.termasukSelesai" | translate
+        }}</mat-chip-option>
+        <mat-chip-option class="prl-fchip prl-fchip--batal" value="batal">{{
+          "project.termasukBatal" | translate
+        }}</mat-chip-option>
+      </mat-chip-listbox>
+    </div>
 
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="prl-search">
       <mat-icon matPrefix>search</mat-icon>

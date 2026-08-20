@@ -26,6 +26,15 @@ import { ProjectUpdateComponent } from '../project-update/project-update.compone
 import { Project, keadaanProyek } from '../project.model';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
+/**
+ * Keadaan yang dapat DITAMBAHKAN ke daftar, di luar yang berjalan.
+ *
+ * Di tingkat modul, bukan milik instans: urutannya menentukan urutan untai
+ * yang dikirim ke server, dan itu bagian dari kesepakatan dengan server —
+ * bukan keadaan sebuah layar.
+ */
+const TAMBAHAN = ['retensi', 'selesai', 'batal'] as const;
+
 @Component({
   selector: 'app-project-list',
   standalone: true,
@@ -79,15 +88,40 @@ export class ProjectListComponent implements OnInit {
    * "aktif sekaligus batal" tidak punya arti, dan menyediakan dua sakelar
    * membuat kombinasi itu bisa dipilih.
    */
-  /*
-   * Bawaannya BERJALAN, bukan semua.
+  /**
+   * Keadaan yang IKUT ditampilkan, di luar yang berjalan.
    *
-   * Proyek selesai dan batal tidak pernah dihapus — biayanya tetap harus
-   * dapat ditinjau — sehingga daftarnya terus memanjang setiap tahun. Yang
-   * dibuka sehari-hari adalah yang masih dikerjakan; menampilkan seluruhnya
-   * membuat proyek berjalan tercampur di antara puluhan yang sudah usai.
+   * Bentuk sebelumnya satu pilihan yang saling meniadakan: memilih "Selesai"
+   * MENGGANTI daftarnya, bukan menambahnya. Yang ingin melihat proyek
+   * berjalan berikut yang menunggu retensi karena itu harus membukanya
+   * bergantian dan menjumlahkan sendiri di kepala.
+   *
+   * Yang berjalan SELALU tampil — itulah dasarnya; kepingnya menambahkan.
    */
-  saring: 'berjalan' | 'retensi' | 'selesai' | 'batal' | null = 'berjalan';
+  /*
+   * Disimpan sebagai LARIK, bukan himpunan.
+   *
+   * `[value]` pada daftar kepingnya membandingkan rujukan; himpunan yang
+   * harus disalin menjadi larik pada setiap penggambaran menghasilkan
+   * rujukan baru terus-menerus, dan kepingnya disetel ulang tanpa henti.
+   */
+  tambahan: string[] = [];
+
+  readonly TAMBAHAN = TAMBAHAN;
+
+  ikut(keadaan: string): boolean {
+    return this.tambahan.includes(keadaan);
+  }
+
+  /**
+   * Keadaan yang dikirim ke server: yang berjalan, berikut yang dicentang.
+   *
+   * Dirakit di satu tempat supaya daftar dan penghitungnya tidak dapat
+   * berbeda.
+   */
+  private get keadaanDiminta(): string {
+    return ['berjalan', ...TAMBAHAN.filter((k) => this.ikut(k))].join(',');
+  }
 
   displayedColumns = [
     'code',
@@ -120,27 +154,14 @@ export class ProjectListComponent implements OnInit {
 
     // Dikirim hanya bila memang menyaring. `isActive=false` adalah
     // penyaringan yang sah, jadi tidak boleh diputuskan lewat kebenaran nilai.
-    if (this.saring === 'berjalan') {
-      /*
-       * `isRetention=false` IKUT dikirim.
-       *
-       * Proyek yang menunggu retensi tetap `isActive` — masa pemeliharaannya
-       * masih berjalan dan biayanya masih dibebankan ke sana. Tanpa syarat
-       * ini, keduanya tercampur pada saringan yang sama dan kepingnya
-       * sendiri tidak pernah memisahkan apa pun.
-       */
-      params['isActive'] = true;
-      params['isCancelled'] = false;
-      params['isRetention'] = false;
-    } else if (this.saring === 'retensi') {
-      params['isRetention'] = true;
-      params['isCancelled'] = false;
-    } else if (this.saring === 'selesai') {
-      params['isActive'] = false;
-      params['isCancelled'] = false;
-    } else if (this.saring === 'batal') {
-      params['isCancelled'] = true;
-    }
+    /*
+     * Keadaan dikirim sebagai DAFTAR, bukan tiga penanda boolean.
+     *
+     * "Berjalan ATAU tunggu retensi" tidak dapat dinyatakan oleh penanda yang
+     * saling DAN — `isRetention=false` dan `isRetention=true` sekaligus tidak
+     * berarti apa-apa.
+     */
+    params['keadaan'] = this.keadaanDiminta;
 
     this.apiService
       .get('projects', params)
@@ -164,22 +185,28 @@ export class ProjectListComponent implements OnInit {
   }
 
   /**
-   * Keadaan yang dipilih, datang dari daftar kepingnya.
+   * Keping "termasuk …" ditekan.
    *
-   * Nilainya DIPAKAI apa adanya, tidak dibalik-balik. Bentuk sebelumnya
-   * menganggap nilai yang sama dengan pilihan sekarang sebagai "tekan lagi
-   * untuk batal" — dan itu benar selama peristiwanya hanya menyala oleh
-   * penekanan orang. Menyalakannya dari `[selected]` membuat pembatalan itu
-   * terjadi sendiri saat layar dibuka, lalu berbalas tanpa henti.
-   *
-   * Membatalkan pilihan tetap bisa: menekan keping yang sedang terpilih
-   * membuat daftarnya mengirim nilai kosong, dan itu berarti "semua".
+   * Nilainya dipakai apa adanya dari peristiwa daftar kepingnya — bukan
+   * dibalik dari keadaan sekarang. Membalik dari keadaan sekarang adalah
+   * yang dahulu membuat daftar ini berkedip tanpa henti: `[selected]`
+   * menyalakan peristiwanya sendiri saat layar dibuka, penanganya
+   * membatalkannya, dan keduanya saling menyalakan.
    */
-  pilihSaring(nilai: string | null | undefined): void {
-    const sah = ['berjalan', 'retensi', 'selesai', 'batal'];
-    const berikutnya = nilai && sah.includes(nilai) ? (nilai as any) : null;
-    if (berikutnya === this.saring) return;
-    this.saring = berikutnya;
+  ubahTambahan(terpilih: string[] | null | undefined): void {
+    const sah = (TAMBAHAN as readonly string[]).filter((k) =>
+      (terpilih ?? []).includes(k),
+    );
+
+    // Tidak ada yang berubah: tidak ada pula yang perlu dimuat ulang.
+    if (
+      sah.length === this.tambahan.length &&
+      sah.every((k) => this.ikut(k))
+    ) {
+      return;
+    }
+
+    this.tambahan = sah;
     this.fetch(0);
   }
 

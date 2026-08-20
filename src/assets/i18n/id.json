@@ -3612,7 +3612,10 @@
     "tanpaInduk": "Berdiri sendiri",
     "gabungAnak": "Gabung dengan proyek anak",
     "gabungAnakKet": "Biaya dan penagihan seluruh proyek dalam satu keluarga dijumlahkan.",
-    "proyekDigabung": "Proyek yang digabung"
+    "proyekDigabung": "Proyek yang digabung",
+    "termasukRetensi": "+ Tunggu retensi",
+    "termasukSelesai": "+ Selesai",
+    "termasukBatal": "+ Batal"
   },
   "projectReport": {
     "title": "Laporan Proyek",
@@ -4178,7 +4181,8 @@
     "sertakanInternal": "Termasuk pembelian internal",
     "internalHint": "Pembelian dari perusahaan dalam grup. Dimatikan bila ingin melihat uang yang benar-benar keluar dari grup.",
     "belumAdaKontrak": "belum ada kontrak",
-    "belumDitagih": "belum ditagih"
+    "belumDitagih": "belum ditagih",
+    "sertakanRetensi": "Termasuk tunggu retensi"
   },
   "employeeView": {
     "menu": "Lihat data lengkap",

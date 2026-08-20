@@ -42,6 +42,15 @@
       <mat-icon>{{ sertakanSelesai ? "check_box" : "check_box_outline_blank" }}</mat-icon>
       {{ "projectMargin.sertakanSelesai" | translate }}
     </button>
+    <button
+      type="button"
+      class="pml-toggle pml-toggle--awal"
+      [class.on]="sertakanRetensi"
+      (click)="sertakanRetensi = !sertakanRetensi"
+    >
+      <mat-icon>{{ sertakanRetensi ? "check_box" : "check_box_outline_blank" }}</mat-icon>
+      {{ "projectMargin.sertakanRetensi" | translate }}
+    </button>
 
     <!--
       Pembelian internal disertakan secara bawaan.

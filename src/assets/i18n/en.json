@@ -3612,7 +3612,10 @@
     "tanpaInduk": "Stands alone",
     "gabungAnak": "Merge with child projects",
     "gabungAnakKet": "Costs and billing across the whole project family are summed.",
-    "proyekDigabung": "Projects merged"
+    "proyekDigabung": "Projects merged",
+    "termasukRetensi": "+ Retention period",
+    "termasukSelesai": "+ Completed",
+    "termasukBatal": "+ Cancelled"
   },
   "projectReport": {
     "title": "Project Report",
@@ -4178,7 +4181,8 @@
     "sertakanInternal": "Include internal purchases",
     "internalHint": "Purchases from companies within the group. Turn off to see only money leaving the group.",
     "belumAdaKontrak": "no contract yet",
-    "belumDitagih": "not invoiced yet"
+    "belumDitagih": "not invoiced yet",
+    "sertakanRetensi": "Include retention period"
   },
   "employeeView": {
     "menu": "View full record",
