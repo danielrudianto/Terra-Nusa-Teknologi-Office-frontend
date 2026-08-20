@@ -112,7 +112,10 @@
               ],
               "outputHashing": "all",
               "browser": "src/main.mobile.ts",
-              "index": "src/index.mobile.html",
+              "index": {
+                "input": "src/index.mobile.html",
+                "output": "index.html"
+              },
               "outputPath": {
                 "base": "dist/frontend-mobile"
               },
@@ -148,7 +151,10 @@
                 }
               ],
               "browser": "src/main.mobile.ts",
-              "index": "src/index.mobile.html",
+              "index": {
+                "input": "src/index.mobile.html",
+                "output": "index.html"
+              },
               "outputPath": {
                 "base": "dist/frontend-mobile"
               },
