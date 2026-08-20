@@ -199,9 +199,9 @@ export class PurchaseOrderRekapComponent {
 
         try {
           if (this.bentuk === 'pdf') {
-            unduhRekapPurchaseOrderPdf(kode, daftar, items, rentang);
+            unduhRekapPurchaseOrderPdf(kode, daftar, items, this.translate, rentang);
           } else {
-            await unduhRekapPurchaseOrder(kode, daftar, items, rentang);
+            await unduhRekapPurchaseOrder(kode, daftar, items, this.translate, rentang);
           }
           this.dialogRef.close(true);
         } catch (e) {

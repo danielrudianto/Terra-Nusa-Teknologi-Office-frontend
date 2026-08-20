@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
 
-import { PURCHASE_TYPE_LABELS } from '../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../constants/purchase-type-label.constant';
 import {
   RentangRekap,
   labelRentang,
@@ -19,9 +19,14 @@ import { vendorDisplayName } from './purchase-order-shared.helper';
  *                 List Kontrak Kerja yang selama ini dipakai;
  *   Per Dokumen — satu baris per purchase order.
  *
- * Nama jenis dibaca dari `PURCHASE_TYPE_LABELS`, bukan disusun ulang di sini:
+ * Nama jenis dibaca lewat `purchaseTypeLabel`, bukan disusun ulang di sini:
  * rekap ini dibaca berdampingan dengan layar Purchase Order, dan dua sebutan
  * untuk jenis yang sama membuat orang menyangka keduanya hal yang berbeda.
+ *
+ * Yang dipakai TERJEMAHANNYA, bukan konstanta `PURCHASE_TYPE_LABELS`.
+ * Konstanta itu berbahasa Inggris, dan memakainya membuat satu kolom
+ * berbunyi "Project supporting equipment and supplies" di tengah dokumen
+ * yang seluruhnya berbahasa Indonesia — persis keadaan yang sempat terjadi.
  */
 
 const BIRU = 'FF1F3864';
@@ -173,8 +178,17 @@ export function sudahDisetujuiRekap(po: IRekapPO): boolean {
   );
 }
 
-function labelJenis(kode: string): string {
-  return PURCHASE_TYPE_LABELS[kode] || kode || '—';
+/**
+ * Alih bahasa jenis dokumen, mengikuti bahasa aplikasi.
+ *
+ * Diterima sebagai ARGUMEN, bukan diambil sendiri: berkas ini fungsi lepas
+ * tanpa suntikan Angular, dan menyalin peta terjemahannya ke sini berarti
+ * dua tempat yang harus selalu sepakat.
+ */
+export type Penerjemah = { instant(kunci: string): string };
+
+function labelJenis(t: Penerjemah, kode: string): string {
+  return purchaseTypeLabel(t, kode) || kode || '—';
 }
 
 function kop(
@@ -258,6 +272,7 @@ function totalkan(
 
 function lembarRincian(
   wb: ExcelJS.Workbook,
+  t: Penerjemah,
   proyek: string,
   periode: string,
   daftar: IRekapPO[],
@@ -310,7 +325,7 @@ function lembarRincian(
       sheet.getCell(baris, 2).value = po.date;
       sheet.getCell(baris, 3).value = po.name;
       sheet.getCell(baris, 4).value = po.purchaseType;
-      sheet.getCell(baris, 5).value = labelJenis(po.purchaseType);
+      sheet.getCell(baris, 5).value = labelJenis(t, po.purchaseType);
       sheet.getCell(baris, 6).value = namaPemasokRekap(po);
       sheet.getCell(baris, 7).value = b.uraian;
       sheet.getCell(baris, 8).value = b.volume;
@@ -376,6 +391,7 @@ function lembarRincian(
 
 function lembarPerDokumen(
   wb: ExcelJS.Workbook,
+  t: Penerjemah,
   proyek: string,
   periode: string,
   daftar: IRekapPO[],
@@ -424,7 +440,7 @@ function lembarPerDokumen(
     sheet.getCell(baris, 2).value = po.date;
     sheet.getCell(baris, 3).value = po.name;
     sheet.getCell(baris, 4).value = po.purchaseType;
-    sheet.getCell(baris, 5).value = labelJenis(po.purchaseType);
+    sheet.getCell(baris, 5).value = labelJenis(t, po.purchaseType);
     sheet.getCell(baris, 6).value = namaPemasokRekap(po);
     sheet.getCell(baris, 7).value = rows.length;
     sheet.getCell(baris, 8).value = dpp;
@@ -493,6 +509,7 @@ function lembarPerDokumen(
 
 function lembarIkhtisar(
   wb: ExcelJS.Workbook,
+  t: Penerjemah,
   proyek: string,
   periode: string,
   daftar: IRekapPO[],
@@ -612,7 +629,7 @@ function lembarIkhtisar(
   };
 
   const jenisDipakai = Array.from(
-    new Set(daftar.map((p) => labelJenis(p.purchaseType))),
+    new Set(daftar.map((p) => labelJenis(t, p.purchaseType))),
   ).sort();
   kelompok('Menurut jenis dokumen', jenisDipakai, 'E');
   kelompok('Menurut keadaan persetujuan', ['Disetujui', 'Draf'], 'N');
@@ -645,6 +662,14 @@ export async function unduhRekapPurchaseOrder(
   proyek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
+  /*
+   * WAJIB, bukan pilihan.
+   *
+   * Bila boleh dilewatkan, yang lupa mengirimkannya mendapat berkas
+   * berbahasa Inggris tanpa satu pun galat — dan bedanya baru ketahuan
+   * setelah berkasnya sampai ke penerima.
+   */
+  t: Penerjemah,
   rentang: RentangRekap = { dari: null, sampai: null },
 ): Promise<void> {
   /*
@@ -674,9 +699,9 @@ export async function unduhRekapPurchaseOrder(
   const AWAL_DATA = 5;
   const akhirDokumen = AWAL_DATA + daftar.length - 1;
 
-  lembarIkhtisar(wb, proyek, periode, daftar, AWAL_DATA, akhirDokumen);
-  lembarRincian(wb, proyek, periode, daftar, items);
-  const { awal, akhir } = lembarPerDokumen(wb, proyek, periode, daftar, items);
+  lembarIkhtisar(wb, t, proyek, periode, daftar, AWAL_DATA, akhirDokumen);
+  lembarRincian(wb, t, proyek, periode, daftar, items);
+  const { awal, akhir } = lembarPerDokumen(wb, t, proyek, periode, daftar, items);
 
   // Bila keduanya berbeda, rumus Ikhtisar menunjuk rentang yang salah dan
   // angkanya diam-diam keliru — lebih baik gagal terang-terangan.

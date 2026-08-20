@@ -1,7 +1,7 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-import { PURCHASE_TYPE_LABELS } from '../constants/purchase-type-label.constant';
+import { purchaseTypeLabel } from '../constants/purchase-type-label.constant';
 import { documentFonts } from '../constants/document-font.constant';
 import {
   RentangRekap,
@@ -11,6 +11,7 @@ import {
 import {
   IRekapItem,
   IRekapPO,
+  Penerjemah,
   barisRekapDokumen,
   namaPemasokRekap,
   sudahDisetujuiRekap,
@@ -41,8 +42,15 @@ function rp(n: number): string {
   return n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
 }
 
-function labelJenis(kode: string): string {
-  return PURCHASE_TYPE_LABELS[kode] || kode || '—';
+/**
+ * Nama jenis dokumen, mengikuti bahasa aplikasi.
+ *
+ * BUKAN dari konstanta `PURCHASE_TYPE_LABELS` yang berbahasa Inggris:
+ * memakainya membuat satu kolom berbunyi "Project supporting equipment and
+ * supplies" di tengah dokumen yang seluruhnya berbahasa Indonesia.
+ */
+function labelJenis(t: Penerjemah, kode: string): string {
+  return purchaseTypeLabel(t, kode) || kode || '—';
 }
 
 function tanggalIndo(v: string): string {
@@ -137,10 +145,10 @@ function tabelIkhtisar(daftar: IRekapPO[]): any {
   };
 }
 
-function tabelPerJenis(daftar: IRekapPO[]): any {
+function tabelPerJenis(t: Penerjemah, daftar: IRekapPO[]): any {
   const per = new Map<string, { n: number; dpp: number; total: number }>();
   for (const po of daftar) {
-    const k = labelJenis(po.purchaseType);
+    const k = labelJenis(t, po.purchaseType);
     const n = nilaiDokumen(po);
     const s = per.get(k) || { n: 0, dpp: 0, total: 0 };
     per.set(k, { n: s.n + 1, dpp: s.dpp + n.dpp, total: s.total + n.total });
@@ -177,7 +185,7 @@ function tabelPerJenis(daftar: IRekapPO[]): any {
   };
 }
 
-function tabelDokumen(daftar: IRekapPO[], items: IRekapItem[]): any {
+function tabelDokumen(t: Penerjemah, daftar: IRekapPO[], items: IRekapItem[]): any {
   const body: any[] = [
     [
       kepalaSel('No.'),
@@ -202,7 +210,7 @@ function tabelDokumen(daftar: IRekapPO[], items: IRekapItem[]): any {
       sel(String(i + 1), { alignment: 'center' }),
       sel(tanggalIndo(po.date), { alignment: 'center' }),
       sel(po.name),
-      sel(labelJenis(po.purchaseType)),
+      sel(labelJenis(t, po.purchaseType)),
       sel(namaPemasokRekap(po)),
       sel(String(jumlahBaris), { alignment: 'center' }),
       sel(rp(n.dpp), { alignment: 'right' }),
@@ -252,6 +260,8 @@ export function unduhRekapPurchaseOrderPdf(
   proyek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
+  // WAJIB; lihat alasannya pada berkas Excel-nya.
+  t: Penerjemah,
   rentang: RentangRekap = { dari: null, sampai: null },
 ): void {
   const hariIni = new Date().toLocaleDateString('id-ID', {
@@ -333,9 +343,9 @@ export function unduhRekapPurchaseOrderPdf(
       { text: 'Ikhtisar', fontSize: 10, bold: true, color: BIRU, margin: [0, 0, 0, 6] },
       tabelIkhtisar(daftar),
       { text: 'Menurut jenis dokumen', fontSize: 10, bold: true, color: BIRU, margin: [0, 0, 0, 6] },
-      tabelPerJenis(daftar),
+      tabelPerJenis(t, daftar),
       { text: 'Daftar dokumen', fontSize: 10, bold: true, color: BIRU, margin: [0, 0, 0, 6] },
-      tabelDokumen(daftar, items),
+      tabelDokumen(t, daftar, items),
       {
         text:
           'Catatan: nilai mengacu pada dokumen, termasuk mobilisasi dan ' +
