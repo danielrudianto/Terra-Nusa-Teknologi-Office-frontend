@@ -1063,7 +1063,12 @@
     "methodVa": "虚拟账户",
     "methodVaHint": "供应商开立的虚拟账号。",
     "methodCash": "现金",
-    "methodCashHint": "当面支付，请附收据。"
+    "methodCashHint": "当面支付，请附收据。",
+    "methodCek": "支票",
+    "methodCekHint": "从账户开出，由收款人兑现。",
+    "methodGiro": "本票",
+    "methodGiroHint": "从账户开出，于指定日期到期。",
+    "tanpaRekening": "现金支付——没有收款账户，因此不要求填写账户信息。请附上收据。"
   },
   "reimbursementCreate": {
     "sectionDetail": "详情",

@@ -143,9 +143,30 @@ export const PILIHAN_CARA_BAYAR: KartuPilihan[] = [
     icon: 'pin',
   },
   {
+    value: 'cek',
+    label: 'purchaseCreate.methodCek',
+    hint: 'purchaseCreate.methodCekHint',
+    icon: 'note',
+  },
+  {
+    value: 'giro',
+    label: 'purchaseCreate.methodGiro',
+    hint: 'purchaseCreate.methodGiroHint',
+    icon: 'schedule_send',
+  },
+  {
     value: 'cash',
     label: 'purchaseCreate.methodCash',
     hint: 'purchaseCreate.methodCashHint',
     icon: 'payments',
   },
 ];
+
+/**
+ * Cara bayar yang MEMERLUKAN rekening tujuan.
+ *
+ * Tunai tidak: uangnya berpindah tangan langsung, dan tidak ada rekening yang
+ * dituju. Cek dan giro memerlukannya — keduanya ditarik atas sebuah rekening,
+ * dan itulah sebabnya keduanya masuk daftar ini bersama transfer.
+ */
+export const CARA_BAYAR_BERREKENING = ['bank', 'va', 'cek', 'giro'];

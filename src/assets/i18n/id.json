@@ -1063,7 +1063,12 @@
     "methodVa": "Virtual account",
     "methodVaHint": "Nomor VA yang diterbitkan pemasok.",
     "methodCash": "Tunai",
-    "methodCashHint": "Dibayar langsung; lampirkan bukti terima."
+    "methodCashHint": "Dibayar langsung; lampirkan bukti terima.",
+    "methodCek": "Cek",
+    "methodCekHint": "Ditarik atas rekening; dicairkan penerimanya.",
+    "methodGiro": "Giro",
+    "methodGiroHint": "Ditarik atas rekening, berjatuh tempo pada tanggal tertentu.",
+    "tanpaRekening": "Dibayar tunai — tidak ada rekening tujuan, jadi isian rekening tidak diminta. Lampirkan bukti terima."
   },
   "reimbursementCreate": {
     "sectionDetail": "Detail",

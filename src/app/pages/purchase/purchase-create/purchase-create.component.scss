@@ -418,3 +418,20 @@
     padding-bottom: 1.5rem;
   }
 }
+
+/*
+ * Keterangan pengganti isian yang sengaja TIDAK diminta.
+ *
+ * Isian rekening yang hilang tanpa keterangan terbaca sebagai bagian formulir
+ * yang rusak; satu baris menyebutkan bahwa hilangnya memang disengaja, dan
+ * apa gantinya.
+ */
+.pc__ket {
+  margin: 0.25rem 0 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}

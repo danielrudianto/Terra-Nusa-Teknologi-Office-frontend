@@ -628,40 +628,20 @@
       </div>
     </div>
     <form [formGroup]="paymentFormGroup">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{ "purchaseCreate.bankName" | translate }}</mat-label>
-        <input
-        autocomplete="off"
-          #input
-          matInput
-          type="search"
-          formControlName="bankName"
-          [placeholder]="'purchaseCreate.bankName' | translate"
-          [matAutocomplete]="auto"
-          (input)="filter()"
-          (focus)="filter()"
-        />
-        <mat-autocomplete requireSelection #auto="matAutocomplete">
-          <mat-option
-            *ngFor="let option of filteredOptions"
-            [value]="option.name"
-            >{{ option.name }}</mat-option
-          >
-        </mat-autocomplete>
-      </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{
-          "purchaseCreate.bankAccountName" | translate
-        }}</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="bankAccountName"
-          [placeholder]="'purchaseCreate.bankAccountName' | translate"
-        />
-      </mat-form-field>
+      <!--
+        CARA BAYAR ditanya LEBIH DAHULU, dan isian rekening mengikutinya.
 
+        Urutan sebelumnya menanyakan nama bank dan nama rekening di atas,
+        cara bayarnya di tengah, lalu nomor rekening di bawahnya. Yang
+        mengisinya diminta menyebutkan rekening tujuan sebelum menyatakan
+        bahwa uangnya memang dikirim ke rekening — dan bila jawabannya
+        TUNAI, ketiga isian itu tidak berarti apa-apa.
+
+        Lebih buruk lagi: ketiganya WAJIB. Pembelian tunai karena itu
+        tidak dapat disimpan sama sekali tanpa mengarang nama bank dan
+        nomor rekening yang tidak pernah ada.
+      -->
       <div class="kartu-pilih">
         <div class="kartu-pilih__judul">{{ "purchaseCreate.paymentMethod" | translate }}</div>
         <div class="kartu-pilih__daftar">
@@ -681,27 +661,68 @@
         </div>
       </div>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>{{
-          "purchaseCreate.bankAccountNumber" | translate
-        }}</mat-label>
-        <!-- Input for bank account name -->
-        <button
-          mat-icon-button
-          type="button"
-          matPrefix
-          (click)="copyBankAccountNumber()"
-        >
-          <mat-icon>content_copy</mat-icon>
-        </button>
-        <input
-          matInput
-          type="text"
-          formControlName="bankAccountNumber"
-          [placeholder]="'purchaseDraft.bankAccountNumber' | translate"
-          mask="9999 9999 9999 9999"
-        />
-      </mat-form-field>
+      @if (perluRekening) {
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseCreate.bankName" | translate }}</mat-label>
+          <input
+          autocomplete="off"
+            #input
+            matInput
+            type="search"
+            formControlName="bankName"
+            [placeholder]="'purchaseCreate.bankName' | translate"
+            [matAutocomplete]="auto"
+            (input)="filter()"
+            (focus)="filter()"
+          />
+          <mat-autocomplete requireSelection #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.name"
+              >{{ option.name }}</mat-option
+            >
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{
+            "purchaseCreate.bankAccountName" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountName"
+            [placeholder]="'purchaseCreate.bankAccountName' | translate"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{
+            "purchaseCreate.bankAccountNumber" | translate
+          }}</mat-label>
+          <!-- Input for bank account name -->
+          <button
+            mat-icon-button
+            type="button"
+            matPrefix
+            (click)="copyBankAccountNumber()"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountNumber"
+            [placeholder]="'purchaseDraft.bankAccountNumber' | translate"
+            mask="9999 9999 9999 9999"
+          />
+        </mat-form-field>
+      }
+
+
+      @if (!perluRekening) {
+        <p class="pc__ket">{{ "purchaseCreate.tanpaRekening" | translate }}</p>
+      }
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>{{ "purchaseCreate.total" | translate }}</mat-label>

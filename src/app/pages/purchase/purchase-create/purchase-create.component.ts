@@ -43,6 +43,7 @@ import { PurchaseOrderPickerComponent } from '../../../components/purchase-order
 import { PurchaseOrderRingkasComponent } from '../../../components/purchase-order-ringkas/purchase-order-ringkas.component';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 import {
+  CARA_BAYAR_BERREKENING,
   PILIHAN_CARA_BAYAR,
   PILIHAN_JENIS_DOKUMEN,
   PILIHAN_KELENGKAPAN,
@@ -139,6 +140,47 @@ export class PurchaseCreateComponent {
   readonly pilihanLingkup = PILIHAN_LINGKUP;
   readonly pilihanPpn = PILIHAN_PPN;
   readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;
+
+  /**
+   * Cara bayar ini memerlukan rekening tujuan.
+   *
+   * Tunai tidak. Sebelumnya ketiga isian rekening WAJIB apa pun cara
+   * bayarnya, sehingga pembelian tunai tidak dapat disimpan tanpa mengarang
+   * nama bank dan nomor rekening yang tidak pernah ada — dan karangan itu
+   * tersimpan sebagai data.
+   */
+  get perluRekening(): boolean {
+    const cara = this.paymentFormGroup?.get('paymentMethod')?.value;
+    // Sebelum cara bayarnya dipilih, isiannya ditampilkan seperti biasa:
+    // menyembunyikannya lebih dahulu membuat bagian itu tampak kosong.
+    return !cara || CARA_BAYAR_BERREKENING.includes(cara);
+  }
+
+  /**
+   * Wajib-tidaknya isian rekening mengikuti cara bayarnya.
+   *
+   * Dipanggil saat cara bayarnya berubah. Menyembunyikan isian tanpa
+   * melepas syaratnya menghasilkan formulir yang tidak sah tanpa satu pun
+   * isian merah yang terlihat — tombol simpannya mati tanpa sebab.
+   */
+  private selaraskanRekening(): void {
+    const perlu = this.perluRekening;
+    for (const nama of ['bankName', 'bankAccountName', 'bankAccountNumber']) {
+      const c = this.paymentFormGroup.get(nama);
+      if (!c) continue;
+      if (perlu) {
+        c.setValidators(
+          nama === 'bankAccountNumber'
+            ? [Validators.required, Validators.pattern(/^[0-9]+$/)]
+            : [Validators.required],
+        );
+      } else {
+        c.clearValidators();
+        c.setValue('');
+      }
+      c.updateValueAndValidity({ emitEvent: false });
+    }
+  }
   readonly pilihanProxy = PILIHAN_PROXY;
 
   /** Jenis nilai lain; satu sumber untuk seluruh layar pembelian. */
@@ -271,6 +313,17 @@ export class PurchaseCreateComponent {
   ngOnInit() {
     this.filteredOptions = this.options.slice();
     this.fetchBankAccounts();
+
+    /*
+     * Syarat isian rekening mengikuti CARA BAYARNYA.
+     *
+     * Disambungkan ke `valueChanges`, bukan ke penangan klik kartunya:
+     * nilainya juga berubah saat formulir diisi dari data lain, dan penangan
+     * klik tidak menyala pada keadaan itu.
+     */
+    this.paymentFormGroup.controls['paymentMethod'].valueChanges.subscribe(() =>
+      this.selaraskanRekening(),
+    );
 
     this.metaFormGroup.controls['documentType'].valueChanges.subscribe(() => {
       const documentType = this.metaFormGroup.value['documentType'];

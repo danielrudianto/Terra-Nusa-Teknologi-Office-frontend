@@ -1063,7 +1063,12 @@
     "methodVa": "Virtual account",
     "methodVaHint": "VA number issued by the supplier.",
     "methodCash": "Cash",
-    "methodCashHint": "Paid directly; attach the receipt."
+    "methodCashHint": "Paid directly; attach the receipt.",
+    "methodCek": "Cheque",
+    "methodCekHint": "Drawn on an account; cashed by the recipient.",
+    "methodGiro": "Giro",
+    "methodGiroHint": "Drawn on an account, due on a set date.",
+    "tanpaRekening": "Paid in cash — there is no destination account, so account details are not requested. Attach the receipt."
   },
   "reimbursementCreate": {
     "sectionDetail": "Detail",
