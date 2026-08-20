@@ -356,10 +356,23 @@ export class PurchaseOrderListComponent {
     return purchaseTypeLabel(this.translate, code);
   }
 
+  /**
+   * Yang benar-benar dibayarkan atas dokumen ini.
+   *
+   * `otherValue` IKUT. Pada penutupan pertanggungan (6.4.2) ia memuat premi
+   * yang dititipkan kepada broker — di luar dasar pajak, tetapi tetap
+   * berpindah tangan. Tanpanya daftar ini menampilkan Rp 35.000 untuk
+   * dokumen yang nilainya Rp 5.002.109: yang tertulis hanya ongkos pembuatan
+   * polisnya.
+   *
+   * PPN tetap dihitung dari DPP saja, bukan dari jumlah ini — preminya bukan
+   * objek PPN.
+   */
   total(po: any): number {
     const dpp = Number(po.dpp) || 0;
     const ppn = Number(po.ppn) || 0;
-    return dpp + (dpp * ppn) / 100;
+    const lain = Number(po.otherValue) || 0;
+    return dpp + (dpp * ppn) / 100 + lain;
   }
 
   createNewPurchaseOrder() {

@@ -608,8 +608,21 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
    * Ditampilkan hanya bila ada salah satunya — pada dokumen tanpa pajak,
    * barisnya sama dengan subtotal dan hanya menambah baris tanpa isi.
    */
+  /**
+   * Nilai DI LUAR dasar pajak yang tetap dibayarkan.
+   *
+   * Pada SPK penutupan pertanggungan (6.4.2) inilah premi yang dititipkan
+   * kepada broker untuk diteruskan kepada penanggung. Ia bukan objek PPN
+   * maupun PPh — karena itu tidak masuk subtotal — tetapi ia berpindah
+   * tangan, dan selama ia tidak tampak di layar ini yang membacanya hanya
+   * melihat ongkos pembuatan polisnya.
+   */
+  get nilaiLain(): number {
+    return Number(this.data?.otherValue) || 0;
+  }
+
   get totalAkhir(): number {
-    return this.subTotal + this.ppnNilai - this.pphNilai;
+    return this.subTotal + this.ppnNilai - this.pphNilai + this.nilaiLain;
   }
 
   /**
@@ -638,6 +651,18 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
 
   get adaPajak(): boolean {
     return this.ppnPersen > 0 || this.pphPersen > 0;
+  }
+
+  /**
+   * Baris nilai akhir ditampilkan.
+   *
+   * BUKAN hanya ketika ada pajak. SPK penutupan pertanggungan lewat broker
+   * sering tanpa PPN sama sekali, sehingga syarat lama menyembunyikan baris
+   * satu-satunya yang memuat preminya — dan subtotal di atasnya hanya berisi
+   * imbalan jasanya.
+   */
+  get adaNilaiAkhir(): boolean {
+    return this.adaPajak || this.nilaiLain > 0;
   }
 
   /**

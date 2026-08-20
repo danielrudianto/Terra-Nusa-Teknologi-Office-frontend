@@ -130,7 +130,26 @@ export interface IPurchaseOrderB {
    * Vendor yang membacanya tidak dapat mengetahui apakah yang dibayarkan
    * jasanya saja atau berikut preminya.
    */
-  premiums?: { task?: string; description?: string; amount?: number }[];
+  premiums?: {
+    task?: string;
+    /** Keterangan bebas dokumen lama; tidak lagi diisi maupun dicetak. */
+    description?: string;
+    amount?: number;
+    /*
+     * Rincian pertanggungan melekat pada PREMINYA, bukan pada baris imbalan
+     * jasa.
+     *
+     * Satu SPK dapat menutup dua polis dengan nilai, risiko sendiri, dan masa
+     * yang berbeda-beda. Selama rinciannya menempel pada baris jasa, kedua
+     * polis itu hanya punya satu tempat untuk menuliskannya — dan yang kedua
+     * kehilangan angkanya.
+     */
+    object?: string | null;
+    sumInsured?: number;
+    deductible?: string | null;
+    coverageStart?: string | null;
+    coverageEnd?: string | null;
+  }[];
   billingTerms?: any[];
   /** Judul lampiran, dua baris seperti dokumen PO lain. */
   billingTitle?: string;
@@ -205,6 +224,74 @@ function buildIdentityTable(data: IPurchaseOrderB) {
  * Vendor PO-B adalah badan usaha (PKP), sehingga baris PPN tetap
  * ditampilkan walau nilainya nol.
  */
+/** Tanggal yang boleh kosong; yang tidak terbaca dianggap tidak diisi. */
+function tanggalPertanggungan(nilai: unknown): string {
+  if (nilai === null || nilai === undefined) return '';
+  const teks = nilai instanceof Date ? nilai : String(nilai).trim();
+  if (!teks) return '';
+  const hasil = formatDate(teks as any);
+  return hasil === '-' ? '' : hasil;
+}
+
+/**
+ * Rincian pertanggungan yang dicetak di bawah uraian preminya.
+ *
+ * Inilah yang selama ini diisi di formulir tetapi tidak pernah sampai ke
+ * kertas: nilai pertanggungan, risiko sendiri, masa berlakunya, dan objek
+ * yang dijamin. Klausul pada dokumen yang sama berbunyi "Masa pertanggungan,
+ * nilai pertanggungan, risiko yang dijamin, serta risiko sendiri mengikuti
+ * rincian sebagaimana tercantum dalam dokumen ini" — merujuk rincian yang
+ * tidak ada di halaman mana pun.
+ *
+ * Yang kosong DILEWATI, bukan dicetak sebagai "-": baris berlabel tanpa isi
+ * pada dokumen yang ditandatangani terbaca sebagai ketentuan yang sengaja
+ * dikosongkan.
+ */
+function rincianPremi(p: any): string[] {
+  const baris: string[] = [];
+
+  const objek = String(p?.object ?? '').trim();
+  if (objek) baris.push(`Objek yang dijamin: ${objek}`);
+
+  const nilai = Number(p?.sumInsured) || 0;
+  if (nilai > 0) baris.push(`Nilai pertanggungan: Rp ${rupiahDokumen(nilai)}`);
+
+  const risiko = String(p?.deductible ?? '').trim();
+  if (risiko) baris.push(`Risiko sendiri: ${risiko}`);
+
+  const mulai = tanggalPertanggungan(p?.coverageStart);
+  const akhir = tanggalPertanggungan(p?.coverageEnd);
+  if (mulai && akhir) {
+    baris.push(`Masa pertanggungan: ${mulai} s.d. ${akhir}`);
+  } else if (mulai) {
+    // Disebut sepihak, bukan dirangkai dengan tanda hubung yang menggantung:
+    // "6 Maret 2026 –" terbaca seperti akhir yang terpotong saat mencetak.
+    baris.push(`Mulai pertanggungan: ${mulai}`);
+  } else if (akhir) {
+    baris.push(`Berakhir pertanggungan: ${akhir}`);
+  }
+
+  return baris;
+}
+
+/**
+ * Uraian satu baris premi: judulnya, berikut rinciannya bila ada.
+ *
+ * Bentuknya sama dengan baris pekerjaan di atasnya — keterangan tambahan
+ * dicetak lebih kecil dan lebih redup di bawah judulnya, bukan disambung
+ * dengan tanda hubung. Sambungan itulah yang membuat "Ls" pada dokumen
+ * sebelumnya terbaca seperti satuan dari nama polisnya.
+ */
+function uraianPremi(p: any): any {
+  const judul = String(p?.task ?? '').trim() || 'Premi';
+  const rincian = rincianPremi(p);
+  if (!rincian.length) return judul;
+  return [
+    judul,
+    { text: `\n${rincian.join('\n')}`, fontSize: 9, color: '#555555' },
+  ];
+}
+
 function buildItemTable(data: IPurchaseOrderB) {
   const th = (text: string) => ({
     text,
@@ -323,15 +410,20 @@ function buildItemTable(data: IPurchaseOrderB) {
           },
           {}, {}, {}, {}, {},
         ],
-        ...premi.map((p) => [
-          { text: '', style: 'td' },
+        ...premi.map((p, i) => [
+          /*
+           * Bernomor sendiri, mulai dari satu.
+           *
+           * Sebelumnya kolom nomornya dikosongkan, sehingga dua polis pada
+           * satu dokumen tidak dapat dirujuk dalam percakapan maupun dalam
+           * endorsement — tidak ada yang bisa disebut "premi nomor dua".
+           * Penomorannya tidak menyambung dari baris jasa di atasnya: itu
+           * daftar yang lain, dan menyambungnya membuat keduanya terbaca
+           * sebagai satu tagihan.
+           */
+          { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
           {
-            text: [
-              String(p?.task ?? '').trim() || 'Premi',
-              String(p?.description ?? '').trim(),
-            ]
-              .filter(Boolean)
-              .join(' — '),
+            text: uraianPremi(p),
             style: 'td',
             colSpan: 4,
           },

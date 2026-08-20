@@ -55,8 +55,16 @@ function teks(simpul: any): string {
 
 describe('premi pada SPK penutupan pertanggungan', () => {
   const PREMI = [
-    { task: 'Premi CAR', description: 'PT Asuransi Uji', amount: 45_000_000 },
-    { task: 'Premi TPL', description: '', amount: 5_000_000 },
+    {
+      task: 'Premi CAR',
+      amount: 45_000_000,
+      object: 'Proyek Tatar Surawisesa R35',
+      sumInsured: 12_000_000_000,
+      deductible: '10% dari klaim, min. Rp 25.000.000',
+      coverageStart: '2026-03-06',
+      coverageEnd: '2027-03-06',
+    },
+    { task: 'Premi TPL', amount: 5_000_000 },
   ];
 
   it('nilainya TERCETAK pada dokumen', () => {
@@ -128,5 +136,111 @@ describe('premi pada SPK penutupan pertanggungan', () => {
      */
     const isi = teks(dokumen({ premiums: PREMI }));
     expect(isi).toContain('Total jasa');
+  });
+});
+
+describe('rincian pertanggungan pada baris premi', () => {
+  /*
+   * Keluhan kedua vendor, dan yang lebih sukar terlihat daripada preminya
+   * sendiri: isian yang diisi di formulir — nilai pertanggungan, risiko
+   * sendiri, masa berlakunya, objek yang dijamin — tidak pernah sampai ke
+   * kertas. Klausul pada dokumen yang sama menyebut "mengikuti rincian
+   * sebagaimana tercantum dalam dokumen ini", merujuk rincian yang tidak ada.
+   */
+  const LENGKAP = [
+    {
+      task: 'Premi CAR',
+      amount: 45_000_000,
+      object: 'Proyek Tatar Surawisesa R35',
+      sumInsured: 12_000_000_000,
+      deductible: '10% dari klaim, min. Rp 25.000.000',
+      coverageStart: '2026-03-06',
+      coverageEnd: '2027-03-06',
+    },
+  ];
+
+  it('nilai pertanggungan, risiko sendiri, masa, dan objeknya tercetak', () => {
+    const isi = teks(dokumen({ premiums: LENGKAP }));
+    expect(isi).toContain('Proyek Tatar Surawisesa R35');
+    expect(isi).toContain('12.000.000.000');
+    expect(isi).toContain('10% dari klaim');
+    expect(isi).toContain('6 Maret 2026');
+    expect(isi).toContain('6 Maret 2027');
+  });
+
+  it('setiap baris premi BERNOMOR', () => {
+    /*
+     * Dua polis pada satu dokumen tidak dapat dirujuk dalam percakapan
+     * maupun endorsement selama barisnya tidak bernomor — tidak ada yang
+     * bisa disebut "premi nomor dua".
+     */
+    const isi = teks(
+      dokumen({ premiums: [...LENGKAP, { task: 'Premi TPL', amount: 5_000_000 }] }),
+    );
+    const blokPremi = isi.slice(isi.indexOf('PREMI —'));
+    expect(blokPremi).toContain('1.');
+    expect(blokPremi).toContain('2.');
+  });
+
+  it('dua polis membawa rinciannya masing-masing', () => {
+    // Inilah sebabnya rinciannya pindah ke premi: selama ia menempel pada
+    // baris imbalan jasa, polis kedua tidak punya tempat menuliskannya.
+    const isi = teks(
+      dokumen({
+        premiums: [
+          { task: 'Premi CAR', amount: 45_000_000, sumInsured: 12_000_000_000 },
+          { task: 'Premi TPL', amount: 5_000_000, sumInsured: 3_000_000_000 },
+        ],
+      }),
+    );
+    expect(isi).toContain('12.000.000.000');
+    expect(isi).toContain('3.000.000.000');
+  });
+
+  it('yang kosong DILEWATI, bukan dicetak sebagai "-"', () => {
+    /*
+     * Baris berlabel tanpa isi pada dokumen yang ditandatangani terbaca
+     * sebagai ketentuan yang sengaja dikosongkan.
+     */
+    const isi = teks(dokumen({ premiums: [{ task: 'Premi TPL', amount: 5_000_000 }] }));
+    expect(isi).not.toContain('Nilai pertanggungan');
+    expect(isi).not.toContain('Risiko sendiri');
+    expect(isi).not.toContain('Masa pertanggungan');
+    expect(isi).not.toContain('Objek yang dijamin');
+  });
+
+  it('satu tanggal saja tidak menghasilkan rentang yang menggantung', () => {
+    const isi = teks(
+      dokumen({
+        premiums: [{ task: 'Premi TPL', amount: 5_000_000, coverageStart: '2026-03-06' }],
+      }),
+    );
+    expect(isi).toContain('Mulai pertanggungan: 6 Maret 2026');
+    expect(isi).not.toContain('s.d.');
+  });
+
+  it('tanggal yang tidak terbaca dianggap tidak diisi', () => {
+    // Bukan "-" dan bukan "Invalid Date": keduanya tercetak pada dokumen
+    // yang ditandatangani.
+    const isi = teks(
+      dokumen({
+        premiums: [{ task: 'Premi TPL', amount: 5_000_000, coverageStart: '', coverageEnd: null }],
+      }),
+    );
+    expect(isi).not.toContain('pertanggungan:');
+    expect(isi.toLowerCase()).not.toContain('invalid');
+  });
+
+  it('keterangan bebas dokumen lama TIDAK lagi tersambung ke judulnya', () => {
+    /*
+     * Bentuk lamanya menyambung keterangan ke nama polisnya dengan tanda
+     * hubung, sehingga "Ls" terbaca seperti satuan dari nama polisnya —
+     * itulah yang dikeluhkan.
+     */
+    const isi = teks(
+      dokumen({ premiums: [{ task: 'Premi CAR', description: 'Ls', amount: 5_000_000 }] }),
+    );
+    expect(isi).not.toContain('— Ls');
+    expect(isi).toContain('Premi CAR');
   });
 });

@@ -523,6 +523,7 @@
     "rejectTitle": "Reject Purchase Order",
     "viewPpn": "VAT",
     "viewPph": "Withholding tax",
+    "viewNilaiLain": "Premium held in trust",
     "viewTotalAkhir": "Amount payable",
     "kenaPpn": "VAT",
     "nonPpn": "No VAT",

@@ -47,6 +47,15 @@ export interface IRekapPO {
   purchaseType: string;
   projectName: string;
   dpp: number | string;
+  /*
+   * Nilai DI LUAR dasar pajak yang tetap dibayarkan.
+   *
+   * Terisi pada penutupan pertanggungan (6.4.2): premi yang dititipkan
+   * kepada broker untuk diteruskan kepada penanggung. Bukan objek PPN
+   * maupun PPh, tetapi tetap uang yang keluar — rekap yang melewatkannya
+   * hanya melaporkan ongkos pembuatan polisnya.
+   */
+  otherValue?: number | string | null;
   ppn: number | string;
   pphPercentage: number | string | null;
   status: string;
@@ -295,7 +304,10 @@ function lembarRincian(
     { nama: 'Harga Satuan (Rp)', lebar: 15, rata: 'right' },
     { nama: 'DPP (Rp)', lebar: 15, rata: 'right' },
     { nama: 'PPN (Rp)', lebar: 13, rata: 'right' },
-    { nama: 'PBBKB (Rp)', lebar: 12, rata: 'right' },
+    // Dahulu 'PBBKB (Rp)' — pajak bahan bakar yang tidak pernah berlaku bagi
+    // purchase order, dan karena itu selalu nol. Ruangnya dipakai nilai yang
+    // memang ada: premi yang dititipkan pada SPK penutupan pertanggungan.
+    { nama: 'Nilai Lain (Rp)', lebar: 14, rata: 'right' },
     { nama: 'PPh (Rp)', lebar: 12, rata: 'right' },
     { nama: 'Total (Rp)', lebar: 15, rata: 'right' },
     { nama: 'Status', lebar: 11, rata: 'center' },
@@ -319,6 +331,14 @@ function lembarRincian(
   for (const po of daftar) {
     const ppn = angka(po.ppn);
     const pph = angka(po.pphPercentage);
+    /*
+     * Nilai lain melekat pada DOKUMEN, bukan pada barisnya.
+     *
+     * Karena itu ia ditulis sekali saja, di baris pertama dokumennya.
+     * Mengulanginya pada setiap baris membuat penjumlahan kolomnya berlipat
+     * sebanyak barisnya.
+     */
+    let lain = angka(po.otherValue);
     for (const b of barisRekapDokumen(po, items)) {
       urut += 1;
       sheet.getCell(baris, 1).value = urut;
@@ -339,7 +359,8 @@ function lembarRincian(
       sheet.getCell(baris, 12).value = {
         formula: `ROUND(K${baris}*${ppn}/100,2)`,
       } as any;
-      sheet.getCell(baris, 13).value = 0;
+      sheet.getCell(baris, 13).value = lain;
+      lain = 0;
       sheet.getCell(baris, 14).value = {
         formula: `ROUND(K${baris}*${pph}/100,2)`,
       } as any;
@@ -414,6 +435,9 @@ function lembarPerDokumen(
     { nama: 'PPN (Rp)', lebar: 14, rata: 'right' },
     { nama: 'PPh %', lebar: 8, rata: 'center' },
     { nama: 'PPh (Rp)', lebar: 13, rata: 'right' },
+    // Kolomnya sendiri, bukan disembunyikan ke dalam Total: yang membaca
+    // rekap ini mencocokkan Total dari angka-angka di kirinya.
+    { nama: 'Nilai Lain (Rp)', lebar: 14, rata: 'right' },
     { nama: 'Total (Rp)', lebar: 16, rata: 'right' },
     { nama: 'Status', lebar: 11, rata: 'center' },
     { nama: 'Pemeriksaan', lebar: 34, rata: 'left' },
@@ -452,10 +476,11 @@ function lembarPerDokumen(
     sheet.getCell(baris, 12).value = {
       formula: `ROUND(H${baris}*K${baris},2)`,
     } as any;
-    sheet.getCell(baris, 13).value = {
-      formula: `H${baris}+J${baris}-L${baris}`,
+    sheet.getCell(baris, 13).value = angka(po.otherValue);
+    sheet.getCell(baris, 14).value = {
+      formula: `H${baris}+J${baris}-L${baris}+M${baris}`,
     } as any;
-    sheet.getCell(baris, 14).value = sudahDisetujuiRekap(po) ? 'Disetujui' : 'Draf';
+    sheet.getCell(baris, 15).value = sudahDisetujuiRekap(po) ? 'Disetujui' : 'Draf';
 
     // Kolom ini KOSONG bila sehat.
     //
@@ -463,7 +488,7 @@ function lembarPerDokumen(
     // — ada baris yang belum terbaca rekap ini, dan angkanya tidak boleh
     // dipakai sebelum diperiksa.
     if (Math.abs(selisih) > 1) {
-      sheet.getCell(baris, 15).value =
+      sheet.getCell(baris, 16).value =
         `PERIKSA — jumlah baris berbeda Rp ${selisih.toLocaleString('id-ID')} ` +
         `dari nilai dokumen`;
     }
@@ -474,14 +499,14 @@ function lembarPerDokumen(
       c.alignment = {
         horizontal: k.rata as any,
         vertical: 'middle',
-        wrapText: idx + 1 === 15,
+        wrapText: idx + 1 === 16,
       };
       c.border = tepi();
     });
-    for (const idx of [8, 10, 12, 13]) sheet.getCell(baris, idx).numFmt = RP;
+    for (const idx of [8, 10, 12, 13, 14]) sheet.getCell(baris, idx).numFmt = RP;
     for (const idx of [9, 11]) sheet.getCell(baris, idx).numFmt = PERSEN;
     if (!sudahDisetujuiRekap(po)) {
-      sheet.getCell(baris, 14).font = {
+      sheet.getCell(baris, 15).font = {
         name: 'Arial',
         size: 9,
         bold: true,
@@ -489,7 +514,7 @@ function lembarPerDokumen(
       };
     }
     if (Math.abs(selisih) > 1) {
-      sheet.getCell(baris, 15).font = {
+      sheet.getCell(baris, 16).font = {
         name: 'Arial',
         size: 8,
         italic: true,
@@ -501,7 +526,7 @@ function lembarPerDokumen(
 
   const akhir = baris - 1;
   if (akhir >= AWAL + 1) {
-    totalkan(sheet, baris, kolom.length, [8, 10, 12, 13], AWAL + 1, akhir);
+    totalkan(sheet, baris, kolom.length, [8, 10, 12, 13, 14], AWAL + 1, akhir);
     sheet.autoFilter = { from: { row: AWAL, column: 1 }, to: { row: akhir, column: kolom.length } };
   }
   return { awal: AWAL + 1, akhir };
@@ -543,7 +568,11 @@ function lembarIkhtisar(
     ['DPP', `SUM('Per Dokumen'!H${awal}:H${akhir})`, RP],
     ['PPN', `SUM('Per Dokumen'!J${awal}:J${akhir})`, RP],
     ['PPh dipotong', `SUM('Per Dokumen'!L${awal}:L${akhir})`, RP],
-    ['Nilai dibayarkan', `SUM('Per Dokumen'!M${awal}:M${akhir})`, RP],
+    // Kolom Total bergeser ke N sejak Nilai Lain punya kolomnya sendiri di M.
+    // Rujukan yang tertinggal di M tidak menimbulkan galat: ia hanya
+    // menjumlah kolom yang lain, dan angkanya tetap tampak masuk akal.
+    ['Nilai lain (premi dititipkan)', `SUM('Per Dokumen'!M${awal}:M${akhir})`, RP],
+    ['Nilai dibayarkan', `SUM('Per Dokumen'!N${awal}:N${akhir})`, RP],
   ];
   let r = 5;
   for (const [label, rumus, fmt] of ringkas) {

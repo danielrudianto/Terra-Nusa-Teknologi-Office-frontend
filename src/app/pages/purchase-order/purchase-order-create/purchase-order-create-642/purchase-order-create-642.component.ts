@@ -246,15 +246,17 @@ export class PurchaseOrderCreate642Component {
 
   addLine() {
     this.t.push(
+      /*
+       * Baris ini adalah IMBALAN JASA-nya saja.
+       *
+       * Rincian pertanggungan — objek, nilai, risiko sendiri, masa berlaku —
+       * pindah ke barisan premi. Selama ia menempel di sini, satu SPK yang
+       * menutup dua polis berbeda hanya punya satu tempat menuliskannya, dan
+       * yang kedua kehilangan angkanya.
+       */
       this.formBuilder.group({
         insuranceType: ['', Validators.required],
         customType: [''], // dipakai saat insuranceType === 'Lainnya'
-        // Objek yang dijamin, mis. "Excavator PC200 B 1234 XYZ".
-        object: [''],
-        sumInsured: [0, [Validators.min(0)]],
-        deductible: [''],
-        coverageStart: [''],
-        coverageEnd: [''],
         quantity: [1, [Validators.required, Validators.min(0.01)]],
         unit: ['polis', Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
@@ -290,11 +292,26 @@ export class PurchaseOrderCreate642Component {
   getPremiumGroupAt(i: number) {
     return this.premiums.at(i) as FormGroup;
   }
+  /**
+   * Satu baris premi = satu polis.
+   *
+   * Rinciannya melekat di sini, bukan pada baris imbalan jasa: dua polis pada
+   * satu SPK bisa berbeda objek, nilai pertanggungan, risiko sendiri, maupun
+   * masa berlakunya.
+   *
+   * Keterangan bebas yang dahulu ada sengaja tidak diteruskan — isinya
+   * tersambung ke judul polisnya saat dicetak ("… — Ls"), sehingga terbaca
+   * seperti satuan. Yang menggantikannya isian-isian bernama di bawah ini.
+   */
   addPremium() {
     this.premiums.push(
       this.formBuilder.group({
         task: ['', [Validators.required, Validators.maxLength(100)]],
-        description: [''],
+        object: [''],
+        sumInsured: [0, [Validators.min(0)]],
+        deductible: [''],
+        coverageStart: [''],
+        coverageEnd: [''],
         amount: [0, [Validators.required, Validators.min(0)]],
       }),
     );
@@ -518,7 +535,8 @@ export class PurchaseOrderCreate642Component {
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
-          remarks_1: x.object || null,
+          // Objek yang dijamin pindah ke barisan premi.
+          remarks_1: null,
         };
       }),
       // Penanda induk bila dokumen ini ADENDUM; server yang
@@ -534,24 +552,28 @@ export class PurchaseOrderCreate642Component {
         paymentTerm: v.paymentTerm,
         creditTerm: v.creditTerm,
         prepaidTerm: v.prepaidTerm,
-        // Rincian pertanggungan disimpan agar dapat dicetak ulang.
-        coverages: this.t.controls.map((c, i) => {
-          const x = c.getRawValue();
-          return {
-            type: this.lineTask(i),
-            object: x.object,
-            sumInsured: Number(x.sumInsured) || 0,
-            deductible: x.deductible,
-            coverageStart: this.toISO(x.coverageStart),
-            coverageEnd: this.toISO(x.coverageEnd),
-          };
-        }),
+        /*
+         * Jenis pertanggungan per baris jasa; rinciannya TIDAK lagi di sini.
+         *
+         * Dokumen lama menyimpannya di `coverages` per baris jasa. Kuncinya
+         * tetap ditulis supaya adendum atas dokumen lama masih menemukan
+         * jenisnya, tetapi nilai, risiko sendiri, dan masanya sekarang
+         * melekat pada preminya — di situlah satu polis benar-benar berdiri
+         * sendiri.
+         */
+        coverages: this.t.controls.map((_c, i) => ({
+          type: this.lineTask(i),
+        })),
         premiums: this.premiums.controls.map((c) => {
           const x = c.getRawValue();
           return {
             task: x.task,
-            description: x.description,
             amount: Number(x.amount) || 0,
+            object: x.object || null,
+            sumInsured: Number(x.sumInsured) || 0,
+            deductible: x.deductible || null,
+            coverageStart: this.toISO(x.coverageStart),
+            coverageEnd: this.toISO(x.coverageEnd),
           };
         }),
         additionalClauses: this.additionalClauseValues,
@@ -579,7 +601,6 @@ export class PurchaseOrderCreate642Component {
         const x = c.getRawValue();
         return {
           name: this.lineTask(i),
-          remarks: x.object,
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
@@ -597,8 +618,12 @@ export class PurchaseOrderCreate642Component {
         const x = c.getRawValue();
         return {
           task: x.task,
-          description: x.description,
           amount: Number(x.amount) || 0,
+          object: x.object,
+          sumInsured: Number(x.sumInsured) || 0,
+          deductible: x.deductible,
+          coverageStart: this.toISO(x.coverageStart),
+          coverageEnd: this.toISO(x.coverageEnd),
         };
       }),
       templateVersion: '1.0',
@@ -880,11 +905,6 @@ export class PurchaseOrderCreate642Component {
             customType: this.insuranceTypes.includes(c.type)
               ? ''
               : (c.type ?? ''),
-            object: c.object ?? '',
-            sumInsured: Number(c.sumInsured) || 0,
-            deductible: c.deductible ?? '',
-            coverageStart: c.coverageStart ?? '',
-            coverageEnd: c.coverageEnd ?? '',
             // Volume dikosongkan pada adendum — ia memuat SELISIH.
             quantity: b.quantity ?? null,
             unit: b.unit ?? 'polis',
@@ -901,12 +921,27 @@ export class PurchaseOrderCreate642Component {
          */
         const premi = this.adendum.larikCustom(induk, 'premiums');
         this.premiums.clear();
-        for (const x of premi) {
+        for (let i = 0; i < premi.length; i++) {
+          const x = premi[i] || {};
+          /*
+           * Dokumen lama menyimpan rincian pertanggungan di `coverages`, per
+           * baris jasa. Dicocokkan menurut urutan HANYA bila jumlahnya sama;
+           * bila tidak, menebak pasangannya akan menempelkan nilai
+           * pertanggungan polis lain pada premi yang salah — dan angka yang
+           * salah di tempat yang tepat lebih sukar tertangkap daripada isian
+           * yang kosong.
+           */
+          const lama =
+            coverages.length === premi.length ? coverages[i] || {} : {};
           this.addPremium();
           this.premiums.at(this.premiums.length - 1).patchValue({
             task: x.task ?? '',
-            description: x.description ?? '',
             amount: Number(x.amount) || 0,
+            object: x.object ?? lama.object ?? '',
+            sumInsured: Number(x.sumInsured ?? lama.sumInsured) || 0,
+            deductible: x.deductible ?? lama.deductible ?? '',
+            coverageStart: x.coverageStart ?? lama.coverageStart ?? '',
+            coverageEnd: x.coverageEnd ?? lama.coverageEnd ?? '',
           });
         }
         /*

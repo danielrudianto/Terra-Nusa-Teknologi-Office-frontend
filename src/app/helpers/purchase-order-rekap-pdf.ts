@@ -73,12 +73,22 @@ function nilaiDokumen(po: IRekapPO): {
   dpp: number;
   ppn: number;
   pph: number;
+  lain: number;
   total: number;
 } {
   const dpp = angka(po.dpp);
   const ppn = Math.round(((dpp * angka(po.ppn)) / 100) * 100) / 100;
   const pph = Math.round(((dpp * angka(po.pphPercentage)) / 100) * 100) / 100;
-  return { dpp, ppn, pph, total: dpp + ppn - pph };
+  /*
+   * Nilai di luar dasar pajak ikut ke yang dibayarkan.
+   *
+   * Pada penutupan pertanggungan (6.4.2) ini adalah premi yang dititipkan
+   * kepada broker. Ia bukan objek PPN maupun PPh — karena itu tidak ikut
+   * kedua hitungan di atas — tetapi ia tetap uang yang keluar. Rekap yang
+   * melewatkannya melaporkan ongkos pembuatan polisnya saja.
+   */
+  const lain = angka(po.otherValue);
+  return { dpp, ppn, pph, lain, total: dpp + ppn - pph + lain };
 }
 
 function sel(teks: string, opsi: Record<string, unknown> = {}): any {
@@ -105,17 +115,28 @@ function tabelIkhtisar(daftar: IRekapPO[]): any {
         dpp: a.dpp + n.dpp,
         ppn: a.ppn + n.ppn,
         pph: a.pph + n.pph,
+        lain: a.lain + n.lain,
         total: a.total + n.total,
       };
     },
-    { dpp: 0, ppn: 0, pph: 0, total: 0 },
+    { dpp: 0, ppn: 0, pph: 0, lain: 0, total: 0 },
   );
 
+  /*
+   * "Nilai lain" hanya dicantumkan bila memang ada.
+   *
+   * Ia terisi pada penutupan pertanggungan saja — premi yang dititipkan.
+   * Barisnya yang selalu tampak berisi nol pada rekap proyek biasa hanya
+   * menambah pertanyaan yang jawabannya "tidak berlaku di sini".
+   */
   const baris = [
     ['Jumlah dokumen', String(daftar.length)],
     ['DPP', `Rp ${rp(total.dpp)}`],
     ['PPN', `Rp ${rp(total.ppn)}`],
     ['PPh dipotong', `Rp ${rp(total.pph)}`],
+    ...(total.lain
+      ? [['Nilai lain (premi dititipkan)', `Rp ${rp(total.lain)}`]]
+      : []),
   ].map(([a, b]) => [
     sel(a, { fontSize: 8 }),
     sel(b, { fontSize: 8, alignment: 'right' }),
@@ -197,6 +218,10 @@ function tabelDokumen(t: Penerjemah, daftar: IRekapPO[], items: IRekapItem[]): a
       kepalaSel('DPP', 'right'),
       kepalaSel('PPN', 'right'),
       kepalaSel('PPh', 'right'),
+      // Premi yang dititipkan pada SPK penutupan pertanggungan; nol pada
+      // jenis lain. Ada kolomnya sendiri supaya Total tetap dapat
+      // dicocokkan dari angka-angka yang terlihat.
+      kepalaSel('Lain', 'right'),
       kepalaSel('Total', 'right'),
       kepalaSel('Status'),
     ],
@@ -216,6 +241,7 @@ function tabelDokumen(t: Penerjemah, daftar: IRekapPO[], items: IRekapItem[]): a
       sel(rp(n.dpp), { alignment: 'right' }),
       sel(rp(n.ppn), { alignment: 'right' }),
       sel(rp(n.pph), { alignment: 'right' }),
+      sel(n.lain ? rp(n.lain) : '—', { alignment: 'right' }),
       sel(rp(n.total), { alignment: 'right', bold: true }),
       sel(draf ? 'Draf' : 'Disetujui', {
         alignment: 'center',
@@ -241,7 +267,7 @@ function tabelDokumen(t: Penerjemah, daftar: IRekapPO[], items: IRekapItem[]): a
        * berikutnya bila sempit. Kolom angka dibiarkan tetap — melebarkannya
        * hanya menambah ruang kosong di kiri angka yang rata kanan.
        */
-      widths: [18, 46, 78, '*', '*', 26, 62, 52, 46, 66, 44],
+      widths: [18, 44, 74, '*', '*', 24, 58, 48, 42, 54, 62, 42],
       body,
     },
     layout: {

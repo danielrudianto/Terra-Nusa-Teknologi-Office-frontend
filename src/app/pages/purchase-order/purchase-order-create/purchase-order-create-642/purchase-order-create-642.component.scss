@@ -1361,3 +1361,31 @@ app-wysiwyg {
   border-radius: 12px;
   background: transparent;
 }
+
+/*
+ * Satu blok per polis pada barisan premi.
+ *
+ * Bentuknya sama dengan blok rincian pertanggungan di atasnya — dulu ia satu
+ * baris memanjang, dan itu berhenti memadai sejak preminya membawa objek,
+ * nilai pertanggungan, risiko sendiri, dan dua tanggal.
+ */
+.po642-premirow {
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.po642-premirow__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+/* Nomornya sama dengan yang tercetak di dokumen, supaya yang mengoreksi
+   "premi nomor dua" menemukan blok yang sama di layar. */
+.po642-premirow__no {
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}

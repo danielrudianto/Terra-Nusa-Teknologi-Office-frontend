@@ -225,70 +225,6 @@
                   </mat-form-field>
                 }
 
-                <mat-form-field appearance="outline" class="po642-span2">
-                  <mat-label>{{
-                    "poField.objekYangDijamin" | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="object"
-                    [placeholder]="'po642.exExcavatorPc200B1234' | translate"
-                  />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>{{
-                    "poField.nilaiPertanggungan" | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="sumInsured"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                  />
-                  <span matPrefix>Rp&nbsp;</span>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>{{
-                    "poField.risikoSendiri" | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="deductible"
-                    [placeholder]="'po642.ex10OfClaimMin' | translate"
-                  />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>{{
-                    "poField.mulaiPertanggungan" | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="coverageStart"
-                    [matDatepicker]="dpS"
-                  />
-                  <mat-datepicker-toggle
-                    matIconPrefix
-                    [for]="dpS"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #dpS></mat-datepicker>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poField.berakhir" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="coverageEnd"
-                    [matDatepicker]="dpE"
-                  />
-                  <mat-datepicker-toggle
-                    matIconPrefix
-                    [for]="dpE"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #dpE></mat-datepicker>
-                </mat-form-field>
 
                 <mat-form-field appearance="outline">
                   <mat-label>{{ "common.quantity" | translate }}</mat-label>
@@ -359,40 +295,113 @@
         } @else {
           <div formArrayName="premiums">
             @for (c of premiums.controls; track c; let i = $index) {
-              <div class="po642-feerow" [formGroupName]="i">
-                <mat-form-field appearance="outline" class="po642-feerow__task">
-                  <mat-label>{{ "poField.uraianPremi" | translate }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="task"
-                    maxlength="100"
-                    [placeholder]="'po642.exPremiCarPeriodeSep' | translate"
-                  />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>{{ "poField.keterangan" | translate }}</mat-label>
-                  <input matInput formControlName="description" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>{{
-                    "poField.perkiraanJumlah" | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    formControlName="amount"
-                    thousandSeparator=" "
-                    mask="separator.2"
-                  />
-                  <span matPrefix>Rp&nbsp;</span>
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="removePremiumAt(i)"
-                  [attr.aria-label]="'po642.hapusPremi' | translate"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
+              <!--
+                Satu blok per POLIS.
+
+                Rincian pertanggungannya ada di sini, bukan di baris imbalan
+                jasa: dua polis pada satu SPK bisa berbeda objek, nilai
+                pertanggungan, risiko sendiri, maupun masa berlakunya.
+              -->
+              <div class="po642-premirow" [formGroupName]="i">
+                <div class="po642-premirow__head">
+                  <span class="po642-premirow__no">{{ i + 1 }}.</span>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removePremiumAt(i)"
+                    [attr.aria-label]="'po642.hapusPremi' | translate"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="po642-grid">
+                  <mat-form-field appearance="outline" class="po642-span2">
+                    <mat-label>{{ "poField.uraianPremi" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="task"
+                      maxlength="100"
+                      [placeholder]="'po642.exPremiCarPeriodeSep' | translate"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="po642-span2">
+                    <mat-label>{{
+                      "poField.objekYangDijamin" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="object"
+                      [placeholder]="'po642.exExcavatorPc200B1234' | translate"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{
+                      "poField.nilaiPertanggungan" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="sumInsured"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                    />
+                    <span matPrefix>Rp&nbsp;</span>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poField.risikoSendiri" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="deductible"
+                      [placeholder]="'po642.ex10OfClaimMin' | translate"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{
+                      "poField.mulaiPertanggungan" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="coverageStart"
+                      [matDatepicker]="dpS"
+                    />
+                    <mat-datepicker-toggle
+                      matIconPrefix
+                      [for]="dpS"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #dpS></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poField.berakhir" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="coverageEnd"
+                      [matDatepicker]="dpE"
+                    />
+                    <mat-datepicker-toggle
+                      matIconPrefix
+                      [for]="dpE"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #dpE></mat-datepicker>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="po642-span2">
+                    <mat-label>{{
+                      "poField.perkiraanJumlah" | translate
+                    }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="amount"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                    />
+                    <span matPrefix>Rp&nbsp;</span>
+                  </mat-form-field>
+                </div>
               </div>
             }
           </div>

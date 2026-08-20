@@ -187,7 +187,18 @@
               </div>
             }
 
-            @if (adaPajak) {
+            @if (nilaiLain > 0) {
+              <div class="pov-item pov-item--pajak">
+                <span class="pov-item__text">
+                  {{ "purchaseOrder.viewNilaiLain" | translate }}
+                </span>
+                <span class="pov-item__amount"
+                  >+ Rp {{ nilaiLain | number: "1.0-0" }}</span
+                >
+              </div>
+            }
+
+            @if (adaNilaiAkhir) {
               <div class="pov-item pov-item--akhir">
                 <span class="pov-item__text">{{
                   "purchaseOrder.viewTotalAkhir" | translate
