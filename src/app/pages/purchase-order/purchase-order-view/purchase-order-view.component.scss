@@ -585,3 +585,30 @@
   line-height: 1.3;
   color: var(--brand-ink, #1a3a8f);
 }
+
+/*
+ * Keterangan mengapa sebuah tombol tidak ada.
+ *
+ * Bentuknya sengaja BUKAN tombol: ia tidak dapat ditekan, dan sesuatu yang
+ * tampak seperti tombol lalu diam saat ditekan lebih membingungkan daripada
+ * tidak ada sama sekali.
+ */
+.pov-sebab {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+  font-size: 0.76rem;
+  line-height: 1.35;
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    color: var(--faint, #9aa0ab);
+  }
+}

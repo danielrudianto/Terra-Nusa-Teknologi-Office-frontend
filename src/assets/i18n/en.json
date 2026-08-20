@@ -4079,7 +4079,8 @@
   "poView": {
     "buatAdendum": "Create addendum",
     "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created.",
-    "ubahDraf": "Edit document"
+    "ubahDraf": "Edit document",
+    "ubahTerkunciDiperiksa": "Already checked, so it can no longer be edited. Revoke the check first, or ask a level 4 user to make the change."
   },
   "poRekap": {
     "judul": "Download recap",

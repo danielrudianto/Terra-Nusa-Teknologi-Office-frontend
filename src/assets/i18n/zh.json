@@ -4079,7 +4079,8 @@
   "poView": {
     "buatAdendum": "创建补充协议",
     "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。",
-    "ubahDraf": "修改文件"
+    "ubahDraf": "修改文件",
+    "ubahTerkunciDiperiksa": "已完成审核，因此无法再修改。请先撤销审核，或请求 4 级以上人员修改。"
   },
   "poRekap": {
     "judul": "下载汇总",

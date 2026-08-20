@@ -403,6 +403,20 @@
           {{ "poView.ubahDraf" | translate }}
         </button>
       }
+      <!--
+        Hilangnya tombol ubah DIJELASKAN, bukan dibiarkan.
+
+        Manajer dapat mengubah dokumen selama belum diperiksa; sesudahnya
+        tidak. Tombol yang tadi ada lalu hilang tanpa keterangan terbaca
+        sebagai kerusakan — padahal keadaannya dapat ditindaklanjuti sendiri:
+        cabut pemeriksaannya, atau mintakan kepada level 4.
+      -->
+      @if (ubahTerhalangPemeriksaan) {
+        <div class="pov-sebab">
+          <mat-icon>lock</mat-icon>
+          <span>{{ "poView.ubahTerkunciDiperiksa" | translate }}</span>
+        </div>
+      }
       @if (bolehAdendum) {
         <button type="button" class="pov-adendum" (click)="buatAdendum()">
           <mat-icon>note_add</mat-icon>

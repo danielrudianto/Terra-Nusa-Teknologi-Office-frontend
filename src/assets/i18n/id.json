@@ -4079,7 +4079,8 @@
   "poView": {
     "buatAdendum": "Buat adendum",
     "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat.",
-    "ubahDraf": "Ubah dokumen"
+    "ubahDraf": "Ubah dokumen",
+    "ubahTerkunciDiperiksa": "Sudah diperiksa, jadi tidak dapat diubah lagi. Cabut pemeriksaannya dahulu, atau mintakan perubahan kepada level 4 ke atas."
   },
   "poRekap": {
     "judul": "Unduh hasil rekap",

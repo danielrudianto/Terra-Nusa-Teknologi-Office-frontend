@@ -31,6 +31,8 @@ import { Router } from '@angular/router';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { barisTampil } from '../../../constants/baris-tampil-po';
+import { AccountService } from '../../../services/account.service';
+import { PermissionService } from '../../../services/permission.service';
 
 
 /**
@@ -347,12 +349,62 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
     return isNaN(n) ? 0 : n;
   }
 
+  private readonly akun = inject(AccountService, { optional: true });
+  private readonly izin = inject(PermissionService, { optional: true });
+
+  /** Level pengguna; nol bila belum terbaca, sehingga tidak memberi apa pun. */
+  private get level(): number {
+    return Number(this.izin?.level?.() ?? 0) || 0;
+  }
+
+  private get buatanSendiri(): boolean {
+    const saya = this.akun?.userId;
+    const pembuat = (this.data as any)?.createdBy;
+    return saya != null && pembuat != null && Number(saya) === Number(pembuat);
+  }
+
+  private get sudahDiperiksa(): boolean {
+    return !!(this.data as any)?.isChecked;
+  }
+
+  /**
+   * Dokumen ini masih dapat diubah OLEH ORANG INI.
+   *
+   * Sebelumnya hanya "belum disetujui" yang diperiksa, sehingga tombolnya
+   * muncul bagi semua orang — lalu server menolak sesudah ditekan. Penolakan
+   * sesudah ditekan terbaca sebagai kerusakan, bukan sebagai aturan.
+   *
+   * Aturannya sama persis dengan yang berlaku di server
+   * (`boleh_mengubah_purchase_order`): pembuatnya, level 4 ke atas, atau
+   * manajer selama dokumennya BELUM DIPERIKSA. Tombol yang disembunyikan
+   * bukan penjagaan — penjaganya tetap di sana.
+   */
   get bolehUbah(): boolean {
     if (this.isPratinjau) return false;
     const d: any = this.data ?? {};
     const disetujui =
       !!d.isApproved || String(d.status ?? '').toLowerCase() === 'approved';
-    return !disetujui;
+    if (disetujui) return false;
+
+    if (this.level >= 4) return true;
+    if (this.buatanSendiri) return true;
+    return this.level >= 3 && !this.sudahDiperiksa;
+  }
+
+  /**
+   * Tombol ubah hilang KARENA dokumennya sudah diperiksa.
+   *
+   * Dibedakan dari tidak berwenang sama sekali: yang ini keadaan yang dapat
+   * ditindaklanjuti — cabut pemeriksaannya, atau mintakan kepada level 4 —
+   * dan tanpa keterangannya, tombol yang tadi ada lalu hilang terbaca
+   * sebagai kerusakan.
+   */
+  get ubahTerhalangPemeriksaan(): boolean {
+    if (this.isPratinjau || this.bolehUbah) return false;
+    const d: any = this.data ?? {};
+    const disetujui =
+      !!d.isApproved || String(d.status ?? '').toLowerCase() === 'approved';
+    return !disetujui && this.sudahDiperiksa && this.level >= 3;
   }
 
   /**
