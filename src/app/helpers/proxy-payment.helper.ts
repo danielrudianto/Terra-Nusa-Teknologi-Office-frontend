@@ -223,7 +223,7 @@ export class ProxyPaymentHelper {
           layout: 'noBorders',
         },
         {
-          text: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n',
+          text: '\n\n\n\n\n\n\n\n\n\n\n',
         },
         {
           table: {
