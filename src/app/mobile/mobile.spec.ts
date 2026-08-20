@@ -122,3 +122,27 @@ describe('mobile: nilai yang ditampilkan sebelum menyetujui', () => {
     );
   });
 });
+
+/**
+ * Data lokal `id` harus terdaftar sebelum pipe angka dipakai.
+ *
+ * Kegagalan yang mendorongnya: aplikasi mobile menyetel `LOCALE_ID: 'id'`
+ * tetapi tidak pernah memanggil `registerLocaleData` — desktop
+ * melakukannya di `language.service.ts`, yang tidak ikut terpakai bootstrap
+ * mobile. Akibatnya pipe `number` melempar NG02100 pada render pertama, dan
+ * halaman daftar gagal seketika dengan galat yang tidak menyebut lokal.
+ *
+ * Diuji lewat `DecimalPipe` langsung — pipe yang sama yang dipakai
+ * `{{ nilai | number }}` di setiap kartu.
+ */
+import { DecimalPipe, registerLocaleData } from '@angular/common';
+import localeId from '@angular/common/locales/id';
+
+describe('mobile: data lokal id terdaftar', () => {
+  it('DecimalPipe id memformat tanpa melempar NG02100', () => {
+    registerLocaleData(localeId, 'id');
+    const pipe = new DecimalPipe('id');
+    // Format Indonesia: pemisah ribuan titik.
+    expect(pipe.transform(1846153, '1.0-0')).toBe('1.846.153');
+  });
+});

@@ -23,11 +23,27 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, registerLocaleData } from '@angular/common';
+import localeEn from '@angular/common/locales/en';
+import localeId from '@angular/common/locales/id';
+import localeZh from '@angular/common/locales/zh';
 import { provideNgxMask } from 'ngx-mask';
 
 import { MobileRootComponent } from './app/mobile/mobile-root.component';
 import { MOBILE_ROUTES } from './app/mobile/mobile.routes';
+
+/*
+ * Data lokal DIDAFTARKAN sebelum aplikasi dijalankan.
+ *
+ * Tanpa ini, `LOCALE_ID: 'id'` menunjuk ke data lokal yang tidak pernah
+ * dimuat, dan pipe `number` serta `date` melempar NG02100 — halaman pertama
+ * gagal dirender seketika, kosong, dengan galat yang tidak menyebut lokal
+ * sama sekali. Aplikasi desktop mendaftarkannya di `language.service.ts`;
+ * bootstrap mobile tidak menyentuh berkas itu, sehingga harus di sini.
+ */
+registerLocaleData(localeId, 'id');
+registerLocaleData(localeEn, 'en');
+registerLocaleData(localeZh, 'zh');
 import { AuthInterceptor } from './app/services/auth.interceptor';
 
 bootstrapApplication(MobileRootComponent, {
