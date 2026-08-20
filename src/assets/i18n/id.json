@@ -2971,7 +2971,8 @@
     "pihakKeduaSingkat": "KEDUA",
     "pajak": "PAJAK",
     "penagihanPertama": "Penagihan pertama ditahan",
-    "penagihanPertamaNol": "0 — tidak ada penahanan; ayatnya tidak dicetak."
+    "penagihanPertamaNol": "0 — tidak ada penahanan; ayatnya tidak dicetak.",
+    "tanggunganTidakAda": "Tidak ada"
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",

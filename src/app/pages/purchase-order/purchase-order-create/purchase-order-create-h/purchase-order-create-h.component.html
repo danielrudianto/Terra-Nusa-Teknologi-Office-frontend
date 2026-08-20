@@ -992,15 +992,20 @@
           </div>
 
           <!--
-            Pembagian tanggungan, HANYA untuk pekerjaan bor.
+            Pembagian tanggungan, untuk BORONGAN — bor maupun umum.
 
-            Borongan umum tidak menampilkannya: butir-butir ini — bobokan
-            pondasi, penentuan titik survey, keamanan keluar masuk alat —
-            khas pekerjaan bor, dan menampilkannya pada subkontraktor listrik
-            berarti menawarkan pilihan atas hal yang tidak ada dalam
-            pekerjaannya.
+            Semula hanya bor, dengan alasan butir-butir ini khas pekerjaan
+            berat. Alasannya benar, kesimpulannya yang keliru: borongan umum
+            tidak diberi pilihan tetapi TETAP mendapat kalimat penuhnya,
+            sehingga subkontraktor pembangunan bedeng tertulis menerima
+            material besi dan beton dari PIHAK PERTAMA.
+
+            Yang menyelesaikannya keadaan ketiga — "tidak ada" — bukan
+            menyembunyikan pilihannya. Bawaan borongan umum sudah mematikan
+            lima butir pekerjaan berat, jadi yang lazim tidak perlu disentuh
+            sama sekali.
           -->
-          @if (isBoronganBor) {
+          @if (pakaiTanggungan) {
             <div class="poh-tanggungan">
               <p class="poh-tanggungan__ket">
                 {{ "poH.tanggunganKet" | translate }}
@@ -1018,6 +1023,15 @@
                     </mat-button-toggle>
                     <mat-button-toggle value="kedua">
                       {{ "poH.pihakKeduaSingkat" | translate }}
+                    </mat-button-toggle>
+                    <!--
+                      "Tidak ada" berbeda dari menaruhnya pada salah satu
+                      pihak: butirnya tidak tercetak sama sekali. Tanpa
+                      keadaan ini, setiap butir terpaksa dibebankan kepada
+                      seseorang walaupun pekerjaannya tidak memuatnya.
+                    -->
+                    <mat-button-toggle value="tidak">
+                      {{ "poH.tanggunganTidakAda" | translate }}
                     </mat-button-toggle>
                   </mat-button-toggle-group>
                 </div>

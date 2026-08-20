@@ -2971,7 +2971,8 @@
     "pihakKeduaSingkat": "乙方",
     "pajak": "税务",
     "penagihanPertama": "首次开票延后",
-    "penagihanPertamaNol": "0 — 不延后；该条款不打印。"
+    "penagihanPertamaNol": "0 — 不延后；该条款不打印。",
+    "tanggunganTidakAda": "不适用"
   },
   "poA": {
     "shipmentService": "货物运输服务",

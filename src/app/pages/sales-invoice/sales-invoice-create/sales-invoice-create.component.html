@@ -1,28 +1,29 @@
+<app-header-title
+  [title]="'salesInvoiceCreate.title' | translate"
+  [description]="'salesInvoiceCreate.breadcrumbCreate' | translate"
+></app-header-title>
+
+<!--
+  Satu papan per bagian, bukan langkah bertahap.
+
+  Bentuk sebelumnya `mat-stepper` dengan tiga langkah — dan `[linear]="false"`,
+  yang berarti langkahnya boleh dilompati. Penomoran langkah karena itu tidak
+  menjanjikan apa pun: ia terlihat seperti urutan yang harus dilalui, padahal
+  bukan.
+
+  Dua akibatnya nyata. Isian yang belum benar tersembunyi di langkah yang
+  sedang tidak terbuka, sehingga yang menekan simpan tidak melihat apa yang
+  kurang. Dan bentuknya berbeda dari layar Pembelian maupun Reimbursement,
+  padahal ketiganya dikerjakan orang yang sama dalam satu hari.
+-->
 <div class="sic">
-  <!-- header -->
-  <div class="sic-head">
-    <div class="sic-head__text">
-      <h1 class="sic-title">{{ "salesInvoiceCreate.title" | translate }}</h1>
-      <p class="sic-sub">
-        <a routerLink="/Sales-invoice">{{
-          "salesInvoiceCreate.breadcrumbList" | translate
-        }}</a>
-        / {{ "salesInvoiceCreate.breadcrumbCreate" | translate }}
-      </p>
-    </div>
-  </div>
-
-  <mat-stepper [linear]="false" #stepper class="sic-stepper">
-    <!-- ===== STEP 1: GENERAL ===== -->
-    <mat-step [stepControl]="metaFormGroup">
       <form [formGroup]="metaFormGroup">
-        <ng-template matStepLabel>{{
-          "salesInvoiceCreate.stepGeneral" | translate
-        }}</ng-template>
-
         <div class="sic-card">
-          <div class="sic-section__title">
-            {{ "salesInvoiceCreate.sectionClient" | translate }}
+          <div class="sic-cardhead">
+            <div class="sic-section__title">
+              <mat-icon>person</mat-icon>
+              {{ "salesInvoiceCreate.sectionClient" | translate }}
+            </div>
           </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
@@ -75,8 +76,11 @@
             </mat-form-field>
           </div>
 
-          <div class="sic-section__title sic-section__title--mt">
-            {{ "salesInvoiceCreate.sectionInvoiceDetail" | translate }}
+          <div class="sic-cardhead  sic-cardhead--mt">
+            <div class="sic-section__title">
+              <mat-icon>description</mat-icon>
+              {{ "salesInvoiceCreate.sectionInvoiceDetail" | translate }}
+            </div>
           </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
@@ -250,30 +254,16 @@
             </mat-form-field>
           </div>
 
-          <div class="sic-actions">
-            <span class="sic-spacer"></span>
-            <button
-              matStepperNext
-              class="sic-btn sic-btn--primary"
-              [disabled]="metaFormGroup.invalid"
-            >
-              {{ "salesInvoiceCreate.next" | translate }}
-            </button>
-          </div>
         </div>
       </form>
-    </mat-step>
 
-    <!-- ===== STEP 2: VALUE ===== -->
-    <mat-step [stepControl]="valueFormGroup">
       <form [formGroup]="valueFormGroup">
-        <ng-template matStepLabel>{{
-          "salesInvoiceCreate.stepValue" | translate
-        }}</ng-template>
-
         <div class="sic-card">
-          <div class="sic-section__title">
-            {{ "salesInvoiceCreate.sectionValueTax" | translate }}
+          <div class="sic-cardhead">
+            <div class="sic-section__title">
+              <mat-icon>payments</mat-icon>
+              {{ "salesInvoiceCreate.sectionValueTax" | translate }}
+            </div>
           </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
@@ -415,37 +405,16 @@
             </mat-form-field>
           </div>
 
-          <div class="sic-actions">
-            <button
-              mat-button
-              matStepperPrevious
-              class="sic-btn sic-btn--ghost"
-            >
-              {{ "salesInvoiceCreate.previous" | translate }}
-            </button>
-            <span class="sic-spacer"></span>
-            <button
-              matStepperNext
-              class="sic-btn sic-btn--primary"
-              [disabled]="metaFormGroup.invalid"
-            >
-              {{ "salesInvoiceCreate.next" | translate }}
-            </button>
-          </div>
         </div>
       </form>
-    </mat-step>
 
-    <!-- ===== STEP 3: PAYMENT ===== -->
-    <mat-step [stepControl]="paymentFormGroup">
       <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>{{
-          "salesInvoiceCreate.stepPayment" | translate
-        }}</ng-template>
-
         <div class="sic-card">
-          <div class="sic-section__title">
-            {{ "salesInvoiceCreate.sectionPayment" | translate }}
+          <div class="sic-cardhead">
+            <div class="sic-section__title">
+              <mat-icon>account_balance_wallet</mat-icon>
+              {{ "salesInvoiceCreate.sectionPayment" | translate }}
+            </div>
           </div>
           <div class="sic-grid">
             <mat-form-field appearance="outline" class="sic-span2">
@@ -492,29 +461,30 @@
             </mat-form-field>
           </div>
 
-          <div class="sic-actions">
-            <button
-              mat-button
-              matStepperPrevious
-              class="sic-btn sic-btn--ghost"
-            >
-              {{ "salesInvoiceCreate.previous" | translate }}
-            </button>
-            <span class="sic-spacer"></span>
-            <button
-              class="sic-btn sic-btn--primary"
-              [disabled]="paymentFormGroup.invalid || isSubmitting"
-              (click)="onSubmit()"
-            >
-              {{
-                isSubmitting
-                  ? ("salesInvoiceCreate.processing" | translate)
-                  : ("salesInvoiceCreate.submitPreview" | translate)
-              }}
-            </button>
-          </div>
         </div>
       </form>
-    </mat-step>
-  </mat-stepper>
+
+  <!--
+    Satu baris tindakan, di luar papan — mengikuti layar Pembelian.
+
+    Tombolnya menunggu KETIGA bagian, bukan hanya bagian pembayaran.
+    Sebelumnya hanya `paymentFormGroup` yang diperiksa, sementara langkahnya
+    boleh dilompati: faktur tanpa klien, tanpa tanggal, dan tanpa DPP dapat
+    terkirim asal rekeningnya terisi.
+  -->
+  <div class="sic-actions sic-actions--akhir">
+    <span class="sic-spacer"></span>
+    <button
+      type="button"
+      class="sic-btn sic-btn--primary"
+      [disabled]="!isValid || isSubmitting"
+      (click)="onSubmit()"
+    >
+      {{
+        isSubmitting
+          ? ("salesInvoiceCreate.processing" | translate)
+          : ("salesInvoiceCreate.submitPreview" | translate)
+      }}
+    </button>
+  </div>
 </div>

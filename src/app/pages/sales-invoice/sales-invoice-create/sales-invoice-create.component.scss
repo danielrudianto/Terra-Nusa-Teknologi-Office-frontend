@@ -17,84 +17,18 @@ $surface: var(--surface, #ffffff);
   padding-bottom: 2rem;
 }
 
-/* header */
-.sic-head {
-  margin: 0.5rem 0 1.25rem;
-}
-.sic-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: $ink;
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-.sic-sub {
-  font-size: 0.85rem;
-  color: $muted;
-  margin: 0.25rem 0 0;
-  a {
-    color: $brand;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
+/*
+ * Kepala halaman dan gaya stepper DIBUANG.
+ *
+ * Kepalanya kini memakai `app-header-title`, komponen yang sama dengan lima
+ * puluh layar lain — sebelumnya layar ini merakit judul dan remah rotinya
+ * sendiri, dan bentuknya sedikit berbeda dari semua tetangganya.
+ *
+ * Gaya `mat-stepper` ikut hilang bersama steppernya: sepuluh aturan
+ * `::ng-deep` yang menimpa bagian dalam komponen Material, yang tidak lagi
+ * ada yang memakainya.
+ */
 
-/* stepper */
-.sic-stepper {
-  background: transparent;
-}
-:host ::ng-deep .sic-stepper .mat-horizontal-content-container {
-  padding: 0;
-}
-:host ::ng-deep .sic-stepper .mat-horizontal-stepper-header-container {
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 16px;
-  padding: 0.4rem 0.6rem;
-  margin-bottom: 1.25rem;
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
-}
-:host ::ng-deep .sic-stepper .mat-step-header {
-  border-radius: 12px;
-  padding: 0.6rem 0.9rem;
-  &:hover {
-    background: var(--hover, #f6f8ff);
-  }
-  .mat-step-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: $muted;
-  }
-  .mat-step-icon-selected,
-  .mat-step-icon-state-edit {
-    background-color: $brand;
-  }
-  .mat-step-label.mat-step-label-active,
-  .mat-step-label-selected {
-    color: $brand;
-    font-weight: 600;
-  }
-}
-:host ::ng-deep .sic-stepper .mat-step-icon {
-  background-color: var(--surface-2, #eef1f6);
-  color: $muted;
-  font-weight: 600;
-}
-:host ::ng-deep .sic-stepper .mat-step-icon-selected,
-:host ::ng-deep .sic-stepper .mat-step-icon-state-edit,
-:host ::ng-deep .sic-stepper .mat-step-icon-state-done {
-  background-color: $brand !important;
-  color: #fff !important;
-}
-:host ::ng-deep .sic-stepper .mat-stepper-horizontal-line {
-  border-top-color: var(--border, #e3e6eb);
-}
-
-/* card */
 .sic-card {
   background: $surface;
   border: 0.5px solid var(--border, #e3e6eb);
@@ -103,18 +37,38 @@ $surface: var(--surface, #ffffff);
     0 1px 2px rgba(16, 24, 40, 0.04),
     0 4px 16px rgba(16, 24, 40, 0.05);
   padding: 1.5rem;
-  margin-top: 0.5rem;
+  /* Bertumpuk ke bawah — jaraknya di bawah, sama seperti papan Pembelian. */
+  margin-bottom: 1.25rem;
+}
+
+/* Kepala papan: judul seksi berikut ikonnya, sejajar layar Pembelian. */
+.sic-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &--mt {
+    margin-top: 1.4rem;
+  }
 }
 
 .sic-section__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: $faint;
-  margin-bottom: 0.9rem;
-  &--mt {
-    margin-top: 1.4rem;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    flex: 0 0 auto;
   }
 }
 
@@ -177,14 +131,6 @@ $surface: var(--surface, #ffffff);
   border: none;
   transition: background 0.15s ease;
 
-  &--ghost {
-    background: transparent;
-    color: $muted;
-    &:hover {
-      background: var(--surface-2, #f3f5f9);
-      color: $ink;
-    }
-  }
   &--primary {
     background: $brand;
     color: #fff;
@@ -304,4 +250,16 @@ $surface: var(--surface, #ffffff);
   font-size: 0.76rem;
   line-height: 1.3;
   color: var(--muted, #6b7280);
+}
+
+/*
+ * Baris tindakan penutup, di luar papan.
+ *
+ * Sebelumnya tiap langkah punya barisnya sendiri berisi "sebelumnya" dan
+ * "berikutnya". Dengan seluruh isian pada satu halaman, yang tersisa satu
+ * tombol simpan — dan ia berada di bawah seluruh papan, bukan di dalam papan
+ * terakhir, supaya tidak terbaca sebagai milik bagian pembayaran saja.
+ */
+.sic-actions--akhir {
+  margin-top: 0.5rem;
 }

@@ -46,6 +46,9 @@ import {
   type LampiranPasal5,
   bangunPasal4,
   BUTIR_TANGGUNGAN_BOR,
+  PihakTanggungan,
+  TANGGUNGAN_BAWAAN_BOR,
+  TANGGUNGAN_BAWAAN_UMUM,
   type PenanggungAsuransi,
 } from '../../../../constants/clause-templates';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -329,6 +332,16 @@ export class PurchaseOrderCreateHComponent implements OnInit {
   };
 
   onWorkScopeChange() {
+    /*
+     * Pembagian tanggungan dikembalikan ke bawaan lingkupnya.
+     *
+     * Bor menyalakan seluruh butir, borongan umum hanya yang berlaku di
+     * hampir setiap pekerjaan. Tanpa penyetelan ulang, orang yang mengubah
+     * lingkupnya dari bor ke umum membawa serta lima butir pekerjaan berat
+     * ke dokumen yang tidak memuatnya — dan tidak ada yang memberitahu.
+     */
+    this.setelTanggunganBawaan();
+
     if (this.isBuangLumpur) {
       this.w.clear();
     } else if (!this.isEntity && this.w.length === 0) {
@@ -358,9 +371,36 @@ export class PurchaseOrderCreateHComponent implements OnInit {
   /** Butir yang dapat dipindahkan antar pihak; dibaca templat. */
   readonly butirTanggungan = BUTIR_TANGGUNGAN_BOR;
 
-  nilaiTanggungan(kunci: string): 'pertama' | 'kedua' {
+  nilaiTanggungan(kunci: string): PihakTanggungan {
     const v = this.formGroup.get('tanggungan')?.value ?? {};
     return v[kunci] ?? 'pertama';
+  }
+
+  /**
+   * Pembagian tanggungan ditampilkan untuk borongan — bor maupun umum.
+   *
+   * Sebelumnya hanya bor. Borongan umum tidak diberi pilihan tetapi TETAP
+   * mendapat kalimat penuhnya, sehingga subkontraktor pembangunan bedeng
+   * tertulis menerima material besi dan beton dari PIHAK PERTAMA.
+   */
+  get pakaiTanggungan(): boolean {
+    return this.isBorongan || this.isBoronganBor;
+  }
+
+  /**
+   * Kembalikan pembagiannya ke bawaan lingkup kerja yang sedang dipilih.
+   *
+   * Bor menyalakan seluruh butir — sama seperti dokumen yang sudah beredar.
+   * Borongan umum hanya menyalakan yang berlaku di hampir setiap pekerjaan.
+   */
+  private setelTanggunganBawaan(): void {
+    this.formGroup
+      .get('tanggungan')
+      ?.setValue(
+        this.isBoronganBor
+          ? { ...TANGGUNGAN_BAWAAN_BOR }
+          : { ...TANGGUNGAN_BAWAAN_UMUM },
+      );
   }
 
   /**
@@ -370,7 +410,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
    * rujukan, dan menyunting isi objek yang sama membuat perubahannya tidak
    * terlihat sampai ada hal lain yang memicu penggambaran ulang.
    */
-  setTanggungan(kunci: string, pihak: 'pertama' | 'kedua'): void {
+  setTanggungan(kunci: string, pihak: PihakTanggungan): void {
     const kini = this.formGroup.get('tanggungan')?.value ?? {};
     this.formGroup.get('tanggungan')?.setValue({ ...kini, [kunci]: pihak });
   }
@@ -474,21 +514,14 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     workScope: new FormControl('borongan', Validators.required),
 
     /*
-     * Pembagian tanggungan Pasal 4, khusus pekerjaan bor.
+     * Pembagian tanggungan Pasal 4.
      *
-     * Bawaannya PIHAK PERTAMA untuk seluruh butir — sama seperti bunyi
-     * dokumen sebelum pembagian ini ada, sehingga yang tidak menyentuhnya
-     * menghasilkan kalimat yang sudah dikenal vendor.
+     * Bawaannya mengikuti BORONGAN UMUM, sebab itulah lingkup kerja yang
+     * terpilih saat formulir pertama dibuka. Memilih pekerjaan bor
+     * menyetelnya ulang ke daftar penuh lewat `onWorkScopeChange`.
      */
-    tanggungan: new FormControl<Record<string, 'pertama' | 'kedua'>>({
-      materialBesi: 'pertama',
-      materialBeton: 'pertama',
-      aksesLokasi: 'pertama',
-      persiapanLahan: 'pertama',
-      perataanLokasi: 'pertama',
-      penentuanTitik: 'pertama',
-      keamananPengawalan: 'pertama',
-      bongkarMuat: 'pertama',
+    tanggungan: new FormControl<Record<string, PihakTanggungan>>({
+      ...TANGGUNGAN_BAWAAN_UMUM,
     }),
     mobilizationNoticeDays: new FormControl(7, [Validators.min(0)]),
     // Perorangan biasanya 'sejak-mulai', perusahaan memakai batas pekan tetap
@@ -739,13 +772,18 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         standbyHari: v.standbyHari,
 
         /*
-         * Pembagian tanggungan HANYA dikirim untuk pekerjaan bor.
+         * Pembagian tanggungan dikirim untuk BORONGAN — bor maupun umum.
          *
-         * Dokumen lain — termasuk sembilan puluh yang sudah terbit dengan
-         * `workScope: 'borongan'` — tidak menyertakannya, sehingga
-         * kalimatnya tetap persis seperti yang ditandatangani vendor.
+         * Sebelumnya hanya bor. Borongan umum tidak diberi pilihan tetapi
+         * tetap mendapat kalimat penuhnya, sehingga subkontraktor
+         * pembangunan bedeng tertulis menerima material besi dan beton dari
+         * PIHAK PERTAMA — pekerjaan yang tidak ada dalam lingkupnya.
+         *
+         * Dokumen yang SUDAH terbit tidak terpengaruh: Pasal 4 disimpan
+         * sebagai teks jadi pada `keterangan`, dan cetak ulang membaca teks
+         * itu — bukan menyusunnya kembali dari pembagian ini.
          */
-        tanggungan: this.isBoronganBor
+        tanggungan: this.pakaiTanggungan
           ? (v.tanggungan ?? undefined)
           : undefined,
       }),

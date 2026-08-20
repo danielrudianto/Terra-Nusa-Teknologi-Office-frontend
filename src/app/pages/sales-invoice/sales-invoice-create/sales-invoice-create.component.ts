@@ -16,7 +16,6 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageBreak, PageSize } from 'pdfmake/interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { TranslatePipe } from '@ngx-translate/core';
 import { catchError, finalize, map, of, tap } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,8 +26,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { RouterModule } from '@angular/router';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { ProjectLookupService } from 'src/app/services/project-lookup.service';
 
@@ -41,14 +40,13 @@ pdfMake.vfs = pdfFonts.vfs;
   templateUrl: './sales-invoice-create.component.html',
   styleUrl: './sales-invoice-create.component.scss',
   imports: [
+    HeaderTitleComponent,
     ProjectSelectorComponent,
     NgxMaskDirective,
     TranslatePipe,
-    RouterModule,
     MatSelectModule,
     MatButtonModule,
     CommonModule,
-    MatStepperModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -69,7 +67,21 @@ export class SalesInvoiceCreateComponent {
 
   bankAccounts: any[] = [];
   isSubmitting: boolean = false;
-  @ViewChild('stepper') stepper!: MatStepper;
+  /**
+   * Seluruh bagian harus sah, bukan bagian pembayarannya saja.
+   *
+   * Bentuk lama memakai `mat-stepper` dengan `[linear]="false"` — langkahnya
+   * boleh dilompati — sementara tombol simpan hanya memeriksa
+   * `paymentFormGroup`. Faktur tanpa klien, tanpa tanggal, dan tanpa DPP
+   * karena itu dapat terkirim asal rekeningnya terisi.
+   */
+  get isValid(): boolean {
+    return (
+      this.metaFormGroup.valid &&
+      this.valueFormGroup.valid &&
+      this.paymentFormGroup.valid
+    );
+  }
 
   metaFormGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -513,7 +525,10 @@ export class SalesInvoiceCreateComponent {
               this.valueFormGroup.reset();
               this.paymentFormGroup.reset();
 
-              this.stepper.selectedIndex = 0;
+              // Kembali ke atas: seluruh isian kini berada pada satu
+              // halaman, sehingga yang perlu dikembalikan gulirannya — bukan
+              // langkah yang sudah tidak ada.
+              window.scrollTo({ top: 0, behavior: 'smooth' });
 
               this.snackBar.open(
       this.translate.instant('notify.createSuccess'),

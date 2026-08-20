@@ -2971,7 +2971,8 @@
     "pihakKeduaSingkat": "SECOND",
     "pajak": "TAX",
     "penagihanPertama": "First invoice held for",
-    "penagihanPertamaNol": "0 — no hold; the clause is not printed."
+    "penagihanPertamaNol": "0 — no hold; the clause is not printed.",
+    "tanggunganTidakAda": "Not applicable"
   },
   "poA": {
     "shipmentService": "Goods delivery service",

@@ -1756,6 +1756,19 @@ export const H_PASAL_3_DEFAULT: string[] = [
 /** Penanggung biaya asuransi CAR & TPL. */
 export type PenanggungAsuransi = 'pertama' | 'kedua' | 'tidakBerlaku';
 
+/**
+ * Kedudukan satu butir tanggungan pada Pasal 4.
+ *
+ * `'tidak'` berarti butirnya TIDAK ADA dalam pekerjaan ini dan tidak
+ * tercetak sama sekali — berbeda dari menaruhnya pada salah satu pihak.
+ *
+ * Tanpa keadaan ketiga ini, setiap butir terpaksa dibebankan kepada
+ * seseorang. Subkontraktor pembangunan bedeng karena itu menerima dokumen
+ * yang menyatakan ia mendapat material besi dan beton dari PIHAK PERTAMA —
+ * pekerjaan yang tidak pernah ada dalam lingkupnya.
+ */
+export type PihakTanggungan = 'pertama' | 'kedua' | 'tidak';
+
 export interface Pasal4Context {
   /** Bila `'tidakBerlaku'`, poin asuransinya tidak dicetak sama sekali. */
   penanggungAsuransi?: PenanggungAsuransi;
@@ -1772,7 +1785,7 @@ export interface Pasal4Context {
    * Bila kosong, kalimatnya memakai bentuk lama — seluruh butir pada PIHAK
    * PERTAMA, termasuk bobokan pondasi eksisting.
    */
-  tanggungan?: Record<string, 'pertama' | 'kedua'>;
+  tanggungan?: Record<string, PihakTanggungan>;
 
   /** Poin tambahan, mis. bobokan pondasi bila proyeknya memerlukan. */
   poinTambahan?: string[];
@@ -1815,6 +1828,40 @@ export const BUTIR_TANGGUNGAN_BOR = [
 ] as const;
 
 /**
+ * Bawaan pembagian tanggungan untuk BORONGAN UMUM.
+ *
+ * Hanya tiga butir yang menyala: akses lokasi, persiapan lahan, dan
+ * koordinasi lingkungan. Ketiganya berlaku pada hampir setiap subkontrak,
+ * apa pun pekerjaannya — yang membangun bedeng pun tetap perlu jalan masuk,
+ * lahan yang dapat dipakai, dan izin dari lingkungan sekitar.
+ *
+ * Lima butir sisanya mati: material besi, material beton, perataan lokasi,
+ * penentuan titik survey, dan keamanan keluar masuk alat. Semuanya khas
+ * pekerjaan berat, dan menyalakannya secara bawaan berarti setiap dokumen
+ * memuat kewajiban atas hal yang tidak ada dalam pekerjaannya. Yang
+ * memerlukannya tinggal menyalakan.
+ *
+ * Pekerjaan BOR tidak memakai bawaan ini — seluruh butirnya menyala, persis
+ * seperti dokumen yang sudah beredar.
+ */
+export const TANGGUNGAN_BAWAAN_UMUM: Record<string, PihakTanggungan> = {
+  materialBesi: 'tidak',
+  materialBeton: 'tidak',
+  aksesLokasi: 'pertama',
+  persiapanLahan: 'pertama',
+  perataanLokasi: 'tidak',
+  penentuanTitik: 'tidak',
+  keamananPengawalan: 'tidak',
+  bongkarMuat: 'pertama',
+};
+
+/** Bawaan pekerjaan bor: seluruh butir pada PIHAK PERTAMA. */
+export const TANGGUNGAN_BAWAAN_BOR: Record<string, PihakTanggungan> =
+  Object.fromEntries(
+    BUTIR_TANGGUNGAN_BOR.map((b) => [b.kunci, 'pertama' as PihakTanggungan]),
+  );
+
+/**
  * Susun kalimat tanggungan dari pembagian pihak.
  *
  * Menghasilkan SATU kalimat bila seluruh butir jatuh pada pihak yang sama,
@@ -1823,7 +1870,7 @@ export const BUTIR_TANGGUNGAN_BOR = [
  * tanpa menambah satu pun keterangan.
  */
 function kalimatTanggungan(
-  pilihan: Record<string, 'pertama' | 'kedua'> | undefined,
+  pilihan: Record<string, PihakTanggungan> | undefined,
 ): string[] {
   const p = pilihan ?? {};
   const perPihak: Record<'pertama' | 'kedua', string[]> = {
@@ -1835,7 +1882,11 @@ function kalimatTanggungan(
     // Tanpa pilihan, butirnya jatuh ke PIHAK PERTAMA — sama seperti bunyi
     // dokumen sebelum pembagian ini ada, sehingga yang tidak menyentuhnya
     // mendapat kalimat yang sudah dikenalnya.
-    perPihak[p[b.kunci] ?? 'pertama'].push(b.teks);
+    const pihak = p[b.kunci] ?? 'pertama';
+    // Butir yang tidak ada dalam pekerjaan ini dilewati sama sekali; ia
+    // tidak jatuh kepada siapa pun.
+    if (pihak === 'tidak') continue;
+    perPihak[pihak].push(b.teks);
   }
 
   const susun = (daftar: string[], pihak: 'pertama' | 'kedua'): string => {
