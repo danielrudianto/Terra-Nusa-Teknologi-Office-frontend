@@ -7,39 +7,42 @@
   />
 
   <div class="prl-toolbar">
-    <mat-chip-listbox [disabled]="isLoading">
-      <mat-chip-option
-        class="prl-fchip prl-fchip--jalan"
-        [selected]="saring === 'berjalan'"
-        (selectionChange)="pilihSaring('berjalan')"
-        >{{ "project.state.berjalan" | translate }}</mat-chip-option
-      >
+    <!--
+      Keadaan dipilih di TINGKAT DAFTAR, bukan per keping.
+      Bentuk sebelumnya memasangkan `[selected]` dengan `(selectionChange)`
+      pada tiap keping. Selama tidak ada keping yang terpilih sejak awal, itu
+      tidak pernah bermasalah. Begitu saringan bawaan menjadi "Berjalan",
+      keping itu terpilih saat layar dibuka, `selectionChange` ikut menyala
+      tanpa ada yang menekannya, penanganya menganggapnya penekanan kedua
+      lalu MEMBATALKAN pilihan — yang membuat `[selected]` berubah lagi, dan
+      menyalakan peristiwa itu lagi. Daftarnya berkedip dan menembak server
+      tanpa henti.
+      Satu peristiwa di tingkat daftar tidak dapat berbalas begitu: `[value]`
+      hanya membaca, dan `(change)` hanya menyala oleh penekanan orang.
+    -->
+    <mat-chip-listbox
+      [disabled]="isLoading"
+      [value]="saring"
+      (change)="pilihSaring($event.value)"
+    >
+      <mat-chip-option class="prl-fchip prl-fchip--jalan" value="berjalan">{{
+        "project.state.berjalan" | translate
+      }}</mat-chip-option>
       <!--
         Tunggu retensi: antara BAST 1 dan BAST 2.
 
         Pekerjaannya sudah diserahkan, tetapi masa pemeliharaannya masih
-        berjalan dan sebagian nilai kontrak masih ditahan. Tanpa kepingnya
-        sendiri, proyek pada masa ini tidak dapat ditemukan sama sekali —
-        ia bukan yang sedang dikerjakan, dan bukan pula yang sudah usai.
+        berjalan dan sebagian nilai kontrak masih ditahan.
       -->
-      <mat-chip-option
-        class="prl-fchip prl-fchip--retensi"
-        [selected]="saring === 'retensi'"
-        (selectionChange)="pilihSaring('retensi')"
-        >{{ "project.state.retensi" | translate }}</mat-chip-option
-      >
-      <mat-chip-option
-        class="prl-fchip prl-fchip--selesai"
-        [selected]="saring === 'selesai'"
-        (selectionChange)="pilihSaring('selesai')"
-        >{{ "project.state.selesai" | translate }}</mat-chip-option
-      >
-      <mat-chip-option
-        class="prl-fchip prl-fchip--batal"
-        [selected]="saring === 'batal'"
-        (selectionChange)="pilihSaring('batal')"
-        >{{ "project.state.batal" | translate }}</mat-chip-option
-      >
+      <mat-chip-option class="prl-fchip prl-fchip--retensi" value="retensi">{{
+        "project.state.retensi" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="prl-fchip prl-fchip--selesai" value="selesai">{{
+        "project.state.selesai" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="prl-fchip prl-fchip--batal" value="batal">{{
+        "project.state.batal" | translate
+      }}</mat-chip-option>
     </mat-chip-listbox>
 
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="prl-search">

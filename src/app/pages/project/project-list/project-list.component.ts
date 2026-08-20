@@ -163,8 +163,23 @@ export class ProjectListComponent implements OnInit {
       });
   }
 
-  pilihSaring(nilai: 'berjalan' | 'retensi' | 'selesai' | 'batal'): void {
-    this.saring = this.saring === nilai ? null : nilai;
+  /**
+   * Keadaan yang dipilih, datang dari daftar kepingnya.
+   *
+   * Nilainya DIPAKAI apa adanya, tidak dibalik-balik. Bentuk sebelumnya
+   * menganggap nilai yang sama dengan pilihan sekarang sebagai "tekan lagi
+   * untuk batal" — dan itu benar selama peristiwanya hanya menyala oleh
+   * penekanan orang. Menyalakannya dari `[selected]` membuat pembatalan itu
+   * terjadi sendiri saat layar dibuka, lalu berbalas tanpa henti.
+   *
+   * Membatalkan pilihan tetap bisa: menekan keping yang sedang terpilih
+   * membuat daftarnya mengirim nilai kosong, dan itu berarti "semua".
+   */
+  pilihSaring(nilai: string | null | undefined): void {
+    const sah = ['berjalan', 'retensi', 'selesai', 'batal'];
+    const berikutnya = nilai && sah.includes(nilai) ? (nilai as any) : null;
+    if (berikutnya === this.saring) return;
+    this.saring = berikutnya;
     this.fetch(0);
   }
 
