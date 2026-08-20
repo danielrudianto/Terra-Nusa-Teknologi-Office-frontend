@@ -345,6 +345,48 @@
           mandor maupun borongan. Sebelumnya hanya mandor, sehingga borongan
           terpaksa memakai keterangan bebas untuk hal yang sama.
         -->
+        <!--
+          Penahan penagihan PERTAMA.
+
+          Ditaruh SEBELUM pilihan siklus: ia membatasi seluruh siklusnya, dan
+          pada lembar yang terbit pun ia ayat pertama. Menaruhnya di bawah
+          membuat urutan di layar berbeda dari urutan di dokumen.
+
+          Hanya untuk lingkup yang benar-benar mencetak pasal itu — lihat
+          `pakaiPenagihanPertama`.
+        -->
+        @if (pakaiPenagihanPertama) {
+          <div class="poh-cutoffs">
+            <mat-form-field
+              appearance="outline"
+              class="poh-cutoffs__term"
+              subscriptSizing="dynamic"
+            >
+              <mat-label>{{ "poH.penagihanPertama" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="firstBillingAfterDays"
+                type="number"
+                [min]="0"
+              />
+              <span matSuffix>&nbsp;{{ "common.days" | translate }}</span>
+            </mat-form-field>
+
+            <!--
+              Nol berarti tidak ada penahanan, dan ayatnya memang tidak
+              tercetak. Disebutkan supaya kosongnya terbaca sebagai pilihan,
+              bukan sebagai isian yang terlewat.
+            -->
+            @if (pratinjauPenagihanPertama) {
+              <p class="poh-cutoffs__preview">{{ pratinjauPenagihanPertama }}</p>
+            } @else {
+              <p class="poh-cutoffs__preview">
+                {{ "poH.penagihanPertamaNol" | translate }}
+              </p>
+            }
+          </div>
+        }
+
         @if (isMandor || isBorongan) {
           <div class="poh-optrow">
             <mat-radio-group

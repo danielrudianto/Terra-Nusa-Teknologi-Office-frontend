@@ -2221,22 +2221,67 @@ function daftarTanggal(days: number[]): string {
   return `tanggal ${urut.join(', ')} dan ${akhir}`;
 }
 
+const SATUAN_TERBILANG = [
+  '',
+  'satu',
+  'dua',
+  'tiga',
+  'empat',
+  'lima',
+  'enam',
+  'tujuh',
+  'delapan',
+  'sembilan',
+];
+
+/**
+ * Angka menjadi kata, untuk ditulis dalam kurung pada klausul.
+ *
+ * Sebelumnya ini peta tetap berisi dua belas angka saja — 1 sampai 10, 14,
+ * dan 30. Angka di luar itu dikembalikan sebagai ANGKA, sehingga klausulnya
+ * tercetak "dalam 21 (21) hari". Pada dokumen yang ditandatangani, bentuk
+ * itu bukan sekadar jelek: penulisan berhuruf ada justru untuk menutup
+ * ruang sengketa atas angkanya, dan mengulang angka yang sama tidak
+ * menutup apa pun.
+ *
+ * Diamnya kekeliruan itu yang membuatnya bertahan: 14 dan 30 ada di peta,
+ * dan keduanya yang paling sering dipakai — sehingga yang memeriksa
+ * dokumen contoh tidak pernah melihat bentuk yang rusak.
+ *
+ * Cukup sampai 999. Tenggat hari pada dokumen ini tidak pernah mendekati
+ * angka itu, dan menyusun sampai jutaan hanya menambah yang tak terpakai.
+ */
+export function terbilang(n: number): string {
+  if (!isFinite(n) || n < 0) return String(n);
+  const bulat = Math.floor(n);
+  if (bulat === 0) return 'nol';
+  if (bulat < 10) return SATUAN_TERBILANG[bulat];
+  if (bulat === 10) return 'sepuluh';
+  if (bulat === 11) return 'sebelas';
+  if (bulat < 20) return `${SATUAN_TERBILANG[bulat - 10]} belas`;
+  if (bulat < 100) {
+    const puluh = Math.floor(bulat / 10);
+    const sisa = bulat % 10;
+    return `${SATUAN_TERBILANG[puluh]} puluh${
+      sisa ? ' ' + SATUAN_TERBILANG[sisa] : ''
+    }`;
+  }
+  if (bulat < 1000) {
+    const ratus = Math.floor(bulat / 100);
+    const sisa = bulat % 100;
+    // "seratus", bukan "satu ratus" — bentuk yang lain tidak dipakai orang.
+    const depan = ratus === 1 ? 'seratus' : `${SATUAN_TERBILANG[ratus]} ratus`;
+    return sisa ? `${depan} ${terbilang(sisa)}` : depan;
+  }
+  return String(bulat);
+}
+
 function terbilangHari(n: number | string): string {
-  const kata: Record<string, string> = {
-    '1': 'satu',
-    '2': 'dua',
-    '3': 'tiga',
-    '4': 'empat',
-    '5': 'lima',
-    '6': 'enam',
-    '7': 'tujuh',
-    '8': 'delapan',
-    '9': 'sembilan',
-    '10': 'sepuluh',
-    '14': 'empat belas',
-    '30': 'tiga puluh',
-  };
-  return kata[String(n)] ?? String(n);
+  const angka = Number(n);
+  // Yang tidak terbaca sebagai angka dikembalikan apa adanya; menuliskannya
+  // sebagai "nol" akan menyatakan sesuatu yang tidak pernah diisi.
+  if (!isFinite(angka)) return String(n);
+  return terbilang(angka);
 }
 
 /** Satu seksi klausul: judul opsional + daftar poin (boleh bertingkat). */
@@ -2271,6 +2316,43 @@ export interface MandorContext extends BuangLumpurContext, Pasal5Context {
    */
   pphNote?: string;
   toolingNote?: string;
+  /**
+   * Penagihan PERTAMA baru boleh diajukan sekian hari sejak pekerjaan
+   * dimulai.
+   *
+   * Bukan pengganti `billingCycleMode` melainkan syarat tambahan atasnya:
+   * siklusnya tetap cutoff atau periode pekan, hanya tagihan pertama yang
+   * ditahan. Karena itu ia bidang tersendiri, dan tercetak sebagai ayat
+   * PERTAMA — syarat yang membatasi seluruh ayat sesudahnya harus dibaca
+   * lebih dulu.
+   *
+   * NOL berarti tidak ada penahanan, dan ayatnya tidak dicetak sama sekali.
+   * Mencetak "setelah 0 (nol) hari" menyatakan aturan yang tidak mengatur
+   * apa pun, dan pembacanya berhenti untuk memikirkan artinya.
+   */
+  firstBillingAfterDays?: number | string;
+}
+
+/**
+ * Ayat penahan penagihan pertama, atau tidak ada sama sekali.
+ *
+ * Dikembalikan sebagai LARIK supaya pemanggilnya cukup menyebarkannya
+ * dengan `...` — tanpa satu pun percabangan di tempat pemakaiannya, dan
+ * tanpa kemungkinan menyisipkan larik kosong yang tercetak sebagai ayat
+ * hampa.
+ *
+ * Nilai yang tidak masuk akal — kosong, bukan angka, nol, atau negatif —
+ * semuanya berarti tidak ada penahanan. Angka negatif tidak ditolak dengan
+ * galat karena tidak ada tempat menampilkannya di sini; formulirnya yang
+ * menjaga batas bawahnya.
+ */
+function ayatPenagihanPertama(ctx: MandorContext): string[] {
+  const n = Number(ctx.firstBillingAfterDays);
+  if (!isFinite(n) || n <= 0) return [];
+  return [
+    `Penagihan pertama dapat dilakukan setelah ${n} (${terbilangHari(n)}) ` +
+      `hari sejak pekerjaan dimulai;`,
+  ];
 }
 
 /** Pilihan baku keterangan PPh pada SPK mandor. */
@@ -2359,6 +2441,9 @@ export function buildMandorClauses(
     {
       title: 'TATA CARA PEMBAYARAN',
       items: [
+        // Penahan tagihan pertama, bila ada. Ayat PERTAMA: ia membatasi
+        // seluruh ayat sesudahnya.
+        ...ayatPenagihanPertama(ctx),
         /*
          * Dua bentuk siklus penagihan.
          *
@@ -2459,6 +2544,7 @@ export function buildGroutingClauses(ctx: MandorContext): ClauseSection[] {
     {
       title: 'TATA CARA PEMBAYARAN',
       items: [
+        ...ayatPenagihanPertama(ctx),
         // Termin diambil dari formulir; sisanya memakai poin bersama.
         `${paymentSentence(ctx).replace(/\.$/, '')} setelah data-data penagihan lengkap kami terima;`,
         ...common.slice(0, 3),

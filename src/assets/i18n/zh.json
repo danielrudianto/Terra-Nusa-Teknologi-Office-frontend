@@ -2969,7 +2969,9 @@
     "tanggunganKet": "选择每一项由哪一方承担。同一方的项目在单据中合并为一句。",
     "pihakPertamaSingkat": "甲方",
     "pihakKeduaSingkat": "乙方",
-    "pajak": "税务"
+    "pajak": "税务",
+    "penagihanPertama": "首次开票延后",
+    "penagihanPertamaNol": "0 — 不延后；该条款不打印。"
   },
   "poA": {
     "shipmentService": "货物运输服务",

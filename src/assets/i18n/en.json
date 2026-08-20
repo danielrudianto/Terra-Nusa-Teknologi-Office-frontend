@@ -2969,7 +2969,9 @@
     "tanggunganKet": "Choose which party bears each item. Items on the same side are merged into one sentence in the document.",
     "pihakPertamaSingkat": "FIRST",
     "pihakKeduaSingkat": "SECOND",
-    "pajak": "TAX"
+    "pajak": "TAX",
+    "penagihanPertama": "First invoice held for",
+    "penagihanPertamaNol": "0 — no hold; the clause is not printed."
   },
   "poA": {
     "shipmentService": "Goods delivery service",

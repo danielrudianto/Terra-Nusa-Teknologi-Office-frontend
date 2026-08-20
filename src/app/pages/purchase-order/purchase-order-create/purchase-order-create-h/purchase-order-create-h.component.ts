@@ -498,6 +498,14 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     // Tanggal cutoff dalam sebulan, mis. [15, 30]. Maksimal 5.
     cutoffDays: new FormArray([new FormControl(30)]),
     billingTermDays: new FormControl(14, [Validators.min(0)]),
+    /*
+     * Penahan penagihan pertama, dalam hari sejak pekerjaan dimulai.
+     *
+     * Bawaannya NOL — yaitu tidak ada penahanan, dan ayatnya tidak tercetak.
+     * Bawaan selain nol akan menyelipkan ketentuan yang tidak pernah
+     * diminta siapa pun ke dalam setiap dokumen baru.
+     */
+    firstBillingAfterDays: new FormControl(0, [Validators.min(0)]),
     weekStartDay: new FormControl('Kamis'),
     weekEndDay: new FormControl('Rabu'),
     // Keterangan PPh & alat kerja (poin 2 & 3 seksi Catatan)
@@ -782,7 +790,15 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         weekStartDay: v.weekStartDay,
         weekEndDay: v.weekEndDay,
         cutoffDays: this.cutoffValues,
-
+        /*
+         * `firstBillingAfterDays` SENGAJA tidak dikirim ke sini.
+         *
+         * Pasal 5 milik lingkup borongan, dan ayat penahan penagihan pertama
+         * hanya tercetak pada pasal TATA CARA PEMBAYARAN milik mandor dan
+         * grouting. Mengirimkannya membuat isiannya tampak berlaku di sini
+         * padahal tidak menghasilkan apa pun — dan penyusun tipe menolaknya,
+         * yang justru menolong.
+         */
         billingTermDays: v.billingTermDays,
         paymentDays: v.paymentDays,
         finalPaymentDays: v.finalPaymentDays,
@@ -838,6 +854,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
       weekStartDay: v.weekStartDay,
       cutoffDays: this.cutoffValues,
       billingTermDays: v.billingTermDays,
+      firstBillingAfterDays: v.firstBillingAfterDays,
       weekEndDay: v.weekEndDay,
     };
 
@@ -880,6 +897,28 @@ export class PurchaseOrderCreateHComponent implements OnInit {
 
   asText(x: string | string[]): string {
     return x as string;
+  }
+
+  /**
+   * Lingkup kerja yang mencetak pasal TATA CARA PEMBAYARAN.
+   *
+   * Hanya mandor dan grouting. Borongan mengatur penagihannya di Pasal 5 dan
+   * pada lampiran tersendiri, sedangkan buang lumpur menyerahkannya ke lembar
+   * terpisah — pada ketiganya ayat ini tidak punya tempat untuk dicetak.
+   *
+   * Isian yang tetap ditampilkan di sana akan menerima angka, menyimpannya,
+   * dan tidak menghasilkan apa pun pada lembar yang terbit. Tidak ada galat,
+   * dan yang mengisinya menyangka ketentuan itu sudah berlaku.
+   */
+  get pakaiPenagihanPertama(): boolean {
+    return this.isMandor || this.isGrouting;
+  }
+
+  /** Pratinjau ayatnya, supaya angka telanjang tidak perlu dibayangkan. */
+  get pratinjauPenagihanPertama(): string {
+    const n = Number(this.formGroup.get('firstBillingAfterDays')?.value) || 0;
+    if (n <= 0) return '';
+    return `Penagihan pertama dapat dilakukan setelah ${n} hari sejak pekerjaan dimulai.`;
   }
 
   get kewajiban(): FormArray {
@@ -1103,6 +1142,10 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         workScope: this.formGroup.get('workScope')?.value ?? null,
         billingTermDays:
           Number(this.formGroup.get('billingTermDays')?.value) || 0,
+        // Ikut disimpan; tanpanya dokumen yang dibuka kembali mencetak
+        // ayatnya hilang, padahal lembar yang beredar memuatnya.
+        firstBillingAfterDays:
+          Number(this.formGroup.get('firstBillingAfterDays')?.value) || 0,
         paymentDays: Number(this.formGroup.get('paymentDays')?.value) || 0,
         finalPaymentDays:
           Number(this.formGroup.get('finalPaymentDays')?.value) || 0,
@@ -1260,6 +1303,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
                     weekEndDay: v.weekEndDay,
                     cutoffDays: this.cutoffValues,
                     billingTermDays: v.billingTermDays,
+                    firstBillingAfterDays: v.firstBillingAfterDays,
                     pphNote: v.pphNote,
                     toolingNote: v.toolingNote,
                   },

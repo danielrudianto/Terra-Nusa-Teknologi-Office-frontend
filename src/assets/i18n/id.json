@@ -2969,7 +2969,9 @@
     "tanggunganKet": "Tentukan pihak yang menanggung tiap butir. Yang sama pihaknya digabung menjadi satu kalimat pada dokumen.",
     "pihakPertamaSingkat": "PERTAMA",
     "pihakKeduaSingkat": "KEDUA",
-    "pajak": "PAJAK"
+    "pajak": "PAJAK",
+    "penagihanPertama": "Penagihan pertama ditahan",
+    "penagihanPertamaNol": "0 — tidak ada penahanan; ayatnya tidak dicetak."
   },
   "poA": {
     "shipmentService": "Jasa pengiriman barang",
