@@ -588,22 +588,24 @@ export class InvoiceComponent {
            * berkas kedua kerap diblokir peramban karena bukan hasil
            * penekanan tombol secara langsung.
            */
-          attachment: [
-            ...(po ? buildPurchaseOrderDContent(this.toPrintData(po)) : []),
+          /*
+           * DUA lampiran, dipisah — dan pemisahannya menentukan kopnya.
+           *
+           * `attachment` berkop surat Alpha; `attachmentPolos` tidak. Surat
+           * pengalihan tidak pernah berkop bila diterbitkan sendiri, dan
+           * menempelkan kop padanya membuat lembar yang mengikat berbeda
+           * dari aslinya.
+           */
+          attachment: po ? buildPurchaseOrderDContent(this.toPrintData(po)) : [],
+          attachmentPolos: [
             /*
-             * Surat pengalihan MULAI DI HALAMAN BARU.
+             * Pemisah halamannya tidak lagi dipasang di sini.
              *
-             * Keduanya menumpang satu berkas, dan tanpa pemisah ini
-             * suratnya menyambung persis di bawah blok tanda tangan SPK —
-             * dua dokumen yang masing-masing mengikat, pada satu halaman,
-             * seolah bagian dari surat yang sama.
-             *
-             * Hanya bila keduanya memang ada: pemisah yang dipasang tanpa
-             * SPK di depannya menghasilkan halaman kosong.
+             * `printInvoiceDocument` yang memasangnya, sebab hanya di sana
+             * diketahui apakah ada lampiran berkop di depannya — pemisah
+             * yang dipasang tanpa SPK di depannya menghasilkan halaman
+             * kosong.
              */
-            ...(po && v.proxyPayment
-              ? [{ text: '', pageBreak: 'before' as any }]
-              : []),
             ...(v.proxyPayment
               ? proxyPaymentContent({
                   invoiceName: this.invoiceNumber,

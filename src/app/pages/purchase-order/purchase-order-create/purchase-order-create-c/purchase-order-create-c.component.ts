@@ -632,7 +632,10 @@ export class PurchaseOrderCreateCComponent {
       pbbkb: this.pbbkbAmount,
       // PPh22 BBM disimpan sebagai otherValue (penambah), sesuai pola data purchases
       otherValue: this.pph22Amount > 0 ? this.pph22Amount : null,
-      otherValueNote: this.pph22Amount > 0 ? 'PPH22' : null,
+      // Nilainya mengikuti daftar bersama `jenis-nilai-lain.ts` — huruf
+      // kecil. Untai 'PPH22' tidak cocok dengan pilihan mana pun, sehingga
+      // layar yang menampilkannya jatuh ke pilihan kosong.
+      otherValueNote: this.pph22Amount > 0 ? 'pph22' : null,
       billing_requirements: {},
       // Baris item PO. Tanpa ini `purchase_order_items` tidak pernah terisi,
       // sehingga dokumen yang dicetak ulang kehilangan seluruh daftar barang.
@@ -655,6 +658,24 @@ export class PurchaseOrderCreateCComponent {
         };
       }),
       customData: {
+        /*
+         * PBBKB dan PPh 22 DISIMPAN DI SINI, bukan hanya dikirim sebagai kolom.
+         *
+         * `purchase_orders` tidak punya kolom `pbbkb` maupun
+         * `otherValueNote`; keduanya dikirim dan dibuang server tanpa berkata
+         * apa pun (`response_model` menyaring bidang yang tidak
+         * dideklarasikan). PPh 22 memang tertampung `otherValue`, tetapi
+         * pencetakan ULANG membacanya dari `customData.pph22` —
+         * `purchase-order-list`, cabang purchaseType 'C'.
+         *
+         * Akibatnya dokumen yang dicetak saat dibuat memuat PBBKB dan PPh 22
+         * di dalam totalnya, sementara cetakan ulang dokumen yang SAMA
+         * menampilkan nol untuk keduanya — dua lembar bernomor sama dengan
+         * jumlah akhir yang berbeda, dan yang beredar di tangan vendor adalah
+         * yang pertama.
+         */
+        pbbkbPercent: Number(this.formGroup.get('pbbkbPercent')?.value) || 0,
+        pph22: Number(this.formGroup.get('pph22')?.value) || 0,
         deliveryMethod: this.formGroup.get('deliveryMethod')?.value,
         deliveryAddress: this.formGroup.get('deliveryAddress')?.value,
         paymentTerm: this.formGroup.get('paymentTerm')?.value,

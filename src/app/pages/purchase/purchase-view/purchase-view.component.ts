@@ -30,6 +30,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { AvatarComponent } from '../../../components/avatar/avatar.component';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 
 @Component({
   selector: 'app-purchase-view',
@@ -107,7 +108,7 @@ export class PurchaseViewComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/,
+        POLA_NOMOR_PO,
       ),
     ]),
     purchaseType: new FormControl('', Validators.required),

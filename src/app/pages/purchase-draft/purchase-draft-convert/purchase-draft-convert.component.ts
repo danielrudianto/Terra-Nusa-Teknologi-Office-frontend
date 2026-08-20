@@ -39,6 +39,7 @@ import { ProjectSelectorComponent } from '../../../components/project-selector/p
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
+import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 
 function lastStatusDescriptionRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -160,7 +161,7 @@ export class PurchaseDraftConvertComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/,
+          POLA_NOMOR_PO,
         ),
       ]),
       projectName: new FormControl('', [
@@ -296,7 +297,7 @@ export class PurchaseDraftConvertComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z]{1,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/;
+          POLA_NOMOR_PO;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name

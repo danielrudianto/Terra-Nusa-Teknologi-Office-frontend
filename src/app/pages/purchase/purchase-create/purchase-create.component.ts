@@ -42,6 +42,7 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
 import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
 import { PurchaseOrderRingkasComponent } from '../../../components/purchase-order-ringkas/purchase-order-ringkas.component';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
+import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 import {
   CARA_BAYAR_BERREKENING,
   PILIHAN_CARA_BAYAR,
@@ -224,7 +225,7 @@ export class PurchaseCreateComponent {
       purchaseOrderName: new FormControl('', [
         Validators.required,
         Validators.pattern(
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/,
+          POLA_NOMOR_PO,
         ),
         Validators.maxLength(100),
       ]),
@@ -540,7 +541,7 @@ export class PurchaseCreateComponent {
         const purchaseOrderName =
           this.metaFormGroup.controls['purchaseOrderName'].value;
         const regex =
-          /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/;
+          POLA_NOMOR_PO;
         const isValid = regex.test(purchaseOrderName);
         if (isValid) {
           // set the project name based on the purchase order name

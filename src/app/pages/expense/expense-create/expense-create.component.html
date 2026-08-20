@@ -514,6 +514,18 @@
               <mat-label>{{
                 "expenseForm.paymentMethod" | translate
               }}</mat-label>
+              <!--
+                Nilainya HARUS sama dengan `pilihan-pembelian.ts`.
+
+                Sebelumnya pilihan bernilai `cash` diberi label "Cek" — sehingga
+                yang memilih "Cek" menyimpan pembelian sebagai TUNAI, dan pembelian
+                tunai terbaca sebagai cek pada layar ini. Sejak cek dan giro
+                menjadi cara bayar tersendiri, keduanya bertentangan terang-terangan.
+
+                `Transfer` ikut didaftarkan meski bukan pilihan baru: dua puluh
+                delapan pembelian lama tersimpan dengan nilai itu, dan tanpa
+                pilihannya di sini kotaknya tampil KOSONG pada dokumen-dokumen itu.
+              -->
               <mat-select formControlName="paymentMethod">
                 <mat-option value="bank">{{
                   "expense.bankTransfer" | translate
@@ -521,8 +533,11 @@
                 <mat-option value="va">{{
                   "expense.virtualAccount" | translate
                 }}</mat-option>
-                <mat-option value="cash">{{
-                  "expense.cheque" | translate
+                <mat-option value="cek">{{ "expense.cheque" | translate }}</mat-option>
+                <mat-option value="giro">{{ "expense.giro" | translate }}</mat-option>
+                <mat-option value="cash">{{ "expense.cash" | translate }}</mat-option>
+                <mat-option value="Transfer">{{
+                  "expense.transferLama" | translate
                 }}</mat-option>
               </mat-select>
             </mat-form-field>

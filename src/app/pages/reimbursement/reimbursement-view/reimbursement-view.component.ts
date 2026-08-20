@@ -83,13 +83,30 @@ export class ReimbursementViewComponent {
       .get('reimbursements/' + this.data.id, {})
       .subscribe({
         next: (data: any) => {
+          /*
+           * Setiap cara bayar punya namanya sendiri.
+           *
+           * Sebelumnya hanya `bank` dan `cash` yang dikenali, dan SELURUH
+           * sisanya jatuh ke "Virtual Account" — termasuk cek dan giro, yang
+           * memang ditawarkan formulir pengajuannya. Pengajuan yang dibayar
+           * dengan giro karena itu tampil dan tercetak sebagai virtual
+           * account: cara bayar yang tidak pernah dipilih siapa pun, pada
+           * dokumen yang dipakai menagih.
+           *
+           * Yang tidak dikenali sekarang ditampilkan APA ADANYA — nilai lama
+           * seperti `Transfer` lebih baik terbaca sebagaimana tersimpan
+           * daripada diterjemahkan menjadi sesuatu yang lain.
+           */
+          const NAMA_CARA_BAYAR: Record<string, string> = {
+            bank: 'Bank Transfer',
+            va: 'Virtual Account',
+            cek: 'Cek',
+            giro: 'Giro',
+            cash: 'Cash',
+          };
           const paymentMethod = data.reimbursement.paymentMethod;
           const paymentMethodText =
-            paymentMethod == 'bank'
-              ? 'Bank Transfer'
-              : paymentMethod == 'cash'
-                ? 'Cash'
-                : 'Virtual Account';
+            NAMA_CARA_BAYAR[paymentMethod] ?? (paymentMethod || '—');
 
           const purchaseType = data.reimbursement.purchaseType;
           const purchaseTypeText =

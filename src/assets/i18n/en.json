@@ -925,7 +925,10 @@
     "ignoreDate": "Ignore date",
     "filterSelection": "Filter Selection",
     "ketikUntukMencari": "Type to search…",
-    "salinPaymentNumber": "Salin payment number"
+    "salinPaymentNumber": "Salin payment number",
+    "cash": "Cash",
+    "giro": "Giro",
+    "transferLama": "Transfer (legacy)"
   },
   "expenseType": {
     "5_1_1": "Asset purchase",
@@ -2383,7 +2386,10 @@
     "submit": "Update status",
     "submitting": "Updating...",
     "cancel": "Cancel",
-    "readonlyHint": "Read only"
+    "readonlyHint": "Read only",
+    "cash": "Cash",
+    "giro": "Giro",
+    "transferLama": "Transfer (legacy)"
   },
   "avatarBuilder": {
     "title": "Your avatar",

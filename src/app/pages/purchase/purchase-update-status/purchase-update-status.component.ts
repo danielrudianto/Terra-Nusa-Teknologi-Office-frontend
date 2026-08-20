@@ -25,6 +25,7 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
+import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 
 @Component({
   selector: 'app-purchase-update-status',
@@ -80,7 +81,7 @@ export class PurchaseUpdateStatusComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK)-[A-Z0-9]{1,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1|6\.4\.2|6\.5\.1)$/,
+        POLA_NOMOR_PO,
       ),
     ]),
     projectName: new FormControl('', Validators.required),
@@ -116,11 +117,26 @@ export class PurchaseUpdateStatusComponent {
     ),
   });
 
+  /*
+   * Isian rekening TIDAK diwajibkan di layar ini.
+   *
+   * Empat isian di bawah hanya DITAMPILKAN — tidak satu pun ikut terkirim
+   * (lihat `onSubmit`). Mewajibkannya karena itu tidak menjaga apa pun, dan
+   * satu-satunya akibatnya merugikan: pembelian TUNAI kini tersimpan dengan
+   * ketiga isian bank kosong — memang begitu seharusnya — sehingga
+   * formulirnya tidak pernah sah, dan tombol simpannya, yang dikunci oleh
+   * kesahihan formulir, mati selamanya.
+   *
+   * Yang mengalaminya melihat tombol mati tanpa satu pun isian memerah, di
+   * layar yang isian banknya sengaja ditampilkan kelabu sebagai keterangan.
+   * Tidak ada yang dapat dilakukannya, dan pembelian tunai itu tidak pernah
+   * dapat dilengkapi berkasnya.
+   */
   paymentFormGroup: FormGroup = new FormGroup({
-    bankName: new FormControl('', Validators.required),
-    bankAccountName: new FormControl('', Validators.required),
-    bankAccountNumber: new FormControl('', Validators.required),
-    paymentMethod: new FormControl('', Validators.required),
+    bankName: new FormControl(''),
+    bankAccountName: new FormControl(''),
+    bankAccountNumber: new FormControl(''),
+    paymentMethod: new FormControl(''),
     paymentTotal: new FormControl(0, [Validators.required, Validators.min(0)]),
   });
 
@@ -173,7 +189,10 @@ export class PurchaseUpdateStatusComponent {
           ppnValue: nilaiUang((data.ppn * data.dpp) / 100),
           pbbkb: data.pbbkb,
           pphCode: data.pphCode,
-          pphTaxObject: data.pphTaxObjectName,
+          // Server mengirimkannya sebagai `pphTaxObject`; `pphTaxObjectName`
+          // tidak pernah ada pada muatannya, sehingga objek pajaknya selalu
+          // kosong di layar ini — tanpa galat apa pun.
+          pphTaxObject: data.pphTaxObject,
           pphPercentage: data.pphPercentage,
           pphValue: nilaiUang((data.pphPercentage * data.dpp) / 100),
           otherValue: data.otherValue,

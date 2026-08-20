@@ -925,7 +925,10 @@
     "ignoreDate": "Ignore date",
     "filterSelection": "Filter Selection",
     "ketikUntukMencari": "Ketik untuk mencari...",
-    "salinPaymentNumber": "Salin payment number"
+    "salinPaymentNumber": "Salin payment number",
+    "cash": "Tunai",
+    "giro": "Giro",
+    "transferLama": "Transfer (data lama)"
   },
   "expenseType": {
     "5_1_1": "Pembelian aset",
@@ -2383,7 +2386,10 @@
     "submit": "Perbarui status",
     "submitting": "Memperbarui...",
     "cancel": "Batal",
-    "readonlyHint": "Hanya baca"
+    "readonlyHint": "Hanya baca",
+    "cash": "Tunai",
+    "giro": "Giro",
+    "transferLama": "Transfer (data lama)"
   },
   "avatarBuilder": {
     "title": "Avatar kamu",

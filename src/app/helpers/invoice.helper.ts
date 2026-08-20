@@ -28,10 +28,29 @@ export interface IInvoiceItem {
 
 export interface IInvoiceDocument {
   /**
-   * Lampiran SPK: isi dokumen yang sudah dirakit helper PO-D.
-   * Dicetak di belakang kuitansi bila SPK-nya ketemu di basis data.
+   * Lampiran BERKOP: isi purchase order yang sudah dirakit helper PO-D.
+   *
+   * Dicetak di belakang kuitansi bila SPK-nya ketemu di basis data, dan
+   * halamannya memakai kop surat Alpha — sama persis dengan SPK yang dicetak
+   * sendiri lewat daftar purchase order.
    */
   attachment?: any[];
+
+  /**
+   * Lampiran TANPA KOP: surat pengalihan pembayaran.
+   *
+   * Dipisahkan dari `attachment` bukan demi kerapian. Kop surat hanya milik
+   * purchase order; surat pengalihan dicetak tanpa kop bila diterbitkan
+   * sendiri, dan menempelkan kop padanya mengubah dokumen yang mengikat
+   * menjadi dokumen yang berbeda dari aslinya.
+   *
+   * Batas antara keduanya tidak dapat disimpulkan dari satu larik gabungan:
+   * banyaknya halaman SPK bergantung pada panjang isinya, dan pdfmake tidak
+   * memberitahukannya sebelum berkasnya dirakit. Yang dapat dipastikan hanya
+   * bahwa surat ini selalu berada di AKHIR — karena itu ia dihitung mundur
+   * dari halaman terakhir.
+   */
+  attachmentPolos?: any[];
 
   /** Nomor dokumen, mis. 05-021-INV-R501-VIII-2026. */
   invoiceNumber: string;
@@ -255,6 +274,8 @@ const MARGIN_BAWAH_KOP = 80;
 /** Margin bawah yang dikehendaki halaman invoice dan kuitansi. */
 const MARGIN_BAWAH_ISI = 20;
 
+
+
 /**
  * Halaman ini bagian isi utama atau lampiran.
  *
@@ -266,9 +287,24 @@ export function bagianHalaman(
   currentPage: number,
   halamanUtama: number,
   adaLampiran: boolean,
-): 'utama' | 'lampiran' {
+  jumlahHalaman = 0,
+  halamanPolos = 0,
+): 'utama' | 'lampiran' | 'polos' {
   if (!adaLampiran) return 'utama';
-  return currentPage > halamanUtama ? 'lampiran' : 'utama';
+  if (currentPage <= halamanUtama) return 'utama';
+  /*
+   * Bagian TANPA KOP dihitung MUNDUR dari halaman terakhir.
+   *
+   * Surat pengalihan selalu dokumen terakhir. Menghitungnya maju dari awal
+   * berarti menebak panjang SPK — yang bergantung pada banyaknya poin
+   * perjanjian dan tidak diketahui sebelum berkasnya dirakit; menghitung
+   * mundur hanya perlu mengetahui panjang SURATNYA, dan surat itu berbentuk
+   * tetap.
+   */
+  if (halamanPolos > 0 && currentPage > jumlahHalaman - halamanPolos) {
+    return 'polos';
+  }
+  return 'lampiran';
 }
 
 export function printInvoiceDocument(
@@ -386,9 +422,42 @@ export function printInvoiceDocument(
   ];
 
   // ---------- lampiran: SPK, lalu surat pengalihan ----------
-  const lampiran: any[] = data.attachment?.length
-    ? [{ text: '', pageBreak: 'before' as any }, ...data.attachment]
+  const berkop: any[] = data.attachment ?? [];
+
+  /*
+   * Surat pengalihan DITARIK KE ATAS, sama seperti halaman invoice.
+   *
+   * Ia dicetak tanpa kop bila terbit sendiri, dan margin atasnya 20 — bukan
+   * 86 yang disediakan berkas ini demi kop lampiran purchase order.
+   * Dibungkus satu tumpukan supaya penarikannya berlaku atas seluruh
+   * suratnya, bukan hanya baris pertamanya.
+   */
+  const polos: any[] = data.attachmentPolos?.length
+    ? [
+        { text: '', pageBreak: 'before' as any },
+        {
+          stack: data.attachmentPolos,
+          margin: [0, MARGIN_ATAS_ISI - MARGIN_ATAS_KOP, 0, 0] as Margins,
+        },
+      ]
     : [];
+
+  const lampiran: any[] =
+    berkop.length || polos.length
+      ? [{ text: '', pageBreak: 'before' as any }, ...berkop, ...polos]
+      : [];
+
+  /*
+   * Berapa halaman yang ditempati surat pengalihan.
+   *
+   * Suratnya berbentuk tetap dan selalu satu halaman; pemisah paksa di
+   * dalamnya ikut dihitung kalau-kalau kelak ia memanjang. Nol bila memang
+   * tidak ada suratnya — dan nol itulah yang membuat seluruh lampiran
+   * kembali dianggap berkop, seperti ketika hanya SPK yang menempel.
+   */
+  const halamanPolos = data.attachmentPolos?.length
+    ? halamanIsiUtama(data.attachmentPolos)
+    : 0;
 
   /*
    * Berapa halaman yang ditempati isi utama.
@@ -442,12 +511,32 @@ export function printInvoiceDocument(
      * sekali — lembar yang mengikat pekerja, tanpa satu pun penanda dari
      * perusahaan mana ia berasal.
      */
-    header: (currentPage: number) =>
-      bagianHalaman(currentPage, halamanUtama, lampiran.length > 0) === 'lampiran'
+    header: (currentPage: number, jumlahHalaman: number) =>
+      bagianHalaman(
+        currentPage,
+        halamanUtama,
+        lampiran.length > 0,
+        jumlahHalaman,
+        halamanPolos,
+      ) === 'lampiran'
         ? documentHeader()
         : undefined,
-    footer: (currentPage: number) =>
-      bagianHalaman(currentPage, halamanUtama, lampiran.length > 0) === 'lampiran'
+    /*
+     * Footer mengikuti bagiannya masing-masing.
+     *
+     * Hanya lampiran BERKOP yang memakai footer Office/Phone/Email berikut
+     * kotak paraf — itu footer dokumen purchase order. Surat pengalihan
+     * memakai footer yang sama dengan invoice, persis seperti bila ia
+     * dicetak sendiri.
+     */
+    footer: (currentPage: number, jumlahHalaman: number) =>
+      bagianHalaman(
+        currentPage,
+        halamanUtama,
+        lampiran.length > 0,
+        jumlahHalaman,
+        halamanPolos,
+      ) === 'lampiran'
         ? documentFooter()
         : footerInvoice(),
   };
@@ -481,12 +570,7 @@ export function printInvoiceDocument(
        * footer invoice ikut naik enam puluh titik dari tempatnya semula —
        * berubah tampilannya, padahal tidak ada yang memintanya.
        */
-      margin: [
-        15,
-        2 + (MARGIN_BAWAH_KOP - MARGIN_BAWAH_ISI),
-        2,
-        2,
-      ] as Margins,
+      margin: [15, 2 + (MARGIN_BAWAH_KOP - MARGIN_BAWAH_ISI), 2, 2] as Margins,
       alignment: 'center' as Alignment,
     };
   }
@@ -528,10 +612,87 @@ export function printInvoiceDocument(
 
   const baseVfs = (pdfFonts as any).vfs ?? (pdfFonts as any);
   const { fonts, vfs } = documentFonts(baseVfs);
-  const pdf = pdfMake.createPdf(dd as any, undefined, fonts as any, vfs as any);
   const fileName = `${data.invoiceNumber}.pdf`;
 
-  if (output === 'print') return pdf.print();
-  if (output === 'download') return pdf.download(fileName);
-  return pdf.open();
+  const keluarkan = (definisi: any, jendela?: Window | null) => {
+    const pdf = pdfMake.createPdf(definisi, undefined, fonts as any, vfs as any);
+    if (output === 'print') return pdf.print();
+    if (output === 'download') return pdf.download(fileName);
+    return jendela ? pdf.open({}, jendela) : pdf.open();
+  };
+
+  /*
+   * Tanpa surat pengalihan, tidak ada batas yang perlu diukur: seluruh
+   * lampiran berkop, dan sekali rakit sudah cukup.
+   */
+  if (!polos.length) return keluarkan(dd);
+
+  /*
+   * DUA KALI RAKIT — dan yang pertama hanya untuk MENGUKUR SURATNYA.
+   *
+   * Batas antara lampiran berkop dan surat pengalihan tidak dapat ditebak.
+   * Panjang purchase order bergantung pada banyaknya poin perjanjian, dan
+   * panjang suratnya sendiri bergantung pada ruang yang tersisa: berkas ini
+   * memakai margin atas dokumen PO demi kopnya, sehingga surat yang
+   * sendirian muat satu halaman kerap memerlukan dua di sini.
+   *
+   * Menebaknya salah dengan cara yang tidak kentara — satu halaman surat
+   * mendapat kop yang bukan miliknya, atau halaman tanda tangan purchase
+   * order kehilangan kopnya — dan tidak ada galat yang menyertainya.
+   *
+   * Yang DIUKUR suratnya, bukan bagian di depannya. Surat itu selalu dimulai
+   * pada halaman baru dan tidak ada apa pun sesudahnya, sehingga jumlah
+   * halamannya sama saja diukur sendirian atau di ujung berkas. Bagian di
+   * depannya tidak begitu: menaruh sesuatu SESUDAH purchase order menggeser
+   * letak blok tanda tangannya, sehingga mengukurnya terpotong menghasilkan
+   * batas yang meleset satu halaman.
+   *
+   * Halamannya lalu dihitung MUNDUR dari halaman terakhir, memakai jumlah
+   * halaman sebenarnya yang diberikan pdfmake saat berkasnya dirakit.
+   */
+  const jendela =
+    output === 'open' && typeof window !== 'undefined'
+      ? window.open('', '_blank')
+      : null;
+
+  let halamanPolosTerukur = 1;
+  const ukur: any = {
+    ...dd,
+    content: polos.slice(1),
+    header: (_c: number, jumlah: number) => {
+      halamanPolosTerukur = Math.max(1, jumlah);
+      return undefined;
+    },
+    footer: undefined,
+  };
+
+  pdfMake
+    .createPdf(ukur, undefined, fonts as any, vfs as any)
+    .getBuffer(() => {
+      const jadi: any = {
+        ...dd,
+        header: (currentPage: number, jumlahHalaman: number) =>
+          bagianHalaman(
+            currentPage,
+            halamanUtama,
+            true,
+            jumlahHalaman,
+            halamanPolosTerukur,
+          ) === 'lampiran'
+            ? documentHeader()
+            : undefined,
+        footer: (currentPage: number, jumlahHalaman: number) =>
+          bagianHalaman(
+            currentPage,
+            halamanUtama,
+            true,
+            jumlahHalaman,
+            halamanPolosTerukur,
+          ) === 'lampiran'
+            ? documentFooter()
+            : footerInvoice(),
+      };
+      keluarkan(jadi, jendela);
+    });
+  return undefined;
 }

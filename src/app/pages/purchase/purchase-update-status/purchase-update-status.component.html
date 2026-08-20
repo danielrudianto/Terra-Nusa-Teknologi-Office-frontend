@@ -302,6 +302,18 @@
 
       <mat-form-field appearance="outline" class="pus-readonly">
         <mat-label>{{ "purchaseStatus.paymentMethod" | translate }}</mat-label>
+        <!--
+          Nilainya HARUS sama dengan `pilihan-pembelian.ts`.
+
+          Sebelumnya pilihan bernilai `cash` diberi label "Cek" — sehingga
+          yang memilih "Cek" menyimpan pembelian sebagai TUNAI, dan pembelian
+          tunai terbaca sebagai cek pada layar ini. Sejak cek dan giro
+          menjadi cara bayar tersendiri, keduanya bertentangan terang-terangan.
+
+          `Transfer` ikut didaftarkan meski bukan pilihan baru: dua puluh
+          delapan pembelian lama tersimpan dengan nilai itu, dan tanpa
+          pilihannya di sini kotaknya tampil KOSONG pada dokumen-dokumen itu.
+        -->
         <mat-select formControlName="paymentMethod">
           <mat-option value="bank">{{
             "purchaseStatus.bankTransfer" | translate
@@ -309,8 +321,11 @@
           <mat-option value="va">{{
             "purchaseStatus.virtualAccount" | translate
           }}</mat-option>
-          <mat-option value="cash">{{
-            "purchaseStatus.cheque" | translate
+          <mat-option value="cek">{{ "purchaseStatus.cheque" | translate }}</mat-option>
+          <mat-option value="giro">{{ "purchaseStatus.giro" | translate }}</mat-option>
+          <mat-option value="cash">{{ "purchaseStatus.cash" | translate }}</mat-option>
+          <mat-option value="Transfer">{{
+            "purchaseStatus.transferLama" | translate
           }}</mat-option>
         </mat-select>
       </mat-form-field>

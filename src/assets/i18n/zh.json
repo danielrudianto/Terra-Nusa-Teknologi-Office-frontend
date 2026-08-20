@@ -925,7 +925,10 @@
     "ignoreDate": "Ignore date",
     "filterSelection": "Filter Selection",
     "ketikUntukMencari": "输入以搜索……",
-    "salinPaymentNumber": "Salin payment number"
+    "salinPaymentNumber": "Salin payment number",
+    "cash": "现金",
+    "giro": "本票",
+    "transferLama": "转账（旧数据）"
   },
   "expenseType": {
     "5_1_1": "资产采购",
@@ -2383,7 +2386,10 @@
     "submit": "更新状态",
     "submitting": "更新中...",
     "cancel": "取消",
-    "readonlyHint": "只读"
+    "readonlyHint": "只读",
+    "cash": "现金",
+    "giro": "本票",
+    "transferLama": "转账（旧数据）"
   },
   "avatarBuilder": {
     "title": "你的头像",

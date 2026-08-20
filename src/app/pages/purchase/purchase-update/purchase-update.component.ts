@@ -31,6 +31,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
+import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -103,7 +104,7 @@ export class PurchaseUpdateComponent {
     purchaseOrderName: new FormControl('', [
       Validators.required,
       Validators.pattern(
-        /^\d{3,4}-(PO|SPK|PKS)-[A-Z0-9]{4,5}-(A|B|C|D|E|F|G|H1|H2|5\.1\.1|5\.1\.2|5\.1\.6|5\.1\.7|6\.3\.1|6\.3\.2|5\.1\.12|6\.4\.1)$/,
+        POLA_NOMOR_PO,
       ),
     ]),
     projectName: new FormControl('', [
@@ -199,6 +200,17 @@ export class PurchaseUpdateComponent {
           supplierID: data.supplier_id,
           supplierName: `${data.supplier_name}, ${data.supplier_prefix}`,
           supplierAddress: `${data.supplier_address}, ${data.supplier_city}, ${data.supplier_province}`,
+          /*
+           * Keadaan dokumen IKUT DIMUAT.
+           *
+           * Sebelumnya tidak, dan bawaannya 'ready'. Pembelian yang tersimpan
+           * 'draft' — belum lengkap berkasnya, belum boleh dibayar — DIAM-DIAM
+           * menjadi 'ready' begitu ada yang menyuntingnya, sekalipun yang
+           * diubah hanya satu huruf pada nomor faktur. Keterangan alasannya
+           * ikut hilang, dan tidak ada satu pun galat yang menyertainya.
+           */
+          lastStatus: data.lastStatus ?? 'ready',
+          lastStatusDescription: data.lastStatusDescription ?? '',
         });
 
         const total =
@@ -318,8 +330,17 @@ export class PurchaseUpdateComponent {
           this.paymentFormGroup.controls['bankAccountNumber'].value,
         paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
         lastStatus: this.metaFormGroup.controls['lastStatus'].value,
+        /*
+         * Dibandingkan dengan 'ready' HURUF KECIL.
+         *
+         * Yang tersimpan selalu huruf kecil — begitu yang ditulis layar
+         * pembuatan, layar konversi draf, dan servernya. Perbandingan
+         * berhuruf besar di sini tidak pernah cocok, sehingga keterangan
+         * "menunggu faktur pajak" tetap menempel pada dokumen yang sudah
+         * lengkap, dan terbaca sebagai dokumen yang masih kurang.
+         */
         lastStatusDescription:
-          this.metaFormGroup.controls['lastStatus'].value == 'Ready'
+          this.metaFormGroup.controls['lastStatus'].value === 'ready'
             ? null
             : this.metaFormGroup.controls['lastStatusDescription'].value,
       })
