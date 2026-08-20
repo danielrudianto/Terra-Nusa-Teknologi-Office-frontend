@@ -23,6 +23,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { AccountService } from '../../services/account.service';
 import { ApiService } from '../../services/api.service';
+import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import { SettingsService } from '../../services/setting.service';
 import { PurchaseOrderListComponent } from './purchase-order-list/purchase-order-list.component';
@@ -30,10 +31,29 @@ import { PurchaseOrderListComponent } from './purchase-order-list/purchase-order
 const SAYA = 7;
 const ORANG_LAIN = 9;
 
-function komponen(level: number, userId: number | null = SAYA): any {
+function komponen(
+  level: number,
+  userId: number | null = SAYA,
+  divisi: string[] = ['procurement'],
+): any {
   const akun = {
     userId,
     user: { id: userId, authenticationLevel: level },
+  };
+
+  /*
+   * Level dan divisi dibaca dari `PermissionService`, bukan dari akun.
+   *
+   * Keduanya berasal dari server; layar tidak menyimpulkan matriks izin
+   * sendiri. Tiruannya karena itu harus menyediakan keduanya, bukan hanya
+   * level pada objek pengguna.
+   */
+  const izin = {
+    level: () => level,
+    departments: () => divisi,
+    inDepartment: (...k: string[]) => k.some((x) => divisi.includes(x)),
+    can: () => true,
+    loaded: () => true,
   };
 
   TestBed.configureTestingModule({
@@ -47,6 +67,7 @@ function komponen(level: number, userId: number | null = SAYA): any {
       { provide: TranslateService, useValue: { instant: (k: string) => k } },
       { provide: ServerMessageService, useValue: { terjemahkan: () => '' } },
       { provide: AccountService, useValue: akun },
+      { provide: PermissionService, useValue: izin },
     ],
   });
 
@@ -62,6 +83,7 @@ function komponen(level: number, userId: number | null = SAYA): any {
         TestBed.inject(TranslateService),
         TestBed.inject(ServerMessageService),
         TestBed.inject(AccountService),
+        TestBed.inject(PermissionService),
       ),
   );
 }
@@ -178,5 +200,112 @@ describe('menghapus purchase order', () => {
      */
     const c = komponen(4);
     expect(c.bolehHapus({ id: 1, isApproved: false, status: 'approved' })).toBeFalse();
+  });
+});
+
+/**
+ * Tombol yang PASTI ditolak tidak disodorkan.
+ *
+ * Dua sikap yang berbeda, dan bedanya disengaja:
+ *
+ *   - bila tindakannya memang BUKAN pekerjaannya — staf level 1, divisi di
+ *     luar procurement — tombolnya hilang TANPA keterangan. Menjelaskannya
+ *     di setiap baris hanya menambah keramaian yang tidak menolong siapa pun;
+ *   - bila tindakannya BIASANYA pekerjaannya tetapi dokumen INI menghalangi
+ *     — dibuat sendiri, diperiksa sendiri — hilangnya DIJELASKAN. Tanpa
+ *     keterangan, menu yang sama terlihat berbeda tanpa sebab dan yang
+ *     membukanya menyimpulkan layarnya rusak.
+ */
+describe('tombol yang tidak pernah dapat ditekan', () => {
+  const poOrangLain = { id: 1, createdBy: ORANG_LAIN, checkedBy: null };
+
+  describe('siapa yang memeriksa', () => {
+    it('level 4 boleh, tanpa memandang divisi', () => {
+      expect(komponen(4, SAYA, []).peranPemeriksa).toBeTrue();
+    });
+
+    it('level 3 procurement boleh', () => {
+      expect(komponen(3, SAYA, ['procurement']).peranPemeriksa).toBeTrue();
+    });
+
+    it('level 3 di luar procurement TIDAK', () => {
+      // Cerminan `boleh_memeriksa` di server: level 3 harus procurement.
+      expect(komponen(3, SAYA, ['fat']).peranPemeriksa).toBeFalse();
+    });
+
+    /*
+     * Merekalah yang membuat dokumennya, dan `purchase_order:update` memang
+     * terbuka sejak level 1 — sehingga tanpa aturan ini tombol "Periksa"
+     * muncul pada setiap baris bagi setiap staf, dan selalu ditolak server.
+     *
+     * Dipisah menjadi dua pengujian, bukan dua pernyataan dalam satu:
+     * `TestBed` hanya dapat dirakit SEKALI per pengujian, dan memanggil
+     * `komponen()` dua kali melemparkan galat yang menyesatkan — bunyinya
+     * soal `inject`, bukan soal aturan yang sedang diuji.
+     */
+    it('level 1 TIDAK, walaupun procurement', () => {
+      expect(komponen(1, SAYA, ['procurement']).peranPemeriksa).toBeFalse();
+    });
+
+    it('level 2 TIDAK, walaupun procurement', () => {
+      expect(komponen(2, SAYA, ['procurement']).peranPemeriksa).toBeFalse();
+    });
+  });
+
+  describe('tombol Periksa', () => {
+    it('tampil bagi pemeriksa pada dokumen orang lain', () => {
+      const c = komponen(3);
+      expect(c.bolehMemeriksa(poOrangLain)).toBeTrue();
+      expect(c.periksaTerhalangPembuat(poOrangLain)).toBeFalse();
+    });
+
+    it('hilang TANPA keterangan bila memeriksa bukan pekerjaannya', () => {
+      const c = komponen(1);
+      expect(c.bolehMemeriksa(poOrangLain)).toBeFalse();
+      expect(c.periksaTerhalangPembuat(poOrangLain))
+        .withContext('bukan pekerjaannya — tidak perlu dijelaskan')
+        .toBeFalse();
+    });
+
+    it('hilang DENGAN keterangan pada dokumen buatannya sendiri', () => {
+      const c = komponen(3);
+      const punyaku = { id: 1, createdBy: SAYA, checkedBy: null };
+      expect(c.bolehMemeriksa(punyaku)).toBeFalse();
+      expect(c.periksaTerhalangPembuat(punyaku)).toBeTrue();
+    });
+  });
+
+  describe('tombol Setujui pada dokumen buatan sendiri', () => {
+    it('disembunyikan — server menolaknya', () => {
+      /*
+       * Sebelumnya layar hanya mengenali "diperiksa sendiri". Pembuat
+       * dokumen tetap disodori tombolnya dan ditolak dengan
+       * SELF_APPROVAL_FORBIDDEN.
+       */
+      const c = komponen(4);
+      const punyaku = { id: 1, createdBy: SAYA, checkedBy: ORANG_LAIN };
+      expect(c.tidakBolehSetujui(punyaku)).toBeTrue();
+      expect(c.sebabTakBolehSetujui(punyaku)).toBe('buatanSendiri');
+    });
+
+    it('pemilik (level 5) tetap boleh', () => {
+      const c = komponen(5);
+      const punyaku = { id: 1, createdBy: SAYA, checkedBy: ORANG_LAIN };
+      expect(c.tidakBolehSetujui(punyaku)).toBeFalse();
+      expect(c.sebabTakBolehSetujui(punyaku)).toBeNull();
+    });
+
+    it('bila keduanya berlaku, yang disebut pemeriksaannya', () => {
+      // Itu tindakan yang paling dekat dengan yang baru saja dilakukannya.
+      const c = komponen(4);
+      const punyaku = { id: 1, createdBy: SAYA, checkedBy: SAYA };
+      expect(c.sebabTakBolehSetujui(punyaku)).toBe('diperiksaSendiri');
+    });
+
+    it('dokumen orang lain tetap dapat disetujui', () => {
+      const c = komponen(4);
+      expect(c.tidakBolehSetujui(poOrangLain)).toBeFalse();
+      expect(c.sebabTakBolehSetujui(poOrangLain)).toBeNull();
+    });
   });
 });

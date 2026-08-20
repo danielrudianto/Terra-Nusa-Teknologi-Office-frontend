@@ -59,6 +59,7 @@ import { FLEET_ID_MODE, FLEET_OPTIONS } from '../../../constants/fleet';
 import { SettingsService } from '../../../services/setting.service';
 import { ServerMessageService } from '../../../services/server-message.service';
 import { AccountService } from '../../../services/account.service';
+import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
 import { PurchaseOrderPeriksaComponent } from '../purchase-order-periksa/purchase-order-periksa.component';
@@ -129,6 +130,7 @@ export class PurchaseOrderListComponent {
     private translate: TranslateService,
     private serverMessage: ServerMessageService,
     private account: AccountService,
+    private perizinan: PermissionService,
   ) {}
 
   isLoading: boolean = false;
@@ -1435,6 +1437,60 @@ export class PurchaseOrderListComponent {
     return !!po?.isChecked;
   }
 
+  /**
+   * Dokumen ini saya yang membuat.
+   *
+   * Tanpa id, dianggap BUKAN buatan sendiri. Server tetap menolak bila
+   * ternyata iya, dan pesannya lebih terbaca daripada tombol yang hilang
+   * tanpa sebab.
+   */
+  buatanSendiri(po: any): boolean {
+    const saya = this.account.userId;
+    if (saya === null) return false;
+    return Number(po?.createdBy) === saya;
+  }
+
+  /**
+   * Memeriksa purchase order memang pekerjaan saya.
+   *
+   * Cerminan `boleh_memeriksa` di server: level 4 ke atas tanpa memandang
+   * divisi, level 3 harus procurement. Level di bawah itu tidak pernah
+   * memeriksa apa pun.
+   *
+   * Level dan divisinya dibaca dari `PermissionService` — keduanya berasal
+   * dari server, bukan disimpulkan di layar. Menyalin matriksnya ke sini
+   * berarti dua tempat yang harus selalu sepakat, dan yang tertinggal saat
+   * aturannya berubah tidak menimbulkan galat apa pun: hanya tombol yang
+   * diam-diam salah muncul atau salah hilang.
+   */
+  get peranPemeriksa(): boolean {
+    const lv = this.perizinan.level();
+    if (lv >= 4) return true;
+    if (lv < 3) return false;
+    return this.perizinan.inDepartment('procurement');
+  }
+
+  /**
+   * Tombol "Periksa" boleh ditampilkan.
+   *
+   * DISEMBUNYIKAN tanpa keterangan bila memeriksa memang bukan pekerjaannya
+   * — bagi staf level 1 dan bagi divisi di luar procurement, tombol itu
+   * tidak pernah dapat ditekan dengan hasil apa pun, dan menjelaskannya
+   * pada setiap baris hanya menambah keramaian yang tidak menolong.
+   *
+   * Pada dokumen BUATANNYA SENDIRI, tombolnya juga hilang — tetapi keadaan
+   * itu diberi keterangan, sebab memeriksa biasanya memang pekerjaannya dan
+   * hilangnya perlu dijelaskan.
+   */
+  bolehMemeriksa(po: any): boolean {
+    return this.peranPemeriksa && !this.buatanSendiri(po);
+  }
+
+  /** Pemeriksa yang tidak boleh memeriksa dokumen INI karena ia pembuatnya. */
+  periksaTerhalangPembuat(po: any): boolean {
+    return this.peranPemeriksa && this.buatanSendiri(po);
+  }
+
   /** Yang memeriksa dokumen ini adalah saya sendiri. */
   diperiksaSendiri(po: any): boolean {
     const saya = this.account.userId;
@@ -1464,7 +1520,23 @@ export class PurchaseOrderListComponent {
    * tombol itu tadinya berada.
    */
   tidakBolehSetujui(po: any): boolean {
-    return this.diperiksaSendiri(po) && !this.pemilikUsaha;
+    if (this.pemilikUsaha) return false;
+    /*
+     * DUA sebab, bukan satu.
+     *
+     * Server menolak keduanya — pemeriksanya sendiri, dan pembuatnya
+     * sendiri. Sebelumnya layar hanya mengenali yang pertama, sehingga
+     * pembuat dokumen tetap disodori tombol yang pasti ditolak.
+     */
+    return this.diperiksaSendiri(po) || this.buatanSendiri(po);
+  }
+
+  /** Sebab tombol setujui tidak ada; menentukan kalimat yang ditampilkan. */
+  sebabTakBolehSetujui(po: any): 'diperiksaSendiri' | 'buatanSendiri' | null {
+    if (!this.tidakBolehSetujui(po)) return null;
+    // Diperiksa sendiri disebut lebih dulu: bila keduanya berlaku, itu yang
+    // paling dekat dengan tindakan yang baru saja dilakukannya.
+    return this.diperiksaSendiri(po) ? 'diperiksaSendiri' : 'buatanSendiri';
   }
 
   /** Dokumen ini sudah disetujui — lembarnya sudah terbit. */

@@ -292,6 +292,24 @@
                 -->
                 @if (!sudahDiperiksa(po)) {
                   <!--
+                    Hilang tanpa keterangan bila memeriksa memang bukan
+                    pekerjaannya — staf level 1, dan divisi di luar
+                    procurement. Bagi mereka tombol ini tidak pernah dapat
+                    ditekan dengan hasil apa pun, dan menjelaskannya di
+                    setiap baris hanya menambah keramaian.
+
+                    Pada dokumen buatannya sendiri, hilangnya DIJELASKAN:
+                    memeriksa biasanya memang pekerjaannya.
+                  -->
+                  @if (periksaTerhalangPembuat(po)) {
+                    <div class="pol-sebab">
+                      <mat-icon>edit_note</mat-icon>
+                      <span>{{
+                        "purchaseOrder.periksaBuatanSendiri" | translate
+                      }}</span>
+                    </div>
+                  }
+                  <!--
                     Menekan ini MEMBUKA dokumennya, bukan langsung menandai.
 
                     Menyusun lembarnya butuh sesaat — rantainya diambil dari
@@ -299,20 +317,22 @@
                     diam sesudah ditekan terbaca sebagai tekanan yang tidak
                     masuk.
                   -->
-                  <button
-                    mat-menu-item
-                    *appCan="'purchase_order:update'"
-                    [disabled]="sedangMenyiapkanPeriksa === po.id"
-                    (click)="periksa(po)"
-                  >
-                    <mat-icon>fact_check</mat-icon
-                    ><span>{{
-                      (sedangMenyiapkanPeriksa === po.id
-                        ? "purchaseOrder.periksaMenyiapkan"
-                        : "purchaseOrder.menuPeriksa"
-                      ) | translate
-                    }}</span>
-                  </button>
+                  @if (bolehMemeriksa(po)) {
+                    <button
+                      mat-menu-item
+                      *appCan="'purchase_order:update'"
+                      [disabled]="sedangMenyiapkanPeriksa === po.id"
+                      (click)="periksa(po)"
+                    >
+                      <mat-icon>fact_check</mat-icon
+                      ><span>{{
+                        (sedangMenyiapkanPeriksa === po.id
+                          ? "purchaseOrder.periksaMenyiapkan"
+                          : "purchaseOrder.menuPeriksa"
+                        ) | translate
+                      }}</span>
+                    </button>
+                  }
                 } @else {
                   <button
                     mat-menu-item
@@ -339,9 +359,16 @@
                   -->
                   @if (tidakBolehSetujui(po)) {
                     <div class="pol-sebab">
-                      <mat-icon>how_to_reg</mat-icon>
+                      <mat-icon>{{
+                        sebabTakBolehSetujui(po) === "buatanSendiri"
+                          ? "edit_note"
+                          : "how_to_reg"
+                      }}</mat-icon>
                       <span>{{
-                        "purchaseOrder.diperiksaSendiri" | translate
+                        (sebabTakBolehSetujui(po) === "buatanSendiri"
+                          ? "purchaseOrder.setujuiBuatanSendiri"
+                          : "purchaseOrder.diperiksaSendiri"
+                        ) | translate
                       }}</span>
                     </div>
                   } @else {

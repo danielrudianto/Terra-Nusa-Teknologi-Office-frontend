@@ -556,7 +556,9 @@
     "periksaGulir": "Scroll to the last page ({{sisa}} of {{jumlah}} left)",
     "periksaGulirSelesai": "Whole document viewed",
     "periksaPernyataan": "I have read this entire document — price, volume, and specification are correct.",
-    "periksaKonfirmasi": "Mark as checked"
+    "periksaKonfirmasi": "Mark as checked",
+    "periksaBuatanSendiri": "You created this document, so someone else has to check it.",
+    "setujuiBuatanSendiri": "You created this document, so someone else has to approve it."
   },
   "income": {
     "title": "Other income",

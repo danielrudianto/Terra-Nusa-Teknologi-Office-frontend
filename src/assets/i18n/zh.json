@@ -556,7 +556,9 @@
     "periksaGulir": "请滚动至最后一页（还剩 {{sisa}} / {{jumlah}}）",
     "periksaGulirSelesai": "已浏览全部页面",
     "periksaPernyataan": "我已阅读本单据全部内容——价格、数量与规格均正确。",
-    "periksaKonfirmasi": "标记为已检查"
+    "periksaKonfirmasi": "标记为已检查",
+    "periksaBuatanSendiri": "此单据由您创建，需由他人检查。",
+    "setujuiBuatanSendiri": "此单据由您创建，需由他人审批。"
   },
   "income": {
     "title": "其他收入",
