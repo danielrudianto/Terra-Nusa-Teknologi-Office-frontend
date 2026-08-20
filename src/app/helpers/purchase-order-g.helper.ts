@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
+import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
 import { ClauseContext, buildClauseLines } from '../constants/clause-templates';
@@ -116,7 +117,7 @@ function buildItemTable(data: IPurchaseOrderG) {
   ];
 
   const rows = data.items.map((item, i) => {
-    const amount = (Number(item.quantity) || 0) * (Number(item.price) || 0);
+    const amount = nilaiBaris(item);
     return [
       { text: `${i + 1}.`, style: 'td', alignment: 'center' as Alignment },
       {
@@ -155,7 +156,7 @@ function buildItemTable(data: IPurchaseOrderG) {
   // Harga satuan pada formulir adalah DPP; PPN 11% ditambahkan di atasnya.
   const subTotal = data.items.reduce(
     (acc, item) =>
-      acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+      acc + nilaiBaris(item),
     0,
   );
   const ppn = data.includePpn ? subTotal * 0.11 : 0;

@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
+import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageSize } from 'pdfmake/interfaces';
 import { documentFonts } from '../constants/document-font.constant';
@@ -133,7 +134,7 @@ function itemsTable(data: IInvoiceDocument, total: number) {
   });
 
   const rows = data.items.map((item, i) => {
-    const jumlah = (Number(item.quantity) || 0) * (Number(item.price) || 0);
+    const jumlah = nilaiBaris(item);
     return [
       { text: `${i + 1}.`, alignment: 'center' as Alignment },
       { text: item.name || '-' },
@@ -263,7 +264,7 @@ export function printInvoiceDocument(
 ) {
   const total = data.items.reduce(
     (acc, item) =>
-      acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+      acc + nilaiBaris(item),
     0,
   );
 

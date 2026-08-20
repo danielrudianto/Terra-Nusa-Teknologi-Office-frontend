@@ -2032,7 +2032,10 @@
     "akanTerbitSebagai": "Akan terbit sebagai",
     "nomorTerkunci": "Nomor dokumen tidak berubah saat disunting",
     "dokumenLama": "Dokumen yang disunting",
-    "tanggalSebelumnya": "Tanggal sebelumnya"
+    "tanggalSebelumnya": "Tanggal sebelumnya",
+    "jumlahBaris": "Jumlah (opsional)",
+    "jumlahBarisKet": "Kosongkan bila mengikuti volume × harga.",
+    "jumlahMenyimpang": "Selisihnya lebih dari Rp {{batas}} dari volume × harga. Betulkan harga satuannya, bukan jumlahnya."
   },
   "menu": {
     "editAsset": "Ubah aset",

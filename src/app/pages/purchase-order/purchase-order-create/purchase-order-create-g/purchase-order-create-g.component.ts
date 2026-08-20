@@ -1,3 +1,9 @@
+import {
+  TOLERANSI_PEMBULATAN,
+  nilaiBaris,
+  nilaiHitung,
+  pembulatanSah,
+} from '../../../../helpers/nilai-baris.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -507,6 +513,15 @@ export class PurchaseOrderCreateGComponent implements OnInit {
       unitMaster: [item.unit || ''],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       price: [0, [Validators.required, Validators.min(0)]],
+      /*
+       * Jumlah baris yang DITULIS; kosong berarti dihitung biasa.
+       *
+       * Harga satuan tersimpan empat desimal, dan sebagian pekerjaan tidak
+       * pernah bulat pada ketelitian itu: 7.000 liter seharga Rp 300.000
+       * berarti Rp 42,857142… per liter, dan yang tersimpan 42,8571 —
+       * dokumennya tercetak Rp 299.999,70.
+       */
+      amount: [null as number | null],
       remarks: [''],
     });
   }
@@ -563,10 +578,31 @@ export class PurchaseOrderCreateGComponent implements OnInit {
   }
 
   get lineTotal(): (i: number) => number {
-    return (i: number) => {
-      const g = this.getFormGroupAt(i).value;
-      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
-    };
+    return (i: number) => nilaiBaris(this.getFormGroupAt(i).getRawValue());
+  }
+
+  readonly TOLERANSI = TOLERANSI_PEMBULATAN;
+
+  /** Volume kali harga, tanpa pembetulan — dipakai sebagai pembanding. */
+  hitungBaris(i: number): number {
+    return nilaiHitung(this.getFormGroupAt(i).getRawValue());
+  }
+
+  /**
+   * Jumlah yang ditulis menyimpang terlalu jauh.
+   *
+   * Di luar batas ini yang salah bukan pembulatannya melainkan harga
+   * satuannya — dan membiarkannya membuat dokumen menyatakan nilai yang tidak
+   * dapat dicocokkan dengan volume kali harganya.
+   */
+  jumlahMenyimpang(i: number): boolean {
+    const v = this.getFormGroupAt(i).getRawValue();
+    return !pembulatanSah(v.amount, v);
+  }
+
+  /** Ada baris yang jumlah tertulisnya menyimpang; dokumen belum boleh terbit. */
+  get adaJumlahMenyimpang(): boolean {
+    return this.t.controls.some((_c, i) => this.jumlahMenyimpang(i));
   }
 
   openSupplierSelector() {
@@ -650,6 +686,8 @@ export class PurchaseOrderCreateGComponent implements OnInit {
           // batas kolomnya.
           task: null,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
+          // Kosong berarti dihitung biasa; server menolak yang di luar batas.
+          amount: x.amount ?? null,
           price: x.price,
           unit: x.unit,
           remarks_1: x.remarks,

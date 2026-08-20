@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
+import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
 import { documentFonts } from '../constants/document-font.constant';
@@ -195,7 +196,7 @@ function scopeTable(data: IPurchaseOrderH) {
       ...base,
       { text: rupiahDokumen(s.price), style: 'td', alignment: 'right' as Alignment },
       {
-        text: rupiahDokumen((Number(s.quantity) || 0) * (Number(s.price) || 0)),
+        text: rupiahDokumen(nilaiBaris(s)),
         style: 'td',
         alignment: 'right' as Alignment,
       },
@@ -206,7 +207,7 @@ function scopeTable(data: IPurchaseOrderH) {
   const subTotal = lump
     ? Number(data.lumpSumPrice) || 0
     : data.scopes.reduce(
-        (acc, s) => acc + (Number(s.quantity) || 0) * (Number(s.price) || 0),
+        (acc, s) => acc + nilaiBaris(s),
         0,
       );
   const ppn = data.includePpn ? subTotal * 0.11 : 0;

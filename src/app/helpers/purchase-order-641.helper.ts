@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
+import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
 import { documentFonts } from '../constants/document-font.constant';
@@ -169,7 +170,7 @@ function buildIdentityTable(data: IPurchaseOrder641) {
 
 function subTotalOf(items: IPurchaseOrder641Item[]): number {
   return (items || []).reduce(
-    (acc, x) => acc + (Number(x.quantity) || 0) * (Number(x.price) || 0),
+    (acc, x) => acc + nilaiBaris(x),
     0,
   );
 }

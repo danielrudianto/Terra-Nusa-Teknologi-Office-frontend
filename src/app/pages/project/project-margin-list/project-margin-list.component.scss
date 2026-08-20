@@ -209,7 +209,13 @@
   color: var(--muted, #6b7280);
 }
 
-/* Yang pertama pada kelompok penyaring; mendorong sisanya ke kanan. */
+/*
+ * Yang PERTAMA pada kelompok penyaring; mendorong seluruh kelompok ke kanan.
+ *
+ * Hanya satu yang boleh memakainya. Ketika kelasnya ikut tersalin ke tombol
+ * berikutnya, tiap tombol mendorong dirinya sendiri — dan kelompoknya
+ * terpencar sepanjang bilah alat alih-alih berdampingan.
+ */
 .pml-toggle--awal {
   margin-left: auto;
 }

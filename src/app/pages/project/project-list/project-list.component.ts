@@ -33,7 +33,16 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
  * yang dikirim ke server, dan itu bagian dari kesepakatan dengan server —
  * bukan keadaan sebuah layar.
  */
-const TAMBAHAN = ['retensi', 'selesai', 'batal'] as const;
+const KEADAAN = ['berjalan', 'retensi', 'selesai', 'batal'] as const;
+
+/**
+ * Yang berlaku ketika tidak ada satu pun keping terpilih.
+ *
+ * Daftar yang tidak menampilkan apa-apa bukan jawaban atas pertanyaan siapa
+ * pun — dan keadaan itu paling mudah terjadi tanpa sengaja, dengan mematikan
+ * keping terakhir.
+ */
+const BAWAAN = 'berjalan';
 
 @Component({
   selector: 'app-project-list',
@@ -89,38 +98,44 @@ export class ProjectListComponent implements OnInit {
    * membuat kombinasi itu bisa dipilih.
    */
   /**
-   * Keadaan yang IKUT ditampilkan, di luar yang berjalan.
+   * Keadaan yang ditampilkan.
    *
-   * Bentuk sebelumnya satu pilihan yang saling meniadakan: memilih "Selesai"
-   * MENGGANTI daftarnya, bukan menambahnya. Yang ingin melihat proyek
-   * berjalan berikut yang menunggu retensi karena itu harus membukanya
-   * bergantian dan menjumlahkan sendiri di kepala.
+   * Seluruhnya PILIHAN, termasuk yang berjalan — daftar berisi proyek masa
+   * retensi saja adalah pertanyaan yang sah, dan bentuk sebelumnya tidak
+   * dapat menjawabnya karena yang berjalan selalu ikut.
    *
-   * Yang berjalan SELALU tampil — itulah dasarnya; kepingnya menambahkan.
+   * Bawaannya yang berjalan saja: proyek selesai dan batal tidak pernah
+   * dihapus — biayanya tetap harus dapat ditinjau — sehingga daftarnya terus
+   * memanjang setiap tahun.
+   *
+   * Disimpan sebagai LARIK, bukan himpunan: `[value]` pada daftar kepingnya
+   * membandingkan rujukan, dan himpunan yang harus disalin pada setiap
+   * penggambaran menghasilkan rujukan baru terus-menerus.
    */
+  readonly KEADAAN = KEADAAN;
+
   /*
-   * Disimpan sebagai LARIK, bukan himpunan.
+   * Dinamai `saring`, bukan `keadaan`.
    *
-   * `[value]` pada daftar kepingnya membandingkan rujukan; himpunan yang
-   * harus disalin menjadi larik pada setiap penggambaran menghasilkan
-   * rujukan baru terus-menerus, dan kepingnya disetel ulang tanpa henti.
+   * `keadaan(p)` sudah ada sebagai pembaca keadaan SEBUAH BARIS, dipakai
+   * papan tampilan untuk mewarnai kepingnya. Dua hal berbeda dengan satu nama
+   * membuat salah satunya diam-diam menimpa yang lain.
    */
-  tambahan: string[] = [];
+  saring: string[] = [BAWAAN];
 
-  readonly TAMBAHAN = TAMBAHAN;
-
-  ikut(keadaan: string): boolean {
-    return this.tambahan.includes(keadaan);
+  ikut(k: string): boolean {
+    return this.saring.includes(k);
   }
 
   /**
-   * Keadaan yang dikirim ke server: yang berjalan, berikut yang dicentang.
+   * Keadaan yang dikirim ke server.
    *
-   * Dirakit di satu tempat supaya daftar dan penghitungnya tidak dapat
-   * berbeda.
+   * Kosong berarti yang berjalan — bukan berarti tidak ada. Dirakit di satu
+   * tempat supaya daftar dan penghitungnya tidak dapat berbeda.
    */
   private get keadaanDiminta(): string {
-    return ['berjalan', ...TAMBAHAN.filter((k) => this.ikut(k))].join(',');
+    const dipilih = KEADAAN.filter((k) => this.ikut(k));
+    return (dipilih.length ? dipilih : [BAWAAN]).join(',');
   }
 
   displayedColumns = [
@@ -185,28 +200,29 @@ export class ProjectListComponent implements OnInit {
   }
 
   /**
-   * Keping "termasuk …" ditekan.
+   * Keping keadaan ditekan.
    *
    * Nilainya dipakai apa adanya dari peristiwa daftar kepingnya — bukan
-   * dibalik dari keadaan sekarang. Membalik dari keadaan sekarang adalah
-   * yang dahulu membuat daftar ini berkedip tanpa henti: `[selected]`
-   * menyalakan peristiwanya sendiri saat layar dibuka, penanganya
-   * membatalkannya, dan keduanya saling menyalakan.
+   * dibalik dari keadaan sekarang. Membalik dari keadaan sekarang adalah yang
+   * dahulu membuat daftar ini berkedip tanpa henti: `[selected]` menyalakan
+   * peristiwanya sendiri saat layar dibuka, penanganya membatalkannya, dan
+   * keduanya saling menyalakan.
+   *
+   * Mematikan SELURUHNYA dibiarkan — kepingnya memang boleh kosong — tetapi
+   * yang dikirim ke server tetap "berjalan". Daftar yang tidak menampilkan
+   * apa-apa bukan jawaban atas pertanyaan siapa pun.
    */
-  ubahTambahan(terpilih: string[] | null | undefined): void {
-    const sah = (TAMBAHAN as readonly string[]).filter((k) =>
+  ubahKeadaan(terpilih: string[] | null | undefined): void {
+    const sah = (KEADAAN as readonly string[]).filter((k) =>
       (terpilih ?? []).includes(k),
     );
 
     // Tidak ada yang berubah: tidak ada pula yang perlu dimuat ulang.
-    if (
-      sah.length === this.tambahan.length &&
-      sah.every((k) => this.ikut(k))
-    ) {
+    if (sah.length === this.saring.length && sah.every((k) => this.ikut(k))) {
       return;
     }
 
-    this.tambahan = sah;
+    this.saring = sah;
     this.fetch(0);
   }
 

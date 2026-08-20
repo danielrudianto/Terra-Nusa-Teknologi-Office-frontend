@@ -2032,7 +2032,10 @@
     "akanTerbitSebagai": "将签发为",
     "nomorTerkunci": "编辑时文件编号不会改变",
     "dokumenLama": "正在编辑的文件",
-    "tanggalSebelumnya": "原日期"
+    "tanggalSebelumnya": "原日期",
+    "jumlahBaris": "金额（选填）",
+    "jumlahBarisKet": "留空则按数量 × 单价计算。",
+    "jumlahMenyimpang": "与数量 × 单价相差超过 Rp {{batas}}。请更正单价，而不是金额。"
   },
   "menu": {
     "editAsset": "编辑资产",

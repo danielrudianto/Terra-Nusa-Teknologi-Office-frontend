@@ -2032,7 +2032,10 @@
     "akanTerbitSebagai": "Will be issued as",
     "nomorTerkunci": "The document number does not change when edited",
     "dokumenLama": "Document being edited",
-    "tanggalSebelumnya": "Previous date"
+    "tanggalSebelumnya": "Previous date",
+    "jumlahBaris": "Amount (optional)",
+    "jumlahBarisKet": "Leave empty to follow quantity × unit price.",
+    "jumlahMenyimpang": "More than Rp {{batas}} away from quantity × unit price. Correct the unit price, not the amount."
   },
   "menu": {
     "editAsset": "Edit asset",

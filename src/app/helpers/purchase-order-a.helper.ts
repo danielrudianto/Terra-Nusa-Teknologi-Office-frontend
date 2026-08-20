@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake';
+import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
 import { documentFonts } from '../constants/document-font.constant';
@@ -288,7 +289,7 @@ function buildShipmentTable(data: IPurchaseOrderA) {
 
   // Harga satuan yang diisi adalah DPP; PPN ditambahkan di atasnya.
   const subTotal = (data.shipments || []).reduce(
-    (acc, s) => acc + (Number(s.quantity) || 0) * (Number(s.price) || 0),
+    (acc, s) => acc + nilaiBaris(s),
     0,
   );
 
