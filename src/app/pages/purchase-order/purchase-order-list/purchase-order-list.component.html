@@ -318,19 +318,20 @@
                     masuk.
                   -->
                   @if (bolehMemeriksa(po)) {
+                    <!--
+                      Tidak lagi ada keadaan "menyiapkan".
+
+                      Dahulu dokumennya dirakit menjadi PDF lebih dahulu, dan
+                      perakitan itu memakan waktu. Sekarang dialognya terbuka
+                      seketika — sama seperti membuka dokumen biasa.
+                    -->
                     <button
                       mat-menu-item
                       *appCan="'purchase_order:update'"
-                      [disabled]="sedangMenyiapkanPeriksa === po.id"
                       (click)="periksa(po)"
                     >
                       <mat-icon>fact_check</mat-icon
-                      ><span>{{
-                        (sedangMenyiapkanPeriksa === po.id
-                          ? "purchaseOrder.periksaMenyiapkan"
-                          : "purchaseOrder.menuPeriksa"
-                        ) | translate
-                      }}</span>
+                      ><span>{{ "purchaseOrder.menuPeriksa" | translate }}</span>
                     </button>
                   }
                 } @else {

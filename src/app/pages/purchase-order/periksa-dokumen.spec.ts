@@ -1,206 +1,207 @@
 /**
- * Menandai "sudah diperiksa" menuntut dokumennya dibuka lebih dulu.
+ * Menandai purchase order "sudah diperiksa".
  *
- * Sebelumnya "Periksa" satu butir menu yang langsung menandai. Dokumennya
- * tidak pernah terbuka — dan tanda itulah yang membuka tombol Setujui,
- * sehingga tahap yang seharusnya menghadirkan mata kedua dapat dilewati
- * tanpa satu pun mata melihatnya.
+ * Bentuk sebelumnya membuka dialog TERSENDIRI berisi PDF hasil rakitan. Dua
+ * hal salah di sana sekaligus, dan yang kedua baru terlihat di tangan
+ * pengguna:
  *
- * Tiga syarat menahan tombol konfirmasinya. Tidak satu pun membuktikan
- * dokumennya benar-benar dibaca — yang dapat dilakukan sebuah layar hanya
- * menghapus kemungkinan menandainya TANPA membukanya sama sekali.
+ *   1. Penampil PDF-nya melaporkan NOL halaman — "sisa 0 dari 0" — sehingga
+ *      syarat "gulir sampai halaman terakhir" tidak akan pernah terpenuhi.
+ *      Tombolnya tidak pernah hidup, dan pemeriksaan berhenti total. Dari
+ *      layar, hal itu tampak seperti tombol yang rusak, bukan seperti syarat
+ *      yang belum dipenuhi.
  *
- * Yang diuji di sini aturan gerbangnya, bukan penampil PDF-nya: merender
- * penampilnya menuntut berkas sungguhan dan pekerja latar, sementara yang
- * menentukan benar-tidaknya justru kapan tombolnya terbuka.
+ *   2. Yang dibaca pemeriksa menjadi berkas LAIN daripada yang dilihat semua
+ *      orang sehari-hari. Dua tampilan atas dokumen yang sama adalah dua
+ *      tempat yang harus selalu sepakat — dan yang tertinggal saat salah
+ *      satunya berubah tidak menimbulkan galat apa pun.
+ *
+ * Sekarang pemeriksaan memakai dialog tampilan yang SAMA, pada mode
+ * `periksa`. Yang dijaga di sini aturan tombolnya; kesamaan isi layar dengan
+ * kertas dijaga `scripts/pemeriksa/pratinjaucek.py`.
  */
 
-import { TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { PurchaseOrderViewComponent } from './purchase-order-view/purchase-order-view.component';
 
-import {
-  JEDA_PERIKSA_DETIK,
-  PurchaseOrderPeriksaComponent,
-} from './purchase-order-periksa/purchase-order-periksa.component';
+/** Berapa detik pemeriksa ditahan sebelum boleh mencentang. */
+const JEDA_PERIKSA_DETIK = 3;
 
-let ditutupDengan: any;
-
-function komponen(): any {
-  ditutupDengan = undefined;
-  TestBed.configureTestingModule({
-    providers: [
-      {
-        provide: MAT_DIALOG_DATA,
-        useValue: { sumber: 'data:application/pdf;base64,AAA', nomor: 'PO-001' },
-      },
-      {
-        provide: MatDialogRef,
-        useValue: { close: (v: any) => (ditutupDengan = v) },
-      },
-    ],
-  });
-  return TestBed.runInInjectionContext(
-    () =>
-      new (PurchaseOrderPeriksaComponent as any)(
-        TestBed.inject(MAT_DIALOG_DATA),
-        TestBed.inject(MatDialogRef),
-      ),
-  );
+/**
+ * Dirakit dari prototipenya; isian kelasnya dipasang sendiri.
+ *
+ * Membuat komponennya utuh menuntut dialog, rute, dan API yang tidak satu pun
+ * ikut menentukan aturan ini.
+ */
+function periksa(ubah: Record<string, any> = {}): any {
+  const c: any = Object.create(PurchaseOrderViewComponent.prototype);
+  c.input = { id: 7, periksa: true };
+  c.data = { id: 7, name: '077-PO-R35CH-G' };
+  c.sisaDetik = JEDA_PERIKSA_DETIK;
+  c.dibaca = false;
+  c.sudahSampaiBawah = true;
+  c.sisaGulir = 0;
+  c.ditutupDengan = undefined;
+  c.dialogRef = { close: (v: any) => (c.ditutupDengan = v) };
+  Object.assign(c, ubah);
+  return c;
 }
 
-afterEach(() => TestBed.resetTestingModule());
-
-/** Anggap jedanya sudah lewat, tanpa benar-benar menunggu. */
-function lewatiJeda(c: any): void {
-  c.sisaDetik.set(0);
+/** Isi dialog beserta ukurannya. */
+function wadah(scrollHeight: number, clientHeight: number, scrollTop = 0): any {
+  return { scrollHeight, clientHeight, scrollTop };
 }
 
-describe('gerbang pemeriksaan dokumen', () => {
-  it('tertutup begitu dialognya terbuka', () => {
-    const c = komponen();
-    expect(c.bolehKonfirmasi()).toBeFalse();
+describe('mode pemeriksaan', () => {
+  it('berlaku pada dokumen tersimpan, bukan pratinjau', () => {
+    expect(periksa().modePeriksa).toBeTrue();
   });
 
-  describe('jeda terpendek', () => {
-    it('menahan walaupun dua syarat lain sudah terpenuhi', () => {
-      const c = komponen();
-      c.halamanSiap({ pagesCount: 1 });
-      c.ubahPernyataan(true);
-
-      expect(c.menungguWaktu()).toBeTrue();
-      expect(c.bolehKonfirmasi())
-        .withContext('jeda belum lewat, tombolnya harus tetap tertutup')
-        .toBeFalse();
-    });
-
-    it('jedanya berjalan mundur dan berhenti di nol', () => {
-      const c = komponen();
-      expect(c.sisaDetik()).toBe(JEDA_PERIKSA_DETIK);
-      lewatiJeda(c);
-      expect(c.menungguWaktu()).toBeFalse();
-    });
+  it('pratinjau TIDAK pernah menjadi mode pemeriksaan', () => {
+    /*
+     * Pratinjau menampilkan dokumen yang belum tersimpan; tidak ada apa pun
+     * yang dapat ditandai sudah diperiksa.
+     */
+    const c = periksa({ input: { data: { id: 1 }, periksa: true } });
+    expect(c.modePeriksa).toBeFalse();
   });
 
-  describe('gulir sampai bawah', () => {
-    it('menahan selama halaman terakhir belum tercapai', () => {
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 4 });
-      c.ubahPernyataan(true);
+  it('dialog biasa tidak menahan siapa pun', () => {
+    expect(periksa({ input: { id: 7 } }).modePeriksa).toBeFalse();
+  });
+});
 
-      expect(c.sudahSampaiBawah()).toBeFalse();
-      expect(c.bolehKonfirmasi()).toBeFalse();
-      expect(c.sisaHalaman()).toBe(3);
-    });
-
-    it('terbuka setelah halaman terakhir tercapai', () => {
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 4 });
-      c.halamanBerpindah(4);
-      c.ubahPernyataan(true);
-
-      expect(c.bolehKonfirmasi()).toBeTrue();
-    });
-
-    it('menggulir kembali ke atas TIDAK membatalkannya', () => {
-      /*
-       * Yang disimpan halaman TERJAUH, bukan halaman berjalan. Kalau yang
-       * dipakai halaman berjalan, syaratnya batal begitu orangnya menggulir
-       * kembali untuk memastikan sesuatu — justru perbuatan yang paling
-       * ingin didorong.
-       */
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 4 });
-      c.halamanBerpindah(4);
-      c.halamanBerpindah(1);
-      c.ubahPernyataan(true);
-
-      expect(c.bolehKonfirmasi()).toBeTrue();
-    });
-
-    it('dokumen satu halaman langsung memenuhinya', () => {
-      /*
-       * Dokumen berhalaman satu tidak pernah memicu perubahan halaman;
-       * yang memenuhinya bawaan `halamanTerjauh` yang bernilai satu.
-       *
-       * Bawaan nol akan menutup gerbangnya SELAMANYA pada dokumen yang
-       * justru paling sering diperiksa — dan tidak ada galat apa pun yang
-       * memberitahunya, hanya tombol yang tidak kunjung hidup.
-       */
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 1 });
-
-      expect(c.sudahSampaiBawah()).toBeTrue();
-    });
-
-    it('sebelum dokumennya termuat, dianggap belum sampai bawah', () => {
-      // Nol halaman berarti belum ada apa pun untuk dilewati; menganggapnya
-      // "selesai" membuat gerbangnya terbuka atas dokumen yang gagal dimuat.
-      const c = komponen();
-      lewatiJeda(c);
-      c.ubahPernyataan(true);
-
-      expect(c.jumlahHalaman()).toBe(0);
-      expect(c.bolehKonfirmasi()).toBeFalse();
-    });
+describe('syarat menandai sudah diperiksa', () => {
+  it('ketiganya harus benar sekaligus', () => {
+    const c = periksa({ sisaDetik: 0, sudahSampaiBawah: true, dibaca: true });
+    expect(c.bolehTandaiPeriksa).toBeTrue();
   });
 
-  describe('pernyataan', () => {
-    it('menahan selama belum dicentang', () => {
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 1 });
-
-      expect(c.bolehKonfirmasi()).toBeFalse();
-    });
-
-    it('mencabut centangnya menutup kembali gerbangnya', () => {
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 1 });
-      c.ubahPernyataan(true);
-      expect(c.bolehKonfirmasi()).toBeTrue();
-
-      c.ubahPernyataan(false);
-      expect(c.bolehKonfirmasi()).toBeFalse();
-    });
+  it('waktu tunggu belum habis: belum boleh', () => {
+    // Menahan klik refleks. Tanpa jeda, "sudah membaca" dapat dicentang
+    // dalam waktu yang tidak cukup untuk membaca apa pun.
+    const c = periksa({ sisaDetik: 2, sudahSampaiBawah: true, dibaca: true });
+    expect(c.bolehTandaiPeriksa).toBeFalse();
   });
 
-  describe('keluar dari dialognya', () => {
-    it('konfirmasi menutup dengan `true`', () => {
-      const c = komponen();
-      lewatiJeda(c);
-      c.halamanSiap({ pagesCount: 1 });
-      c.ubahPernyataan(true);
-      c.konfirmasi();
+  it('belum tergulir sampai bawah: belum boleh', () => {
+    const c = periksa({ sisaDetik: 0, sudahSampaiBawah: false, dibaca: true });
+    expect(c.bolehTandaiPeriksa).toBeFalse();
+  });
 
-      expect(ditutupDengan).toBeTrue();
+  it('belum dicentang: belum boleh', () => {
+    const c = periksa({ sisaDetik: 0, sudahSampaiBawah: true, dibaca: false });
+    expect(c.bolehTandaiPeriksa).toBeFalse();
+  });
+});
+
+describe('gulir sampai bawah', () => {
+  it('dokumen PENDEK dianggap sudah terbaca', () => {
+    /*
+     * Inilah yang rusak pada bentuk sebelumnya, dengan sebab yang berbeda:
+     * syarat yang tidak mungkin dipenuhi menghalangi pemeriksaan alih-alih
+     * menjaganya. Dokumen yang tidak dapat digulir sama sekali sudah
+     * terlihat seluruhnya.
+     */
+    const c = periksa();
+    c.hitungGulir(wadah(400, 400));
+    expect(c.sudahSampaiBawah).toBeTrue();
+  });
+
+  it('dokumen panjang belum dianggap terbaca sebelum digulir', () => {
+    const c = periksa();
+    c.hitungGulir(wadah(2000, 400));
+    expect(c.sudahSampaiBawah).toBeFalse();
+  });
+
+  it('tergulir sampai bawah menyalakannya', () => {
+    const c = periksa();
+    c.hitungGulir(wadah(2000, 400));
+    c.padaGulir(wadah(2000, 400, 1600));
+    expect(c.sudahSampaiBawah).toBeTrue();
+  });
+
+  it('tergulir separuh belum cukup', () => {
+    const c = periksa();
+    c.hitungGulir(wadah(2000, 400));
+    c.padaGulir(wadah(2000, 400, 800));
+    expect(c.sudahSampaiBawah).toBeFalse();
+    expect(c.sisaGulir).toBe(800);
+  });
+
+  it('kurang beberapa piksel tetap dihitung sampai bawah', () => {
+    /*
+     * `scrollHeight` dan `clientHeight` tidak pernah persis sama pada zoom
+     * peramban selain 100%. Perbandingan tepat membuat sebagian orang tidak
+     * pernah dianggap sampai bawah — tanpa sebab yang terlihat dari layar.
+     */
+    const c = periksa();
+    c.hitungGulir(wadah(2000, 400));
+    c.padaGulir(wadah(2000, 400, 1590));
+    expect(c.sudahSampaiBawah).toBeTrue();
+  });
+
+  it('sekali sampai bawah tetap dihitung walau digulir naik lagi', () => {
+    // Yang dijaga adalah "halamannya pernah dilewati", bukan posisi
+    // gulirnya saat tombol ditekan.
+    const c = periksa();
+    c.hitungGulir(wadah(2000, 400));
+    c.padaGulir(wadah(2000, 400, 1600));
+    c.padaGulir(wadah(2000, 400, 0));
+    expect(c.sudahSampaiBawah).toBeTrue();
+  });
+
+  it('wadah yang belum ada tidak mengubah apa pun', () => {
+    const c = periksa({ sudahSampaiBawah: false });
+    c.padaGulir(null);
+    c.hitungGulir(null);
+    expect(c.sudahSampaiBawah).toBeFalse();
+  });
+});
+
+describe('menandai', () => {
+  it('menutup dialog dengan true', () => {
+    const c = periksa({ sisaDetik: 0, dibaca: true });
+    c.konfirmasiPeriksa();
+    expect(c.ditutupDengan).toBeTrue();
+  });
+
+  it('DITOLAK di dalam fungsinya, bukan hanya oleh tombol yang mati', () => {
+    /*
+     * Keadaan tombol bukan tempat menaruh aturan: ia dapat ditekan lewat
+     * papan ketik, dan `disabled` dapat dilepas dari peramban.
+     */
+    const c = periksa({ sisaDetik: 3, dibaca: true });
+    c.konfirmasiPeriksa();
+    expect(c.ditutupDengan).toBeUndefined();
+  });
+
+  it('tanpa centang tidak menutup apa pun', () => {
+    const c = periksa({ sisaDetik: 0, dibaca: false });
+    c.konfirmasiPeriksa();
+    expect(c.ditutupDengan).toBeUndefined();
+  });
+});
+
+describe('adendum diberi peringatan', () => {
+  it('disebut ketika dokumennya adendum', () => {
+    /*
+     * Adendum memuat SELISIH. Dibaca sendirian, volume di dalamnya tidak
+     * menyatakan yang berlaku — dan pemeriksa yang menilai angkanya tanpa
+     * membuka induknya menyetujui sesuatu yang belum utuh.
+     */
+    const c = periksa({ data: { id: 7, parentPurchaseOrderID: 3 } });
+    expect(c.adendumSelisih).toBeTrue();
+  });
+
+  it('tidak disebut pada dokumen biasa', () => {
+    expect(periksa().adendumSelisih).toBeFalse();
+  });
+
+  it('tidak disebut di luar mode pemeriksaan', () => {
+    const c = periksa({
+      input: { id: 7 },
+      data: { id: 7, parentPurchaseOrderID: 3 },
     });
-
-    it('konfirmasi yang dipaksa saat gerbangnya tertutup TIDAK menutup', () => {
-      /*
-       * Dijaga di dalam `konfirmasi()`, bukan hanya lewat `[disabled]`:
-       * tombol yang mati masih dapat ditekan lewat papan ketik pada sebagian
-       * peramban, dan penandaannya akan terkirim tanpa satu pun syarat
-       * terpenuhi.
-       */
-      const c = komponen();
-      c.konfirmasi();
-
-      expect(ditutupDengan).toBeUndefined();
-    });
-
-    it('batal menutup dengan `false`, bukan tanpa nilai', () => {
-      // Yang membukanya membedakan "dibatalkan" dari "dikonfirmasi" lewat
-      // nilai ini; tanpa nilai, keduanya sama-sama palsu dan tidak apa-apa —
-      // tetapi menyebutnya tegas membuat maksudnya terbaca.
-      const c = komponen();
-      c.batal();
-
-      expect(ditutupDengan).toBeFalse();
-    });
+    expect(c.adendumSelisih).toBeFalse();
   });
 });

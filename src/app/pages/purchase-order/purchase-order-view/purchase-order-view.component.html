@@ -54,7 +54,11 @@
     }
   </div>
 
-  <mat-dialog-content class="pov-content">
+  <mat-dialog-content
+    class="pov-content"
+    #isi
+    (scroll)="padaGulir(isi)"
+  >
     @if (isLoading) {
       <div class="pov-state"><mat-spinner diameter="34"></mat-spinner></div>
     } @else {
@@ -278,6 +282,23 @@
       hendak dicegah adalah orang yang menggulir cepat, dan teks yang seragam
       dengan sekitarnya justru terlewat oleh orang seperti itu.
     -->
+    <!--
+      Adendum memuat SELISIH, bukan keadaan pekerjaannya.
+
+      Dibaca sendirian, volume di dalamnya tidak menyatakan yang berlaku —
+      dan pemeriksa yang menilai angkanya tanpa membuka induknya menyetujui
+      sesuatu yang belum utuh.
+    -->
+    @if (adendumSelisih) {
+      <div class="pov-waspada">
+        <mat-icon>call_split</mat-icon>
+        <div>
+          <strong>{{ "poView.periksaAdendum" | translate }}</strong>
+          <p>{{ "poView.periksaAdendumKet" | translate }}</p>
+        </div>
+      </div>
+    }
+
     @if (isPratinjau && input.konfirmasi) {
       <div class="pov-tegas">
         <mat-icon>fact_check</mat-icon>
@@ -363,11 +384,68 @@
         </p>
       </div>
     }
+
+    <!--
+      Pernyataan pemeriksa.
+
+      Syaratnya tiga dan harus benar bersamaan: waktu tunggu habis, isinya
+      sudah tergulir sampai bawah, dan pernyataannya dicentang. Ketiganya
+      menjawab hal yang berbeda — yang pertama menahan klik refleks, yang
+      kedua memastikan halamannya pernah dilewati, yang ketiga meminta
+      seseorang menanggungnya dengan sadar.
+    -->
+    @if (modePeriksa) {
+      <div class="pov-konfirmasi">
+        <div class="pov-syarat">
+          <span class="pov-syarat__item" [class.is-ok]="!masihMenunggu">
+            <mat-icon>{{
+              masihMenunggu ? "hourglass_top" : "check_circle"
+            }}</mat-icon>
+            @if (masihMenunggu) {
+              {{ "poForm.confirmReadTunggu" | translate: { detik: sisaDetik } }}
+            } @else {
+              {{ "poView.periksaWaktuSelesai" | translate }}
+            }
+          </span>
+          <span class="pov-syarat__item" [class.is-ok]="sudahSampaiBawah">
+            <mat-icon>{{
+              sudahSampaiBawah ? "check_circle" : "vertical_align_bottom"
+            }}</mat-icon>
+            @if (sudahSampaiBawah) {
+              {{ "poView.periksaGulirSelesai" | translate }}
+            } @else {
+              {{ "poView.periksaGulirSisa" | translate }}
+            }
+          </span>
+        </div>
+        <label class="pov-cek" [class.pov-cek--menunggu]="!sudahSampaiBawah || masihMenunggu">
+          <input
+            type="checkbox"
+            [(ngModel)]="dibaca"
+            [disabled]="masihMenunggu || !sudahSampaiBawah"
+          />
+          <span>{{ "poView.periksaPernyataan" | translate }}</span>
+        </label>
+      </div>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions class="pov-foot">
     <span class="pov-spacer"></span>
-    @if (isPratinjau && input.konfirmasi) {
+    @if (modePeriksa) {
+      <button type="button" class="pov-close" (click)="tutup()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="pov-terbit"
+        [disabled]="!bolehTandaiPeriksa"
+        (click)="konfirmasiPeriksa()"
+      >
+        <mat-icon>fact_check</mat-icon>
+        {{ "poView.periksaTandai" | translate }}
+      </button>
+    } @else if (isPratinjau && input.konfirmasi) {
       <button type="button" class="pov-close" (click)="tutup()">
         {{ "common.cancel" | translate }}
       </button>

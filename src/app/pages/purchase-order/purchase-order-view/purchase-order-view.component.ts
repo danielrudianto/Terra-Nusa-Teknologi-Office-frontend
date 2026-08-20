@@ -3,7 +3,15 @@ import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja
 import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { inject } from '@angular/core';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -81,7 +89,9 @@ const ADENDUM_ROUTES: Record<string, string> = {
   templateUrl: './purchase-order-view.component.html',
   styleUrl: './purchase-order-view.component.scss',
 })
-export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
+export class PurchaseOrderViewComponent
+  implements OnInit, OnDestroy, AfterViewChecked
+{
   private readonly serverMessage = inject(ServerMessageService);
 
   isLoading = true;
@@ -183,7 +193,9 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
   private mulaiHitungMundur(): void {
     // Hanya pada pratinjau yang meminta konfirmasi; dialog yang sekadar
     // menampilkan dokumen tidak perlu menahan siapa pun.
-    if (!this.isPratinjau || !this.input?.konfirmasi) {
+    const menahan =
+      (this.isPratinjau && !!this.input?.konfirmasi) || this.modePeriksa;
+    if (!menahan) {
       this.sisaDetik = 0;
       return;
     }
@@ -227,6 +239,15 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
        * Dialog menutup dengan `true` bila pembuatnya melanjutkan.
        */
       konfirmasi?: boolean;
+      /**
+       * Membuka dokumen TERSIMPAN untuk diperiksa.
+       *
+       * Berbeda dari `konfirmasi`, yang berlaku pada pratinjau sebelum
+       * dokumen terbit. Mode ini dipakai pemeriksa atas dokumen yang sudah
+       * ada, dan dialog menutup dengan `true` bila ia menandainya sudah
+       * diperiksa.
+       */
+      periksa?: boolean;
     },
     private dialogRef: MatDialogRef<PurchaseOrderViewComponent>,
     private router: Router,
@@ -435,6 +456,107 @@ export class PurchaseOrderViewComponent  implements OnInit, OnDestroy {
 
   get isPratinjau(): boolean {
     return !!this.input?.data;
+  }
+
+  /**
+   * Dokumen ini sedang DIPERIKSA.
+   *
+   * Sebelumnya pemeriksaan memakai dialog tersendiri berisi PDF hasil
+   * rakitan. Dua hal salah di sana sekaligus: penampil PDF-nya melaporkan
+   * nol halaman sehingga syarat "gulir sampai halaman terakhir" tidak pernah
+   * dapat dipenuhi — tombolnya tidak akan pernah hidup — dan yang dibaca
+   * pemeriksa menjadi berkas lain daripada yang dilihat semua orang di layar
+   * ini.
+   *
+   * Sekarang yang diperiksa TAMPILAN YANG SAMA dengan yang dibuka
+   * sehari-hari. Poin perjanjiannya dirakit dari sumber yang sama dengan
+   * yang dicetak (`buildClauseLines`), sehingga apa yang dibaca di sini
+   * memang yang akan tertulis di kertas.
+   */
+  get modePeriksa(): boolean {
+    return !!this.input?.periksa && !this.isPratinjau;
+  }
+
+  /**
+   * Isi dialog sudah tergulir sampai bawah.
+   *
+   * Bawaannya BENAR dan dikoreksi setelah isinya termuat: dokumen pendek
+   * tidak dapat digulir sama sekali, dan syarat yang tidak mungkin dipenuhi
+   * menghalangi pemeriksaan alih-alih menjaganya.
+   */
+  sudahSampaiBawah = true;
+
+  /** Sisa yang belum terbaca, dalam piksel; hanya untuk keterangan. */
+  sisaGulir = 0;
+
+  @ViewChild('isi') private wadahIsi?: ElementRef<HTMLElement>;
+
+  /**
+   * Sudah diukur sekali setelah isinya termuat.
+   *
+   * Pengukurannya harus terjadi SESUDAH dokumen digambar — sebelum itu
+   * tingginya nol, dan setiap dokumen akan dianggap tidak dapat digulir.
+   * Diukur ulang setiap kali datanya berganti.
+   */
+  private _diukur = false;
+
+  ngAfterViewChecked(): void {
+    if (!this.modePeriksa || this._diukur || !this.data) return;
+    const el = this.wadahIsi?.nativeElement;
+    if (!el || el.scrollHeight === 0) return;
+    this._diukur = true;
+    this.hitungGulir(el);
+  }
+
+  /**
+   * Dipanggil saat isi dialog digulir, dan sekali setelah isinya termuat.
+   *
+   * Ambang 24 piksel: `scrollHeight` dan `clientHeight` tidak pernah persis
+   * sama pada zoom peramban selain 100%, sehingga perbandingan tepat membuat
+   * sebagian orang tidak pernah dianggap sampai bawah.
+   */
+  padaGulir(el: HTMLElement | null): void {
+    if (!el) return;
+    const sisa = el.scrollHeight - el.scrollTop - el.clientHeight;
+    this.sisaGulir = Math.max(0, Math.round(sisa));
+    if (sisa <= 24) this.sudahSampaiBawah = true;
+  }
+
+  /** Periksa apakah isinya memang dapat digulir; dipanggil setelah termuat. */
+  hitungGulir(el: HTMLElement | null): void {
+    if (!el) return;
+    const dapatDigulir = el.scrollHeight - el.clientHeight > 24;
+    this.sudahSampaiBawah = !dapatDigulir;
+    this.padaGulir(el);
+  }
+
+  /**
+   * Tombol "Tandai sudah diperiksa" boleh ditekan.
+   *
+   * Ketiganya harus benar sekaligus: waktu tunggu habis, isinya sudah
+   * tergulir sampai bawah, dan pernyataannya dicentang.
+   */
+  get bolehTandaiPeriksa(): boolean {
+    return !this.masihMenunggu && this.sudahSampaiBawah && this.dibaca;
+  }
+
+  /**
+   * Dokumen ini ADENDUM, dan isinya memuat SELISIH.
+   *
+   * Dibaca sendirian ia tidak menyatakan volume yang berlaku. Disebutkan
+   * terang-terangan pada mode pemeriksaan: yang memeriksanya perlu membuka
+   * induknya sebelum menilai angka mana pun.
+   */
+  get adendumSelisih(): boolean {
+    const d: any = this.data ?? {};
+    return this.modePeriksa && !!d.parentPurchaseOrderID;
+  }
+
+  konfirmasiPeriksa(): void {
+    // Penjaga kedua: tombolnya memang sudah dinonaktifkan, tetapi keadaan
+    // tombol bukan tempat menaruh aturan.
+    if (!this.bolehTandaiPeriksa) return;
+    this.dialogRef.close(true);
   }
 
   tutup(): void {

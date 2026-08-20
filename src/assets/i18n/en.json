@@ -4081,7 +4081,14 @@
     "buatAdendum": "Create addendum",
     "adendumJenisBelumAda": "This document type has no form yet, so an addendum cannot be created.",
     "ubahDraf": "Edit document",
-    "ubahTerkunciDiperiksa": "Already checked, so it can no longer be edited. Revoke the check first, or ask a level 4 user to make the change."
+    "ubahTerkunciDiperiksa": "Already checked, so it can no longer be edited. Revoke the check first, or ask a level 4 user to make the change.",
+    "periksaTandai": "Mark as checked",
+    "periksaPernyataan": "I have read this entire document — the prices, quantities, and specifications are correct.",
+    "periksaWaktuSelesai": "Waiting time complete",
+    "periksaGulirSelesai": "Read to the end",
+    "periksaGulirSisa": "Scroll to the bottom first",
+    "periksaAdendum": "This document is an addendum",
+    "periksaAdendumKet": "It contains the DIFFERENCE, not the quantities in force. Open the parent document before judging the figures."
   },
   "poRekap": {
     "judul": "Download recap",

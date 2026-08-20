@@ -612,3 +612,35 @@
     color: var(--faint, #9aa0ab);
   }
 }
+
+/*
+ * Syarat pemeriksaan, ditampilkan sebagai keadaan — bukan sebagai galat.
+ *
+ * Yang belum terpenuhi berwarna redup, yang sudah berwarna hijau. Tanpa
+ * baris ini, tombol yang mati tidak menyebutkan apa yang kurang, dan
+ * itulah yang membuat pemeriksaan sebelumnya terbaca sebagai kerusakan.
+ */
+.pov-syarat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.pov-syarat__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--faint, #9aa0ab);
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+
+  &.is-ok {
+    color: var(--ok-fg, #1a7f45);
+  }
+}

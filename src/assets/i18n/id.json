@@ -4081,7 +4081,14 @@
     "buatAdendum": "Buat adendum",
     "adendumJenisBelumAda": "Jenis dokumen ini belum punya formulir, sehingga adendumnya belum dapat dibuat.",
     "ubahDraf": "Ubah dokumen",
-    "ubahTerkunciDiperiksa": "Sudah diperiksa, jadi tidak dapat diubah lagi. Cabut pemeriksaannya dahulu, atau mintakan perubahan kepada level 4 ke atas."
+    "ubahTerkunciDiperiksa": "Sudah diperiksa, jadi tidak dapat diubah lagi. Cabut pemeriksaannya dahulu, atau mintakan perubahan kepada level 4 ke atas.",
+    "periksaTandai": "Tandai sudah diperiksa",
+    "periksaPernyataan": "Saya telah membaca seluruh dokumen ini — harga, volume, dan spesifikasinya sudah benar.",
+    "periksaWaktuSelesai": "Waktu tunggu selesai",
+    "periksaGulirSelesai": "Sudah dibaca sampai bawah",
+    "periksaGulirSisa": "Gulir sampai bawah dahulu",
+    "periksaAdendum": "Dokumen ini adendum",
+    "periksaAdendumKet": "Isinya memuat SELISIH, bukan volume yang berlaku. Buka dokumen induknya sebelum menilai angkanya."
   },
   "poRekap": {
     "judul": "Unduh hasil rekap",

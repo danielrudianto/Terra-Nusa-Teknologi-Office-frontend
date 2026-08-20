@@ -62,7 +62,6 @@ import { AccountService } from '../../../services/account.service';
 import { PermissionService } from '../../../services/permission.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
-import { PurchaseOrderPeriksaComponent } from '../purchase-order-periksa/purchase-order-periksa.component';
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
 
 @Component({
@@ -136,7 +135,6 @@ export class PurchaseOrderListComponent {
   isLoading: boolean = false;
   isReprinting: number | null = null;
   /** Dokumen yang lembarnya sedang disusun untuk diperiksa. */
-  sedangMenyiapkanPeriksa: number | null = null;
   searchControl: FormControl = new FormControl('');
   orders: any[] = [];
   /** Kolom & arah pengurutan; penamaannya mengikuti halaman Pembelian. */
@@ -1595,71 +1593,46 @@ export class PurchaseOrderListComponent {
    * bukan lembar yang akan diterima vendor — dan bedanya justru akan muncul
    * pada bagian yang paling jarang dilihat.
    */
+  /**
+   * Buka dokumennya untuk DIPERIKSA.
+   *
+   * Memakai dialog tampilan yang SAMA dengan yang dibuka sehari-hari, bukan
+   * penampil PDF tersendiri.
+   *
+   * Bentuk sebelumnya merakit PDF dari rantai dokumennya lalu membukanya di
+   * penampil PDF di dalam dialog. Dua hal salah di sana sekaligus:
+   *
+   *   1. Penampilnya melaporkan NOL halaman — "sisa 0 dari 0" — sehingga
+   *      syarat "gulir sampai halaman terakhir" tidak pernah dapat dipenuhi
+   *      dan tombol "Tandai sudah diperiksa" tidak akan pernah hidup.
+   *      Pemeriksaan berhenti total, dan dari layar hal itu tampak seperti
+   *      tombol yang rusak.
+   *
+   *   2. Yang dibaca pemeriksa menjadi berkas LAIN daripada yang dilihat
+   *      semua orang. Dua tampilan atas dokumen yang sama adalah dua tempat
+   *      yang harus selalu sepakat — dan yang tertinggal saat salah satunya
+   *      berubah tidak menimbulkan galat apa pun.
+   *
+   * Poin perjanjian pada tampilan ini dirakit dari sumber yang sama dengan
+   * yang dicetak, sehingga apa yang dibaca memang yang akan tertulis di
+   * kertas.
+   */
   periksa(po: any): void {
-    if (this.sedangMenyiapkanPeriksa === po.id) return;
-    this.sedangMenyiapkanPeriksa = po.id;
-
-    /*
-     * Rantainya diambil, bukan dokumennya sendirian.
-     *
-     * Adendum berisi SELISIH; dibaca sendirian ia tidak menyatakan keadaan
-     * pekerjaannya, dan pemeriksa tidak dapat menilai volume yang berlaku.
-     * Sama seperti saat dicetak, induk dan adendum sebelumnya ikut.
-     */
-    this.apiService.get(`purchase-orders/${po.id}/rantai`, {}).subscribe({
-      next: async (rantai: any) => {
-        try {
-          const daftar: any[] = Array.isArray(rantai) ? rantai : [];
-          if (!daftar.length) {
-            this.gagalSiapkanPeriksa();
-            return;
-          }
-
-          const sumber: string =
-            daftar.length === 1
-              ? await this.susunDokumen(daftar[0], 'dataurl')
-              : await cetakRantaiPurchaseOrder(
-                  daftar
-                    .map((d) => this.susunDokumen(d, 'docdef'))
-                    .filter(Boolean),
-                  po.name || 'purchase-order',
-                  'dataurl',
-                );
-
-          if (!sumber) {
-            this.gagalSiapkanPeriksa();
-            return;
-          }
-
-          this.sedangMenyiapkanPeriksa = null;
-          this.dialog
-            .open(PurchaseOrderPeriksaComponent, {
-              data: { sumber, nomor: po.name },
-              autoFocus: false,
-              maxWidth: '96vw',
-              // Ditutup lewat tombolnya saja: menutup tanpa sengaja di
-              // tengah pemeriksaan berarti mengulang dari awal.
-              disableClose: true,
-            })
-            .afterClosed()
-            .subscribe((setuju) => {
-              if (setuju) {
-                this.ubahPemeriksaan(po, true, 'purchaseOrder.diperiksa');
-              }
-            });
-        } catch {
-          this.gagalSiapkanPeriksa();
+    this.dialog
+      .open(PurchaseOrderViewComponent, {
+        data: { id: po.id, periksa: true },
+        autoFocus: false,
+        maxWidth: '96vw',
+        // Ditutup lewat tombolnya saja: menutup tanpa sengaja di tengah
+        // pemeriksaan berarti mengulang dari awal.
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (setuju) {
+          this.ubahPemeriksaan(po, true, 'purchaseOrder.diperiksa');
         }
-      },
-      error: () => this.gagalSiapkanPeriksa(),
-    });
-  }
-
-  private gagalSiapkanPeriksa(): void {
-    this.sedangMenyiapkanPeriksa = null;
-    this.snackBar.open(this.translate.instant('notify.actionFailed'), 'Close', {
-      duration: 4000,
-    });
+      });
   }
 
   /**

@@ -4081,7 +4081,14 @@
     "buatAdendum": "创建补充协议",
     "adendumJenisBelumAda": "该单据类型尚无表单，暂无法创建补充协议。",
     "ubahDraf": "修改文件",
-    "ubahTerkunciDiperiksa": "已完成审核，因此无法再修改。请先撤销审核，或请求 4 级以上人员修改。"
+    "ubahTerkunciDiperiksa": "已完成审核，因此无法再修改。请先撤销审核，或请求 4 级以上人员修改。",
+    "periksaTandai": "标记为已审核",
+    "periksaPernyataan": "我已阅读本文件全文——价格、数量和规格均正确。",
+    "periksaWaktuSelesai": "等待时间已结束",
+    "periksaGulirSelesai": "已阅读至末尾",
+    "periksaGulirSisa": "请先滚动至底部",
+    "periksaAdendum": "本文件为附录",
+    "periksaAdendumKet": "其内容为差额，而非现行数量。评估数字前请先打开主文件。"
   },
   "poRekap": {
     "judul": "下载汇总",
