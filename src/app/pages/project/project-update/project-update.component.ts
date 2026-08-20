@@ -1,4 +1,8 @@
 import { Component, Inject, Optional } from '@angular/core';
+import {
+  KeadaanProyek,
+  keadaanProyek,
+} from '../project.model';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -64,6 +68,7 @@ export class ProjectUpdateComponent {
       endDate: data?.endDate ? new Date(data.endDate) : null,
       isActive: !!data?.isActive,
       isCancelled: !!data?.isCancelled,
+      isRetention: !!data?.isRetention,
     });
   }
 
@@ -89,21 +94,41 @@ export class ProjectUpdateComponent {
     endDate: new FormControl<Date | null>(null),
     isActive: new FormControl(true),
     isCancelled: new FormControl(false),
+    isRetention: new FormControl(false),
   });
 
   /**
-   * Tiga keadaan, dua penanda. Layar memakai satu pilihan agar kombinasi
-   * yang tidak punya arti (aktif sekaligus batal) tidak mungkin dipilih.
+   * Empat keadaan, tiga penanda. Layar memakai satu pilihan agar kombinasi
+   * yang tidak punya arti — aktif sekaligus batal, atau selesai sekaligus
+   * menunggu retensi — tidak mungkin dipilih.
+   *
+   * Dibaca lewat `keadaanProyek` yang sama dengan daftar dan rincian, bukan
+   * disimpulkan ulang di sini: dua tempat yang membaca penanda yang sama
+   * dengan urutan berbeda cepat atau lambat berbeda jawabannya.
    */
-  get keadaan(): 'berjalan' | 'selesai' | 'batal' {
-    if (this.formGroup.value.isCancelled) return 'batal';
-    return this.formGroup.value.isActive ? 'berjalan' : 'selesai';
+  get keadaan(): KeadaanProyek {
+    const v = this.formGroup.value;
+    return keadaanProyek({
+      isActive: !!v.isActive,
+      isCancelled: !!v.isCancelled,
+      isRetention: !!v.isRetention,
+    });
   }
 
-  setKeadaan(k: 'berjalan' | 'selesai' | 'batal'): void {
+  setKeadaan(k: KeadaanProyek): void {
+    /*
+     * `isActive` tetap menyala pada masa retensi.
+     *
+     * Proyeknya belum selesai: masa pemeliharaan masih berjalan, sebagian
+     * nilai kontrak masih ditahan, dan perbaikan yang timbul masih
+     * dibebankan ke sana. Mematikannya akan mengeluarkan proyek itu dari
+     * setiap pemilih proyek — sehingga biaya perbaikannya tidak punya
+     * tempat untuk dicatat.
+     */
     this.formGroup.patchValue({
-      isActive: k === 'berjalan',
+      isActive: k === 'berjalan' || k === 'retensi',
       isCancelled: k === 'batal',
+      isRetention: k === 'retensi',
     });
   }
 
@@ -148,6 +173,9 @@ export class ProjectUpdateComponent {
         endDate: v.endDate ? moment(v.endDate).format('YYYY-MM-DD') : null,
         isActive: v.isActive,
         isCancelled: v.isCancelled,
+        // Muatan ini menyebut kolomnya satu per satu; yang tidak ditulis di
+        // sini tersimpan sebagai NULL tanpa galat apa pun.
+        isRetention: v.isRetention,
       })
       .subscribe({
         next: () => {

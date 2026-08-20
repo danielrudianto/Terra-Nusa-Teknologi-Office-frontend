@@ -3578,8 +3578,9 @@
     "state": {
       "label": "State",
       "berjalan": "Running",
-      "selesai": "Finished",
-      "batal": "Cancelled"
+      "selesai": "Completed (BAST 2)",
+      "batal": "Cancelled",
+      "retensi": "Retention period"
     },
     "selectorPlaceholder": "Type a project code or name",
     "unknownCode": "This code is not registered as a project yet.",

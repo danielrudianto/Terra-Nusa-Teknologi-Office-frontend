@@ -13,6 +13,7 @@ export interface Project {
   endDate?: string | null;
   isActive: boolean;
   isCancelled: boolean;
+  isRetention?: boolean;
   /** Nominal dokumen (DPP + PPN), untuk ditampilkan. */
   contractValue: number;
   /** Dasar pengenaan pajak, untuk menghitung margin. */
@@ -40,17 +41,33 @@ export interface ProjectContract {
 }
 
 /**
- * Tiga keadaan proyek dinyatakan oleh dua penanda. Diterjemahkan di satu
+ * Empat keadaan proyek dinyatakan oleh tiga penanda. Diterjemahkan di satu
  * tempat ini supaya daftar, rincian, dan penyaring tidak pernah berbeda
  * cara membacanya.
+ *
+ * "Tunggu retensi" adalah masa antara BAST 1 dan BAST 2: pekerjaannya sudah
+ * diserahkan, tetapi proyeknya BELUM selesai — masa pemeliharaan masih
+ * berjalan, sebagian nilai kontrak masih ditahan, dan perbaikan yang timbul
+ * masih dibebankan ke proyek ini. Karena itu ia tetap `isActive`.
  */
-export type KeadaanProyek = 'berjalan' | 'selesai' | 'batal';
+export type KeadaanProyek = 'berjalan' | 'retensi' | 'selesai' | 'batal';
 
 export function keadaanProyek(p: {
   isActive: boolean;
   isCancelled: boolean;
+  isRetention?: boolean;
 }): KeadaanProyek {
+  /*
+   * Urutannya dari yang paling menentukan.
+   *
+   * `isCancelled` didahulukan: proyek batal tidak berubah artinya oleh
+   * penanda apa pun di bawahnya. `isRetention` diperiksa sebelum `isActive`
+   * karena keduanya menyala bersamaan — membaca `isActive` lebih dahulu
+   * membuat proyek retensi terbaca "berjalan" dan penyaringnya tidak pernah
+   * menemukan satu pun.
+   */
   if (p.isCancelled) return 'batal';
+  if (p.isRetention) return 'retensi';
   return p.isActive ? 'berjalan' : 'selesai';
 }
 

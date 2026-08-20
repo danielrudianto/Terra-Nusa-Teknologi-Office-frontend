@@ -3578,8 +3578,9 @@
     "state": {
       "label": "状态",
       "berjalan": "进行中",
-      "selesai": "已完成",
-      "batal": "已取消"
+      "selesai": "已完成（BAST 2）",
+      "batal": "已取消",
+      "retensi": "保固期"
     },
     "selectorPlaceholder": "输入项目代号或名称",
     "unknownCode": "该代号尚未登记为项目。",

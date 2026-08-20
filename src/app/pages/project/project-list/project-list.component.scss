@@ -107,6 +107,18 @@ td.num {
   background: var(--ok-bg);
   color: var(--ok-fg);
 }
+/*
+ * Tunggu retensi — antara BAST 1 dan BAST 2.
+ *
+ * Biru, sekelompok dengan "berjalan" dan bukan dengan "selesai": proyeknya
+ * memang belum usai, yang berbeda hanya tahapnya. Warna netral seperti
+ * "selesai" membuatnya terbaca sebagai pekerjaan yang sudah tuntas, dan
+ * justru pada masa inilah retensi paling mudah terlupakan.
+ */
+.prl-chip--retensi {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
 .prl-chip--selesai {
   background: var(--surface-2);
   color: var(--muted);
@@ -305,3 +317,21 @@ tr[mat-row]:hover {
     justify-content: flex-end;
   }
 }
+
+/*
+ * Tunggu retensi — antara BAST 1 dan BAST 2.
+ *
+ * Warnanya biru, sekelompok dengan "berjalan" dan bukan dengan "selesai":
+ * proyeknya memang belum usai. Yang membedakan hanya tahapnya, dan hijau di
+ * sini akan membuatnya terbaca sebagai pekerjaan yang sudah tuntas.
+ */
+:host ::ng-deep .prl-fchip--retensi.mdc-evolution-chip--selected {
+  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
+  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
+}
+:host ::ng-deep .prl-fchip--retensi .mdc-evolution-chip__text-label::before {
+  background: var(--brand, #154dec);
+  opacity: 1;
+}
+
+

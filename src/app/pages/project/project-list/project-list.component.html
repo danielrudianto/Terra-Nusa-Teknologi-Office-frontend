@@ -14,6 +14,20 @@
         (selectionChange)="pilihSaring('berjalan')"
         >{{ "project.state.berjalan" | translate }}</mat-chip-option
       >
+      <!--
+        Tunggu retensi: antara BAST 1 dan BAST 2.
+
+        Pekerjaannya sudah diserahkan, tetapi masa pemeliharaannya masih
+        berjalan dan sebagian nilai kontrak masih ditahan. Tanpa kepingnya
+        sendiri, proyek pada masa ini tidak dapat ditemukan sama sekali —
+        ia bukan yang sedang dikerjakan, dan bukan pula yang sudah usai.
+      -->
+      <mat-chip-option
+        class="prl-fchip prl-fchip--retensi"
+        [selected]="saring === 'retensi'"
+        (selectionChange)="pilihSaring('retensi')"
+        >{{ "project.state.retensi" | translate }}</mat-chip-option
+      >
       <mat-chip-option
         class="prl-fchip prl-fchip--selesai"
         [selected]="saring === 'selesai'"

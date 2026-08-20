@@ -79,7 +79,15 @@ export class ProjectListComponent implements OnInit {
    * "aktif sekaligus batal" tidak punya arti, dan menyediakan dua sakelar
    * membuat kombinasi itu bisa dipilih.
    */
-  saring: 'berjalan' | 'selesai' | 'batal' | null = null;
+  /*
+   * Bawaannya BERJALAN, bukan semua.
+   *
+   * Proyek selesai dan batal tidak pernah dihapus — biayanya tetap harus
+   * dapat ditinjau — sehingga daftarnya terus memanjang setiap tahun. Yang
+   * dibuka sehari-hari adalah yang masih dikerjakan; menampilkan seluruhnya
+   * membuat proyek berjalan tercampur di antara puluhan yang sudah usai.
+   */
+  saring: 'berjalan' | 'retensi' | 'selesai' | 'batal' | null = 'berjalan';
 
   displayedColumns = [
     'code',
@@ -113,7 +121,19 @@ export class ProjectListComponent implements OnInit {
     // Dikirim hanya bila memang menyaring. `isActive=false` adalah
     // penyaringan yang sah, jadi tidak boleh diputuskan lewat kebenaran nilai.
     if (this.saring === 'berjalan') {
+      /*
+       * `isRetention=false` IKUT dikirim.
+       *
+       * Proyek yang menunggu retensi tetap `isActive` — masa pemeliharaannya
+       * masih berjalan dan biayanya masih dibebankan ke sana. Tanpa syarat
+       * ini, keduanya tercampur pada saringan yang sama dan kepingnya
+       * sendiri tidak pernah memisahkan apa pun.
+       */
       params['isActive'] = true;
+      params['isCancelled'] = false;
+      params['isRetention'] = false;
+    } else if (this.saring === 'retensi') {
+      params['isRetention'] = true;
       params['isCancelled'] = false;
     } else if (this.saring === 'selesai') {
       params['isActive'] = false;
@@ -143,7 +163,7 @@ export class ProjectListComponent implements OnInit {
       });
   }
 
-  pilihSaring(nilai: 'berjalan' | 'selesai' | 'batal'): void {
+  pilihSaring(nilai: 'berjalan' | 'retensi' | 'selesai' | 'batal'): void {
     this.saring = this.saring === nilai ? null : nilai;
     this.fetch(0);
   }

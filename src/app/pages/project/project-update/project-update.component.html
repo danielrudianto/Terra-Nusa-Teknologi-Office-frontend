@@ -90,6 +90,18 @@
         >
           {{ "project.state.berjalan" | translate }}
         </button>
+        <!--
+          Tunggu retensi: antara BAST 1 dan BAST 2. Diletakkan di antara
+          keduanya karena di situlah tempatnya dalam urutan pekerjaan.
+        -->
+        <button
+          type="button"
+          class="pc__seg-opt"
+          [class.is-active]="keadaan === 'retensi'"
+          (click)="setKeadaan('retensi')"
+        >
+          {{ "project.state.retensi" | translate }}
+        </button>
         <button
           type="button"
           class="pc__seg-opt"

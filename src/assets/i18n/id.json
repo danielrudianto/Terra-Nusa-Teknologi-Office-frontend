@@ -3578,8 +3578,9 @@
     "state": {
       "label": "Keadaan",
       "berjalan": "Berjalan",
-      "selesai": "Selesai",
-      "batal": "Batal"
+      "selesai": "Selesai (BAST 2)",
+      "batal": "Batal",
+      "retensi": "Tunggu retensi"
     },
     "selectorPlaceholder": "Ketik kode atau nama proyek",
     "unknownCode": "Kode ini belum terdaftar sebagai proyek.",
