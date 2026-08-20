@@ -8,6 +8,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
+import { catchError, forkJoin, of } from 'rxjs';
+
 import { ApiService } from '../../../services/api.service';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
@@ -338,6 +340,28 @@ export class ProjectReportComponent implements OnInit {
     });
   }
 
+  /**
+   * Laporan digabung dengan proyek anaknya.
+   *
+   * Bawaannya MATI. Angka proyek yang sudah dihafal orang tidak boleh
+   * berubah sendiri begitu fitur ini terpasang; yang menghendaki gabungan
+   * menyalakannya, dan saat itu ia tahu apa yang sedang dilihatnya.
+   */
+  readonly gabungAnak = signal(false);
+
+  /** Proyek yang ikut terhitung: satu, atau seluruh keluarganya. */
+  readonly proyekTergabung = computed(() =>
+    this.gabungAnak() ? this.lookup.keluarga(this.kode()) : [],
+  );
+
+  /** Layar ini punya sesuatu untuk digabung. */
+  readonly bisaDigabung = computed(() => this.lookup.punyaAnak(this.kode()));
+
+  ubahGabung(nyala: boolean): void {
+    this.gabungAnak.set(nyala);
+    this.muat(this.kode());
+  }
+
   muat(kode: string): void {
     this.memuat.set(true);
     this.galat.set(null);
@@ -347,15 +371,49 @@ export class ProjectReportComponent implements OnInit {
     // ikut membuat laporan terbuka kosong tanpa sebab yang terbaca.
     this.tahun.set(SELURUH);
 
-    this.api
-      .get(`purchases/report/project/${kode}`, {})
+    /*
+     * Satu permintaan per proyek, lalu digabung di layar.
+     *
+     * Server melayani laporan per KODE, dan kode itu tersimpan sebagai teks
+     * pada tiap dokumen — bukan sebagai tautan. Menggabungkannya di server
+     * berarti mengubah empat kueri sekaligus; menggabungkannya di sini cukup
+     * menyambung empat larik, dan satu keluarga proyek isinya beberapa,
+     * bukan puluhan.
+     */
+    const daftar = this.gabungAnak() ? this.lookup.keluarga(kode) : [];
+    const kodeSemua = daftar.length ? daftar.map((p) => p.code) : [kode];
+
+    forkJoin(
+      kodeSemua.map((k) =>
+        this.api.get(`purchases/report/project/${k}`, {}).pipe(
+          /*
+           * Satu proyek yang gagal TIDAK menggugurkan yang lain.
+           *
+           * Pada gabungan, satu kode yang bermasalah akan menghapus seluruh
+           * laporan keluarganya — dan yang membacanya tidak akan tahu bahwa
+           * yang hilang cuma satu.
+           */
+          catchError(() => of(null)),
+        ),
+      ),
+    )
       .subscribe({
-        next: (res: any) => {
+        next: (hasil: any[]) => {
+          const sah = hasil.filter(Boolean);
+          if (!sah.length) {
+            this._data.set(null);
+            const pesan = this.translate.instant('notify.loadFailed');
+            this.galat.set(pesan);
+            this.snackBar.open(pesan, 'Close', { duration: 4000 });
+            return;
+          }
+          const gabung = (kunci: string) =>
+            sah.flatMap((r: any) => r?.[kunci] ?? []);
           this._data.set({
-            purchases: res?.purchases ?? [],
-            reimbursements: res?.reimbursements ?? [],
-            purchase_drafts: res?.purchase_drafts ?? [],
-            sales_invoices: res?.sales_invoices ?? [],
+            purchases: gabung('purchases'),
+            reimbursements: gabung('reimbursements'),
+            purchase_drafts: gabung('purchase_drafts'),
+            sales_invoices: gabung('sales_invoices'),
           });
         },
         error: (err) => {
@@ -379,14 +437,32 @@ export class ProjectReportComponent implements OnInit {
    * sekitar sebelas persen dari kenyataannya — cukup untuk membuat proyek
    * yang sebenarnya rugi tipis terlihat untung.
    */
-  readonly nilaiKontrak = computed(() =>
-    Number((this.proyek() as any)?.contractDpp ?? 0),
-  );
+  readonly nilaiKontrak = computed(() => {
+    /*
+     * Pada gabungan, kontrak SELURUH keluarga dijumlahkan.
+     *
+     * Kontraknya kerap berada di induk sementara biayanya di anak; memakai
+     * kontrak satu proyek saja terhadap biaya sekeluarga menghasilkan margin
+     * yang tampak rugi total.
+     */
+    const keluarga = this.proyekTergabung();
+    if (keluarga.length) {
+      return keluarga.reduce((a, p) => a + Number((p as any).contractDpp ?? 0), 0);
+    }
+    return Number((this.proyek() as any)?.contractDpp ?? 0);
+  });
 
   /** Nominal dokumen apa adanya, hanya untuk ditampilkan. */
-  readonly nominalKontrak = computed(() =>
-    Number((this.proyek() as any)?.contractValue ?? 0),
-  );
+  readonly nominalKontrak = computed(() => {
+    const keluarga = this.proyekTergabung();
+    if (keluarga.length) {
+      return keluarga.reduce(
+        (a, p) => a + Number((p as any).contractValue ?? 0),
+        0,
+      );
+    }
+    return Number((this.proyek() as any)?.contractValue ?? 0);
+  });
 
   /**
    * Tahun yang benar-benar punya catatan pada proyek ini.

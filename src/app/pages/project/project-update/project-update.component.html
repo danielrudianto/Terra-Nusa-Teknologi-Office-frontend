@@ -79,6 +79,32 @@
       </mat-form-field>
     </div>
 
+    <!--
+      Proyek induk.
+
+      Sebagian pekerjaan dipecah menjadi beberapa kode: satu memegang
+      kontraknya, yang lain menampung biaya per paket. Dilihat sendiri-sendiri
+      keduanya tampak ganjil — ada penjualan tanpa pembelian, atau pembelian
+      tanpa penjualan sama sekali — dan margin masing-masing tidak berarti
+      apa-apa.
+    -->
+    @if (sudahJadiInduk) {
+      <p class="pc__ket">{{ "project.sudahJadiInduk" | translate }}</p>
+    } @else {
+      <mat-form-field appearance="outline" class="pc__full">
+        <mat-label>{{ "project.proyekInduk" | translate }}</mat-label>
+        <mat-select formControlName="parentProjectID">
+          <mat-option [value]="null">{{
+            "project.tanpaInduk" | translate
+          }}</mat-option>
+          @for (p of calonInduk; track p.id) {
+            <mat-option [value]="p.id">{{ p.code }} — {{ p.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ "project.proyekIndukKet" | translate }}</mat-hint>
+      </mat-form-field>
+    }
+
     <div class="pc__keadaan">
       <span class="pc__keadaan-label">{{ "project.state.label" | translate }}</span>
       <div class="pc__seg">

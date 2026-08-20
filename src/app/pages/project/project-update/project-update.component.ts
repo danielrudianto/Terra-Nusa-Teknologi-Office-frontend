@@ -3,6 +3,8 @@ import {
   KeadaanProyek,
   keadaanProyek,
 } from '../project.model';
+import { ProjectLookupService } from '../../../services/project-lookup.service';
+import { inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -51,6 +53,8 @@ import { ClientAutocompleteComponent } from '../../../components/client-autocomp
   styleUrl: './project-update.component.scss',
 })
 export class ProjectUpdateComponent {
+  readonly lookup = inject(ProjectLookupService);
+
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
@@ -69,6 +73,7 @@ export class ProjectUpdateComponent {
       isActive: !!data?.isActive,
       isCancelled: !!data?.isCancelled,
       isRetention: !!data?.isRetention,
+      parentProjectID: data?.parentProjectID ?? null,
     });
   }
 
@@ -95,6 +100,7 @@ export class ProjectUpdateComponent {
     isActive: new FormControl(true),
     isCancelled: new FormControl(false),
     isRetention: new FormControl(false),
+    parentProjectID: new FormControl<number | null>(null),
   });
 
   /**
@@ -132,7 +138,33 @@ export class ProjectUpdateComponent {
     });
   }
 
+  /**
+   * Proyek yang boleh dijadikan induk.
+   *
+   * Disaring di layar SEBAGAI PELENGKAP, bukan pengganti: server menolak
+   * juga. Yang di sini hanya agar orang tidak memilih sesuatu yang pasti
+   * ditolak sesudah menekan simpan.
+   *
+   * Tiga yang dikeluarkan, dan ketiganya menghasilkan rantai yang tidak
+   * dapat dihitung: dirinya sendiri, proyek yang sudah menjadi anak, dan —
+   * bila proyek ini sendiri punya anak — seluruhnya.
+   */
+  get calonInduk(): any[] {
+    const semua = this.lookup.proyek().filter((p) => p.id > 0);
+    if (this.lookup.anakDari(this.data?.id).length) return [];
+    return semua.filter(
+      (p) => p.id !== this.data?.id && !p.parentProjectID,
+    );
+  }
+
+  /** Proyek ini sudah menjadi induk, sehingga tidak dapat menjadi anak. */
+  get sudahJadiInduk(): boolean {
+    return this.lookup.anakDari(this.data?.id).length > 0;
+  }
+
   ngOnInit(): void {
+    // Daftar proyek dipakai pemilih induk; dimuat sekali dan dipakai bersama.
+    void this.lookup.muat();
     this.apiService.get('clients', { page: 1, pageSize: 200 }).subscribe({
       next: (res: any) => {
         this.clients = res?.data ?? res ?? [];
@@ -176,6 +208,8 @@ export class ProjectUpdateComponent {
         // Muatan ini menyebut kolomnya satu per satu; yang tidak ditulis di
         // sini tersimpan sebagai NULL tanpa galat apa pun.
         isRetention: v.isRetention,
+        // `null` berarti melepas hubungannya; dikirim apa adanya.
+        parentProjectID: v.parentProjectID ?? null,
       })
       .subscribe({
         next: () => {

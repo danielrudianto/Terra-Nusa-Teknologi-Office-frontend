@@ -11,6 +11,38 @@
       [label]="'projectReport.selectProject' | translate"
     />
     <p class="prp-pilih__ket">{{ "projectReport.selectHint" | translate }}</p>
+
+    <!--
+      Sakelar gabung, HANYA pada proyek yang memang punya keluarga.
+
+      Bawaannya mati: angka proyek yang sudah dihafal orang tidak boleh
+      berubah sendiri begitu fitur ini terpasang. Yang menghendaki gabungan
+      menyalakannya, dan saat itu ia tahu apa yang sedang dilihatnya.
+
+      Proyek yang ikut disebut namanya — pada laporan gabungan, "biaya proyek
+      ini" tidak lagi berarti satu kode saja, dan itu harus terbaca tanpa
+      perlu ditebak.
+    -->
+    @if (bisaDigabung()) {
+      <div class="prp-gabung">
+        <mat-slide-toggle
+          color="primary"
+          [checked]="gabungAnak()"
+          (change)="ubahGabung($event.checked)"
+        >
+          {{ "project.gabungAnak" | translate }}
+        </mat-slide-toggle>
+        <p class="prp-gabung__ket">{{ "project.gabungAnakKet" | translate }}</p>
+        @if (gabungAnak()) {
+          <p class="prp-gabung__daftar">
+            {{ "project.proyekDigabung" | translate }}:
+            @for (p of proyekTergabung(); track p.id) {
+              <span class="prp-gabung__kode">{{ p.code }}</span>
+            }
+          </p>
+        }
+      </div>
+    }
   </div>
 
   <p class="prp-kosong" *ngIf="!kode() && !memuat()">

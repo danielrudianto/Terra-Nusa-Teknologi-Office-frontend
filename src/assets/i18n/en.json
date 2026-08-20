@@ -3605,7 +3605,14 @@
     "arahTambahHint": "New or additional work",
     "arahKurang": "Reduces value",
     "arahKurangHint": "Work cancelled or scope reduced",
-    "arahKurangHanyaAdendum": "Only an addendum can reduce the value. The first contract has nothing to reduce yet."
+    "arahKurangHanyaAdendum": "Only an addendum can reduce the value. The first contract has nothing to reduce yet.",
+    "proyekInduk": "Parent project",
+    "proyekIndukKet": "Leave empty if this project stands alone. A parent project’s report can be merged with its children.",
+    "sudahJadiInduk": "This project is already a parent, so it cannot become a child of another project.",
+    "tanpaInduk": "Stands alone",
+    "gabungAnak": "Merge with child projects",
+    "gabungAnakKet": "Costs and billing across the whole project family are summed.",
+    "proyekDigabung": "Projects merged"
   },
   "projectReport": {
     "title": "Project Report",

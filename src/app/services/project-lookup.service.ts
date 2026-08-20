@@ -22,6 +22,14 @@ export interface ProyekRingkas {
   /** Dasar pengenaan pajak. Inilah yang dipakai menghitung margin. */
   contractDpp: number;
   contractCount: number;
+  /**
+   * Proyek INDUK, bila proyek ini bagian dari pekerjaan yang lebih besar.
+   *
+   * Sebagian pekerjaan dipecah menjadi beberapa kode: satu memegang
+   * kontraknya, yang lain menampung biaya per paket. Dilihat sendiri-sendiri
+   * keduanya tampak ganjil — ada penjualan tanpa pembelian, atau sebaliknya.
+   */
+  parentProjectID?: number | null;
 }
 
 /**
@@ -77,6 +85,44 @@ export class ProjectLookupService {
     for (const p of this._proyek()) peta.set(p.code.toUpperCase(), p);
     return peta;
   });
+
+  /** Proyek yang menjadikan proyek ini induknya. */
+  anakDari(id: number | null | undefined): ProyekRingkas[] {
+    if (id === null || id === undefined) return [];
+    return this._proyek().filter((p) => Number(p.parentProjectID) === Number(id));
+  }
+
+  /**
+   * Satu keluarga proyek: induknya lebih dahulu, lalu anak-anaknya.
+   *
+   * Kode yang diberikan boleh induk maupun anak — keduanya menghasilkan
+   * keluarga yang sama, sebab yang membuka laporan tidak selalu tahu yang
+   * mana induknya.
+   *
+   * Kedalamannya satu tingkat; server menolak rantai yang lebih dalam.
+   */
+  keluarga(kode: string): ProyekRingkas[] {
+    const ini = this.cari(kode);
+    if (!ini) return [];
+
+    const induk = ini.parentProjectID
+      ? (this._proyek().find((p) => p.id === Number(ini.parentProjectID)) ?? ini)
+      : ini;
+
+    /*
+     * Induknya SELALU disertakan, bahkan bila yang dibuka anaknya.
+     *
+     * Kontraknya kerap berada di induk sementara biayanya di anak;
+     * menjumlahkan anak-anaknya saja menghasilkan proyek yang seluruhnya
+     * biaya tanpa satu pun penagihan.
+     */
+    return [induk, ...this.anakDari(induk.id)];
+  }
+
+  /** Proyek ini punya anak, sehingga laporannya dapat digabung. */
+  punyaAnak(kode: string): boolean {
+    return this.keluarga(kode).length > 1;
+  }
 
   /**
    * Muat sekali. Panggilan berikutnya memakai ulang permintaan yang sedang

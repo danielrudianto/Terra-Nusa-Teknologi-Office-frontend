@@ -243,3 +243,25 @@
     font-size: 18px;
   }
 }
+
+/* Isian selebar formulir; pemilih induk tidak berpasangan dengan apa pun. */
+.pc__full {
+  width: 100%;
+}
+
+/*
+ * Keterangan pengganti isian yang sengaja TIDAK ditawarkan.
+ *
+ * Proyek yang sudah menjadi induk tidak dapat dijadikan anak. Menyembunyikan
+ * pilihannya tanpa keterangan membuat yang mencarinya menyangka fiturnya
+ * hilang; satu baris menutup pertanyaan itu.
+ */
+.pc__ket {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}

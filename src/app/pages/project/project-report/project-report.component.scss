@@ -880,3 +880,43 @@
   color: var(--ink, #16181d);
   font-variant-numeric: tabular-nums;
 }
+
+/*
+ * Sakelar gabung proyek anak.
+ *
+ * Diberi latar sendiri: ia MENGUBAH ARTI seluruh angka di bawahnya, dan
+ * sakelar yang menyatu dengan sekitarnya terlewat oleh yang menggulir cepat —
+ * lalu angkanya dibaca sebagai milik satu proyek.
+ */
+.prp-gabung {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8ff);
+}
+
+.prp-gabung__ket {
+  margin: 0.35rem 0 0;
+  color: var(--muted, #6b7280);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.prp-gabung__daftar {
+  margin: 0.5rem 0 0;
+  color: var(--muted, #6b7280);
+  font-size: 0.76rem;
+}
+
+/* Kode proyek yang ikut terhitung; ditandai supaya dapat dipindai sekilas. */
+.prp-gabung__kode {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.72rem;
+  font-weight: 600;
+}

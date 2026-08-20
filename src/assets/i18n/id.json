@@ -3605,7 +3605,14 @@
     "arahTambahHint": "Pekerjaan baru atau tambahan",
     "arahKurang": "Mengurangi nilai",
     "arahKurangHint": "Pekerjaan dibatalkan atau lingkupnya dikurangi",
-    "arahKurangHanyaAdendum": "Hanya adendum yang dapat mengurangi nilai. Dokumen pertama belum punya apa pun untuk dikurangi."
+    "arahKurangHanyaAdendum": "Hanya adendum yang dapat mengurangi nilai. Dokumen pertama belum punya apa pun untuk dikurangi.",
+    "proyekInduk": "Proyek induk",
+    "proyekIndukKet": "Kosongkan bila proyek ini berdiri sendiri. Laporan proyek induk dapat digabung dengan anak-anaknya.",
+    "sudahJadiInduk": "Proyek ini sudah menjadi induk, sehingga tidak dapat dijadikan anak proyek lain.",
+    "tanpaInduk": "Berdiri sendiri",
+    "gabungAnak": "Gabung dengan proyek anak",
+    "gabungAnakKet": "Biaya dan penagihan seluruh proyek dalam satu keluarga dijumlahkan.",
+    "proyekDigabung": "Proyek yang digabung"
   },
   "projectReport": {
     "title": "Laporan Proyek",

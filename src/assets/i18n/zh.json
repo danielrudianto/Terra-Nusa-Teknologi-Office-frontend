@@ -3605,7 +3605,14 @@
     "arahTambahHint": "新增或追加工作",
     "arahKurang": "减少金额",
     "arahKurangHint": "工作取消或范围缩减",
-    "arahKurangHanyaAdendum": "只有补充协议才能减少金额。首份合同尚无可减少的内容。"
+    "arahKurangHanyaAdendum": "只有补充协议才能减少金额。首份合同尚无可减少的内容。",
+    "proyekInduk": "父项目",
+    "proyekIndukKet": "若本项目独立，请留空。父项目的报表可与其子项目合并。",
+    "sudahJadiInduk": "本项目已是父项目，因此不能成为其他项目的子项目。",
+    "tanpaInduk": "独立项目",
+    "gabungAnak": "合并子项目",
+    "gabungAnakKet": "整个项目族的成本与开票金额将合并计算。",
+    "proyekDigabung": "已合并的项目"
   },
   "projectReport": {
     "title": "项目报表",
