@@ -1400,7 +1400,15 @@
     "processing": "Processing...",
     "submitPreview": "Submit & preview",
     "sudahDitagih": "{{n}} invoice(s) already issued for this project",
-    "sudahDitagihKet": "Check so the same work is not billed twice."
+    "sudahDitagihKet": "Check so the same work is not billed twice.",
+    "belumLengkap": "Invoice cannot be submitted yet",
+    "belumLengkapKet": "Some entries are still incorrect in:",
+    "nomorTidakSesuai": "Invoice number does not match the required pattern",
+    "nomorContoh": "Format: 001-INV-MICZ-VIII-2026 — three digits, INV, project code, Roman month, year.",
+    "cetakMenyatu": "Combined",
+    "cetakMenyatuHint": "The tax invoice is printed together with the invoice, in one file.",
+    "cetakTerpisah": "Printed separately",
+    "cetakTerpisahHint": "The tax invoice is printed as its own sheet, separate from the invoice."
   },
   "clientForm": {
     "createTitle": "Add Client",

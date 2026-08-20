@@ -1400,7 +1400,15 @@
     "processing": "Memproses...",
     "submitPreview": "Kirim & pratinjau",
     "sudahDitagih": "{{n}} faktur sudah terbit untuk proyek ini",
-    "sudahDitagihKet": "Periksa agar pekerjaan yang sama tidak tertagih dua kali."
+    "sudahDitagihKet": "Periksa agar pekerjaan yang sama tidak tertagih dua kali.",
+    "belumLengkap": "Faktur belum dapat dikirim",
+    "belumLengkapKet": "Masih ada isian yang belum benar di bagian:",
+    "nomorTidakSesuai": "Nomor faktur belum sesuai pola",
+    "nomorContoh": "Bentuknya: 001-INV-MICZ-VIII-2026 — tiga angka, INV, kode proyek, bulan romawi, tahun.",
+    "cetakMenyatu": "Menyatu",
+    "cetakMenyatuHint": "Faktur pajak tercetak menyatu dengan invoice, dalam satu berkas.",
+    "cetakTerpisah": "Cetak terpisah",
+    "cetakTerpisahHint": "Faktur pajak tercetak sebagai lembar tersendiri, terpisah dari invoice."
   },
   "clientForm": {
     "createTitle": "Tambah Klien",

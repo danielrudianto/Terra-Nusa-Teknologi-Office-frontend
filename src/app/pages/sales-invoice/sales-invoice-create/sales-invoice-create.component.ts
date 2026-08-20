@@ -30,6 +30,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { ProjectLookupService } from 'src/app/services/project-lookup.service';
+import { PILIHAN_CETAK_TERPISAH } from 'src/app/constants/pilihan-faktur';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -81,6 +82,50 @@ export class SalesInvoiceCreateComponent {
       this.valueFormGroup.valid &&
       this.paymentFormGroup.valid
     );
+  }
+
+  readonly pilihanCetakTerpisah = PILIHAN_CETAK_TERPISAH;
+
+  /** Faktur pajaknya dicetak terpisah dari invoicenya. */
+  get cetakTerpisah(): boolean {
+    return this.valueFormGroup.get('separatedInvoice')?.value === true;
+  }
+
+  /**
+   * Bagian yang belum sah, disebut namanya.
+   *
+   * Tombol simpan mati sampai KETIGA bagiannya benar, dan sampai sekarang
+   * tidak ada satu pun tanda mengapa. Isian yang salah bisa berada di kartu
+   * yang sudah tergulir jauh ke atas — yang menekan tombolnya hanya melihat
+   * tombol yang tidak menanggapi, dan itu terbaca sebagai kerusakan.
+   */
+  get bagianKurang(): string[] {
+    const kurang: string[] = [];
+    if (this.metaFormGroup.invalid) {
+      kurang.push('salesInvoiceCreate.sectionInvoiceDetail');
+    }
+    if (this.valueFormGroup.invalid) {
+      kurang.push('salesInvoiceCreate.sectionValueTax');
+    }
+    if (this.paymentFormGroup.invalid) {
+      kurang.push('salesInvoiceCreate.sectionPayment');
+    }
+    return kurang;
+  }
+
+  /**
+   * Nomor fakturnya terisi tetapi TIDAK sesuai pola.
+   *
+   * Dibedakan dari "belum diisi": polanya ditolak tanpa pesan di mana pun,
+   * sehingga yang sudah mengisinya menyangka nomornya sudah benar dan mencari
+   * kesalahannya di isian lain.
+   *
+   * Contoh bentuk yang benar disebutkan di layar, bukan hanya aturannya —
+   * "001-INV-MICZ-VIII-2026" lebih cepat dicocokkan daripada uraian pola.
+   */
+  get nomorTidakSesuai(): boolean {
+    const c = this.metaFormGroup.get('name');
+    return !!c && !!c.value && c.hasError('pattern');
   }
 
   metaFormGroup: FormGroup = new FormGroup({

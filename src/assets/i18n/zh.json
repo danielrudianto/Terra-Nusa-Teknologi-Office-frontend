@@ -1400,7 +1400,15 @@
     "processing": "处理中...",
     "submitPreview": "提交并预览",
     "sudahDitagih": "本项目已开具 {{n}} 张发票",
-    "sudahDitagihKet": "请核对，避免同一工作重复开票。"
+    "sudahDitagihKet": "请核对，避免同一工作重复开票。",
+    "belumLengkap": "发票尚不能提交",
+    "belumLengkapKet": "以下部分仍有填写有误：",
+    "nomorTidakSesuai": "发票编号不符合规定格式",
+    "nomorContoh": "格式：001-INV-MICZ-VIII-2026 — 三位数字、INV、项目代码、罗马数字月份、年份。",
+    "cetakMenyatu": "合并打印",
+    "cetakMenyatuHint": "税务发票与发票合并打印在同一文件中。",
+    "cetakTerpisah": "分开打印",
+    "cetakTerpisahHint": "税务发票单独成页，与发票分开打印。"
   },
   "clientForm": {
     "createTitle": "添加客户",

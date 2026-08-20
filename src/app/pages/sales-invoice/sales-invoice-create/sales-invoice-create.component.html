@@ -17,6 +17,61 @@
   padahal ketiganya dikerjakan orang yang sama dalam satu hari.
 -->
 <div class="sic">
+      <!--
+        BANNER: apa yang membuat fakturnya belum boleh dikirim.
+
+        Tombol simpan mati sampai ketiga bagiannya sah, dan sampai sekarang
+        tidak ada satu pun tanda mengapa. Isian yang salah bisa berada di
+        kartu yang sudah tergulir jauh ke atas — dari kursi penggunanya, yang
+        terlihat hanya tombol yang tidak menanggapi.
+      -->
+      @if (bagianKurang.length) {
+        <div class="sic-alert">
+          <mat-icon>edit_note</mat-icon>
+          <div class="sic-alert__teks">
+            <strong>{{ "salesInvoiceCreate.belumLengkap" | translate }}</strong>
+            <span>
+              {{ "salesInvoiceCreate.belumLengkapKet" | translate }}
+              @for (b of bagianKurang; track b) {
+                <span class="sic-alert__tag">{{ b | translate }}</span>
+              }
+            </span>
+          </div>
+        </div>
+      }
+
+      <!--
+        Nomor faktur yang ditolak polanya disebut TERSENDIRI.
+
+        Ia ditolak tanpa pesan di mana pun, sehingga yang sudah mengisinya
+        menyangka nomornya benar dan mencari kesalahannya di isian lain.
+        Contoh bentuknya ikut ditulis: sebuah contoh lebih cepat dicocokkan
+        daripada uraian polanya.
+      -->
+      @if (nomorTidakSesuai) {
+        <div class="sic-alert sic-alert--salah">
+          <mat-icon>error_outline</mat-icon>
+          <div class="sic-alert__teks">
+            <strong>{{ "salesInvoiceCreate.nomorTidakSesuai" | translate }}</strong>
+            <span>{{ "salesInvoiceCreate.nomorContoh" | translate }}</span>
+          </div>
+        </div>
+      }
+
+      <!--
+        Cetak terpisah mengubah dokumen yang sampai ke klien; ketika menyala,
+        ia dinyatakan di tempat yang pasti terbaca sebelum tombol ditekan.
+      -->
+      @if (cetakTerpisah) {
+        <div class="sic-alert sic-alert--info">
+          <mat-icon>content_copy</mat-icon>
+          <div class="sic-alert__teks">
+            <strong>{{ "salesInvoiceCreate.cetakTerpisah" | translate }}</strong>
+            <span>{{ "salesInvoiceCreate.cetakTerpisahHint" | translate }}</span>
+          </div>
+        </div>
+      }
+
       <form [formGroup]="metaFormGroup">
         <div class="sic-card">
           <div class="sic-cardhead">
@@ -390,19 +445,43 @@
               />
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="sic-span2">
-              <mat-label>{{
-                "salesInvoiceCreate.printSeparately" | translate
-              }}</mat-label>
-              <mat-select formControlName="separatedInvoice">
-                <mat-option [value]="false">{{
-                  "salesInvoiceCreate.optionNo" | translate
-                }}</mat-option>
-                <mat-option [value]="true">{{
-                  "salesInvoiceCreate.optionYes" | translate
-                }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+          </div>
+
+          <!--
+            Berkartu, bukan daftar tarik-turun.
+
+            "Cetak terpisah?" dengan jawaban "Ya" dan "Tidak" tidak menyatakan
+            apa yang terpisah dari apa. Pilihannya mengubah bentuk dokumen
+            yang sampai ke klien, dan akibat itu tidak terlihat sama sekali
+            dari sebuah daftar. Bentuknya sama dengan status dokumen pada
+            formulir Pembelian.
+          -->
+          <div class="kartu-pilih sic-kartu">
+            <div class="kartu-pilih__judul">
+              {{ "salesInvoiceCreate.printSeparately" | translate }}
+            </div>
+            <div class="kartu-pilih__daftar">
+              @for (o of pilihanCetakTerpisah; track $index) {
+                <label
+                  class="kartu"
+                  [class.on]="
+                    valueFormGroup.get('separatedInvoice')?.value === o.value
+                  "
+                >
+                  <input
+                    type="radio"
+                    formControlName="separatedInvoice"
+                    [value]="o.value"
+                    hidden
+                  />
+                  <mat-icon>{{ o.icon }}</mat-icon>
+                  <span class="kartu__teks">
+                    <span class="kartu__judul">{{ o.label | translate }}</span>
+                    <span class="kartu__hint">{{ o.hint | translate }}</span>
+                  </span>
+                </label>
+              }
+            </div>
           </div>
 
         </div>

@@ -263,3 +263,74 @@ $surface: var(--surface, #ffffff);
 .sic-actions--akhir {
   margin-top: 0.5rem;
 }
+
+/* ============ BANNER ============ */
+
+/*
+ * Bentuknya sama dengan banner pada daftar Pembelian (`pl-alert`).
+ *
+ * Kuning untuk yang belum lengkap — pekerjaan yang tertunda; merah untuk
+ * nomor yang ditolak — sesuatu yang sudah diisi dan salah; biru untuk
+ * keterangan. Menyamakan warnanya membuat ketiganya terbaca sama mendesak.
+ */
+.sic-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 1px solid var(--warn-fg, #a2651a);
+  color: var(--warn-fg, #a2651a);
+  font-size: 0.84rem;
+
+  > .mat-icon {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+}
+
+.sic-alert--salah {
+  background: var(--bad-bg, #fdecec);
+  border-color: var(--bad-fg, #b3322f);
+  color: var(--bad-fg, #b3322f);
+}
+
+.sic-alert--info {
+  background: var(--brand-soft, #e7ecfb);
+  border-color: var(--brand, #154dec);
+  color: var(--brand-ink, #0f3fd0);
+}
+
+.sic-alert__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  span {
+    font-size: 0.77rem;
+    opacity: 0.9;
+  }
+}
+
+/* Nama bagian yang belum sah, supaya dapat dipindai tanpa membaca kalimatnya. */
+.sic-alert__tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* Pemilih berkartu mengisi lebar kartunya, di luar petak isian. */
+.sic-kartu {
+  margin-top: 0.5rem;
+}

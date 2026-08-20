@@ -177,3 +177,97 @@ describe('nomor faktur', () => {
     }
   });
 });
+
+describe('banner dan pemilih cetak terpisah', () => {
+  /*
+   * Tombol simpan mati sampai KETIGA bagiannya sah, dan sampai sekarang
+   * tidak ada satu pun tanda mengapa. Isian yang salah bisa berada di kartu
+   * yang sudah tergulir jauh ke atas — dari kursi penggunanya, yang terlihat
+   * hanya tombol yang tidak menanggapi, dan itu terbaca sebagai kerusakan.
+   */
+  it('menyebut bagian mana yang belum sah', () => {
+    const c = komponen();
+    expect(c.bagianKurang).toEqual([
+      'salesInvoiceCreate.sectionInvoiceDetail',
+      'salesInvoiceCreate.sectionValueTax',
+      'salesInvoiceCreate.sectionPayment',
+    ]);
+  });
+
+  it('bagian yang sudah benar hilang dari daftarnya', () => {
+    const c = komponen();
+    isiMeta(c);
+    isiNilai(c);
+    expect(c.bagianKurang).toEqual(['salesInvoiceCreate.sectionPayment']);
+  });
+
+  it('faktur yang sah tidak memunculkan banner sama sekali', () => {
+    const c = komponen();
+    isiMeta(c);
+    isiNilai(c);
+    isiPembayaran(c);
+    expect(c.bagianKurang.length).toBe(0);
+    expect(c.isValid).toBeTrue();
+  });
+
+  describe('nomor faktur yang ditolak polanya', () => {
+    it('ditandai ketika sudah diisi tetapi salah bentuk', () => {
+      /*
+       * Dibedakan dari "belum diisi": polanya ditolak tanpa pesan di mana
+       * pun, sehingga yang sudah mengisinya menyangka nomornya benar dan
+       * mencari kesalahannya di isian lain.
+       */
+      const c = komponen();
+      c.metaFormGroup.patchValue({ name: 'INV/2026/001' });
+      expect(c.nomorTidakSesuai).toBeTrue();
+    });
+
+    it('TIDAK ditandai ketika masih kosong', () => {
+      // Isian yang belum disentuh bukan kekeliruan; menandainya membuat
+      // formulir yang baru dibuka sudah tampak salah.
+      const c = komponen();
+      expect(c.nomorTidakSesuai).toBeFalse();
+    });
+
+    it('TIDAK ditandai ketika nomornya benar', () => {
+      const c = komponen();
+      c.metaFormGroup.patchValue({ name: NOMOR_SAH });
+      expect(c.nomorTidakSesuai).toBeFalse();
+    });
+  });
+
+  describe('pemilih cetak terpisah', () => {
+    it('bawaannya menyatu', () => {
+      const c = komponen();
+      expect(c.cetakTerpisah).toBeFalse();
+    });
+
+    it('kedua kartunya memuat nilai boolean, bukan teks', () => {
+      /*
+       * `separatedInvoice` dikirim apa adanya ke kolom yang sama namanya.
+       * Nilai '"true"' berbentuk teks tersimpan sebagai benar pada kolom
+       * boolean mana pun — termasuk ketika yang dipilih "Tidak".
+       */
+      const c = komponen();
+      const nilai = c.pilihanCetakTerpisah.map((o: any) => o.value);
+      expect(nilai).toEqual([false, true]);
+      for (const v of nilai) expect(typeof v).toBe('boolean');
+    });
+
+    it('setiap kartu punya keterangan sendiri', () => {
+      // Itulah yang membedakannya dari daftar tarik-turun berisi "Ya" dan
+      // "Tidak": keduanya tidak menyatakan apa yang terpisah dari apa.
+      const c = komponen();
+      for (const o of c.pilihanCetakTerpisah) {
+        expect(o.hint).withContext(o.label).toBeTruthy();
+        expect(o.hint).not.toBe(o.label);
+      }
+    });
+
+    it('memilih terpisah menyalakan bannernya', () => {
+      const c = komponen();
+      c.valueFormGroup.patchValue({ separatedInvoice: true });
+      expect(c.cetakTerpisah).toBeTrue();
+    });
+  });
+});
