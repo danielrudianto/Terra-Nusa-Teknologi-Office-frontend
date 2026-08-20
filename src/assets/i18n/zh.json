@@ -548,7 +548,15 @@
     "cabutPeriksaTitle": "撤销审核",
     "cabutPeriksaPrompt": "{{name}} 的审核将被撤销，其批准同时失效。单据回到草稿状态。",
     "filterSub": "无需重新输入搜索即可缩小列表范围。",
-    "diperiksaSendiri": "此单据由您检查，需由他人审批。"
+    "diperiksaSendiri": "此单据由您检查，需由他人审批。",
+    "periksaJudul": "检查采购订单",
+    "periksaMenyiapkan": "正在打开单据…",
+    "periksaTunggu": "请等待 {{detik}} 秒",
+    "periksaTungguSelesai": "等待时间已满",
+    "periksaGulir": "请滚动至最后一页（还剩 {{sisa}} / {{jumlah}}）",
+    "periksaGulirSelesai": "已浏览全部页面",
+    "periksaPernyataan": "我已阅读本单据全部内容——价格、数量与规格均正确。",
+    "periksaKonfirmasi": "标记为已检查"
   },
   "income": {
     "title": "其他收入",

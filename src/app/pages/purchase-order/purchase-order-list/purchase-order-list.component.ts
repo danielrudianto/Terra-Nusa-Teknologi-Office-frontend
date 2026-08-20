@@ -61,6 +61,7 @@ import { ServerMessageService } from '../../../services/server-message.service';
 import { AccountService } from '../../../services/account.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
+import { PurchaseOrderPeriksaComponent } from '../purchase-order-periksa/purchase-order-periksa.component';
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
 
 @Component({
@@ -132,6 +133,8 @@ export class PurchaseOrderListComponent {
 
   isLoading: boolean = false;
   isReprinting: number | null = null;
+  /** Dokumen yang lembarnya sedang disusun untuk diperiksa. */
+  sedangMenyiapkanPeriksa: number | null = null;
   searchControl: FormControl = new FormControl('');
   orders: any[] = [];
   /** Kolom & arah pengurutan; penamaannya mengikuti halaman Pembelian. */
@@ -1486,13 +1489,83 @@ export class PurchaseOrderListComponent {
   }
 
   /**
-   * Tandai dokumen sudah diperiksa.
+   * Tandai dokumen sudah diperiksa — SESUDAH dokumennya dibuka.
    *
-   * Tahap SEBELUM persetujuan; dokumen yang belum diperiksa ditolak server
-   * ketika hendak disetujui.
+   * Sebelumnya ini satu butir menu yang langsung menandai. Dokumennya tidak
+   * pernah terbuka, dan tanda itulah yang membuka tombol Setujui — sehingga
+   * tahap yang seharusnya menghadirkan mata kedua dapat dilewati tanpa satu
+   * pun mata melihatnya.
+   *
+   * Lembarnya disusun dengan cara yang SAMA PERSIS dengan cetak ulang,
+   * lewat `susunDokumen`. Menyusunnya sendiri di sini berarti yang diperiksa
+   * bukan lembar yang akan diterima vendor — dan bedanya justru akan muncul
+   * pada bagian yang paling jarang dilihat.
    */
   periksa(po: any): void {
-    this.ubahPemeriksaan(po, true, 'purchaseOrder.diperiksa');
+    if (this.sedangMenyiapkanPeriksa === po.id) return;
+    this.sedangMenyiapkanPeriksa = po.id;
+
+    /*
+     * Rantainya diambil, bukan dokumennya sendirian.
+     *
+     * Adendum berisi SELISIH; dibaca sendirian ia tidak menyatakan keadaan
+     * pekerjaannya, dan pemeriksa tidak dapat menilai volume yang berlaku.
+     * Sama seperti saat dicetak, induk dan adendum sebelumnya ikut.
+     */
+    this.apiService.get(`purchase-orders/${po.id}/rantai`, {}).subscribe({
+      next: async (rantai: any) => {
+        try {
+          const daftar: any[] = Array.isArray(rantai) ? rantai : [];
+          if (!daftar.length) {
+            this.gagalSiapkanPeriksa();
+            return;
+          }
+
+          const sumber: string =
+            daftar.length === 1
+              ? await this.susunDokumen(daftar[0], 'dataurl')
+              : await cetakRantaiPurchaseOrder(
+                  daftar
+                    .map((d) => this.susunDokumen(d, 'docdef'))
+                    .filter(Boolean),
+                  po.name || 'purchase-order',
+                  'dataurl',
+                );
+
+          if (!sumber) {
+            this.gagalSiapkanPeriksa();
+            return;
+          }
+
+          this.sedangMenyiapkanPeriksa = null;
+          this.dialog
+            .open(PurchaseOrderPeriksaComponent, {
+              data: { sumber, nomor: po.name },
+              autoFocus: false,
+              maxWidth: '96vw',
+              // Ditutup lewat tombolnya saja: menutup tanpa sengaja di
+              // tengah pemeriksaan berarti mengulang dari awal.
+              disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((setuju) => {
+              if (setuju) {
+                this.ubahPemeriksaan(po, true, 'purchaseOrder.diperiksa');
+              }
+            });
+        } catch {
+          this.gagalSiapkanPeriksa();
+        }
+      },
+      error: () => this.gagalSiapkanPeriksa(),
+    });
+  }
+
+  private gagalSiapkanPeriksa(): void {
+    this.sedangMenyiapkanPeriksa = null;
+    this.snackBar.open(this.translate.instant('notify.actionFailed'), 'Close', {
+      duration: 4000,
+    });
   }
 
   /**

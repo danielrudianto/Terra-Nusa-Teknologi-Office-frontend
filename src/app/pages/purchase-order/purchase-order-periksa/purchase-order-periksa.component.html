@@ -1,0 +1,101 @@
+<div class="pop">
+  <div class="pop-head" mat-dialog-title>
+    <span class="pop-head__icon"><mat-icon>fact_check</mat-icon></span>
+    <div class="pop-head__teks">
+      <h2 class="pop-title">{{ "purchaseOrder.periksaJudul" | translate }}</h2>
+      <span class="pop-sub">{{ nomor }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="pop-isi">
+    <!--
+      Dokumennya sendiri, bukan ringkasannya.
+
+      Yang diperiksa harga, volume, dan spesifikasi — dan ketiganya hanya
+      lengkap pada lembar yang akan diterima vendor. Ringkasan menghilangkan
+      justru bagian yang paling sering keliru: satuan, catatan per baris, dan
+      syarat pembayaran.
+    -->
+    <ngx-extended-pdf-viewer
+      [src]="sumber"
+      [sidebarVisible]="false"
+      [spread]="'off'"
+      [handTool]="true"
+      [showToolbar]="true"
+      [showFindButton]="true"
+      [showZoomButtons]="true"
+      [showOpenFileButton]="false"
+      [showPrintButton]="false"
+      [showDownloadButton]="false"
+      [showDrawEditor]="false"
+      [showHighlightEditor]="false"
+      [showStampEditor]="false"
+      [showTextEditor]="false"
+      [showPresentationModeButton]="false"
+      [showPropertiesButton]="false"
+      [showRotateButton]="false"
+      [showScrollingButtons]="false"
+      [showSpreadButton]="false"
+      (pagesLoaded)="halamanSiap($event)"
+      (pageChange)="halamanBerpindah($event)"
+    ></ngx-extended-pdf-viewer>
+  </mat-dialog-content>
+
+  <div class="pop-kaki">
+    <!--
+      Apa yang masih menahan, disebut satu per satu.
+
+      Tombol mati tanpa keterangan terbaca sebagai kerusakan. Yang menekannya
+      perlu tahu bahwa yang kurang GULIRANNYA, bukan izinnya.
+    -->
+    <div class="pop-syarat">
+      <span class="pop-syarat__butir" [class.selesai]="!menungguWaktu()">
+        <mat-icon>{{ menungguWaktu() ? "timer" : "check_circle" }}</mat-icon>
+        @if (menungguWaktu()) {
+          {{ "purchaseOrder.periksaTunggu" | translate: { detik: sisaDetik() } }}
+        } @else {
+          {{ "purchaseOrder.periksaTungguSelesai" | translate }}
+        }
+      </span>
+
+      <span class="pop-syarat__butir" [class.selesai]="sudahSampaiBawah()">
+        <mat-icon>{{
+          sudahSampaiBawah() ? "check_circle" : "vertical_align_bottom"
+        }}</mat-icon>
+        @if (sudahSampaiBawah()) {
+          {{ "purchaseOrder.periksaGulirSelesai" | translate }}
+        } @else {
+          {{
+            "purchaseOrder.periksaGulir"
+              | translate: { sisa: sisaHalaman(), jumlah: jumlahHalaman() }
+          }}
+        }
+      </span>
+    </div>
+
+    <mat-checkbox
+      class="pop-pernyataan"
+      color="primary"
+      [checked]="sudahBaca()"
+      (change)="ubahPernyataan($event.checked)"
+    >
+      {{ "purchaseOrder.periksaPernyataan" | translate }}
+    </mat-checkbox>
+
+    <div class="pop-tombol">
+      <span class="pop-spacer"></span>
+      <button type="button" class="pop-batal" (click)="batal()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="pop-simpan"
+        [disabled]="!bolehKonfirmasi()"
+        (click)="konfirmasi()"
+      >
+        <mat-icon>fact_check</mat-icon>
+        {{ "purchaseOrder.periksaKonfirmasi" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

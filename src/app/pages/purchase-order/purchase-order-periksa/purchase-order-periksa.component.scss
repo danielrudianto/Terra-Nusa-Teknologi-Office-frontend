@@ -1,0 +1,140 @@
+.pop {
+  display: flex;
+  flex-direction: column;
+  /*
+   * Setinggi dan selebar mungkin.
+   *
+   * Yang diperiksa isi dokumennya. Dialog kecil membuat lembarnya mengecil
+   * sampai angka pada kolom harga tidak lagi terbaca tanpa memperbesar —
+   * dan yang tidak terbaca tidak akan diperiksa.
+   */
+  width: min(1100px, 94vw);
+  height: min(88vh, 900px);
+}
+
+.pop-head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.4rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #e4e9fb);
+  flex: 0 0 auto;
+}
+.pop-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  flex: 0 0 auto;
+}
+.pop-title {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+.pop-sub {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+.pop-isi {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-height: none !important;
+  display: flex;
+}
+ngx-extended-pdf-viewer {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+}
+
+.pop-kaki {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem 1.4rem 1rem;
+  border-top: 1px solid var(--line, #e4e9fb);
+  background: var(--surface, #fff);
+}
+
+/* Apa yang masih menahan tombolnya; tombol mati tanpa sebab terbaca rusak. */
+.pop-syarat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+.pop-syarat__butir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-variant-numeric: tabular-nums;
+}
+.pop-syarat__butir .mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+.pop-syarat__butir.selesai {
+  color: var(--ok-fg, #2f7d54);
+}
+
+.pop-pernyataan {
+  font-size: 0.84rem;
+}
+
+.pop-tombol {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pop-spacer {
+  flex: 1 1 auto;
+}
+.pop-batal,
+.pop-simpan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 38px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pop-batal {
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+}
+.pop-simpan {
+  border: 0;
+  background: var(--brand, #154dec);
+  color: var(--on-brand, #fff);
+}
+.pop-simpan .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+.pop-simpan:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

@@ -291,13 +291,27 @@
                   orang menekan tombol yang pasti ditolak server.
                 -->
                 @if (!sudahDiperiksa(po)) {
+                  <!--
+                    Menekan ini MEMBUKA dokumennya, bukan langsung menandai.
+
+                    Menyusun lembarnya butuh sesaat — rantainya diambil dari
+                    server lalu PDF-nya dirakit di peramban — dan menu yang
+                    diam sesudah ditekan terbaca sebagai tekanan yang tidak
+                    masuk.
+                  -->
                   <button
                     mat-menu-item
                     *appCan="'purchase_order:update'"
+                    [disabled]="sedangMenyiapkanPeriksa === po.id"
                     (click)="periksa(po)"
                   >
                     <mat-icon>fact_check</mat-icon
-                    ><span>{{ "purchaseOrder.menuPeriksa" | translate }}</span>
+                    ><span>{{
+                      (sedangMenyiapkanPeriksa === po.id
+                        ? "purchaseOrder.periksaMenyiapkan"
+                        : "purchaseOrder.menuPeriksa"
+                      ) | translate
+                    }}</span>
                   </button>
                 } @else {
                   <button

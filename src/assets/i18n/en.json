@@ -548,7 +548,15 @@
     "cabutPeriksaTitle": "Undo check",
     "cabutPeriksaPrompt": "The check on {{name}} will be undone and its approval will lapse. The document returns to draft.",
     "filterSub": "Narrow the list without retyping your search.",
-    "diperiksaSendiri": "You checked this document, so someone else has to approve it."
+    "diperiksaSendiri": "You checked this document, so someone else has to approve it.",
+    "periksaJudul": "Check purchase order",
+    "periksaMenyiapkan": "Opening document…",
+    "periksaTunggu": "Please wait {{detik}}s",
+    "periksaTungguSelesai": "Wait time done",
+    "periksaGulir": "Scroll to the last page ({{sisa}} of {{jumlah}} left)",
+    "periksaGulirSelesai": "Whole document viewed",
+    "periksaPernyataan": "I have read this entire document — price, volume, and specification are correct.",
+    "periksaKonfirmasi": "Mark as checked"
   },
   "income": {
     "title": "Other income",

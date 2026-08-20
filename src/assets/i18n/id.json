@@ -548,7 +548,15 @@
     "cabutPeriksaTitle": "Cabut pemeriksaan",
     "cabutPeriksaPrompt": "Pemeriksaan {{name}} akan dicabut dan persetujuannya ikut gugur. Dokumen kembali ke draf.",
     "filterSub": "Persempit daftar tanpa mengetik ulang pencarian.",
-    "diperiksaSendiri": "Dokumen ini Anda yang memeriksa, jadi persetujuannya harus dari orang lain."
+    "diperiksaSendiri": "Dokumen ini Anda yang memeriksa, jadi persetujuannya harus dari orang lain.",
+    "periksaJudul": "Periksa purchase order",
+    "periksaMenyiapkan": "Membuka dokumen…",
+    "periksaTunggu": "Tunggu {{detik}} detik",
+    "periksaTungguSelesai": "Waktu tunggu selesai",
+    "periksaGulir": "Gulir sampai halaman terakhir (sisa {{sisa}} dari {{jumlah}})",
+    "periksaGulirSelesai": "Seluruh halaman sudah dilewati",
+    "periksaPernyataan": "Saya telah membaca seluruh dokumen ini — harga, volume, dan spesifikasinya sudah benar.",
+    "periksaKonfirmasi": "Tandai sudah diperiksa"
   },
   "income": {
     "title": "Pendapatan Lain",
