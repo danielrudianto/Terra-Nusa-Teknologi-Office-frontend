@@ -59,24 +59,74 @@
     <div class="table-responsive">
       <table mat-table [dataSource]="tenders" #table>
         <ng-container matColumnDef="number">
-          <th mat-header-cell *matHeaderCellDef>{{ "tender.nomor" | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('number')">
+            <span class="tl-th">
+              {{ "tender.nomor" | translate }}
+              <mat-icon *ngIf="sortBy === 'number' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'number' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'number'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
           <td mat-cell *matCellDef="let t">{{ t.number || "—" }}</td>
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ "tender.nama" | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('name')">
+            <span class="tl-th">
+              {{ "tender.nama" | translate }}
+              <mat-icon *ngIf="sortBy === 'name' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'name' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'name'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
           <td mat-cell *matCellDef="let t">{{ t.name }}</td>
         </ng-container>
 
         <ng-container matColumnDef="projectName">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "tender.proyek" | translate }}
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('projectName')">
+            <span class="tl-th">
+              {{ "tender.proyek" | translate }}
+              <mat-icon *ngIf="sortBy === 'projectName' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'projectName' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'projectName'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
           </th>
           <td mat-cell *matCellDef="let t">{{ t.projectName }}</td>
         </ng-container>
 
         <ng-container matColumnDef="tenderType">
-          <th mat-header-cell *matHeaderCellDef>{{ "tender.jenis" | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('tenderType')">
+            <span class="tl-th">
+              {{ "tender.jenis" | translate }}
+              <mat-icon *ngIf="sortBy === 'tenderType' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'tenderType' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'tenderType'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
           <td mat-cell *matCellDef="let t">
             {{
               (t.tenderType === "jasa" ? "tender.jasa" : "tender.barang")
@@ -107,7 +157,20 @@
         </ng-container>
 
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ "tender.status" | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef (click)="urutkan('status')">
+            <span class="tl-th">
+              {{ "tender.status" | translate }}
+              <mat-icon *ngIf="sortBy === 'status' && sortByDirection === 'asc'"
+                >arrow_drop_up</mat-icon
+              >
+              <mat-icon *ngIf="sortBy === 'status' && sortByDirection === 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy !== 'status'" class="tl-th__idle"
+                >unfold_more</mat-icon
+              >
+            </span>
+          </th>
           <td mat-cell *matCellDef="let t">
             <span class="tl-status" [attr.data-status]="t.status">
               {{ "tender.status" + (t.status | titlecase) | translate }}
@@ -147,11 +210,17 @@
       </table>
     </div>
 
+    <!--
+      Banyak baris mengikuti PENGATURAN pengguna, dan halaman berjalan ikut
+      dikembalikan saat layar dibuka dari tautan — sama seperti daftar
+      Pembelian.
+    -->
     <mat-paginator
       [length]="count"
-      [pageSize]="10"
-      [pageSizeOptions]="[10, 25, 50]"
-      (page)="muat()"
+      [pageSize]="pageSize"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="gantiHalaman($event)"
     ></mat-paginator>
   </div>
 </div>

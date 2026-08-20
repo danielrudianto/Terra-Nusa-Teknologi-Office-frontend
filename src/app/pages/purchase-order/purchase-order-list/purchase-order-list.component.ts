@@ -1026,6 +1026,15 @@ export class PurchaseOrderListComponent {
               price: Number(it.price) || 0,
             })),
             includePpn: Number(data.ppn) > 0,
+            /*
+             * Premi ikut TERCETAK, bukan hanya diketahui ada.
+             *
+             * Sebelumnya hanya `hasPremium` yang diteruskan — klausulnya
+             * menyebut "nilai premi yang tercantum dalam dokumen ini"
+             * sementara nilainya tidak ada di halaman mana pun, dan vendor
+             * tidak dapat mengetahui apakah yang dibayarkan jasanya saja.
+             */
+            premiums: custom.premiums || [],
             sections: buildInsuranceClauses(
               {
                 ...printData.clauseContext,

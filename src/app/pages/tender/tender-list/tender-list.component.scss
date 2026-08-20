@@ -118,3 +118,35 @@
   color: var(--muted, #6b7280);
   font-size: 0.9rem;
 }
+
+/* ---------- judul kolom yang dapat diurutkan ---------- */
+
+/*
+ * Bentuknya sama dengan daftar Pembelian dan Reimbursement.
+ *
+ * Ikon `unfold_more` yang redup ditampilkan pada kolom yang SEDANG TIDAK
+ * mengurutkan — tanpanya, tidak ada tanda bahwa judulnya dapat ditekan sama
+ * sekali, dan pengurutannya hanya ditemukan orang yang kebetulan mengkliknya.
+ */
+.tl-th {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--brand, #154dec);
+  }
+  &__idle {
+    color: var(--faint, #cfd4dc) !important;
+  }
+}
+
+/* Judul yang dapat ditekan harus terlihat dapat ditekan. */
+th.mat-mdc-header-cell:has(.tl-th) {
+  cursor: pointer;
+  user-select: none;
+}

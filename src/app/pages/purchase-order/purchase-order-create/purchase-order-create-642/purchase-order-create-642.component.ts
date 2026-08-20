@@ -586,6 +586,21 @@ export class PurchaseOrderCreate642Component {
         };
       }),
       includePpn: !!v.includePPN,
+      /*
+       * Premi ikut ke dokumen, bukan hanya ke penyimpanan.
+       *
+       * Pratinjau dan penyimpanan memakai penyusun yang sama, jadi tanpa
+       * baris ini yang dilihat pembuatnya pun sama-sama kehilangan preminya
+       * — dan kekeliruannya baru ketahuan dari vendor.
+       */
+      premiums: this.premiums.controls.map((c) => {
+        const x = c.getRawValue();
+        return {
+          task: x.task,
+          description: x.description,
+          amount: Number(x.amount) || 0,
+        };
+      }),
       templateVersion: '1.0',
       sections: this.previewSections,
       clauseContext: this.clauseContext(),

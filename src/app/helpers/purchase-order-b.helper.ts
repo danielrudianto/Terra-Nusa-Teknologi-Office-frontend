@@ -116,6 +116,21 @@ export interface IPurchaseOrderB {
    * SPK sewa alat tidak memakainya; PO 5.1.2 mode jasa memakainya karena
    * catatan perjanjiannya menyebut adanya lembar terpisah.
    */
+  /**
+   * Premi yang DITITIPKAN kepada PIHAK KEDUA untuk diteruskan ke penanggung.
+   *
+   * Hanya dipakai penutupan pertanggungan (6.4.2). Ia bukan penghasilan
+   * PIHAK KEDUA dan karena itu TIDAK boleh masuk `items`: dasar pajak
+   * dihitung dari `items`, sehingga memasukkannya ke sana akan menambah PPN
+   * dan PPh atas uang yang hanya lewat.
+   *
+   * Tetapi ia tetap harus TERCETAK. Tanpa itu dokumennya hanya memuat
+   * imbalan jasa, sementara klausulnya menyebut "nilai premi yang tercantum
+   * dalam dokumen ini" — merujuk sesuatu yang tidak ada di halaman mana pun.
+   * Vendor yang membacanya tidak dapat mengetahui apakah yang dibayarkan
+   * jasanya saja atau berikut preminya.
+   */
+  premiums?: { task?: string; description?: string; amount?: number }[];
   billingTerms?: any[];
   /** Judul lampiran, dua baris seperti dokumen PO lain. */
   billingTitle?: string;
@@ -280,6 +295,58 @@ function buildItemTable(data: IPurchaseOrderB) {
     { text: rupiahDokumen(value), style: 'td', alignment: 'right' as Alignment, bold },
   ];
 
+  /*
+   * Premi dicetak SESUDAH total jasa, sebagai blok tersendiri.
+   *
+   * Bukan digabung ke baris pekerjaan: dasar pajak dihitung dari `items`,
+   * dan menyatukannya akan menambah PPN atas uang yang hanya dititipkan.
+   * Bukan pula dihilangkan: tanpa angkanya, dokumen ini hanya menyebutkan
+   * imbalan jasa dan vendor tidak dapat mengetahui apakah preminya ikut
+   * dibayarkan.
+   *
+   * Baris terakhirnya menjumlahkan keduanya — itulah angka yang sebenarnya
+   * berpindah tangan, dan satu-satunya yang selama ini tidak pernah tertulis.
+   */
+  const premi = (data.premiums ?? []).filter(
+    (p) => (Number(p?.amount) || 0) > 0 || String(p?.task ?? '').trim(),
+  );
+  const jumlahPremi = premi.reduce((a, p) => a + (Number(p?.amount) || 0), 0);
+
+  const barisPremi: any[][] = premi.length
+    ? [
+        [
+          {
+            text: 'PREMI — dititipkan untuk diteruskan kepada penanggung, di luar dasar pajak',
+            style: 'td',
+            colSpan: 6,
+            italics: true,
+          },
+          {}, {}, {}, {}, {},
+        ],
+        ...premi.map((p) => [
+          { text: '', style: 'td' },
+          {
+            text: [
+              String(p?.task ?? '').trim() || 'Premi',
+              String(p?.description ?? '').trim(),
+            ]
+              .filter(Boolean)
+              .join(' — '),
+            style: 'td',
+            colSpan: 4,
+          },
+          {}, {}, {},
+          {
+            text: rupiahDokumen(Number(p?.amount) || 0),
+            style: 'td',
+            alignment: 'right' as Alignment,
+          },
+        ]),
+        summaryRow('Jumlah premi', jumlahPremi),
+        summaryRow('JUMLAH DIBAYARKAN', total + jumlahPremi, true),
+      ]
+    : [];
+
   return {
     table: {
       headerRows: 1,
@@ -289,7 +356,8 @@ function buildItemTable(data: IPurchaseOrderB) {
         ...rows,
         summaryRow('Sub Total', subTotal),
         summaryRow('PPN', ppn),
-        summaryRow('Total', total, true),
+        summaryRow(premi.length ? 'Total jasa' : 'Total', total, true),
+        ...barisPremi,
       ],
     },
     layout: TABLE_LAYOUT,
