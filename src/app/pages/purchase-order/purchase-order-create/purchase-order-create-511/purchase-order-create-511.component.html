@@ -10,19 +10,18 @@
     [description]="'poForm.desc511' | translate"
   />
 
-
-    <!--
+  <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-    @if (isUbah) {
-      <div class="pou-banner">
-        <mat-icon>edit_note</mat-icon>
-        <div>
-          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
-        </div>
+  @if (isUbah) {
+    <div class="pou-banner">
+      <mat-icon>edit_note</mat-icon>
+      <div>
+        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
       </div>
-    }
+    </div>
+  }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="po511-card">
@@ -51,9 +50,9 @@
           -->
           <input matInput formControlName="projectName" readonly />
           <mat-hint>{{ "common.projectCodeHint" | translate }}</mat-hint>
-          <mat-error *ngIf="f['projectName'].hasError('pattern')"
-            >{{ "po511.harus45KarakterKapital" | translate }}</mat-error
-          >
+          <mat-error *ngIf="f['projectName'].hasError('pattern')">{{
+            "po511.harus45KarakterKapital" | translate
+          }}</mat-error>
         </mat-form-field>
 
         @if (adendum.memuatDokumenLama) {
@@ -120,15 +119,14 @@
           {{ "common.itemList" | translate }}
         </div>
         <button type="button" class="po511-add" (click)="openItemSelector()">
-          <mat-icon>add</mat-icon>{{ "po511.tambahBarang" | translate }}</button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahBarang" | translate }}
+        </button>
       </div>
 
       @if (t.controls.length === 0) {
         <div class="po511-empty">
           <mat-icon>inventory_2</mat-icon>
-          <span
-            >{{ "po511.belumAdaBarangKlikTambah" | translate }}</span
-          >
+          <span>{{ "po511.belumAdaBarangKlikTambah" | translate }}</span>
         </div>
       } @else {
         <div class="po511-itemlist">
@@ -207,7 +205,7 @@
                     matInput
                     formControlName="price"
                     thousandSeparator=" "
-                    mask="separator.2"
+                    mask="separator.4"
                     prefix="Rp. "
                     placeholder="0"
                   />
@@ -247,9 +245,7 @@
 
       <div class="po511-note">
         <mat-icon>info</mat-icon>
-        <span
-          >{{ "po511.bilaPpnDipilihHargaDi" | translate }}</span
-        >
+        <span>{{ "po511.bilaPpnDipilihHargaDi" | translate }}</span>
       </div>
     </div>
 
@@ -261,7 +257,8 @@
       <div class="po511-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
-          <mat-select formControlName="deliveryMethod"
+          <mat-select
+            formControlName="deliveryMethod"
             (selectionChange)="selaraskanTerminLoco()"
           >
             <mat-option [value]="0">{{
@@ -310,7 +307,9 @@
               CBD, dan dokumennya terbit menyebut pengiriman yang tidak pernah
               terjadi.
             -->
-            <mat-option value="CASH">{{ "poForm.cash" | translate }}</mat-option>
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
             <!--
               COD dan CBD hanya berlaku pada FRANCO.
 
@@ -324,8 +323,12 @@
               dokumennya.
             -->
             @if (!isLoco) {
-              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
-              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+              <mat-option value="COD">{{
+                "poForm.cod" | translate
+              }}</mat-option>
+              <mat-option value="CBD">{{
+                "poForm.cbd" | translate
+              }}</mat-option>
             }
             <mat-option value="PPD">{{
               "poForm.prepaidOpt" | translate
@@ -436,7 +439,8 @@
           {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="po511-add" (click)="addClause()">
-          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+        </button>
       </div>
       <p class="po511-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
@@ -482,7 +486,12 @@
           class="po511-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
+          {{
+            isSubmitting
+              ? ("hardcoded.menyimpan" | translate)
+              : ((isUbah ? "poForm.submitUbah" : "hardcoded.buatPurchaseOrder")
+                | translate)
+          }}
         </button>
       </div>
     </div>

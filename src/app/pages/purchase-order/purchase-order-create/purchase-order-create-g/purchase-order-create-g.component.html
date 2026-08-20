@@ -10,19 +10,18 @@
     [description]="'poForm.headerDescG' | translate"
   />
 
-
-    <!--
+  <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-    @if (isUbah) {
-      <div class="pou-banner">
-        <mat-icon>edit_note</mat-icon>
-        <div>
-          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
-        </div>
+  @if (isUbah) {
+    <div class="pou-banner">
+      <mat-icon>edit_note</mat-icon>
+      <div>
+        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
       </div>
-    }
+    </div>
+  }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="pog-card">
@@ -45,11 +44,11 @@
 
         <!-- Tipe G melekat pada proyek; PUSAT tidak berlaku di sini. -->
         <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [tanpaPusat]="true"
-        [label]="'poForm.projectCode' | translate"
-      />
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [tanpaPusat]="true"
+          [label]="'poForm.projectCode' | translate"
+        />
 
         @if (adendum.memuatDokumenLama) {
           <!--
@@ -201,7 +200,7 @@
                     matInput
                     formControlName="price"
                     thousandSeparator=" "
-                    mask="separator.2"
+                    mask="separator.4"
                     prefix="Rp. "
                     placeholder="0"
                   />
@@ -254,7 +253,8 @@
       <div class="pog-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
-          <mat-select formControlName="deliveryMethod"
+          <mat-select
+            formControlName="deliveryMethod"
             (selectionChange)="selaraskanTerminLoco()"
           >
             <mat-option [value]="0">{{
@@ -305,7 +305,9 @@
               CBD, dan dokumennya terbit menyebut pengiriman yang tidak pernah
               terjadi.
             -->
-            <mat-option value="CASH">{{ "poForm.cash" | translate }}</mat-option>
+            <mat-option value="CASH">{{
+              "poForm.cash" | translate
+            }}</mat-option>
             <!--
               COD dan CBD hanya berlaku pada FRANCO.
 
@@ -319,8 +321,12 @@
               dokumennya.
             -->
             @if (!isLoco) {
-              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
-              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
+              <mat-option value="COD">{{
+                "poForm.cod" | translate
+              }}</mat-option>
+              <mat-option value="CBD">{{
+                "poForm.cbd" | translate
+              }}</mat-option>
             }
             <mat-option value="PPD">{{
               "poForm.prepaidOpt" | translate

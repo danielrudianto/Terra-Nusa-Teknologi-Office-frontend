@@ -10,19 +10,18 @@
     [description]="'poForm.descH' | translate"
   />
 
-
-    <!--
+  <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-    @if (isUbah) {
-      <div class="pou-banner">
-        <mat-icon>edit_note</mat-icon>
-        <div>
-          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
-        </div>
+  @if (isUbah) {
+    <div class="pou-banner">
+      <mat-icon>edit_note</mat-icon>
+      <div>
+        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
       </div>
-    }
+    </div>
+  }
   <!-- ===== STEP 0: pilih jenis subkontraktor ===== -->
   @if (!subType) {
     <div class="poh-card poh-choose">
@@ -68,9 +67,9 @@
           </span>
           <span class="poh-pick__code">H2</span>
           <span class="poh-pick__name">{{ "poH.nonEntity" | translate }}</span>
-          <span class="poh-pick__desc"
-            >{{ "poH.mandorPeroranganWajibDataPekerja" | translate }}</span
-          >
+          <span class="poh-pick__desc">{{
+            "poH.mandorPeroranganWajibDataPekerja" | translate
+          }}</span>
         </button>
       </div>
     </div>
@@ -120,28 +119,30 @@
           </mat-form-field>
 
           <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'poForm.projectCode' | translate"
-      />
+            formControlName="projectName"
+            [hanyaAktif]="true"
+            [label]="'poForm.projectCode' | translate"
+          />
 
           @if (adendum.memuatDokumenLama) {
-          <!--
+            <!--
             Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
             yang dimatikan. Kotak abu-abu tetap terlihat seperti
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
-          <app-supplier-terkunci
-            class="poh-span2"
-            [label]="'poForm.supplier' | translate"
-            [nama]="formGroup.get('supplierName')?.value"
-            [alamat]="formGroup.get('supplierAddress')?.value"
-          />
-        } @else {
-          <mat-form-field appearance="outline" class="poh-span2">
+            <app-supplier-terkunci
+              class="poh-span2"
+              [label]="'poForm.supplier' | translate"
+              [nama]="formGroup.get('supplierName')?.value"
+              [alamat]="formGroup.get('supplierAddress')?.value"
+            />
+          } @else {
+            <mat-form-field appearance="outline" class="poh-span2">
               <mat-label>{{
-                isEntity ? ('hardcoded.subkontraktorBadanUsaha' | translate) : ('hardcoded.mandorPerorangan' | translate)
+                isEntity
+                  ? ("hardcoded.subkontraktorBadanUsaha" | translate)
+                  : ("hardcoded.mandorPerorangan" | translate)
               }}</mat-label>
               <input
                 matInput
@@ -159,7 +160,7 @@
                 <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
-        }
+          }
         </div>
       </div>
 
@@ -283,7 +284,8 @@
               -->
               @if (isEntity) {
                 <button type="button" class="poh-reset" (click)="clearPph()">
-                  <mat-icon>close</mat-icon>{{ "po5112.hapus" | translate }}</button>
+                  <mat-icon>close</mat-icon>{{ "po5112.hapus" | translate }}
+                </button>
               }
             </div>
           }
@@ -378,7 +380,9 @@
               bukan sebagai isian yang terlewat.
             -->
             @if (pratinjauPenagihanPertama) {
-              <p class="poh-cutoffs__preview">{{ pratinjauPenagihanPertama }}</p>
+              <p class="poh-cutoffs__preview">
+                {{ pratinjauPenagihanPertama }}
+              </p>
             } @else {
               <p class="poh-cutoffs__preview">
                 {{ "poH.penagihanPertamaNol" | translate }}
@@ -393,15 +397,15 @@
               formControlName="billingCycleMode"
               class="poh-rate"
             >
-              <mat-radio-button value="cutoff-tanggal" color="primary"
-                >{{ "poH.perProgresTanggalCutoff" | translate }}</mat-radio-button
-              >
-              <mat-radio-button value="periode-pekan" color="primary"
-                >{{ "poH.perProgresMingguan" | translate }}</mat-radio-button
-              >
-              <mat-radio-button value="selesai-pekerjaan" color="primary"
-                >{{ "poH.saatPekerjaanSelesai" | translate }}</mat-radio-button
-              >
+              <mat-radio-button value="cutoff-tanggal" color="primary">{{
+                "poH.perProgresTanggalCutoff" | translate
+              }}</mat-radio-button>
+              <mat-radio-button value="periode-pekan" color="primary">{{
+                "poH.perProgresMingguan" | translate
+              }}</mat-radio-button>
+              <mat-radio-button value="selesai-pekerjaan" color="primary">{{
+                "poH.saatPekerjaanSelesai" | translate
+              }}</mat-radio-button>
             </mat-radio-group>
 
             @if (formGroup.value.billingCycleMode === "selesai-pekerjaan") {
@@ -410,7 +414,9 @@
                 pekan, yang perlu hanya terminnya.
               -->
               <div class="poh-cutoffs">
-                <p class="poh-cutoffs__preview">{{ "poH.penagihanDilakukanSatuKaliSetelah" | translate }}</p>
+                <p class="poh-cutoffs__preview">
+                  {{ "poH.penagihanDilakukanSatuKaliSetelah" | translate }}
+                </p>
                 <mat-form-field
                   appearance="outline"
                   class="poh-cutoffs__term"
@@ -464,7 +470,9 @@
                 ada yang menyadari.
               -->
               <div class="poh-cutoffs">
-                <div class="poh-cutoffs__label">{{ "poH.tanggalCutoffDalamSebulan" | translate }}</div>
+                <div class="poh-cutoffs__label">
+                  {{ "poH.tanggalCutoffDalamSebulan" | translate }}
+                </div>
 
                 <div class="poh-cutoffs__row" formArrayName="cutoffDays">
                   @for (c of cutoffDays.controls; track c; let i = $index) {
@@ -486,16 +494,16 @@
                         proyeksi konten bila berada di dalam `@if`.
                       -->
                       <button
-                          [class.poh-cutoff__x--sembunyi]="cutoffDays.length <= 1"
-                          matSuffix
-                          mat-icon-button
-                          type="button"
-                          class="poh-cutoff__x"
-                          (click)="removeCutoff(i)"
-                          [attr.aria-label]="'poH.hapusTanggalCutoff' | translate"
-                        >
-                          <mat-icon>close</mat-icon>
-                        </button>
+                        [class.poh-cutoff__x--sembunyi]="cutoffDays.length <= 1"
+                        matSuffix
+                        mat-icon-button
+                        type="button"
+                        class="poh-cutoff__x"
+                        (click)="removeCutoff(i)"
+                        [attr.aria-label]="'poH.hapusTanggalCutoff' | translate"
+                      >
+                        <mat-icon>close</mat-icon>
+                      </button>
                     </mat-form-field>
                   }
 
@@ -506,7 +514,8 @@
                       class="poh-cutoffs__add"
                       (click)="addCutoff()"
                     >
-                      <mat-icon>add</mat-icon>{{ "poH.tambah" | translate }}</button>
+                      <mat-icon>add</mat-icon>{{ "poH.tambah" | translate }}
+                    </button>
                   }
                 </div>
 
@@ -575,10 +584,12 @@
               aplikasi; sebelumnya hanya empat isian ini yang
               menyimpang.
             -->
-            <textarea rows="2"
+            <textarea
+              rows="2"
               matInput
               formControlName="workLocation"
-              [placeholder]="'poField.exR501KotaBaruParahyangan' | translate"></textarea>
+              [placeholder]="'poField.exR501KotaBaruParahyangan' | translate"
+            ></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="poh-span2">
@@ -681,7 +692,8 @@
             {{ "poH.workScope" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addScope()">
-            <mat-icon>add</mat-icon>{{ "po512.tambahPekerjaan" | translate }}</button>
+            <mat-icon>add</mat-icon>{{ "po512.tambahPekerjaan" | translate }}
+          </button>
         </div>
 
         @if (t.controls.length === 0) {
@@ -696,7 +708,8 @@
                 <div class="poh-scope__head">
                   <span class="poh-scope__no">#{{ i + 1 }}</span>
                   <span class="poh-scope__label">{{
-                    getFormGroupAt(i).value.task || ('hardcoded.pekerjaanBelumDiisi' | translate)
+                    getFormGroupAt(i).value.task ||
+                      ("hardcoded.pekerjaanBelumDiisi" | translate)
                   }}</span>
                   @if (!isLumpSum) {
                     <span class="poh-scope__amt"
@@ -749,9 +762,9 @@
                         u
                       }}</mat-option>
                     </mat-select>
-                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'"
-                      >{{ "poH.lumpSumVolumeDikunci1" | translate }}</mat-hint
-                    >
+                    <mat-hint *ngIf="getFormGroupAt(i).value.unit === 'LS'">{{
+                      "poH.lumpSumVolumeDikunci1" | translate
+                    }}</mat-hint>
                   </mat-form-field>
 
                   @if (!isLumpSum) {
@@ -763,7 +776,7 @@
                         matInput
                         formControlName="price"
                         thousandSeparator=" "
-                        mask="separator.2"
+                        mask="separator.4"
                         prefix="Rp. "
                         placeholder="0"
                       />
@@ -786,7 +799,9 @@
               "poForm.includePpn" | translate
             }}</mat-slide-toggle>
           } @else {
-            <span class="poh-rate__hint">{{ "poH.subkontraktorPeroranganBukanPkpTid" | translate }}</span>
+            <span class="poh-rate__hint">{{
+              "poH.subkontraktorPeroranganBukanPkpTid" | translate
+            }}</span>
           }
           <div class="poh-summary">
             <div class="poh-summary__row">
@@ -812,7 +827,9 @@
               {{ "poH.workerData" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addWorker()">
-              <mat-icon>person_add</mat-icon>{{ "poH.tambahPekerja" | translate }}</button>
+              <mat-icon>person_add</mat-icon
+              >{{ "poH.tambahPekerja" | translate }}
+            </button>
           </div>
 
           @if (w.controls.length === 0) {
@@ -853,7 +870,7 @@
                 </div>
               }
 
-      <!--
+              <!--
         Tombol tambah KEDUA, di bawah daftar.
 
         Yang di kepala kartu tidak terjangkau setelah beberapa baris
@@ -861,11 +878,15 @@
         atas, menekan, lalu menggulir kembali ke bawah untuk
         mengisinya.
       -->
-      @if (w.controls.length) {
-        <button type="button" class="pou-add pou-add--bawah" (click)="addWorker()">
-          <mat-icon>add</mat-icon>{{ "poH.tambahPekerja" | translate }}
-        </button>
-      }
+              @if (w.controls.length) {
+                <button
+                  type="button"
+                  class="pou-add pou-add--bawah"
+                  (click)="addWorker()"
+                >
+                  <mat-icon>add</mat-icon>{{ "poH.tambahPekerja" | translate }}
+                </button>
+              }
             </div>
           }
         </div>
@@ -891,7 +912,8 @@
               class="poh-add"
               (click)="addKewajibanTambahan()"
             >
-              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+            </button>
           </div>
 
           <div class="poh-banner">
@@ -911,7 +933,11 @@
                     <mat-label>{{
                       "poH.obligationPoints" | translate
                     }}</mat-label>
-                    <textarea matInput [formControlName]="i" rows="2"></textarea>
+                    <textarea
+                      matInput
+                      [formControlName]="i"
+                      rows="2"
+                    ></textarea>
                   </mat-form-field>
                   <button
                     mat-icon-button
@@ -988,7 +1014,8 @@
               {{ "poH.article4" | translate }}
             </div>
             <button type="button" class="poh-add" (click)="addKeterangan()">
-              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+              <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+            </button>
           </div>
 
           <!--
@@ -1277,13 +1304,19 @@
               </span>
             </div>
 
-            <mat-slide-toggle color="primary" formControlName="lampiranFakturPajak">
+            <mat-slide-toggle
+              color="primary"
+              formControlName="lampiranFakturPajak"
+            >
               {{ "poH.lampiranFakturPajak" | translate }}
             </mat-slide-toggle>
             <mat-slide-toggle color="primary" formControlName="lampiranCop">
               {{ "poH.lampiranCop" | translate }}
             </mat-slide-toggle>
-            <mat-slide-toggle color="primary" formControlName="lampiranBeritaAcara">
+            <mat-slide-toggle
+              color="primary"
+              formControlName="lampiranBeritaAcara"
+            >
               {{ "poH.lampiranBeritaAcara" | translate }}
             </mat-slide-toggle>
 
@@ -1432,19 +1465,19 @@
           Mengetik bebas TETAP boleh: sebagian dokumen menyebut
           penanggung jawab yang tidak ada di daftar karyawan.
         -->
-        <app-pic-autocomplete
-          [label]="'poH.picName' | translate"
-          [placeholder]="'poH.exStephanie' | translate"
-          formControlName="officePICName"
-          (teleponTerpilih)="
-            formGroup.get('officePICPhoneNumber')?.setValue($event)
-          "
-        />
+            <app-pic-autocomplete
+              [label]="'poH.picName' | translate"
+              [placeholder]="'poH.exStephanie' | translate"
+              formControlName="officePICName"
+              (teleponTerpilih)="
+                formGroup.get('officePICPhoneNumber')?.setValue($event)
+              "
+            />
 
             <mat-form-field appearance="outline">
               <mat-label>{{ "poH.picPhone" | translate }}</mat-label>
               <input
-            autocomplete="off"
+                autocomplete="off"
                 matInput
                 formControlName="officePICPhoneNumber"
                 [placeholder]="'poH.ex0811902590' | translate"
@@ -1475,7 +1508,8 @@
             {{ "poH.extraPoints" | translate }}
           </div>
           <button type="button" class="poh-add" (click)="addClause()">
-            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+          </button>
         </div>
         <!--
           Satu keterangan, bukan dua.
@@ -1538,7 +1572,14 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
+              {{
+                isSubmitting
+                  ? ("hardcoded.menyimpan" | translate)
+                  : ((isUbah
+                      ? "poForm.submitUbah"
+                      : "hardcoded.buatPurchaseOrder"
+                    ) | translate)
+              }}
             </button>
           </div>
         }
@@ -1599,7 +1640,14 @@
                 isSubmitting
               "
             >
-              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
+              {{
+                isSubmitting
+                  ? ("hardcoded.menyimpan" | translate)
+                  : ((isUbah
+                      ? "poForm.submitUbah"
+                      : "hardcoded.buatPurchaseOrder"
+                    ) | translate)
+              }}
             </button>
           </div>
         </div>

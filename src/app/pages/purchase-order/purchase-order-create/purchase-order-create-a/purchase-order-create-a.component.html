@@ -10,19 +10,18 @@
     [description]="'poForm.descA' | translate"
   />
 
-
-    <!--
+  <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-    @if (isUbah) {
-      <div class="pou-banner">
-        <mat-icon>edit_note</mat-icon>
-        <div>
-          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
-        </div>
+  @if (isUbah) {
+    <div class="pou-banner">
+      <mat-icon>edit_note</mat-icon>
+      <div>
+        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
       </div>
-    }
+    </div>
+  }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== Informasi PO ===== -->
     <div class="poa-card">
@@ -44,10 +43,10 @@
         </mat-form-field>
 
         <app-project-selector
-        formControlName="projectName"
-        [hanyaAktif]="true"
-        [label]="'poForm.projectCode' | translate"
-      />
+          formControlName="projectName"
+          [hanyaAktif]="true"
+          [label]="'poForm.projectCode' | translate"
+        />
 
         @if (adendum.memuatDokumenLama) {
           <!--
@@ -189,7 +188,7 @@
                 matInput
                 formControlName="insuranceValue"
                 thousandSeparator=" "
-                mask="separator.2"
+                mask="separator.4"
               />
               <mat-hint>{{ "poA.insuranceValueHint" | translate }}</mat-hint>
             </mat-form-field>
@@ -233,7 +232,7 @@
                 matInput
                 formControlName="containerInsuranceValue"
                 thousandSeparator=" "
-                mask="separator.2"
+                mask="separator.4"
               />
               <mat-hint>{{
                 "poA.containerInsuranceHint" | translate
@@ -290,7 +289,8 @@
           {{ "common.deliveryList" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addShipment()">
-          <mat-icon>add</mat-icon>{{ "poA.tambahPengiriman" | translate }}</button>
+          <mat-icon>add</mat-icon>{{ "poA.tambahPengiriman" | translate }}
+        </button>
       </div>
 
       @if (t.controls.length === 0) {
@@ -505,7 +505,7 @@
                     matInput
                     formControlName="amount"
                     thousandSeparator=" "
-                    mask="separator.2"
+                    mask="separator.4"
                     prefix="Rp. "
                     placeholder="0"
                   />
@@ -538,7 +538,9 @@
 
               <!-- mode-specific fields -->
               @if (getFormGroupAt(i).value.mode === "darat") {
-                <div class="poa-vehlabel">{{ "poA.jenisKendaraan" | translate }}<button
+                <div class="poa-vehlabel">
+                  {{ "poA.jenisKendaraan" | translate
+                  }}<button
                     type="button"
                     class="poa-veh-info"
                     (click)="openFleetInfo()"
@@ -555,8 +557,9 @@
                       stroke-linejoin="round"
                     >
                       <circle cx="12" cy="12" r="10" />
-                      <path d="M12 16v-4M12 8h.01" />
-                    </svg>{{ "poA.lihatPanduan" | translate }}</button>
+                      <path d="M12 16v-4M12 8h.01" /></svg
+                    >{{ "poA.lihatPanduan" | translate }}
+                  </button>
                 </div>
                 <div class="poa-vehicles">
                   @for (fleet of fleets; track fleet.id) {
@@ -626,7 +629,10 @@
                       "poA.shipmentPicPhone" | translate
                     }}</mat-label>
                     <input
-            autocomplete="off" matInput formControlName="picPhone" />
+                      autocomplete="off"
+                      matInput
+                      formControlName="picPhone"
+                    />
                   </mat-form-field>
                 </div>
               } @else {
@@ -670,7 +676,11 @@
         kepala kartu berjarak beberapa sentimeter saja.
       -->
       @if (t.controls.length) {
-        <button type="button" class="poa-add poa-add--bawah" (click)="addShipment()">
+        <button
+          type="button"
+          class="poa-add poa-add--bawah"
+          (click)="addShipment()"
+        >
           <mat-icon>add</mat-icon>{{ "poA.tambahPengiriman" | translate }}
         </button>
       }
@@ -779,7 +789,8 @@
           {{ "common.extraPoints" | translate }}
         </div>
         <button type="button" class="poa-add" (click)="addClause()">
-          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+          <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+        </button>
       </div>
       <p class="poa-hint">{{ "poA.extraPointHint" | translate }}</p>
 
@@ -827,7 +838,12 @@
             formGroup.invalid || t.controls.length === 0 || isSubmitting
           "
         >
-          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
+          {{
+            isSubmitting
+              ? ("hardcoded.menyimpan" | translate)
+              : ((isUbah ? "poForm.submitUbah" : "hardcoded.buatPurchaseOrder")
+                | translate)
+          }}
         </button>
       </div>
     </div>

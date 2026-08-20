@@ -10,27 +10,30 @@
     [description]="'poForm.desc512' | translate"
   />
 
-
-    <!--
+  <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-    @if (isUbah) {
-      <div class="pou-banner">
-        <mat-icon>edit_note</mat-icon>
-        <div>
-          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
-        </div>
+  @if (isUbah) {
+    <div class="pou-banner">
+      <mat-icon>edit_note</mat-icon>
+      <div>
+        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
       </div>
-    }
+    </div>
+  }
   <!--
     Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
     bentuknya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
   -->
   @if (!mode) {
     <div class="po512-card po512-choose">
-      <div class="po512-choose__title">{{ "poForm.assetMaintenance" | translate }}</div>
-      <div class="po512-choose__sub">{{ "poForm.mauBeliBarangnyaAtauPesan" | translate }}</div>
+      <div class="po512-choose__title">
+        {{ "poForm.assetMaintenance" | translate }}
+      </div>
+      <div class="po512-choose__sub">
+        {{ "poForm.mauBeliBarangnyaAtauPesan" | translate }}
+      </div>
 
       <div class="po512-choose__grid">
         <button type="button" class="po512-pick" (click)="chooseMode('barang')">
@@ -50,8 +53,12 @@
             </svg>
           </span>
           <span class="po512-pick__code">{{ "po512.barang" | translate }}</span>
-          <span class="po512-pick__name">{{ "poForm.beliBarang" | translate }}</span>
-          <span class="po512-pick__desc">{{ "poForm.sparepartMaterialPerawatanDiambilD" | translate }}</span>
+          <span class="po512-pick__name">{{
+            "poForm.beliBarang" | translate
+          }}</span>
+          <span class="po512-pick__desc">{{
+            "poForm.sparepartMaterialPerawatanDiambilD" | translate
+          }}</span>
         </button>
 
         <button type="button" class="po512-pick" (click)="chooseMode('jasa')">
@@ -70,8 +77,12 @@
             </svg>
           </span>
           <span class="po512-pick__code">{{ "po512.jasa" | translate }}</span>
-          <span class="po512-pick__name">{{ "poForm.pesanJasa" | translate }}</span>
-          <span class="po512-pick__desc">{{ "poForm.jasaPerbaikanServisUraianPekerjaan" | translate }}</span>
+          <span class="po512-pick__name">{{
+            "poForm.pesanJasa" | translate
+          }}</span>
+          <span class="po512-pick__desc">{{
+            "poForm.jasaPerbaikanServisUraianPekerjaan" | translate
+          }}</span>
         </button>
       </div>
     </div>
@@ -86,7 +97,12 @@
             {{ "common.poInfo" | translate }}
           </div>
           <span class="po512-modechip">
-            <strong>{{ isGoods ? ('hardcoded.barang' | translate) : ('hardcoded.jasa' | translate) }}</strong> · {{ modeLabel }}
+            <strong>{{
+              isGoods
+                ? ("hardcoded.barang" | translate)
+                : ("hardcoded.jasa" | translate)
+            }}</strong>
+            · {{ modeLabel }}
             <button
               type="button"
               class="po512-modechip__btn"
@@ -123,22 +139,24 @@
           </mat-form-field>
 
           @if (adendum.memuatDokumenLama) {
-          <!--
+            <!--
             Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
             yang dimatikan. Kotak abu-abu tetap terlihat seperti
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
-          <app-supplier-terkunci
-            class="po512-span2"
-            [label]="'poForm.supplier' | translate"
-            [nama]="formGroup.get('supplierName')?.value"
-            [alamat]="formGroup.get('supplierAddress')?.value"
-          />
-        } @else {
-          <mat-form-field appearance="outline" class="po512-span2">
+            <app-supplier-terkunci
+              class="po512-span2"
+              [label]="'poForm.supplier' | translate"
+              [nama]="formGroup.get('supplierName')?.value"
+              [alamat]="formGroup.get('supplierAddress')?.value"
+            />
+          } @else {
+            <mat-form-field appearance="outline" class="po512-span2">
               <mat-label>{{
-                isGoods ? "Supplier" : ('hardcoded.vendorJasaBengkel' | translate)
+                isGoods
+                  ? "Supplier"
+                  : ("hardcoded.vendorJasaBengkel" | translate)
               }}</mat-label>
               <input
                 matInput
@@ -156,7 +174,7 @@
                 <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
-        }
+          }
         </div>
       </div>
 
@@ -164,7 +182,11 @@
       <div class="po512-card">
         <div class="po512-cardhead">
           <div class="po512-section__title po512-section__title--flush">
-            {{ isGoods ? ('hardcoded.daftarBarang' | translate) : ('hardcoded.daftarPekerjaan' | translate) }}
+            {{
+              isGoods
+                ? ("hardcoded.daftarBarang" | translate)
+                : ("hardcoded.daftarPekerjaan" | translate)
+            }}
           </div>
           @if (isGoods) {
             <button
@@ -172,10 +194,14 @@
               class="po512-add"
               (click)="openItemSelector()"
             >
-              <mat-icon>inventory_2</mat-icon>{{ "po511.tambahBarang" | translate }}</button>
+              <mat-icon>inventory_2</mat-icon
+              >{{ "po511.tambahBarang" | translate }}
+            </button>
           } @else {
             <button type="button" class="po512-add" (click)="addService()">
-              <mat-icon>build</mat-icon>{{ "po512.tambahPekerjaan" | translate }}</button>
+              <mat-icon>build</mat-icon
+              >{{ "po512.tambahPekerjaan" | translate }}
+            </button>
           }
         </div>
 
@@ -184,8 +210,8 @@
             <mat-icon>{{ isGoods ? "inventory_2" : "handyman" }}</mat-icon>
             <span>{{
               isGoods
-                ? ('hardcoded.belumAdaBarangKlikTambah' | translate)
-                : ('hardcoded.belumAdaPekerjaanKlikTambah' | translate)
+                ? ("hardcoded.belumAdaBarangKlikTambah" | translate)
+                : ("hardcoded.belumAdaPekerjaanKlikTambah" | translate)
             }}</span>
           </div>
         } @else {
@@ -205,7 +231,8 @@
                       }}</span>
                     } @else {
                       {{
-                        getFormGroupAt(i).value.task || ('hardcoded.pekerjaanBelumDiisi' | translate)
+                        getFormGroupAt(i).value.task ||
+                          ("hardcoded.pekerjaanBelumDiisi" | translate)
                       }}
                     }
                   </span>
@@ -269,7 +296,7 @@
                       <input
                         matInput
                         formControlName="unit"
-                    (change)="onUnitChange(i)"
+                        (change)="onUnitChange(i)"
                         [placeholder]="'po512.pcs' | translate"
                       />
                     } @else {
@@ -288,8 +315,8 @@
                       "common.lumpSumLocked" | translate
                     }}</mat-hint>
                   </mat-form-field>
-                @if (satuanBerbeda(i)) {
-                  <!--
+                  @if (satuanBerbeda(i)) {
+                    <!--
                     Peringatan, bukan larangan.
 
                     Sebagian pembelian memang memakai satuan berbeda dari
@@ -299,15 +326,14 @@
                     satuan `Kg` menghasilkan pesanan lima kali lipat yang
                     baru ketahuan saat barangnya datang.
                   -->
-                  <div class="po-satuan-beda">
-                    <mat-icon>warning_amber</mat-icon>
-                    <span>{{
-                      "poForm.satuanBerbedaMaster"
-                        | translate: { satuan: satuanMaster(i) }
-                    }}</span>
-                  </div>
-                }
-
+                    <div class="po-satuan-beda">
+                      <mat-icon>warning_amber</mat-icon>
+                      <span>{{
+                        "poForm.satuanBerbedaMaster"
+                          | translate: { satuan: satuanMaster(i) }
+                      }}</span>
+                    </div>
+                  }
 
                   <mat-form-field appearance="outline">
                     <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
@@ -315,7 +341,7 @@
                       matInput
                       formControlName="price"
                       thousandSeparator=" "
-                      mask="separator.2"
+                      mask="separator.4"
                       prefix="Rp. "
                       placeholder="0"
                     />
@@ -343,7 +369,7 @@
               </div>
             }
 
-      <!--
+            <!--
         Tombol tambah KEDUA, di bawah daftar.
 
         Yang di kepala kartu tidak terjangkau setelah beberapa baris
@@ -351,11 +377,16 @@
         atas, menekan, lalu menggulir kembali ke bawah untuk
         mengisinya.
       -->
-      @if (t.controls.length) {
-        <button type="button" class="pou-add pou-add--bawah" (click)="addService()">
-          <mat-icon>add</mat-icon>{{ "po512.tambahPekerjaan" | translate }}
-        </button>
-      }
+            @if (t.controls.length) {
+              <button
+                type="button"
+                class="pou-add pou-add--bawah"
+                (click)="addService()"
+              >
+                <mat-icon>add</mat-icon
+                >{{ "po512.tambahPekerjaan" | translate }}
+              </button>
+            }
           </div>
         }
 
@@ -478,9 +509,10 @@
           <div class="po512-grid">
             <mat-form-field appearance="outline">
               <mat-label>{{ "poForm.deliveryTerm" | translate }}</mat-label>
-              <mat-select formControlName="deliveryMethod"
-            (selectionChange)="selaraskanTerminLoco()"
-          >
+              <mat-select
+                formControlName="deliveryMethod"
+                (selectionChange)="selaraskanTerminLoco()"
+              >
                 <mat-option [value]="0">{{
                   "poForm.franco" | translate
                 }}</mat-option>
@@ -513,7 +545,7 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ "poForm.supplierPICPhone" | translate }}</mat-label>
               <input
-            autocomplete="off"
+                autocomplete="off"
                 matInput
                 formControlName="supplierPICPhoneNumber"
                 [placeholder]="'po511.08xxxxxxxxxx' | translate"
@@ -530,18 +562,18 @@
           Mengetik bebas TETAP boleh: sebagian dokumen menyebut
           penanggung jawab yang tidak ada di daftar karyawan.
         -->
-        <app-pic-autocomplete
-          [label]="'poForm.officePICReceiver' | translate"
-          [placeholder]="'poForm.officePICPlaceholder' | translate"
-          formControlName="officePICName"
-          (teleponTerpilih)="
-            formGroup.get('officePICPhoneNumber')?.setValue($event)
-          "
-        />
+            <app-pic-autocomplete
+              [label]="'poForm.officePICReceiver' | translate"
+              [placeholder]="'poForm.officePICPlaceholder' | translate"
+              formControlName="officePICName"
+              (teleponTerpilih)="
+                formGroup.get('officePICPhoneNumber')?.setValue($event)
+              "
+            />
             <mat-form-field appearance="outline">
               <mat-label>{{ "poForm.officePICPhone" | translate }}</mat-label>
               <input
-            autocomplete="off"
+                autocomplete="off"
                 matInput
                 formControlName="officePICPhoneNumber"
                 [placeholder]="'po511.08xxxxxxxxxx' | translate"
@@ -560,7 +592,9 @@
           <mat-icon>lock</mat-icon>
           <span
             >Poin terisi otomatis sesuai mode ({{
-              isGoods ? ('hardcoded.barangSparepart' | translate) : ('hardcoded.jasaPerbaikan' | translate)
+              isGoods
+                ? ("hardcoded.barangSparepart" | translate)
+                : ("hardcoded.jasaPerbaikan" | translate)
             }}) &amp; termin pembayaran. Poin tambahan menyusul di bawahnya.
             Teks inilah yang tersimpan.</span
           >
@@ -591,7 +625,8 @@
             {{ "common.extraPoints" | translate }}
           </div>
           <button type="button" class="po512-add" (click)="addClause()">
-            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
+          </button>
         </div>
         <p class="po512-hint">{{ "poForm.extraPointNote" | translate }}</p>
         @if (additionalClauses.controls.length === 0) {
@@ -645,7 +680,12 @@
           class="po512-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
+          {{
+            isSubmitting
+              ? ("hardcoded.menyimpan" | translate)
+              : ((isUbah ? "poForm.submitUbah" : "hardcoded.buatPurchaseOrder")
+                | translate)
+          }}
         </button>
       </div>
     </form>
