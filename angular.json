@@ -114,7 +114,7 @@
               "browser": "src/main.mobile.ts",
               "index": "src/index.mobile.html",
               "outputPath": {
-                "base": "dist/terrabot-mobile"
+                "base": "dist/frontend-mobile"
               },
               "tsConfig": "tsconfig.mobile.json",
               "assets": [
@@ -150,7 +150,7 @@
               "browser": "src/main.mobile.ts",
               "index": "src/index.mobile.html",
               "outputPath": {
-                "base": "dist/terrabot-mobile"
+                "base": "dist/frontend-mobile"
               },
               "tsConfig": "tsconfig.mobile.json",
               "assets": [

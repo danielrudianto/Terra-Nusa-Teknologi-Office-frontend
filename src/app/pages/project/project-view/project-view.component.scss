@@ -326,6 +326,15 @@
    ini bagian dari keluarga mengubah arti seluruh angka di bawahnya — proyek
    anak yang tampak tanpa penjualan bukan proyek yang gagal menagih,
    melainkan proyek yang penagihannya ada di induknya.
+
+   WARNANYA MEMAKAI TOKEN TEMA, BUKAN NILAI TETAP.
+
+   Versi pertama memakai `--surface-1` dan `--surface-0` — dua nama yang
+   TIDAK ADA di tema ini. Seluruh pemakainya jatuh ke nilai cadangan yang
+   ditulis di sebelahnya, dan nilai cadangan itu terang: banner-nya menyala
+   putih di tema gelap, dengan teks kelabu yang nyaris tidak terbaca.
+   `warnacek.py` menandainya; gw tidak menjalankannya. Nama yang benar
+   `--surface`, `--page-bg`, `--ink`, `--muted`, `--line`, `--border`.
    --------------------------------------------------------------------- */
 .prv-tindakan {
   display: flex;
@@ -335,12 +344,28 @@
 }
 
 .prv-keluarga {
-  border: 1px solid var(--border, #e3e6ea);
-  border-left: 3px solid var(--brand, #3f6ad8);
-  border-radius: 10px;
-  background: var(--surface-1, #fff);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--brand);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow, none);
   padding: 0.85rem 1rem;
   margin-bottom: 1rem;
+  /* Muncul dengan geser halus, bukan berkedip masuk: banner ini menyusul
+     sesudah datanya sampai, dan yang muncul mendadak menggeser seluruh
+     angka di bawahnya tanpa peringatan. */
+  animation: prv-keluarga-masuk 0.22s ease-out both;
+}
+
+@keyframes prv-keluarga-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .prv-keluarga__kepala {
@@ -350,7 +375,7 @@
   margin-bottom: 0.6rem;
 
   mat-icon {
-    color: var(--brand, #3f6ad8);
+    color: var(--brand);
     flex: none;
   }
 }
@@ -358,11 +383,12 @@
 .prv-keluarga__judul {
   font-weight: 600;
   font-size: 0.92rem;
+  color: var(--ink);
 }
 
 .prv-keluarga__sub {
   font-size: 0.78rem;
-  color: var(--muted, #6b7280);
+  color: var(--muted);
   line-height: 1.4;
 }
 
@@ -375,17 +401,39 @@
   gap: 0.6rem;
   width: 100%;
   border: 0;
-  border-top: 1px solid var(--border, #eef0f3);
+  border-top: 1px solid var(--line);
   background: transparent;
-  padding: 0.55rem 0.25rem;
+  padding: 0.55rem 0.5rem;
+  margin: 0 -0.5rem;
+  border-radius: 8px;
   text-align: left;
   cursor: pointer;
   font: inherit;
-  color: inherit;
+  color: var(--ink);
+  transition:
+    background 0.14s ease,
+    transform 0.14s ease;
 
-  &:hover,
+  &:hover {
+    background: var(--hover);
+  }
+
   &:focus-visible {
-    background: var(--surface-2, #f7f8fa);
+    outline: 2px solid var(--brand);
+    outline-offset: -2px;
+    background: var(--hover);
+  }
+
+  /* Ditekan: bergeser sedikit, bukan berubah warna saja — pada layar
+     sentuh warna hover tidak pernah terlihat. */
+  &:active {
+    transform: translateX(2px);
+  }
+
+  &:hover .prv-keluarga__panah,
+  &:focus-visible .prv-keluarga__panah {
+    transform: translateX(2px);
+    color: var(--brand);
   }
 }
 
@@ -394,7 +442,7 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted, #6b7280);
+  color: var(--faint);
   min-width: 3.2rem;
 }
 
@@ -402,12 +450,13 @@
   flex: none;
   font-weight: 600;
   font-size: 0.85rem;
+  color: var(--ink);
 }
 
 .prv-keluarga__nama {
   flex: 1 1 auto;
   font-size: 0.85rem;
-  color: var(--muted, #6b7280);
+  color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -415,23 +464,43 @@
 
 .prv-keluarga__panah {
   flex: none;
-  color: var(--muted, #9aa1ad);
+  color: var(--faint);
   font-size: 18px;
   width: 18px;
   height: 18px;
+  transition:
+    transform 0.14s ease,
+    color 0.14s ease;
 }
 
 .prv-keluarga__kaki {
   margin-top: 0.6rem;
   padding-top: 0.55rem;
-  border-top: 1px solid var(--border, #eef0f3);
+  border-top: 1px solid var(--line);
   font-size: 0.75rem;
-  color: var(--muted, #6b7280);
+  color: var(--muted);
   line-height: 1.45;
 }
 
 @media (max-width: 640px) {
   .prv-keluarga__nama {
     display: none;
+  }
+}
+
+/* Yang menyetel sistemnya untuk mengurangi gerak biasanya melakukannya
+   karena gerak membuatnya pusing — bukan karena selera. */
+@media (prefers-reduced-motion: reduce) {
+  .prv-keluarga {
+    animation: none;
+  }
+
+  .prv-keluarga__baris,
+  .prv-keluarga__panah {
+    transition: none;
+  }
+
+  .prv-keluarga__baris:active {
+    transform: none;
   }
 }
