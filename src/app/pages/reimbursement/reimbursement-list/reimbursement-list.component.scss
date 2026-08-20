@@ -1,235 +1,46 @@
-:host {
-  display: block;
-  font-family: "Montserrat", sans-serif;
-}
+@use "../../../styles/daftar" as daftar;
 
-/* full width — no max-width cap */
-.reimbursement-list {
-  width: 100%;
-  padding-bottom: 2rem;
-}
+/*
+ * Kerangka papannya bersama seluruh daftar lain.
+ *
+ * Salinan yang ada di sini sebelumnya nyaris sama dengan daftar Pembelian,
+ * tetapi tidak persis: barisnya 64px sementara Pembelian 66px, lingkaran
+ * namanya 34px sementara Pembelian 36px, dan lebar maksimal label proyeknya
+ * 200px sementara Pembelian 180px. Selisih dua piksel tidak pernah dilaporkan
+ * siapa pun — ia hanya membuat kedua layar terasa tidak sama tanpa dapat
+ * ditunjuk letaknya. Sekarang ketiganya mengikuti kerangka yang sama.
+ */
+@include daftar.daftar("rl", ".reimbursement-list");
 
-/* ---------- toolbar ---------- */
-.rl-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: 0.5rem 0 1rem;
-}
+/* ===== warna per keping penyaring ===== */
+@include daftar.fchip("rl", "approved", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+@include daftar.fchip("rl", "rejected", var(--bad-bg, #fdecec), var(--bad-fg, #b3322f), var(--bad-fg, #d64541));
+@include daftar.fchip("rl", "pending", var(--warn-bg, #fdf0e3), var(--warn-fg, #a2651a), var(--warn-fg, #e0942e));
+@include daftar.fchip("rl", "paid", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+@include daftar.fchip("rl", "unpaid", var(--bad-bg, #fdecec), var(--bad-fg, #b3322f), var(--bad-fg, #d64541));
 
-.rl-search {
-  width: 100%;
-  max-width: 400px;
-}
-
-:host ::ng-deep .rl-search .mat-mdc-text-field-wrapper {
-  border-radius: 14px;
-  background: var(--surface, #ffffff);
-}
-:host ::ng-deep .rl-search .mat-mdc-form-field-icon-prefix > .mat-icon {
-  color: var(--faint, #9aa0ab);
-  margin: 0 6px 0 4px;
-}
-
-/* filter chips (clean toggle pills) */
-:host ::ng-deep .mat-mdc-chip-listbox .mdc-evolution-chip-set__chips {
-  gap: 8px;
-}
-:host ::ng-deep .mat-mdc-chip-option {
-  --mdc-chip-container-height: 34px;
-  --mdc-chip-elevated-container-color: #ffffff;
-  --mdc-chip-elevated-selected-container-color: var(--brand-soft, #e7ecfb);
-  --mdc-chip-label-text-color: var(--muted, #5f6672);
-  --mdc-chip-selected-label-text-color: var(--brand, #154dec);
-  --mdc-chip-outline-color: var(--border, #d9dce2);
-  --mdc-chip-outline-width: 0.5px;
-  --mdc-chip-selected-outline-width: 0px;
-  --mdc-chip-focus-state-layer-opacity: 0;
-  padding: 0.5rem;
-  border-radius: 10px;
-}
-:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__graphic {
-  display: none;
-}
-:host ::ng-deep .mat-mdc-chip-option .mdc-evolution-chip__text-label {
-  font-weight: 500;
-  font-size: 0.8rem;
-  letter-spacing: 0.01em;
-}
-:host ::ng-deep .mat-mdc-chip-option:hover:not(.mdc-evolution-chip--selected) {
-  --mdc-chip-elevated-container-color: var(--hover, #f6f8ff);
-}
-
-/* ---------- card ---------- */
-.rl-card {
-  position: relative;
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 18px;
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
-  overflow: hidden;
-}
-
-.rl-loadingbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--brand-soft, #e7ecfb);
-  overflow: hidden;
-  z-index: 3;
-
-  span {
-    position: absolute;
-    height: 100%;
-    width: 40%;
-    background: var(--brand, #154dec);
-    border-radius: 3px;
-    animation: rl-indeterminate 1.1s ease-in-out infinite;
-  }
-}
-@keyframes rl-indeterminate {
-  0% {
-    left: -40%;
-  }
-  60% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-.rl-card.is-loading .table-responsive {
-  opacity: 0.55;
-  transition: opacity 0.2s;
-}
-
-.table-responsive {
-  overflow-x: auto;
-}
-
-/* ---------- mat-table ---------- */
-:host ::ng-deep table.mat-mdc-table {
-  width: 100%;
-  background: transparent;
-  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
-}
-
-:host ::ng-deep .mat-mdc-header-row {
-  background: var(--surface-2, #fafbfc);
-  min-height: 46px;
-  border-bottom: 1px solid var(--line, #eef0f3);
-}
-:host ::ng-deep .mat-mdc-header-cell {
-  color: var(--muted, #6b7280);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-bottom: none;
-  padding: 0 16px;
-  user-select: none;
-  cursor: pointer;
-}
-
-:host ::ng-deep .mat-mdc-row {
-  min-height: 64px;
-  cursor: pointer;
-  transition: background 0.14s ease;
-  border-bottom: 1px solid var(--line, #eef0f3);
-}
-:host ::ng-deep .mat-mdc-row:last-child {
-  border-bottom: none;
-}
-:host ::ng-deep .mat-mdc-row:hover {
-  background: var(--hover, #f6f8ff);
-}
-
-:host ::ng-deep .mat-mdc-cell {
-  border-bottom: none;
-  padding: 0.6rem 16px;
-  color: var(--ink, #16181d);
-  font-size: 0.9rem;
-  vertical-align: middle;
-}
-
-.rl-th {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  white-space: nowrap;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: var(--brand, #154dec);
-  }
-  &__idle {
-    color: var(--faint, #cfd4dc) !important;
-  }
-  &--right {
-    justify-content: flex-end;
-  }
-}
-
-/* ---------- cell content ---------- */
-.rl-date {
-  color: var(--muted, #6b7280);
-  font-weight: 500;
-  white-space: nowrap;
-}
-.rl-primary {
-  font-weight: 600;
-  color: var(--ink, #16181d);
-  font-size: 0.9rem;
-}
+/*
+ * Keterangan yang bukan baris kedua.
+ *
+ * Berbeda dari `.rl-secondary`: yang ini dibaca sebagai isi selnya sendiri —
+ * jenis pembeliannya, atau tanda hubung ketika proyeknya kosong — sehingga
+ * tintanya tetap penuh, hanya sedikit lebih kecil.
+ */
 .rl-muted {
   font-size: 0.82rem;
   color: var(--ink, #16181d);
 }
 
+/* Nama pemohon berikut lingkaran hurufnya; sebangun dengan `.pl-supplier`
+   pada daftar Pembelian, hanya namanya yang mengikuti isi kolomnya. */
 .rl-person {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
 }
-.rl-avatar {
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand, #154dec);
-  font-weight: 700;
-  font-size: 0.9rem;
-  display: grid;
-  place-items: center;
-  text-transform: uppercase;
-}
 
-.rl-tag {
-  display: inline-block;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  background: var(--surface-2, #f1f3f7);
-  color: var(--muted, #3f4653);
-  font-size: 0.76rem;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 8px;
-}
-
-.rl-num {
-  text-align: right;
-}
+/* Nilai yang diajukan; sebangun dengan `.pl-total`. */
 .rl-amount {
   font-weight: 700;
   color: var(--ink, #16181d);
@@ -238,159 +49,25 @@
   white-space: nowrap;
 }
 
-/* ---------- chips ---------- */
-.rl-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 4px 10px 4px 8px;
-  border-radius: 999px;
-  white-space: nowrap;
-
-  mat-icon {
-    font-size: 15px;
-    width: 15px;
-    height: 15px;
-  }
-  &__dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-  }
-
-  &--approved {
-    background: var(--ok-bg, #e6f6ec);
-    color: var(--ok-fg, #1a7f45);
-    .rl-chip__dot {
-      background: var(--ok-fg, #22a75a);
-    }
-  }
-  &--pending {
-    background: var(--warn-bg, #fdf0e3);
-    color: var(--warn-fg, #a2651a);
-    .rl-chip__dot {
-      background: var(--warn-fg, #e0942e);
-    }
-  }
-  &--rejected {
-    background: var(--bad-bg, #fdecec);
-    color: var(--bad-fg, #b3322f);
-    .rl-chip__dot {
-      background: var(--bad-fg, #d9534f);
-    }
-  }
-  &--paid {
-    background: var(--ok-bg, #e6f6ec);
-    color: var(--ok-fg, #1a7f45);
-  }
-  &--unpaid {
-    background: var(--bad-bg, #fdecec);
-    color: var(--bad-fg, #b3322f);
+/* ---------- keadaan reimbursement ---------- */
+.rl-chip--approved {
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+  .rl-chip__dot {
+    background: var(--ok-fg, #22a75a);
   }
 }
-
-/* ---------- empty ---------- */
-.rl-norow .rl-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 3rem 1rem;
-  color: var(--faint, #9aa0ab);
-  font-size: 0.9rem;
-
-  mat-icon {
-    font-size: 34px;
-    width: 34px;
-    height: 34px;
-    color: var(--faint, #cfd4dc);
+.rl-chip--pending {
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+  .rl-chip__dot {
+    background: var(--warn-fg, #e0942e);
   }
 }
-
-/* ---------- paginator ---------- */
-:host ::ng-deep .mat-mdc-paginator {
-  background: transparent;
-  border-top: 1px solid var(--line, #eef0f3);
-  color: var(--muted, #6b7280);
-  font-family: "Montserrat", sans-serif;
-}
-
-/* ---------- responsive ---------- */
-@media (min-width: min(900px, 92vw)) {
-  .rl-toolbar {
-    flex-direction: row;
-    align-items: center;
+.rl-chip--rejected {
+  background: var(--bad-bg, #fdecec);
+  color: var(--bad-fg, #b3322f);
+  .rl-chip__dot {
+    background: var(--bad-fg, #d64541);
   }
-  .rl-search {
-    max-width: 380px;
-  }
-}
-
-/* ===== warna per filter chip (saat selected) ===== */
-:host
-  ::ng-deep
-  .rl-fchip.mdc-evolution-chip--selected
-  .mdc-evolution-chip__checkmark {
-  display: none;
-}
-
-:host ::ng-deep .rl-fchip--approved.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
-  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
-}
-:host ::ng-deep .rl-fchip--rejected.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
-  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
-}
-:host ::ng-deep .rl-fchip--pending.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-selected-container-color: var(--warn-bg, #fdf0e3);
-  --mdc-chip-selected-label-text-color: var(--warn-fg, #a2651a);
-}
-:host ::ng-deep .rl-fchip--paid.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-selected-container-color: var(--ok-bg, #e6f6ec);
-  --mdc-chip-selected-label-text-color: var(--ok-fg, #1a7f45);
-}
-:host ::ng-deep .rl-fchip--unpaid.mdc-evolution-chip--selected {
-  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecec);
-  --mdc-chip-selected-label-text-color: var(--bad-fg, #b3322f);
-}
-
-/* dot indikator warna di depan tiap chip */
-:host ::ng-deep .rl-fchip .mdc-evolution-chip__text-label::before {
-  content: "";
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  margin-right: 7px;
-  vertical-align: middle;
-}
-:host ::ng-deep .rl-fchip--approved .mdc-evolution-chip__text-label::before {
-  background: var(--ok-fg, #22a75a);
-}
-:host ::ng-deep .rl-fchip--rejected .mdc-evolution-chip__text-label::before {
-  background: var(--bad-fg, #d64541);
-}
-:host ::ng-deep .rl-fchip--pending .mdc-evolution-chip__text-label::before {
-  background: var(--warn-fg, #e0942e);
-}
-:host ::ng-deep .rl-fchip--paid .mdc-evolution-chip__text-label::before {
-  background: var(--ok-fg, #22a75a);
-}
-:host ::ng-deep .rl-fchip--unpaid .mdc-evolution-chip__text-label::before {
-  background: var(--bad-fg, #d64541);
-}
-
-/*
- * Sisa ruang jatuh SEBELUM anak kedua, bukan dibagi rata.
- *
- * `space-between` hanya benar untuk DUA anak: penyaring di kiri, pencarian
- * di kanan. Tombol muat ulang menjadikannya tiga, dan `space-between` lalu
- * menaruh yang di tengah persis di tengah — kotak pencariannya tampak
- * mengambang, terpisah dari keduanya.
- */
-.rl-toolbar > *:nth-child(2) {
-  margin-left: auto;
 }

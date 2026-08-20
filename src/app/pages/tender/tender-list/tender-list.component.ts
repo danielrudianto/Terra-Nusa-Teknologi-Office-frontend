@@ -97,6 +97,25 @@ export class TenderListComponent implements OnInit {
     'action',
   ];
 
+  /**
+   * Warna keping keadaan.
+   *
+   * Dirangkai di sini, bukan di papan tampilan: `'tl-chip--' + t.status`
+   * menghasilkan nama kelas yang tidak ada bila keadaannya di luar keempat
+   * ini, dan kepingnya lalu tampil tanpa latar sama sekali — terbaca sebagai
+   * kolom yang rusak, bukan sebagai keadaan yang belum dikenal.
+   */
+  private readonly WARNA_STATUS: Record<string, string> = {
+    draft: 'tl-chip--draft',
+    berjalan: 'tl-chip--berjalan',
+    selesai: 'tl-chip--selesai',
+    batal: 'tl-chip--batal',
+  };
+
+  warnaStatus(status: string): string {
+    return this.WARNA_STATUS[status] ?? 'tl-chip--netral';
+  }
+
   ngOnInit(): void {
     /*
      * Keadaan daftar dibaca dari ALAMATNYA lebih dulu.

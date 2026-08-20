@@ -170,6 +170,47 @@ describe('daftar tender', () => {
     });
   });
 
+  describe('warna keping keadaan', () => {
+    /*
+     * Percobaan pertama merangkai kelasnya di papan tampilan:
+     * `'tl-chip--' + t.status`. Keadaan di luar keempat ini menghasilkan nama
+     * kelas yang tidak ada, dan kepingnya tampil tanpa latar sama sekali —
+     * terbaca sebagai kolom yang rusak, bukan keadaan yang belum dikenal.
+     */
+    it('keempat keadaan punya warnanya sendiri', () => {
+      const c = komponen();
+      const warna = ['draft', 'berjalan', 'selesai', 'batal'].map((s) =>
+        c.warnaStatus(s),
+      );
+      expect(warna).toEqual([
+        'tl-chip--draft',
+        'tl-chip--berjalan',
+        'tl-chip--selesai',
+        'tl-chip--batal',
+      ]);
+      expect(new Set(warna).size).withContext('tidak ada yang kembar').toBe(4);
+    });
+
+    it('keadaan yang tidak dikenal tetap berwujud keping', () => {
+      const c = komponen();
+      for (const ngawur of ['', 'ditunda', 'DRAFT', undefined]) {
+        expect(c.warnaStatus(ngawur)).withContext(String(ngawur)).toBe('tl-chip--netral');
+      }
+    });
+
+    it('setiap saringan yang ditawarkan punya warnanya', () => {
+      /*
+       * Penjaga terhadap keadaan baru yang ditambahkan di satu tempat saja:
+       * kepingnya muncul di baris penyaring, tetapi barisnya di tabel tampil
+       * netral tanpa ada yang menyadarinya.
+       */
+      const c = komponen();
+      for (const s of ['draft', 'berjalan', 'selesai', 'batal']) {
+        expect(c.warnaStatus(s)).withContext(s).not.toBe('tl-chip--netral');
+      }
+    });
+  });
+
   describe('keadaan ditulis kembali ke alamat', () => {
     it('setiap pemuatan menyimpan keadaannya', () => {
       const c = komponen();

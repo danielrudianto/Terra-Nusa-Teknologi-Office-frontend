@@ -1,58 +1,56 @@
-.tl-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: 0.5rem 0 1rem;
-}
-
-.tl-search {
-  width: 100%;
-  max-width: 400px;
-}
-
-.tl-card {
-  position: relative;
-  background: var(--surface, #ffffff);
-  border: 0.5px solid var(--border, #e3e6eb);
-  border-radius: 18px;
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 16px rgba(16, 24, 40, 0.05);
-  overflow: hidden;
-}
-
-.tl-loadingbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--brand-soft, #e7ecfb);
-  overflow: hidden;
-  z-index: 5;
-  span {
-    position: absolute;
-    height: 100%;
-    width: 40%;
-    background: var(--brand, #154dec);
-    animation: tl-indeterminate 1.1s infinite ease-in-out;
-  }
-}
-
-.tl-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
+@use "../../../styles/daftar" as daftar;
 
 /*
- * Gaya khusus tender.
+ * Kerangka papannya bersama seluruh daftar lain.
  *
- * Kerangkanya disalin dari daftar draf pembelian supaya seluruh daftar di
- * aplikasi ini terlihat sama — yang berbeda hanya kolomnya, bukan bentuk
- * papan, bilah pencarian, dan penyaringnya.
+ * Sebelumnya berkas ini menyalin sendiri sebagian kecil kerangkanya dan
+ * berhenti sebelum penataan tabel. Akibatnya terlihat berdampingan dengan
+ * daftar Pembelian: judul kolomnya besar dan huruf kecil, barisnya rapat,
+ * kotak pencariannya turun ke barisnya sendiri, kepingnya tidak bertitik, dan
+ * bilah muatnya diam karena gerakan yang dirujuknya tidak pernah ditulis.
  */
+@include daftar.daftar("tl", ".tender-list");
+
+/* ===== warna per keping penyaring ===== */
+@include daftar.fchip("tl", "semua", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
+@include daftar.fchip("tl", "draft", var(--warn-bg, #fdf0e3), var(--warn-fg, #a2651a), var(--warn-fg, #e0942e));
+@include daftar.fchip("tl", "berjalan", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
+@include daftar.fchip("tl", "selesai", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
+@include daftar.fchip("tl", "batal", var(--bad-bg, #fdecec), var(--bad-fg, #b3322f), var(--bad-fg, #d64541));
+
+/*
+ * Keadaan tender yang tidak ada padanannya di daftar lain.
+ *
+ * `draft` sudah disediakan kerangka bersama; ketiga ini khas tender.
+ */
+.tl-chip--netral {
+  background: var(--surface-2, #f1f3f7);
+  color: var(--muted, #5f6672);
+  .tl-chip__dot {
+    background: var(--muted, #9aa0ab);
+  }
+}
+.tl-chip--berjalan {
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  .tl-chip__dot {
+    background: var(--brand, #154dec);
+  }
+}
+.tl-chip--selesai {
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+  .tl-chip__dot {
+    background: var(--ok-fg, #22a75a);
+  }
+}
+.tl-chip--batal {
+  background: var(--bad-bg, #fdecec);
+  color: var(--bad-fg, #b3322f);
+  .tl-chip__dot {
+    background: var(--bad-fg, #d64541);
+  }
+}
 
 /* Banyaknya penawaran; yang belum cukup ditandai dengan pembaginya —
    "2 / 3" langsung memberi tahu berapa lagi yang ditunggu, sedangkan
@@ -62,38 +60,13 @@
   font-weight: 600;
 
   &.kurang {
-    color: var(--warn, #a2651a);
+    color: var(--warn-fg, #a2651a);
   }
 }
 
 .tl-jumlah__min {
   font-weight: 400;
   opacity: 0.7;
-}
-
-.tl-status {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--surface-2, #f6f8ff);
-  color: var(--muted, #6b7280);
-
-  &[data-status="berjalan"] {
-    background: var(--brand-soft, #e7ecfb);
-    color: var(--brand, #154dec);
-  }
-
-  &[data-status="selesai"] {
-    background: var(--ok-bg, #e6f6ec);
-    color: var(--ok-fg, #1a7f45);
-  }
-
-  &[data-status="batal"] {
-    background: var(--bad-bg, #fdecec);
-    color: var(--bad-fg, #b3322f);
-  }
 }
 
 .tl-open {
@@ -107,46 +80,4 @@
   line-height: 0;
   padding: 0;
   color: var(--faint, #9aa0ab);
-}
-
-.tl-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 2.5rem 1rem;
-  color: var(--muted, #6b7280);
-  font-size: 0.9rem;
-}
-
-/* ---------- judul kolom yang dapat diurutkan ---------- */
-
-/*
- * Bentuknya sama dengan daftar Pembelian dan Reimbursement.
- *
- * Ikon `unfold_more` yang redup ditampilkan pada kolom yang SEDANG TIDAK
- * mengurutkan — tanpanya, tidak ada tanda bahwa judulnya dapat ditekan sama
- * sekali, dan pengurutannya hanya ditemukan orang yang kebetulan mengkliknya.
- */
-.tl-th {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  white-space: nowrap;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: var(--brand, #154dec);
-  }
-  &__idle {
-    color: var(--faint, #cfd4dc) !important;
-  }
-}
-
-/* Judul yang dapat ditekan harus terlihat dapat ditekan. */
-th.mat-mdc-header-cell:has(.tl-th) {
-  cursor: pointer;
-  user-select: none;
 }

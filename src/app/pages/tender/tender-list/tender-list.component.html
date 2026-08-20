@@ -14,7 +14,9 @@
       [value]="saring"
       (change)="pilihSaring($event.value)"
     >
-      <mat-chip-option value="">{{ "tender.semua" | translate }}</mat-chip-option>
+      <mat-chip-option class="tl-fchip tl-fchip--semua" value="">{{
+        "tender.semua" | translate
+      }}</mat-chip-option>
       <mat-chip-option class="tl-fchip tl-fchip--draft" value="draft">{{
         "tender.statusDraft" | translate
       }}</mat-chip-option>
@@ -73,7 +75,9 @@
               >
             </span>
           </th>
-          <td mat-cell *matCellDef="let t">{{ t.number || "—" }}</td>
+          <td mat-cell *matCellDef="let t">
+            <span class="tl-date">{{ t.number || "—" }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="name">
@@ -91,7 +95,9 @@
               >
             </span>
           </th>
-          <td mat-cell *matCellDef="let t">{{ t.name }}</td>
+          <td mat-cell *matCellDef="let t">
+            <span class="tl-primary">{{ t.name || "—" }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="projectName">
@@ -109,7 +115,10 @@
               >
             </span>
           </th>
-          <td mat-cell *matCellDef="let t">{{ t.projectName }}</td>
+          <td mat-cell *matCellDef="let t">
+            <span class="tl-tag" *ngIf="t.projectName">{{ t.projectName }}</span>
+            <span class="tl-secondary" *ngIf="!t.projectName">—</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="tenderType">
@@ -128,18 +137,34 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let t">
-            {{
-              (t.tenderType === "jasa" ? "tender.jasa" : "tender.barang")
-                | translate
-            }}
+            <!--
+              Bentuknya mengikuti kolom "Tipe" pada daftar Pembelian: keping
+              berikon, bukan teks telanjang. Kolom yang isinya hanya dua
+              kemungkinan lebih cepat dipindai lewat bentuk daripada dibaca.
+            -->
+            <span
+              class="tl-chip"
+              [class.tl-chip--internal]="t.tenderType === 'jasa'"
+              [class.tl-chip--external]="t.tenderType !== 'jasa'"
+            >
+              <mat-icon>{{
+                t.tenderType === "jasa" ? "handyman" : "inventory_2"
+              }}</mat-icon>
+              {{
+                (t.tenderType === "jasa" ? "tender.jasa" : "tender.barang")
+                  | translate
+              }}
+            </span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="quoteCount">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "tender.penawaran" | translate }}
+          <th mat-header-cell *matHeaderCellDef class="tl-num">
+            <span class="tl-th tl-th--right">{{
+              "tender.penawaran" | translate
+            }}</span>
           </th>
-          <td mat-cell *matCellDef="let t">
+          <td mat-cell *matCellDef="let t" class="tl-num">
             <!--
               Ditandai bila belum cukup untuk memutuskan.
 
@@ -172,14 +197,25 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let t">
-            <span class="tl-status" [attr.data-status]="t.status">
+            <!--
+              Warnanya dipilih di komponen, bukan dirangkai dari nilainya.
+              Keadaan yang tidak dikenal karena itu tetap tampak sebagai
+              keping — bukan tulisan telanjang tanpa latar yang terlihat
+              seperti kolom yang rusak.
+            -->
+            <span class="tl-chip" [ngClass]="warnaStatus(t.status)">
+              <span class="tl-chip__dot"></span>
               {{ "tender.status" + (t.status | titlecase) | translate }}
             </span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef></th>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            [attr.aria-label]="'common.actions' | translate"
+          ></th>
           <td mat-cell *matCellDef="let t">
             <button
               mat-icon-button
@@ -219,7 +255,7 @@
       [length]="count"
       [pageSize]="pageSize"
       [pageIndex]="page - 1"
-      [pageSizeOptions]="[10, 25, 50, 100]"
+      [pageSizeOptions]="[10, 25, 50]"
       (page)="gantiHalaman($event)"
     ></mat-paginator>
   </div>
