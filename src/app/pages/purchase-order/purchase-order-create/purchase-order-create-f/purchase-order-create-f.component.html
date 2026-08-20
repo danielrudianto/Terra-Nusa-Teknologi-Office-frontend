@@ -10,18 +10,19 @@
     [description]="'poForm.descF' | translate"
   />
 
-  <!--
+
+    <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-  @if (isUbah) {
-    <div class="pou-banner">
-      <mat-icon>edit_note</mat-icon>
-      <div>
-        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
       </div>
-    </div>
-  }
+    }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="pof-card">
@@ -65,10 +66,10 @@
         </mat-form-field>
 
         <app-project-selector
-          formControlName="projectName"
-          [hanyaAktif]="true"
-          [label]="'poForm.projectCode' | translate"
-        />
+        formControlName="projectName"
+        [hanyaAktif]="true"
+        [label]="'poForm.projectCode' | translate"
+      />
 
         @if (adendum.memuatDokumenLama) {
           <!--
@@ -77,6 +78,33 @@
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
+          <!--
+            Dokumen yang sedang disunting, disebut TERANG-TERANGAN.
+
+            Layar sunting bentuknya sama persis dengan layar pembuatan, dan
+            satu-satunya penanda sebelumnya adalah pemasok yang tergembok di
+            bawah. Yang membukanya dari daftar tidak melihat dokumen mana
+            yang sedang dipegangnya — dan pada dokumen bernomor mirip, itu
+            cukup untuk menyunting yang salah.
+
+            Nomornya tidak pernah berubah: ia melekat pada dokumennya dan
+            sudah beredar. Karena itu ditampilkan sebagai teks bergembok,
+            bukan sebagai isian.
+          -->
+          @if (adendum.nomorLama) {
+            <app-supplier-terkunci
+              class="pof-span2"
+              [label]="'poForm.dokumenLama' | translate"
+              [nama]="adendum.nomorLama"
+              [alamat]="
+                ('poForm.tanggalSebelumnya' | translate) +
+                ': ' +
+                (adendum.tanggalLama | date: 'dd MMM yyyy')
+              "
+              [kunciTeks]="'poForm.nomorTerkunci'"
+            />
+          }
+
           <app-supplier-terkunci
             class="pof-span2"
             [label]="'poForm.supplier' | translate"
@@ -181,9 +209,7 @@
             <span>{{ "poF.testSpec" | translate }}</span>
             <span>{{ "poF.testQty" | translate }}</span>
             <span>{{ "poF.testPrice" | translate }}</span>
-            <span class="pof-uji__kanan">{{
-              "poF.testSubtotal" | translate
-            }}</span>
+            <span class="pof-uji__kanan">{{ "poF.testSubtotal" | translate }}</span>
             <span></span>
           </div>
 
@@ -250,6 +276,7 @@
         </div>
 
         <div class="pof-grid">
+
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.testReportDays" | translate }}</mat-label>
             <input
@@ -260,6 +287,7 @@
             />
             <span matSuffix>&nbsp;{{ "poForm.workDays" | translate }}</span>
           </mat-form-field>
+
         </div>
       }
 
@@ -291,10 +319,7 @@
               @for (u of ujiTerpilih; track u) {
                 <mat-chip [removable]="true" (removed)="hapusUji(u)">
                   {{ u }}
-                  <button
-                    matChipRemove
-                    [attr.aria-label]="'common.delete' | translate"
-                  >
+                  <button matChipRemove [attr.aria-label]="'common.delete' | translate">
                     <mat-icon>close</mat-icon>
                   </button>
                 </mat-chip>
@@ -332,12 +357,8 @@
       }
 
       @if (formGroup.get("materialType")?.value === "beton") {
-        <mat-checkbox formControlName="concreteTestRequired" color="primary">{{
-          "poF.berlakukanKetentuanUjiKuatTekan" | translate
-        }}</mat-checkbox>
-        <p class="pof-material__hint">
-          {{ "po63.bilaDimatikanPoinnyaTetapTercetak" | translate }}
-        </p>
+        <mat-checkbox formControlName="concreteTestRequired" color="primary">{{ "poF.berlakukanKetentuanUjiKuatTekan" | translate }}</mat-checkbox>
+        <p class="pof-material__hint">{{ "po63.bilaDimatikanPoinnyaTetapTercetak" | translate }}</p>
 
         @if (formGroup.value.concreteTestRequired) {
           <div class="pof-grid">
@@ -346,12 +367,12 @@
                 "poField.biayaUjiLaboratoriumIndependen" | translate
               }}</mat-label>
               <mat-select formControlName="concreteTestCostBearer">
-                <mat-option value="pembeli">{{
-                  "poF.ditanggungPembeliAkn" | translate
-                }}</mat-option>
-                <mat-option value="penjual">{{
-                  "poF.ditanggungPenjualBeton" | translate
-                }}</mat-option>
+                <mat-option value="pembeli"
+                  >{{ "poF.ditanggungPembeliAkn" | translate }}</mat-option
+                >
+                <mat-option value="penjual"
+                  >{{ "poF.ditanggungPenjualBeton" | translate }}</mat-option
+                >
               </mat-select>
             </mat-form-field>
           </div>
@@ -472,10 +493,9 @@
         <div class="pof-grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ "poForm.deliveryMethod" | translate }}</mat-label>
-            <mat-select
-              formControlName="deliveryMethod"
-              (selectionChange)="selaraskanTerminLoco()"
-            >
+            <mat-select formControlName="deliveryMethod"
+            (selectionChange)="selaraskanTerminLoco()"
+          >
               <mat-option [value]="0">{{
                 "poForm.franco" | translate
               }}</mat-option>
@@ -586,16 +606,16 @@
                   <mat-form-field appearance="outline">
                     <mat-label>{{ "poForm.unit" | translate }}</mat-label>
                     <mat-select
-                      formControlName="unit"
-                      (selectionChange)="onUnitChange(i)"
-                    >
+                    formControlName="unit"
+                    (selectionChange)="onUnitChange(i)"
+                  >
                       <mat-option *ngFor="let u of units" [value]="u">{{
                         u
                       }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  @if (satuanBerbeda(i)) {
-                    <!--
+                @if (satuanBerbeda(i)) {
+                  <!--
                     Peringatan, bukan larangan.
 
                     Sebagian pembelian memang memakai satuan berbeda dari
@@ -605,14 +625,14 @@
                     satuan `Kg` menghasilkan pesanan lima kali lipat yang
                     baru ketahuan saat barangnya datang.
                   -->
-                    <div class="po-satuan-beda">
-                      <mat-icon>warning_amber</mat-icon>
-                      <span>{{
-                        "poForm.satuanBerbedaMaster"
-                          | translate: { satuan: satuanMaster(i) }
-                      }}</span>
-                    </div>
-                  }
+                  <div class="po-satuan-beda">
+                    <mat-icon>warning_amber</mat-icon>
+                    <span>{{
+                      "poForm.satuanBerbedaMaster"
+                        | translate: { satuan: satuanMaster(i) }
+                    }}</span>
+                  </div>
+                }
 
                   <mat-form-field appearance="outline">
                     <mat-label>{{ "poForm.unitPrice" | translate }}</mat-label>
@@ -620,7 +640,7 @@
                       matInput
                       formControlName="price"
                       thousandSeparator=" "
-                      mask="separator.4"
+                      mask="separator.2"
                       prefix="Rp. "
                       placeholder="0"
                     />
@@ -638,16 +658,34 @@
             }
           </div>
         }
+
+        <!--
+          Tombol tambah KEDUA, di bawah daftar.
+
+          Yang di kepala kartu tidak terjangkau setelah beberapa baris terisi:
+          yang menyadari ada satu yang kurang harus menggulir ke atas,
+          menekan, lalu menggulir kembali ke bawah untuk mengisinya.
+        -->
+        @if (t.controls.length) {
+          <button
+            type="button"
+            class="pou-add pou-add--bawah"
+            (click)="openItemSelector()"
+          >
+            <mat-icon>add</mat-icon> {{ "poForm.addItem" | translate }}
+          </button>
+        }
+
       </div>
     }
 
     <!--
       Sakelar PPN dan ringkasan nilai berlaku untuk KEDUA jenis.
-
+      
       Sebelumnya keduanya berada di dalam blok `@if (!isTestService)`, yang
       hanya dirender untuk pengadaan material — sehingga jasa uji sama sekali
       tidak punya sakelar PPN, walaupun jasa laboratorium juga dikenakan PPN.
-
+      
       Diletakkan di luar kedua cabang, bukan disalin ke masing-masing: dua
       salinan berarti dua tempat yang harus diperbaiki bersamaan, dan yang
       terlupa tidak menimbulkan galat — hanya satu jenis yang diam-diam
@@ -699,9 +737,7 @@
               CBD, dan dokumennya terbit menyebut pengiriman yang tidak pernah
               terjadi.
             -->
-            <mat-option value="CASH">{{
-              "poForm.cash" | translate
-            }}</mat-option>
+            <mat-option value="CASH">{{ "poForm.cash" | translate }}</mat-option>
             <!--
               COD dan CBD hanya berlaku pada FRANCO.
 
@@ -715,12 +751,8 @@
               dokumennya.
             -->
             @if (!isLoco) {
-              <mat-option value="COD">{{
-                "poForm.cod" | translate
-              }}</mat-option>
-              <mat-option value="CBD">{{
-                "poForm.cbd" | translate
-              }}</mat-option>
+              <mat-option value="COD">{{ "poForm.cod" | translate }}</mat-option>
+              <mat-option value="CBD">{{ "poForm.cbd" | translate }}</mat-option>
             }
             <mat-option value="PPD">{{
               "poForm.prepaidOpt" | translate
@@ -930,12 +962,7 @@
           class="pof-submit"
           [disabled]="formGroup.invalid || isSubmitting"
         >
-          {{
-            isSubmitting
-              ? ("hardcoded.menyimpan" | translate)
-              : ((isUbah ? "poForm.submitUbah" : "hardcoded.buatPurchaseOrder")
-                | translate)
-          }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
         </button>
       </div>
     </div>

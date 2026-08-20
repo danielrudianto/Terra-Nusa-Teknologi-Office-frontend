@@ -115,7 +115,18 @@ export class PurchaseOrderCreateHComponent implements OnInit {
     // dokumen induknya. Dipanggil di `ngOnInit` — bukan di penangan
     // tombol — karena alamatnya sudah membawa `adendumDari` sejak
     // halaman dibuka, dan yang membukanya tidak menekan apa pun.
-    this.muatAdendum();
+    /*
+     * Dipanggil SEKALI, dan hanya bila memang ada dokumen lamanya.
+     *
+     * Sebelumnya ada dua panggilan berurutan di sini: satu tanpa syarat, satu
+     * lagi di bawah dengan syarat. Dokumen induknya karena itu diambil DUA
+     * KALI dari server pada setiap pembukaan layar sunting — terlihat sebagai
+     * dua permintaan bernomor sama pada tab jaringan — dan formulirnya diisi
+     * dua kali oleh dua jawaban yang datang tidak berurutan.
+     *
+     * Tidak ada galat. Yang terjadi hanya sebagian isian terisi dari jawaban
+     * yang satu dan sebagian dari yang lain.
+     */
     // Bila dibuka sebagai adendum ATAU koreksi, isinya diambil dari dokumen
     // lamanya.
     //
@@ -1574,6 +1585,16 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         if (!induk) return;
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
+        /*
+         * Jangka kredit dan prepaid diselaraskan SESUDAH isinya termuat.
+         *
+         * Aturannya — tunai mematikan keduanya — sebelumnya hanya dijalankan
+         * oleh penangan `(selectionChange)` pada pilihannya. Mengisi
+         * formulirnya dari dokumen lama tidak menekan apa pun, sehingga
+         * dokumen tunai terbuka dengan kedua isian itu tetap hidup; keduanya
+         * baru mati setelah pilihannya diganti lalu dikembalikan.
+         */
+        this.onPaymentTermChange();
 
         /*
          * Pulihkan yang TIDAK tercakup `isiFormulir`.

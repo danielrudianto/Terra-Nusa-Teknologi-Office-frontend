@@ -2024,7 +2024,10 @@
     "satuanBerbedaMaster": "Satuan di master barang adalah {{satuan}}. Pastikan volume yang diisi memang dalam satuan yang dipilih.",
     "picHint": "Pilih dari daftar karyawan, atau ketik nama lain.",
     "materialTestSoil": "Uji tanah",
-    "akanTerbitSebagai": "Akan terbit sebagai"
+    "akanTerbitSebagai": "Akan terbit sebagai",
+    "nomorTerkunci": "Nomor dokumen tidak berubah saat disunting",
+    "dokumenLama": "Dokumen yang disunting",
+    "tanggalSebelumnya": "Tanggal sebelumnya"
   },
   "menu": {
     "editAsset": "Ubah aset",

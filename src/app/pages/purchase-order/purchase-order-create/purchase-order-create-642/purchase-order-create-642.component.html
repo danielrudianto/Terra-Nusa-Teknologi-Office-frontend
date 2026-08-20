@@ -126,6 +126,33 @@
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
+          <!--
+            Dokumen yang sedang disunting, disebut TERANG-TERANGAN.
+
+            Layar sunting bentuknya sama persis dengan layar pembuatan, dan
+            satu-satunya penanda sebelumnya adalah pemasok yang tergembok di
+            bawah. Yang membukanya dari daftar tidak melihat dokumen mana
+            yang sedang dipegangnya — dan pada dokumen bernomor mirip, itu
+            cukup untuk menyunting yang salah.
+
+            Nomornya tidak pernah berubah: ia melekat pada dokumennya dan
+            sudah beredar. Karena itu ditampilkan sebagai teks bergembok,
+            bukan sebagai isian.
+          -->
+          @if (adendum.nomorLama) {
+            <app-supplier-terkunci
+              class="po642-span2"
+              [label]="'poForm.dokumenLama' | translate"
+              [nama]="adendum.nomorLama"
+              [alamat]="
+                ('poForm.tanggalSebelumnya' | translate) +
+                ': ' +
+                (adendum.tanggalLama | date: 'dd MMM yyyy')
+              "
+              [kunciTeks]="'poForm.nomorTerkunci'"
+            />
+          }
+
           <app-supplier-terkunci
             class="po642-span2"
             [label]="'poForm.vendor' | translate"

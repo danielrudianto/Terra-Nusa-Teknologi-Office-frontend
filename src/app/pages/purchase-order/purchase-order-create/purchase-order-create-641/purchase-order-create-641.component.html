@@ -10,18 +10,19 @@
     [description]="typeLabel"
   />
 
-  <!--
+
+    <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-  @if (isUbah) {
-    <div class="pou-banner">
-      <mat-icon>edit_note</mat-icon>
-      <div>
-        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
       </div>
-    </div>
-  }
+    }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <div class="po641-card">
       <div class="po641-section__title">{{ "common.poInfo" | translate }}</div>
@@ -55,6 +56,33 @@
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
+          <!--
+            Dokumen yang sedang disunting, disebut TERANG-TERANGAN.
+
+            Layar sunting bentuknya sama persis dengan layar pembuatan, dan
+            satu-satunya penanda sebelumnya adalah pemasok yang tergembok di
+            bawah. Yang membukanya dari daftar tidak melihat dokumen mana
+            yang sedang dipegangnya — dan pada dokumen bernomor mirip, itu
+            cukup untuk menyunting yang salah.
+
+            Nomornya tidak pernah berubah: ia melekat pada dokumennya dan
+            sudah beredar. Karena itu ditampilkan sebagai teks bergembok,
+            bukan sebagai isian.
+          -->
+          @if (adendum.nomorLama) {
+            <app-supplier-terkunci
+              class="po641-span2"
+              [label]="'poForm.dokumenLama' | translate"
+              [nama]="adendum.nomorLama"
+              [alamat]="
+                ('poForm.tanggalSebelumnya' | translate) +
+                ': ' +
+                (adendum.tanggalLama | date: 'dd MMM yyyy')
+              "
+              [kunciTeks]="'poForm.nomorTerkunci'"
+            />
+          }
+
           <app-supplier-terkunci
             class="po641-span2"
             [label]="'poForm.vendor' | translate"
@@ -90,8 +118,7 @@
           {{ "po641.legalDocs" | translate }}
         </div>
         <button type="button" class="po641-add" (click)="addLine()">
-          <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}
-        </button>
+          <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}</button>
       </div>
 
       @if (t.controls.length === 0) {
@@ -106,10 +133,7 @@
               <div class="po641-line__head">
                 <span class="po641-line__no">#{{ i + 1 }}</span>
                 <span class="po641-line__label">
-                  {{
-                    resolvedType(i) ||
-                      ("hardcoded.jenisPengurusanBelumDipilih" | translate)
-                  }}
+                  {{ resolvedType(i) || ('hardcoded.jenisPengurusanBelumDipilih' | translate) }}
                   <span
                     class="po641-validity"
                     *ngIf="getFormGroupAt(i).value.description"
@@ -190,9 +214,7 @@
                     [placeholder]="'po641.ex30' | translate"
                   />
                   <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
-                  <mat-hint>{{
-                    "po641.dihitungSejakBerkasDinyatakanLengk" | translate
-                  }}</mat-hint>
+                  <mat-hint>{{ "po641.dihitungSejakBerkasDinyatakanLengk" | translate }}</mat-hint>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -227,7 +249,7 @@
                     matInput
                     formControlName="price"
                     thousandSeparator=" "
-                    mask="separator.4"
+                    mask="separator.2"
                     prefix="Rp. "
                     placeholder="0"
                   />
@@ -236,7 +258,7 @@
             </div>
           }
 
-          <!--
+      <!--
         Tombol tambah KEDUA, di bawah daftar.
 
         Yang di kepala kartu tidak terjangkau setelah beberapa baris
@@ -244,15 +266,11 @@
         atas, menekan, lalu menggulir kembali ke bawah untuk
         mengisinya.
       -->
-          @if (t.controls.length) {
-            <button
-              type="button"
-              class="pou-add pou-add--bawah"
-              (click)="addLine()"
-            >
-              <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}
-            </button>
-          }
+      @if (t.controls.length) {
+        <button type="button" class="pou-add pou-add--bawah" (click)="addLine()">
+          <mat-icon>add</mat-icon>{{ "po641.tambahDokumen" | translate }}
+        </button>
+      }
         </div>
       }
 
@@ -346,9 +364,7 @@
 
     <!-- ===== Perkiraan biaya resmi ===== -->
     <div class="po641-card">
-      <div class="po641-section__title">
-        {{ "po641.perkiraanBiayaResmi" | translate }}
-      </div>
+      <div class="po641-section__title">{{ "po641.perkiraanBiayaResmi" | translate }}</div>
       <p class="po641-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
       @for (fee of fees.controls; track fee; let i = $index) {
@@ -356,10 +372,7 @@
           <div class="po641-line__head">
             <span class="po641-line__no">#{{ i + 1 }}</span>
             <span class="po641-line__label">
-              {{
-                getFeeGroupAt(i).value.task ||
-                  ("hardcoded.biayaBelumDiisi" | translate)
-              }}
+              {{ getFeeGroupAt(i).value.task || ('hardcoded.biayaBelumDiisi' | translate) }}
             </span>
             <span class="po641-line__amt"
               >Rp {{ getFeeGroupAt(i).value.amount | number: "1.0-0" }}</span
@@ -395,7 +408,7 @@
                 matInput
                 formControlName="amount"
                 thousandSeparator=" "
-                mask="separator.4"
+                mask="separator.2"
               />
               <span matPrefix>{{ "po641.rp" | translate }}</span>
             </mat-form-field>
@@ -405,8 +418,7 @@
 
       <div class="po641-actions">
         <button mat-stroked-button type="button" (click)="addFee()">
-          <mat-icon>add</mat-icon>{{ "po641.tambahBiayaResmi" | translate }}
-        </button>
+          <mat-icon>add</mat-icon>{{ "po641.tambahBiayaResmi" | translate }}</button>
         <span class="po641-spacer"></span>
         @if (hasOfficialFee) {
           <span class="po641-line__amt"
@@ -418,9 +430,7 @@
 
     <!-- ===== Ketentuan pelaksanaan ===== -->
     <div class="po641-card">
-      <div class="po641-section__title">
-        {{ "po641.ketentuanPelaksanaan" | translate }}
-      </div>
+      <div class="po641-section__title">{{ "po641.ketentuanPelaksanaan" | translate }}</div>
       <div class="po641-grid">
         @if (hasOfficialFee) {
           <mat-form-field appearance="outline" class="po641-span2">
@@ -434,9 +444,9 @@
                 >{{ r.key | translate }}</mat-option
               >
             </mat-select>
-            <mat-hint>{{
-              "po641.penanggungBiayaResmiYangSudah" | translate
-            }}</mat-hint>
+            <mat-hint
+              >{{ "po641.penanggungBiayaResmiYangSudah" | translate }}</mat-hint
+            >
           </mat-form-field>
         }
 
@@ -546,12 +556,7 @@
             formGroup.invalid || t.controls.length === 0 || isSubmitting
           "
         >
-          {{
-            isSubmitting
-              ? ("hardcoded.menyimpan" | translate)
-              : ((isUbah ? "poForm.submitUbah" : "hardcoded.buatPurchaseOrder")
-                | translate)
-          }}
+          {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
         </button>
       </div>
     </div>

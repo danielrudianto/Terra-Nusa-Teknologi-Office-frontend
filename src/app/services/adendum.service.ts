@@ -70,13 +70,38 @@ export class AdendumService {
     return this.isAdendum || this.isUbah;
   }
 
+  /**
+   * Dokumen lama yang sedang disunting atau diadendum.
+   *
+   * Disimpan di sini, bukan di tiap varian formulir: enam belas layar
+   * memuatnya dengan cara yang sama, dan yang menampilkannya cukup membaca
+   * dari satu tempat.
+   */
+  dokumenLama: any = null;
+
+  /** Nomor dokumen lama; kosong bila layar ini pembuatan biasa. */
+  get nomorLama(): string {
+    return this.dokumenLama?.name ?? '';
+  }
+
+  /** Tanggal dokumen lama, apa adanya dari server (YYYY-MM-DD). */
+  get tanggalLama(): string {
+    return this.dokumenLama?.date ?? '';
+  }
+
   /** Ambil dokumen lama; null bila layar ini pembuatan biasa. */
   muatInduk(): Observable<any | null> {
     const id = this.indukId ?? this.ubahId;
-    if (!id) return of(null);
-    return this.apiService
-      .get(`purchase-orders/${id}`, {})
-      .pipe(map((x: any) => x ?? null));
+    if (!id) {
+      this.dokumenLama = null;
+      return of(null);
+    }
+    return this.apiService.get(`purchase-orders/${id}`, {}).pipe(
+      map((x: any) => {
+        this.dokumenLama = x ?? null;
+        return this.dokumenLama;
+      }),
+    );
   }
 
   /**
@@ -135,6 +160,27 @@ export class AdendumService {
       if (sumber[k] === undefined || sumber[k] === null) return;
       nilai[k] = sumber[k];
     });
+
+    /*
+     * Sakelar PPN DIPETAKAN, tidak disalin.
+     *
+     * Pemetaan di atas mencocokkan nama ISIAN dengan nama kolom, dan dua hal
+     * ini memang tidak pernah sama namanya: layar menyimpannya sebagai
+     * `includePPN` (benar/salah), dokumen menyimpannya sebagai `ppn` (tarif,
+     * 0 atau 11). Karena `sumber['includePPN']` selalu `undefined`, kuncinya
+     * dilewati — dan sakelarnya bertahan pada nilai BAWAANNYA.
+     *
+     * Bawaannya menyala. Akibatnya setiap dokumen NON-PPN yang dibuka untuk
+     * disunting muncul dengan sakelar PPN hidup; yang menyimpannya tanpa
+     * memperhatikan menerbitkan ulang dokumen itu dengan PPN sebelas persen
+     * yang tidak pernah disepakati.
+     *
+     * Diperiksa `!== undefined`, bukan kebenaran nilainya: `ppn = 0` adalah
+     * keterangan yang sah — justru keterangan yang paling penting di sini.
+     */
+    if (formGroup.get('includePPN') && sumber['ppn'] !== undefined) {
+      nilai['includePPN'] = Number(sumber['ppn']) > 0;
+    }
 
     formGroup.patchValue(nilai);
   }

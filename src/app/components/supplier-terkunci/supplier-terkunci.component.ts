@@ -41,7 +41,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       -->
       <span class="sptk__kunci">
         <mat-icon>lock</mat-icon>
-        {{ 'poForm.pemasokTerkunci' | translate }}
+        {{ kunciTeks | translate }}
       </span>
     </div>
   `,
@@ -117,4 +117,13 @@ export class SupplierTerkunciComponent {
   @Input() label = '';
   @Input() nama: string | null = null;
   @Input() alamat: string | null = null;
+
+  /**
+   * Kunci i18n keterangan gemboknya.
+   *
+   * Bawaannya pemasok — pemakaian pertamanya. Dapat diganti supaya bentuk
+   * kartu yang sama dipakai juga untuk keterangan dokumen lama, alih-alih
+   * menyalin gayanya ke komponen kedua yang harus dijaga sejalan.
+   */
+  @Input() kunciTeks = 'poForm.pemasokTerkunci';
 }

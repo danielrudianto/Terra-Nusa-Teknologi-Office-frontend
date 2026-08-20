@@ -2024,7 +2024,10 @@
     "satuanBerbedaMaster": "The master item unit is {{satuan}}. Make sure the quantity matches the unit you selected.",
     "picHint": "Pick from the employee list, or type another name.",
     "materialTestSoil": "Soil testing",
-    "akanTerbitSebagai": "Will be issued as"
+    "akanTerbitSebagai": "Will be issued as",
+    "nomorTerkunci": "The document number does not change when edited",
+    "dokumenLama": "Document being edited",
+    "tanggalSebelumnya": "Previous date"
   },
   "menu": {
     "editAsset": "Edit asset",

@@ -10,30 +10,27 @@
     [description]="typeLabel"
   />
 
-  <!--
+
+    <!--
       Ditegaskan di muka: mengubah TIDAK menyetujui.
       -->
-  @if (isUbah) {
-    <div class="pou-banner">
-      <mat-icon>edit_note</mat-icon>
-      <div>
-        <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
-        <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+    @if (isUbah) {
+      <div class="pou-banner">
+        <mat-icon>edit_note</mat-icon>
+        <div>
+          <strong>{{ "poForm.ubahJudulBanner" | translate }}</strong>
+          <span>{{ "poForm.ubahKeteranganBanner" | translate }}</span>
+        </div>
       </div>
-    </div>
-  }
+    }
   <!--
     Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
     bentuknya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
   -->
   @if (!mode) {
     <div class="po651-card po651-choose">
-      <div class="po651-choose__title">
-        {{ "po651.jenisBiayaRekrutmen" | translate }}
-      </div>
-      <div class="po651-choose__sub">
-        {{ "po651.pilihDahuluBentukBarisDan" | translate }}
-      </div>
+      <div class="po651-choose__title">{{ "po651.jenisBiayaRekrutmen" | translate }}</div>
+      <div class="po651-choose__sub">{{ "po651.pilihDahuluBentukBarisDan" | translate }}</div>
 
       <div class="po651-choose__grid">
         <button type="button" class="po651-pick" (click)="chooseMode('kuota')">
@@ -51,12 +48,8 @@
             </svg>
           </span>
           <span class="po651-pick__code">{{ "po651.kuota" | translate }}</span>
-          <span class="po651-pick__name">{{
-            "po651.slotLowonganIklan" | translate
-          }}</span>
-          <span class="po651-pick__desc">{{
-            "po651.kuotaJobstreetIklanKampusDibayar" | translate
-          }}</span>
+          <span class="po651-pick__name">{{ "po651.slotLowonganIklan" | translate }}</span>
+          <span class="po651-pick__desc">{{ "po651.kuotaJobstreetIklanKampusDibayar" | translate }}</span>
         </button>
 
         <button
@@ -78,15 +71,9 @@
               <path d="M22 11h-6M19 8v6" />
             </svg>
           </span>
-          <span class="po651-pick__code">{{
-            "po651.peserta" | translate
-          }}</span>
-          <span class="po651-pick__name">{{
-            "po651.psikotesTesKesehatan" | translate
-          }}</span>
-          <span class="po651-pick__desc">{{
-            "po651.dibayarAtasPesertaYangDiperiksa" | translate
-          }}</span>
+          <span class="po651-pick__code">{{ "po651.peserta" | translate }}</span>
+          <span class="po651-pick__name">{{ "po651.psikotesTesKesehatan" | translate }}</span>
+          <span class="po651-pick__desc">{{ "po651.dibayarAtasPesertaYangDiperiksa" | translate }}</span>
         </button>
       </div>
     </div>
@@ -101,11 +88,7 @@
             {{ "common.poInfo" | translate }}
           </div>
           <span class="po651-modechip">
-            <strong>{{
-              isKuota
-                ? ("hardcoded.kuota" | translate)
-                : ("hardcoded.peserta" | translate)
-            }}</strong>
+            <strong>{{ isKuota ? ('hardcoded.kuota' | translate) : ('hardcoded.peserta' | translate) }}</strong>
             <button
               type="button"
               class="po651-modechip__btn"
@@ -137,20 +120,47 @@
           </mat-form-field>
 
           @if (adendum.memuatDokumenLama) {
-            <!--
+          <!--
             Pemasok terkunci: ditampilkan sebagai TEKS, bukan isian
             yang dimatikan. Kotak abu-abu tetap terlihat seperti
             dapat diisi, dan ketika nilainya kosong ia tidak dapat
             dibedakan dari isian yang memang belum diisi.
           -->
+          <!--
+            Dokumen yang sedang disunting, disebut TERANG-TERANGAN.
+
+            Layar sunting bentuknya sama persis dengan layar pembuatan, dan
+            satu-satunya penanda sebelumnya adalah pemasok yang tergembok di
+            bawah. Yang membukanya dari daftar tidak melihat dokumen mana
+            yang sedang dipegangnya — dan pada dokumen bernomor mirip, itu
+            cukup untuk menyunting yang salah.
+
+            Nomornya tidak pernah berubah: ia melekat pada dokumennya dan
+            sudah beredar. Karena itu ditampilkan sebagai teks bergembok,
+            bukan sebagai isian.
+          -->
+          @if (adendum.nomorLama) {
             <app-supplier-terkunci
               class="po651-span2"
-              [label]="'common.supplier' | translate"
-              [nama]="formGroup.get('supplierName')?.value"
-              [alamat]="formGroup.get('supplierAddress')?.value"
+              [label]="'poForm.dokumenLama' | translate"
+              [nama]="adendum.nomorLama"
+              [alamat]="
+                ('poForm.tanggalSebelumnya' | translate) +
+                ': ' +
+                (adendum.tanggalLama | date: 'dd MMM yyyy')
+              "
+              [kunciTeks]="'poForm.nomorTerkunci'"
             />
-          } @else {
-            <mat-form-field appearance="outline" class="po651-span2">
+          }
+
+          <app-supplier-terkunci
+            class="po651-span2"
+            [label]="'common.supplier' | translate"
+            [nama]="formGroup.get('supplierName')?.value"
+            [alamat]="formGroup.get('supplierAddress')?.value"
+          />
+        } @else {
+          <mat-form-field appearance="outline" class="po651-span2">
               <mat-label>{{ "common.supplier" | translate }}</mat-label>
               <input
                 matInput
@@ -168,7 +178,7 @@
                 <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
-          }
+        }
 
           <!--
           Alamat pemasok disembunyikan saat menyunting.
@@ -178,8 +188,8 @@
           berlaku — terlebih ketika salah satunya berupa isian yang
           tampak dapat diubah.
         -->
-          @if (!adendum.memuatDokumenLama) {
-            <mat-form-field appearance="outline" class="po651-span2">
+        @if (!adendum.memuatDokumenLama) {
+          <mat-form-field appearance="outline" class="po651-span2">
               <mat-label>{{ "common.address" | translate }}</mat-label>
               <textarea
                 matInput
@@ -188,7 +198,7 @@
                 style="resize: none"
               ></textarea>
             </mat-form-field>
-          }
+        }
         </div>
       </div>
 
@@ -196,15 +206,10 @@
       <div class="po651-card">
         <div class="po651-cardhead">
           <div class="po651-section__title po651-section__title--flush">
-            {{
-              isKuota
-                ? ("hardcoded.rincianKuota" | translate)
-                : ("hardcoded.rincianPemeriksaan" | translate)
-            }}
+            {{ isKuota ? ('hardcoded.rincianKuota' | translate) : ('hardcoded.rincianPemeriksaan' | translate) }}
           </div>
           <button type="button" class="po651-add" (click)="addLine()">
-            <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}
-          </button>
+            <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}</button>
         </div>
 
         <div formArrayName="lines">
@@ -213,10 +218,7 @@
               <div class="po651-line__head">
                 <span class="po651-line__no">#{{ i + 1 }}</span>
                 <span class="po651-line__label">
-                  {{
-                    getFormGroupAt(i).value.task ||
-                      ("hardcoded.belumDiisi" | translate)
-                  }}
+                  {{ getFormGroupAt(i).value.task || ('hardcoded.belumDiisi' | translate) }}
                 </span>
                 <span class="po651-line__amt"
                   >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
@@ -236,9 +238,7 @@
               <div class="po651-grid">
                 <mat-form-field appearance="outline" class="po651-span2">
                   <mat-label>{{
-                    isKuota
-                      ? ("hardcoded.namaPaketSlot" | translate)
-                      : ("hardcoded.jenisPemeriksaan" | translate)
+                    isKuota ? ('hardcoded.namaPaketSlot' | translate) : ('hardcoded.jenisPemeriksaan' | translate)
                   }}</mat-label>
                   <input
                     matInput
@@ -284,15 +284,13 @@
 
                 <mat-form-field appearance="outline" class="po651-span2">
                   <mat-label>{{
-                    isKuota
-                      ? ("hardcoded.hargaPerSatuan" | translate)
-                      : ("hardcoded.hargaPerPeserta" | translate)
+                    isKuota ? ('hardcoded.hargaPerSatuan' | translate) : ('hardcoded.hargaPerPeserta' | translate)
                   }}</mat-label>
                   <input
                     matInput
                     formControlName="price"
                     thousandSeparator=" "
-                    mask="separator.4"
+                    mask="separator.2"
                   />
                   <span matPrefix>{{ "po641.rp" | translate }}</span>
                 </mat-form-field>
@@ -300,7 +298,7 @@
             </div>
           }
 
-          <!--
+      <!--
         Tombol tambah KEDUA, di bawah daftar.
 
         Yang di kepala kartu tidak terjangkau setelah beberapa baris
@@ -308,15 +306,11 @@
         atas, menekan, lalu menggulir kembali ke bawah untuk
         mengisinya.
       -->
-          @if (t.controls.length) {
-            <button
-              type="button"
-              class="pou-add pou-add--bawah"
-              (click)="addLine()"
-            >
-              <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}
-            </button>
-          }
+      @if (t.controls.length) {
+        <button type="button" class="pou-add pou-add--bawah" (click)="addLine()">
+          <mat-icon>add</mat-icon>{{ "po5112.tambahBaris" | translate }}
+        </button>
+      }
         </div>
 
         <div class="po651-foot">
@@ -424,9 +418,7 @@
 
       <!-- ===== Ketentuan ===== -->
       <div class="po651-card">
-        <div class="po651-section__title">
-          {{ "po642.ketentuan" | translate }}
-        </div>
+        <div class="po651-section__title">{{ "po642.ketentuan" | translate }}</div>
         <div class="po651-grid">
           @if (isKuota) {
             <mat-form-field appearance="outline">
@@ -443,9 +435,7 @@
                 [for]="dpQuota"
               ></mat-datepicker-toggle>
               <mat-datepicker #dpQuota></mat-datepicker>
-              <mat-hint>{{
-                "po651.kuotaTidakTerpakaiSetelahnyaHangus" | translate
-              }}</mat-hint>
+              <mat-hint>{{ "po651.kuotaTidakTerpakaiSetelahnyaHangus" | translate }}</mat-hint>
             </mat-form-field>
           } @else {
             <mat-form-field appearance="outline">
@@ -457,9 +447,7 @@
                 [min]="0"
               />
               <span matSuffix>{{ "poField.hariKerja" | translate }}</span>
-              <mat-hint>{{
-                "po651.sejakPelaksanaanPemeriksaan" | translate
-              }}</mat-hint>
+              <mat-hint>{{ "po651.sejakPelaksanaanPemeriksaan" | translate }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -473,9 +461,7 @@
                 [min]="0"
               />
               <span matSuffix>hari</span>
-              <mat-hint>{{
-                "po651.sebelumJadwalLewatItuTetap" | translate
-              }}</mat-hint>
+              <mat-hint>{{ "po651.sebelumJadwalLewatItuTetap" | translate }}</mat-hint>
             </mat-form-field>
           }
         </div>
@@ -510,8 +496,7 @@
             {{ "common.extraPoints" | translate }}
           </div>
           <button type="button" class="po651-add" (click)="addClause()">
-            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}
-          </button>
+            <mat-icon>add</mat-icon>{{ "po511.tambahPoin" | translate }}</button>
         </div>
         <p class="po651-hint">{{ "poForm.extraPointNote" | translate }}</p>
 
@@ -559,14 +544,7 @@
               formGroup.invalid || t.controls.length === 0 || isSubmitting
             "
           >
-            {{
-              isSubmitting
-                ? ("hardcoded.menyimpan" | translate)
-                : ((isUbah
-                    ? "poForm.submitUbah"
-                    : "hardcoded.buatPurchaseOrder"
-                  ) | translate)
-            }}
+            {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ((isUbah ? 'poForm.submitUbah' : 'hardcoded.buatPurchaseOrder') | translate) }}
           </button>
         </div>
       </div>

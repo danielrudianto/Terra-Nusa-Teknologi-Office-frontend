@@ -1446,15 +1446,3 @@ app-wysiwyg {
  * yang ini menandai UJUNG daftar, dan bentuknya menyerupai baris kosong
  * yang menunggu diisi.
  */
-.pou-add--bawah {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  width: 100%;
-  margin: 0.5rem 0 0.25rem;
-  padding: 0.75rem 1rem;
-  border: 1px dashed var(--border, #d7dbe3);
-  border-radius: 12px;
-  background: transparent;
-}

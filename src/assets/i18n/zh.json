@@ -2024,7 +2024,10 @@
     "satuanBerbedaMaster": "主数据中的单位为 {{satuan}}。请确认所填数量与所选单位一致。",
     "picHint": "从员工列表中选择，或输入其他姓名。",
     "materialTestSoil": "土工试验",
-    "akanTerbitSebagai": "将签发为"
+    "akanTerbitSebagai": "将签发为",
+    "nomorTerkunci": "编辑时文件编号不会改变",
+    "dokumenLama": "正在编辑的文件",
+    "tanggalSebelumnya": "原日期"
   },
   "menu": {
     "editAsset": "编辑资产",

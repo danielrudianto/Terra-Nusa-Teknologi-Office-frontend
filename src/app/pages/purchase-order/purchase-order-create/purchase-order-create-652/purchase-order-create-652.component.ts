@@ -739,6 +739,16 @@ export class PurchaseOrderCreate652Component {
         if (!induk) return;
         this.induk = induk;
         this.adendum.isiFormulir(this.formGroup, induk);
+        /*
+         * Jangka kredit dan prepaid diselaraskan SESUDAH isinya termuat.
+         *
+         * Aturannya — tunai mematikan keduanya — sebelumnya hanya dijalankan
+         * oleh penangan `(selectionChange)` pada pilihannya. Mengisi
+         * formulirnya dari dokumen lama tidak menekan apa pun, sehingga
+         * dokumen tunai terbuka dengan kedua isian itu tetap hidup; keduanya
+         * baru mati setelah pilihannya diganti lalu dikembalikan.
+         */
+        this.onPaymentTermChange();
         this.adendum.kunciIsian(this.formGroup);
         this.t.clear();
         this.adendum.barisInduk(induk).forEach((x: any) => {

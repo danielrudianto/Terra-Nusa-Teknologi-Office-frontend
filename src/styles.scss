@@ -1043,3 +1043,48 @@ html[data-density="compact"] {
   flex: 0 0 auto;
   color: var(--brand, #154dec) !important;
 }
+
+/*
+ * Tombol "tambah" KEDUA, di bawah daftar barang pada formulir purchase order.
+ *
+ * Yang di kepala kartu tidak terjangkau setelah beberapa baris terisi: yang
+ * menyadari ada satu yang kurang harus menggulir ke atas, menekan, lalu
+ * menggulir kembali ke bawah untuk mengisinya.
+ *
+ * Selebar kartu dan bergaris putus-putus, dibedakan dari yang di kepala: yang
+ * ini menandai UJUNG daftar, dan bentuknya menyerupai baris kosong yang
+ * menunggu diisi.
+ *
+ * Ditaruh di sini, bukan di tiap formulir. Delapan berkas memuat salinan
+ * aturan yang sama persis, dan yang tertinggal saat bentuknya berubah tidak
+ * menimbulkan galat apa pun — hanya satu formulir yang diam-diam berbeda dari
+ * lima belas lainnya.
+ */
+.pou-add--bawah {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0.5rem 0 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border, #d7dbe3);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pou-add--bawah:hover {
+  border-color: var(--brand, #154dec);
+  color: var(--brand, #154dec);
+  background: var(--hover, #f6f8ff);
+}
+
+.pou-add--bawah .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
