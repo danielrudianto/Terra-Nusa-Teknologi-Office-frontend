@@ -6,6 +6,109 @@
     [description]="project.code"
   />
 
+  <!--
+    Jalan ke laporan proyek.
+
+    Sebelumnya laporan hanya dapat dicapai lewat daftar margin — yang
+    membuka sebuah proyek dan bertanya "untungnya berapa" harus kembali ke
+    daftar, mencari proyek yang sama sekali lagi, lalu membukanya dari sana.
+  -->
+  <div class="prv-tindakan">
+    <button
+      mat-stroked-button
+      color="primary"
+      type="button"
+      *appCan="'project:read'"
+      (click)="bukaLaporan(project.code)"
+    >
+      <mat-icon>insights</mat-icon>
+      {{ "project.lihatLaporan" | translate }}
+    </button>
+  </div>
+
+  <!--
+    Keluarga proyek: induk dan anak-anaknya.
+
+    Muncul HANYA bila proyek ini memang bertaut. Sebagian pekerjaan dipecah
+    menjadi beberapa kode proyek — satu memegang kontraknya, yang lain
+    menampung biaya per paket — dan dilihat sendiri-sendiri keduanya tampak
+    ganjil: ada yang berpembelian tanpa penjualan, dan sebaliknya. Tanpa
+    banner ini, yang membukanya menyimpulkan datanya rusak.
+  -->
+  @if (punyaKeluarga) {
+    <div class="prv-keluarga">
+      <div class="prv-keluarga__kepala">
+        <mat-icon>account_tree</mat-icon>
+        <div>
+          <div class="prv-keluarga__judul">
+            {{ "project.keluarga.judul" | translate }}
+          </div>
+          <div class="prv-keluarga__sub">
+            @if (keluarga.induk) {
+              {{ "project.keluarga.subAnak" | translate }}
+            } @else {
+              {{
+                "project.keluarga.subInduk"
+                  | translate: { jumlah: keluarga.anak.length }
+              }}
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (keluarga.induk) {
+        <button
+          type="button"
+          class="prv-keluarga__baris"
+          (click)="bukaProyek(keluarga.induk.id)"
+        >
+          <span class="prv-keluarga__peran">{{
+            "project.keluarga.induk" | translate
+          }}</span>
+          <span class="prv-keluarga__kode">{{ keluarga.induk.code }}</span>
+          <span class="prv-keluarga__nama">{{ keluarga.induk.name }}</span>
+          <span
+            class="prv-chip"
+            [ngClass]="'prv-chip--' + keadaanKeluarga(keluarga.induk)"
+            >{{
+              "project.state." + keadaanKeluarga(keluarga.induk) | translate
+            }}</span
+          >
+          <mat-icon class="prv-keluarga__panah">chevron_right</mat-icon>
+        </button>
+      }
+
+      @for (a of keluarga.anak; track a.id) {
+        <button
+          type="button"
+          class="prv-keluarga__baris"
+          (click)="bukaProyek(a.id)"
+        >
+          <span class="prv-keluarga__peran">{{
+            "project.keluarga.anak" | translate
+          }}</span>
+          <span class="prv-keluarga__kode">{{ a.code }}</span>
+          <span class="prv-keluarga__nama">{{ a.name }}</span>
+          <span class="prv-chip" [ngClass]="'prv-chip--' + keadaanKeluarga(a)">{{
+            "project.state." + keadaanKeluarga(a) | translate
+          }}</span>
+          <mat-icon class="prv-keluarga__panah">chevron_right</mat-icon>
+        </button>
+      }
+
+      <!--
+        Laporan keluarga, bukan laporan proyek ini saja.
+
+        Yang punya anak biasanya tidak menyimpan biayanya sendiri; laporannya
+        yang menggabungkan seluruh keluarga itulah yang menjawab "proyek ini
+        untung berapa".
+      -->
+      <div class="prv-keluarga__kaki">
+        {{ "project.keluarga.gabunganKet" | translate }}
+      </div>
+    </div>
+  }
+
   <div class="prv-kpi">
     <div class="prv-sel">
       <div class="prv-label">{{ "project.contractValue" | translate }}</div>

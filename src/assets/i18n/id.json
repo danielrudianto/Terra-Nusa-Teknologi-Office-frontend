@@ -3631,7 +3631,16 @@
     "proyekDigabung": "Proyek yang digabung",
     "termasukRetensi": "+ Tunggu retensi",
     "termasukSelesai": "+ Selesai",
-    "termasukBatal": "+ Batal"
+    "termasukBatal": "+ Batal",
+    "lihatLaporan": "Lihat laporan proyek",
+    "keluarga": {
+      "judul": "Proyek ini bagian dari satu keluarga proyek",
+      "subInduk": "Punya {{jumlah}} proyek anak. Biaya sebagian pekerjaan dicatat di sana, bukan di sini.",
+      "subAnak": "Proyek ini anak dari proyek di bawah. Kontraknya dipegang induknya.",
+      "induk": "Induk",
+      "anak": "Anak",
+      "gabunganKet": "Laporan proyek menggabungkan seluruh keluarga, sehingga marginnya utuh."
+    }
   },
   "projectReport": {
     "title": "Laporan Proyek",

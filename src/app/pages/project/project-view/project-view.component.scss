@@ -47,6 +47,9 @@
 .prv-chip--berjalan { background: var(--ok-bg); color: var(--ok-fg); }
 .prv-chip--selesai  { background: var(--surface-2); color: var(--muted); }
 .prv-chip--batal    { background: var(--bad-bg); color: var(--bad-fg); }
+/* Tertinggal sejak keadaan "tunggu retensi" ditambahkan: kepingnya ada di
+   layar, gayanya tidak — sehingga ia tampil tanpa warna sama sekali. */
+.prv-chip--retensi  { background: var(--warn-bg, #fff4e5); color: var(--warn-fg, #96601a); }
 
 .prv-kartu {
   background: var(--surface);
@@ -314,4 +317,121 @@
   font-size: 0.78rem;
   line-height: 1.45;
   color: var(--bad-fg, #b3322f);
+}
+
+/* ---------------------------------------------------------------------
+   Keluarga proyek: induk dan anak-anaknya.
+
+   Ditaruh DI ATAS kartu angka, bukan di bawahnya: keterangan bahwa proyek
+   ini bagian dari keluarga mengubah arti seluruh angka di bawahnya — proyek
+   anak yang tampak tanpa penjualan bukan proyek yang gagal menagih,
+   melainkan proyek yang penagihannya ada di induknya.
+   --------------------------------------------------------------------- */
+.prv-tindakan {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prv-keluarga {
+  border: 1px solid var(--border, #e3e6ea);
+  border-left: 3px solid var(--brand, #3f6ad8);
+  border-radius: 10px;
+  background: var(--surface-1, #fff);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.prv-keluarga__kepala {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+
+  mat-icon {
+    color: var(--brand, #3f6ad8);
+    flex: none;
+  }
+}
+
+.prv-keluarga__judul {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.prv-keluarga__sub {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.4;
+}
+
+/* Barisnya TOMBOL, bukan div ber-(click).
+   Yang memakai papan ketik harus dapat mencapainya, dan pembaca layar
+   harus menyebutnya sebagai sesuatu yang dapat ditekan. */
+.prv-keluarga__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--border, #eef0f3);
+  background: transparent;
+  padding: 0.55rem 0.25rem;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--surface-2, #f7f8fa);
+  }
+}
+
+.prv-keluarga__peran {
+  flex: none;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #6b7280);
+  min-width: 3.2rem;
+}
+
+.prv-keluarga__kode {
+  flex: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.prv-keluarga__nama {
+  flex: 1 1 auto;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prv-keluarga__panah {
+  flex: none;
+  color: var(--muted, #9aa1ad);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.prv-keluarga__kaki {
+  margin-top: 0.6rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border, #eef0f3);
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .prv-keluarga__nama {
+    display: none;
+  }
 }

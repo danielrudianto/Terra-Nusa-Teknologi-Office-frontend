@@ -230,8 +230,63 @@ export class ProjectViewComponent implements OnInit {
     this.route.params.subscribe((p) => this.fetch(Number(p['id'])));
   }
 
+  /**
+   * Induk dan anak-anak proyek ini.
+   *
+   * Sebagian pekerjaan dipecah menjadi beberapa kode proyek: satu memegang
+   * kontraknya, yang lain menampung biaya per paket. Dilihat sendiri-sendiri
+   * keduanya tampak ganjil — ada yang berpenjualan tanpa satu pun pembelian,
+   * dan sebaliknya — sehingga yang membukanya menyimpulkan datanya rusak.
+   *
+   * Kosong pada hampir seluruh proyek; hanya yang memang bertaut yang
+   * menampilkan bannernya.
+   */
+  keluarga: { induk: any | null; anak: any[] } = { induk: null, anak: [] };
+
+  get punyaKeluarga(): boolean {
+    return !!this.keluarga.induk || this.keluarga.anak.length > 0;
+  }
+
+  /** Keadaan sebuah proyek keluarga, untuk mewarnai kepingnya. */
+  keadaanKeluarga(p: any): string {
+    return keadaanProyek(p);
+  }
+
+  /**
+   * Buka proyek lain dalam keluarga ini.
+   *
+   * Berpindah di dalam layar yang sama, bukan membuka tab baru: yang
+   * menelusuri keluarga proyek biasanya membandingkan keduanya bergantian,
+   * dan tab yang menumpuk membuatnya kehilangan jejak mana yang mana.
+   */
+  bukaProyek(id: number): void {
+    this.router.navigate(['/Project', id]);
+  }
+
+  /** Laporan proyek ini — memakai KODE, bukan id. */
+  bukaLaporan(kode: string): void {
+    this.router.navigate(['/Project/Report', kode]);
+  }
+
+  private muatKeluarga(id: number): void {
+    // Gagal diam-diam: keterangan keluarga hanya melengkapi, dan galat di
+    // sini tidak boleh menutupi proyek yang sudah tampil dengan baik.
+    this.apiService.get(`projects/${id}/keluarga`, {}).subscribe({
+      next: (res: any) => {
+        this.keluarga = {
+          induk: res?.induk ?? null,
+          anak: res?.anak ?? [],
+        };
+      },
+      error: () => {
+        this.keluarga = { induk: null, anak: [] };
+      },
+    });
+  }
+
   fetch(id: number): void {
     this.isLoading = true;
+    this.muatKeluarga(id);
     this.apiService
       .get(`projects/${id}`, {})
       .subscribe({

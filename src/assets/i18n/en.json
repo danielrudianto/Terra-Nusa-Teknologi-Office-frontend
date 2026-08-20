@@ -3631,7 +3631,16 @@
     "proyekDigabung": "Projects merged",
     "termasukRetensi": "+ Retention period",
     "termasukSelesai": "+ Completed",
-    "termasukBatal": "+ Cancelled"
+    "termasukBatal": "+ Cancelled",
+    "lihatLaporan": "View project report",
+    "keluarga": {
+      "judul": "This project is part of a project family",
+      "subInduk": "Has {{jumlah}} child project(s). Some costs are recorded there, not here.",
+      "subAnak": "This is a child of the project below. The contract sits with the parent.",
+      "induk": "Parent",
+      "anak": "Child",
+      "gabunganKet": "The project report merges the whole family, so the margin is complete."
+    }
   },
   "projectReport": {
     "title": "Project Report",

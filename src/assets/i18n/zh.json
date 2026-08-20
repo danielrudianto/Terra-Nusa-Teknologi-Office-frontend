@@ -3631,7 +3631,16 @@
     "proyekDigabung": "已合并的项目",
     "termasukRetensi": "+ 保固期",
     "termasukSelesai": "+ 已完成",
-    "termasukBatal": "+ 已取消"
+    "termasukBatal": "+ 已取消",
+    "lihatLaporan": "查看项目报告",
+    "keluarga": {
+      "judul": "本项目属于一个项目族",
+      "subInduk": "有 {{jumlah}} 个子项目。部分成本记录在那里，而非此处。",
+      "subAnak": "本项目是下方项目的子项目，合同归母项目所有。",
+      "induk": "母项目",
+      "anak": "子项目",
+      "gabunganKet": "项目报告合并整个项目族，因此毛利完整。"
+    }
   },
   "projectReport": {
     "title": "项目报表",
