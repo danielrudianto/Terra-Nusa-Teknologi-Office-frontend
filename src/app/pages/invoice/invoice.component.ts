@@ -32,7 +32,7 @@ import { ApiService } from '../../services/api.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { tanggalLokal } from '../../utils/tanggal';
 import { konteksKlausulTenagaKerja } from '../../helpers/klausul-tenaga-kerja.helper';
 import { usulanPPhUntuk } from '../../constants/usulan-pph';
@@ -390,6 +390,20 @@ export class InvoiceComponent {
   private fetchPurchaseOrder(): Observable<any | null> {
     const nama = this.purchaseOrderName;
     if (!nama) return of(null);
+    /*
+     * DUA permintaan, dan yang kedua wajib.
+     *
+     * Daftar purchase order hanya mengembalikan kolom dokumennya — nomor,
+     * tanggal, pemasok — TANPA baris barangnya; baris itu diambil endpoint
+     * rinciannya. Sebelumnya lampirannya dirakit dari baris daftar saja,
+     * sehingga `po.items` selalu kosong dan SPK yang menempel di belakang
+     * invoice tercetak dengan TABEL KOMPONEN UPAH KOSONG — hanya judul
+     * kolomnya.
+     *
+     * Tidak ada galat apa pun: `(po?.items ?? [])` menghasilkan larik kosong,
+     * dan dokumennya tetap terbit. Lembar itu sampai ke pekerja tanpa satu
+     * pun angka upah di dalamnya.
+     */
     return this.apiService
       .get('purchase-orders', { keyword: nama, page_size: 5 })
       .pipe(
@@ -397,6 +411,16 @@ export class InvoiceComponent {
           const list = res?.data ?? res?.items ?? [];
           return list.find((x: any) => x?.name === nama) ?? null;
         }),
+        switchMap((baris: any) =>
+          baris?.id
+            ? this.apiService.get(`purchase-orders/${baris.id}`, {}).pipe(
+                map((rinci: any) => rinci ?? baris),
+                // Rinciannya gagal diambil: dokumennya tetap terbit dengan
+                // apa yang ada, seperti sebelumnya.
+                catchError(() => of(baris)),
+              )
+            : of(baris),
+        ),
         catchError(() => of(null)),
       );
   }
@@ -477,8 +501,16 @@ export class InvoiceComponent {
       workerCity: po?.supplierCity ?? '',
       workerNpwp: po?.supplierNpwp ?? '',
       // PO-D mencatat komponen upah: label + nominal per satuan.
+      /*
+       * Urutan bidangnya SAMA dengan saat SPK dicetak sendiri
+       * (`purchase-order-list`): `remarks_3` lebih dahulu, baru `task`.
+       *
+       * Sebelumnya di sini terbalik — `task` lebih dahulu — sehingga baris
+       * yang punya keduanya tercetak dengan label yang berbeda dari lembar
+       * yang sama bila dicetak lewat daftar purchase order.
+       */
       items: (po?.items ?? []).map((it: any) => ({
-        label: it.task || it.item_description || '',
+        label: it.remarks_3 || it.task || '',
         amount: Number(it.price) || 0,
         unit: it.unit ?? '',
       })),
@@ -558,6 +590,20 @@ export class InvoiceComponent {
            */
           attachment: [
             ...(po ? buildPurchaseOrderDContent(this.toPrintData(po)) : []),
+            /*
+             * Surat pengalihan MULAI DI HALAMAN BARU.
+             *
+             * Keduanya menumpang satu berkas, dan tanpa pemisah ini
+             * suratnya menyambung persis di bawah blok tanda tangan SPK —
+             * dua dokumen yang masing-masing mengikat, pada satu halaman,
+             * seolah bagian dari surat yang sama.
+             *
+             * Hanya bila keduanya memang ada: pemisah yang dipasang tanpa
+             * SPK di depannya menghasilkan halaman kosong.
+             */
+            ...(po && v.proxyPayment
+              ? [{ text: '', pageBreak: 'before' as any }]
+              : []),
             ...(v.proxyPayment
               ? proxyPaymentContent({
                   invoiceName: this.invoiceNumber,

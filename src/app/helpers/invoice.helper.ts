@@ -2,6 +2,10 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins, PageSize } from 'pdfmake/interfaces';
 import { documentFonts } from '../constants/document-font.constant';
+import {
+  DOCUMENT_STYLES,
+  documentFooter,
+} from './purchase-order-shared.helper';
 
 pdfMake.vfs = pdfFonts.vfs;
 /**
@@ -223,6 +227,36 @@ function signatureBlock(data: IInvoiceDocument) {
   };
 }
 
+/**
+ * Berapa halaman yang ditempati isi utama invoice.
+ *
+ * Dihitung dari pemisah halaman yang dipasang sendiri, bukan ditulis tetap:
+ * satu halaman untuk yang pertama, ditambah satu untuk tiap pemisah paksa.
+ *
+ * Perkiraan ini meleset bila isi utamanya MELUBER sendiri — pdfmake tidak
+ * memberitahukan banyaknya halaman sebelum berkasnya dirakit. Bila itu
+ * terjadi, yang meleset hanya footer satu halaman, bukan isinya.
+ */
+export function halamanIsiUtama(isi: any[]): number {
+  return 1 + isi.filter((n: any) => n?.pageBreak === 'before').length;
+}
+
+/**
+ * Halaman ini bagian isi utama atau lampiran.
+ *
+ * pdfmake hanya menyediakan SATU footer per berkas, sementara berkas ini
+ * memuat empat dokumen yang biasanya terbit sendiri-sendiri. Pemilihannya
+ * dipisahkan ke sini supaya batasnya dapat diuji tanpa merakit PDF.
+ */
+export function bagianHalaman(
+  currentPage: number,
+  halamanUtama: number,
+  adaLampiran: boolean,
+): 'utama' | 'lampiran' {
+  if (!adaLampiran) return 'utama';
+  return currentPage > halamanUtama ? 'lampiran' : 'utama';
+}
+
 export function printInvoiceDocument(
   data: IInvoiceDocument,
   output: PdfOutput = 'open',
@@ -248,11 +282,14 @@ export function printInvoiceDocument(
     },
   ];
 
-  const dd = {
-    pageSize: 'A4' as PageSize,
-    pageMargins: [40, 20, 40, 20] as Margins,
-    fontSize: 12,
-    content: [
+  /*
+   * Isi UTAMA dipisahkan dari lampirannya.
+   *
+   * Bukan sekadar kerapian: footer dokumen ini berbeda antara keduanya, dan
+   * yang menentukan batasnya adalah banyaknya halaman isi utama — yang hanya
+   * dapat dihitung bila keduanya memang terpisah.
+   */
+  const isiUtama: any[] = [
       // ---------- halaman 1: invoice ----------
       ...heading('INVOICE'),
       { text: 'Kepada Yth.', margin: [0, 0, 0, 2] as Margins },
@@ -318,20 +355,51 @@ export function printInvoiceDocument(
         margin: [0, 0, 0, 6] as Margins,
       },
       signatureBlock(data),
+  ];
 
-      ,
-      // ---------- lampiran: SPK yang bersangkutan ----------
-      ...(data.attachment?.length
-        ? [
-            {
-              text: '',
-              pageBreak: 'before' as any,
-            },
-            ...data.attachment,
-          ]
-        : []),
-    ],
-    footer: {
+  // ---------- lampiran: SPK, lalu surat pengalihan ----------
+  const lampiran: any[] = data.attachment?.length
+    ? [{ text: '', pageBreak: 'before' as any }, ...data.attachment]
+    : [];
+
+  /*
+   * Berapa halaman yang ditempati isi utama.
+   *
+   * DIHITUNG dari pemisah halaman yang dipasang sendiri, bukan ditulis tetap
+   * dua: satu halaman untuk yang pertama, ditambah satu untuk tiap pemisah
+   * paksa sesudahnya.
+   *
+   * Perkiraan ini meleset bila isi utamanya MELUBER sendiri — daftar barang
+   * yang sangat panjang, misalnya — sebab pdfmake tidak memberitahukan
+   * banyaknya halaman sebelum berkasnya dirakit. Pada invoice tenaga kerja
+   * barisnya sedikit dan hal itu belum pernah terjadi; bila suatu saat
+   * terjadi, yang meleset hanya footer satu halaman, bukan isinya.
+   */
+  const halamanUtama = halamanIsiUtama(isiUtama);
+
+  const dd = {
+    pageSize: 'A4' as PageSize,
+    pageMargins: [40, 20, 40, 20] as Margins,
+    fontSize: 12,
+    content: [...isiUtama, ...lampiran],
+    /*
+     * Footer BERBEDA antara isi utama dan lampirannya.
+     *
+     * pdfmake hanya menyediakan SATU footer per berkas, sementara berkas ini
+     * memuat empat dokumen yang biasanya terbit sendiri-sendiri. Sebelumnya
+     * seluruh halaman memakai footer invoice, sehingga SPK di lampiran
+     * kehilangan blok Office/Phone/Email yang selalu ada bila ia dicetak
+     * sendiri — dan yang menerimanya tidak punya satu pun keterangan kontak.
+     */
+    footer: (currentPage: number) =>
+      bagianHalaman(currentPage, halamanUtama, lampiran.length > 0) === 'lampiran'
+        ? documentFooter()
+        : footerInvoice(),
+  };
+
+  /** Footer invoice: satu baris keterangan, dipakai halaman isi utama. */
+  function footerInvoice() {
+    return {
       table: {
         width: ['auto', '*'],
         body: [
@@ -353,8 +421,28 @@ export function printInvoiceDocument(
       layout: 'noBorders',
       margin: [15, 2, 2, 2] as Margins,
       alignment: 'center' as Alignment,
-    },
+    };
+  }
+
+  Object.assign(dd, {
+    /*
+     * Gaya dokumen purchase order IKUT DIDAFTARKAN.
+     *
+     * Lampiran SPK di belakang invoice memakai nama gaya `docSubTitle`,
+     * `th`, dan `td` — dan nama gaya berlaku per DOKUMEN, bukan per potongan
+     * isi. Selama ketiganya tidak terdaftar di sini, pdfmake mengabaikannya
+     * tanpa berkata apa pun: baris "No.: 062-SPK-..." yang seharusnya rata
+     * tengah tercetak rata kiri, dan tabelnya kehilangan ukuran serta jarak
+     * barisnya.
+     *
+     * Akibatnya SPK yang menempel di invoice tampak BERBEDA dari SPK yang
+     * sama bila dicetak sendiri — tanpa ada yang mengubah isinya.
+     *
+     * Ditaruh lebih dahulu supaya gaya milik invoice sendiri menang bila
+     * namanya kebetulan sama.
+     */
     styles: {
+      ...DOCUMENT_STYLES,
       header: {
         fontSize: 16,
         bold: true,
@@ -369,7 +457,7 @@ export function printInvoiceDocument(
       },
     },
     defaultStyle: { font: 'Calibri', fontSize: 11, lineHeight: 1.15 },
-  };
+  });
 
   const baseVfs = (pdfFonts as any).vfs ?? (pdfFonts as any);
   const { fonts, vfs } = documentFonts(baseVfs);
