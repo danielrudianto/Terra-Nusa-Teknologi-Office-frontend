@@ -72,6 +72,10 @@ function po(checkedBy: number | null): any {
   return { id: 1, name: 'PO-001', isChecked: true, checkedBy };
 }
 
+function poDisetujui(): any {
+  return { id: 2, name: 'PO-002', isChecked: true, isApproved: true, status: 'approved' };
+}
+
 describe('pemeriksa tidak menyetujui yang diperiksanya', () => {
   it('tombol disembunyikan dari yang memeriksa', () => {
     const c = komponen(4);
@@ -123,5 +127,56 @@ describe('pemeriksa tidak menyetujui yang diperiksanya', () => {
     // `Number()` selalu bernilai salah, dan aturannya tidak pernah berlaku.
     const c = komponen(4);
     expect(c.tidakBolehSetujui({ ...po(SAYA), checkedBy: String(SAYA) })).toBeTrue();
+  });
+});
+
+/**
+ * Menu "Hapus": bebas sebelum terbit, hanya pemilik sesudahnya.
+ *
+ * Dokumen yang belum disetujui belum dicetak dan belum dipegang siapa pun di
+ * luar kantor. Yang sudah disetujui ada di tangan vendor — menghapusnya
+ * membuat lembar yang beredar tidak punya padanan sama sekali di sistem.
+ */
+describe('menghapus purchase order', () => {
+  it('yang belum disetujui bebas dihapus', () => {
+    const c = komponen(3);
+    expect(c.bolehHapus({ id: 1, isApproved: false, status: 'draft' })).toBeTrue();
+  });
+
+  it('yang sudah diperiksa tetapi belum disetujui tetap bebas', () => {
+    // Diperiksa bukan terbit. Dokumennya masih di dalam kantor.
+    const c = komponen(3);
+    expect(c.bolehHapus(po(SAYA))).toBeTrue();
+  });
+
+  it('yang dibatalkan tetap bebas dihapus', () => {
+    /*
+     * Membatalkan mencabut persetujuannya (`isApproved` kembali false),
+     * jadi dokumennya tidak lagi terbit. Sebelumnya ia ikut tertutup karena
+     * penjagaannya memakai "sudah selesai" — yang menggabungkan disetujui
+     * dan dibatalkan menjadi satu keadaan padahal keduanya berbeda.
+     */
+    const c = komponen(3);
+    expect(c.bolehHapus({ id: 1, isApproved: false, status: 'cancelled' })).toBeTrue();
+  });
+
+  it('yang sudah disetujui TIDAK boleh dihapus level 4', () => {
+    const c = komponen(4);
+    expect(c.bolehHapus(poDisetujui())).toBeFalse();
+  });
+
+  it('yang sudah disetujui boleh dihapus pemilik', () => {
+    const c = komponen(5);
+    expect(c.bolehHapus(poDisetujui())).toBeTrue();
+  });
+
+  it('`status: approved` tanpa `isApproved` tetap terbaca sudah terbit', () => {
+    /*
+     * Sebagian dokumen lama tersimpan dengan `status: "approved"` sementara
+     * `isApproved` masih false. Memeriksa satu bidang saja membuat dokumen
+     * yang sudah dipegang vendor terbuka untuk dihapus siapa pun.
+     */
+    const c = komponen(4);
+    expect(c.bolehHapus({ id: 1, isApproved: false, status: 'approved' })).toBeFalse();
   });
 });

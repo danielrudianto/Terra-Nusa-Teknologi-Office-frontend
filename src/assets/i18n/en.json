@@ -3677,7 +3677,8 @@
     "FORBIDDEN": "You do not have access for this action.",
     "VALIDATION": "Some fields are invalid. Please review the form.",
     "INTERNAL": "A server error occurred. Please try again shortly.",
-    "PO_CHECKER_IS_APPROVER": "A purchase order cannot be approved by the same person who checked it. Please ask someone else to approve."
+    "PO_CHECKER_IS_APPROVER": "A purchase order cannot be approved by the same person who checked it. Please ask someone else to approve.",
+    "PO_DELETE_APPROVED_FORBIDDEN": "An approved purchase order can only be deleted by the owner. Use an addendum for changes after it has been issued."
   },
   "movePayment": {
     "title": "Move payment date",

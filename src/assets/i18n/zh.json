@@ -3677,7 +3677,8 @@
     "FORBIDDEN": "您没有执行此操作的权限。",
     "VALIDATION": "部分字段无效，请检查表单。",
     "INTERNAL": "服务器发生错误，请稍后重试。",
-    "PO_CHECKER_IS_APPROVER": "采购订单不能由检查人本人审批，请另请他人审批。"
+    "PO_CHECKER_IS_APPROVER": "采购订单不能由检查人本人审批，请另请他人审批。",
+    "PO_DELETE_APPROVED_FORBIDDEN": "已审批的采购订单只能由所有者删除。签发后如需变更，请使用补充协议。"
   },
   "movePayment": {
     "title": "调整付款日期",

@@ -373,14 +373,18 @@
                 ><span>{{ "purchaseOrder.menuReprint" | translate }}</span>
               </button>
               <!--
-                Hapus disembunyikan pada dokumen yang sudah disetujui.
+                Hapus: bebas sebelum terbit, hanya pemilik sesudahnya.
 
-                Dokumen yang disetujui sudah dicetak dan dipegang vendor;
+                Yang belum disetujui bebas dihapus — termasuk yang sudah
+                diperiksa dan yang dibatalkan; dokumennya belum terbit dan
+                belum dipegang siapa pun di luar kantor.
+
+                Yang sudah disetujui sudah dicetak dan ada di tangan vendor:
                 menghapusnya membuat lembar yang beredar tidak punya padanan
-                sama sekali. Yang perlu diubah setelah disetujui diselesaikan
-                lewat ADENDUM.
+                sama sekali. Jalan yang biasa ADENDUM — dan kalau dokumennya
+                memang keliru sejak awal, pemiliknya yang memutuskan.
               -->
-              @if (!sudahSelesai(po)) {
+              @if (bolehHapus(po)) {
                 <button
                   mat-menu-item
                   *appCan="'purchase_order:delete'"

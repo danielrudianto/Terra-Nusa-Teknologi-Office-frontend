@@ -3677,7 +3677,8 @@
     "FORBIDDEN": "Anda tidak memiliki akses untuk tindakan ini.",
     "VALIDATION": "Ada isian yang belum benar. Periksa kembali formulirnya.",
     "INTERNAL": "Terjadi kesalahan di server. Coba lagi beberapa saat lagi.",
-    "PO_CHECKER_IS_APPROVER": "Purchase order tidak dapat disetujui oleh pemeriksanya sendiri. Mintakan persetujuan kepada pengguna lain."
+    "PO_CHECKER_IS_APPROVER": "Purchase order tidak dapat disetujui oleh pemeriksanya sendiri. Mintakan persetujuan kepada pengguna lain.",
+    "PO_DELETE_APPROVED_FORBIDDEN": "Purchase order yang sudah disetujui hanya dapat dihapus oleh pemilik. Yang perlu diubah setelah terbit diselesaikan lewat adendum."
   },
   "movePayment": {
     "title": "Pindahkan tanggal pembayaran",

@@ -1464,6 +1464,27 @@ export class PurchaseOrderListComponent {
     return this.diperiksaSendiri(po) && !this.pemilikUsaha;
   }
 
+  /** Dokumen ini sudah disetujui — lembarnya sudah terbit. */
+  sudahDisetujui(po: any): boolean {
+    return !!po?.isApproved || po?.status === 'approved';
+  }
+
+  /**
+   * Menu "Hapus" boleh ditampilkan.
+   *
+   * Yang BELUM disetujui bebas dihapus — termasuk yang sudah diperiksa dan
+   * yang dibatalkan. Dokumennya belum terbit, belum dicetak, dan belum
+   * dipegang siapa pun di luar kantor.
+   *
+   * Yang SUDAH disetujui hanya pemilik. Lembarnya sudah ada di tangan
+   * vendor, dan menghapusnya membuat lembar itu tidak punya padanan sama
+   * sekali di sistem. Jalan yang biasa adendum — tetapi kadang dokumennya
+   * memang keliru sejak awal, dan yang memutuskan itu pemiliknya.
+   */
+  bolehHapus(po: any): boolean {
+    return !this.sudahDisetujui(po) || this.pemilikUsaha;
+  }
+
   /**
    * Tandai dokumen sudah diperiksa.
    *
