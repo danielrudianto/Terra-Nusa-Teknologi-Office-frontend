@@ -4627,7 +4627,12 @@
       "sub": "Hanya persetujuan dan laporan. Selebihnya di aplikasi desktop.",
       "menunggu": "menunggu persetujuan",
       "laporan": "Laporan margin per proyek",
-      "hapus": "Cari lalu hapus pembelian"
+      "hapus": "Cari lalu hapus pembelian",
+      "halo": "Halo",
+      "tuntas": "Semua sudah tuntas",
+      "menungguTotal": "menunggu keputusan Anda",
+      "perluKeputusan": "Perlu keputusan",
+      "lainnya": "Lainnya"
     },
     "po": {
       "judul": "Persetujuan Purchase Order",
@@ -4644,7 +4649,12 @@
       "disetujui": "{{nomor}} disetujui",
       "ditolak": "{{nomor}} ditolak",
       "buatanSendiri": "Dokumen ini buatan Anda sendiri, jadi tidak dapat Anda setujui. Mintakan kepada pengguna lain.",
-      "diperiksaSendiri": "Anda yang memeriksa dokumen ini. Pemeriksa dan penyetuju sengaja dua orang berbeda."
+      "diperiksaSendiri": "Anda yang memeriksa dokumen ini. Pemeriksa dan penyetuju sengaja dua orang berbeda.",
+      "pemasok": "Pemasok",
+      "sudahDiperiksa": "Diperiksa",
+      "poinPerjanjian": "Poin perjanjian",
+      "tanpaKlausul": "Dokumen ini tidak memuat poin perjanjian.",
+      "sudahBaca": "Saya sudah membaca poin perjanjian di atas."
     },
     "reimbursement": {
       "judul": "Persetujuan Reimbursement",

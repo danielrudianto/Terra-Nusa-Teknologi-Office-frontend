@@ -1,16 +1,84 @@
-.mbr-judul {
-  font-size: 1.5rem;
+.mbr-sapa {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.mbr-sapa__halo {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+.mbr-sapa__nama {
+  font-size: 1.3rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 0.25rem 0 0.2rem;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
 
-.mbr-sub {
+/* Kartu utama: brand pekat, angka besar. Ini yang pertama dilihat, dan yang
+   menjawab pertanyaan yang membawa orang membuka aplikasi. */
+.mbr-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 128px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong, #0f3fd0));
+  color: var(--on-brand);
+  padding: 1.3rem 1rem;
+  margin-bottom: 1.6rem;
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--brand) 35%, transparent);
+  animation: mbr-hero-masuk 0.32s ease-out both;
+
+  /* Tuntas: tak ada yang menunggu — warnanya turun menjadi tenang, bukan
+     brand yang menuntut perhatian. */
+  &.mbr-hero--kosong {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--card-shadow);
+  }
+}
+
+@keyframes mbr-hero-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mbr-hero__angka {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.mbr-hero__teks {
   font-size: 0.85rem;
-  color: var(--muted);
-  margin: 0 0 1.3rem;
-  line-height: 1.45;
+  opacity: 0.92;
+}
+
+.mbr-seksi {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  margin: 0 0.2rem 0.6rem;
+}
+
+.mbr-seksi:not(:first-of-type) {
+  margin-top: 1.4rem;
 }
 
 .mbr-petak {
@@ -44,8 +112,8 @@
     outline-offset: 2px;
   }
 
-  /* Ikon dalam petak berwarna lembut, seperti lencana aplikasi — bukan ikon
-     telanjang yang menempel di teks. */
+  /* Ikon dalam lencana warna lembut, seperti aplikasi — bukan ikon telanjang
+     yang menempel di teks. */
   > mat-icon {
     flex: none;
     width: 44px;
@@ -59,8 +127,8 @@
   }
 }
 
-/* Menghapus dibedakan warnanya dari menyetujui: keduanya berdampingan di
-   satu layar, dan yang satu tidak dapat dibatalkan. */
+/* Menghapus dibedakan warnanya: berdampingan dengan menyetujui, dan yang
+   satu tidak dapat dibatalkan. */
 .mbr-petak--awas > mat-icon {
   background: var(--bad-bg);
   color: var(--bad-fg);
@@ -104,29 +172,12 @@
   color: var(--faint);
 }
 
-/* Petak masuk bertahap, sama seperti kartu daftar. */
-.mbr-petak {
-  animation: mbr-petak-masuk 0.28s ease-out both;
-}
-@for $i from 1 through 4 {
-  .mbr-petak:nth-child(#{$i + 2}) {
-    animation-delay: #{$i * 0.04}s;
-  }
-}
-@keyframes mbr-petak-masuk {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .mbr-petak {
+  .mbr-hero {
     animation: none;
+  }
+
+  .mbr-petak {
     transition: none;
 
     &:active {

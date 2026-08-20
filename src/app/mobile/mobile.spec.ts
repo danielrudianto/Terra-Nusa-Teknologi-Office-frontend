@@ -146,3 +146,56 @@ describe('mobile: data lokal id terdaftar', () => {
     expect(pipe.transform(1846153, '1.0-0')).toBe('1.846.153');
   });
 });
+
+/**
+ * Persetujuan terkunci sampai klausulnya ditandai dibaca.
+ *
+ * Ini yang membedakan "menyetujui" dari "menekan tombol": tombol setuju baru
+ * hidup setelah `sudahBaca`, dan `sudahBaca` hanya benar setelah klausulnya
+ * termuat lalu ditandai — atau ketika dokumennya memang tak punya klausul.
+ */
+describe('mobile: persetujuan menunggu klausul dibaca', () => {
+  function layarPo(over: Record<string, unknown> = {}): any {
+    const c: any = Object.create(PersetujuanPoComponent.prototype);
+    c.akun = { userId: 7, user: { id: 7, authenticationLevel: 4 } };
+    c.izin = { level: () => 4 };
+    c.klausul = [{ items: ['Butir 1'] }];
+    c.sudahBaca = false;
+    c.memuatRincian = false;
+    Object.assign(c, over);
+    return c;
+  }
+
+  const poOrangLain = { id: 1, name: 'x', createdBy: 9, checkedBy: 9 };
+
+  it('tombol setuju mati sebelum klausul ditandai dibaca', () => {
+    const c = layarPo({ sudahBaca: false });
+    expect(c.bolehTekanSetuju(poOrangLain)).toBeFalse();
+  });
+
+  it('hidup setelah ditandai dibaca', () => {
+    const c = layarPo({ sudahBaca: false });
+    c.tandaiBaca();
+    expect(c.sudahBaca).toBeTrue();
+    expect(c.bolehTekanSetuju(poOrangLain)).toBeTrue();
+  });
+
+  it('tetap mati selama rincian masih dimuat', () => {
+    const c = layarPo({ sudahBaca: true, memuatRincian: true });
+    expect(c.bolehTekanSetuju(poOrangLain)).toBeFalse();
+  });
+
+  it('setujui tidak mengirim apa-apa bila belum dibaca', () => {
+    let dikirim = false;
+    const c = layarPo({ sudahBaca: false });
+    c.kirimStatus = () => (dikirim = true);
+    c.setujui(poOrangLain);
+    expect(dikirim).toBeFalse();
+  });
+
+  it('ikon SPK berbeda dari PO', () => {
+    const c = layarPo();
+    expect(c.ikon({ name: '082-SPK-MICZ-A' })).toBe('engineering');
+    expect(c.ikon({ name: '086-PO-R501-G' })).toBe('inventory_2');
+  });
+});

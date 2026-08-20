@@ -2,5 +2,181 @@
 
 @include m.kartu-daftar('mpo');
 @include m.panel-rincian('mpo');
-
 @include m.hormati_gerak('mpo');
+
+/* ---- kartu: ikon + lencana status ---- */
+.mpo-kepala {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.mpo-ikon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--brand-soft);
+  color: var(--brand);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  &.mpo-ikon--besar {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+
+    mat-icon {
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+    }
+  }
+}
+
+.mpo-kepala__teks {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mpo-tanda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.mpo-lencana {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  line-height: 1.4;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.mpo-lencana--jenis {
+  background: var(--page-bg);
+  color: var(--muted);
+}
+
+.mpo-lencana--periksa {
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+}
+
+/* ---- panel: kepala berlogo ---- */
+.mpo-panel__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.mpo-rinci__total {
+  color: var(--brand);
+  font-size: 1rem;
+}
+
+/* ---- klausul: yang harus dibaca ---- */
+.mpo-klausul {
+  margin-bottom: 1.1rem;
+}
+
+.mpo-klausul__judul {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+  }
+}
+
+.mpo-klausul__kosong {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.mpo-klausul__pasal {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--brand);
+  margin: 0.8rem 0 0.35rem;
+}
+
+.mpo-klausul__daftar {
+  margin: 0;
+  padding-left: 1.15rem;
+
+  li {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+  }
+}
+
+.mpo-klausul__sub {
+  margin: 0.2rem 0 0.4rem;
+  padding-left: 1rem;
+  list-style: circle;
+
+  li {
+    color: var(--muted);
+  }
+}
+
+/* ---- centang sudah baca ---- */
+.mpo-baca {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: var(--brand-soft);
+  color: var(--ink);
+  cursor: pointer;
+
+  input {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    margin-top: 0.05rem;
+    accent-color: var(--brand);
+  }
+}

@@ -4627,7 +4627,12 @@
       "sub": "仅审批与报告，其余请用桌面版。",
       "menunggu": "等待审批",
       "laporan": "各项目毛利报告",
-      "hapus": "搜索后删除采购"
+      "hapus": "搜索后删除采购",
+      "halo": "你好",
+      "tuntas": "全部已处理",
+      "menungguTotal": "等待您决定",
+      "perluKeputusan": "需要决定",
+      "lainnya": "其他"
     },
     "po": {
       "judul": "采购订单审批",
@@ -4644,7 +4649,12 @@
       "disetujui": "{{nomor}} 已批准",
       "ditolak": "{{nomor}} 已拒绝",
       "buatanSendiri": "此单据由您创建，不能由您批准，请交由他人。",
-      "diperiksaSendiri": "此单据由您审核。审核人与批准人须为两人。"
+      "diperiksaSendiri": "此单据由您审核。审核人与批准人须为两人。",
+      "pemasok": "供应商",
+      "sudahDiperiksa": "已审核",
+      "poinPerjanjian": "协议条款",
+      "tanpaKlausul": "此单据没有协议条款。",
+      "sudahBaca": "我已阅读以上条款。"
     },
     "reimbursement": {
       "judul": "报销审批",

@@ -2,11 +2,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { ApiService } from '../../services/api.service';
+import { AccountService } from '../../services/account.service';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -14,22 +16,36 @@ import { ApiService } from '../../services/api.service';
  * Angkanya bukan hiasan. Yang membuka aplikasi ini biasanya sedang di luar
  * kantor dan ingin tahu satu hal — ada yang perlu diputuskan atau tidak.
  * Tanpa angkanya, ia harus membuka kedua layar bergantian untuk menemukan
- * bahwa keduanya kosong.
+ * bahwa keduanya kosong. Karena itu jumlah yang menunggu ditampilkan besar
+ * di atas, sebelum apa pun yang lain.
  */
 @Component({
   selector: 'app-beranda',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslatePipe],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, TranslatePipe],
   templateUrl: './beranda.component.html',
   styleUrls: ['./beranda.component.scss'],
 })
 export class BerandaComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly akun = inject(AccountService);
   private readonly router = inject(Router);
 
   jumlahPo = 0;
   jumlahReimbursement = 0;
   sedangMemuat = false;
+
+  get namaDepan(): string {
+    // Nama depan saja: sapaan di ponsel yang menyebut nama lengkap terbaca
+    // kaku, seperti surat resmi, bukan aplikasi yang dipakai sendiri.
+    const nama = this.akun.displayName?.trim() || '';
+    return nama.split(/\s+/)[0] || nama;
+  }
+
+  /** Total yang menunggu keputusan, lintas kedua jenis. */
+  get totalMenunggu(): number {
+    return this.jumlahPo + this.jumlahReimbursement;
+  }
 
   ngOnInit(): void {
     this.muat();
@@ -49,25 +65,28 @@ export class BerandaComponent implements OnInit {
           pageSize: 50,
         })
         .pipe(catchError(() => of(null))),
-    }).subscribe({
-      next: (res: any) => {
-        /*
-         * Yang belum diperiksa TIDAK dihitung.
-         *
-         * Sama dengan saringan di layar persetujuannya: dokumen yang belum
-         * diperiksa memang belum dapat disetujui, dan menghitungnya membuat
-         * beranda menjanjikan pekerjaan yang tidak ada di layar berikutnya.
-         */
-        const po = res?.po?.data ?? res?.po?.items ?? [];
-        this.jumlahPo = po.filter((x: any) => !!x?.isChecked).length;
+    })
+      .subscribe({
+        next: (res: any) => {
+          /*
+           * Yang belum diperiksa TIDAK dihitung.
+           *
+           * Sama dengan saringan di layar persetujuannya: dokumen yang belum
+           * diperiksa memang belum dapat disetujui, dan menghitungnya membuat
+           * beranda menjanjikan pekerjaan yang tidak ada di layar berikutnya.
+           */
+          const po = res?.po?.data ?? res?.po?.items ?? [];
+          this.jumlahPo = po.filter((x: any) => !!x?.isChecked).length;
 
-        const rb =
-          res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
-        this.jumlahReimbursement = rb.length;
-      },
-      error: () => {},
-    });
-    this.sedangMemuat = false;
+          const rb = res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
+          this.jumlahReimbursement = rb.length;
+        },
+        error: () => {},
+      })
+      // `sedangMemuat` dimatikan SESUDAH permintaannya selesai, bukan di
+      // baris berikutnya — yang sebelumnya mematikannya seketika, sehingga
+      // pemuatnya tidak pernah terlihat dan angkanya melonjak dari nol.
+      .add(() => (this.sedangMemuat = false));
   }
 
   ke(jalur: string): void {

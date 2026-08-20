@@ -10,6 +10,12 @@ import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
+import {
+  susunKlausulDokumen,
+  klausulSubDaftar,
+} from '../../helpers/klausul-dokumen.helper';
+import { ClauseSection } from '../../constants/clause-templates';
+import { purchaseTypeLabel } from '../../constants/purchase-type-label.constant';
 
 /**
  * Menyetujui purchase order dari ponsel.
@@ -96,12 +102,70 @@ export class PersetujuanPoComponent implements OnInit {
       .add(() => (this.sedangMemuat = false));
   }
 
+  /** Bagian klausul dokumen yang sedang dibuka; kosong sampai termuat. */
+  klausul: ClauseSection[] = [];
+  memuatRincian = false;
+  sudahBaca = false;
+
+  klausulSubDaftar = klausulSubDaftar;
+
+  /**
+   * Membuka rincian MENGAMBIL dokumen lengkapnya lebih dulu.
+   *
+   * Daftar purchase order hanya mengembalikan kolom dokumennya — nomor,
+   * pemasok, nilai — TANPA `customData`, dan klausul dibangun dari situ.
+   * Menyusun klausul dari baris daftar menghasilkan perjanjian kosong, dan
+   * "sudah membaca" ditandatangani atas dokumen yang isinya tidak pernah
+   * termuat.
+   */
   buka(po: any): void {
     this.dipilih = po;
+    this.klausul = [];
+    this.sudahBaca = false;
+    this.memuatRincian = true;
+    this.api.get(`purchase-orders/${po.id}`, {}).subscribe({
+      next: (rinci: any) => {
+        // Rincian menimpa baris daftar: yang ini memuat customData dan items.
+        this.dipilih = { ...po, ...(rinci ?? {}) };
+        this.klausul = susunKlausulDokumen(this.dipilih);
+        // Dokumen tanpa klausul (mis. sebagian pembelian material sederhana)
+        // tidak menahan persetujuan — tidak ada yang perlu dibaca.
+        if (!this.klausul.length) this.sudahBaca = true;
+      },
+      error: () => {
+        // Gagal memuat rincian: klausulnya tidak terlihat, jadi persetujuan
+        // TIDAK dibuka. Menyetujui yang isinya tak termuat adalah persis yang
+        // dihindari layar ini.
+        this.klausul = [];
+        this.sudahBaca = false;
+      },
+    }).add(() => (this.memuatRincian = false));
   }
 
   tutup(): void {
     this.dipilih = null;
+    this.klausul = [];
+    this.sudahBaca = false;
+  }
+
+  isiKlausul(x: string | string[]): string {
+    return Array.isArray(x) ? '' : String(x ?? '');
+  }
+
+  subKlausul(x: string | string[]): string[] {
+    return Array.isArray(x) ? x : [];
+  }
+
+  /**
+   * Ditandai sudah dibaca oleh yang menyetujui.
+   *
+   * Bukan pengaman — server tetap memutuskan — melainkan penghenti langkah:
+   * tombol setuju baru hidup setelah ini ditandai, supaya persetujuan bukan
+   * satu ketukan refleks di ponsel yang dipegang sambil berjalan. Dokumen
+   * tanpa klausul tidak menuntutnya; tidak ada yang perlu dibaca.
+   */
+  tandaiBaca(): void {
+    this.sudahBaca = true;
   }
 
   /** Dokumen ini dibuat oleh saya sendiri. */
@@ -152,8 +216,33 @@ export class PersetujuanPoComponent implements OnInit {
     return dpp + ppn + lain;
   }
 
+  /** Nama jenis dokumen, mis. "Pengadaan barang". */
+  jenis(po: any): string {
+    return purchaseTypeLabel(this.translate, po?.purchaseType);
+  }
+
+  /**
+   * Ikon menurut BENTUK dokumen.
+   *
+   * SPK (surat perintah kerja) dan PO (purchase order) dibedakan dari nomor
+   * dokumennya — bentuk itu yang menentukan apakah ini pekerjaan jasa atau
+   * pengadaan barang, dan ikon yang berbeda membuat keduanya dapat dipilah
+   * sekilas tanpa membaca nomornya.
+   */
+  ikon(po: any): string {
+    const nomor = String(po?.name ?? '');
+    if (/-SPK-/i.test(nomor)) return 'engineering';
+    if (/-PKS-/i.test(nomor)) return 'handshake';
+    return 'inventory_2';
+  }
+
+  /** Tombol setuju hidup: berhak, dan klausulnya sudah ditandai dibaca. */
+  bolehTekanSetuju(po: any): boolean {
+    return this.bolehSetujui(po) && this.sudahBaca && !this.memuatRincian;
+  }
+
   setujui(po: any): void {
-    if (!this.bolehSetujui(po)) return;
+    if (!this.bolehTekanSetuju(po)) return;
     this.kirimStatus(po, 'approved', 'mobile.po.disetujui');
   }
 

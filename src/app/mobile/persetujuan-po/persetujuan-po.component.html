@@ -11,37 +11,56 @@
 } @else {
   @for (po of daftar; track po.id) {
     <button type="button" class="mpo-kartu" (click)="buka(po)">
-      <div class="mpo-baris1">
-        <span class="mpo-nomor">{{ po.name }}</span>
-        <span class="mpo-nilai">{{ nilai(po) | number: "1.0-0" }}</span>
+      <div class="mpo-kepala">
+        <span class="mpo-ikon"><mat-icon>{{ ikon(po) }}</mat-icon></span>
+        <div class="mpo-kepala__teks">
+          <div class="mpo-baris1">
+            <span class="mpo-nomor">{{ po.name }}</span>
+            <span class="mpo-nilai">{{ nilai(po) | number: "1.0-0" }}</span>
+          </div>
+          <div class="mpo-baris2">
+            <span class="mpo-nama">{{ po.supplierName || "—" }}</span>
+            <span class="mpo-tanggal">{{ po.date | date: "d MMM y" }}</span>
+          </div>
+        </div>
       </div>
-      <div class="mpo-baris2">
-        <span class="mpo-nama">{{ po.supplierName || "—" }}</span>
-        <span class="mpo-tanggal">{{ po.date }}</span>
+      <div class="mpo-tanda">
+        <span class="mpo-lencana mpo-lencana--jenis">{{ jenis(po) }}</span>
+        <span class="mpo-lencana mpo-lencana--periksa">
+          <mat-icon>verified</mat-icon>{{ "mobile.po.sudahDiperiksa" | translate }}
+        </span>
       </div>
     </button>
   }
 }
 
 <!--
-  Rincian dan persetujuannya.
+  Rincian, KLAUSUL, dan persetujuannya.
 
-  Satu ketukan pada baris daftar, di ponsel yang dipegang sambil berjalan,
-  adalah cara paling mudah menandatangani sesuatu yang tidak dibaca. Karena
-  itu daftar hanya membuka panel ini; tombol setujunya ada di dalam, sesudah
-  nomor, pemasok, nilai, dan siapa pemeriksanya terlihat.
+  Tombol setuju baru hidup setelah klausulnya ditandai dibaca. Satu ketukan
+  pada baris daftar, di ponsel yang dipegang sambil berjalan, adalah cara
+  paling mudah menandatangani sesuatu yang tidak dibaca — jadi persetujuannya
+  ada di dalam, di bawah isi perjanjian yang sebenarnya.
 -->
 @if (dipilih) {
   <div class="mpo-tirai" (click)="tutup()">
     <div class="mpo-panel" (click)="$event.stopPropagation()">
       <div class="mpo-tarik"></div>
 
-      <h2 class="mpo-judul">{{ dipilih.name }}</h2>
-      <p class="mpo-sub">{{ dipilih.supplierName || "—" }}</p>
+      <div class="mpo-panel__kepala">
+        <span class="mpo-ikon mpo-ikon--besar"><mat-icon>{{ ikon(dipilih) }}</mat-icon></span>
+        <div>
+          <h2 class="mpo-judul">{{ dipilih.name }}</h2>
+          <p class="mpo-sub">{{ jenis(dipilih) }}</p>
+        </div>
+      </div>
 
       <dl class="mpo-rinci">
+        <dt>{{ "mobile.po.pemasok" | translate }}</dt>
+        <dd>{{ dipilih.supplierName || "—" }}</dd>
+
         <dt>{{ "mobile.po.tanggal" | translate }}</dt>
-        <dd>{{ dipilih.date }}</dd>
+        <dd>{{ dipilih.date | date: "d MMMM y" }}</dd>
 
         <dt>{{ "mobile.po.proyek" | translate }}</dt>
         <dd>{{ dipilih.projectName || "—" }}</dd>
@@ -53,17 +72,57 @@
         <dd>{{ dipilih.ppn || 0 }}%</dd>
 
         <dt>{{ "mobile.po.total" | translate }}</dt>
-        <dd>{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+        <dd class="mpo-rinci__total">{{ nilai(dipilih) | number: "1.0-0" }}</dd>
 
         <dt>{{ "mobile.po.diperiksa" | translate }}</dt>
         <dd>{{ dipilih.checkedByName || "—" }}</dd>
       </dl>
+
+      <!-- Poin perjanjian: yang sebenarnya harus dibaca sebelum menyetujui. -->
+      <div class="mpo-klausul">
+        <div class="mpo-klausul__judul">
+          <mat-icon>gavel</mat-icon>
+          {{ "mobile.po.poinPerjanjian" | translate }}
+        </div>
+
+        @if (memuatRincian) {
+          <div class="mpo-muat"><mat-spinner diameter="26" /></div>
+        } @else if (!klausul.length) {
+          <p class="mpo-klausul__kosong">
+            {{ "mobile.po.tanpaKlausul" | translate }}
+          </p>
+        } @else {
+          @for (bagian of klausul; track $index) {
+            @if (bagian.title) {
+              <div class="mpo-klausul__pasal">{{ bagian.title }}</div>
+            }
+            <ol class="mpo-klausul__daftar">
+              @for (butir of bagian.items; track $index) {
+                @if (klausulSubDaftar(butir)) {
+                  <ul class="mpo-klausul__sub">
+                    @for (anak of subKlausul(butir); track $index) {
+                      <li>{{ anak }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <li>{{ isiKlausul(butir) }}</li>
+                }
+              }
+            </ol>
+          }
+        }
+      </div>
 
       @if (sebabTerhalang(dipilih); as sebab) {
         <div class="mpo-peringatan">
           <mat-icon>info</mat-icon>
           <span>{{ sebab | translate }}</span>
         </div>
+      } @else if (klausul.length && !sudahBaca) {
+        <label class="mpo-baca">
+          <input type="checkbox" [checked]="sudahBaca" (change)="tandaiBaca()" />
+          <span>{{ "mobile.po.sudahBaca" | translate }}</span>
+        </label>
       }
 
       <div class="mpo-aksi">
@@ -72,7 +131,7 @@
             mat-flat-button
             color="primary"
             type="button"
-            [disabled]="sedangKirim"
+            [disabled]="!bolehTekanSetuju(dipilih) || sedangKirim"
             (click)="setujui(dipilih)"
           >
             {{ "mobile.po.setujui" | translate }}

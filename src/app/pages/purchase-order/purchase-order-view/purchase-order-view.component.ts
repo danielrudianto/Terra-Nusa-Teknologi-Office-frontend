@@ -1,5 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
+import {
+  jenisEfektifDokumen,
+  susunKlausulDokumen,
+} from '../../../helpers/klausul-dokumen.helper';
 import { ClauseLineComponent } from '../../../components/clause-line/clause-line.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { inject } from '@angular/core';
@@ -865,129 +869,16 @@ export class PurchaseOrderViewComponent
    * pada formulir sewa.
    */
   get jenisEfektif(): string {
-    const custom = this.data?.customData || {};
-    if (custom.formOrigin) return custom.formOrigin;
-    if (
-      this.data?.purchaseType === 'A' &&
-      (custom.equipmentRiskBearer !== undefined ||
-        custom.operatorByVendor !== undefined ||
-        custom.quotaPeriodDays !== undefined)
-    ) {
-      return 'B';
-    }
-    return this.data?.purchaseType;
+    // Disatukan ke `helpers/klausul-dokumen.helper.ts` bersama penyusun
+    // klausulnya — dipakai layar ini DAN persetujuan dari ponsel.
+    return jenisEfektifDokumen(this.data);
   }
 
   private susunKlausul(): ClauseSection[] {
-    if (!this.data) return [];
-    const custom = this.data.customData || {};
-    const tambahan: string[] = custom.additionalClauses || [];
-
-    switch (this.jenisEfektif) {
-      case 'A':
-        return buildTransportClauses(
-          {
-            ...custom,
-            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-          },
-          tambahan,
-        );
-      case 'D':
-        /*
-         * Konteksnya disusun penyusun BERSAMA.
-         *
-         * Sebelumnya `customData` diteruskan apa adanya: tanggalnya masih
-         * ISO, sehingga kalimat jangka waktu perjanjian tidak pernah
-         * terbentuk, dan jadwal upahnya tidak ada sama sekali. Yang membuka
-         * pratinjau melihat dokumen yang lebih sedikit isinya daripada yang
-         * baru saja ia isi di formulir.
-         */
-        return buildManpowerClauses(
-          konteksKlausulTenagaKerja(custom, this.data),
-          tambahan,
-        );
-      case 'H': {
-        /*
-         * PO-H punya EMPAT pasal, bukan satu daftar klausul.
-         *
-         * Sebelumnya pratinjau hanya menyusun Pasal 1 lewat
-         * `buildClauseLines`, sedangkan dokumen yang tercetak juga memuat
-         * Pasal 3 (kewajiban), Pasal 4 (keterangan), dan Pasal 5 (tata cara
-         * penagihan). Ketiganya tidak pernah muncul di layar — sehingga
-         * "sudah membaca" ditandatangani atas dokumen yang belum terlihat
-         * seluruhnya.
-         *
-         * Sumbernya `customData`, sama dengan yang dipakai cetak ulang,
-         * supaya keduanya tidak dapat berbeda.
-         */
-        const bagian: ClauseSection[] = [];
-
-        /*
-         * Nomor pasal DIHITUNG, bukan ditulis tetap.
-         *
-         * Sebelumnya tertulis 'Pasal 1', 'Pasal 3', 'Pasal 4', 'Pasal 5' —
-         * dan Pasal 2 memang tidak pernah disusun di sini karena isinya
-         * tabel pekerjaan, yang sudah tampil di bagian Daftar Barang di
-         * atas. Yang membacanya melihat urutan melompat dari 1 ke 3 dan
-         * menyimpulkan ada bagian dokumen yang hilang.
-         *
-         * Dokumen tercetak tetap memakai lima pasal beserta tabelnya di
-         * Pasal 2; yang berbeda hanya di layar ini. Karena itu judulnya
-         * disertai NAMA ISINYA — supaya nomor di layar dan nomor pada
-         * dokumen yang ditandatangani tidak tertukar begitu saja.
-         */
-        const tambah = (nama: string, isi: (string | string[])[]) => {
-          if (!isi.length) return;
-          bagian.push({ title: `Pasal ${bagian.length + 1} — ${nama}`, items: isi });
-        };
-
-        const pasal1 = buildClauseLines(
-          'H',
-          { ...custom, paymentTerm: custom.paymentTerm ?? this.data.payment_term },
-          this.data.templateVersion,
-          tambahan,
-        );
-        tambah('Lingkup dan Waktu Pekerjaan', pasal1);
-        tambah('Kewajiban', custom.kewajiban || []);
-        tambah('Keterangan', custom.keterangan || []);
-        tambah('Penagihan dan Pembayaran',
-               buildPasal5(custom, custom.billingDocuments));
-
-        return bagian;
-      }
-      case '6.4.2':
-        // Asuransi punya penyusun klausulnya sendiri; tanpa cabang ini
-        // pencarian templat tidak menemukan apa pun dan pratinjaunya kosong.
-        return buildInsuranceClauses(
-          {
-            ...custom,
-            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-          },
-          tambahan,
-        );
-      case '6.5.2':
-        // Pelatihan; alasannya sama dengan 6.4.2 di atas.
-        return buildTrainingClauses(
-          {
-            ...custom,
-            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-          },
-          tambahan,
-        );
-      case '6.4.1':
-        return buildLegalServiceClauses(
-          {
-            ...custom,
-            paymentTerm: custom.paymentTerm ?? this.data.payment_term,
-            hasOfficialFee: (custom.officialFees || []).length > 0,
-          },
-          tambahan,
-        );
-      default: {
-        const lines = this.clauses;
-        return lines.length ? [{ items: lines }] : [];
-      }
-    }
+    // Disatukan ke `helpers/klausul-dokumen.helper.ts`: layar ini dan
+    // persetujuan dari ponsel menyusun perjanjian yang sama, sehingga yang
+    // menandatangani dari mana pun membaca dokumen yang sama.
+    return susunKlausulDokumen(this.data);
   }
 
   /**

@@ -1,5 +1,30 @@
-<h1 class="mbr-judul">{{ "mobile.beranda.judul" | translate }}</h1>
-<p class="mbr-sub">{{ "mobile.beranda.sub" | translate }}</p>
+<!-- Sapaan: aplikasi yang dipakai sendiri, bukan halaman formulir. -->
+<div class="mbr-sapa">
+  <span class="mbr-sapa__halo">{{ "mobile.beranda.halo" | translate }},</span>
+  <span class="mbr-sapa__nama">{{ namaDepan }}</span>
+</div>
+
+<!--
+  Kartu utama: berapa yang menunggu, sebelum apa pun yang lain.
+  Yang membuka aplikasi ini ingin tahu satu hal — ada yang perlu diputuskan
+  atau tidak. Jawabannya di sini, besar, tanpa harus membuka layar lain.
+-->
+<div class="mbr-hero" [class.mbr-hero--kosong]="totalMenunggu === 0">
+  @if (sedangMemuat) {
+    <mat-spinner diameter="28" />
+  } @else {
+    <div class="mbr-hero__angka">{{ totalMenunggu }}</div>
+    <div class="mbr-hero__teks">
+      @if (totalMenunggu === 0) {
+        {{ "mobile.beranda.tuntas" | translate }}
+      } @else {
+        {{ "mobile.beranda.menungguTotal" | translate }}
+      }
+    </div>
+  }
+</div>
+
+<div class="mbr-seksi">{{ "mobile.beranda.perluKeputusan" | translate }}</div>
 
 <button type="button" class="mbr-petak" (click)="ke('/Persetujuan')">
   <mat-icon>fact_check</mat-icon>
@@ -20,6 +45,8 @@
     jumlahReimbursement
   }}</span>
 </button>
+
+<div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
 
 <button type="button" class="mbr-petak" (click)="ke('/Proyek')">
   <mat-icon>insights</mat-icon>

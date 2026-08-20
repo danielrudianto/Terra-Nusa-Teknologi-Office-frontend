@@ -4627,7 +4627,12 @@
       "sub": "Approvals and reports only. Everything else is on desktop.",
       "menunggu": "awaiting approval",
       "laporan": "Margin report per project",
-      "hapus": "Search then delete a purchase"
+      "hapus": "Search then delete a purchase",
+      "halo": "Hi",
+      "tuntas": "All caught up",
+      "menungguTotal": "awaiting your decision",
+      "perluKeputusan": "Needs a decision",
+      "lainnya": "Other"
     },
     "po": {
       "judul": "Purchase Order Approval",
@@ -4644,7 +4649,12 @@
       "disetujui": "{{nomor}} approved",
       "ditolak": "{{nomor}} rejected",
       "buatanSendiri": "You created this document, so you cannot approve it. Ask someone else.",
-      "diperiksaSendiri": "You checked this document. Checker and approver are deliberately two different people."
+      "diperiksaSendiri": "You checked this document. Checker and approver are deliberately two different people.",
+      "pemasok": "Supplier",
+      "sudahDiperiksa": "Checked",
+      "poinPerjanjian": "Agreement terms",
+      "tanpaKlausul": "This document has no agreement terms.",
+      "sudahBaca": "I have read the terms above."
     },
     "reimbursement": {
       "judul": "Reimbursement Approval",

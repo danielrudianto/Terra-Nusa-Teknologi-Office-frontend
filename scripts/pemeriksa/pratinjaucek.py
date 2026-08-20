@@ -8,7 +8,8 @@ memuat persis apa yang akan tertulis di kertas.
 
 Keduanya dirakit di dua tempat yang berbeda:
 
-  * layar   -> `purchase-order-view.component.ts`, `susunKlausul()`
+  * layar   -> `helpers/klausul-dokumen.helper.ts`, `susunKlausulDokumen()`
+             (dipakai layar desktop DAN persetujuan dari ponsel)
   * kertas  -> `purchase-order-list.component.ts`, saat mencetak ulang
 
 Keduanya bercabang menurut jenis PO, dan tiap cabang memanggil penyusun
@@ -33,7 +34,9 @@ import sys
 from pathlib import Path
 
 AKAR = Path(__file__).resolve().parents[2]
-LAYAR = AKAR / "src/app/pages/purchase-order/purchase-order-view/purchase-order-view.component.ts"
+# Logika klausul layar kini di helper BERSAMA (dipakai desktop dan mobile),
+# bukan lagi di dalam komponennya. Sejak itu, "sisi layar" berarti helper ini.
+LAYAR = AKAR / "src/app/helpers/klausul-dokumen.helper.ts"
 KERTAS = AKAR / "src/app/pages/purchase-order/purchase-order-list/purchase-order-list.component.ts"
 
 #: Penyusun klausul yang dikenali. Nama di luar daftar ini diabaikan supaya
@@ -106,7 +109,7 @@ def main() -> int:
             print(f"berkas tidak ditemukan: {berkas}")
             return 2
 
-    layar = _per_jenis(_blok_switch(LAYAR.read_text(), "switch (this.jenisEfektif)"))
+    layar = _per_jenis(_blok_switch(LAYAR.read_text(), "switch (jenisEfektifDokumen(data))"))
     isi_kertas = KERTAS.read_text()
 
     # Sisi cetak tidak memakai satu `switch`; cabangnya rantai `if/else if`

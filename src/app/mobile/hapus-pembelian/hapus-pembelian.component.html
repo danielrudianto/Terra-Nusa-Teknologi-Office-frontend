@@ -33,7 +33,7 @@
       </div>
       <div class="mhp-baris2">
         <span class="mhp-nama">{{ p.supplier_name || p.supplierName || "\u2014" }}</span>
-        <span class="mhp-tanggal">{{ p.date }}</span>
+        <span class="mhp-tanggal">{{ p.date | date: "d MMM y" }}</span>
       </div>
     </button>
   }
@@ -51,7 +51,7 @@
 
       <dl class="mhp-rinci">
         <dt>{{ "mobile.pembelian.tanggal" | translate }}</dt>
-        <dd>{{ dipilih.date }}</dd>
+        <dd>{{ dipilih.date | date: "d MMMM y" }}</dd>
 
         <dt>{{ "mobile.pembelian.proyek" | translate }}</dt>
         <dd>{{ dipilih.projectName || "\u2014" }}</dd>
