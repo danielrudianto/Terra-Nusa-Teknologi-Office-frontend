@@ -24,6 +24,13 @@ import {
   sebelumTahun,
 } from '../../../constants/tahun-laporan';
 import {
+  biayaDraft,
+  biayaPembelian,
+  biayaReimbursement,
+  nilaiTagihan,
+  nilaiTagihanKotor,
+} from '../../../helpers/nilai-biaya.helper';
+import {
   unduhLaporanProyekExcel,
   unduhLaporanProyekPdf,
   type DataLaporanProyek,
@@ -79,37 +86,14 @@ function namaPemasok(p: any): string {
  * tidak menjawab pertanyaan "uangnya ke siapa".
  */
 /*
- * Nilai satu dokumen biaya.
+ * Rumus biayanya TIDAK ADA DI BERKAS INI — ia di `helpers/nilai-biaya.helper.ts`.
  *
- * Rumusnya BERBEDA per sumber dan bedanya disengaja: pembelian memuat PBBKB
- * dan nilai lain, draft belum, reimbursement hanya nominal pengajuan.
- * Menyamakannya membuat PPN terhitung dua kali pada sebagian baris dan
- * hilang pada sebagian lain.
- *
- * Disimpan di satu tempat karena dipakai dua kali — pengelompokan menurut
- * kategori dan arus per minggu. Bila ditulis terpisah, cepat atau lambat
- * salah satunya diubah sendirian dan kedua tampilan berbeda totalnya.
+ * Layar ini dulu punya rumusnya sendiri, `dpp + PPN + PBBKB + nilai lain`,
+ * sementara daftar margin dan servernya menjumlahkan `dpp` saja. Keduanya
+ * menyebut hasilnya "margin", keduanya tidak pernah menimbulkan galat, dan
+ * bedanya baru ketahuan ketika satu proyek dibuka dari daftarnya dan
+ * angkanya berbeda ratusan juta.
  */
-function nilaiPembelian(p: any): number {
-  return (
-    Number(p.dpp || 0) +
-    (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
-    Number(p.pbbkb || 0) +
-    Number(p.otherValue || 0)
-  );
-}
-
-function nilaiDraft(p: any): number {
-  return (
-    Number(p.dpp || 0) +
-    (Number(p.ppn || 0) * Number(p.dpp || 0)) / 100 +
-    Number(p.pbbkb || 0)
-  );
-}
-
-function nilaiFaktur(f: any): number {
-  return Number(f.dpp || 0) + (Number(f.ppn || 0) * Number(f.dpp || 0)) / 100;
-}
 
 /**
  * Biaya dikelompokkan menurut kode tipe biaya, lalu per pemasok.
@@ -123,10 +107,9 @@ function nilaiFaktur(f: any): number {
  * dan bila salah satunya kelak diubah sendirian, bedanya tidak akan
  * ketahuan dari layar mana pun.
  *
- * Ketiga sumber dijumlahkan dengan rumusnya masing-masing: pembelian dan
- * draft memakai DPP ditambah PPN, PBBKB, dan nilai lain; reimbursement
- * memakai nominal pengajuannya. Menyamakan rumusnya akan membuat PPN
- * terhitung dua kali pada sebagian baris dan hilang pada sebagian lain.
+ * Ketiganya memakai rumus bersama di `helpers/nilai-biaya.helper.ts`:
+ * pembelian dan draft memakai DPP saja, reimbursement memakai nominal
+ * pengajuannya karena pengajuan penggantian memang tidak mengenal DPP.
  */
 function susunKategori(
   d: any,
@@ -150,13 +133,13 @@ function susunKategori(
     : d.purchases.filter((p: any) => !p.isInternal);
 
   for (const p of pembelian) {
-    catat(p.purchaseType, namaPemasok(p), nilaiPembelian(p));
+    catat(p.purchaseType, namaPemasok(p), biayaPembelian(p));
   }
   for (const p of d.purchase_drafts) {
-    catat(p.purchaseType, namaPemasok(p), nilaiDraft(p));
+    catat(p.purchaseType, namaPemasok(p), biayaDraft(p));
   }
   for (const r of d.reimbursements) {
-    catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
+    catat(r.purchaseType, namaPenerima(r), biayaReimbursement(r));
   }
 
   const hasil: Kategori[] = [];
@@ -573,13 +556,13 @@ export class ProjectReportComponent implements OnInit {
       : d.purchases.filter((p: any) => !p.isInternal);
 
     for (const p of pembelian)
-      tambah(biaya, awalMinggu(p.date), nilaiPembelian(p));
+      tambah(biaya, awalMinggu(p.date), biayaPembelian(p));
     for (const p of d.purchase_drafts)
-      tambah(biaya, awalMinggu(p.date), nilaiDraft(p));
+      tambah(biaya, awalMinggu(p.date), biayaDraft(p));
     for (const r of d.reimbursements)
-      tambah(biaya, awalMinggu(r.date), Number(r.amount || 0));
+      tambah(biaya, awalMinggu(r.date), biayaReimbursement(r));
     for (const f of d.sales_invoices)
-      tambah(tagihan, awalMinggu(f.date), nilaiFaktur(f));
+      tambah(tagihan, awalMinggu(f.date), nilaiTagihan(f));
 
     const semua = [...new Set([...biaya.keys(), ...tagihan.keys()])].sort();
     if (semua.length === 0) return [];
@@ -760,17 +743,19 @@ export class ProjectReportComponent implements OnInit {
   });
 
   /**
-   * Tertagih tanpa PPN.
+   * Tertagih tanpa PPN — dasar yang sama dengan biaya dan dengan daftar margin.
    *
    * Disandingkan dengan nilai berikut PPN pada layar yang sama, sehingga
    * ketiga angka — kontrak, biaya, tertagih — dapat dibandingkan dalam
-   * dasar yang sama, dan DPP-nya tetap terlihat bagi yang memerlukannya.
+   * dasar yang sama, dan nilai kotornya tetap terlihat bagi yang
+   * memerlukannya. Angka INI yang sebanding dengan kolom "Tertagih" pada
+   * daftar margin; yang berikut PPN di atasnya tidak.
    */
   readonly tertagihDpp = computed(() => {
     const d = this._data();
     if (!d) return 0;
     return d.sales_invoices.reduce(
-      (a: number, b: any) => a + Number(b.dpp || 0),
+      (a: number, b: any) => a + nilaiTagihan(b),
       0,
     );
   });
@@ -779,10 +764,7 @@ export class ProjectReportComponent implements OnInit {
     const d = this._data();
     if (!d) return 0;
     return d.sales_invoices.reduce(
-      (a: number, b: any) =>
-        a +
-        Number(b.dpp || 0) +
-        (Number(b.ppn || 0) * Number(b.dpp || 0)) / 100,
+      (a: number, b: any) => a + nilaiTagihanKotor(b),
       0,
     );
   });

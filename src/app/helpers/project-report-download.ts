@@ -109,7 +109,7 @@ export async function unduhLaporanProyekExcel(
     { label: 'Nilai kontrak (DPP)', nilai: d.nilaiKontrak, ket: 'Dasar perhitungan margin' },
     { label: 'Nilai kontrak (termasuk PPN)', nilai: d.nominalKontrak, ket: '' },
     { label: 'Total biaya (seumur proyek)', nilai: d.biayaSeumurProyek, ket: persen(d.biayaSeumurProyek, d.nilaiKontrak) + ' dari kontrak' },
-    { label: 'Margin (seumur proyek)', nilai: d.margin, ket: persen(d.margin, d.nilaiKontrak) + ' dari kontrak' },
+    { label: 'Margin atas kontrak (seumur proyek)', nilai: d.margin, ket: persen(d.margin, d.nilaiKontrak) + ' dari kontrak' },
     { label: 'Sudah tertagih', nilai: d.tertagih, ket: persen(d.tertagih, d.nilaiKontrak) + ' dari kontrak' },
   ];
 
@@ -245,7 +245,7 @@ export function unduhLaporanProyekPdf(d: DataLaporanProyek): void {
     ['Nilai kontrak (termasuk PPN)', { text: rupiah(d.nominalKontrak), ...kanan }, { text: '—', ...kanan }],
     ['Total biaya (seumur proyek)', { text: rupiah(d.biayaSeumurProyek), ...kanan }, { text: persen(d.biayaSeumurProyek, d.nilaiKontrak), ...kanan }],
     [
-      { text: 'Margin (seumur proyek)', bold: true },
+      { text: 'Margin atas kontrak (seumur proyek)', bold: true },
       { text: rupiah(d.margin), bold: true, ...kanan },
       { text: persen(d.margin, d.nilaiKontrak), bold: true, ...kanan },
     ],
@@ -337,8 +337,11 @@ export function unduhLaporanProyekPdf(d: DataLaporanProyek): void {
        */
       {
         text:
-          'Margin dihitung dari nilai kontrak DPP (di luar PPN). PPN adalah ' +
-          'titipan negara, bukan pendapatan.',
+          'Margin dihitung dari nilai kontrak DPP (di luar PPN) dikurangi ' +
+          'biaya DPP. PPN keluaran titipan negara, PPN masukan dapat ' +
+          'dikreditkan — keduanya bukan pendapatan dan bukan biaya proyek. ' +
+          'Daftar margin proyek memakai dasar biaya yang sama, tetapi ' +
+          'membandingkannya dengan yang SUDAH DITAGIHKAN, bukan nilai kontrak.',
         style: 'nota',
       },
     ],
