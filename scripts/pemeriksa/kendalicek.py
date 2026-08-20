@@ -15,6 +15,19 @@ Sudah terjadi pada formulir aset: `deacription` untuk kendali bernama
 `description`. Satu huruf tertukar, satu layar mati, dan tidak ada satu pun
 tahap sebelum peramban yang menyebutnya.
 
+MENGGANTIKAN `form-controls.spec.ts`
+
+Berkas uji itu memeriksa hal yang sama untuk formulir purchase order, dengan
+membaca berkas sumbernya lewat `require.context`. Fungsi itu milik webpack;
+sejak pengujian pindah ke esbuild ia tidak ada lagi, sehingga berkasnya
+menjalankan NOL pengujian, melempar galat di `afterAll`, dan memutus seluruh
+berkas uji lain yang dijalankan bersamanya — hasilnya "DISCONNECTED", bukan
+"FAILED", sehingga terbaca seperti gangguan peramban.
+
+Pemeriksaan yang hilang itu dipindahkan ke sini: lihat cabang `_dilewati` di
+`main()`, yang memeriksa keberadaan nama pada berkas bersarang memakai
+gabungan kendali dokumen dan kendali baris.
+
 Jalankan dari akar frontend:
 
     python3 scripts/pemeriksa/kendalicek.py
@@ -253,6 +266,37 @@ def main() -> int:
         salah_konteks.extend(periksa_konteks(html, isi_html, isi_ts))
 
         if _dilewati(isi_ts, isi_html):
+            # Berkas bersarang TETAP diperiksa keberadaan namanya, hanya
+            # dengan ukuran yang lebih longgar: GABUNGAN kendali dokumen dan
+            # kendali baris.
+            #
+            # Yang ditangkap di sini salah ketik — nama yang tidak ada di
+            # kelompok mana pun. Salah TEMPAT sudah ditangani
+            # `periksa_konteks` di atas, dan itulah sebabnya gabungan sudah
+            # cukup; memakai kelompok yang tepat di sini hanya mengulang
+            # pemeriksaan yang sama dengan cara yang lebih rapuh.
+            #
+            # Sebelumnya bagian ini tidak diperiksa sama sekali di sini,
+            # melainkan oleh `form-controls.spec.ts` — yang memakai
+            # `require.context` dan berhenti bekerja begitu pengujian pindah
+            # ke esbuild: nol pengujian dijalankan, galat di `afterAll`, dan
+            # SELURUH berkas uji lain di jalur yang sama ikut terputus.
+            # Hijaunya tidak berarti apa-apa selama berbulan-bulan.
+            dokumen, baris_kendali = kelompok_dokumen_dan_baris(isi_ts)
+            gabungan = dokumen | baris_kendali | kendali(isi_ts)
+            if not gabungan:
+                continue
+            for nama in sorted(dipakai - gabungan):
+                baris = next(
+                    (
+                        i + 1
+                        for i, b in enumerate(isi_html.splitlines())
+                        if f'formControlName="{nama}"' in b
+                        or f"formControlName='{nama}'" in b
+                    ),
+                    0,
+                )
+                temuan.append((html, baris, nama, sorted(gabungan)))
             continue
 
         ada = kendali(isi_ts)

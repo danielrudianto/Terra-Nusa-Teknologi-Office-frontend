@@ -121,3 +121,120 @@ describe('menekan keping', () => {
     expect(c.saring).toEqual(['selesai']);
   });
 });
+
+/**
+ * Saringan tersimpan di ALAMAT halamannya.
+ *
+ * Tanpa ini, menekan segarkan atau membagikan tautannya mengembalikan daftar
+ * ke halaman pertama tanpa saringan — dan yang membukanya melihat sesuatu
+ * yang lain dari yang dimaksud pengirimnya, tanpa tahu bahwa yang dilihatnya
+ * berbeda. Daftar Tender sudah begitu sejak awal; yang ini menyusul.
+ */
+function komponenBeralamat(params: Record<string, any>): any {
+  const c: any = Object.create(ProjectListComponent.prototype);
+  c.saring = ['berjalan'];
+  c.page = 0;
+  c.pageSize = 10;
+  c.sortBy = 'code';
+  c.sortByDirection = 'asc';
+  c.searchControl = { value: '', setValue: (v: any) => (c.searchControl.value = v) };
+  c.route = { snapshot: { queryParams: params } };
+  c.ditulis = null;
+  c.router = { navigate: (_: any, opts: any) => (c.ditulis = opts) };
+  return c;
+}
+
+describe('saringan proyek tersimpan di alamatnya', () => {
+  it('keadaan dibaca dari alamat', () => {
+    const c = komponenBeralamat({ keadaan: 'retensi,selesai' });
+    c.bacaAlamat();
+    expect(c.saring).toEqual(['retensi', 'selesai']);
+  });
+
+  it('urutan pada alamat tidak menentukan urutan tersimpan', () => {
+    // Yang menentukan urutan KEADAAN, supaya untainya dapat dibandingkan.
+    const c = komponenBeralamat({ keadaan: 'batal,berjalan' });
+    c.bacaAlamat();
+    expect(c.keadaanDiminta).toBe('berjalan,batal');
+  });
+
+  it('keadaan asing pada alamat diabaikan, bukan diteruskan', () => {
+    /*
+     * Alamatnya dapat diketik siapa saja. Nama yang tidak dikenal
+     * menghasilkan saringan yang tidak cocok dengan apa pun, dan daftarnya
+     * kosong tanpa satu pun keterangan mengapa.
+     */
+    const c = komponenBeralamat({ keadaan: 'ngawur,retensi' });
+    c.bacaAlamat();
+    expect(c.saring).toEqual(['retensi']);
+  });
+
+  it('seluruhnya asing kembali ke bawaannya', () => {
+    const c = komponenBeralamat({ keadaan: 'ngawur,ngaco' });
+    c.bacaAlamat();
+    expect(c.saring).toEqual(['berjalan']);
+  });
+
+  it('halaman pada alamat dihitung dari satu, di dalam dari nol', () => {
+    // Alamat yang menyebut "halaman 0" tidak berarti apa pun bagi yang
+    // membacanya; paginator-nya sendiri menghitung dari nol.
+    const c = komponenBeralamat({ page: '3' });
+    c.bacaAlamat();
+    expect(c.page).toBe(2);
+  });
+
+  it('halaman tidak pernah menjadi negatif', () => {
+    const c = komponenBeralamat({ page: '0' });
+    c.bacaAlamat();
+    expect(c.page).toBe(0);
+  });
+
+  it('arah urutan yang tidak dikenal diabaikan', () => {
+    const c = komponenBeralamat({ sortByDirection: 'menyamping' });
+    c.bacaAlamat();
+    expect(c.sortByDirection).toBe('asc');
+  });
+
+  it('alamat kosong tidak mengubah apa pun', () => {
+    const c = komponenBeralamat({});
+    c.bacaAlamat();
+    expect(c.saring).toEqual(['berjalan']);
+    expect(c.page).toBe(0);
+    expect(c.sortBy).toBe('code');
+  });
+
+  it('keadaan ditulis kembali ke alamat', () => {
+    const c = komponenBeralamat({});
+    c.saring = ['retensi'];
+    c.simpanKeAlamat();
+    expect(c.ditulis.queryParams.keadaan).toBe('retensi');
+    expect(c.ditulis.queryParams.page).toBe(1);
+  });
+
+  it('penulisannya tidak menambah riwayat peramban', () => {
+    /*
+     * Menambahnya tiap kali kolom ditekan membuat tombol kembali menelusuri
+     * ulang setiap pengurutan — pada daftar yang kerap diurutkan, tombol itu
+     * menjadi tidak dapat dipakai sama sekali.
+     */
+    const c = komponenBeralamat({});
+    c.simpanKeAlamat();
+    expect(c.ditulis.replaceUrl).toBeTrue();
+  });
+
+  it('pencarian kosong tidak meninggalkan sisa pada alamat', () => {
+    const c = komponenBeralamat({});
+    c.searchControl.value = '   ';
+    c.simpanKeAlamat();
+    expect(c.ditulis.queryParams.cari).toBeNull();
+  });
+
+  it('di luar router, tidak ada yang dibaca maupun ditulis', () => {
+    // Komponen ini dibangun langsung oleh sebagian pengujian, tanpa router.
+    const c = komponenBeralamat({});
+    c.route = null;
+    expect(() => c.bacaAlamat()).not.toThrow();
+    c.simpanKeAlamat();
+    expect(c.ditulis).toBeNull();
+  });
+});

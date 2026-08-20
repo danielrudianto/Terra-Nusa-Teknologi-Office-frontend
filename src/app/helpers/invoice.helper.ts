@@ -6,6 +6,7 @@ import { documentFonts } from '../constants/document-font.constant';
 import {
   DOCUMENT_STYLES,
   documentFooter,
+  documentHeader,
 } from './purchase-order-shared.helper';
 
 pdfMake.vfs = pdfFonts.vfs;
@@ -242,6 +243,18 @@ export function halamanIsiUtama(isi: any[]): number {
   return 1 + isi.filter((n: any) => n?.pageBreak === 'before').length;
 }
 
+/** Margin atas halaman berkop; sama dengan `DOCUMENT_PAGE` pada dokumen PO. */
+const MARGIN_ATAS_KOP = 86;
+
+/** Margin atas yang dikehendaki halaman invoice dan kuitansi. */
+const MARGIN_ATAS_ISI = 20;
+
+/** Margin bawah halaman berkop; menampung footer berikut kotak parafnya. */
+const MARGIN_BAWAH_KOP = 80;
+
+/** Margin bawah yang dikehendaki halaman invoice dan kuitansi. */
+const MARGIN_BAWAH_ISI = 20;
+
 /**
  * Halaman ini bagian isi utama atau lampiran.
  *
@@ -268,11 +281,25 @@ export function printInvoiceDocument(
     0,
   );
 
+  /*
+   * Setiap halaman isi utama DITARIK KE ATAS sebanyak tinggi kop surat.
+   *
+   * Berkas ini memakai satu margin atas untuk seluruh halaman — pdfmake
+   * tidak menyediakan margin per halaman — dan lampirannya memerlukan 86
+   * untuk kop surat Alpha. Tanpa penarikan ini, invoice dan kuitansi ikut
+   * turun 66 titik dan berubah tampilannya, padahal tidak ada yang
+   * memintanya.
+   *
+   * Invoice ini SENGAJA tanpa kop Alpha: ia diterbitkan oleh pemasok UNTUK
+   * Alpha, bukan sebaliknya. Yang berkop hanya lampirannya.
+   */
+  const TARIK_KE_ATAS = MARGIN_ATAS_ISI - MARGIN_ATAS_KOP;
+
   const heading = (title: string) => [
     {
       text: `${data.city}, ${formatDate(data.date)}`,
       alignment: 'right' as Alignment,
-      margin: [0, 0, 0, 10] as Margins,
+      margin: [0, TARIK_KE_ATAS, 0, 10] as Margins,
     },
     { text: title, style: 'docTitle' },
     {
@@ -380,7 +407,18 @@ export function printInvoiceDocument(
 
   const dd = {
     pageSize: 'A4' as PageSize,
-    pageMargins: [40, 20, 40, 20] as Margins,
+    /*
+     * Margin halaman mengikuti DOKUMEN PO, bukan invoice.
+     *
+     * Atas 86 menyediakan ruang kop surat pada lampiran; bawah 80
+     * menyediakan ruang footer Office/Phone/Email berikut kotak parafnya.
+     * Sebelumnya bawahnya 20, sehingga footer lampiran — yang tingginya
+     * sekitar 60 titik — tercetak melewati tepi bawah kertas.
+     *
+     * Halaman isi utama tidak ikut berubah tampilannya: masing-masing
+     * ditarik kembali ke atas lewat `TARIK_KE_ATAS`.
+     */
+    pageMargins: [45, MARGIN_ATAS_KOP, 45, MARGIN_BAWAH_KOP] as Margins,
     fontSize: 12,
     content: [...isiUtama, ...lampiran],
     /*
@@ -392,6 +430,22 @@ export function printInvoiceDocument(
      * kehilangan blok Office/Phone/Email yang selalu ada bila ia dicetak
      * sendiri — dan yang menerimanya tidak punya satu pun keterangan kontak.
      */
+    /*
+     * Kop surat HANYA pada lampiran.
+     *
+     * Lampirannya dokumen Alpha — SPK dan surat pengalihan — dan keduanya
+     * selalu berkop bila dicetak sendiri. Dirakit dari `content` saja, kop
+     * itu tidak ikut: ia dipasang docDefinition PO sebagai `header`, dan
+     * yang disalin ke sini hanya isinya.
+     *
+     * Akibatnya SPK yang menempel di belakang invoice terbit tanpa kop sama
+     * sekali — lembar yang mengikat pekerja, tanpa satu pun penanda dari
+     * perusahaan mana ia berasal.
+     */
+    header: (currentPage: number) =>
+      bagianHalaman(currentPage, halamanUtama, lampiran.length > 0) === 'lampiran'
+        ? documentHeader()
+        : undefined,
     footer: (currentPage: number) =>
       bagianHalaman(currentPage, halamanUtama, lampiran.length > 0) === 'lampiran'
         ? documentFooter()
@@ -420,7 +474,19 @@ export function printInvoiceDocument(
         ],
       },
       layout: 'noBorders',
-      margin: [15, 2, 2, 2] as Margins,
+      /*
+       * DITURUNKAN sebanyak selisih kedua margin bawah.
+       *
+       * Margin bawah berkasnya 80 demi footer lampiran; tanpa penurunan ini
+       * footer invoice ikut naik enam puluh titik dari tempatnya semula —
+       * berubah tampilannya, padahal tidak ada yang memintanya.
+       */
+      margin: [
+        15,
+        2 + (MARGIN_BAWAH_KOP - MARGIN_BAWAH_ISI),
+        2,
+        2,
+      ] as Margins,
       alignment: 'center' as Alignment,
     };
   }

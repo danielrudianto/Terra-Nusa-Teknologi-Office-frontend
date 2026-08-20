@@ -13,7 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
 
 import { ApiService } from '../../../services/api.service';
@@ -147,11 +147,85 @@ export class ProjectListComponent implements OnInit {
     'action',
   ];
 
+  /**
+   * Diambil lewat `inject`, bukan lewat konstruktor.
+   *
+   * Menambah parameter konstruktor mematahkan setiap pengujian yang membangun
+   * komponen ini sendiri — dan yang gagal bukan hal yang sedang diubah,
+   * sehingga sebabnya sulit dikenali oleh yang membaca hasilnya.
+   *
+   * `optional` karena pengujian menjalankan komponen ini di luar router.
+   */
+  private readonly route = inject(ActivatedRoute, { optional: true });
+
   ngOnInit(): void {
+    this.bacaAlamat();
     this.fetch();
     this.searchControl.valueChanges
       .pipe(debounceTime(400))
       .subscribe(() => this.fetch(0));
+  }
+
+  /**
+   * Keadaan daftar dibaca dari ALAMATNYA lebih dulu.
+   *
+   * Sama seperti daftar Tender dan Pembelian. Tanpa ini, menekan segarkan
+   * atau membagikan tautannya mengembalikan daftar ke halaman pertama tanpa
+   * saringan — dan yang membukanya melihat sesuatu yang lain dari yang
+   * dimaksud pengirimnya, tanpa tahu bahwa yang dilihatnya berbeda.
+   */
+  private bacaAlamat(): void {
+    const p = this.route?.snapshot?.queryParams ?? {};
+    if (p['page']) this.page = Math.max(0, +p['page'] - 1);
+    if (p['pageSize']) this.pageSize = +p['pageSize'];
+    if (p['sortBy']) this.sortBy = p['sortBy'];
+    if (p['sortByDirection'] === 'asc' || p['sortByDirection'] === 'desc') {
+      this.sortByDirection = p['sortByDirection'];
+    }
+    if (p['cari']) this.searchControl.setValue(p['cari'], { emitEvent: false });
+
+    /*
+     * Keadaan disaring terhadap yang DIKENAL.
+     *
+     * Alamatnya dapat diketik siapa saja. Nama keadaan yang tidak dikenal
+     * diteruskan ke server sebagai saringan yang tidak cocok dengan apa pun,
+     * dan daftarnya kosong tanpa satu pun keterangan mengapa.
+     *
+     * Kosong sesudah disaring berarti kembali ke bawaannya — sama seperti
+     * mematikan seluruh kepingnya dari layar.
+     */
+    if (p['keadaan']) {
+      const diminta = String(p['keadaan']).split(',');
+      const sah = (KEADAAN as readonly string[]).filter((k) =>
+        diminta.includes(k),
+      );
+      this.saring = sah.length ? sah : [BAWAAN];
+    }
+  }
+
+  /** Tulis keadaan daftar ke alamatnya, tanpa menambah riwayat peramban. */
+  private simpanKeAlamat(): void {
+    if (!this.route) return;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: this.page + 1,
+        pageSize: this.pageSize,
+        sortBy: this.sortBy,
+        sortByDirection: this.sortByDirection,
+        keadaan: this.keadaanDiminta,
+        cari: (this.searchControl.value ?? '').trim() || null,
+      },
+      /*
+       * Riwayat peramban TIDAK ditambah.
+       *
+       * Menambahnya tiap kali kolom ditekan membuat tombol kembali
+       * menelusuri ulang setiap pengurutan, bukan kembali ke layar
+       * sebelumnya — dan pada daftar yang kerap diurutkan, tombol itu
+       * menjadi tidak dapat dipakai sama sekali.
+       */
+      replaceUrl: true,
+    });
   }
 
   fetch(targetPage: number = this.page): void {
@@ -197,6 +271,10 @@ export class ProjectListComponent implements OnInit {
       .add(() => {
         this.isLoading = false;
       });
+
+    // Sesudah permintaannya berangkat, bukan sebelum: alamatnya menggambarkan
+    // apa yang sedang dimuat, dan tidak menunggu jawabannya.
+    this.simpanKeAlamat();
   }
 
   /**
