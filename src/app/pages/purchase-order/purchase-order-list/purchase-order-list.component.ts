@@ -1527,6 +1527,41 @@ export class PurchaseOrderListComponent {
   }
 
   /**
+   * Level pengguna yang sedang masuk.
+   *
+   * Bawaannya 1 — yang paling rendah — bukan 0: level yang tidak terbaca
+   * harus jatuh ke yang paling sedikit haknya, bukan lolos.
+   */
+  private get levelSaya(): number {
+    return Number(this.account.user?.['authenticationLevel']) || 1;
+  }
+
+  /**
+   * Boleh MENCABUT pemeriksaan dokumen ini.
+   *
+   * Sengaja lebih sempit daripada izin memeriksa. Memberi centang adalah
+   * menyatakan "saya sudah membaca isinya dan isinya benar" — pernyataan
+   * atas nama sendiri. Mencabut centang ORANG LAIN menghapus pernyataan
+   * orang lain, dan di sistem ini ia sekaligus MENGGUGURKAN PERSETUJUAN yang
+   * terlanjur terbit: dokumennya kembali menjadi draf.
+   *
+   * Sebelum ini, satu klik dari siapa pun yang berizin
+   * `purchase_order:update` dapat membatalkan tanda tangan seorang direktur
+   * tanpa dokumen itu berubah satu huruf pun — dan dari layar mana pun tidak
+   * tampak apa yang terjadi.
+   *
+   * Pemeriksanya sendiri tetap boleh menarik pernyataannya; yang menemukan
+   * kekeliruan sesudah mencentang harus punya jalan membetulkannya, kalau
+   * tidak ia akan diam saja.
+   *
+   * Servernya yang menentukan (`boleh_mencabut_pemeriksaan`); yang di sini
+   * hanya agar tombolnya tidak ditawarkan kepada yang pasti ditolak.
+   */
+  bolehCabutPeriksa(po: any): boolean {
+    return this.diperiksaSendiri(po) || this.levelSaya >= 4;
+  }
+
+  /**
    * Tombol "Setujui" tidak berlaku bagi pemeriksanya sendiri.
    *
    * Pemeriksaan dan persetujuan sengaja dua tangan: pemeriksa membaca

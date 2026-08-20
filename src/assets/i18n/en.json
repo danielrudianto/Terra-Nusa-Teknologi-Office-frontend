@@ -559,7 +559,8 @@
     "periksaPernyataan": "I have read this entire document — price, volume, and specification are correct.",
     "periksaKonfirmasi": "Mark as checked",
     "periksaBuatanSendiri": "You created this document, so someone else has to check it.",
-    "setujuiBuatanSendiri": "You created this document, so someone else has to approve it."
+    "setujuiBuatanSendiri": "You created this document, so someone else has to approve it.",
+    "cabutBukanPemeriksa": "Only {{nama}} or level 4 can revoke this check"
   },
   "income": {
     "title": "Other income",

@@ -559,7 +559,8 @@
     "periksaPernyataan": "我已阅读本单据全部内容——价格、数量与规格均正确。",
     "periksaKonfirmasi": "标记为已检查",
     "periksaBuatanSendiri": "此单据由您创建，需由他人检查。",
-    "setujuiBuatanSendiri": "此单据由您创建，需由他人审批。"
+    "setujuiBuatanSendiri": "此单据由您创建，需由他人审批。",
+    "cabutBukanPemeriksa": "仅 {{nama}} 或四级以上可撤销此审核"
   },
   "income": {
     "title": "其他收入",

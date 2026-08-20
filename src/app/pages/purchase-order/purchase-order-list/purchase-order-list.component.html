@@ -335,16 +335,41 @@
                     </button>
                   }
                 } @else {
-                  <button
-                    mat-menu-item
-                    *appCan="'purchase_order:update'"
-                    (click)="batalkanPemeriksaan(po)"
-                  >
-                    <mat-icon>undo</mat-icon
-                    ><span>{{
-                      "purchaseOrder.menuCabutPeriksa" | translate
-                    }}</span>
-                  </button>
+                  <!--
+                    Mencabut pemeriksaan lebih sempit daripada memberikannya.
+
+                    Pencabutan menggugurkan PERSETUJUAN yang terlanjur terbit
+                    — dokumennya kembali menjadi draf. Sebelum ini siapa pun
+                    yang berizin `purchase_order:update` dapat membatalkan
+                    tanda tangan seorang direktur dengan satu klik, tanpa
+                    dokumen itu berubah satu huruf pun.
+
+                    Yang boleh: pemeriksanya sendiri — ia menarik
+                    pernyataannya sendiri — dan level 4 ke atas.
+
+                    Disembunyikan berikut sebabnya, bukan dikelabukan: tombol
+                    kelabu tetap mengesankan tindakannya masih mungkin.
+                  -->
+                  @if (bolehCabutPeriksa(po)) {
+                    <button
+                      mat-menu-item
+                      *appCan="'purchase_order:update'"
+                      (click)="batalkanPemeriksaan(po)"
+                    >
+                      <mat-icon>undo</mat-icon
+                      ><span>{{
+                        "purchaseOrder.menuCabutPeriksa" | translate
+                      }}</span>
+                    </button>
+                  } @else {
+                    <div class="pol-sebab">
+                      <mat-icon>lock_person</mat-icon>
+                      <span>{{
+                        "purchaseOrder.cabutBukanPemeriksa"
+                          | translate: { nama: po.checkedByName || "—" }
+                      }}</span>
+                    </div>
+                  }
                   <!--
                     Pemeriksa TIDAK menyetujui yang diperiksanya sendiri.
 

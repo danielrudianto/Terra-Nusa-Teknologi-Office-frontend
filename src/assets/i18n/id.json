@@ -559,7 +559,8 @@
     "periksaPernyataan": "Saya telah membaca seluruh dokumen ini — harga, volume, dan spesifikasinya sudah benar.",
     "periksaKonfirmasi": "Tandai sudah diperiksa",
     "periksaBuatanSendiri": "Dokumen ini Anda yang membuat, jadi pemeriksaannya harus dari orang lain.",
-    "setujuiBuatanSendiri": "Dokumen ini Anda yang membuat, jadi persetujuannya harus dari orang lain."
+    "setujuiBuatanSendiri": "Dokumen ini Anda yang membuat, jadi persetujuannya harus dari orang lain.",
+    "cabutBukanPemeriksa": "Hanya {{nama}} atau level 4 yang dapat mencabut pemeriksaan ini"
   },
   "income": {
     "title": "Pendapatan Lain",
