@@ -1,6 +1,11 @@
 import ExcelJS from 'exceljs';
 
 import { PURCHASE_TYPE_LABELS } from '../constants/purchase-type-label.constant';
+import {
+  RentangRekap,
+  labelRentang,
+  potonganBerkas,
+} from '../constants/rentang-rekap';
 import { vendorDisplayName } from './purchase-order-shared.helper';
 
 /**
@@ -254,6 +259,7 @@ function totalkan(
 function lembarRincian(
   wb: ExcelJS.Workbook,
   proyek: string,
+  periode: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
 ): void {
@@ -283,7 +289,7 @@ function lembarRincian(
     sheet,
     kolom.length,
     `REKAP PURCHASE ORDER — PROYEK ${proyek}`,
-    'PT Alpha Konstruksi Nusantara · disusun ' +
+    `Periode: ${periode} · PT Alpha Konstruksi Nusantara · disusun ` +
       new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'long',
@@ -371,6 +377,7 @@ function lembarRincian(
 function lembarPerDokumen(
   wb: ExcelJS.Workbook,
   proyek: string,
+  periode: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
 ): { awal: number; akhir: number } {
@@ -399,7 +406,8 @@ function lembarPerDokumen(
     sheet,
     kolom.length,
     `REKAP PER DOKUMEN — PROYEK ${proyek}`,
-    'Satu baris per purchase order. Kolom Pemeriksaan kosong bila jumlah ' +
+    `Periode: ${periode} · Satu baris per purchase order. ` +
+      'Kolom Pemeriksaan kosong bila jumlah ' +
       'barisnya sudah sama dengan nilai dokumen.',
   );
   const AWAL = 4;
@@ -486,6 +494,7 @@ function lembarPerDokumen(
 function lembarIkhtisar(
   wb: ExcelJS.Workbook,
   proyek: string,
+  periode: string,
   daftar: IRekapPO[],
   awal: number,
   akhir: number,
@@ -497,7 +506,8 @@ function lembarIkhtisar(
     sheet,
     4,
     `IKHTISAR — PROYEK ${proyek}`,
-    'Dihitung dari lembar Per Dokumen. Mengubah data di sana memperbarui ' +
+    `Periode: ${periode} · ` +
+      'Dihitung dari lembar Per Dokumen. Mengubah data di sana memperbarui ' +
       'angka di lembar ini.',
   );
 
@@ -635,7 +645,17 @@ export async function unduhRekapPurchaseOrder(
   proyek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
+  rentang: RentangRekap = { dari: null, sampai: null },
 ): Promise<void> {
+  /*
+   * Periodenya dicetak pada KETIGA lembar.
+   *
+   * Lembarnya dipisah dan dikirim satu-satu — biasanya lembar Per Dokumen
+   * saja. Menyebut periodenya hanya pada lembar pertama berarti lembar yang
+   * beredar tidak menyebutkannya sama sekali, dan rekap sepotong terbaca
+   * sebagai rekap seluruh proyek.
+   */
+  const periode = labelRentang(rentang);
   const wb = new ExcelJS.Workbook();
   wb.creator = 'TerraBot';
   wb.created = new Date();
@@ -654,9 +674,9 @@ export async function unduhRekapPurchaseOrder(
   const AWAL_DATA = 5;
   const akhirDokumen = AWAL_DATA + daftar.length - 1;
 
-  lembarIkhtisar(wb, proyek, daftar, AWAL_DATA, akhirDokumen);
-  lembarRincian(wb, proyek, daftar, items);
-  const { awal, akhir } = lembarPerDokumen(wb, proyek, daftar, items);
+  lembarIkhtisar(wb, proyek, periode, daftar, AWAL_DATA, akhirDokumen);
+  lembarRincian(wb, proyek, periode, daftar, items);
+  const { awal, akhir } = lembarPerDokumen(wb, proyek, periode, daftar, items);
 
   // Bila keduanya berbeda, rumus Ikhtisar menunjuk rentang yang salah dan
   // angkanya diam-diam keliru — lebih baik gagal terang-terangan.
@@ -674,7 +694,7 @@ export async function unduhRekapPurchaseOrder(
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Rekap_Purchase_Order_${proyek}_${new Date().getFullYear()}.xlsx`;
+  a.download = `Rekap_Purchase_Order_${proyek}_${potonganBerkas(rentang)}.xlsx`;
   a.click();
   URL.revokeObjectURL(url);
 }

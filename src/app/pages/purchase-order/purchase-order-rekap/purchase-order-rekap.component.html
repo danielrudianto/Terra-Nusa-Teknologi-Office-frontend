@@ -48,6 +48,77 @@
     </div>
 
     <!--
+      Rentang tanggal.
+
+      Bawaannya "semua" — sama seperti sebelum pilihan ini ada. Pintasannya
+      menjawab yang paling sering diminta ("pembelian kita minggu ini apa
+      saja") tanpa mengetik tanggal, dan pilihan manual tetap tersedia untuk
+      rentang yang bukan pekan maupun bulan berjalan.
+    -->
+    <div class="por-bentuk">
+      <span class="por-bentuk__label">
+        {{ "poRekap.periode" | translate }}
+      </span>
+      <div class="por-bentuk__pilihan por-periode">
+        @for (p of pilihanPeriode; track p.nilai) {
+          <button
+            type="button"
+            class="por-opsi"
+            [class.on]="periode === p.nilai"
+            (click)="pilihPeriode(p.nilai)"
+          >
+            <mat-icon>{{ p.ikon }}</mat-icon>
+            {{ p.label | translate }}
+          </button>
+        }
+      </div>
+
+      @if (periode === "manual") {
+        <mat-form-field
+          subscriptSizing="dynamic"
+          appearance="outline"
+          class="por-range"
+        >
+          <mat-label>{{ "poRekap.rentang" | translate }}</mat-label>
+          <mat-date-range-input
+            [formGroup]="rentangManual"
+            [rangePicker]="pemilihRentang"
+          >
+            <input
+              matStartDate
+              formControlName="mulai"
+              [placeholder]="'poRekap.mulai' | translate"
+            />
+            <input
+              matEndDate
+              formControlName="selesai"
+              [placeholder]="'poRekap.selesai' | translate"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="pemilihRentang"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #pemilihRentang></mat-date-range-picker>
+        </mat-form-field>
+      }
+
+      <!--
+        Rentang yang berlaku, disebut sebagai tanggal.
+
+        Pintasan "minggu ini" tidak menyebutkan tanggal berapa saja itu, dan
+        yang menerbitkannya perlu tahu sebelum berkasnya sampai ke penerima.
+      -->
+      @if (rentangBelumSah) {
+        <span class="por-rentang por-rentang--salah">
+          {{ "poRekap.rentangSalah" | translate }}
+        </span>
+      } @else {
+        <span class="por-rentang">{{ keteranganRentang }}</span>
+      }
+    </div>
+
+    <!--
       Apa yang akan diterbitkan, disebut di muka.
 
       Rekap ini dikirim ke luar, dan yang menerbitkannya perlu tahu bahwa
@@ -68,7 +139,7 @@
     <button
       type="button"
       class="por-save"
-      [disabled]="proyek.invalid || sedangMenyusun"
+      [disabled]="proyek.invalid || sedangMenyusun || rentangBelumSah"
       (click)="unduh()"
     >
       @if (sedangMenyusun) {

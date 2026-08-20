@@ -547,7 +547,8 @@
     "periksaDicabut": "Pemeriksaan dicabut; dokumen kembali ke draf",
     "cabutPeriksaTitle": "Cabut pemeriksaan",
     "cabutPeriksaPrompt": "Pemeriksaan {{name}} akan dicabut dan persetujuannya ikut gugur. Dokumen kembali ke draf.",
-    "filterSub": "Persempit daftar tanpa mengetik ulang pencarian."
+    "filterSub": "Persempit daftar tanpa mengetik ulang pencarian.",
+    "diperiksaSendiri": "Dokumen ini Anda yang memeriksa, jadi persetujuannya harus dari orang lain."
   },
   "income": {
     "title": "Pendapatan Lain",
@@ -3625,7 +3626,14 @@
     "terpakai": "Kontrak terpakai",
     "contractGrossHint": "Nilai dokumen, termasuk PPN",
     "dppValue": "DPP",
-    "belumAdaCatatan": "Proyek ini belum punya catatan pembelian, penjualan, maupun reimbursement."
+    "belumAdaCatatan": "Proyek ini belum punya catatan pembelian, penjualan, maupun reimbursement.",
+    "year": "Tahun",
+    "yearAll": "Semua",
+    "cakupan": "Kontrak & margin dihitung seumur proyek · biaya & arus menampilkan",
+    "costPeriod": "Biaya",
+    "ofLifetimeCost": "dari biaya seumur proyek",
+    "noCostPeriod": "Tidak ada biaya tercatat pada {{tahun}}. Kontrak, margin, dan tagihan di atas tetap seumur proyek.",
+    "carriedOver": "Dibawa dari tahun sebelumnya:"
   },
   "employeeStatus": {
     "title": "Nonaktifkan Karyawan",
@@ -3668,7 +3676,8 @@
     "NOT_FOUND": "Data tidak ditemukan.",
     "FORBIDDEN": "Anda tidak memiliki akses untuk tindakan ini.",
     "VALIDATION": "Ada isian yang belum benar. Periksa kembali formulirnya.",
-    "INTERNAL": "Terjadi kesalahan di server. Coba lagi beberapa saat lagi."
+    "INTERNAL": "Terjadi kesalahan di server. Coba lagi beberapa saat lagi.",
+    "PO_CHECKER_IS_APPROVER": "Purchase order tidak dapat disetujui oleh pemeriksanya sendiri. Mintakan persetujuan kepada pengguna lain."
   },
   "movePayment": {
     "title": "Pindahkan tanggal pembayaran",
@@ -4051,16 +4060,26 @@
   },
   "poRekap": {
     "judul": "Unduh hasil rekap",
-    "sub": "Pilih proyek dan bentuk berkasnya",
+    "sub": "Pilih proyek, periode, dan bentuk berkasnya",
     "unduh": "Unduh",
     "menyusun": "Menyusun…",
-    "keterangan": "Rekap memuat seluruh purchase order proyek terpilih, termasuk yang berstatus Draf. Statusnya ditandai pada setiap baris.",
+    "keterangan": "Rekap memuat purchase order proyek terpilih pada periode yang dipilih, termasuk yang berstatus Draf. Statusnya ditandai pada setiap baris.",
     "kosong": "Proyek ini belum punya purchase order.",
     "gagal": "Rekap gagal disusun. Coba lagi.",
     "menu": "Unduh hasil rekap",
     "format": "Bentuk berkas",
     "excel": "Excel",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "periode": "Periode",
+    "periodeSemua": "Semua",
+    "periodeMinggu": "Minggu ini",
+    "periodeBulan": "Bulan ini",
+    "periodeManual": "Pilih tanggal",
+    "rentang": "Rentang tanggal",
+    "mulai": "Dari",
+    "selesai": "Sampai",
+    "rentangSalah": "Isi setidaknya satu tanggal, dan pastikan tanggal akhir tidak mendahului tanggal awal.",
+    "kosongRentang": "Tidak ada purchase order pada proyek ini untuk {{rentang}}."
   },
   "poRingkas": {
     "judul": "Isi purchase order",

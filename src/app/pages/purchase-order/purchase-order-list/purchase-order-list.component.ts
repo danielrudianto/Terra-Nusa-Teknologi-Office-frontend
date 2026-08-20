@@ -58,6 +58,7 @@ import { printPurchaseOrder641 } from '../../../helpers/purchase-order-641.helpe
 import { FLEET_ID_MODE, FLEET_OPTIONS } from '../../../constants/fleet';
 import { SettingsService } from '../../../services/setting.service';
 import { ServerMessageService } from '../../../services/server-message.service';
+import { AccountService } from '../../../services/account.service';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 import { PurchaseOrderRekapComponent } from '../purchase-order-rekap/purchase-order-rekap.component';
 import { PurchaseOrderFilterComponent } from './purchase-order-filter/purchase-order-filter.component';
@@ -126,6 +127,7 @@ export class PurchaseOrderListComponent {
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private serverMessage: ServerMessageService,
+    private account: AccountService,
   ) {}
 
   isLoading: boolean = false;
@@ -1428,6 +1430,38 @@ export class PurchaseOrderListComponent {
   /** Dokumen ini sudah diperiksa. */
   sudahDiperiksa(po: any): boolean {
     return !!po?.isChecked;
+  }
+
+  /** Yang memeriksa dokumen ini adalah saya sendiri. */
+  diperiksaSendiri(po: any): boolean {
+    const saya = this.account.userId;
+    // Tanpa id, anggap bukan pemeriksanya. Server tetap menolak bila
+    // ternyata iya, dan pesannya lebih jelas daripada tombol yang mati
+    // tanpa sebab.
+    if (saya === null) return false;
+    return Number(po?.checkedBy) === saya;
+  }
+
+  /** Pemilik usaha boleh menyetujui dokumen yang diperiksanya sendiri. */
+  get pemilikUsaha(): boolean {
+    return Number(this.account.user?.['authenticationLevel']) >= 5;
+  }
+
+  /**
+   * Tombol "Setujui" tidak berlaku bagi pemeriksanya sendiri.
+   *
+   * Pemeriksaan dan persetujuan sengaja dua tangan: pemeriksa membaca
+   * isinya, penyetuju memutuskan dokumen itu boleh terbit. Satu orang yang
+   * mengerjakan keduanya berturut-turut mengembalikan keduanya menjadi satu
+   * tangan.
+   *
+   * Disembunyikan, bukan dimatikan. Menyodorkan tombol yang pasti ditolak
+   * server menuntun orang menekannya, dan penolakan sesudah ditekan terbaca
+   * sebagai kerusakan — bukan sebagai aturan. Sebabnya disebut di tempat
+   * tombol itu tadinya berada.
+   */
+  tidakBolehSetujui(po: any): boolean {
+    return this.diperiksaSendiri(po) && !this.pemilikUsaha;
   }
 
   /**

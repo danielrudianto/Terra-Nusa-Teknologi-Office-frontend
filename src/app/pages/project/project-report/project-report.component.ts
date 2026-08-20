@@ -14,6 +14,14 @@ import { ProjectSelectorComponent } from '../../../components/project-selector/p
 import { ProjectLookupService } from '../../../services/project-lookup.service';
 import { purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
 import {
+  SELURUH,
+  TahunLaporan,
+  dalamTahun,
+  daftarTahun,
+  labelTahun,
+  sebelumTahun,
+} from '../../../constants/tahun-laporan';
+import {
   unduhLaporanProyekExcel,
   unduhLaporanProyekPdf,
   type DataLaporanProyek,
@@ -99,6 +107,74 @@ function nilaiDraft(p: any): number {
 
 function nilaiFaktur(f: any): number {
   return Number(f.dpp || 0) + (Number(f.ppn || 0) * Number(f.dpp || 0)) / 100;
+}
+
+/**
+ * Biaya dikelompokkan menurut kode tipe biaya, lalu per pemasok.
+ *
+ * Fungsi lepas, bukan isi `computed`, karena dipakai DUA KALI dengan cakupan
+ * berbeda: sekali atas data tahun terpilih, sekali atas seluruh umur proyek.
+ * Angka yang kedua yang membentuk margin.
+ *
+ * Menjumlahkan yang kedua dengan rumus tersendiri akan menghasilkan dua
+ * angka yang seharusnya identik ketika saringannya "Seluruh periode" —
+ * dan bila salah satunya kelak diubah sendirian, bedanya tidak akan
+ * ketahuan dari layar mana pun.
+ *
+ * Ketiga sumber dijumlahkan dengan rumusnya masing-masing: pembelian dan
+ * draft memakai DPP ditambah PPN, PBBKB, dan nilai lain; reimbursement
+ * memakai nominal pengajuannya. Menyamakan rumusnya akan membuat PPN
+ * terhitung dua kali pada sebagian baris dan hilang pada sebagian lain.
+ */
+function susunKategori(
+  d: any,
+  sertakanInternal: boolean,
+  kontrak: number,
+  namaKategori: (kode: string) => string,
+): Kategori[] {
+  if (!d) return [];
+
+  const peta = new Map<string, Map<string, number>>();
+
+  const catat = (kode: string, pemasok: string, nilai: number) => {
+    const k = (kode || '?').toString();
+    if (!peta.has(k)) peta.set(k, new Map());
+    const m = peta.get(k)!;
+    m.set(pemasok, (m.get(pemasok) ?? 0) + (Number(nilai) || 0));
+  };
+
+  const pembelian = sertakanInternal
+    ? d.purchases
+    : d.purchases.filter((p: any) => !p.isInternal);
+
+  for (const p of pembelian) {
+    catat(p.purchaseType, namaPemasok(p), nilaiPembelian(p));
+  }
+  for (const p of d.purchase_drafts) {
+    catat(p.purchaseType, namaPemasok(p), nilaiDraft(p));
+  }
+  for (const r of d.reimbursements) {
+    catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
+  }
+
+  const hasil: Kategori[] = [];
+  for (const [kode, pemasokMap] of peta) {
+    const pemasok = [...pemasokMap.entries()]
+      .map(([nama, nilai]) => ({ nama, nilai }))
+      .sort((a, b) => b.nilai - a.nilai);
+    const nilai = pemasok.reduce((a, b) => a + b.nilai, 0);
+    hasil.push({
+      kode,
+      nama: namaKategori(kode),
+      nilai,
+      pemasok,
+      // `null` bila kontraknya belum diisi — bukan nol, karena nol terbaca
+      // sebagai "tidak menyerap apa pun" padahal artinya "belum dapat
+      // dihitung".
+      porsiKontrak: kontrak > 0 ? (nilai / kontrak) * 100 : null,
+    });
+  }
+  return hasil.sort((a, b) => b.nilai - a.nilai);
 }
 
 /**
@@ -212,6 +288,17 @@ export class ProjectReportComponent implements OnInit {
    */
   readonly sertakanInternal = signal(true);
 
+  /**
+   * Tahun aktivitas yang sedang ditampilkan.
+   *
+   * Bawaannya SELURUH PERIODE, bukan tahun berjalan. Bila bawaannya tahun
+   * ini, setiap proyek yang selesai tahun lalu terbuka kosong melompong —
+   * dan yang membukanya menyimpulkan datanya hilang, bukan tahunnya yang
+   * keliru.
+   */
+  readonly tahun = signal<TahunLaporan>(SELURUH);
+  readonly SELURUH = SELURUH;
+
   /*
    * Warna komposisi. Sengaja tetap, bukan token tema: ini warna DATA, yang
    * gunanya membedakan satu kategori dari kategori lain. Mengikutkannya ke
@@ -256,6 +343,9 @@ export class ProjectReportComponent implements OnInit {
     this.galat.set(null);
     this.kode.set(kode);
     this.kategoriTerbuka.set(null);
+    // Tahun proyek sebelumnya belum tentu ada pada proyek ini. Membawanya
+    // ikut membuat laporan terbuka kosong tanpa sebab yang terbaca.
+    this.tahun.set(SELURUH);
 
     this.api
       .get(`purchases/report/project/${kode}`, {})
@@ -299,63 +389,86 @@ export class ProjectReportComponent implements OnInit {
   );
 
   /**
-   * Biaya dikelompokkan menurut kode tipe biaya, lalu per pemasok.
+   * Tahun yang benar-benar punya catatan pada proyek ini.
    *
-   * Ketiga sumber dijumlahkan dengan rumusnya masing-masing: pembelian dan
-   * draft memakai DPP ditambah PPN, PBBKB, dan nilai lain; reimbursement
-   * memakai nominal pengajuannya. Menyamakan rumusnya akan membuat PPN
-   * terhitung dua kali pada sebagian baris dan hilang pada sebagian lain.
+   * Diturunkan dari datanya sendiri, bukan deretan tahun tetap: proyek
+   * setahun hanya menawarkan satu tahun, sehingga tidak ada tahun kosong
+   * yang bisa terpilih — dan proyek lintas tahun ketahuan lintas tahun dari
+   * daftarnya sendiri.
    */
-  readonly kategori = computed<Kategori[]>(() => {
+  readonly tahunTersedia = computed<number[]>(() => {
     const d = this._data();
     if (!d) return [];
-
-    const peta = new Map<string, Map<string, number>>();
-
-    const catat = (kode: string, pemasok: string, nilai: number) => {
-      const k = (kode || '?').toString();
-      if (!peta.has(k)) peta.set(k, new Map());
-      const m = peta.get(k)!;
-      m.set(pemasok, (m.get(pemasok) ?? 0) + (Number(nilai) || 0));
-    };
-
-    const pembelian = this.sertakanInternal()
-      ? d.purchases
-      : d.purchases.filter((p: any) => !p.isInternal);
-
-    for (const p of pembelian) {
-      catat(p.purchaseType, namaPemasok(p), nilaiPembelian(p));
-    }
-    for (const p of d.purchase_drafts) {
-      catat(p.purchaseType, namaPemasok(p), nilaiDraft(p));
-    }
-    for (const r of d.reimbursements) {
-      catat(r.purchaseType, namaPenerima(r), Number(r.amount || 0));
-    }
-
-    // Nilai kontrak dibaca sekali di luar perulangan: memanggil signal di
-    // dalamnya menghitung ulang untuk setiap kategori tanpa alasan.
-    const kontrak = this.nilaiKontrak();
-
-    const hasil: Kategori[] = [];
-    for (const [kode, pemasokMap] of peta) {
-      const pemasok = [...pemasokMap.entries()]
-        .map(([nama, nilai]) => ({ nama, nilai }))
-        .sort((a, b) => b.nilai - a.nilai);
-      const nilai = pemasok.reduce((a, b) => a + b.nilai, 0);
-      hasil.push({
-        kode,
-        nama: purchaseTypeLabel(this.translate, kode) ?? kode,
-        nilai,
-        pemasok,
-        // `null` bila kontraknya belum diisi — bukan nol, karena nol
-        // terbaca sebagai "tidak menyerap apa pun" padahal artinya
-        // "belum dapat dihitung".
-        porsiKontrak: kontrak > 0 ? (nilai / kontrak) * 100 : null,
-      });
-    }
-    return hasil.sort((a, b) => b.nilai - a.nilai);
+    return daftarTahun([
+      ...(d.purchases ?? []).map((x: any) => x.date),
+      ...(d.purchase_drafts ?? []).map((x: any) => x.date),
+      ...(d.reimbursements ?? []).map((x: any) => x.date),
+      ...(d.sales_invoices ?? []).map((x: any) => x.date),
+    ]);
   });
+
+  /**
+   * Data yang sudah disaring menurut tahun terpilih.
+   *
+   * Yang disaring TANGGAL DOKUMEN, bukan tanggal dibuat maupun tanggal
+   * bayar: tanggal dokumen yang menyatakan kapan pekerjaannya terjadi, dan
+   * itu pula tanggal yang tercetak di layar — sehingga yang membaca dapat
+   * mencocokkan barisnya satu per satu bila angkanya diragukan.
+   */
+  readonly dataPeriode = computed<any>(() => {
+    const d = this._data();
+    if (!d) return null;
+    const t = this.tahun();
+    if (t === SELURUH) return d;
+
+    const saring = (baris: any[]) =>
+      (baris ?? []).filter((x: any) => dalamTahun(x?.date, t));
+
+    return {
+      purchases: saring(d.purchases),
+      reimbursements: saring(d.reimbursements),
+      purchase_drafts: saring(d.purchase_drafts),
+      sales_invoices: saring(d.sales_invoices),
+    };
+  });
+
+  /** Sebutan periode untuk layar dan untuk dicetak pada berkas unduhannya. */
+  readonly labelPeriode = computed(() => labelTahun(this.tahun()));
+
+  readonly menyaringTahun = computed(() => this.tahun() !== SELURUH);
+
+  /**
+   * Biaya kategori TAHUN TERPILIH — yang tampil di layar.
+   *
+   * Ini angka aktivitas, bukan angka kesehatan proyek. Yang membentuk
+   * margin adalah `biayaSeumurProyek` di bawah.
+   */
+  readonly kategori = computed<Kategori[]>(() =>
+    susunKategori(
+      this.dataPeriode(),
+      this.sertakanInternal(),
+      this.nilaiKontrak(),
+      (kode) => purchaseTypeLabel(this.translate, kode) ?? kode,
+    ),
+  );
+
+  /**
+   * Kategori atas SELURUH umur proyek, tanpa saringan tahun.
+   *
+   * Tidak ditampilkan; ia hanya sumber `biayaSeumurProyek`. Dihitung lewat
+   * fungsi yang SAMA dengan kategori di layar, bukan dijumlah sendiri
+   * dengan rumus terpisah — dua rumus untuk satu angka berarti keduanya
+   * bisa berbeda ketika saringannya "Seluruh periode", dan tidak ada yang
+   * membandingkan keduanya.
+   */
+  private readonly kategoriSeumurProyek = computed<Kategori[]>(() =>
+    susunKategori(
+      this._data(),
+      this.sertakanInternal(),
+      this.nilaiKontrak(),
+      (kode) => purchaseTypeLabel(this.translate, kode) ?? kode,
+    ),
+  );
 
   /**
    * Arus per minggu: biaya keluar dan tagihan terbit.
@@ -369,7 +482,7 @@ export class ProjectReportComponent implements OnInit {
    * justru jeda itulah yang biasanya menandakan pekerjaan berhenti.
    */
   readonly mingguan = computed<Minggu[]>(() => {
-    const d = this._data();
+    const d = this.dataPeriode();
     if (!d) return [];
 
     const biaya = new Map<string, number>();
@@ -396,7 +509,16 @@ export class ProjectReportComponent implements OnInit {
     if (semua.length === 0) return [];
 
     const hasil: Minggu[] = [];
-    let kumulatif = 0;
+    /*
+     * Kumulatifnya DIMULAI dari biaya tahun-tahun sebelumnya, bukan dari nol.
+     *
+     * Kumulatif yang direset tiap tahun membuat proyek yang sudah berjalan
+     * setahun terlihat baru dimulai — dan grafik ini justru dibaca untuk
+     * menjawab "apakah anggarannya akan jebol sebelum pekerjaannya selesai".
+     * Angka bawaannya disebutkan di layar supaya garis yang mulai tinggi
+     * tidak terbaca sebagai lonjakan pada minggu pertama.
+     */
+    let kumulatif = this.biayaDibawa();
     const kursor = new Date(semua[0]);
     const akhir = new Date(semua[semua.length - 1]);
 
@@ -431,9 +553,62 @@ export class ProjectReportComponent implements OnInit {
     return m.reduce((a, b) => (b.biaya > a.biaya ? b : a));
   });
 
-  readonly totalBiaya = computed(() =>
+  /**
+   * Biaya TAHUN TERPILIH.
+   *
+   * Sengaja tidak lagi bernama `biayaSeumurProyek`. Nama itu tidak menyebutkan
+   * cakupannya, dan begitu saringan tahun ada, satu nama untuk dua cakupan
+   * membuat setiap pemakaiannya harus ditebak. Sekarang setiap tempat yang
+   * memakainya menyatakan sendiri cakupan mana yang dimaksudnya.
+   */
+  readonly biayaPeriode = computed(() =>
     this.kategori().reduce((a, b) => a + b.nilai, 0),
   );
+
+  /**
+   * Biaya SEUMUR PROYEK — yang membentuk margin.
+   *
+   * Tidak pernah ikut disaring tahun. Margin sepotong tahun adalah angka
+   * yang tampak masuk akal tetapi tidak menggambarkan apa pun: SPK terbit
+   * Desember dan pekerjaannya berjalan tahun berikutnya membuat tahun
+   * pertama untung hampir penuh dan tahun keduanya rugi telak.
+   */
+  readonly biayaSeumurProyek = computed(() =>
+    this.kategoriSeumurProyek().reduce((a, b) => a + b.nilai, 0),
+  );
+
+  /**
+   * Biaya yang sudah keluar SEBELUM tahun terpilih.
+   *
+   * Dipakai sebagai titik awal grafik kumulatif. Tanpanya, grafik tahun
+   * kedua dimulai dari nol dan proyek yang sudah berjalan setahun terlihat
+   * baru dimulai — persis kebalikan dari yang ingin diketahui darinya.
+   */
+  readonly biayaDibawa = computed(() => {
+    const d = this._data();
+    const t = this.tahun();
+    if (!d || t === SELURUH) return 0;
+
+    const saring = (baris: any[]) =>
+      (baris ?? []).filter((x: any) => sebelumTahun(x?.date, t));
+
+    return this.kategoriSeumurProyekSampai({
+      purchases: saring(d.purchases),
+      reimbursements: saring(d.reimbursements),
+      purchase_drafts: saring(d.purchase_drafts),
+      sales_invoices: [],
+    });
+  });
+
+  /** Menjumlahkan biaya sekumpulan data lewat rumus yang sama dengan layar. */
+  private kategoriSeumurProyekSampai(d: any): number {
+    return susunKategori(
+      d,
+      this.sertakanInternal(),
+      this.nilaiKontrak(),
+      (kode) => kode,
+    ).reduce((a, b) => a + b.nilai, 0);
+  }
 
   /** Berapa pembelian internal yang ada, terpakai atau tidak. */
   readonly jumlahInternal = computed(() => {
@@ -477,7 +652,10 @@ export class ProjectReportComponent implements OnInit {
     this.jedaBerubah = setTimeout(() => this.baruBerubah.set(false), 600);
   }
 
-  readonly margin = computed(() => this.nilaiKontrak() - this.totalBiaya());
+  /** Margin selalu seumur proyek; lihat `biayaSeumurProyek`. */
+  readonly margin = computed(
+    () => this.nilaiKontrak() - this.biayaSeumurProyek(),
+  );
 
   /**
    * Berapa persen nilai kontrak yang sudah terpakai biaya.
@@ -494,7 +672,9 @@ export class ProjectReportComponent implements OnInit {
    */
   readonly porsiTerpakai = computed(() => {
     const k = this.nilaiKontrak();
-    return k > 0 ? (this.totalBiaya() / k) * 100 : null;
+    // Seumur proyek, sama seperti margin: porsi sepotong tahun terhadap
+    // kontrak utuh tidak pernah menyentuh 100% dan tidak pernah memperingatkan.
+    return k > 0 ? (this.biayaSeumurProyek() / k) * 100 : null;
   });
 
   /** True bila biaya sudah melampaui nilai kontraknya. */
@@ -531,9 +711,16 @@ export class ProjectReportComponent implements OnInit {
     );
   });
 
-  /** Persentase terhadap total biaya; nol bila belum ada biaya sama sekali. */
+  /**
+   * Persentase terhadap biaya TAHUN TERPILIH.
+   *
+   * Yang dibandingkan komposisi kategori — dan kategorinya sendiri sudah
+   * disaring tahun, jadi pembaginya harus sama-sama tahun itu. Membaginya
+   * dengan biaya seumur proyek membuat seluruh potongan mengecil dan
+   * jumlahnya tidak lagi seratus persen.
+   */
   persen(nilai: number): number {
-    const t = this.totalBiaya();
+    const t = this.biayaPeriode();
     return t === 0 ? 0 : (nilai / t) * 100;
   }
 
@@ -580,6 +767,40 @@ export class ProjectReportComponent implements OnInit {
     );
   });
 
+  /**
+   * Proyeknya punya catatan, TAHUN TERPILIH yang kosong.
+   *
+   * Dibedakan dari `belumAdaCatatan` dengan sengaja. Keduanya menghasilkan
+   * layar yang sama-sama kosong, tetapi sebabnya berbeda dan tindakannya
+   * berbeda: yang satu memang belum ada apa-apa, yang satunya cuma salah
+   * pilih tahun. Kalimat yang sama untuk keduanya membuat yang membaca
+   * menyimpulkan proyeknya kosong padahal datanya ada di tahun sebelah.
+   */
+  readonly periodeKosong = computed(() => {
+    if (!this.menyaringTahun()) return false;
+    if (this.belumAdaCatatan()) return false;
+    const d = this.dataPeriode();
+    if (!d) return false;
+    return (
+      (d.purchases?.length ?? 0) === 0 &&
+      (d.purchase_drafts?.length ?? 0) === 0 &&
+      (d.reimbursements?.length ?? 0) === 0 &&
+      (d.sales_invoices?.length ?? 0) === 0
+    );
+  });
+
+  pilihTahun(t: TahunLaporan): void {
+    if (t === this.tahun()) return;
+    this.tahun.set(t);
+    this.kategoriTerbuka.set(null);
+
+    // Kedipan yang sama dengan sakelar internal: angka yang berubah
+    // diam-diam lebih membingungkan daripada angka yang berubah terlihat.
+    clearTimeout(this.jedaBerubah);
+    this.baruBerubah.set(true);
+    this.jedaBerubah = setTimeout(() => this.baruBerubah.set(false), 600);
+  }
+
   /*
    * Unduhan Laporan Proyek.
    *
@@ -599,9 +820,21 @@ export class ProjectReportComponent implements OnInit {
       namaProyek: p?.name ?? '',
       nilaiKontrak: this.nilaiKontrak(),
       nominalKontrak: this.nominalKontrak(),
-      totalBiaya: this.totalBiaya(),
+      // Seumur proyek — pasangannya margin, dan margin tidak pernah
+      // disaring tahun.
+      biayaSeumurProyek: this.biayaSeumurProyek(),
       margin: this.margin(),
       tertagih: this.tertagih(),
+      /*
+       * Biaya tahun terpilih, dan periodenya.
+       *
+       * Keduanya WAJIB ikut ke berkasnya. Berkas yang beredar tidak membawa
+       * konteks layar: rincian kategori di dalamnya sudah tersaring tahun,
+       * dan tanpa keterangan periode ia terbaca sebagai rincian seumur
+       * proyek yang totalnya kebetulan tidak cocok dengan biayanya.
+       */
+      biayaPeriode: this.biayaPeriode(),
+      periode: this.labelPeriode(),
       kategori: this.kategori().map((k) => ({
         kode: k.kode,
         nama: k.nama,

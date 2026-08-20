@@ -43,9 +43,25 @@ export interface DataLaporanProyek {
   nilaiKontrak: number;
   /** Nominal kontrak termasuk PPN, untuk keterangan. */
   nominalKontrak: number;
-  totalBiaya: number;
+  /**
+   * Biaya SEUMUR PROYEK — pasangan margin, tidak pernah disaring tahun.
+   *
+   * Semula bernama `totalBiaya`. Nama itu tidak menyebutkan cakupannya, dan
+   * begitu ada dua cakupan, setiap pemakaiannya harus ditebak dari
+   * sekitarnya — persis keadaan yang membuat tertukarnya mungkin.
+   */
+  biayaSeumurProyek: number;
   margin: number;
   tertagih: number;
+  /**
+   * Biaya TAHUN TERPILIH.
+   *
+   * Sama dengan `biayaSeumurProyek` selama periodenya "Seluruh periode". Begitu
+   * satu tahun dipilih, rincian kategori di berkas ini hanya memuat tahun
+   * itu — dan porsinya harus dibagi angka ini, bukan biaya seumur proyek,
+   * kalau tidak jumlah seluruh porsinya tidak lagi seratus persen.
+   */
+  biayaPeriode?: number;
   kategori: KategoriLaporan[];
   mingguan: MingguLaporan[];
   /** Teks periode yang tampil di layar, mis. "Agustus 2026". */
@@ -85,14 +101,32 @@ export async function unduhLaporanProyekExcel(
 ): Promise<void> {
   const periode = d.periode ? `Periode: ${d.periode}` : undefined;
   const judul = `${d.kodeProyek} — ${d.namaProyek}`;
+  // Berkas lama tidak mengirimkannya; tanpa cadangan ini porsinya menjadi
+  // `NaN%` alih-alih angka.
+  const biayaPeriode = d.biayaPeriode ?? d.biayaSeumurProyek;
 
   const ringkasan = [
     { label: 'Nilai kontrak (DPP)', nilai: d.nilaiKontrak, ket: 'Dasar perhitungan margin' },
     { label: 'Nilai kontrak (termasuk PPN)', nilai: d.nominalKontrak, ket: '' },
-    { label: 'Total biaya', nilai: d.totalBiaya, ket: persen(d.totalBiaya, d.nilaiKontrak) + ' dari kontrak' },
-    { label: 'Margin', nilai: d.margin, ket: persen(d.margin, d.nilaiKontrak) + ' dari kontrak' },
+    { label: 'Total biaya (seumur proyek)', nilai: d.biayaSeumurProyek, ket: persen(d.biayaSeumurProyek, d.nilaiKontrak) + ' dari kontrak' },
+    { label: 'Margin (seumur proyek)', nilai: d.margin, ket: persen(d.margin, d.nilaiKontrak) + ' dari kontrak' },
     { label: 'Sudah tertagih', nilai: d.tertagih, ket: persen(d.tertagih, d.nilaiKontrak) + ' dari kontrak' },
   ];
+
+  /*
+   * Baris biaya periode HANYA muncul bila periodenya memang dipersempit.
+   *
+   * Pada rekap seluruh periode, angkanya sama persis dengan baris di
+   * atasnya — dan dua baris berangka sama membuat yang membacanya mencari
+   * beda yang tidak ada.
+   */
+  if (biayaPeriode !== d.biayaSeumurProyek) {
+    ringkasan.push({
+      label: `Biaya periode ${d.periode}`,
+      nilai: biayaPeriode,
+      ket: 'Dasar porsi pada lembar Komposisi Biaya',
+    });
+  }
 
   /*
    * Rincian pemasok ditulis sebagai baris tersendiri di bawah kategorinya,
@@ -107,7 +141,7 @@ export async function unduhLaporanProyekExcel(
       kategori: k.nama,
       pemasok: '',
       nilai: k.nilai,
-      porsi: persen(k.nilai, d.totalBiaya),
+      porsi: persen(k.nilai, biayaPeriode),
     });
     k.pemasok.forEach((p) =>
       komposisi.push({
@@ -204,20 +238,39 @@ function barisTabel(judul: string[], baris: any[][]) {
 
 export function unduhLaporanProyekPdf(d: DataLaporanProyek): void {
   const kanan = { alignment: 'right' as Alignment };
+  const biayaPeriode = d.biayaPeriode ?? d.biayaSeumurProyek;
+
+  const barisRingkasan: any[][] = [
+    ['Nilai kontrak (DPP)', { text: rupiah(d.nilaiKontrak), ...kanan }, { text: '100,0%', ...kanan }],
+    ['Nilai kontrak (termasuk PPN)', { text: rupiah(d.nominalKontrak), ...kanan }, { text: '—', ...kanan }],
+    ['Total biaya (seumur proyek)', { text: rupiah(d.biayaSeumurProyek), ...kanan }, { text: persen(d.biayaSeumurProyek, d.nilaiKontrak), ...kanan }],
+    [
+      { text: 'Margin (seumur proyek)', bold: true },
+      { text: rupiah(d.margin), bold: true, ...kanan },
+      { text: persen(d.margin, d.nilaiKontrak), bold: true, ...kanan },
+    ],
+    ['Sudah tertagih', { text: rupiah(d.tertagih), ...kanan }, { text: persen(d.tertagih, d.nilaiKontrak), ...kanan }],
+  ];
+
+  /*
+   * Biaya periode disebut TERPISAH, tepat di bawah biaya seumur proyek.
+   *
+   * Rincian kategori di halaman berikutnya hanya memuat periode itu.
+   * Tanpa barisnya, jumlah rincian tidak akan cocok dengan satu pun angka
+   * pada ringkasan ini — dan yang mencocokkan akan menyangka berkasnya
+   * salah hitung, bukan tersaring.
+   */
+  if (biayaPeriode !== d.biayaSeumurProyek) {
+    barisRingkasan.push([
+      { text: `Biaya periode ${d.periode}`, color: '#154DEC' },
+      { text: rupiah(biayaPeriode), color: '#154DEC', ...kanan },
+      { text: persen(biayaPeriode, d.nilaiKontrak), color: '#154DEC', ...kanan },
+    ]);
+  }
 
   const ringkasan = barisTabel(
     ['Keterangan', 'Nilai', 'Porsi'],
-    [
-      ['Nilai kontrak (DPP)', { text: rupiah(d.nilaiKontrak), ...kanan }, { text: '100,0%', ...kanan }],
-      ['Nilai kontrak (termasuk PPN)', { text: rupiah(d.nominalKontrak), ...kanan }, { text: '—', ...kanan }],
-      ['Total biaya', { text: rupiah(d.totalBiaya), ...kanan }, { text: persen(d.totalBiaya, d.nilaiKontrak), ...kanan }],
-      [
-        { text: 'Margin', bold: true },
-        { text: rupiah(d.margin), bold: true, ...kanan },
-        { text: persen(d.margin, d.nilaiKontrak), bold: true, ...kanan },
-      ],
-      ['Sudah tertagih', { text: rupiah(d.tertagih), ...kanan }, { text: persen(d.tertagih, d.nilaiKontrak), ...kanan }],
-    ],
+    barisRingkasan,
   );
 
   const barisKategori: any[][] = [];
@@ -225,7 +278,7 @@ export function unduhLaporanProyekPdf(d: DataLaporanProyek): void {
     barisKategori.push([
       { text: k.nama, bold: true },
       { text: rupiah(k.nilai), bold: true, ...kanan },
-      { text: persen(k.nilai, d.totalBiaya), bold: true, ...kanan },
+      { text: persen(k.nilai, biayaPeriode), bold: true, ...kanan },
     ]);
     k.pemasok.forEach((p) =>
       barisKategori.push([

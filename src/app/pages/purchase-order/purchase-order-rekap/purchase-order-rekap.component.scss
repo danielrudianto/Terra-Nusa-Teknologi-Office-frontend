@@ -151,3 +151,36 @@
   height: 18px;
   font-size: 18px;
 }
+
+/* ---- rentang tanggal ---- */
+
+/*
+ * Empat pilihan periode dibungkus dua-dua bila sempit.
+ *
+ * Berbeda dari pilihan bentuk berkas yang hanya dua dan selalu muat sebaris,
+ * empat tombol pada dialog selebar 520px membuat labelnya terpotong.
+ */
+.por-periode {
+  flex-wrap: wrap;
+}
+.por-periode .por-opsi {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 128px;
+  height: 38px;
+  font-size: 0.78rem;
+}
+
+.por-range {
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+/* Rentang yang berlaku, disebut sebagai tanggal — bukan sebagai nama pintasan. */
+.por-rentang {
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+.por-rentang--salah {
+  color: var(--danger, #c00000);
+  font-weight: 600;
+}

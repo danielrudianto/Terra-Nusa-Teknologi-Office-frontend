@@ -30,9 +30,16 @@
 }
 
 /* ---- ringkasan angka ---- */
+/*
+ * Kolomnya menyesuaikan jumlah sel, bukan dipatok empat.
+ *
+ * Sel "biaya periode" hanya muncul ketika ada tahun yang dipilih, sehingga
+ * jumlahnya berubah antara empat dan lima. Dipatok empat, sel kelima jatuh
+ * sendirian ke baris berikutnya selebar seperempat layar.
+ */
 .prp-kpi {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0.875rem;
   margin-bottom: 1rem;
 }
@@ -773,5 +780,103 @@
   text-align: right;
   font-size: 0.72rem;
   color: var(--faint, #8a8f98);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ---- saringan tahun ---- */
+
+/*
+ * Aturan cakupan, ditampilkan TERUS.
+ *
+ * Bukan hanya saat disaring: kalimat yang muncul belakangan baru terbaca
+ * setelah orang sempat salah membaca angkanya.
+ */
+.prp-cakupan {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.76rem;
+  color: var(--faint, #8a8f98);
+}
+.prp-cakupan .mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  flex: 0 0 auto;
+  color: var(--brand, #154dec);
+}
+.prp-cakupan b {
+  color: var(--ink, #16181d);
+}
+
+.prp-tahun {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.prp-tahun__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+}
+.prp-tahun__pilihan {
+  display: inline-flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.prp-tahun__pilihan button {
+  height: 32px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.prp-tahun__pilihan button:hover {
+  border-color: var(--brand, #154dec);
+}
+.prp-tahun__pilihan button.on {
+  border-color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+}
+
+/* Sel biaya periode: dibedakan dari biaya seumur proyek di sebelahnya. */
+.prp-sel--periode {
+  border-color: var(--brand, #154dec);
+  background: var(--brand-soft, #e7ecfb);
+}
+.prp-sel--periode .prp-label {
+  color: var(--brand, #154dec);
+}
+
+/* Biaya yang dibawa dari tahun sebelumnya, pada grafik kumulatif. */
+.prp-dibawa {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  color: var(--faint, #8a8f98);
+}
+.prp-dibawa .mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+.prp-dibawa b {
+  color: var(--ink, #16181d);
   font-variant-numeric: tabular-nums;
 }

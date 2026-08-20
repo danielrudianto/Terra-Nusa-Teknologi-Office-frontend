@@ -547,7 +547,8 @@
     "periksaDicabut": "审核已撤销；单据回到草稿状态",
     "cabutPeriksaTitle": "撤销审核",
     "cabutPeriksaPrompt": "{{name}} 的审核将被撤销，其批准同时失效。单据回到草稿状态。",
-    "filterSub": "无需重新输入搜索即可缩小列表范围。"
+    "filterSub": "无需重新输入搜索即可缩小列表范围。",
+    "diperiksaSendiri": "此单据由您检查，需由他人审批。"
   },
   "income": {
     "title": "其他收入",
@@ -3625,7 +3626,14 @@
     "terpakai": "合同已用",
     "contractGrossHint": "合同金额，含增值税",
     "dppValue": "税基",
-    "belumAdaCatatan": "该项目尚无采购、销售或报销记录。"
+    "belumAdaCatatan": "该项目尚无采购、销售或报销记录。",
+    "year": "年份",
+    "yearAll": "全部",
+    "cakupan": "合同与毛利按项目全周期计算 · 成本与流水显示",
+    "costPeriod": "成本",
+    "ofLifetimeCost": "占项目全周期成本",
+    "noCostPeriod": "{{tahun}} 没有成本记录。上方的合同、毛利与开票仍为项目全周期。",
+    "carriedOver": "自往年结转："
   },
   "employeeStatus": {
     "title": "停用员工",
@@ -3668,7 +3676,8 @@
     "NOT_FOUND": "未找到数据。",
     "FORBIDDEN": "您没有执行此操作的权限。",
     "VALIDATION": "部分字段无效，请检查表单。",
-    "INTERNAL": "服务器发生错误，请稍后重试。"
+    "INTERNAL": "服务器发生错误，请稍后重试。",
+    "PO_CHECKER_IS_APPROVER": "采购订单不能由检查人本人审批，请另请他人审批。"
   },
   "movePayment": {
     "title": "调整付款日期",
@@ -4051,16 +4060,26 @@
   },
   "poRekap": {
     "judul": "下载汇总",
-    "sub": "选择项目与文件格式",
+    "sub": "选择项目、期间与文件格式",
     "unduh": "下载",
     "menyusun": "生成中…",
-    "keterangan": "汇总包含所选项目的全部采购订单，含草稿。每行均标注状态。",
+    "keterangan": "汇总包含所选项目在所选期间内的采购订单，含草稿。每行均标注状态。",
     "kosong": "该项目尚无采购订单。",
     "gagal": "汇总生成失败，请重试。",
     "menu": "下载汇总",
     "format": "文件格式",
     "excel": "Excel",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "periode": "期间",
+    "periodeSemua": "全部",
+    "periodeMinggu": "本周",
+    "periodeBulan": "本月",
+    "periodeManual": "自选日期",
+    "rentang": "日期范围",
+    "mulai": "起",
+    "selesai": "至",
+    "rentangSalah": "请至少填写一个日期，并确保结束日期不早于开始日期。",
+    "kosongRentang": "该项目在 {{rentang}} 内没有采购订单。"
   },
   "poRingkas": {
     "judul": "采购订单内容",

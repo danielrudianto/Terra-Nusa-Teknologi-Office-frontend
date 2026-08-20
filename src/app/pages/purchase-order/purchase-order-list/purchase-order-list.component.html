@@ -310,14 +310,36 @@
                       "purchaseOrder.menuCabutPeriksa" | translate
                     }}</span>
                   </button>
-                  <button
-                    mat-menu-item
-                    *appCan="'purchase_order:approve'"
-                    (click)="approve(po)"
-                  >
-                    <mat-icon>check_circle</mat-icon
-                    ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
-                  </button>
+                  <!--
+                    Pemeriksa TIDAK menyetujui yang diperiksanya sendiri.
+
+                    Dua tahap ini sengaja dua tangan. Yang membuatnya mudah
+                    terlewat: menu ini langsung berganti menampilkan
+                    "Setujui" begitu "Periksa" ditekan — dua klik berurutan
+                    di tempat yang sama, oleh orang yang sama.
+
+                    Tombolnya disembunyikan, bukan dimatikan, dan sebabnya
+                    disebut di tempat tombol itu tadinya berada. Tombol
+                    kelabu tetap mengesankan tindakannya masih mungkin, dan
+                    penolakan sesudah ditekan terbaca sebagai kerusakan.
+                  -->
+                  @if (tidakBolehSetujui(po)) {
+                    <div class="pol-sebab">
+                      <mat-icon>how_to_reg</mat-icon>
+                      <span>{{
+                        "purchaseOrder.diperiksaSendiri" | translate
+                      }}</span>
+                    </div>
+                  } @else {
+                    <button
+                      mat-menu-item
+                      *appCan="'purchase_order:approve'"
+                      (click)="approve(po)"
+                    >
+                      <mat-icon>check_circle</mat-icon
+                      ><span>{{ "purchaseOrder.menuApprove" | translate }}</span>
+                    </button>
+                  }
                 }
 
                 <!--

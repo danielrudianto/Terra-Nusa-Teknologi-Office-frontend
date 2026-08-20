@@ -4,6 +4,11 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { PURCHASE_TYPE_LABELS } from '../constants/purchase-type-label.constant';
 import { documentFonts } from '../constants/document-font.constant';
 import {
+  RentangRekap,
+  labelRentang,
+  potonganBerkas,
+} from '../constants/rentang-rekap';
+import {
   IRekapItem,
   IRekapPO,
   barisRekapDokumen,
@@ -215,7 +220,20 @@ function tabelDokumen(daftar: IRekapPO[], items: IRekapItem[]): any {
   return {
     table: {
       headerRows: 1,
-      widths: [18, 46, 78, 78, 92, 26, 62, 52, 46, 66, 44],
+      /*
+       * Lebarnya SAMA dengan kedua tabel di atasnya.
+       *
+       * Keduanya memakai `'*'` sehingga selalu selebar halaman (781,89 pt
+       * pada A4 mendatar dengan tepi 30). Tabel ini semula seluruhnya
+       * berukuran tetap dan berjumlah 608 pt — 174 pt lebih sempit, dan
+       * ketiganya tampak seperti tiga tabel yang tidak sejajar.
+       *
+       * Sisanya diberikan kepada `Jenis` dan `Vendor / Penerima`: keduanya
+       * kolom teks, dan hanya keduanya yang isinya membungkus ke baris
+       * berikutnya bila sempit. Kolom angka dibiarkan tetap — melebarkannya
+       * hanya menambah ruang kosong di kiri angka yang rata kanan.
+       */
+      widths: [18, 46, 78, '*', '*', 26, 62, 52, 46, 66, 44],
       body,
     },
     layout: {
@@ -234,12 +252,14 @@ export function unduhRekapPurchaseOrderPdf(
   proyek: string,
   daftar: IRekapPO[],
   items: IRekapItem[],
+  rentang: RentangRekap = { dari: null, sampai: null },
 ): void {
   const hariIni = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
+  const periode = labelRentang(rentang);
 
   const dd: any = {
     // MENDATAR: sebelas kolom tidak muat pada halaman tegak, dan memaksanya
@@ -275,9 +295,17 @@ export function unduhRekapPurchaseOrderPdf(
           ],
         },
         {
-          text: `Disusun ${hariIni}`,
-          fontSize: 7.5,
-          color: ABU,
+          /*
+           * Periodenya disebut PADA dokumennya, di setiap halaman.
+           *
+           * Rekap sepotong yang tidak menyebut periodenya terbaca sebagai
+           * rekap seluruh proyek, dan penerimanya menyimpulkan proyek itu
+           * hanya punya sekian pembelian.
+           */
+          stack: [
+            { text: `Periode: ${periode}`, fontSize: 7.5, bold: true, color: BIRU },
+            { text: `Disusun ${hariIni}`, fontSize: 7.5, color: ABU },
+          ],
           alignment: 'right',
         },
       ],
@@ -326,6 +354,6 @@ export function unduhRekapPurchaseOrderPdf(
   const { fonts, vfs } = documentFonts(baseVfs);
   const pdf = pdfMake.createPdf(dd, undefined, fonts as any, vfs as any);
   pdf.download(
-    `Rekap_Purchase_Order_${proyek}_${new Date().getFullYear()}.pdf`,
+    `Rekap_Purchase_Order_${proyek}_${potonganBerkas(rentang)}.pdf`,
   );
 }

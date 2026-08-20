@@ -512,3 +512,28 @@ $hover: var(--hover, #f6f8ff);
     font-size: 13px;
   }
 }
+
+/*
+ * Sebab tombol "Setujui" tidak ada, di tempat tombol itu tadinya berada.
+ *
+ * Menghilangkan tombolnya begitu saja membuat menu yang sama terlihat
+ * berbeda tanpa alasan, dan yang membukanya menyimpulkan layarnya rusak.
+ * Bukan `mat-menu-item`: ia bukan tindakan dan tidak boleh dapat ditekan.
+ */
+.pol-sebab {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 260px;
+  padding: 0.5rem 1rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+.pol-sebab .mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  flex: 0 0 auto;
+  color: var(--faint, #8a8f98);
+}

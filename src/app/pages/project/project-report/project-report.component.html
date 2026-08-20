@@ -63,12 +63,38 @@
         </div>
       </div>
 
+      <!--
+        Biaya SEUMUR PROYEK.
+
+        Angka ini tidak pernah ikut saringan tahun: ia pasangan margin di
+        sebelahnya, dan margin sepotong tahun tidak menggambarkan apa pun.
+        Biaya tahun terpilih punya selnya sendiri.
+      -->
       <div class="prp-sel">
         <div class="prp-label">{{ "projectReport.cost" | translate }}</div>
-        <div class="prp-nilai">{{ totalBiaya() | number: "1.0-0" }}</div>
+        <div class="prp-nilai">{{ biayaSeumurProyek() | number: "1.0-0" }}</div>
         <div class="prp-ket" *ngIf="nilaiKontrak() > 0">
-          {{ persenKontrak(totalBiaya()) | number: "1.1-1" }}%
+          {{ persenKontrak(biayaSeumurProyek()) | number: "1.1-1" }}%
           {{ "projectReport.ofContract" | translate }}
+        </div>
+      </div>
+
+      <!--
+        Biaya tahun terpilih — sel tersendiri, dan hanya muncul saat memang
+        ada tahun yang dipilih.
+
+        Satu sel yang nilainya berganti-ganti mengikuti saringan adalah
+        justru yang berbahaya: angkanya dikutip ke luar tanpa tahunnya ikut
+        terbawa. Dua sel berdampingan membuat cakupannya terbaca sekaligus.
+      -->
+      <div class="prp-sel prp-sel--periode" *ngIf="menyaringTahun()">
+        <div class="prp-label">
+          {{ "projectReport.costPeriod" | translate }} {{ labelPeriode() }}
+        </div>
+        <div class="prp-nilai">{{ biayaPeriode() | number: "1.0-0" }}</div>
+        <div class="prp-ket" *ngIf="biayaSeumurProyek() > 0">
+          {{ (biayaPeriode() / biayaSeumurProyek()) * 100 | number: "1.1-1" }}%
+          {{ "projectReport.ofLifetimeCost" | translate }}
         </div>
       </div>
 
@@ -131,6 +157,50 @@
             {{ tertagihDpp() | number: "1.0-0" }}
           </span>
         </div>
+      </div>
+    </div>
+
+    <!--
+      Aturan cakupan, disebut TERUS — bukan hanya saat disaring.
+
+      Kalimat yang cuma muncul ketika saringannya aktif baru terbaca setelah
+      orang sempat salah membaca. Ada terus, aturannya sudah dipahami sejak
+      layarnya terbuka.
+    -->
+    <p class="prp-cakupan">
+      <mat-icon>info</mat-icon>
+      <span>
+        {{ "projectReport.cakupan" | translate }}
+        <b>{{ labelPeriode() }}</b>
+      </span>
+    </p>
+
+    <!-- ===== pemilih tahun ===== -->
+    <div class="prp-tahun" *ngIf="tahunTersedia().length > 1">
+      <span class="prp-tahun__label">
+        {{ "projectReport.year" | translate }}
+      </span>
+      <div class="prp-tahun__pilihan">
+        <button
+          type="button"
+          [class.on]="tahun() === SELURUH"
+          (click)="pilihTahun(SELURUH)"
+        >
+          {{ "projectReport.yearAll" | translate }}
+        </button>
+        <!--
+          Hanya tahun yang benar-benar punya catatan. Deretan tahun tetap
+          akan menawarkan tahun kosong, dan tahun kosong yang terpilih
+          terbaca sebagai data yang hilang.
+        -->
+        <button
+          type="button"
+          *ngFor="let t of tahunTersedia()"
+          [class.on]="tahun() === t"
+          (click)="pilihTahun(t)"
+        >
+          {{ t }}
+        </button>
       </div>
     </div>
 
@@ -208,7 +278,19 @@
       </div>
     </div>
 
-    <p class="prp-nihil" *ngIf="kategori().length === 0">
+    <!--
+      Kosong karena tahunnya, atau kosong karena proyeknya — dua sebab
+      berbeda dengan tindakan yang berbeda. Kalimat yang sama untuk keduanya
+      membuat yang membaca menyimpulkan proyeknya kosong padahal datanya ada
+      di tahun sebelah.
+    -->
+    <p class="prp-nihil" *ngIf="periodeKosong()">
+      {{ "projectReport.noCostPeriod" | translate: { tahun: labelPeriode() } }}
+    </p>
+    <p
+      class="prp-nihil"
+      *ngIf="!periodeKosong() && kategori().length === 0"
+    >
       {{ "projectReport.noCost" | translate }}
     </p>
 
@@ -229,10 +311,10 @@
         <ng-container *ngIf="margin() >= 0">
           <div
             class="prp-mbar__biaya"
-            [style.width.%]="persenKontrak(totalBiaya())"
+            [style.width.%]="persenKontrak(biayaSeumurProyek())"
           >
-            <span *ngIf="persenKontrak(totalBiaya()) >= 8">
-              {{ persenKontrak(totalBiaya()) | number: "1.0-0" }}%
+            <span *ngIf="persenKontrak(biayaSeumurProyek()) >= 8">
+              {{ persenKontrak(biayaSeumurProyek()) | number: "1.0-0" }}%
             </span>
           </div>
           <div class="prp-mbar__margin" [style.width.%]="persenKontrak(margin())">
@@ -258,7 +340,7 @@
         <span>
           <i class="prp-kotak prp-kotak--biaya-kontrak"></i>
           {{ "projectReport.cost" | translate }}
-          <b>{{ totalBiaya() | number: "1.0-0" }}</b>
+          <b>{{ biayaSeumurProyek() | number: "1.0-0" }}</b>
         </span>
         <span *ngIf="margin() >= 0">
           <i class="prp-kotak prp-kotak--margin"></i>
@@ -399,6 +481,22 @@
         <div class="prp-label prp-label--sela">
           {{ "projectReport.cumulative" | translate }}
         </div>
+
+        <!--
+          Angka bawaan dari tahun-tahun sebelumnya.
+
+          Kumulatifnya sengaja TIDAK direset tiap tahun — proyek yang sudah
+          berjalan setahun akan terlihat baru dimulai. Tetapi garis yang
+          mulai tinggi tanpa keterangan terbaca sebagai lonjakan pada minggu
+          pertama, jadi angkanya disebutkan.
+        -->
+        <p class="prp-dibawa" *ngIf="biayaDibawa() > 0">
+          <mat-icon>subdirectory_arrow_right</mat-icon>
+          <span>
+            {{ "projectReport.carriedOver" | translate }}
+            <b>{{ biayaDibawa() | number: "1.0-0" }}</b>
+          </span>
+        </p>
         <div class="prp-kum">
           <div class="prp-kum__baris" *ngFor="let w of mingguan(); trackBy: lacakMinggu">
             <span class="prp-kum__label">{{ w.label }}</span>

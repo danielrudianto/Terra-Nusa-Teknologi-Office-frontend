@@ -547,7 +547,8 @@
     "periksaDicabut": "Check undone; document returned to draft",
     "cabutPeriksaTitle": "Undo check",
     "cabutPeriksaPrompt": "The check on {{name}} will be undone and its approval will lapse. The document returns to draft.",
-    "filterSub": "Narrow the list without retyping your search."
+    "filterSub": "Narrow the list without retyping your search.",
+    "diperiksaSendiri": "You checked this document, so someone else has to approve it."
   },
   "income": {
     "title": "Other income",
@@ -3625,7 +3626,14 @@
     "terpakai": "Contract used",
     "contractGrossHint": "Document value, including VAT",
     "dppValue": "Tax base",
-    "belumAdaCatatan": "No purchases, invoices, or reimbursements recorded for this project yet."
+    "belumAdaCatatan": "No purchases, invoices, or reimbursements recorded for this project yet.",
+    "year": "Year",
+    "yearAll": "All",
+    "cakupan": "Contract & margin are calculated over the whole project · cost and flow show",
+    "costPeriod": "Cost",
+    "ofLifetimeCost": "of whole-project cost",
+    "noCostPeriod": "No cost recorded in {{tahun}}. Contract, margin, and billing above still cover the whole project.",
+    "carriedOver": "Carried over from earlier years:"
   },
   "employeeStatus": {
     "title": "Deactivate Employee",
@@ -3668,7 +3676,8 @@
     "NOT_FOUND": "Not found.",
     "FORBIDDEN": "You do not have access for this action.",
     "VALIDATION": "Some fields are invalid. Please review the form.",
-    "INTERNAL": "A server error occurred. Please try again shortly."
+    "INTERNAL": "A server error occurred. Please try again shortly.",
+    "PO_CHECKER_IS_APPROVER": "A purchase order cannot be approved by the same person who checked it. Please ask someone else to approve."
   },
   "movePayment": {
     "title": "Move payment date",
@@ -4051,16 +4060,26 @@
   },
   "poRekap": {
     "judul": "Download recap",
-    "sub": "Pick a project and a file format",
+    "sub": "Pick a project, a period, and a file format",
     "unduh": "Download",
     "menyusun": "Building…",
-    "keterangan": "The recap covers every purchase order of the selected project, drafts included. Each row is marked with its status.",
+    "keterangan": "The recap covers the purchase orders of the selected project within the chosen period, drafts included. Each row is marked with its status.",
     "kosong": "This project has no purchase orders yet.",
     "gagal": "Could not build the recap. Please try again.",
     "menu": "Download recap",
     "format": "File format",
     "excel": "Excel",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "periode": "Period",
+    "periodeSemua": "All",
+    "periodeMinggu": "This week",
+    "periodeBulan": "This month",
+    "periodeManual": "Pick dates",
+    "rentang": "Date range",
+    "mulai": "From",
+    "selesai": "To",
+    "rentangSalah": "Pick at least one date, and make sure the end is not before the start.",
+    "kosongRentang": "No purchase orders in this project for {{rentang}}."
   },
   "poRingkas": {
     "judul": "Purchase order contents",
