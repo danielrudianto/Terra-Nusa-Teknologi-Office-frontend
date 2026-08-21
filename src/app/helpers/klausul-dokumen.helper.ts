@@ -24,7 +24,6 @@ import {
   buildInsuranceClauses,
   buildLegalServiceBillingTerms,
   buildLegalServiceClauses,
-  buildMaintenanceBillingTerms,
   buildMandorClauses,
   buildManpowerClauses,
   buildPasal5,
@@ -257,9 +256,17 @@ export function penagihanDokumen(data: any): ClauseSection | null {
   }
 
   if (jenis === '5.1.2') {
-    return custom.maintenanceMode === 'jasa'
-      ? bungkus(buildMaintenanceBillingTerms())
-      : bungkus(buildBillingTerms(tempo));
+    /*
+     * 5.1.2 TIDAK menampilkan halaman penagihan di PRATINJAU.
+     *
+     * Permintaan pengguna: pratinjau 5.1.2 dibuat ringkas seperti pratinjau
+     * jenis lain, tanpa bagian "tata cara penagihan dan pembayaran" yang
+     * panjang. CETAK/PDF-nya TIDAK berubah — halaman penagihannya tetap
+     * dirakit sendiri oleh helper cetak (G memakai `buildBillingTerms`, B
+     * memakai `buildMaintenanceBillingTerms`), jadi dokumen di atas kertas
+     * tetap lengkap. Yang dihilangkan hanya tampilannya di layar pratinjau.
+     */
+    return null;
   }
 
   if (jenis === 'C' || jenis === 'G') {

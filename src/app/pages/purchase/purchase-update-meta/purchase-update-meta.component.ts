@@ -17,6 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -25,7 +26,6 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
-import { MatButtonModule } from '@angular/material/button';
 
 /**
  * Sunting META pembelian LUAR — hanya level 5.
@@ -60,10 +60,10 @@ import { MatButtonModule } from '@angular/material/button';
     MatDatepickerModule,
     MatDividerModule,
     MatIconModule,
+    MatButtonModule,
     MatProgressSpinnerModule,
     NgxMaskDirective,
     DialogGeserDirective,
-    MatButtonModule,
   ],
   providers: [provideNgxMask()],
 })
@@ -111,42 +111,39 @@ export class PurchaseUpdateMetaComponent {
   private nilaiAwal = { dpp: 0, ppn: 0, pphPercentage: 0 };
 
   ngOnInit(): void {
-    this.api
-      .get(`purchases/${this.data.id}/meta`, {})
-      .subscribe({
-        next: (d: any) => {
-          this.adaPembayaran = !!d?.hasActivePayment;
-          this.pemasok = [d?.supplier?.name, d?.supplier?.prefix]
-            .filter((x: any) => x != null && x !== '')
-            .join(', ');
-          this.nomorPO = d?.purchaseOrderName ?? '';
+    this.api.get(`purchases/${this.data.id}/meta`, {}).subscribe({
+      next: (d: any) => {
+        this.adaPembayaran = !!d?.hasActivePayment;
+        this.pemasok = [d?.supplier?.name, d?.supplier?.prefix]
+          .filter((x: any) => x != null && x !== '')
+          .join(', ');
+        this.nomorPO = d?.purchaseOrderName ?? '';
 
-          this.meta.patchValue({
-            date: d?.date,
-            invoiceName: d?.invoiceName,
-            receiptName: d?.receiptName,
-            taxInvoiceName: d?.taxInvoiceName,
-          });
+        this.meta.patchValue({
+          date: d?.date,
+          invoiceName: d?.invoiceName,
+          receiptName: d?.receiptName,
+          taxInvoiceName: d?.taxInvoiceName,
+        });
 
-          this.nilaiAwal = {
-            dpp: Number(d?.dpp) || 0,
-            ppn: Number(d?.ppn) || 0,
-            pphPercentage: Number(d?.pphPercentage) || 0,
-          };
-          this.nilai.patchValue(this.nilaiAwal);
+        this.nilaiAwal = {
+          dpp: Number(d?.dpp) || 0,
+          ppn: Number(d?.ppn) || 0,
+          pphPercentage: Number(d?.pphPercentage) || 0,
+        };
+        this.nilai.patchValue(this.nilaiAwal);
 
-          // Terkunci bila sudah ada pembayaran — bukan disembunyikan, supaya
-          // angkanya tetap terbaca beserta alasan mengapa tak bisa diubah.
-          if (this.adaPembayaran) this.nilai.disable();
-        },
-        error: (err) => {
-          this.snackBar.open(this.pesanServer.terjemahkan(err), 'Close', {
-            duration: 4000,
-          });
-          this.dialog.close();
-        },
-      })
-      .add(() => (this.memuat = false));
+        // Terkunci bila sudah ada pembayaran — bukan disembunyikan, supaya
+        // angkanya tetap terbaca beserta alasan mengapa tak bisa diubah.
+        if (this.adaPembayaran) this.nilai.disable();
+      },
+      error: (err) => {
+        this.snackBar.open(this.pesanServer.terjemahkan(err), 'Close', {
+          duration: 4000,
+        });
+        this.dialog.close();
+      },
+    }).add(() => (this.memuat = false));
   }
 
   /** Total dokumen (tanpa PPh), untuk kecocokan mata. */
