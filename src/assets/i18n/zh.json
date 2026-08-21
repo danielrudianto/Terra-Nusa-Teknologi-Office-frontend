@@ -2044,7 +2044,8 @@
     "jumlahBaris": "金额（选填）",
     "jumlahBarisKet": "留空则按数量 × 单价计算。",
     "jumlahMenyimpang": "与数量 × 单价相差超过 Rp {{batas}}。请更正单价，而不是金额。",
-    "jumlahMenyimpangCegah": "有行的金额与数量乘单价相差超过 Rp {{batas}}。请先更正——超出范围的金额将被服务器丢弃。"
+    "jumlahMenyimpangCegah": "有行的金额与数量乘单价相差超过 Rp {{batas}}。请先更正——超出范围的金额将被服务器丢弃。",
+    "jumlahBarisHint": "留空则按 数量 × 单价 计算。"
   },
   "menu": {
     "editAsset": "编辑资产",

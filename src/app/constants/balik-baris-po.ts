@@ -123,6 +123,7 @@ export const BALIK_BARIS: Record<
   '5112': (x, u) => ({
     ...dasar(x, u),
     description: x.task || namaBarang(x),
+    amount: x.amount ?? null,
     remarks: x.remarks_1 ?? '',
   }),
   '516': (x, u) => ({

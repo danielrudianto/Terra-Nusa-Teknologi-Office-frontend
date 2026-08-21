@@ -2044,7 +2044,8 @@
     "jumlahBaris": "Jumlah (opsional)",
     "jumlahBarisKet": "Kosongkan bila mengikuti volume × harga.",
     "jumlahMenyimpang": "Selisihnya lebih dari Rp {{batas}} dari volume × harga. Betulkan harga satuannya, bukan jumlahnya.",
-    "jumlahMenyimpangCegah": "Ada baris yang jumlahnya menyimpang lebih dari Rp {{batas}} dari volume kali harga. Betulkan dulu — jumlah yang menyimpang akan dibuang server."
+    "jumlahMenyimpangCegah": "Ada baris yang jumlahnya menyimpang lebih dari Rp {{batas}} dari volume kali harga. Betulkan dulu — jumlah yang menyimpang akan dibuang server.",
+    "jumlahBarisHint": "Kosongkan bila mengikuti volume × harga."
   },
   "menu": {
     "editAsset": "Ubah aset",

@@ -1088,14 +1088,28 @@ export class PurchaseOrderCreateBComponent implements OnInit {
         quotaPeriodDays: this.rentalByHour
           ? Number(this.formGroup.get('quotaPeriodDays')?.value) || 30
           : null,
-        excessHourRate: this.rentalByHour
-          ? Number(
-              String(this.formGroup.get('excessHourRate')?.value ?? '').replace(
-                /[^\d.-]/g,
-                '',
-              ),
-            ) || 0
-          : 0,
+        /*
+         * DISIMPAN tanpa syarat `rentalByHour`.
+         *
+         * Tarif kelebihan jam dipakai DUA moda — per jam DAN per shift.
+         * Sebelumnya hanya disimpan pada moda per jam, sehingga sewa per shift
+         * kehilangan tarifnya (tersimpan 0) dan tiap cetak ulang menampilkan
+         * Rp 0. `jamPerShift` dulu tidak disimpan sama sekali, jadi panjang
+         * shift kembali ke bawaan 8 jam saat dokumen dibaca ulang.
+         */
+        excessHourRate:
+          Number(
+            String(this.formGroup.get('excessHourRate')?.value ?? '').replace(
+              /[^\d.-]/g,
+              '',
+            ),
+          ) || 0,
+        jamPerShift: Number(this.formGroup.get('jamPerShift')?.value) || 8,
+        // Sewa jangka pendek (khusus tipe A) mengubah lima klausul; tanpa
+        // disimpan, dokumen yang dibaca ulang kembali ke klausul jangka penuh.
+        shortTermRental:
+          this.formGroup.get('purchaseType')?.value === 'A' &&
+          !!this.formGroup.get('shortTermRental')?.value,
         additionalClauses: this.additionalClauseValues,
       },
     };

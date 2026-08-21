@@ -1,5 +1,11 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
+import {
+  TOLERANSI_PEMBULATAN,
+  nilaiBaris,
+  nilaiHitung,
+  pembulatanSah,
+} from '../../../../helpers/nilai-baris.helper';
 import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { printPurchaseOrderB } from '../../../../helpers/purchase-order-b.helper';
@@ -219,8 +225,34 @@ export class PurchaseOrderCreate5112Component {
       unit: ['account', Validators.required],
       quantity: [1, volumeValidators(this.isAdendum)],
       price: [0, [Validators.required, Validators.min(0)]],
+      // Jumlah TERTULIS: mengoreksi pembulatan (mis. 10 × 1.455.000 =
+      // 14.550.000 tetapi ditulis bulat 14.500.000). Kosong = ikut qty×harga.
+      // Dibatasi TOLERANSI supaya bukan cara mengganti harga diam-diam.
+      amount: [null as number | null],
       remarks: [''],
     });
+  }
+
+  private tGroup(i: number): FormGroup {
+    return this.getFormGroupAt(i);
+  }
+
+  readonly TOLERANSI = TOLERANSI_PEMBULATAN;
+
+  /** Volume × harga tanpa pembetulan — pembanding untuk placeholder. */
+  hitungBaris(i: number): number {
+    return nilaiHitung(this.tGroup(i).getRawValue());
+  }
+
+  /** Jumlah tertulis menyimpang terlalu jauh dari qty × harga. */
+  jumlahMenyimpang(i: number): boolean {
+    const v = this.tGroup(i).getRawValue();
+    return !pembulatanSah(v.amount, v);
+  }
+
+  /** Ada baris yang jumlah tertulisnya menyimpang. */
+  get adaJumlahMenyimpang(): boolean {
+    return this.t.controls.some((_c, i) => this.jumlahMenyimpang(i));
   }
 
   addItem() {
@@ -311,9 +343,10 @@ export class PurchaseOrderCreate5112Component {
 
   // ----- live summary -----
   get rawTotal(): number {
+    // Memakai `nilaiBaris`: jumlah tertulis (koreksi pembulatan) dipakai bila
+    // ada, selain itu qty × harga.
     return this.t.value.reduce(
-      (acc: number, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
+      (acc: number, x: any) => acc + nilaiBaris(x),
       0,
     );
   }
@@ -332,10 +365,7 @@ export class PurchaseOrderCreate5112Component {
   }
 
   get lineTotal(): (i: number) => number {
-    return (i: number) => {
-      const g = this.getFormGroupAt(i).value;
-      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
-    };
+    return (i: number) => nilaiBaris(this.getFormGroupAt(i).getRawValue());
   }
 
   openSupplierSelector() {
@@ -510,6 +540,9 @@ export class PurchaseOrderCreate5112Component {
           task: x.description || null,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
+          // Jumlah tertulis (koreksi pembulatan); server menjaganya dalam
+          // batas toleransi juga.
+          amount: x.amount ?? null,
           unit: x.unit,
           remarks_1: x.remarks,
         };
@@ -570,6 +603,7 @@ export class PurchaseOrderCreate5112Component {
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
+          amount: x.amount ?? null,
         };
       }),
       includePpn: !!v.includePPN,
@@ -674,6 +708,20 @@ export class PurchaseOrderCreate5112Component {
    * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit.
    */
   async onSubmit(): Promise<void> {
+    // Jumlah tertulis yang menyimpang dihentikan di sini — server pun
+    // membuangnya diam-diam bila di luar toleransi, jadi lebih baik yang
+    // mengisi diberi tahu sebelum dokumennya terbit.
+    if (this.adaJumlahMenyimpang) {
+      this.snackBar.open(
+        this.translateSvc.instant('poForm.jumlahMenyimpangCegah', {
+          batas: TOLERANSI_PEMBULATAN,
+        }),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
     const setuju = await firstValueFrom(
       this.dialog
         .open(PurchaseOrderViewComponent, {

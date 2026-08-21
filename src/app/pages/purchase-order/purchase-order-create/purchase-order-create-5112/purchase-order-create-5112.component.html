@@ -346,6 +346,29 @@
                 placeholder="0"
               />
             </mat-form-field>
+            <!--
+              Jumlah TERTULIS (opsional): koreksi pembulatan. Kosong = ikut
+              qty × harga; placeholder-nya menampilkan angka itu supaya jelas
+              apa yang sedang dikoreksi.
+            -->
+            <mat-form-field appearance="outline" class="po5112-itemamount">
+              <mat-label>{{ "poForm.jumlahBaris" | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="amount"
+                thousandSeparator=" "
+                mask="separator.2"
+                prefix="Rp. "
+                placeholder="{{ hitungBaris(i) | number: '1.0-2' }}"
+              />
+              @if (jumlahMenyimpang(i)) {
+                <mat-error>{{
+                  "poForm.jumlahMenyimpang" | translate: { batas: TOLERANSI }
+                }}</mat-error>
+              } @else {
+                <mat-hint>{{ "poForm.jumlahBarisHint" | translate }}</mat-hint>
+              }
+            </mat-form-field>
             <button
               type="button"
               class="po5112-itemremove"

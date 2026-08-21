@@ -1142,7 +1142,25 @@ export class PurchaseOrderCreate512Component implements OnInit {
           'lines',
           this.adendum.barisInduk(induk),
           (x) => {
-          const g = this.buildServiceLine();
+          /*
+           * Pembangun baris MENGIKUTI MODE dokumennya.
+           *
+           * Mode barang memakai `buildGoodsLine` (punya `item_id` &
+           * `description`); mode jasa memakai `buildServiceLine`. Sebelumnya
+           * SELALU `buildServiceLine` — sehingga saat dokumen BARANG dibuka
+           * sebagai adendum/ubah, `patchValue` membuang `item_id`/nama (kunci
+           * yang tak ada di grup jasa), dan saat disimpan barisnya kehilangan
+           * rujukan katalog beserta namanya, tampil "—". Kelas yang sama
+           * dengan bug 5.1.12, lewat jalur sunting.
+           */
+          const g = this.isGoods
+            ? this.buildGoodsLine({
+                id: x.item_id,
+                sku: x.sku,
+                description: x.item_description,
+                unit: x.unit,
+              })
+            : this.buildServiceLine();
           g.patchValue(BALIK_BARIS['512'](x, this.isUbah));
           return g;
         },

@@ -2044,7 +2044,8 @@
     "jumlahBaris": "Amount (optional)",
     "jumlahBarisKet": "Leave empty to follow quantity × unit price.",
     "jumlahMenyimpang": "More than Rp {{batas}} away from quantity × unit price. Correct the unit price, not the amount.",
-    "jumlahMenyimpangCegah": "A line amount differs from quantity x price by more than Rp {{batas}}. Fix it first — the server discards out-of-range amounts."
+    "jumlahMenyimpangCegah": "A line amount differs from quantity x price by more than Rp {{batas}}. Fix it first — the server discards out-of-range amounts.",
+    "jumlahBarisHint": "Leave empty to follow volume × price."
   },
   "menu": {
     "editAsset": "Edit asset",

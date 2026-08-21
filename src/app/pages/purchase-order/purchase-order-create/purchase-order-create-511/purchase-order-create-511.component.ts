@@ -351,6 +351,18 @@ export class PurchaseOrderCreate511Component implements OnInit {
     purchaseType: new FormControl('5.1.1'),
     supplierID: new FormControl('', Validators.required),
     supplierName: new FormControl('', Validators.required),
+    /*
+     * `supplierPrefix` & `supplierCity` HARUS punya kendali di sini.
+     *
+     * Pemilih pemasok mem-`patchValue` keduanya, tetapi tanpa kendalinya
+     * Angular membuangnya diam-diam: tanda tangan mencetak nama telanjang
+     * ("Sumber Rezeki") alih-alih "PT. Sumber Rezeki", dan alamat Loco yang
+     * disusun otomatis kehilangan kotanya. Keduanya hanya untuk cetak —
+     * server menurunkan prefiks dari `supplierID` — tetapi lembar yang terbit
+     * saat itu memakai nilai dari sini.
+     */
+    supplierPrefix: new FormControl(''),
+    supplierCity: new FormControl(''),
     supplierAddress: new FormControl('', Validators.required),
 
     /*
@@ -550,6 +562,7 @@ export class PurchaseOrderCreate511Component implements OnInit {
              * yang mengikat kedua pihak. Tidak menghasilkan galat apa pun.
              */
             supplierPrefix: data.prefix || '',
+            supplierCity: data.city || '',
             supplierAddress: data.address,
             /*
              * Dua bentuk nama diterima.

@@ -137,6 +137,9 @@
 .po5112-itemprice {
   flex: 0 0 170px;
 }
+.po5112-itemamount {
+  flex: 0 0 170px;
+}
 .po5112-itemremove {
   flex: 0 0 auto;
   margin-top: 8px;
@@ -166,7 +169,8 @@
   .po5112-itemdesc,
   .po5112-itemqty,
   .po5112-itemunit,
-  .po5112-itemprice {
+  .po5112-itemprice,
+  .po5112-itemamount {
     flex: 1 1 100%;
   }
 }

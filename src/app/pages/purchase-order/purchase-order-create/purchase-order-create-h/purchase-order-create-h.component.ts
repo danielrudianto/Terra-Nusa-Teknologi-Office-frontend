@@ -1171,6 +1171,24 @@ export class PurchaseOrderCreateHComponent implements OnInit {
         rateType: this.formGroup.get('rateType')?.value,
         lumpSumPrice: Number(this.formGroup.get('lumpSumPrice')?.value) || 0,
         billingPeriod: this.formGroup.get('billingPeriod')?.value,
+        /*
+         * Sumber klausul yang DULU hanya hidup di memori layar.
+         *
+         * Kelima nilai ini ikut menentukan kalimat dokumen, tetapi tidak
+         * disimpan — sehingga cetak ulang / adendum merakit ulang klausulnya
+         * dari `customData` yang tidak memuatnya, dan kalimatnya diam-diam
+         * kembali ke bawaan (catatan PPh & alat kerja mandor ke pilihan
+         * pertama, tenggat mobilisasi ke 7 hari, penyelesaian grouting ke
+         * tempo/14). Disimpan di sini supaya yang tercetak ulang sama dengan
+         * yang ditandatangani.
+         */
+        settlementMode: this.formGroup.get('settlementMode')?.value,
+        settlementDays:
+          Number(this.formGroup.get('settlementDays')?.value) || 0,
+        mobilizationNoticeDays:
+          Number(this.formGroup.get('mobilizationNoticeDays')?.value) || 0,
+        pphNote: this.formGroup.get('pphNote')?.value,
+        toolingNote: this.formGroup.get('toolingNote')?.value,
         // Sakelar lampiran; menentukan kalimat kewajiban dan baris dokumen
         // pada Pasal 5 saat dokumennya dibaca kembali.
         lampiran: this.lampiranPasal5,
