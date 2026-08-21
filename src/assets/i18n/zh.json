@@ -804,7 +804,22 @@
     "pphSalaryRecap": "预扣税汇总（工资）",
     "pphSalarySub": "下载员工工资预扣税报表",
     "ppnRecap": "增值税汇总",
-    "ppnSub": "下载所选期间的增值税报表"
+    "ppnSub": "下载所选期间的增值税报表",
+    "ppnPositionTitle": "增值税状况",
+    "ppnPositionSub": "预估应缴或多缴",
+    "ppnPositionDesc": "某期间的<b>应缴/多缴</b>增值税预估。",
+    "ppnPositionCalc": "计算状况",
+    "ppnKurangBayar": "预估应缴",
+    "ppnLebihBayar": "预估多缴",
+    "ppnNihil": "预估为零",
+    "ppnEstimasiNote": "预估数字，取决于税务发票的完整性。",
+    "ppnKeluaran": "销项增值税",
+    "ppnMasukanKredit": "进项增值税（可抵扣）",
+    "ppnSelisih": "差额",
+    "ppnTanpaFaktur": "尚无税务发票的进项",
+    "ppnTanpaFakturNote": "金额真实存在，但在开具税务发票之前不能减少应缴款。",
+    "ppnBilaLengkap": "若所有发票均已开具",
+    "ppnUnduhRincian": "下载明细（Excel）"
   },
   "dashboardReimbursement": {
     "dialogTitle": "今日报销",

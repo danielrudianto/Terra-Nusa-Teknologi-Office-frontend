@@ -122,6 +122,47 @@
       </span>
     </button>
 
+    <button type="button" class="tx-card" (click)="openPosisiPPN()">
+      <span class="tx-card__icon tx-card__icon--blue">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      </span>
+      <span class="tx-card__body">
+        <span class="tx-card__title">{{
+          "taxing.ppnPositionTitle" | translate
+        }}</span>
+        <span
+          class="tx-card__desc"
+          [innerHTML]="'taxing.ppnPositionDesc' | translate"
+        ></span>
+      </span>
+      <span class="tx-card__cta"
+        >{{ "taxing.openReport" | translate }}
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </span>
+    </button>
+
     <button type="button" class="tx-card" (click)="openPPHReport()">
       <span class="tx-card__icon tx-card__icon--violet">
         <svg

@@ -804,7 +804,22 @@
     "pphSalaryRecap": "Rekap PPh (Gaji)",
     "pphSalarySub": "Unduh laporan PPh gaji karyawan",
     "ppnRecap": "Rekap PPN",
-    "ppnSub": "Unduh laporan PPN periode terpilih"
+    "ppnSub": "Unduh laporan PPN periode terpilih",
+    "ppnPositionTitle": "Posisi PPN",
+    "ppnPositionSub": "Estimasi kurang atau lebih bayar",
+    "ppnPositionDesc": "Estimasi PPN <b>kurang/lebih bayar</b> pada satu periode.",
+    "ppnPositionCalc": "Hitung posisi",
+    "ppnKurangBayar": "Estimasi kurang bayar",
+    "ppnLebihBayar": "Estimasi lebih bayar",
+    "ppnNihil": "Estimasi nihil",
+    "ppnEstimasiNote": "Angka estimasi, bergantung kelengkapan faktur pajak.",
+    "ppnKeluaran": "PPN keluaran",
+    "ppnMasukanKredit": "PPN masukan (dapat dikreditkan)",
+    "ppnSelisih": "Selisih",
+    "ppnTanpaFaktur": "Masukan belum ada faktur pajak",
+    "ppnTanpaFakturNote": "Nilainya nyata, tetapi belum bisa mengurangi setoran sampai fakturnya terbit.",
+    "ppnBilaLengkap": "Bila semua faktur terbit",
+    "ppnUnduhRincian": "Unduh rincian (Excel)"
   },
   "dashboardReimbursement": {
     "dialogTitle": "Reimbursement Hari Ini",

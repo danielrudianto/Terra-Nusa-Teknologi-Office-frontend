@@ -804,7 +804,22 @@
     "pphSalaryRecap": "Withholding tax recap (salary)",
     "pphSalarySub": "Download employee salary withholding tax report",
     "ppnRecap": "VAT recap",
-    "ppnSub": "Download VAT report for the selected period"
+    "ppnSub": "Download VAT report for the selected period",
+    "ppnPositionTitle": "VAT Position",
+    "ppnPositionSub": "Estimated payable or overpaid",
+    "ppnPositionDesc": "Estimated VAT <b>payable/overpaid</b> for a period.",
+    "ppnPositionCalc": "Calculate position",
+    "ppnKurangBayar": "Estimated payable",
+    "ppnLebihBayar": "Estimated overpaid",
+    "ppnNihil": "Estimated nil",
+    "ppnEstimasiNote": "Estimated figure, depends on tax invoice completeness.",
+    "ppnKeluaran": "Output VAT",
+    "ppnMasukanKredit": "Input VAT (creditable)",
+    "ppnSelisih": "Difference",
+    "ppnTanpaFaktur": "Input without tax invoice",
+    "ppnTanpaFakturNote": "The amount is real, but cannot reduce the payment until its tax invoice is issued.",
+    "ppnBilaLengkap": "If all invoices are issued",
+    "ppnUnduhRincian": "Download details (Excel)"
   },
   "dashboardReimbursement": {
     "dialogTitle": "Today's Reimbursements",

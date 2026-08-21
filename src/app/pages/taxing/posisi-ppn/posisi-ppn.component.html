@@ -1,0 +1,116 @@
+<div class="txr">
+  <div class="txr-head" mat-dialog-title appDialogGeser>
+    <span class="txr-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    </span>
+    <div class="txr-head__text">
+      <h2 class="txr-title">{{ "taxing.ppnPositionTitle" | translate }}</h2>
+      <span class="txr-sub">{{ "taxing.ppnPositionSub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="txr-content">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <div class="txr-yearrow">
+        <span class="txr-label">{{ "common.period" | translate }}</span>
+        <div class="txr-year">
+          <button type="button" (click)="gantiTahun(-1)"
+            [attr.aria-label]="'tax.tahunSebelumnya' | translate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <span>{{ formGroup.value.year }}</span>
+          <button type="button" (click)="gantiTahun(1)"
+            [attr.aria-label]="'tax.tahunBerikutnya' | translate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      </div>
+      <div class="txr-months">
+        <button type="button" class="txr-month" *ngFor="let m of months"
+          [class.is-active]="+formGroup.value.month === m.n"
+          (click)="pilihBulan(m.n)">
+          {{ m.key | translate }}
+        </button>
+      </div>
+
+      <button type="submit" class="pp-hitung"
+        [disabled]="formGroup.invalid || isLoading">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2" />
+          <path d="M8 6h8M8 10h8M8 14h3M8 18h3M15 14l4 4M19 14l-4 4" />
+        </svg>
+        {{ isLoading ? ('hardcoded.menyiapkan' | translate) : ('taxing.ppnPositionCalc' | translate) }}
+      </button>
+    </form>
+
+    <!-- ===== hasil ===== -->
+    <div class="pp-result" *ngIf="posisi && !isLoading">
+      <!-- verdict -->
+      <div class="pp-verdict"
+        [class.pp-verdict--kurang]="posisi.status === 'kurang_bayar'"
+        [class.pp-verdict--lebih]="posisi.status === 'lebih_bayar'"
+        [class.pp-verdict--nihil]="posisi.status === 'nihil'">
+        <span class="pp-verdict__label">
+          <ng-container [ngSwitch]="posisi.status">
+            <span *ngSwitchCase="'kurang_bayar'">{{ "taxing.ppnKurangBayar" | translate }}</span>
+            <span *ngSwitchCase="'lebih_bayar'">{{ "taxing.ppnLebihBayar" | translate }}</span>
+            <span *ngSwitchDefault>{{ "taxing.ppnNihil" | translate }}</span>
+          </ng-container>
+        </span>
+        <span class="pp-verdict__value">Rp {{ selisihAbs | number: "1.0-0" }}</span>
+        <span class="pp-verdict__note">{{ "taxing.ppnEstimasiNote" | translate }}</span>
+      </div>
+
+      <!-- breakdown -->
+      <div class="pp-row">
+        <span class="pp-row__key">{{ "taxing.ppnKeluaran" | translate }}</span>
+        <span class="pp-row__val">Rp {{ posisi.keluaran.total | number: "1.0-0" }}</span>
+      </div>
+      <div class="pp-row">
+        <span class="pp-row__key">{{ "taxing.ppnMasukanKredit" | translate }}</span>
+        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.masukanKreditable.total | number: "1.0-0" }}</span>
+      </div>
+      <div class="pp-row pp-row--sum">
+        <span class="pp-row__key">{{ "taxing.ppnSelisih" | translate }}</span>
+        <span class="pp-row__val">Rp {{ posisi.selisih | number: "1.0-0" }}</span>
+      </div>
+
+      <!-- catatan masukan tanpa faktur -->
+      <div class="pp-warn" *ngIf="posisi.masukanTanpaFaktur.total > 0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <path d="M12 9v4M12 17h.01" />
+        </svg>
+        <div class="pp-warn__text">
+          <strong>{{ "taxing.ppnTanpaFaktur" | translate }}: Rp {{ posisi.masukanTanpaFaktur.total | number: "1.0-0" }}</strong>
+          <span>{{ "taxing.ppnTanpaFakturNote" | translate }}</span>
+          <span class="pp-warn__proj">
+            {{ "taxing.ppnBilaLengkap" | translate }}:
+            Rp {{ posisi.selisihBilaLengkap | number: "1.0-0" }}
+          </span>
+        </div>
+      </div>
+
+      <button type="button" class="pp-unduh" (click)="unduhExcel()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+        </svg>
+        {{ "taxing.ppnUnduhRincian" | translate }}
+      </button>
+    </div>
+  </mat-dialog-content>
+</div>
