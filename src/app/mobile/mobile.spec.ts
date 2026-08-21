@@ -175,7 +175,7 @@ describe('mobile: persetujuan menunggu klausul dibaca', () => {
 
   it('hidup setelah ditandai dibaca', () => {
     const c = layarPo({ sudahBaca: false });
-    c.tandaiBaca();
+    c.tandaiBaca(true);
     expect(c.sudahBaca).toBeTrue();
     expect(c.bolehTekanSetuju(poOrangLain)).toBeTrue();
   });
@@ -197,5 +197,37 @@ describe('mobile: persetujuan menunggu klausul dibaca', () => {
     const c = layarPo();
     expect(c.ikon({ name: '082-SPK-MICZ-A' })).toBe('engineering');
     expect(c.ikon({ name: '086-PO-R501-G' })).toBe('inventory_2');
+  });
+});
+
+describe('mobile: daftar barang PO dapat dibuka', () => {
+  function layar(items: any[]): any {
+    const c: any = Object.create(PersetujuanPoComponent.prototype);
+    c.dipilih = { purchaseType: 'G', items };
+    return c;
+  }
+
+  it('memetakan baris memakai barisTampil bersama', () => {
+    const c = layar([
+      { quantity: 200, unit: 'sak', price: 62500, item_description: 'Semen' },
+    ]);
+    expect(c.jumlahBarang).toBe(1);
+    const b = c.barang[0];
+    expect(b.judul).toContain('Semen');
+    expect(b.qty).toBe('200 sak');
+    expect(b.nilai).toBe(200 * 62500);
+  });
+
+  it('menghormati jumlah tertulis pada baris', () => {
+    // Baris dengan `amount` (pembetulan pembulatan) memakai angka itu, bukan
+    // volume kali harga — sama dengan seluruh aplikasi.
+    const c = layar([{ quantity: 7000, price: 42.8571, amount: 300000, item_description: 'Solar' }]);
+    expect(c.barang[0].nilai).toBe(300000);
+  });
+
+  it('tanpa barang, jumlahnya nol', () => {
+    const c = layar([]);
+    expect(c.jumlahBarang).toBe(0);
+    expect(c.barang).toEqual([]);
   });
 });

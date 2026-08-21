@@ -180,3 +180,123 @@
     accent-color: var(--brand);
   }
 }
+
+/* ---- daftar barang, dapat dibuka-tutup ---- */
+.mpo-barang {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+}
+
+.mpo-barang__kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: 0;
+  background: var(--surface-2);
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  min-height: 48px;
+
+  > mat-icon {
+    flex: none;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    color: var(--muted);
+  }
+}
+
+.mpo-barang__judul {
+  flex: 1 1 auto;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.mpo-barang__jumlah {
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 1.35rem;
+  text-align: center;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.mpo-barang__panah {
+  flex: none;
+  color: var(--faint);
+  transition: transform 0.18s ease;
+
+  &.buka {
+    transform: rotate(180deg);
+  }
+}
+
+.mpo-barang__daftar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mpo-barang__baris {
+  padding: 0.7rem 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.mpo-barang__utama {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.mpo-barang__nama {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.mpo-barang__nilai {
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.mpo-barang__bawah {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  margin-top: 0.2rem;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.mpo-barang__qty {
+  font-weight: 600;
+  color: var(--brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpo-barang__panah {
+    transition: none;
+  }
+}
+
+/* Tercentang: latar hijau lembut + ikon centang, supaya keadaan "sudah
+   dikonfirmasi" terbaca sekilas tanpa harus melihat kotaknya. */
+.mpo-baca--tercentang {
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+}

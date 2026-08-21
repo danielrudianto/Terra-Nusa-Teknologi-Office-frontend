@@ -16,6 +16,8 @@ import {
 } from '../../helpers/klausul-dokumen.helper';
 import { ClauseSection } from '../../constants/clause-templates';
 import { purchaseTypeLabel } from '../../constants/purchase-type-label.constant';
+import { barisTampil } from '../../constants/baris-tampil-po';
+import { nilaiBaris } from '../../helpers/nilai-baris.helper';
 
 /**
  * Menyetujui purchase order dari ponsel.
@@ -109,6 +111,37 @@ export class PersetujuanPoComponent implements OnInit {
 
   klausulSubDaftar = klausulSubDaftar;
 
+  /** Daftar barang dibuka atau tertutup; tertutup saat panel dibuka. */
+  barangTerbuka = false;
+
+  /**
+   * Baris barang dokumen ini, dalam bentuk siap tampil.
+   *
+   * Memakai `barisTampil()` yang SAMA dengan layar desktop: kolom
+   * `remarks_1..6` berarti berbeda tiap varian PO, dan menerjemahkannya
+   * sendiri di sini akan menampilkan nomor polisi sebagai nama barang pada
+   * satu varian dan sebaliknya pada varian lain.
+   */
+  get barang(): { judul: string; rincian: string[]; qty: string; nilai: number }[] {
+    const items = this.dipilih?.items ?? [];
+    return items.map((x: any) => {
+      const t = barisTampil(this.dipilih?.purchaseType, x);
+      const q = Number(x?.quantity) || 0;
+      const satuan = (x?.unit ?? '').toString().trim();
+      return {
+        judul: t.judul,
+        rincian: t.rincian,
+        // "10 sak", "1 Ls" — kosong bila volumenya tak berarti.
+        qty: q ? `${q}${satuan ? ' ' + satuan : ''}` : satuan,
+        nilai: nilaiBaris(x),
+      };
+    });
+  }
+
+  get jumlahBarang(): number {
+    return this.dipilih?.items?.length ?? 0;
+  }
+
   /**
    * Membuka rincian MENGAMBIL dokumen lengkapnya lebih dulu.
    *
@@ -122,6 +155,7 @@ export class PersetujuanPoComponent implements OnInit {
     this.dipilih = po;
     this.klausul = [];
     this.sudahBaca = false;
+    this.barangTerbuka = false;
     this.memuatRincian = true;
     this.api.get(`purchase-orders/${po.id}`, {}).subscribe({
       next: (rinci: any) => {
@@ -164,8 +198,11 @@ export class PersetujuanPoComponent implements OnInit {
    * satu ketukan refleks di ponsel yang dipegang sambil berjalan. Dokumen
    * tanpa klausul tidak menuntutnya; tidak ada yang perlu dibaca.
    */
-  tandaiBaca(): void {
-    this.sudahBaca = true;
+  tandaiBaca(dicentang: boolean): void {
+    // Boleh dibatalkan lagi: yang tak sengaja mencentang harus punya jalan
+    // menariknya, dan mencabut centang mengunci kembali tombol setujunya —
+    // tanda "sudah membaca" tidak boleh tertinggal benar padahal ditarik.
+    this.sudahBaca = dicentang;
   }
 
   /** Dokumen ini dibuat oleh saya sendiri. */

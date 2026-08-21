@@ -4654,7 +4654,8 @@
       "sudahDiperiksa": "Checked",
       "poinPerjanjian": "Agreement terms",
       "tanpaKlausul": "This document has no agreement terms.",
-      "sudahBaca": "I have read the terms above."
+      "sudahBaca": "I have read the terms above.",
+      "barang": "Line items"
     },
     "reimbursement": {
       "judul": "Reimbursement Approval",

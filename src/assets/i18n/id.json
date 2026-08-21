@@ -4654,7 +4654,8 @@
       "sudahDiperiksa": "Diperiksa",
       "poinPerjanjian": "Poin perjanjian",
       "tanpaKlausul": "Dokumen ini tidak memuat poin perjanjian.",
-      "sudahBaca": "Saya sudah membaca poin perjanjian di atas."
+      "sudahBaca": "Saya sudah membaca poin perjanjian di atas.",
+      "barang": "Daftar barang"
     },
     "reimbursement": {
       "judul": "Persetujuan Reimbursement",

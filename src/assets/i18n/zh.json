@@ -4654,7 +4654,8 @@
       "sudahDiperiksa": "已审核",
       "poinPerjanjian": "协议条款",
       "tanpaKlausul": "此单据没有协议条款。",
-      "sudahBaca": "我已阅读以上条款。"
+      "sudahBaca": "我已阅读以上条款。",
+      "barang": "明细"
     },
     "reimbursement": {
       "judul": "报销审批",

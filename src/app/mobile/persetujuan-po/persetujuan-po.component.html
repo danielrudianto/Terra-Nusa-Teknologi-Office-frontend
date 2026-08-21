@@ -78,6 +78,53 @@
         <dd>{{ dipilih.checkedByName || "—" }}</dd>
       </dl>
 
+      <!--
+        Daftar barang, dapat DIBUKA-TUTUP.
+
+        Tertutup saat panel dibuka: sebagian besar keputusan cukup dari nomor,
+        pemasok, dan nilainya di atas. Yang perlu memeriksa rincinya membukanya
+        — dan pada dokumen berbaris banyak, daftar yang selalu terbentang
+        mendorong klausul serta tombolnya jauh ke bawah.
+      -->
+      @if (jumlahBarang) {
+        <div class="mpo-barang">
+          <button
+            type="button"
+            class="mpo-barang__kepala"
+            (click)="barangTerbuka = !barangTerbuka"
+            [attr.aria-expanded]="barangTerbuka"
+          >
+            <mat-icon>inventory_2</mat-icon>
+            <span class="mpo-barang__judul">
+              {{ "mobile.po.barang" | translate }}
+              <span class="mpo-barang__jumlah">{{ jumlahBarang }}</span>
+            </span>
+            <mat-icon class="mpo-barang__panah" [class.buka]="barangTerbuka">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (barangTerbuka) {
+            <ul class="mpo-barang__daftar">
+              @for (b of barang; track $index) {
+                <li class="mpo-barang__baris">
+                  <div class="mpo-barang__utama">
+                    <span class="mpo-barang__nama">{{ b.judul }}</span>
+                    <span class="mpo-barang__nilai">{{ b.nilai | number: "1.0-0" }}</span>
+                  </div>
+                  <div class="mpo-barang__bawah">
+                    <span class="mpo-barang__qty">{{ b.qty || "—" }}</span>
+                    @for (r of b.rincian; track $index) {
+                      <span class="mpo-barang__ket">{{ r }}</span>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
       <!-- Poin perjanjian: yang sebenarnya harus dibaca sebelum menyetujui. -->
       <div class="mpo-klausul">
         <div class="mpo-klausul__judul">
@@ -118,9 +165,21 @@
           <mat-icon>info</mat-icon>
           <span>{{ sebab | translate }}</span>
         </div>
-      } @else if (klausul.length && !sudahBaca) {
-        <label class="mpo-baca">
-          <input type="checkbox" [checked]="sudahBaca" (change)="tandaiBaca()" />
+      } @else if (klausul.length) {
+        <!--
+          TETAP terlihat setelah dicentang, bukan hilang.
+
+          Centang yang lenyap begitu ditekan menghilangkan satu-satunya tanda
+          bahwa langkah itu sudah dilewati — yang membukanya kembali tidak tahu
+          apakah ia sudah mengonfirmasi atau belum. Dibiarkan tampil dan
+          tercentang, sekaligus dapat ditarik untuk mengunci lagi.
+        -->
+        <label class="mpo-baca" [class.mpo-baca--tercentang]="sudahBaca">
+          <input
+            type="checkbox"
+            [checked]="sudahBaca"
+            (change)="tandaiBaca($any($event.target).checked)"
+          />
           <span>{{ "mobile.po.sudahBaca" | translate }}</span>
         </label>
       }
