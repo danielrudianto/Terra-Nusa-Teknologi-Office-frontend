@@ -1,4 +1,4 @@
-<div class="pu">
+<form class="pu" (ngSubmit)="onSubmit()">
   <div class="pu-head" mat-dialog-title appDialogGeser>
     <span class="pu-badge"><mat-icon>edit_note</mat-icon></span>
     <div class="pu-head__text">
@@ -6,65 +6,54 @@
       <span class="pu-sub">{{ "purchaseUpdate.subtitle" | translate }}</span>
     </div>
   </div>
+
   <mat-dialog-content class="pu-content">
-    <mat-stepper [linear]="true" #stepper>
-      <mat-step [stepControl]="metaFormGroup">
-        <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-          <ng-template matStepLabel>{{
-            "expense.metaData" | translate
-          }}</ng-template>
-          <mat-form-field appearance="outline" class="w-100 d-none">
-            <mat-label>{{ "purchaseUpdate.id" | translate }}</mat-label>
-            <input matInput formControlName="id" readonly />
+    @if (memuat) {
+      <div class="pu-muat"><mat-spinner diameter="34" /></div>
+    } @else {
+      <!-- Dokumen mana yang sedang disunting; ketiganya tak dapat diubah. -->
+      <div class="pu-info">
+        <div class="pu-info__baris">
+          <mat-icon>storefront</mat-icon>
+          <span>{{ metaFormGroup.get("supplierName")?.value || "—" }}</span>
+        </div>
+        <div class="pu-info__baris">
+          <mat-icon>tag</mat-icon>
+          <span>{{ metaFormGroup.get("purchaseOrderName")?.value || "—" }}</span>
+        </div>
+        <div class="pu-info__baris">
+          <mat-icon>category</mat-icon>
+          <span>{{ metaFormGroup.get("purchaseType")?.value || "—" }}</span>
+        </div>
+        @if (metaFormGroup.get("supplierAddress")?.value) {
+          <div class="pu-info__baris pu-info__baris--alamat">
+            <mat-icon>place</mat-icon>
+            <span>{{ metaFormGroup.get("supplierAddress")?.value }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Keterangan -->
+      <ng-container [formGroup]="metaFormGroup">
+        <div class="pu-seksi">{{ "expense.metaData" | translate }}</div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseUpdate.invoiceName" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="invoiceName"
+            type="text"
+            [placeholder]="'expense.invoiceName' | translate"
+          />
+        </mat-form-field>
+
+        <div class="pu-dua">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "purchaseUpdate.receiptName" | translate }}</mat-label>
+            <input matInput type="text" formControlName="receiptName" />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseUpdate.supplier" | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="supplierName"
-              type="text"
-              [placeholder]="'purchaseDraft.supplierName' | translate"
-              readonly
-            />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
-            <textarea
-              matInput
-              formControlName="supplierAddress"
-              rows="3"
-              [placeholder]="'purchase.supplierAddress' | translate"
-              readonly
-              style="resize: none"
-            ></textarea>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseUpdate.invoiceName" | translate
-            }}</mat-label>
-            <input
-              matInput
-              formControlName="invoiceName"
-              type="text"
-              [placeholder]="'expense.invoiceName' | translate"
-            />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseUpdate.receiptName" | translate
-            }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="receiptName"
-              [placeholder]="'purchaseDraft.receiptName' | translate"
-            />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
+          <mat-form-field appearance="outline">
             <mat-label>{{
               "purchaseUpdate.taxInvoiceName" | translate
             }}</mat-label>
@@ -72,91 +61,54 @@
               matInput
               type="text"
               formControlName="taxInvoiceName"
-              [placeholder]="'purchaseDraft.taxInvoiceName' | translate"
               maxlength="17"
             />
           </mat-form-field>
+        </div>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseUpdate.purchaseOrderName" | translate
-            }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="purchaseOrderName"
-              [placeholder]="'purchaseDraft.purchaseOrderName' | translate"
-              readonly
-            />
-          </mat-form-field>
+        <app-project-selector
+          formControlName="projectName"
+          [label]="'purchaseUpdate.project' | translate"
+        />
 
-          <app-project-selector
-        formControlName="projectName"
-        [label]="'purchaseUpdate.project' | translate"
-      />
-
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseUpdate.purchaseType" | translate
-            }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="purchaseType"
-              [placeholder]="'purchaseDraft.purchaseType' | translate"
-              readonly
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-100">
+        <div class="pu-dua">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.date" | translate }}</mat-label>
             <input
               matInput
               formControlName="date"
-              [placeholder]="'expense.date' | translate"
               [matDatepicker]="picker"
             />
-            <mat-datepicker-toggle
-              matIconPrefix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-datepicker-toggle matIconSuffix [for]="picker" />
+            <mat-datepicker #picker />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.dueDate" | translate }}</mat-label>
             <input
               matInput
               formControlName="dueDate"
-              [placeholder]="'expense.date' | translate"
               [matDatepicker]="duePicker"
             />
-            <mat-datepicker-toggle
-              matIconPrefix
-              [for]="duePicker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #duePicker></mat-datepicker>
+            <mat-datepicker-toggle matIconSuffix [for]="duePicker" />
+            <mat-datepicker #duePicker />
           </mat-form-field>
-        </form>
+        </div>
+      </ng-container>
 
-        <mat-divider class="my-3"></mat-divider>
-        <button mat-stroked-button color="primary" matStepperNext>
-          {{ "common.stepNext" | translate }}
-        </button>
-      </mat-step>
-      <mat-step [stepControl]="valueFormGroup">
-        <form [formGroup]="valueFormGroup">
-          <ng-template matStepLabel>{{
-            "expense.valueData" | translate
-          }}</ng-template>
-          <mat-divider class="mt-3"></mat-divider>
+      <mat-divider class="pu-garis" />
 
-          <mat-form-field appearance="outline" class="w-100">
+      <!-- Nilai -->
+      <ng-container [formGroup]="valueFormGroup">
+        <div class="pu-seksi">{{ "expense.valueData" | translate }}</div>
+
+        <div class="pu-dua">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.dpp" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="dpp"
-              [placeholder]="'expense.dpp' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -164,27 +116,26 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.ppnPercent" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="ppn"
-              [placeholder]="'purchaseDraft.ppn' | translate"
-              suffix="%"
-              thousandSeparator=" "
+              suffix=" %"
               mask="separator.2"
               readonly
             />
           </mat-form-field>
+        </div>
 
-          <mat-form-field appearance="outline" class="w-100">
+        <div class="pu-dua">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.ppnValue" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="ppnValue"
-              [placeholder]="'purchaseDraft.ppnRp' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
@@ -192,21 +143,22 @@
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
+          <mat-form-field appearance="outline">
             <mat-label>{{ "purchaseUpdate.pbbkb" | translate }}</mat-label>
             <input
               matInput
               type="text"
               formControlName="pbbkb"
-              [placeholder]="'expense.pbbkb' | translate"
               prefix="Rp. "
               thousandSeparator=" "
               mask="separator.2"
               readonly
             />
           </mat-form-field>
+        </div>
 
-          <mat-form-field appearance="outline" class="w-100">
+        <div class="pu-dua">
+          <mat-form-field appearance="outline">
             <mat-label>{{
               "purchaseUpdate.pphObjectName" | translate
             }}</mat-label>
@@ -214,12 +166,11 @@
               matInput
               type="text"
               formControlName="pphTaxObject"
-              [placeholder]="'expense.pphObjectName' | translate"
               readonly
             />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
+          <mat-form-field appearance="outline">
             <mat-label>{{
               "purchaseUpdate.pphPercentage" | translate
             }}</mat-label>
@@ -227,147 +178,100 @@
               matInput
               type="text"
               formControlName="pphPercentage"
-              [placeholder]="'purchaseDraft.pphPercentage' | translate"
+              suffix=" %"
               readonly
             />
           </mat-form-field>
+        </div>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseUpdate.otherValue" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="otherValue"
-              [placeholder]="'purchaseDraft.othervalue' | translate"
-              prefix="Rp. "
-              thousandSeparator=" "
-              mask="separator.2"
-              readonly
-            />
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseUpdate.otherValue" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="otherValue"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+            readonly
+          />
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{
-              "purchaseUpdate.otherValueNote" | translate
-            }}</mat-label>
-            <mat-select formControlName="otherValueNote">
-              <mat-option value="">{{ "purchaseUpdate.select" | translate }}</mat-option>
-              <!--
-                Daftar jenis dikumpulkan di `jenis-nilai-lain.ts`.
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{
+            "purchaseUpdate.otherValueNote" | translate
+          }}</mat-label>
+          <mat-select formControlName="otherValueNote">
+            <mat-option value="">{{
+              "purchaseUpdate.select" | translate
+            }}</mat-option>
+            @for (j of jenisNilaiLain; track j.value) {
+              <mat-option [value]="j.value">{{ j.label | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-                Sebelumnya tiap layar menulisnya sendiri, dan keempatnya
-                berbeda: `administrative` hanya ada di satu, dan PPh 22
-                tersimpan dengan nilai `packing`.
-              -->
-              @for (j of jenisNilaiLain; track j.value) {
-                <mat-option [value]="j.value">{{ j.label | translate }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+        <div class="pu-total">
+          <span>{{ "purchaseUpdate.total" | translate }}</span>
+          <span class="pu-total__nilai">{{
+            valueFormGroup.get("total")?.value | number: "1.0-2"
+          }}</span>
+        </div>
+      </ng-container>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{ "purchaseUpdate.total" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="total"
-              [placeholder]="'expense.total' | translate"
-              prefix="Rp. "
-              thousandSeparator=" "
-              mask="separator.2"
-            />
-          </mat-form-field>
-        </form>
+      <mat-divider class="pu-garis" />
 
-        <mat-divider class="my-3"></mat-divider>
-        <button
-          mat-stroked-button
-          color="accent"
-          style="letter-spacing: 0"
-          matStepperPrevious
-        >
-          {{ "common.stepPrev" | translate }}
-        </button>
+      <!-- Lampiran -->
+      <ng-container [formGroup]="attachmentFormGroup">
+        <div class="pu-seksi">{{ "common.attachmentsData" | translate }}</div>
 
-        <button
-          mat-stroked-button
-          color="primary"
-          style="letter-spacing: 0"
-          class="ms-2"
-          matStepperNext
-        >
-          {{ "common.stepNext" | translate }}
-        </button>
-      </mat-step>
-      <mat-step [stepControl]="attachmentFormGroup">
-        <form [formGroup]="attachmentFormGroup">
-          <ng-template matStepLabel>{{
-            "common.attachmentsData" | translate
-          }}</ng-template>
-          <mat-divider class="mt-3"></mat-divider>
-
+        <div class="pu-lampiran">
+          <mat-slide-toggle color="primary" formControlName="isInvoiceAttached">{{
+            "purchaseDraft.invoice" | translate
+          }}</mat-slide-toggle>
+          <mat-slide-toggle color="primary" formControlName="isReceiptAttached">{{
+            "purchaseDraft.receipt" | translate
+          }}</mat-slide-toggle>
           <mat-slide-toggle
             color="primary"
-            class="my-2"
-            formControlName="isInvoiceAttached"
-            >{{ "purchaseDraft.invoice" | translate }}</mat-slide-toggle
-          >
-          <br />
-
-          <mat-slide-toggle
-            color="primary"
-            class="my-2"
-            formControlName="isReceiptAttached"
-            >{{ "purchaseDraft.receipt" | translate }}</mat-slide-toggle
-          >
-          <br />
-
-          <mat-slide-toggle
-            color="primary"
-            class="my-2"
             formControlName="isTaxInvoiceAttached"
             >{{ "purchaseDraft.taxInvoice" | translate }}</mat-slide-toggle
           >
-          <br />
-
+          <mat-slide-toggle color="primary" formControlName="isCopAttached">{{
+            "purchaseDraft.certificateOfPayment" | translate
+          }}</mat-slide-toggle>
           <mat-slide-toggle
             color="primary"
-            class="my-2"
-            formControlName="isCopAttached"
-            >{{ "purchaseDraft.certificateOfPayment" | translate }}</mat-slide-toggle
-          >
-          <br />
-
-          <mat-slide-toggle
-            color="primary"
-            class="my-2"
             formControlName="isCopyPurchaseOrderAttached"
-            >{{ "purchaseDraft.copyOfPurchaseOrderContract" | translate }}</mat-slide-toggle
+            >{{
+              "purchaseDraft.copyOfPurchaseOrderContract" | translate
+            }}</mat-slide-toggle
           >
-          <br />
-        </form>
-
-        <mat-divider class="my-3"></mat-divider>
-        <button
-          mat-stroked-button
-          color="accent"
-          style="letter-spacing: 0"
-          matStepperPrevious
-        >
-          {{ "common.stepPrev" | translate }}
-        </button>
-
-        <button
-          mat-stroked-button
-          color="primary"
-          style="letter-spacing: 0"
-          class="ms-2"
-          type="button"
-          (click)="onSubmit()"
-        >
-          {{ "common.submit" | translate }}
-        </button>
-      </mat-step>
-    </mat-stepper>
+        </div>
+      </ng-container>
+    }
   </mat-dialog-content>
-</div>
+
+  <div class="pu-aksi">
+    <button mat-button type="button" mat-dialog-close>
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="
+        memuat ||
+        isSubmitting ||
+        metaFormGroup.invalid ||
+        attachmentFormGroup.invalid
+      "
+    >
+      @if (isSubmitting) {
+        <mat-spinner diameter="18" />
+      } @else {
+        {{ "common.save" | translate }}
+      }
+    </button>
+  </div>
+</form>

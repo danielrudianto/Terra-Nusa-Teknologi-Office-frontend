@@ -22,7 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from 'src/app/services/api.service';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -64,7 +64,7 @@ function bankAccountIDRequired(): ValidatorFn {
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatStepperModule,
+    MatProgressSpinnerModule,
     MatDatepickerModule,
     MatDividerModule,
     MatSelectModule,
@@ -90,6 +90,8 @@ export class PurchaseUpdateComponent {
   ) {}
 
   isSubmitting: boolean = false;
+  /** Muat awal: spinner dulu, supaya kolomnya tidak berkedip kosong. */
+  memuat: boolean = true;
   purchaseType = null;
   metaFormGroup: FormGroup = new FormGroup({
     id: new FormControl(this.data.id),
@@ -280,10 +282,20 @@ export class PurchaseUpdateComponent {
         });
         this.dialog.close();
       },
-    });
+    }).add(() => (this.memuat = false));
   }
 
   onSubmit() {
+    // Enter di dalam form ikut memanggil ini; jadi penjaganya di sini, bukan
+    // hanya pada keadaan tombolnya. Tanpa ini, menekan Enter saat kolom masih
+    // salah tetap mengirim.
+    if (this.isSubmitting || this.memuat) return;
+    if (this.metaFormGroup.invalid || this.attachmentFormGroup.invalid) {
+      this.metaFormGroup.markAllAsTouched();
+      this.attachmentFormGroup.markAllAsTouched();
+      return;
+    }
+
     this.isSubmitting = true;
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);

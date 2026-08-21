@@ -1,4 +1,4 @@
-<div class="pum">
+<form class="pum" (ngSubmit)="simpan()">
   <div class="pum-head" mat-dialog-title appDialogGeser>
     <span class="pum-badge"><mat-icon>edit_note</mat-icon></span>
     <div class="pum-head__text">
@@ -25,7 +25,7 @@
         }
       </div>
 
-      <form [formGroup]="meta" (ngSubmit)="simpan()">
+      <ng-container [formGroup]="meta">
         <div class="pum-seksi">{{ "purchaseMeta.metaSection" | translate }}</div>
 
         <mat-form-field appearance="outline" class="w-100">
@@ -59,11 +59,11 @@
           />
           <mat-hint>{{ "purchaseMeta.taxInvoiceHint" | translate }}</mat-hint>
         </mat-form-field>
-      </form>
+      </ng-container>
 
       <mat-divider class="pum-garis" />
 
-      <form [formGroup]="nilai">
+      <ng-container [formGroup]="nilai">
         <div class="pum-seksi pum-seksi--nilai">
           <span>{{ "purchaseMeta.valueSection" | translate }}</span>
           @if (adaPembayaran) {
@@ -118,7 +118,7 @@
           <span>{{ "purchaseMeta.total" | translate }}</span>
           <span class="pum-total__nilai">{{ total | number: "1.0-2" }}</span>
         </div>
-      </form>
+      </ng-container>
     }
   </mat-dialog-content>
 
@@ -129,9 +129,8 @@
     <button
       mat-flat-button
       color="primary"
-      type="button"
+      type="submit"
       [disabled]="memuat || menyimpan || meta.invalid"
-      (click)="simpan()"
     >
       @if (menyimpan) {
         <mat-spinner diameter="18" />
@@ -140,4 +139,4 @@
       }
     </button>
   </div>
-</div>
+</form>

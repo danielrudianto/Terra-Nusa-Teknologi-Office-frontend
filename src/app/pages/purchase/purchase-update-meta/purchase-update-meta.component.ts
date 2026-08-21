@@ -160,6 +160,9 @@ export class PurchaseUpdateMetaComponent {
   }
 
   simpan(): void {
+    // Enter di dalam form ikut memanggil ini; jangan kirim saat masih memuat,
+    // sedang menyimpan, atau kolomnya belum sah.
+    if (this.memuat || this.menyimpan) return;
     if (this.meta.invalid) {
       this.meta.markAllAsTouched();
       return;

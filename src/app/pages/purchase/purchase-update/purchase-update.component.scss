@@ -2,20 +2,23 @@
   font-family: "Montserrat", sans-serif;
   color: var(--ink, #16181d);
   width: 100%;
+  max-width: 480px;
   box-sizing: border-box;
-}
-.pu *,
-.pu *::before,
-.pu *::after {
-  box-sizing: border-box;
+  display: block;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }
 
-/* header */
+/* header — sama irama dengan dialog Ubah Pembelian (meta) */
 .pu-head {
   display: flex !important;
   align-items: center;
   gap: 12px;
-  padding: 1.15rem 1.4rem !important;
+  padding: 1.1rem 1.35rem !important;
   margin: 0 !important;
   background: linear-gradient(
     135deg,
@@ -23,6 +26,7 @@
     var(--surface-2, #f3f6ff) 100%
   );
   border-bottom: 1px solid var(--border, #e3e6eb);
+  cursor: grab;
   &::before {
     display: none !important;
     content: none !important;
@@ -54,103 +58,132 @@
   font-size: 1.02rem;
   font-weight: 700;
   margin: 0;
-  color: var(--ink, #16181d);
 }
 .pu-sub {
   font-size: 0.8rem;
   color: var(--muted, #6b7280);
-  white-space: nowrap;
 }
 
 .pu-content {
-  padding: 1rem 1.4rem 1.25rem !important;
+  padding: 1rem 1.35rem 0.5rem !important;
   overflow-x: hidden;
+}
+
+.pu-muat {
+  display: grid;
+  place-items: center;
+  padding: 2.5rem 0;
+}
+
+/* pita info dokumen (pemasok, nomor PO, jenis) */
+.pu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.9rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f5f7fb);
+  border: 1px solid var(--line, #eef0f3);
+  &__baris {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    mat-icon {
+      flex: 0 0 auto;
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+      color: var(--muted, #6b7280);
+    }
+    &--alamat {
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: var(--muted, #6b7280);
+      align-items: flex-start;
+    }
+  }
+}
+
+.pu-seksi {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  margin: 0.2rem 0 0.65rem;
 }
 
 .w-100 {
   width: 100%;
 }
-.d-none {
-  display: none !important;
-}
-.my-2 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.my-3 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-.mt-3 {
-  margin-top: 1rem;
-}
-.ms-2 {
-  margin-left: 0.5rem;
+.pu-dua {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  mat-form-field {
+    width: 100%;
+  }
 }
 
-/* stepper — dark aware */
-:host ::ng-deep .mat-stepper-vertical,
-:host ::ng-deep .mat-stepper-horizontal {
-  background: transparent;
-  font-family: "Montserrat", sans-serif;
+.pu-garis {
+  margin: 0.4rem 0 1rem !important;
+  border-top-color: var(--line, #eef0f3) !important;
 }
-:host ::ng-deep .mat-step-header {
-  border-radius: 10px;
-  &:hover {
-    background: var(--hover, #f6f8ff) !important;
-  }
-}
-:host ::ng-deep .mat-step-header .mat-step-label {
-  color: var(--muted, #6b7280);
+
+.pu-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #eef2fe);
+  font-size: 0.86rem;
   font-weight: 600;
-  &.mat-step-label-active {
-    color: var(--ink, #16181d);
-  }
-  &.mat-step-label-selected {
+  color: var(--ink, #16181d);
+  &__nilai {
+    font-size: 1.05rem;
+    font-weight: 800;
     color: var(--brand, #154dec);
   }
 }
-:host ::ng-deep .mat-step-header .mat-step-icon {
-  background: var(--border, #e3e6eb);
-  color: var(--muted, #6b7280);
-  &.mat-step-icon-selected,
-  &.mat-step-icon-state-done,
-  &.mat-step-icon-state-edit {
-    background: var(--brand, #154dec);
-    color: #fff;
+
+.pu-lampiran {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.2rem 0 0.4rem;
+  ::ng-deep .mat-mdc-slide-toggle label {
+    color: var(--ink, #16181d);
+    font-size: 0.88rem;
   }
 }
-:host ::ng-deep .mat-stepper-horizontal-line,
-:host ::ng-deep .mat-stepper-vertical-line::before {
-  border-color: var(--line, #eef0f3);
+
+/* kaki tetap: Batal + Simpan, sama persis dengan dialog meta */
+.pu-aksi {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.85rem 1.35rem 1.1rem;
+  border-top: 1px solid var(--line, #eef0f3);
+  button {
+    border-radius: 11px !important;
+    font-weight: 600 !important;
+    min-width: 96px;
+    letter-spacing: 0;
+  }
+  ::ng-deep mat-spinner circle {
+    stroke: #fff;
+  }
 }
 
-/* divider */
-:host ::ng-deep .mat-divider {
-  border-top-color: var(--line, #eef0f3);
-}
-
-/* slide toggle label */
-:host ::ng-deep .mat-mdc-slide-toggle label {
-  color: var(--ink, #16181d);
-  font-size: 0.88rem;
-}
-
-/* buttons */
-:host ::ng-deep .mat-mdc-outlined-button {
-  border-radius: 11px !important;
-  font-weight: 600 !important;
-  height: 42px;
-  border-color: var(--border, #e3e6eb) !important;
-}
-:host ::ng-deep button[matStepperNext],
-:host ::ng-deep button[color="primary"].mat-mdc-outlined-button {
-  border-color: var(--brand, #154dec) !important;
-  color: var(--brand, #154dec) !important;
-}
-
-/* form field labels/inputs already themed by material tokens,
-   but ensure readonly fields blend in dark */
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
+}
+:host ::ng-deep .mat-divider {
+  border-top-color: var(--line, #eef0f3);
 }
