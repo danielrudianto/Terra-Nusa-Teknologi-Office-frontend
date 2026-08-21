@@ -4692,7 +4692,11 @@
       "disetujui": "{{nomor}} approved",
       "ditolak": "{{nomor}} rejected",
       "ajuanSendiri": "This is your own claim, so you cannot approve it.",
-      "cariPlaceholder": "Search number, name, or item"
+      "cariPlaceholder": "Search number, name, or item",
+      "atasNama": "Account name",
+      "rekening": "Destination account",
+      "rincian": "Expense details",
+      "tanpaRincian": "No details."
     },
     "pembelian": {
       "judul": "Delete Purchase",

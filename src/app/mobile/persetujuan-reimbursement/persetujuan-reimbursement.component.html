@@ -81,9 +81,42 @@
         <dt>{{ "mobile.reimbursement.bank" | translate }}</dt>
         <dd>{{ dipilih.bankName || "\u2014" }}</dd>
 
+        <dt>{{ "mobile.reimbursement.atasNama" | translate }}</dt>
+        <dd>{{ dipilih.bankAccountName || "\u2014" }}</dd>
+
+        <dt>{{ "mobile.reimbursement.rekening" | translate }}</dt>
+        <dd class="mrb-rekening">{{ dipilih.bankAccountNumber || "\u2014" }}</dd>
+
         <dt>{{ "mobile.reimbursement.nominal" | translate }}</dt>
-        <dd>{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+        <dd class="mrb-rinci__total">{{ nilai(dipilih) | number: "1.0-0" }}</dd>
       </dl>
+
+      <!-- Rincian: uang ini untuk apa saja. -->
+      <div class="mrb-item">
+        <div class="mrb-item__judul">
+          <mat-icon>receipt_long</mat-icon>
+          {{ "mobile.reimbursement.rincian" | translate }}
+        </div>
+        @if (memuatRincian) {
+          <div class="mrb-muat"><mat-spinner diameter="24" /></div>
+        } @else if (!rincianItem.length) {
+          <p class="mrb-item__kosong">{{ "mobile.reimbursement.tanpaRincian" | translate }}</p>
+        } @else {
+          <ul class="mrb-item__daftar">
+            @for (it of rincianItem; track $index) {
+              <li class="mrb-item__baris">
+                <div class="mrb-item__atas">
+                  <span class="mrb-item__nama">{{ it.description || "\u2014" }}</span>
+                  <span class="mrb-item__nilai">{{ (it.amount || 0) | number: "1.0-0" }}</span>
+                </div>
+                @if (it.date) {
+                  <span class="mrb-item__tanggal">{{ it.date | date: "d MMM y" }}</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
 
       @if (ajuanSendiri(dipilih)) {
         <div class="mrb-peringatan">

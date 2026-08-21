@@ -121,12 +121,33 @@ export class PersetujuanReimbursementComponent implements OnInit {
     this.muat(true);
   }
 
+  /** Rincian baris pengajuan yang sedang dibuka (apa saja yang diganti). */
+  rincianItem: any[] = [];
+  memuatRincian = false;
+
   buka(r: any): void {
     this.dipilih = r;
+    this.rincianItem = [];
+    this.memuatRincian = true;
+    // Ambil rincian: baris pengeluaran + nomor rekening tujuan. Menyetujui
+    // tanpa melihat "uang ini untuk apa" dan "ditransfer ke mana" berarti
+    // tanda tangan atas sesuatu yang tidak terbaca.
+    this.api.get(`reimbursements/${r.id}`, {}).subscribe({
+      next: (res: any) => {
+        const inti = res?.reimbursement ?? {};
+        this.dipilih = { ...r, ...inti };
+        this.rincianItem = res?.reimbursement_items ?? res?.items ?? [];
+      },
+      error: () => {
+        // Gagal memuat rincian: biarkan data daftar apa adanya.
+        this.rincianItem = [];
+      },
+    }).add(() => (this.memuatRincian = false));
   }
 
   tutup(): void {
     this.dipilih = null;
+    this.rincianItem = [];
   }
 
   /**

@@ -4692,7 +4692,11 @@
       "disetujui": "{{nomor}} 已批准",
       "ditolak": "{{nomor}} 已拒绝",
       "ajuanSendiri": "这是您自己的申请，不能由您批准。",
-      "cariPlaceholder": "搜索编号、名称或项目"
+      "cariPlaceholder": "搜索编号、名称或项目",
+      "atasNama": "账户名",
+      "rekening": "收款账户",
+      "rincian": "支出明细",
+      "tanpaRincian": "无明细。"
     },
     "pembelian": {
       "judul": "删除采购",

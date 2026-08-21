@@ -4692,7 +4692,11 @@
       "disetujui": "{{nomor}} disetujui",
       "ditolak": "{{nomor}} ditolak",
       "ajuanSendiri": "Pengajuan ini milik Anda sendiri, jadi tidak dapat Anda setujui.",
-      "cariPlaceholder": "Cari nomor, nama, atau item"
+      "cariPlaceholder": "Cari nomor, nama, atau item",
+      "atasNama": "Atas nama",
+      "rekening": "Rekening tujuan",
+      "rincian": "Rincian pengeluaran",
+      "tanpaRincian": "Tidak ada rincian."
     },
     "pembelian": {
       "judul": "Hapus Pembelian",
