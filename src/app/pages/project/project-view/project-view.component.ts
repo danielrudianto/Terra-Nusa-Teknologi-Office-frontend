@@ -404,7 +404,17 @@ export class ProjectViewComponent implements OnInit {
       pphCode: null,
       pphTaxObject: null,
       pphPercentage: null,
-      date: new Date(),
+      /*
+       * Tanggal DIBIARKAN KOSONG, tidak diisi hari ini.
+       *
+       * SPK dan adendum bertanggal sesuai dokumen fisiknya — kerap bukan
+       * hari dokumen itu dimasukkan ke sistem. Mengisinya "hari ini" di depan
+       * berbahaya: tanggalnya sudah terlihat terisi, jadi mudah terlewat, dan
+       * dokumen bertanggal keliru itu yang menjadi dasar penagihan dan
+       * retensi. Dikosongkan supaya tanggalnya harus diketik sadar; validator
+       * `required` menahan simpan sampai diisi.
+       */
+      date: null,
       description: '',
     });
   }
