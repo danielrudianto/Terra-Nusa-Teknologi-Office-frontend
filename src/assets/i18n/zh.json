@@ -4724,7 +4724,10 @@
       "keluar": "退出登录",
       "notifikasi": "通知",
       "notifNyala": "已在此设备开启通知。",
-      "notifMati": "已在此设备关闭通知。"
+      "notifMati": "已在此设备关闭通知。",
+      "tentang": "关于",
+      "versiAplikasi": "应用版本",
+      "ketukMuat": "点按加载最新版本"
     }
   }
 }

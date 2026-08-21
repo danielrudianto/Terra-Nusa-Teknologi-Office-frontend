@@ -4724,7 +4724,10 @@
       "keluar": "Keluar",
       "notifikasi": "Notifikasi",
       "notifNyala": "Notifikasi dinyalakan di perangkat ini.",
-      "notifMati": "Notifikasi dimatikan di perangkat ini."
+      "notifMati": "Notifikasi dimatikan di perangkat ini.",
+      "tentang": "Tentang",
+      "versiAplikasi": "Versi aplikasi",
+      "ketukMuat": "Ketuk untuk memuat versi terbaru"
     }
   }
 }

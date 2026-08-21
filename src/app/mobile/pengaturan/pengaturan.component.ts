@@ -9,6 +9,7 @@ import { SettingsService, ThemeMode } from '../../services/setting.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
 import { PushService } from '../../services/push.service';
+import { VersiService } from '../../services/versi.service';
 
 /**
  * Pengaturan mobile: tema dan keluar.
@@ -36,6 +37,8 @@ export class PengaturanComponent implements OnInit {
   private readonly push = inject(PushService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  /** Versi aplikasi + pemantau pembaruan — sama dengan desktop. */
+  readonly versi = inject(VersiService);
 
   ngOnInit(): void {
     // Daftarkan service worker & segarkan status langganan bila pengguna ini

@@ -4724,7 +4724,10 @@
       "keluar": "Log out",
       "notifikasi": "Notifications",
       "notifNyala": "Notifications turned on for this device.",
-      "notifMati": "Notifications turned off for this device."
+      "notifMati": "Notifications turned off for this device.",
+      "tentang": "About",
+      "versiAplikasi": "App version",
+      "ketukMuat": "Tap to load the latest version"
     }
   }
 }

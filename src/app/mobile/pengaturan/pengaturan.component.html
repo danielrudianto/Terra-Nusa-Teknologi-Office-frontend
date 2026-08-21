@@ -61,3 +61,23 @@
   <mat-icon>logout</mat-icon>
   <span>{{ "mobile.setelan.keluar" | translate }}</span>
 </button>
+
+<!-- Versi aplikasi (mirip desktop). Tombol muncul bila ada pembaruan. -->
+<div class="mst-seksi">{{ "mobile.setelan.tentang" | translate }}</div>
+@if (versi.adaPembaruan()) {
+  <button type="button" class="mst-versi mst-versi--baru" (click)="versi.muatUlang()">
+    <mat-icon>system_update_alt</mat-icon>
+    <span class="mst-versi__teks">
+      <span class="mst-versi__judul">{{ "app.versiBaruSingkat" | translate }}</span>
+      <span class="mst-versi__ket">{{ "mobile.setelan.ketukMuat" | translate }}</span>
+    </span>
+  </button>
+} @else {
+  <div class="mst-versi">
+    <mat-icon>info</mat-icon>
+    <span class="mst-versi__teks">
+      <span class="mst-versi__judul">{{ "mobile.setelan.versiAplikasi" | translate }}</span>
+      <span class="mst-versi__ket">v{{ versi.versi.nomor }} · {{ versi.versi.commit }}</span>
+    </span>
+  </div>
+}

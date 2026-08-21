@@ -150,6 +150,52 @@
   }
 }
 
+.mst-versi {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: inherit;
+  text-align: left;
+
+  > mat-icon {
+    flex: none;
+    color: var(--muted);
+  }
+  &__teks {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  &__judul {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  &__ket {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Ada pembaruan: dorong perhatian, dapat ditekan untuk memuat ulang. */
+  &--baru {
+    cursor: pointer;
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    -webkit-tap-highlight-color: transparent;
+
+    > mat-icon,
+    .mst-versi__judul {
+      color: var(--brand-strong);
+    }
+  }
+}
+
 .mst-keluar {
   width: 100%;
   display: flex;
