@@ -345,7 +345,17 @@ export class PurchaseUpdateComponent {
           this.attachmentFormGroup.value.isCopyPurchaseOrderAttached,
         dueDate: dueDateFormatted,
         date: dateFormatted,
-        procurementType: this.purchaseType,
+        /*
+         * `procurementType` SENGAJA tidak dikirim.
+         *
+         * Dahulu di sini terkirim `this.purchaseType` — yang berisi KATEGORI
+         * anggaran (mis. "B", "5.1.1"), bukan jenis pengadaan (barang/jasa).
+         * `procurementType` dan `purchaseType` dua kolom berbeda, dan keduanya
+         * masuk daftar boleh-ubah di repository, sehingga tiap penyimpanan
+         * internal diam-diam menimpa `procurementType` dengan kode kategori.
+         * Layar ini tidak menyunting jenis pengadaan, jadi kolomnya tidak
+         * dikirim sama sekali — tidak dikirim berarti tidak diubah.
+         */
         dpp: this.valueFormGroup.controls['dpp'].value,
         ppn: this.valueFormGroup.controls['ppn'].value,
         pbbkb: this.valueFormGroup.controls['pbbkb'].value,

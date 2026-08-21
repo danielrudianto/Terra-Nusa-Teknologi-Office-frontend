@@ -43,6 +43,7 @@ import { Router } from '@angular/router';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { barisTampil } from '../../../constants/baris-tampil-po';
+import { nilaiBaris } from '../../../helpers/nilai-baris.helper';
 import { AccountService } from '../../../services/account.service';
 import { PermissionService } from '../../../services/permission.service';
 
@@ -731,16 +732,19 @@ export class PurchaseOrderViewComponent
     if (b !== null && this.items.length === 1) return b;
 
     /*
-     * Mobilisasi IKUT dihitung.
+     * `nilaiBaris`, BUKAN volume × harga langsung.
      *
-     * Tanpa itu dialog menampilkan Rp 7.500.000 untuk dokumen yang `dpp`-nya
-     * tersimpan Rp 11.000.000 — dan yang membacanya menyangka salah satunya
-     * rusak, padahal yang salah hanya penjumlahan di layar ini.
+     * Bila barisnya membawa `amount` (jumlah tertulis untuk membetulkan
+     * pembulatan — mis. 7.000 × 42,8571 = 299.999,7 dibulatkan jadi 300.000),
+     * itulah nilai yang berlaku. Sebelumnya layar ini mengalikan volume × harga
+     * apa adanya, sehingga pratinjaunya menampilkan 299.999,7 padahal formulir
+     * dan PDF-nya sudah 300.000 — pratinjau berbeda dari dokumen yang terbit.
+     *
+     * Mobilisasi IKUT dihitung: tanpa itu dialog menampilkan Rp 7.500.000
+     * untuk dokumen yang `dpp`-nya Rp 11.000.000, dan yang membacanya
+     * menyangka salah satunya rusak.
      */
-    return (
-      (Number(item?.quantity) || 0) * (Number(item?.price) || 0) +
-      this.mobilisasi(item)
-    );
+    return nilaiBaris(item) + this.mobilisasi(item);
   }
 
   get subTotal(): number {

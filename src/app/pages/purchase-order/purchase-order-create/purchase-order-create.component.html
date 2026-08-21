@@ -65,6 +65,7 @@
           class="poc-tile"
           [class.poc-tile--soon]="tile.comingSoon"
           [routerLink]="tile.comingSoon ? null : tile.link"
+          queryParamsHandling="preserve"
         >
           <span class="poc-tile__badge poc-tile__badge--num">{{
             tile.type

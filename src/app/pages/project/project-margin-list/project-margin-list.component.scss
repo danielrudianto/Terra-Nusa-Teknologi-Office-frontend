@@ -5,6 +5,17 @@
   padding: 1.5rem;
 }
 
+/*
+ * Ditanam di halaman Proyek: paddingnya sendiri DIBUANG.
+ *
+ * Halaman induknya sudah memberi jarak tepi; padding kedua di sini mendorong
+ * pencarian, saringan, dan tabelnya masuk 1,5rem lebih ke dalam daripada
+ * sakelar di atasnya — terlihat sebagai anak tangga di tepi kiri.
+ */
+.pml--embedded {
+  padding: 0;
+}
+
 .pml-head {
   display: flex;
   align-items: flex-start;

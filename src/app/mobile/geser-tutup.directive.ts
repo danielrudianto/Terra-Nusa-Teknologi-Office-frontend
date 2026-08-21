@@ -83,7 +83,17 @@ export class GeserTutupDirective implements OnInit, OnDestroy {
     // halaman, bukan sekadar "menutup" panel yang sudah tertutup. Karena
     // pendengar popstate sudah dilepas di atas, `history.back()` ini tidak
     // memicu penutupan ulang.
-    if (this.titipRiwayat && !this.tutupKarenaBack) {
+    //
+    // DIJAGA `history.state?.bottomSheet`: hanya membuang entri BILA entri
+    // titipan kita memang masih di puncak riwayat. Bila panel ini dibongkar
+    // karena PERPINDAHAN HALAMAN (router sudah menaruh state-nya sendiri di
+    // atas milik kita), `history.back()` justru akan membatalkan perpindahan
+    // itu — melempar pengguna kembali ke layar yang baru saja ditinggalkannya.
+    if (
+      this.titipRiwayat &&
+      !this.tutupKarenaBack &&
+      (history.state as any)?.bottomSheet === true
+    ) {
       this.titipRiwayat = false;
       try {
         history.back();
@@ -102,6 +112,11 @@ export class GeserTutupDirective implements OnInit, OnDestroy {
    * `history.back()` sekali lagi.
    */
   private onPop = (): void => {
+    // Hanya bertindak bila entri titipan kita memang masih pending. Tanpa ini,
+    // popstate susulan (mis. `history.back()` pembersih dari panel lain yang
+    // baru tertutup, atau gerakan Back yang bukan milik kita) bisa menutup
+    // panel ini di luar maksudnya.
+    if (!this.titipRiwayat) return;
     this.titipRiwayat = false;
     this.tutupKarenaBack = true;
     this.tutup.emit();
