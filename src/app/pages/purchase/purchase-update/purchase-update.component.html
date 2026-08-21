@@ -252,13 +252,14 @@
     }
   </mat-dialog-content>
 
-  <div class="pu-aksi">
+  <mat-dialog-actions class="pu-aksi">
+    <span class="pu-spacer"></span>
     <button mat-button type="button" mat-dialog-close>
       {{ "common.cancel" | translate }}
     </button>
     <button
       mat-flat-button
-      color="primary"
+      class="pu-simpan"
       type="submit"
       [disabled]="
         memuat ||
@@ -273,5 +274,5 @@
         {{ "common.save" | translate }}
       }
     </button>
-  </div>
+  </mat-dialog-actions>
 </form>

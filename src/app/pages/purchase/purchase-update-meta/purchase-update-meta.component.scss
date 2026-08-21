@@ -183,16 +183,26 @@
 }
 
 .pum-aksi {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.85rem 1.35rem 1.1rem;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 0.75rem 1rem !important;
+  margin: 0 !important;
   border-top: 1px solid var(--line, #eef0f3);
-  button {
-    border-radius: 11px !important;
-    font-weight: 600 !important;
-    min-width: 96px;
-    letter-spacing: 0;
+}
+.pum-spacer {
+  flex: 1;
+}
+/* Simpan diwarnai lewat kelasnya; `color="primary"` jatuh ke abu-abu di M3. */
+.pum-simpan {
+  background: var(--brand, #154dec) !important;
+  color: #fff !important;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  border-radius: 12px !important;
+  min-width: 96px;
+  &[disabled] {
+    opacity: 0.55;
   }
   ::ng-deep mat-spinner circle {
     stroke: #fff;

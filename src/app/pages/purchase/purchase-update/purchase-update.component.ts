@@ -182,7 +182,18 @@ export class PurchaseUpdateComponent {
 
   fetchData(id: number) {
     this.apiService.get('purchases/' + id, {}).subscribe({
-      next: (data: any) => {
+      next: (resp: any) => {
+        /*
+         * `GET purchases/{id}` MEMBUNGKUS jawabannya: `{ purchase, payments }`.
+         *
+         * Layar ini sejak dulu membaca `resp.invoiceName`, `resp.dpp`, dan
+         * seterusnya — yang semuanya `undefined` karena isinya ada satu
+         * tingkat di dalam `resp.purchase`. Itulah "semuanya undefined":
+         * bukan datanya kosong, melainkan dibaca dari tingkat yang salah.
+         * Dibuka di sini supaya seluruh `data.*` di bawah menunjuk ke isian
+         * pembeliannya, bukan ke pembungkusnya.
+         */
+        const data: any = resp?.purchase ?? resp;
         if (data.isInternal == false) {
           this.snackBar.open(
       this.translate.instant('notify.notInternalData'), 'Close', {
