@@ -55,7 +55,11 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
  * membacanya mengira persoalannya pada berkas worker — padahal sebabnya ada
  * pada jawaban server satu langkah sebelumnya.
  */
-pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
+// Menunjuk ke SHIM, bukan langsung ke worker aslinya: shim menambal
+// `Promise.try` di dalam worker (pdf.js v5 memakainya) lalu memuat worker
+// aslinya. Tanpa itu, unggah PDF melempar "Promise.try is not a function"
+// di peramban lama.
+pdfjslib.GlobalWorkerOptions.workerSrc = '/assets/pdf-worker-shim.mjs';
 
 /**
  * Satu coretan pada halaman.

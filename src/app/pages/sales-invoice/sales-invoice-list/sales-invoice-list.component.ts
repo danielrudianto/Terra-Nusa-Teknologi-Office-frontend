@@ -4,6 +4,7 @@ import { CanDirective } from '../../../directives/can.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
+import { PermissionService } from 'src/app/services/permission.service';
 import { SalesInvoiceConfirmComponent } from './sales-invoice-confirm/sales-invoice-confirm.component';
 import { SalesInvoicePaymentCreateComponent } from '../../../components/payment-create/sales-invoice-payment-create/sales-invoice-payment-create.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -49,12 +50,44 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
 })
 export class SalesInvoiceListComponent {
   private readonly translate = inject(TranslateService);
+  private readonly izin = inject(PermissionService);
   constructor(
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
   ) {}
+
+  /**
+   * Bukti potong yang SUDAH terisi hanya boleh diubah level 5.
+   *
+   * Servernya yang menegakkan — ini hanya menyembunyikan aksi yang pasti
+   * ditolak, supaya yang lain tidak menekan tombol yang gagal.
+   */
+  get bolehEditBuktiPotong(): boolean {
+    return this.izin.level() >= 5;
+  }
+
+  /**
+   * Boleh membuka dialog bukti potong untuk invoice ini?
+   *
+   * Pengisian PERTAMA: saat statusnya menunggu bukti potong (seperti semula).
+   * KOREKSI: bila sudah terisi, hanya level 5 — untuk membetulkan nomor yang
+   * tertukar antar invoice bernominal sama.
+   */
+  bisaBukaBuktiPotong(invoice: any): boolean {
+    if (invoice?.taxingStatus === 'income_tax_not_published') return true;
+    const sudahAda = !!(invoice?.incomeTaxInvoiceName || '').toString().trim();
+    return sudahAda && (Number(invoice?.pphPercentage) || 0) > 0
+      ? this.bolehEditBuktiPotong
+      : false;
+  }
+
+  /** Label aksi: "Edit" bila sudah terisi, selain itu "Input". */
+  labelBuktiPotong(invoice: any): string {
+    const sudahAda = !!(invoice?.incomeTaxInvoiceName || '').toString().trim();
+    return sudahAda ? 'salesInvoice.menuEditIncomeTax' : 'salesInvoice.menuIncomeTax';
+  }
 
   salesInvoices: any[] = [];
   count: number = 0;

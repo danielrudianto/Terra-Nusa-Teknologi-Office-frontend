@@ -10,6 +10,8 @@
  * ada dokumen yang disetujui dari ponsel padahal di desktop ditolak.
  */
 
+// Ditambal PALING AWAL, sebelum apa pun yang memuat pdf.js.
+import './polyfill-promise-try';
 import { LOCALE_ID, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';

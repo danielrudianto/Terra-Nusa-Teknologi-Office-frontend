@@ -278,10 +278,10 @@
               <button
                 mat-menu-item
                 (click)="openIncomeTax(invoice)"
-                [disabled]="invoice.taxingStatus !== 'income_tax_not_published'"
+                [disabled]="!bisaBukaBuktiPotong(invoice)"
               >
                 <mat-icon>receipt_long</mat-icon
-                ><span>{{ "salesInvoice.menuIncomeTax" | translate }}</span>
+                ><span>{{ labelBuktiPotong(invoice) | translate }}</span>
               </button>
             </mat-menu>
           </td>

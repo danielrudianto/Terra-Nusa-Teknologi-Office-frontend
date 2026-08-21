@@ -280,7 +280,8 @@
     "tagihan": "Tagihan",
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
-    "belumAdaPembayaranDiterima": "尚未收到付款。"
+    "belumAdaPembayaranDiterima": "尚未收到付款。",
+    "menuEditIncomeTax": "修改扣缴凭证"
   },
   "language": {
     "label": "语言",
@@ -3218,7 +3219,8 @@
     "pphCode": "预扣税代码",
     "pphObject": "税目",
     "pphRate": "税率",
-    "pphWithheld": "已预扣税额"
+    "pphWithheld": "已预扣税额",
+    "editTitle": "修改预扣税凭证"
   },
   "salaryPayment": {
     "salaryDetail": "工资明细",

@@ -4,7 +4,7 @@
       <mat-icon>description</mat-icon>
     </span>
     <div class="itc-head__text">
-      <h2 class="itc-title">{{ "incomeTax.title" | translate }}</h2>
+      <h2 class="itc-title">{{ (data.incomeTaxInvoiceName ? "incomeTax.editTitle" : "incomeTax.title") | translate }}</h2>
       <span class="itc-sub" *ngIf="data.name">{{ data.name }}</span>
       <span class="itc-sub" *ngIf="!data.name"
         >{{ "salesInvoice.masukkanNomorBuktiPotong" | translate }}</span

@@ -280,7 +280,8 @@
     "tagihan": "Tagihan",
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
-    "belumAdaPembayaranDiterima": "Belum ada pembayaran diterima."
+    "belumAdaPembayaranDiterima": "Belum ada pembayaran diterima.",
+    "menuEditIncomeTax": "Edit bukti potong"
   },
   "language": {
     "label": "Bahasa",
@@ -3218,7 +3219,8 @@
     "pphCode": "Kode PPh",
     "pphObject": "Objek PPh",
     "pphRate": "Tarif PPh",
-    "pphWithheld": "PPh dipotong"
+    "pphWithheld": "PPh dipotong",
+    "editTitle": "Edit bukti potong PPh"
   },
   "salaryPayment": {
     "salaryDetail": "Rincian Gaji",

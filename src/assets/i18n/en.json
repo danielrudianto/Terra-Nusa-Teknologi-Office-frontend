@@ -280,7 +280,8 @@
     "tagihan": "Tagihan",
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
-    "belumAdaPembayaranDiterima": "No payments received yet."
+    "belumAdaPembayaranDiterima": "No payments received yet.",
+    "menuEditIncomeTax": "Edit withholding slip"
   },
   "language": {
     "label": "Language",
@@ -3218,7 +3219,8 @@
     "pphCode": "Withholding tax code",
     "pphObject": "Tax object",
     "pphRate": "Tax rate",
-    "pphWithheld": "Tax withheld"
+    "pphWithheld": "Tax withheld",
+    "editTitle": "Edit withholding tax slip"
   },
   "salaryPayment": {
     "salaryDetail": "Salary details",
