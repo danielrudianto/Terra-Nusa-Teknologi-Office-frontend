@@ -70,8 +70,22 @@ export function susunKlausulDokumen(data: any): ClauseSection[] {
   const tambahan: string[] = custom.additionalClauses || [];
   const termBayar = custom.paymentTerm ?? data.payment_term;
 
-  // Bagian penagihan disatukan di akhir, apa pun jenis dokumennya.
-  const penagihan = penagihanDokumen(data);
+  /*
+   * PRATINJAU TIDAK lagi menampilkan halaman "tata cara penagihan dan
+   * pembayaran".
+   *
+   * Permintaan pengguna, konsisten dengan 5.1.2: bagian ini panjang dan
+   * membuat pratinjau ramai, sementara isinya bagian LAMPIRAN — bukan
+   * ketentuan pokok yang perlu dibaca ulang di layar. CETAK/PDF-nya TIDAK
+   * berubah: helper cetak (transport/legal/G/C, dst.) merakit halaman
+   * penagihannya sendiri, jadi dokumen di atas kertas tetap lengkap. Yang
+   * dihilangkan hanya tampilannya di layar pratinjau — dan itu berlaku untuk
+   * SEMUA jenis (dahulu masih muncul pada A, C, G, dan 6.4.1).
+   *
+   * `penagihanDokumen` sengaja dibiarkan ada bila kelak ingin dikembalikan
+   * per-jenis; di sini cukup tidak dipakai.
+   */
+  const penagihan: ClauseSection | null = null;
   const tutup = (bagian: ClauseSection[]): ClauseSection[] =>
     penagihan ? [...bagian, penagihan] : bagian;
 
