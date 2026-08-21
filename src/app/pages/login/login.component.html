@@ -25,8 +25,20 @@
                 subscriptSizing="dynamic"
               >
                 <mat-label>{{ "login.email" | translate }}</mat-label>
+                <!--
+                  type=email + inputmode=email memunculkan papan ketik dengan
+                  "@" di ponsel; autocapitalize/autocorrect/spellcheck DIMATIKAN
+                  supaya huruf pertama tidak dikapitalkan dan alamatnya tidak
+                  "dibetulkan" jadi kata lain.
+                -->
                 <input
                   matInput
+                  type="email"
+                  inputmode="email"
+                  autocomplete="email"
+                  autocapitalize="none"
+                  autocorrect="off"
+                  spellcheck="false"
                   formControlName="email"
                   [placeholder]="'login.emailPlaceholder' | translate"
                   [readonly]="isSubmitting"

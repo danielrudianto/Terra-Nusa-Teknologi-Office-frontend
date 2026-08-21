@@ -1,0 +1,83 @@
+<div class="mmk">
+  <!-- Kepala merek: ringkas, senada dengan kerangka aplikasi mobile. -->
+  <div class="mmk-merek">
+    <span class="mmk-merek__ikon"><mat-icon>link</mat-icon></span>
+    <span class="mmk-merek__nama">TerraBot</span>
+    <span class="mmk-merek__tanda">{{ "mobile.tanda" | translate }}</span>
+  </div>
+
+  <div class="mmk-sambut">
+    <h1>{{ "login.welcome" | translate }}</h1>
+    <p>{{ "login.subtitle" | translate }}</p>
+  </div>
+
+  <form class="mmk-form" [formGroup]="form" (ngSubmit)="masuk()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ "login.email" | translate }}</mat-label>
+      <mat-icon matPrefix>mail</mat-icon>
+      <input
+        matInput
+        type="email"
+        inputmode="email"
+        autocomplete="email"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false"
+        formControlName="email"
+        [placeholder]="'login.emailPlaceholder' | translate"
+        [readonly]="isSubmitting"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ "login.password" | translate }}</mat-label>
+      <mat-icon matPrefix>lock</mat-icon>
+      <input
+        matInput
+        type="password"
+        autocomplete="current-password"
+        formControlName="password"
+        [placeholder]="'login.passwordPlaceholder' | translate"
+        [readonly]="isSubmitting"
+      />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="remember" color="primary" class="mmk-ingat">
+      {{ "login.rememberMe" | translate }}
+    </mat-checkbox>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      class="mmk-tombol"
+      [disabled]="isSubmitting"
+    >
+      @if (isSubmitting) {
+        <mat-spinner diameter="20" />
+      } @else {
+        {{ "login.loginButton" | translate }}
+      }
+    </button>
+  </form>
+
+  <!-- Bahasa & tema: kecil, di bawah, tidak mengambil perhatian dari masuk. -->
+  <div class="mmk-kontrol">
+    <button type="button" class="mmk-kontrol__btn" [matMenuTriggerFor]="langMenu">
+      <span>{{ currentLang.flag }}</span>
+      <span>{{ currentLang.short }}</span>
+    </button>
+    <mat-menu #langMenu="matMenu">
+      @for (lang of languages; track lang.code) {
+        <button mat-menu-item (click)="setLang(lang.code)">
+          <span style="margin-right: 8px">{{ lang.flag }}</span>
+          <span>{{ lang.native }}</span>
+        </button>
+      }
+    </mat-menu>
+
+    <button type="button" class="mmk-kontrol__btn" (click)="toggleTheme()">
+      <mat-icon>{{ isDark ? "light_mode" : "dark_mode" }}</mat-icon>
+    </button>
+  </div>
+</div>

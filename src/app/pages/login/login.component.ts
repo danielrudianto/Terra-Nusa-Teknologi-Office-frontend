@@ -56,70 +56,8 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.arahkanKeMobileBilaPonsel();
-  }
-
-  /**
-   * Dari PONSEL, arahkan ke aplikasi mobile SEBELUM masuk.
-   *
-   * MENGAPA SEBELUM MASUK
-   *
-   * Token disimpan per-asal (localStorage domain `terrabot...` dan
-   * `m.terrabot...` TERPISAH). Mengalihkan SESUDAH login berarti tokennya
-   * tertinggal di domain desktop dan yang di ponsel harus masuk dua kali.
-   * Karena itu pengalihannya di halaman masuk, sebelum kredensialnya dikirim
-   * — supaya tokennya langsung tersimpan di asal yang benar.
-   *
-   * HANYA PONSEL. Tablet dan desktop tetap memakai aplikasi biasa; layar
-   * lebarnya memang untuk itu.
-   *
-   * Tidak berulang: di domain mobile (`m.`) fungsi ini langsung berhenti,
-   * jadi tak ada lingkaran pengalihan. Dan `?desktop=1` memaksa tetap di
-   * desktop bagi yang memang menginginkannya dari ponsel.
-   */
-  private arahkanKeMobileBilaPonsel(): void {
-    try {
-      const host = window.location.hostname;
-
-      // Sudah di domain mobile, atau lingkungan pengembangan — jangan alihkan.
-      if (
-        host.startsWith('m.') ||
-        host === 'localhost' ||
-        /^\d+\.\d+\.\d+\.\d+$/.test(host)
-      ) {
-        return;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('desktop') === '1') {
-        // Pilihan yang menempel selama sesi tab ini.
-        sessionStorage.setItem('paksaDesktop', '1');
-        return;
-      }
-      if (sessionStorage.getItem('paksaDesktop') === '1') return;
-
-      if (!this.adalahPonsel()) return;
-
-      window.location.href = `${window.location.protocol}//m.${host}/Login`;
-    } catch {
-      // Gagal membaca lingkungan bukan alasan menahan halaman masuk.
-    }
-  }
-
-  /**
-   * Perangkat ini PONSEL — bukan tablet, bukan desktop.
-   *
-   * Dibedakan dari lebar layar: yang menentukan bukan seberapa sempit
-   * jendelanya (desktop dapat mengecilkan jendela), melainkan perangkatnya.
-   * iPad dan tablet Android sengaja TIDAK termasuk — keduanya tidak membawa
-   * penanda "Mobile" pada agennya, dan layar lebarnya memang untuk aplikasi
-   * biasa.
-   */
-  private adalahPonsel(): boolean {
-    const ua = navigator.userAgent || '';
-    return /iPhone|iPod|Android.*Mobile|Windows Phone|BlackBerry|IEMobile|Opera Mini/i.test(
-      ua,
-    );
+    // Pengalihan ponsel -> mobile sekarang di `main.ts` (sebelum bootstrap),
+    // supaya berlaku baik yang sudah login maupun belum. Tak ada lagi di sini.
   }
 
   get isDark(): boolean {

@@ -28,9 +28,11 @@ import { levelGuard } from './penjaga-level';
 
 export const MOBILE_ROUTES: Routes = [
   {
+    // Masuk versi mobile — tampilan senada dengan aplikasi, bukan login
+    // desktop yang kartunya besar. Alur masuknya sama persis.
     path: 'Login',
     loadComponent: () =>
-      import('../pages/login/login.component').then((m) => m.LoginComponent),
+      import('./masuk/masuk.component').then((m) => m.MasukComponent),
   },
   {
     path: '',
