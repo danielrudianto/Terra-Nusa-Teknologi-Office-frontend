@@ -3645,7 +3645,9 @@
       "induk": "Induk",
       "anak": "Anak",
       "gabunganKet": "Laporan proyek menggabungkan seluruh keluarga, sehingga marginnya utuh."
-    }
+    },
+    "modeProyek": "Proyek",
+    "modeLaporan": "Laporan proyek"
   },
   "projectReport": {
     "title": "Laporan Proyek",

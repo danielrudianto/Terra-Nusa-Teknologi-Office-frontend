@@ -217,14 +217,15 @@ export class MainComponent {
       name: 'nav.master',
       children: [
         {
+          /*
+           * Satu pintu ke proyek. "Laporan Proyek" DULU entri menu terpisah
+           * di sebelah ini, dan keduanya kerap tertukar karena namanya mirip.
+           * Sekarang laporannya sakelar di dalam halaman Proyek (?mode=laporan),
+           * jadi cukup satu entri.
+           */
           name: 'nav.project',
           icon: 'company.svg',
           route: '/Project',
-        },
-        {
-          name: 'nav.projectReport',
-          icon: 'income.svg',
-          route: '/Project/Report',
         },
         {
           name: 'nav.masterData',

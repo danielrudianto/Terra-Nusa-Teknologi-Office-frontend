@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -69,6 +69,16 @@ type Urut =
 export class ProjectMarginListComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
+
+  /**
+   * Ditanam DI DALAM halaman Proyek, di bawah sakelar Proyek/Laporan.
+   *
+   * Ketika ditanam, kepala halamannya sendiri disembunyikan: halaman Proyek
+   * sudah punya kepala dan sakelar sendiri di atasnya, jadi kepala kedua
+   * hanya menggandakan judul. Sisanya — pencarian, saringan, tabel — tetap
+   * apa adanya.
+   */
+  @Input() embedded = false;
 
   readonly cari = new FormControl('');
 

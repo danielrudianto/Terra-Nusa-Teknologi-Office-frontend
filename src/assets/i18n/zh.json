@@ -3645,7 +3645,9 @@
       "induk": "母项目",
       "anak": "子项目",
       "gabunganKet": "项目报告合并整个项目族，因此毛利完整。"
-    }
+    },
+    "modeProyek": "项目",
+    "modeLaporan": "项目报表"
   },
   "projectReport": {
     "title": "项目报表",

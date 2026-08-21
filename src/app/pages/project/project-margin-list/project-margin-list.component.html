@@ -1,10 +1,12 @@
-<div class="pml">
-  <div class="pml-head">
-    <div class="pml-head__text">
-      <h1 class="pml-title">{{ "projectMargin.judulHalaman" | translate }}</h1>
-      <span class="pml-sub">{{ "projectMargin.subHalaman" | translate }}</span>
+<div class="pml" [class.pml--embedded]="embedded">
+  @if (!embedded) {
+    <div class="pml-head">
+      <div class="pml-head__text">
+        <h1 class="pml-title">{{ "projectMargin.judulHalaman" | translate }}</h1>
+        <span class="pml-sub">{{ "projectMargin.subHalaman" | translate }}</span>
+      </div>
     </div>
-  </div>
+  }
 
   <div class="pml-bar">
     <mat-form-field

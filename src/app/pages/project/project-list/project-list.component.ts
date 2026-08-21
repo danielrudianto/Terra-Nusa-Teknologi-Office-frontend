@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,6 +26,10 @@ import { ProjectCreateComponent } from '../project-create/project-create.compone
 import { ProjectUpdateComponent } from '../project-update/project-update.component';
 import { Project, keadaanProyek } from '../project.model';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { ProjectMarginListComponent } from '../project-margin-list/project-margin-list.component';
+
+/** Dua wajah satu halaman: daftar proyek biasa, atau daftar marginnya. */
+type ModeProyek = 'proyek' | 'laporan';
 
 /**
  * Keadaan yang dapat DITAMBAHKAN ke daftar, di luar yang berjalan.
@@ -59,11 +64,13 @@ const BAWAAN = 'berjalan';
     MatButtonModule,
     MatMenuModule,
     MatChipsModule,
+    MatButtonToggleModule,
     MatSnackBarModule,
     TranslatePipe,
     HeaderTitleComponent,
     CanDirective,
     RefreshButtonComponent,
+    ProjectMarginListComponent,
   ],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',
@@ -80,6 +87,22 @@ export class ProjectListComponent implements OnInit {
   ) {}
 
   @ViewChild('table') table: MatTable<any> | undefined;
+
+  /**
+   * Halaman ini DUA muka, dipilih lewat satu sakelar di atas saringannya:
+   *
+   *   'proyek'  -> daftar proyek biasa (nama, kode, keadaan) — layar ini.
+   *   'laporan' -> daftar margin/nominal (kontrak, tertagih, biaya, untung).
+   *
+   * Sebelumnya keduanya halaman terpisah di menu — "Proyek" dan "Laporan
+   * Proyek" — dan sering tertukar karena namanya mirip dan isinya sama-sama
+   * daftar proyek. Disatukan menjadi satu halaman: yang berbeda hanya
+   * "sedang melihat proyeknya, atau angkanya".
+   *
+   * Modenya ikut ke ALAMAT (`?mode=laporan`) supaya menyegarkan atau
+   * membagikan tautannya tetap membuka muka yang sama.
+   */
+  mode: ModeProyek = 'proyek';
 
   searchControl = new FormControl('');
   projects: Project[] = [];
@@ -160,7 +183,9 @@ export class ProjectListComponent implements OnInit {
 
   ngOnInit(): void {
     this.bacaAlamat();
-    this.fetch();
+    // Muka 'laporan' memuat datanya sendiri lewat komponen marginnya; daftar
+    // proyek hanya perlu diambil bila memang muka itu yang tampil.
+    if (this.mode === 'proyek') this.fetch();
     this.searchControl.valueChanges
       .pipe(debounceTime(400))
       .subscribe(() => this.fetch(0));
@@ -176,6 +201,7 @@ export class ProjectListComponent implements OnInit {
    */
   private bacaAlamat(): void {
     const p = this.route?.snapshot?.queryParams ?? {};
+    if (p['mode'] === 'laporan') this.mode = 'laporan';
     if (p['page']) this.page = Math.max(0, +p['page'] - 1);
     if (p['pageSize']) this.pageSize = +p['pageSize'];
     if (p['sortBy']) this.sortBy = p['sortBy'];
@@ -209,6 +235,7 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
+        mode: this.mode === 'laporan' ? 'laporan' : null,
         page: this.page + 1,
         pageSize: this.pageSize,
         sortBy: this.sortBy,
@@ -302,6 +329,32 @@ export class ProjectListComponent implements OnInit {
 
     this.saring = sah;
     this.fetch(0);
+  }
+
+  /**
+   * Pindah muka: daftar proyek <-> daftar margin.
+   *
+   * Nilainya dari sakelarnya dipakai apa adanya; bila tidak berubah, tidak
+   * ada yang dikerjakan. Pindah ke 'proyek' memuat ulang daftarnya (muka itu
+   * memang ditarik di sini); pindah ke 'laporan' cukup menulis alamatnya —
+   * komponen marginnya menarik datanya sendiri saat muncul.
+   */
+  gantiMode(m: ModeProyek | null | undefined): void {
+    if (!m || m === this.mode) return;
+    this.mode = m;
+    if (m === 'proyek') {
+      this.fetch(this.page);
+      return;
+    }
+    // Muka laporan: tak lewat fetch(), jadi alamatnya ditulis di sini.
+    if (this.route) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { mode: 'laporan' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   changeSortBy(kolom: string): void {

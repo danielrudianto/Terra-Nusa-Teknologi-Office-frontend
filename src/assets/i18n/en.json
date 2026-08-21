@@ -3645,7 +3645,9 @@
       "induk": "Parent",
       "anak": "Child",
       "gabunganKet": "The project report merges the whole family, so the margin is complete."
-    }
+    },
+    "modeProyek": "Projects",
+    "modeLaporan": "Project report"
   },
   "projectReport": {
     "title": "Project Report",

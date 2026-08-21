@@ -358,3 +358,39 @@ tr[mat-row]:hover {
   font-size: 0.78rem;
   font-weight: 600;
 }
+
+/*
+ * Sakelar muka: Proyek | Laporan.
+ *
+ * Dibedakan bentuknya dari keping saringan di bawahnya — segmented, bukan
+ * pil terpisah — supaya terbaca "satu pilihan mengganti seluruh isi", bukan
+ * "satu saringan lagi yang bisa dinyalakan bersama yang lain".
+ */
+.prl-mode {
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+
+  ::ng-deep .mat-button-toggle {
+    background: var(--surface-2, #f5f7fb);
+    color: var(--muted, #6b7280);
+    font-family: "Montserrat", sans-serif;
+  }
+  ::ng-deep .mat-button-toggle-label-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    line-height: 40px;
+    padding: 0 18px;
+  }
+  ::ng-deep .mat-button-toggle mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  ::ng-deep .mat-button-toggle-checked {
+    background: var(--brand, #154dec);
+    color: #fff;
+  }
+}

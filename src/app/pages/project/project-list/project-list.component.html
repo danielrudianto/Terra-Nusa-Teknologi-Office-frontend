@@ -1,10 +1,44 @@
 <div class="prl">
   <app-header-title
     [title]="'project.title' | translate"
-    [description]="'project.description' | translate"
-    [actionButtonLabel]="'project.createNew' | translate"
+    [description]="
+      (mode === 'laporan' ? 'projectMargin.subHalaman' : 'project.description')
+        | translate
+    "
+    [actionButtonLabel]="
+      mode === 'proyek' ? ('project.createNew' | translate) : null
+    "
     (onActionButtonClicked)="buatProyek()"
   />
+
+  <!--
+    Sakelar muka, DI ATAS saringan kepingnya.
+
+    Dua hal yang beda pertanyaannya dipisah: sakelar ini menjawab "sedang
+    lihat proyeknya atau angkanya", keping di bawahnya menjawab "keadaan mana
+    yang ditampilkan". Menyatukannya dalam satu baris keping membuat keduanya
+    tampak setara padahal yang satu mengganti seluruh isi tabel.
+  -->
+  <mat-button-toggle-group
+    class="prl-mode"
+    [value]="mode"
+    (change)="gantiMode($event.value)"
+    [hideSingleSelectionIndicator]="true"
+  >
+    <mat-button-toggle value="proyek">
+      <mat-icon>folder</mat-icon>
+      {{ "project.modeProyek" | translate }}
+    </mat-button-toggle>
+    <mat-button-toggle value="laporan">
+      <mat-icon>insights</mat-icon>
+      {{ "project.modeLaporan" | translate }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (mode === 'laporan') {
+    <!-- Muka laporan: daftar margin/nominal, kepalanya sendiri disembunyikan. -->
+    <app-project-margin-list [embedded]="true" />
+  } @else {
 
   <div class="prl-toolbar">
     <!--
@@ -234,4 +268,6 @@
       [pageSizeOptions]="[10, 25, 50]"
     ></mat-paginator>
   </div>
+
+  }
 </div>
