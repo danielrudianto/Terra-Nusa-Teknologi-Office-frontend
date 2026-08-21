@@ -32,6 +32,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
+import { MatButtonModule } from '@angular/material/button';
 
 function bankAccountIDRequired(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -72,6 +73,7 @@ function bankAccountIDRequired(): ValidatorFn {
     MatSlideToggleModule,
     DialogGeserDirective,
     NgxMaskDirective,
+    MatButtonModule,
   ],
   // `provideNgxMask()` WAJIB ada di komponen yang memakai mask;
   // tanpa itu atribut `mask` hanya teks yang diabaikan Angular.
@@ -95,7 +97,10 @@ export class PurchaseUpdateComponent {
   purchaseType = null;
   metaFormGroup: FormGroup = new FormGroup({
     id: new FormControl(this.data.id),
-    invoiceName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    invoiceName: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(100),
+    ]),
     receiptName: new FormControl('', Validators.maxLength(100)),
     taxInvoiceName: new FormControl('', Validators.maxLength(17)),
     supplierID: new FormControl('', Validators.required),
@@ -105,9 +110,7 @@ export class PurchaseUpdateComponent {
     dueDate: new FormControl('', Validators.required),
     purchaseOrderName: new FormControl('', [
       Validators.required,
-      Validators.pattern(
-        POLA_NOMOR_PO,
-      ),
+      Validators.pattern(POLA_NOMOR_PO),
     ]),
     projectName: new FormControl('', [
       Validators.required,
@@ -181,119 +184,131 @@ export class PurchaseUpdateComponent {
   }
 
   fetchData(id: number) {
-    this.apiService.get('purchases/' + id, {}).subscribe({
-      next: (resp: any) => {
-        /*
-         * `GET purchases/{id}` MEMBUNGKUS jawabannya: `{ purchase, payments }`.
-         *
-         * Layar ini sejak dulu membaca `resp.invoiceName`, `resp.dpp`, dan
-         * seterusnya — yang semuanya `undefined` karena isinya ada satu
-         * tingkat di dalam `resp.purchase`. Itulah "semuanya undefined":
-         * bukan datanya kosong, melainkan dibaca dari tingkat yang salah.
-         * Dibuka di sini supaya seluruh `data.*` di bawah menunjuk ke isian
-         * pembeliannya, bukan ke pembungkusnya.
-         */
-        const data: any = resp?.purchase ?? resp;
-        if (data.isInternal == false) {
-          this.snackBar.open(
-      this.translate.instant('notify.notInternalData'), 'Close', {
-            duration: 3000,
+    this.apiService
+      .get('purchases/' + id, {})
+      .subscribe({
+        next: (resp: any) => {
+          /*
+           * `GET purchases/{id}` MEMBUNGKUS jawabannya: `{ purchase, payments }`.
+           *
+           * Layar ini sejak dulu membaca `resp.invoiceName`, `resp.dpp`, dan
+           * seterusnya — yang semuanya `undefined` karena isinya ada satu
+           * tingkat di dalam `resp.purchase`. Itulah "semuanya undefined":
+           * bukan datanya kosong, melainkan dibaca dari tingkat yang salah.
+           * Dibuka di sini supaya seluruh `data.*` di bawah menunjuk ke isian
+           * pembeliannya, bukan ke pembungkusnya.
+           */
+          const data: any = resp?.purchase ?? resp;
+          if (data.isInternal == false) {
+            this.snackBar.open(
+              this.translate.instant('notify.notInternalData'),
+              'Close',
+              {
+                duration: 3000,
+              },
+            );
+          }
+          this.metaFormGroup.patchValue({
+            id: id,
+            invoiceName: data.invoiceName,
+            receiptName: data.receiptName,
+            taxInvoiceName: data.taxInvoiceName,
+            date: data.date,
+            dueDate: data.dueDate,
+            projectName: data.projectName,
+            purchaseOrderName: data.purchaseOrderName,
+            purchaseType: data.purchaseType,
+            /*
+             * Pemasok ada di OBJEK `supplier`, bukan di bidang `supplier_*`.
+             *
+             * `GET purchases/{id}` sudah lama menyusun ulang kolom pemasoknya
+             * menjadi satu objek `data.supplier = {id, name, address, ...}` dan
+             * MEMBUANG bidang `supplier_id`, `supplier_name`, dan seterusnya.
+             * Layar ini masih membaca bidang lama yang sudah tidak ada, sehingga
+             * yang muncul "undefined, undefined" — dan `supplierID` kosong
+             * membuat penyimpanan gagal validasi diam-diam.
+             */
+            supplierID: data.supplier?.id,
+            supplierName: [data.supplier?.name, data.supplier?.prefix]
+              .filter((x: any) => x != null && x !== '')
+              .join(', '),
+            supplierAddress: [
+              data.supplier?.address,
+              data.supplier?.city,
+              data.supplier?.province,
+            ]
+              .filter((x: any) => x != null && x !== '')
+              .join(', '),
+            /*
+             * Keadaan dokumen IKUT DIMUAT.
+             *
+             * Sebelumnya tidak, dan bawaannya 'ready'. Pembelian yang tersimpan
+             * 'draft' — belum lengkap berkasnya, belum boleh dibayar — DIAM-DIAM
+             * menjadi 'ready' begitu ada yang menyuntingnya, sekalipun yang
+             * diubah hanya satu huruf pada nomor faktur. Keterangan alasannya
+             * ikut hilang, dan tidak ada satu pun galat yang menyertainya.
+             */
+            lastStatus: data.lastStatus ?? 'ready',
+            lastStatusDescription: data.lastStatusDescription ?? '',
           });
-        }
-        this.metaFormGroup.patchValue({
-          id: id,
-          invoiceName: data.invoiceName,
-          receiptName: data.receiptName,
-          taxInvoiceName: data.taxInvoiceName,
-          date: data.date,
-          dueDate: data.dueDate,
-          projectName: data.projectName,
-          purchaseOrderName: data.purchaseOrderName,
-          purchaseType: data.purchaseType,
-          /*
-           * Pemasok ada di OBJEK `supplier`, bukan di bidang `supplier_*`.
-           *
-           * `GET purchases/{id}` sudah lama menyusun ulang kolom pemasoknya
-           * menjadi satu objek `data.supplier = {id, name, address, ...}` dan
-           * MEMBUANG bidang `supplier_id`, `supplier_name`, dan seterusnya.
-           * Layar ini masih membaca bidang lama yang sudah tidak ada, sehingga
-           * yang muncul "undefined, undefined" — dan `supplierID` kosong
-           * membuat penyimpanan gagal validasi diam-diam.
-           */
-          supplierID: data.supplier?.id,
-          supplierName: [data.supplier?.name, data.supplier?.prefix]
-            .filter((x: any) => x != null && x !== '')
-            .join(', '),
-          supplierAddress: [
-            data.supplier?.address,
-            data.supplier?.city,
-            data.supplier?.province,
-          ]
-            .filter((x: any) => x != null && x !== '')
-            .join(', '),
-          /*
-           * Keadaan dokumen IKUT DIMUAT.
-           *
-           * Sebelumnya tidak, dan bawaannya 'ready'. Pembelian yang tersimpan
-           * 'draft' — belum lengkap berkasnya, belum boleh dibayar — DIAM-DIAM
-           * menjadi 'ready' begitu ada yang menyuntingnya, sekalipun yang
-           * diubah hanya satu huruf pada nomor faktur. Keterangan alasannya
-           * ikut hilang, dan tidak ada satu pun galat yang menyertainya.
-           */
-          lastStatus: data.lastStatus ?? 'ready',
-          lastStatusDescription: data.lastStatusDescription ?? '',
-        });
 
-        const total =
-          data.dpp + (data.ppn * data.dpp) / 100 + data.pbbkb + data.otherValue;
-        const paymentTotal =
-          data.dpp +
-          (data.ppn * data.dpp) / 100 +
-          data.pbbkb +
-          data.otherValue +
-          (data.pphPercentage * data.dpp) / 100;
+          const total =
+            data.dpp +
+            (data.ppn * data.dpp) / 100 +
+            data.pbbkb +
+            data.otherValue;
+          const paymentTotal =
+            data.dpp +
+            (data.ppn * data.dpp) / 100 +
+            data.pbbkb +
+            data.otherValue +
+            (data.pphPercentage * data.dpp) / 100;
 
-        this.valueFormGroup.patchValue({
-          dpp: data.dpp,
-          ppn: data.ppn,
-          ppnValue: ((data.ppn * data.dpp) / 100).toFixed(2),
-          pbbkb: data.pbbkb,
-          pphCode: data.pphCode,
-          pphTaxObject: data.pphTaxObject,
-          pphPercentage: data.pphPercentage,
-          pphValue: ((data.pphPercentage * data.dpp) / 100).toFixed(2),
-          otherValue: data.otherValue,
-          otherValueNote: data.otherValueNote,
-          total: total,
-        });
+          this.valueFormGroup.patchValue({
+            dpp: data.dpp,
+            ppn: data.ppn,
+            ppnValue: ((data.ppn * data.dpp) / 100).toFixed(2),
+            pbbkb: data.pbbkb,
+            pphCode: data.pphCode,
+            pphTaxObject: data.pphTaxObject,
+            pphPercentage: data.pphPercentage,
+            pphValue: ((data.pphPercentage * data.dpp) / 100).toFixed(2),
+            otherValue: data.otherValue,
+            otherValueNote: data.otherValueNote,
+            total: total,
+          });
 
-        this.attachmentFormGroup.patchValue({
-          isInvoiceAttached: data.isInvoiceAttached,
-          isReceiptAttached: data.isReceiptAttached,
-          isTaxInvoiceAttached: data.isTaxInvoiceAttached,
-          isCopAttached: data.isCopAttached,
-          isCopyPurchaseOrderAttached: data.isCopyPurchaseOrderAttached,
-        });
+          this.attachmentFormGroup.patchValue({
+            isInvoiceAttached: data.isInvoiceAttached,
+            isReceiptAttached: data.isReceiptAttached,
+            isTaxInvoiceAttached: data.isTaxInvoiceAttached,
+            isCopAttached: data.isCopAttached,
+            isCopyPurchaseOrderAttached: data.isCopyPurchaseOrderAttached,
+          });
 
-        this.paymentFormGroup.patchValue({
-          bankName: data.bankName,
-          bankAccountName: data.bankAccountName,
-          bankAccountNumber: data.bankAccountNumber,
-          paymentMethod: data.paymentMethod,
-          paymentTotal: paymentTotal.toFixed(2),
-        });
+          this.paymentFormGroup.patchValue({
+            bankName: data.bankName,
+            bankAccountName: data.bankAccountName,
+            bankAccountNumber: data.bankAccountNumber,
+            paymentMethod: data.paymentMethod,
+            paymentTotal: paymentTotal.toFixed(2),
+          });
 
-        this.purchaseType = data.purchaseType;
-      },
-      error: (error) => {
-        console.error(error);
-        this.snackBar.open(
-      this.translate.instant('notify.loadFailed'), 'Close', {
-          duration: 3000,
-        });
-        this.dialog.close();
-      },
-    }).add(() => (this.memuat = false));
+          this.purchaseType = data.purchaseType;
+        },
+        error: (error) => {
+          console.error(error);
+          this.snackBar.open(
+            this.translate.instant('notify.loadFailed'),
+            'Close',
+            {
+              duration: 3000,
+            },
+          );
+          this.dialog.close();
+        },
+      })
+      .add(() => (this.memuat = false));
   }
 
   onSubmit() {
@@ -388,9 +403,12 @@ export class PurchaseUpdateComponent {
       .subscribe({
         next: (data) => {
           this.snackBar.open(
-      this.translate.instant('notify.updateSuccess'), 'Close', {
-            duration: 3000,
-          });
+            this.translate.instant('notify.updateSuccess'),
+            'Close',
+            {
+              duration: 3000,
+            },
+          );
 
           this.dialog.close();
         },
