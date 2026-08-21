@@ -55,9 +55,23 @@ export class ApiService {
   }
 
   get(url: string, queryParams: any) {
+    /*
+     * Parameter `undefined`/`null` DIBUANG sebelum dikirim.
+     *
+     * Angular menyerialkan objek params dengan `String(nilai)` — sehingga
+     * `keyword: undefined` menjadi query `keyword=undefined` (string harfiah),
+     * lalu server menyaring baris yang namanya benar-benar "undefined": tidak
+     * ada, jadi daftarnya KOSONG. Nilai `false` dan `0` SENGAJA dipertahankan
+     * — `checked=false` adalah penyaring yang sah.
+     */
+    const bersih: Record<string, any> = {};
+    for (const k of Object.keys(queryParams || {})) {
+      const v = queryParams[k];
+      if (v !== undefined && v !== null) bersih[k] = v;
+    }
     return this.http.get(environment.url + url, {
       headers: this.headers(url),
-      params: queryParams,
+      params: bersih,
     });
   }
 
