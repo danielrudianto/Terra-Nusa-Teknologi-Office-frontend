@@ -173,6 +173,24 @@ function barisBerjangka(x: any): BarisTampil {
   };
 }
 
+/**
+ * Upah tenaga kerja harian (PO-D).
+ *
+ * Satu pekerja diratakan menjadi beberapa baris — satu per KOMPONEN upah
+ * (gaji, uang makan, uang transportasi), yang tersimpan di `remarks_3`.
+ * Judulnya komponen upahnya, BUKAN nama pekerjaannya: `task` sama untuk
+ * ketiga baris ("Staff Engineer" tiga kali) sehingga tidak membedakan apa
+ * pun, sementara komponennyalah yang menyatakan baris ini bayaran untuk apa.
+ * Nama pekerjaannya dipindah ke rincian, dan identitas pekerja sudah tampil
+ * di kepala dokumen.
+ */
+function barisUpah(x: any): BarisTampil {
+  return {
+    judul: x?.remarks_3 || x?.task || 'Upah',
+    rincian: isi(x?.task),
+  };
+}
+
 const PETA: Record<string, (x: any) => BarisTampil> = {
   A: barisPengiriman,
   B: barisSewa,
@@ -188,7 +206,7 @@ const PETA: Record<string, (x: any) => BarisTampil> = {
   '642': barisPertanggungan,
   '651': barisJasa,
   '652': barisBerjangka,
-  D: barisJasa,
+  D: barisUpah,
   H: barisJasa,
 };
 

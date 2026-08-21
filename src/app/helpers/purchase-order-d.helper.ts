@@ -201,8 +201,14 @@ function signatureColumns(data: IPurchaseOrderD) {
            * Pada SPK tenaga kerja keduanya memang orang yang sama, tetapi
            * baris kedua itu tempat TANDA TANGAN dibubuhkan: mencetak namanya
            * di situ menghilangkan garis dan ruang tandanya sekaligus.
+           *
+           * Namanya memakai `workerName` yang SUDAH dibersihkan
+           * (`vendorDisplayName`), bukan `data.workerName` mentah — yang
+           * terakhir masih membawa ", Pribadi" dari pemilih pemasok, sehingga
+           * tercetak "Rendi Putra Pradita, Pribadi" pada baris tanda tangan
+           * sementara baris PIHAK KEDUA di atasnya sudah bersih.
            */
-          ...signerLines(data.workerName, undefined, true),
+          ...signerLines(workerName, undefined, true),
         ],
       },
     ],
