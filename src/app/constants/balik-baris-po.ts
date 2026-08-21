@@ -164,7 +164,12 @@ export const BALIK_BARIS: Record<
   h: (x, u) => ({ ...dasar(x, u), task: x.task ?? '' }),
 
   // --- pengujian material: barang dari katalog, catatan di remarks_1 ---
-  f: (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
+  f: (x, u) => ({
+    ...dasar(x, u),
+    item_id: x.item_id,
+    remarks: x.remarks_1 ?? '',
+    amount: x.amount ?? null,
+  }),
 
   // --- pertanggungan: rinciannya di customData, `items` hanya angkanya ---
   '642': (x, u) => ({ ...dasar(x, u), object: x.remarks_1 ?? '' }),

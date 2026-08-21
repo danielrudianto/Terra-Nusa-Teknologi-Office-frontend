@@ -655,6 +655,30 @@
                       placeholder="0"
                     />
                   </mat-form-field>
+                  <!--
+                    Jumlah baris yang DITULIS (koreksi pembulatan). Kosong =
+                    dihitung biasa. Bendrat sekian kg pada harga per-kg kerap
+                    jatuh ke Rp 299.999,70; yang ditulis membetulkannya ke
+                    Rp 300.000, dibatasi TOLERANSI.
+                  -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ "poForm.jumlahBaris" | translate }}</mat-label>
+                    <input
+                      matInput
+                      formControlName="amount"
+                      thousandSeparator=" "
+                      mask="separator.2"
+                      [placeholder]="(hitungBaris(i) | number: '1.0-2') ?? ''"
+                    />
+                    <span matPrefix>Rp&nbsp;</span>
+                    @if (jumlahMenyimpang(i)) {
+                      <mat-error>{{
+                        "poForm.jumlahMenyimpang" | translate: { batas: TOLERANSI }
+                      }}</mat-error>
+                    } @else {
+                      <mat-hint>{{ "poForm.jumlahBarisKet" | translate }}</mat-hint>
+                    }
+                  </mat-form-field>
                   <mat-form-field appearance="outline" class="pof-itemremarks">
                     <mat-label>{{ "poForm.remarks" | translate }}</mat-label>
                     <input
