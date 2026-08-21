@@ -4749,7 +4749,8 @@
       "notifMati": "已在此设备关闭通知。",
       "tentang": "关于",
       "versiAplikasi": "应用版本",
-      "ketukMuat": "点按加载最新版本"
+      "ketukMuat": "点按加载最新版本",
+      "aplikasi": "应用"
     },
     "disalin": "已复制",
     "salin": "复制"
@@ -4778,5 +4779,13 @@
     "konfirmasi": "采购订单 {{nomor}} 将被取消，然后你以正确类型在相同编号创建替代单据。是否继续？",
     "lanjutBuat": "旧采购订单已取消。现在创建替代单据——编号已锁定为 {{nomor}}。",
     "tanpaNomor": "此采购订单没有序号（为手动输入），无法通过此方式重新签发。"
+  },
+  "pwa": {
+    "judul": "安装应用",
+    "subAndroid": "将 TerraBot 安装到主屏幕——全屏打开，无地址栏。",
+    "subIos": "将 TerraBot 添加到主屏幕，即可像应用一样打开：",
+    "tombol": "安装",
+    "iosLangkah1": "在 Safari 中点按“分享”按钮",
+    "iosLangkah2": "选择“添加到主屏幕”"
   }
 }

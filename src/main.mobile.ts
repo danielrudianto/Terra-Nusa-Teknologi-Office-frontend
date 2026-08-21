@@ -47,6 +47,29 @@ import { VERSI } from './app/versi';
 registerLocaleData(localeId, 'id');
 registerLocaleData(localeEn, 'en');
 registerLocaleData(localeZh, 'zh');
+
+/*
+ * Tangkap tawaran pemasangan PWA SEDINI MUNGKIN.
+ *
+ * `beforeinstallprompt` kerap menyala sebelum Angular hidup, dan eventnya
+ * hanya boleh dipakai sekali. Bila tidak ditangkap di sini ia lewat, dan
+ * tombol "Pasang aplikasi" tidak pernah bisa ditawarkan. Eventnya disimpan
+ * di `window` supaya `PwaPasangService` membacanya belakangan; sinyal dikirim
+ * agar layar yang sudah tampil ikut memperbarui tombolnya.
+ */
+(function () {
+  const w = window as any;
+  w.addEventListener('beforeinstallprompt', (e: Event) => {
+    e.preventDefault();
+    w.__pwaPrompt = e;
+    w.dispatchEvent(new Event('pwa-bisa-pasang'));
+  });
+  w.addEventListener('appinstalled', () => {
+    w.__pwaPrompt = null;
+    w.dispatchEvent(new Event('pwa-terpasang'));
+  });
+})();
+
 import { AuthInterceptor } from './app/services/auth.interceptor';
 
 bootstrapApplication(MobileRootComponent, {

@@ -4749,7 +4749,8 @@
       "notifMati": "Notifications turned off for this device.",
       "tentang": "About",
       "versiAplikasi": "App version",
-      "ketukMuat": "Tap to load the latest version"
+      "ketukMuat": "Tap to load the latest version",
+      "aplikasi": "App"
     },
     "disalin": "Copied",
     "salin": "Copy"
@@ -4778,5 +4779,13 @@
     "konfirmasi": "PO {{nomor}} will be CANCELLED, then you create its replacement with the correct type at the same number. Continue?",
     "lanjutBuat": "Old PO cancelled. Now create the replacement — its number is locked to {{nomor}}.",
     "tanpaNomor": "This PO has no sequence number (typed manually), so it cannot be reissued through this path."
+  },
+  "pwa": {
+    "judul": "Install app",
+    "subAndroid": "Install TerraBot to your home screen — opens full-screen, no address bar.",
+    "subIos": "Add TerraBot to your Home Screen so it opens like an app:",
+    "tombol": "Install",
+    "iosLangkah1": "Tap the Share button in Safari",
+    "iosLangkah2": "Choose \"Add to Home Screen\""
   }
 }

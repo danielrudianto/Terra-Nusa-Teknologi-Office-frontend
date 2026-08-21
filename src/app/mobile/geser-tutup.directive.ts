@@ -9,13 +9,24 @@ import {
 } from '@angular/core';
 
 /**
- * Geser ke BAWAH untuk menutup panel bawah (bottom sheet) — seperti aplikasi
- * ponsel biasa.
+ * Panel bawah (bottom sheet) yang bisa DITUTUP dengan dua cara ponsel biasa:
  *
- * Tanpa Hammer: cukup touch event. Tarikan hanya dimulai bila panel sudah di
- * PUNCAK gulirannya (scrollTop 0), supaya menggulir isi ke bawah tidak salah
- * dikira menutup. Melewati ambang saat dilepas → `(tutup)`; kurang dari itu,
- * panel kembali ke tempatnya.
+ *   1. GESER ke bawah — tanpa Hammer, cukup touch event. Tarikan hanya
+ *      dimulai bila panel sudah di PUNCAK gulirannya (scrollTop 0), supaya
+ *      menggulir isi ke bawah tidak salah dikira menutup. Melewati ambang saat
+ *      dilepas → `(tutup)`; kurang dari itu, panel kembali ke tempatnya.
+ *
+ *   2. Tombol KEMBALI (back) — di ponsel, orang menekan Back untuk menutup
+ *      lembar yang terbuka, BUKAN untuk pindah halaman. Saat panel terbuka,
+ *      satu entri riwayat "dititipkan"; tekanan Back berikutnya mengonsumsi
+ *      entri itu — halaman tidak berpindah — dan panelnya yang ditutup. Saat
+ *      panel ditutup lewat cara lain (geser, ketuk luar, tombol aksi), entri
+ *      titipan itu dibersihkan agar Back berikutnya benar-benar pindah
+ *      halaman.
+ *
+ * Keduanya menandai hal yang sama: "ini lembar yang bisa dibubarkan". Karena
+ * itu keduanya di satu tempat — setiap lembar yang bisa digeser-tutup otomatis
+ * juga tertutup oleh Back.
  */
 @Directive({
   selector: '[appGeserTutup]',
@@ -31,11 +42,33 @@ export class GeserTutupDirective implements OnInit, OnDestroy {
   private geser = 0;
   private menarik = false;
 
+  /** Entri riwayat titipan kita masih ada (belum dikonsumsi Back). */
+  private titipRiwayat = false;
+  /** Penutupan ini dipicu oleh Back — jangan bersihkan riwayat lagi. */
+  private tutupKarenaBack = false;
+
   ngOnInit(): void {
     const el = this.host.nativeElement;
     el.addEventListener('touchstart', this.onStart, { passive: true });
     el.addEventListener('touchmove', this.onMove, { passive: false });
     el.addEventListener('touchend', this.onEnd, { passive: true });
+
+    /*
+     * Titip satu entri riwayat DENGAN alamat yang sama.
+     *
+     * Alamatnya tidak diubah (argumen ketiga dikosongkan), jadi tidak ada
+     * rute yang berpindah — yang bertambah hanya satu langkah "kembali" yang
+     * kita sediakan untuk menutup panel. Dibungkus try: sebagian konteks
+     * (mis. pratinjau/embed) melarang History API, dan itu tidak boleh
+     * menggagalkan panelnya.
+     */
+    try {
+      history.pushState({ bottomSheet: true }, '');
+      this.titipRiwayat = true;
+      window.addEventListener('popstate', this.onPop);
+    } catch {
+      this.titipRiwayat = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -43,7 +76,36 @@ export class GeserTutupDirective implements OnInit, OnDestroy {
     el.removeEventListener('touchstart', this.onStart as any);
     el.removeEventListener('touchmove', this.onMove as any);
     el.removeEventListener('touchend', this.onEnd as any);
+
+    window.removeEventListener('popstate', this.onPop);
+    // Ditutup lewat UI (bukan Back): entri titipan masih menumpuk di riwayat.
+    // Dibuang di sini supaya tekanan Back berikutnya benar-benar pindah
+    // halaman, bukan sekadar "menutup" panel yang sudah tertutup. Karena
+    // pendengar popstate sudah dilepas di atas, `history.back()` ini tidak
+    // memicu penutupan ulang.
+    if (this.titipRiwayat && !this.tutupKarenaBack) {
+      this.titipRiwayat = false;
+      try {
+        history.back();
+      } catch {
+        /* diam: gagal membersihkan riwayat bukan alasan menahan penutupan */
+      }
+    }
   }
+
+  /**
+   * Tombol Back ditekan saat panel terbuka.
+   *
+   * Entri titipan kita yang dikonsumsi — alamatnya sama, jadi tidak ada
+   * perpindahan halaman. Yang perlu dilakukan hanya menutup panelnya, dan
+   * MENANDAI bahwa penutupan ini dari Back supaya `ngOnDestroy` tidak menekan
+   * `history.back()` sekali lagi.
+   */
+  private onPop = (): void => {
+    this.titipRiwayat = false;
+    this.tutupKarenaBack = true;
+    this.tutup.emit();
+  };
 
   private diPuncak(): boolean {
     return (this.host.nativeElement.scrollTop || 0) <= 0;

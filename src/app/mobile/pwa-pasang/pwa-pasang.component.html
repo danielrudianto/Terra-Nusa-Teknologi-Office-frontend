@@ -1,0 +1,32 @@
+@if (pwa.bolehTawarkan()) {
+  <div class="pwa">
+    <span class="pwa__ikon"><mat-icon>install_mobile</mat-icon></span>
+    <div class="pwa__isi">
+      <strong class="pwa__judul">{{ "pwa.judul" | translate }}</strong>
+      <span class="pwa__sub">{{
+        (pwa.bisaPasang() ? "pwa.subAndroid" : "pwa.subIos") | translate
+      }}</span>
+
+      @if (!pwa.bisaPasang()) {
+        <!-- iOS: tidak bisa programatik; tinggal petunjuk langkahnya. -->
+        <ol class="pwa__langkah">
+          <li>
+            <mat-icon>ios_share</mat-icon>
+            <span>{{ "pwa.iosLangkah1" | translate }}</span>
+          </li>
+          <li>
+            <mat-icon>add_box</mat-icon>
+            <span>{{ "pwa.iosLangkah2" | translate }}</span>
+          </li>
+        </ol>
+      }
+    </div>
+
+    @if (pwa.bisaPasang()) {
+      <button mat-flat-button color="primary" type="button" (click)="pasang()">
+        <mat-icon>download</mat-icon>
+        {{ "pwa.tombol" | translate }}
+      </button>
+    }
+  </div>
+}

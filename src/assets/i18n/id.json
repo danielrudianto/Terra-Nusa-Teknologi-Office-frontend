@@ -4749,7 +4749,8 @@
       "notifMati": "Notifikasi dimatikan di perangkat ini.",
       "tentang": "Tentang",
       "versiAplikasi": "Versi aplikasi",
-      "ketukMuat": "Ketuk untuk memuat versi terbaru"
+      "ketukMuat": "Ketuk untuk memuat versi terbaru",
+      "aplikasi": "Aplikasi"
     },
     "disalin": "Disalin",
     "salin": "Salin"
@@ -4778,5 +4779,13 @@
     "konfirmasi": "PO {{nomor}} akan DIBATALKAN, lalu kamu buat penggantinya dengan jenis yang benar di nomor yang sama. Lanjutkan?",
     "lanjutBuat": "PO lama dibatalkan. Sekarang buat penggantinya — nomornya dikunci ke {{nomor}}.",
     "tanpaNomor": "PO ini tidak punya nomor urut (nomornya diketik manual), jadi tidak bisa diterbitkan ulang lewat jalur ini."
+  },
+  "pwa": {
+    "judul": "Pasang aplikasi",
+    "subAndroid": "Pasang TerraBot ke layar utama — buka penuh layar, tanpa bilah alamat.",
+    "subIos": "Tambahkan TerraBot ke Layar Utama agar terbuka seperti aplikasi:",
+    "tombol": "Pasang",
+    "iosLangkah1": "Ketuk tombol Bagikan di Safari",
+    "iosLangkah2": "Pilih \"Tambahkan ke Layar Utama\""
   }
 }

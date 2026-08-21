@@ -10,6 +10,8 @@ import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
 import { PushService } from '../../services/push.service';
 import { VersiService } from '../../services/versi.service';
+import { PwaPasangService } from '../../services/pwa-pasang.service';
+import { PwaPasangComponent } from '../pwa-pasang/pwa-pasang.component';
 
 /**
  * Pengaturan mobile: tema dan keluar.
@@ -26,6 +28,7 @@ import { VersiService } from '../../services/versi.service';
     MatIconModule,
     MatProgressSpinnerModule,
     TranslatePipe,
+    PwaPasangComponent,
   ],
   templateUrl: './pengaturan.component.html',
   styleUrls: ['./pengaturan.component.scss'],
@@ -39,6 +42,8 @@ export class PengaturanComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   /** Versi aplikasi + pemantau pembaruan — sama dengan desktop. */
   readonly versi = inject(VersiService);
+  /** Tawaran pasang aplikasi (PWA); menyembunyikan dirinya bila tak relevan. */
+  readonly pwa = inject(PwaPasangService);
 
   ngOnInit(): void {
     // Daftarkan service worker & segarkan status langganan bila pengguna ini

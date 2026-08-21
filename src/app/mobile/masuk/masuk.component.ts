@@ -17,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 
+import { PwaPasangComponent } from '../pwa-pasang/pwa-pasang.component';
 import { ApiService } from '../../services/api.service';
 import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
@@ -53,6 +54,7 @@ import {
     MatMenuModule,
     MatProgressSpinnerModule,
     TranslatePipe,
+    PwaPasangComponent,
   ],
   templateUrl: './masuk.component.html',
   styleUrls: ['./masuk.component.scss'],
