@@ -117,7 +117,14 @@ export const BALIK_BARIS: Record<
     remarks: x.remarks_1 ?? '',
     amount: x.amount ?? null,
   }),
-  '5112': (x, u) => ({ ...dasar(x, u), remarks: x.remarks_1 ?? '' }),
+  // 5.1.12 menyimpan nama produk di `task` (tanpa katalog, `item_description`
+  // selalu kosong). Karena itu deskripsinya dibaca dari `task` lebih dulu,
+  // baru jatuh ke `item_description` untuk dokumen lama.
+  '5112': (x, u) => ({
+    ...dasar(x, u),
+    description: x.task || namaBarang(x),
+    remarks: x.remarks_1 ?? '',
+  }),
   '516': (x, u) => ({
     ...dasar(x, u),
     item_id: x.item_id,

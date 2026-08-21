@@ -495,12 +495,19 @@ export class PurchaseOrderCreate5112Component {
         const x = c.getRawValue();
         return {
           item_id: null,
-          // Nama barang tidak disalin: sudah tersimpan di
-          // master_item dan diambil lewat item_id saat dibaca.
-          // Menyalinnya berarti dokumen menyimpan nama yang bisa
-          // berbeda dari katalognya, dan nama panjang melampaui
-          // batas kolomnya.
-          task: null,
+          /*
+           * Nama produk DISIMPAN di `task`.
+           *
+           * 5.1.12 tidak memakai katalog (`item_id` selalu null), sehingga
+           * `item_description` — yang biasanya hasil join ke master_item —
+           * SELALU kosong. Nama yang diketik ("Google Workspace") tidak punya
+           * kolom lain untuk ditumpangi, dan sebelumnya dibuang di sini: dokumen
+           * tersimpan tanpa nama barang sama sekali, tampil "—" saat dibuka lagi
+           * meski pratinjau saat membuat masih menampilkannya. `task` (String
+           * 100) adalah kolom teks bebas yang memang dibaca layar lihat sebagai
+           * cadangan nama, jadi ke sanalah namanya disimpan.
+           */
+          task: x.description || null,
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
