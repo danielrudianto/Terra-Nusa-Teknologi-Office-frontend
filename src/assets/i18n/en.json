@@ -4696,7 +4696,8 @@
       "atasNama": "Account name",
       "rekening": "Destination account",
       "rincian": "Expense details",
-      "tanpaRincian": "No details."
+      "tanpaRincian": "No details.",
+      "sudahBaca": "I have reviewed the details and destination account."
     },
     "pembelian": {
       "judul": "Delete Purchase",
@@ -4732,6 +4733,8 @@
       "tentang": "About",
       "versiAplikasi": "App version",
       "ketukMuat": "Tap to load the latest version"
-    }
+    },
+    "disalin": "Copied",
+    "salin": "Copy"
   }
 }

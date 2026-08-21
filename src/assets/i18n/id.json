@@ -4696,7 +4696,8 @@
       "atasNama": "Atas nama",
       "rekening": "Rekening tujuan",
       "rincian": "Rincian pengeluaran",
-      "tanpaRincian": "Tidak ada rincian."
+      "tanpaRincian": "Tidak ada rincian.",
+      "sudahBaca": "Saya sudah memeriksa rincian dan rekening tujuannya."
     },
     "pembelian": {
       "judul": "Hapus Pembelian",
@@ -4732,6 +4733,8 @@
       "tentang": "Tentang",
       "versiAplikasi": "Versi aplikasi",
       "ketukMuat": "Ketuk untuk memuat versi terbaru"
-    }
+    },
+    "disalin": "Disalin",
+    "salin": "Salin"
   }
 }

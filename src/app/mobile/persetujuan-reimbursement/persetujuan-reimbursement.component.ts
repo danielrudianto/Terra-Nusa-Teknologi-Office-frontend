@@ -13,6 +13,7 @@ import { AccountService } from '../../services/account.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
+import { GeserTutupDirective } from '../geser-tutup.directive';
 
 /**
  * Menyetujui reimbursement dari ponsel.
@@ -35,6 +36,7 @@ import { ScrollBawahDirective } from '../scroll-bawah.directive';
     TranslatePipe,
     TarikSegarkanDirective,
     ScrollBawahDirective,
+    GeserTutupDirective,
   ],
   templateUrl: './persetujuan-reimbursement.component.html',
   styleUrls: [
@@ -125,9 +127,24 @@ export class PersetujuanReimbursementComponent implements OnInit {
   rincianItem: any[] = [];
   memuatRincian = false;
 
+  /**
+   * Ditandai sudah diperiksa oleh yang menyetujui.
+   *
+   * Bukan pengaman — server tetap memutuskan — melainkan PENGHENTI LANGKAH:
+   * tombol Setujui baru hidup setelah ini ditandai, supaya persetujuan bukan
+   * satu ketukan refleks di ponsel. Reimbursement adalah uang yang akan
+   * benar-benar ditransfer; menyetujuinya tanpa membaca rinciannya persis yang
+   * hendak dicegah.
+   */
+  sudahBaca = false;
+  tandaiBaca(dicentang: boolean): void {
+    this.sudahBaca = dicentang;
+  }
+
   buka(r: any): void {
     this.dipilih = r;
     this.rincianItem = [];
+    this.sudahBaca = false;
     this.memuatRincian = true;
     // Ambil rincian: baris pengeluaran + nomor rekening tujuan. Menyetujui
     // tanpa melihat "uang ini untuk apa" dan "ditransfer ke mana" berarti
@@ -148,6 +165,7 @@ export class PersetujuanReimbursementComponent implements OnInit {
   tutup(): void {
     this.dipilih = null;
     this.rincianItem = [];
+    this.sudahBaca = false;
   }
 
   /**
@@ -161,6 +179,64 @@ export class PersetujuanReimbursementComponent implements OnInit {
     const saya = this.akun.userId;
     if (saya === null) return false;
     return Number(r?.createdBy) === saya;
+  }
+
+  /**
+   * Jenis pengeluaran — hanya tiga. Kuncinya sama dengan daftar desktop
+   * supaya labelnya tidak pernah berbeda antar layar.
+   */
+  jenisKunci(r: any): string {
+    switch (r?.purchaseType) {
+      case 'A':
+        return 'reimbursementType.transport';
+      case 'E':
+        return 'reimbursementType.consumption';
+      case '5.1.6':
+        return 'reimbursementType.document';
+      default:
+        return 'reimbursement.unknown';
+    }
+  }
+
+  jenisIkon(r: any): string {
+    switch (r?.purchaseType) {
+      case 'A':
+        return 'directions_car';
+      case 'E':
+        return 'restaurant';
+      case '5.1.6':
+        return 'description';
+      default:
+        return 'category';
+    }
+  }
+
+  /** Salin ke papan klip; nomor rekening & nominal kerap disalin ke m-banking. */
+  salin(teks: any): void {
+    const v = String(teks ?? '').replace(/\s+/g, ' ').trim();
+    if (!v) return;
+    const beri = () =>
+      this.snackBar.open(this.translate.instant('mobile.disalin'), 'Tutup', {
+        duration: 1500,
+      });
+    try {
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(v).then(beri).catch(() => {});
+      } else {
+        // Cadangan untuk peramban lama / konteks non-HTTPS.
+        const ta = document.createElement('textarea');
+        ta.value = v;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        beri();
+      }
+    } catch {
+      /* diam: menyalin gagal bukan alasan menahan apa pun */
+    }
   }
 
   /**

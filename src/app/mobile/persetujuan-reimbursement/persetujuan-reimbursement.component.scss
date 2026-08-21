@@ -87,3 +87,115 @@
   place-items: center;
   padding: 0.8rem 0;
 }
+
+/* ---- checklist "sudah diperiksa" (gate tombol setujui) ---- */
+.mrb-baca {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 1.1rem 0 0.4rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: var(--brand-soft);
+  color: var(--ink);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.16s ease;
+
+  input {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    margin-top: 0.05rem;
+    accent-color: var(--brand);
+  }
+  &--tercentang {
+    border-color: var(--brand);
+  }
+}
+
+/* Jarak tegas sebelum tombol aksi — supaya Setujui tidak mepet daftar. */
+.mrb-aksi {
+  margin-top: 0.6rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+/* ---- kepala panel: judul + pil jenis ---- */
+.mrb-panel__kepala {
+  margin-bottom: 0.9rem;
+
+  .mrb-judul {
+    margin: 0 0 0.5rem;
+  }
+}
+
+/* ---- pil jenis pengeluaran ---- */
+.mrb-tanda {
+  margin-top: 0.6rem;
+}
+.mrb-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem 0.22rem 0.45rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  line-height: 1.4;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Tiga jenis, tiga warna — dikenali sekilas tanpa membaca. */
+  &[data-jenis='A'] {
+    background: color-mix(in srgb, #2f9e6b 16%, var(--surface));
+    color: color-mix(in srgb, #2f9e6b 82%, var(--ink));
+  }
+  &[data-jenis='E'] {
+    background: color-mix(in srgb, #d9822b 18%, var(--surface));
+    color: color-mix(in srgb, #d9822b 82%, var(--ink));
+  }
+  &[data-jenis='5.1.6'] {
+    background: color-mix(in srgb, #5a6cd8 16%, var(--surface));
+    color: color-mix(in srgb, #5a6cd8 84%, var(--ink));
+  }
+}
+
+/* ---- nilai yang dapat disalin (rekening, total) ---- */
+.mrb-salin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0.1rem 0.2rem;
+  margin: -0.1rem -0.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--faint);
+    flex: none;
+  }
+  &:active {
+    background: var(--hover);
+  }
+  &--total .mrb-rinci__total {
+    font-weight: 800;
+  }
+}

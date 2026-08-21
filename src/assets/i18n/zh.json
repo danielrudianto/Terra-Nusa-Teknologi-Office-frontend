@@ -4696,7 +4696,8 @@
       "atasNama": "账户名",
       "rekening": "收款账户",
       "rincian": "支出明细",
-      "tanpaRincian": "无明细。"
+      "tanpaRincian": "无明细。",
+      "sudahBaca": "我已核对明细和收款账户。"
     },
     "pembelian": {
       "judul": "删除采购",
@@ -4732,6 +4733,8 @@
       "tentang": "关于",
       "versiAplikasi": "应用版本",
       "ketukMuat": "点按加载最新版本"
-    }
+    },
+    "disalin": "已复制",
+    "salin": "复制"
   }
 }

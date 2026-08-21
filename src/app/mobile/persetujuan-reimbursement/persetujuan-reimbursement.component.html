@@ -52,6 +52,12 @@
           <span class="mrb-nama">{{ r.bankAccountName || "\u2014" }}</span>
           <span class="mrb-tanggal">{{ r.date | date: "d MMM y" }}</span>
         </div>
+        <!-- Jenis pengeluaran: pil kecil supaya sekilas tahu ini uang apa. -->
+        <div class="mrb-tanda">
+          <span class="mrb-pil" [attr.data-jenis]="r.purchaseType">
+            <mat-icon>{{ jenisIkon(r) }}</mat-icon>{{ jenisKunci(r) | translate }}
+          </span>
+        </div>
       </button>
     }
 
@@ -65,11 +71,20 @@
 
 @if (dipilih) {
   <div class="mrb-tirai" (click)="tutup()">
-    <div class="mrb-panel" (click)="$event.stopPropagation()">
+    <div
+      class="mrb-panel"
+      appGeserTutup
+      (tutup)="tutup()"
+      (click)="$event.stopPropagation()"
+    >
       <div class="mrb-tarik"></div>
 
-      <h2 class="mrb-judul">{{ dipilih.name || dipilih.id }}</h2>
-      <p class="mrb-sub">{{ dipilih.bankAccountName || "\u2014" }}</p>
+      <div class="mrb-panel__kepala">
+        <h2 class="mrb-judul">{{ dipilih.name || dipilih.id }}</h2>
+        <span class="mrb-pil" [attr.data-jenis]="dipilih.purchaseType">
+          <mat-icon>{{ jenisIkon(dipilih) }}</mat-icon>{{ jenisKunci(dipilih) | translate }}
+        </span>
+      </div>
 
       <dl class="mrb-rinci">
         <dt>{{ "mobile.reimbursement.tanggal" | translate }}</dt>
@@ -85,10 +100,30 @@
         <dd>{{ dipilih.bankAccountName || "\u2014" }}</dd>
 
         <dt>{{ "mobile.reimbursement.rekening" | translate }}</dt>
-        <dd class="mrb-rekening">{{ dipilih.bankAccountNumber || "\u2014" }}</dd>
+        <dd>
+          <button
+            type="button"
+            class="mrb-salin"
+            (click)="salin(dipilih.bankAccountNumber)"
+            [attr.aria-label]="'mobile.salin' | translate"
+          >
+            <span class="mrb-rekening">{{ dipilih.bankAccountNumber || "\u2014" }}</span>
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </dd>
 
         <dt>{{ "mobile.reimbursement.nominal" | translate }}</dt>
-        <dd class="mrb-rinci__total">{{ nilai(dipilih) | number: "1.0-0" }}</dd>
+        <dd>
+          <button
+            type="button"
+            class="mrb-salin mrb-salin--total"
+            (click)="salin(nilai(dipilih))"
+            [attr.aria-label]="'mobile.salin' | translate"
+          >
+            <span class="mrb-rinci__total">{{ nilai(dipilih) | number: "1.0-0" }}</span>
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </dd>
       </dl>
 
       <!-- Rincian: uang ini untuk apa saja. -->
@@ -123,6 +158,20 @@
           <mat-icon>info</mat-icon>
           <span>{{ "mobile.reimbursement.ajuanSendiri" | translate }}</span>
         </div>
+      } @else {
+        <!--
+          TETAP terlihat setelah dicentang, bukan hilang — supaya yang membuka
+          kembali tahu langkah ini sudah dilewati. Tombol Setujui baru hidup
+          setelah ini ditandai.
+        -->
+        <label class="mrb-baca" [class.mrb-baca--tercentang]="sudahBaca">
+          <input
+            type="checkbox"
+            [checked]="sudahBaca"
+            (change)="tandaiBaca($any($event.target).checked)"
+          />
+          <span>{{ "mobile.reimbursement.sudahBaca" | translate }}</span>
+        </label>
       }
 
       <div class="mrb-aksi">
@@ -131,7 +180,7 @@
             mat-flat-button
             color="primary"
             type="button"
-            [disabled]="sedangKirim"
+            [disabled]="sedangKirim || !sudahBaca || memuatRincian"
             (click)="setujui(dipilih)"
           >
             {{ "mobile.reimbursement.setujui" | translate }}

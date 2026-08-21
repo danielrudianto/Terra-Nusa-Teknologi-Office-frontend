@@ -23,6 +23,7 @@ import { barisTampil } from '../../constants/baris-tampil-po';
 import { nilaiBaris } from '../../helpers/nilai-baris.helper';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { ScrollBawahDirective } from '../scroll-bawah.directive';
+import { GeserTutupDirective } from '../geser-tutup.directive';
 
 type Mode = 'periksa' | 'setujui';
 
@@ -54,6 +55,7 @@ type Mode = 'periksa' | 'setujui';
     TranslatePipe,
     TarikSegarkanDirective,
     ScrollBawahDirective,
+    GeserTutupDirective,
   ],
   templateUrl: './po-daftar.component.html',
   styleUrls: [

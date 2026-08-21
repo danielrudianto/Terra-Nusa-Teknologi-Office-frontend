@@ -1141,3 +1141,28 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* ===================================================================
+   APLIKASI MOBILE: scrollbar tersembunyi
+   =================================================================== */
+
+/*
+ * Di aplikasi ponsel, scrollbar KLASIK yang memakan lebar meninggalkan kolom
+ * kosong di kanan — bilah bawah `right:0` berhenti di tepi konten, dan
+ * gutter scrollbar tampak sebagai "ruang kecil" yang membuatnya tidak
+ * benar-benar selebar layar. Aplikasi ponsel asli tidak menampilkan
+ * scrollbar; disembunyikan agar konten dan navigasinya penuh selebar layar.
+ *
+ * DILINGKUP ke `body.mobile-app` (hanya index mobile memakainya) supaya
+ * desktop tetap punya scrollbar seperti biasa.
+ */
+body.mobile-app {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE lama */
+}
+body.mobile-app::-webkit-scrollbar,
+body.mobile-app *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* WebKit/Blink */
+}

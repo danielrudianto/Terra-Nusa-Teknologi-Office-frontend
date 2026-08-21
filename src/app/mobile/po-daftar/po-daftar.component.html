@@ -89,7 +89,12 @@
 <!-- Panel rincian + aksi (periksa / setujui). -->
 @if (dipilih) {
   <div class="mpo-tirai" (click)="tutup()">
-    <div class="mpo-panel" (click)="$event.stopPropagation()">
+    <div
+      class="mpo-panel"
+      appGeserTutup
+      (tutup)="tutup()"
+      (click)="$event.stopPropagation()"
+    >
       <div class="mpo-tarik"></div>
 
       <div class="mpo-panel__kepala">
