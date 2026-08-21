@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -76,6 +77,8 @@ export class PemeriksaanPoComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   daftar: any[] = [];
   sedangMemuat = false;
@@ -90,6 +93,22 @@ export class PemeriksaanPoComponent implements OnInit {
 
   ngOnInit(): void {
     this.muat();
+
+    // Deep link dari notifikasi push: `/Pemeriksaan?open=<id>` langsung
+    // membuka dokumen yang diminta diperiksa — satu ketukan dari notifikasi
+    // ke isinya, bukan mencari-cari di daftar. Parameternya dibersihkan
+    // setelah dipakai supaya muat ulang tidak membukanya lagi.
+    const buka = this.route.snapshot.queryParamMap.get('open');
+    const id = Number(buka);
+    if (buka && id) {
+      this.buka({ id });
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { open: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
   }
 
   muat(): void {

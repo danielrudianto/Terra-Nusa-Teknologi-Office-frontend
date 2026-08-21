@@ -4702,6 +4702,11 @@
       "peringatan": "Deleting cannot be undone. Approved purchases can only be deleted by the owner.",
       "yakin": "I have checked the document and want to delete it.",
       "terhapus": "{{nomor}} deleted"
+    },
+    "notif": {
+      "judul": "PO notifications",
+      "aktif": "On — you’ll be alerted on new POs",
+      "mati": "Turn on to be alerted on new POs"
     }
   }
 }

@@ -62,6 +62,35 @@
   }}</span>
 </button>
 
+<!--
+  Notifikasi push — hanya untuk yang berwenang memeriksa, dan hanya bila
+  perangkatnya mendukung. Menyalakannya baru meminta izin; sebelum itu tidak
+  ada permintaan yang mengganggu.
+-->
+@if (bolehMemeriksa() && pushDidukung) {
+  <button
+    type="button"
+    class="mbr-petak"
+    [disabled]="pushSedangProses"
+    (click)="pushAktif ? matikanNotif() : aktifkanNotif()"
+  >
+    <mat-icon>{{ pushAktif ? "notifications_active" : "notifications_off" }}</mat-icon>
+    <span class="mbr-petak__teks">
+      <span class="mbr-petak__judul">{{ "mobile.notif.judul" | translate }}</span>
+      <span class="mbr-petak__ket">{{
+        (pushAktif ? "mobile.notif.aktif" : "mobile.notif.mati") | translate
+      }}</span>
+    </span>
+    @if (pushSedangProses) {
+      <mat-spinner diameter="20" />
+    } @else {
+      <mat-icon class="mbr-petak__panah">{{
+        pushAktif ? "toggle_on" : "toggle_off"
+      }}</mat-icon>
+    }
+  </button>
+}
+
 <div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
 
 <button type="button" class="mbr-petak" (click)="ke('/Proyek')">

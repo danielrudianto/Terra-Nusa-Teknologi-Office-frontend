@@ -4702,6 +4702,11 @@
       "peringatan": "Menghapus tidak dapat dibatalkan. Pembelian yang sudah disetujui hanya dapat dihapus pemilik.",
       "yakin": "Saya sudah memeriksa dokumennya dan yakin ingin menghapusnya.",
       "terhapus": "{{nomor}} dihapus"
+    },
+    "notif": {
+      "judul": "Notifikasi PO",
+      "aktif": "Menyala — ada PO baru langsung diberi tahu",
+      "mati": "Nyalakan untuk diberi tahu PO baru"
     }
   }
 }

@@ -10,6 +10,8 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
+import { PushService } from '../../services/push.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -31,7 +33,48 @@ export class BerandaComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);
+  private readonly push = inject(PushService);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
+
+  /** Perangkat ini mendukung notifikasi push? */
+  get pushDidukung(): boolean {
+    return this.push.didukung();
+  }
+
+  /** Perangkat ini sedang berlangganan notifikasi? */
+  get pushAktif(): boolean {
+    return this.push.berlangganan();
+  }
+
+  get pushSedangProses(): boolean {
+    return this.push.sedangProses();
+  }
+
+  /**
+   * Nyalakan/matikan notifikasi di perangkat ini.
+   *
+   * Ditawarkan HANYA kepada yang berwenang memeriksa: merekalah yang perlu
+   * tahu begitu ada PO baru. Yang lain tidak diberi tombol yang tak berguna
+   * baginya.
+   */
+  async aktifkanNotif(): Promise<void> {
+    const galat = await this.push.aktifkan();
+    if (galat) {
+      this.snackBar.open(galat, 'Tutup', { duration: 6000 });
+    } else {
+      this.snackBar.open('Notifikasi dinyalakan di perangkat ini.', 'Tutup', {
+        duration: 3000,
+      });
+    }
+  }
+
+  async matikanNotif(): Promise<void> {
+    await this.push.matikan();
+    this.snackBar.open('Notifikasi dimatikan di perangkat ini.', 'Tutup', {
+      duration: 3000,
+    });
+  }
 
   jumlahPo = 0;
   jumlahReimbursement = 0;
@@ -72,6 +115,11 @@ export class BerandaComponent implements OnInit {
 
   ngOnInit(): void {
     this.muat();
+    // Daftarkan service worker & segarkan status langganan — hanya menyiapkan,
+    // tidak meminta izin apa pun sampai pengguna menekan tombolnya.
+    if (this.bolehMemeriksa()) {
+      void this.push.init();
+    }
   }
 
   muat(): void {
