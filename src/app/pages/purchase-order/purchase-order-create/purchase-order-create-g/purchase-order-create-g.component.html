@@ -168,7 +168,7 @@
                   }}</span>
                 </div>
                 <div class="pog-itemtotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  Rp {{ lineTotal(i) | number: "1.0-2" }}
                 </div>
                 <button
                   mat-icon-button
@@ -302,15 +302,15 @@
         <div class="pog-summary">
           <div class="pog-summary__row">
             <span>{{ "poForm.subtotal" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="pog-summary__row">
             <span>{{ "poForm.ppn" | translate }}</span
-            ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            ><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="pog-summary__row pog-summary__row--total">
             <span>{{ "poForm.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>

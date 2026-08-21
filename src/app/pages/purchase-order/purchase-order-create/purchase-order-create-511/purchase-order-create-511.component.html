@@ -174,7 +174,7 @@
                   }}</span>
                 </div>
                 <div class="po511-itemtotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  Rp {{ lineTotal(i) | number: "1.0-2" }}
                 </div>
                 <button
                   mat-icon-button
@@ -305,14 +305,14 @@
         <div class="po511-summary">
           <div class="po511-summary__row">
             <span>{{ "po511.subtotalDpp" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="po511-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="po511-summary__row po511-summary__row--total">
             <span>{{ "common.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>

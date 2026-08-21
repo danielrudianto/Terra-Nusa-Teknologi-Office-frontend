@@ -127,28 +127,24 @@ export class AdendumService {
         : induk.customData || {};
 
     /*
-     * Tanggal dan nomor TIDAK diwarisi.
+     * Tanggal DIWARISI pada KEDUA mode — sunting maupun adendum.
      *
-     * Adendum terbit pada tanggalnya sendiri, dan nomornya dibentuk server
-     * dari induknya. Mewarisi keduanya menghasilkan dokumen bertanggal lama
-     * yang tampak sah — dan itu tidak akan terlihat sampai ada yang
-     * membandingkannya dengan lembar aslinya.
-     */
-    /*
-     * Pada mode UBAH, tanggal DIWARISI.
+     * Keputusan dari lapangan: 95% penyuntingan hanya menyentuh barang dan
+     * harga, hampir tidak pernah tanggalnya, dan yang mengerjakannya langsung
+     * masuk ke daftar barang tanpa melirik tanggal. Kolom tanggal yang kosong
+     * karena itu tertinggal kosong sampai server menolaknya — atau lebih
+     * buruk, terisi hari ini diam-diam dan dokumennya berpindah hari.
      *
-     * Yang diubah adalah dokumen yang sudah ada; tanggalnya bagian dari
-     * dokumen itu, bukan sesuatu yang ditentukan ulang. Mengosongkannya
-     * membuat yang membetulkan satu angka harus mengingat tanggal aslinya
-     * — dan bila ia salah ingat, dokumennya berpindah hari tanpa ada yang
-     * menyadarinya.
+     * Maka tanggalnya diisikan lebih dulu dari dokumen sebelumnya. Pada
+     * SUNTING ia memang tanggal dokumen itu; pada ADENDUM ia menjadi nilai
+     * awal yang masuk akal dan tetap dapat diganti bila adendumnya memang
+     * terbit di hari lain. Keduanya lebih baik daripada kolom kosong yang
+     * menghentikan orang di tengah pekerjaan yang tak menyangkut tanggal.
      *
      * Nomor tetap tidak diwarisi ke isian: ia tidak diketik, melainkan
      * dipegang dokumennya sendiri.
      */
-    const TIDAK_DIWARISI = this.isUbah
-      ? ['purchase_order', 'name', ...abaikan]
-      : ['date', 'purchase_order', 'name', ...abaikan];
+    const TIDAK_DIWARISI = ['purchase_order', 'name', ...abaikan];
 
     const sumber: any = { ...induk, ...custom };
     const nilai: any = {};
