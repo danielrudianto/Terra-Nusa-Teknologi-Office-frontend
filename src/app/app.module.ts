@@ -55,6 +55,7 @@ import { AppComponent } from './app.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { VERSI } from './versi';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -141,7 +142,11 @@ export const MY_FORMATS = {
       loader: {
         provide: TranslateLoader,
         useFactory: (http: HttpClient) =>
-          new TranslateHttpLoader(http, './assets/i18n/', '.json'),
+          // Akhiran membawa VERSI build sebagai pembeda cache — lihat
+          // keterangan yang sama pada bootstrap mobile. Tanpa ini, deploy
+          // yang menambah kunci terjemahan tetap menyajikan JSON lama dari
+          // cache, dan kunci barunya muncul mentah di layar.
+          new TranslateHttpLoader(http, './assets/i18n/', `.json?v=${VERSI.commit}`),
         deps: [HttpClient],
       },
     }),

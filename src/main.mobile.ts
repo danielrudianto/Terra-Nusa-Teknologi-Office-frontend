@@ -31,6 +31,7 @@ import { provideNgxMask } from 'ngx-mask';
 
 import { MobileRootComponent } from './app/mobile/mobile-root.component';
 import { MOBILE_ROUTES } from './app/mobile/mobile.routes';
+import { VERSI } from './app/versi';
 
 /*
  * Data lokal DIDAFTARKAN sebelum aplikasi dijalankan.
@@ -78,8 +79,21 @@ bootstrapApplication(MobileRootComponent, {
         fallbackLang: 'id',
         loader: {
           provide: TranslateLoader,
+          // Akhiran berkasnya membawa VERSI build sebagai pembeda cache.
+          //
+          // Berkas terjemahan diambil saat aplikasi berjalan, dan peramban
+          // maupun nginx menyimpannya lama. Tanpa pembeda ini, deploy yang
+          // menambah kunci baru tetap menyajikan `id.json` LAMA — kunci
+          // barunya muncul MENTAH di layar (mis. "mobile.po.barang") sampai
+          // seseorang menekan muat-ulang paksa. Versi build berubah tiap
+          // deploy, jadi berkasnya selalu diambil ulang tepat ketika berubah,
+          // dan tidak sekali pun lebih sering dari itu.
           useFactory: (http: HttpClient) =>
-            new TranslateHttpLoader(http, './assets/i18n/', '.json'),
+            new TranslateHttpLoader(
+              http,
+              './assets/i18n/',
+              `.json?v=${VERSI.commit}`,
+            ),
           deps: [HttpClient],
         },
       }),
