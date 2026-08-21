@@ -184,7 +184,17 @@ export const MY_FORMATS = {
       },
     },
     { provide: ErrorHandler, useClass: ChunkErrorHandler },
-    provideNgxMask(),
+    /*
+     * Pemisah ribuan SPASI, penanda desimal titik ATAU koma.
+     *
+     * Titik sebagai pemisah ribuan bertabrakan dengan titik sebagai desimal:
+     * pada kolom harga, "." lalu tak dapat lagi berarti desimal, dan yang
+     * mengetik "300.000,50" tidak dapat memasukkan bagian desimalnya sama
+     * sekali. Spasi untuk ribuan menghilangkan tabrakan itu, dan desimal
+     * boleh diketik dengan "." maupun "," — keduanya diterima (bawaan
+     * ngx-mask: decimalMarker ['.', ','], sengaja tidak diubah).
+     */
+    provideNgxMask({ thousandSeparator: ' ' }),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

@@ -62,7 +62,8 @@ bootstrapApplication(MobileRootComponent, {
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideHttpClient(withInterceptorsFromDi()),
     provideNativeDateAdapter(),
-    provideNgxMask(),
+    // Pemisah ribuan spasi; desimal titik/koma (bawaan) — sama dengan desktop.
+    provideNgxMask({ thousandSeparator: ' ' }),
     DatePipe,
     DecimalPipe,
     {
