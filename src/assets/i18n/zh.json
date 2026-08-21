@@ -2266,7 +2266,16 @@
     "versiTanggal": "构建时间",
     "versiKode": "构建代码",
     "versiPeriksa": "检查更新",
-    "versiDiperiksa": "上次检查"
+    "versiDiperiksa": "上次检查",
+    "notif": "通知",
+    "notifSub": "直接发送到此设备的提醒",
+    "notifPO": "采购订单通知",
+    "notifPOHint": "有新的采购订单需要检查时收到通知。点按通知即可直接打开单据。",
+    "notifNyala": "开启",
+    "notifMati": "关闭",
+    "notifNyalaOk": "已在此设备上启用通知。",
+    "notifMatiOk": "已在此设备上关闭通知。",
+    "notifTakDidukung": "此浏览器尚不支持通知。"
   },
   "allowanceForm": {
     "title": "添加津贴",
@@ -3746,7 +3755,12 @@
     "VALIDATION": "部分字段无效，请检查表单。",
     "INTERNAL": "服务器发生错误，请稍后重试。",
     "PO_CHECKER_IS_APPROVER": "采购订单不能由检查人本人审批，请另请他人审批。",
-    "PO_DELETE_APPROVED_FORBIDDEN": "已审批的采购订单只能由所有者删除。签发后如需变更，请使用补充协议。"
+    "PO_DELETE_APPROVED_FORBIDDEN": "已审批的采购订单只能由所有者删除。签发后如需变更，请使用补充协议。",
+    "NUMBER_IN_USE": "该编号仍被一张有效的采购订单占用。请先取消该编号上的旧单据，再签发替代单据。",
+    "FORBIDDEN_LEVEL": "只有 5 级用户才能强制指定单据编号。",
+    "FORCE_NUMBER_ON_ADDENDUM": "补充协议不能强制编号——补充协议始终沿用其主单据编号。",
+    "PROJECT_CODE_REQUIRED": "强制指定单据编号需要项目代码。",
+    "INVALID_FORCE_NUMBER": "强制指定的编号无效。"
   },
   "movePayment": {
     "title": "调整付款日期",
@@ -4757,5 +4771,12 @@
     "locked": "已锁定",
     "lockedNote": "该采购已有付款记录，金额无法更改。如确需修正金额，请先取消付款。",
     "forbiddenLevel": "只有 5 级用户才能更新此采购。"
+  },
+  "poReissue": {
+    "menu": "重新签发（强制编号）",
+    "judul": "以相同编号重新签发",
+    "konfirmasi": "采购订单 {{nomor}} 将被取消，然后你以正确类型在相同编号创建替代单据。是否继续？",
+    "lanjutBuat": "旧采购订单已取消。现在创建替代单据——编号已锁定为 {{nomor}}。",
+    "tanpaNomor": "此采购订单没有序号（为手动输入），无法通过此方式重新签发。"
   }
 }

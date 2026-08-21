@@ -173,6 +173,8 @@ export class PurchaseOrderListComponent {
   ngOnInit(): void {
     // Cetak otomatis bila datang dari formulir adendum.
     this.cetakDariAlamat();
+    // Buka dokumennya langsung bila datang dari ketukan notifikasi.
+    this.bukaDariAlamat();
     this.fetch();
     this.searchControl.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.fetch(1);
@@ -557,6 +559,36 @@ export class PurchaseOrderListComponent {
       },
       error: () => {},
     });
+  }
+
+  /**
+   * Buka dialog dokumen langsung dari ketukan NOTIFIKASI.
+   *
+   * Notifikasi PO membawa alamat `/Purchase-order?open={id}` (dan `mode` yang
+   * dipakai layar ponsel). Ketika diketuk, service worker mengarahkan tab ini
+   * ke alamat itu — halaman termuat ulang, dan di sinilah id-nya dibaca lalu
+   * dialognya dibuka. Tanpa ini, yang menekan notifikasi hanya sampai di
+   * daftar dan harus mencari sendiri dokumen yang memicunya.
+   *
+   * `open` yang bukan angka diabaikan diam-diam: alamat dapat diketik siapa
+   * saja, dan yang penting daftarnya tetap terbuka.
+   *
+   * Parameternya DIBERSIHKAN setelah dipakai; tanpa itu, memuat ulang halaman
+   * membuka dialog yang sama berulang kali.
+   */
+  private bukaDariAlamat(): void {
+    const v = this.route.snapshot.queryParamMap.get('open');
+    const id = Number(v);
+    if (!v || isNaN(id) || !id) return;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { open: null, mode: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+
+    this.viewOrder({ id });
   }
 
   /**
@@ -1498,6 +1530,70 @@ export class PurchaseOrderListComponent {
     if (lv >= 4) return true;
     if (lv < 3) return false;
     return this.perizinan.inDepartment('procurement');
+  }
+
+  /** Hanya level 5 yang boleh memaksa nomor (koreksi historis). */
+  get bolehPaksaNomor(): boolean {
+    return this.perizinan.level() >= 5;
+  }
+
+  /**
+   * Terbitkan ulang dokumen ini DI NOMOR YANG SAMA.
+   *
+   * Untuk koreksi arsip: PO historis yang terlanjur salah (mis. salah jenis)
+   * tidak bisa disunting di tempat — jenisnya menentukan nomor, klausul, dan
+   * bentuk datanya. Jalannya: dokumen salah DIBATALKAN, lalu penggantinya
+   * dibuat dari nol dengan jenis yang benar, tetapi nomornya DIPAKSA ke nomor
+   * lama supaya urutan arsip tetap cocok dengan berkas kertas. Nomor lain
+   * tidak bergeser — yang dipaksa hanya nomor dokumen ini.
+   *
+   * Nomor lama harus ada; dokumen lama yang nomornya diketik manual (tanpa
+   * urutan `number`) tidak bisa lewat jalur ini.
+   */
+  terbitkanUlangNomor(po: any): void {
+    const nomor = Number(po?.number);
+    if (!nomor || isNaN(nomor)) {
+      this.snackBar.open(
+        this.translate.instant('poReissue.tanpaNomor'),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('poReissue.judul'),
+          prompt: this.translate.instant('poReissue.konfirmasi', {
+            nomor: po?.name ?? nomor,
+          }),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (!setuju) return;
+        // Batalkan yang salah lebih dulu — nomor yang masih dipakai PO aktif
+        // ditolak server, jadi slotnya harus dikosongkan sebelum penggantinya
+        // dibuat.
+        this.apiService.delete(`purchase-orders/${po.id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('poReissue.lanjutBuat', { nomor }),
+              'Close',
+              { duration: 4000 },
+            );
+            this.router.navigate(['/Purchase-order/Create'], {
+              queryParams: { nomorPaksa: nomor },
+            });
+          },
+          error: (err) => {
+            this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+              duration: 6000,
+            });
+          },
+        });
+      });
   }
 
   /**

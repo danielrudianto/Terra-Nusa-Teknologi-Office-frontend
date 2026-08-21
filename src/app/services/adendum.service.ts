@@ -52,6 +52,24 @@ export class AdendumService {
     return v && !isNaN(n) ? n : null;
   }
 
+  /**
+   * Nomor urut yang DIPAKSA, dibawa lewat alamat `?nomorPaksa=45`.
+   *
+   * Dipakai untuk koreksi dokumen HISTORIS oleh level 5: dokumen salah
+   * dibatalkan, lalu penggantinya diterbitkan di nomor yang sama supaya
+   * urutan arsipnya tetap cocok dengan berkas kertasnya. Server tetap
+   * memeriksa levelnya dan menolak nomor yang masih dipakai PO aktif.
+   *
+   * Dibaca dari alamat — bukan disimpan di layanan — mengikuti pola
+   * `indukId`/`ubahId`: satu-satunya sumber kebenaran adalah URL, sehingga
+   * menyegarkan halaman tidak menghilangkan konteksnya.
+   */
+  get nomorPaksa(): number | null {
+    const v = this.route.snapshot.queryParamMap.get('nomorPaksa');
+    const n = Number(v);
+    return v && !isNaN(n) && n > 0 ? n : null;
+  }
+
   get isAdendum(): boolean {
     return this.indukId !== null;
   }

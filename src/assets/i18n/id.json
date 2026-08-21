@@ -2266,7 +2266,16 @@
     "versiTanggal": "Dibangun",
     "versiKode": "Kode build",
     "versiPeriksa": "Periksa pembaruan",
-    "versiDiperiksa": "Terakhir diperiksa"
+    "versiDiperiksa": "Terakhir diperiksa",
+    "notif": "Notifikasi",
+    "notifSub": "Pemberitahuan langsung ke perangkat ini",
+    "notifPO": "Notifikasi purchase order",
+    "notifPOHint": "Dapatkan pemberitahuan saat ada PO baru yang perlu diperiksa. Ketuk notifikasinya untuk langsung membuka dokumennya.",
+    "notifNyala": "Aktif",
+    "notifMati": "Nonaktif",
+    "notifNyalaOk": "Notifikasi dinyalakan di perangkat ini.",
+    "notifMatiOk": "Notifikasi dimatikan di perangkat ini.",
+    "notifTakDidukung": "Peramban ini belum mendukung notifikasi."
   },
   "allowanceForm": {
     "title": "Tambah Allowance",
@@ -3746,7 +3755,12 @@
     "VALIDATION": "Ada isian yang belum benar. Periksa kembali formulirnya.",
     "INTERNAL": "Terjadi kesalahan di server. Coba lagi beberapa saat lagi.",
     "PO_CHECKER_IS_APPROVER": "Purchase order tidak dapat disetujui oleh pemeriksanya sendiri. Mintakan persetujuan kepada pengguna lain.",
-    "PO_DELETE_APPROVED_FORBIDDEN": "Purchase order yang sudah disetujui hanya dapat dihapus oleh pemilik. Yang perlu diubah setelah terbit diselesaikan lewat adendum."
+    "PO_DELETE_APPROVED_FORBIDDEN": "Purchase order yang sudah disetujui hanya dapat dihapus oleh pemilik. Yang perlu diubah setelah terbit diselesaikan lewat adendum.",
+    "NUMBER_IN_USE": "Nomor itu masih dipakai PO yang aktif. Batalkan dulu PO lama di nomor tersebut, baru terbitkan penggantinya.",
+    "FORBIDDEN_LEVEL": "Hanya pengguna level 5 yang boleh memaksa nomor dokumen.",
+    "FORCE_NUMBER_ON_ADDENDUM": "Nomor tidak bisa dipaksa pada adendum — adendum selalu mengikuti nomor induknya.",
+    "PROJECT_CODE_REQUIRED": "Kode proyek harus ada untuk memaksa nomor dokumen.",
+    "INVALID_FORCE_NUMBER": "Nomor yang dipaksa tidak sah."
   },
   "movePayment": {
     "title": "Pindahkan tanggal pembayaran",
@@ -4757,5 +4771,12 @@
     "locked": "Terkunci",
     "lockedNote": "Nilai tidak bisa diubah karena pembelian ini sudah ada pembayarannya. Batalkan dulu pembayarannya bila nominalnya memang perlu dibetulkan.",
     "forbiddenLevel": "Hanya pengguna level 5 yang bisa mengubah pembelian ini."
+  },
+  "poReissue": {
+    "menu": "Terbitkan ulang (paksa nomor)",
+    "judul": "Terbitkan ulang di nomor sama",
+    "konfirmasi": "PO {{nomor}} akan DIBATALKAN, lalu kamu buat penggantinya dengan jenis yang benar di nomor yang sama. Lanjutkan?",
+    "lanjutBuat": "PO lama dibatalkan. Sekarang buat penggantinya — nomornya dikunci ke {{nomor}}.",
+    "tanpaNomor": "PO ini tidak punya nomor urut (nomornya diketik manual), jadi tidak bisa diterbitkan ulang lewat jalur ini."
   }
 }

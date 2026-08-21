@@ -461,6 +461,21 @@
                   ><span>{{ "purchaseOrder.menuDelete" | translate }}</span>
                 </button>
               }
+              <!--
+                Koreksi historis: batalkan dokumen salah lalu terbitkan ulang
+                di nomor yang sama. Hanya level 5 — mengganti isi nomor yang
+                sudah terbit adalah wewenang yang harus dipegang sedikit orang.
+              -->
+              @if (bolehPaksaNomor) {
+                <button
+                  mat-menu-item
+                  *appCan="'purchase_order:delete'"
+                  (click)="terbitkanUlangNomor(po)"
+                >
+                  <mat-icon>published_with_changes</mat-icon
+                  ><span>{{ "poReissue.menu" | translate }}</span>
+                </button>
+              }
             </mat-menu>
           </td>
         </ng-container>

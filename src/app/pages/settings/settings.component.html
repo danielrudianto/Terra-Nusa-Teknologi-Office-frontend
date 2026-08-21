@@ -262,6 +262,53 @@
     </div>
   </section>
 
+  <!-- ===== NOTIFIKASI ===== -->
+  <!--
+    Ditawarkan HANYA kepada pemeriksa — merekalah penerima notifikasi PO.
+    Menawarkannya ke semua orang membuat yang lain menyalakannya lalu tidak
+    pernah menerima apa pun, dan menyimpulkan fiturnya rusak.
+  -->
+  @if (bolehMemeriksa) {
+    <section class="st-card">
+      <div class="st-card__head">
+        <span class="st-card__icon">
+          <mat-icon>notifications_active</mat-icon>
+        </span>
+        <div class="st-card__titles">
+          <h2 class="st-card__title">{{ "settings.notif" | translate }}</h2>
+          <span class="st-card__desc">{{ "settings.notifSub" | translate }}</span>
+        </div>
+      </div>
+
+      <div class="st-row">
+        <div class="st-row__text">
+          <span class="st-row__label">{{ "settings.notifPO" | translate }}</span>
+          <span class="st-row__hint">{{
+            "settings.notifPOHint" | translate
+          }}</span>
+        </div>
+
+        @if (!pushDidukung) {
+          <div class="st-notif__catatan">
+            <mat-icon>info</mat-icon>
+            <span>{{ "settings.notifTakDidukung" | translate }}</span>
+          </div>
+        } @else {
+          <mat-slide-toggle
+            color="primary"
+            [checked]="pushAktif"
+            [disabled]="pushSedangProses"
+            (change)="$event.checked ? aktifkanNotif() : matikanNotif()"
+            >{{
+              (pushAktif ? "settings.notifNyala" : "settings.notifMati")
+                | translate
+            }}</mat-slide-toggle
+          >
+        }
+      </div>
+    </section>
+  }
+
   <!-- ===== SECURITY ===== -->
   <section class="st-card">
     <div class="st-card__head">

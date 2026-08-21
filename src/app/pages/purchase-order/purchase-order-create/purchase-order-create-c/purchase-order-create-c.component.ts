@@ -624,6 +624,7 @@ export class PurchaseOrderCreateCComponent {
       // Penanda induk bila dokumen ini ADENDUM; server yang
       // menghitung nomor adendumnya.
       parentPurchaseOrderID: this.adendum.indukId ?? undefined,
+      forceNumber: this.adendum.nomorPaksa ?? undefined,
       name: '',
       dpp: dpp,
       ppn: ppn,

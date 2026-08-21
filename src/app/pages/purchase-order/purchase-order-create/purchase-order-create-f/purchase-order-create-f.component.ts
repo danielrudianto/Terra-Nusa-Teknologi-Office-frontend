@@ -1235,6 +1235,7 @@ export class PurchaseOrderCreateFComponent {
       projectCode: projectCode,
       // Penanda induk; server yang menghitung nomor adendumnya.
       parentPurchaseOrderID: this.adendum.indukId ?? undefined,
+      forceNumber: this.adendum.nomorPaksa ?? undefined,
       name: '',
       dpp: dpp,
       ppn: ppn,

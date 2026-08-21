@@ -2266,7 +2266,16 @@
     "versiTanggal": "Built",
     "versiKode": "Build code",
     "versiPeriksa": "Check for updates",
-    "versiDiperiksa": "Last checked"
+    "versiDiperiksa": "Last checked",
+    "notif": "Notifications",
+    "notifSub": "Direct alerts to this device",
+    "notifPO": "Purchase order notifications",
+    "notifPOHint": "Get notified when a new PO needs checking. Tap the notification to open the document directly.",
+    "notifNyala": "On",
+    "notifMati": "Off",
+    "notifNyalaOk": "Notifications enabled on this device.",
+    "notifMatiOk": "Notifications disabled on this device.",
+    "notifTakDidukung": "This browser does not support notifications yet."
   },
   "allowanceForm": {
     "title": "Add Allowance",
@@ -3746,7 +3755,12 @@
     "VALIDATION": "Some fields are invalid. Please review the form.",
     "INTERNAL": "A server error occurred. Please try again shortly.",
     "PO_CHECKER_IS_APPROVER": "A purchase order cannot be approved by the same person who checked it. Please ask someone else to approve.",
-    "PO_DELETE_APPROVED_FORBIDDEN": "An approved purchase order can only be deleted by the owner. Use an addendum for changes after it has been issued."
+    "PO_DELETE_APPROVED_FORBIDDEN": "An approved purchase order can only be deleted by the owner. Use an addendum for changes after it has been issued.",
+    "NUMBER_IN_USE": "That number is still held by an active PO. Cancel the old PO at that number first, then issue the replacement.",
+    "FORBIDDEN_LEVEL": "Only level 5 users may force a document number.",
+    "FORCE_NUMBER_ON_ADDENDUM": "A number cannot be forced on an addendum — an addendum always follows its parent.",
+    "PROJECT_CODE_REQUIRED": "A project code is required to force a document number.",
+    "INVALID_FORCE_NUMBER": "The forced number is invalid."
   },
   "movePayment": {
     "title": "Move payment date",
@@ -4757,5 +4771,12 @@
     "locked": "Locked",
     "lockedNote": "The values cannot be changed because this purchase already has payments. Cancel the payments first if the amounts really need correcting.",
     "forbiddenLevel": "Only level 5 users can update this purchase."
+  },
+  "poReissue": {
+    "menu": "Reissue (force number)",
+    "judul": "Reissue at the same number",
+    "konfirmasi": "PO {{nomor}} will be CANCELLED, then you create its replacement with the correct type at the same number. Continue?",
+    "lanjutBuat": "Old PO cancelled. Now create the replacement — its number is locked to {{nomor}}.",
+    "tanpaNomor": "This PO has no sequence number (typed manually), so it cannot be reissued through this path."
   }
 }

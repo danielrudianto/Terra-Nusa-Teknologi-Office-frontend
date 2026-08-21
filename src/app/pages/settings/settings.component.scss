@@ -464,3 +464,21 @@
   opacity: 0;
   pointer-events: none;
 }
+
+/* Catatan "peramban tak mendukung" pada kartu notifikasi. */
+.st-notif__catatan {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 30ch;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--muted, #6b7280);
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--faint, #9aa0ab);
+  }
+}

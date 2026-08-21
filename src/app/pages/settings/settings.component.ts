@@ -29,6 +29,8 @@ import { AvatarComponent } from '../../components/avatar/avatar.component';
 import { AvatarBuilderComponent } from '../../components/avatar/avatar-builder/avatar-builder.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { VersiService } from 'src/app/services/versi.service';
+import { PushService } from '../../../app/services/push.service';
+import { PermissionService } from '../../../app/services/permission.service';
 import {
   AppLang,
   LangOption,
@@ -56,6 +58,8 @@ import {
 })
 export class SettingsComponent implements OnInit {
   readonly versi = inject(VersiService);
+  private readonly push = inject(PushService);
+  private readonly izin = inject(PermissionService);
 
   constructor(
     private apiService: ApiService,
@@ -108,6 +112,55 @@ export class SettingsComponent implements OnInit {
     // profile is read only here — it is managed from the User page
     this.profileFormGroup.disable();
     this.fetchProfile();
+
+    // Daftarkan service worker & segarkan status langganan, tapi hanya bila
+    // pengguna ini memang penerima notifikasi (pemeriksa) — selain mereka
+    // tidak ditawari, jadi tidak perlu mendaftarkan apa pun.
+    if (this.bolehMemeriksa) void this.push.init();
+  }
+
+  // ---- Notifikasi -------------------------------------------------------
+
+  /**
+   * Notifikasi PO ditawarkan HANYA kepada penerimanya: para pemeriksa.
+   *
+   * Sama persis dengan aturan di ponsel — level 4 ke atas, atau level 3 yang
+   * berada di divisi pengadaan. Server pun hanya mengirim ke mereka; tombol
+   * bagi yang lain hanya menyalakan langganan yang tidak akan pernah berbunyi.
+   */
+  get bolehMemeriksa(): boolean {
+    const lv = this.izin.level();
+    if (lv >= 4) return true;
+    if (lv < 3) return false;
+    return this.izin.inDepartment('procurement');
+  }
+
+  get pushDidukung(): boolean {
+    return this.push.didukung();
+  }
+  get pushAktif(): boolean {
+    return this.push.berlangganan();
+  }
+  get pushSedangProses(): boolean {
+    return this.push.sedangProses();
+  }
+
+  async aktifkanNotif(): Promise<void> {
+    const galat = await this.push.aktifkan();
+    this.snackBar.open(
+      galat ?? this.translate.instant('settings.notifNyalaOk'),
+      'Close',
+      { duration: galat ? 6000 : 3000 },
+    );
+  }
+
+  async matikanNotif(): Promise<void> {
+    await this.push.matikan();
+    this.snackBar.open(
+      this.translate.instant('settings.notifMatiOk'),
+      'Close',
+      { duration: 3000 },
+    );
   }
 
   /** Load the signed-in user's profile from the API. */

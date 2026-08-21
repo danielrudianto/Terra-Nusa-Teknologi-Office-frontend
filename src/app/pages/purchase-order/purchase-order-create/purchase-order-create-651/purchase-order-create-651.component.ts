@@ -470,6 +470,7 @@ export class PurchaseOrderCreate651Component {
       // Penanda induk bila dokumen ini ADENDUM; server yang
       // menghitung nomor adendumnya.
       parentPurchaseOrderID: this.adendum.indukId ?? undefined,
+      forceNumber: this.adendum.nomorPaksa ?? undefined,
       customData: {
         recruitmentMode: this.mode,
         paymentTerm: v.paymentTerm,

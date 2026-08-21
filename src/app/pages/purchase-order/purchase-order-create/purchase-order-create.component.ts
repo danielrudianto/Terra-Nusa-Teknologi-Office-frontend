@@ -163,74 +163,91 @@ export class PurchaseOrderCreateComponent {
       case '5.1.1':
         this.router.navigate(['511'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '5.1.2':
         this.router.navigate(['512'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '5.1.6':
         this.router.navigate(['516'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '5.1.12':
         this.router.navigate(['5112'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '6.3.1':
         this.router.navigate(['631'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '6.3.2':
         this.router.navigate(['632'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '6.4.1':
         this.router.navigate(['641'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case '6.5.1':
         this.router.navigate(['651'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'A':
         this.router.navigate(['A'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'B':
         this.router.navigate(['B'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'C':
         this.router.navigate(['C'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'D':
         this.router.navigate(['D'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'F':
         this.router.navigate(['F'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
       case 'H':
-        this.router.navigate(['H'], { relativeTo: this.route });
+        this.router.navigate(['H'], {
+          relativeTo: this.route,
+          queryParamsHandling: 'preserve',
+        });
         break;
       case 'G':
         this.router.navigate(['G'], {
           relativeTo: this.route,
+          queryParamsHandling: 'preserve',
         });
         break;
     }
