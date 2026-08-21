@@ -4788,5 +4788,9 @@
     "tombol": "安装",
     "iosLangkah1": "在 Safari 中点按“分享”按钮",
     "iosLangkah2": "选择“添加到主屏幕”"
+  },
+  "poItem": {
+    "dari": "从",
+    "ke": "至"
   }
 }

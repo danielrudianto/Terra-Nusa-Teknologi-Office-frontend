@@ -19,6 +19,16 @@ export interface BarisTampil {
   rincian: string[];
 }
 
+/**
+ * Penerjemah opsional untuk label yang harus mengikuti bahasa aplikasi.
+ *
+ * Berkas ini konstanta murni tanpa akses `TranslateService`; label seperti
+ * "Dari"/"Ke" pada pengiriman tidak boleh terkunci Bahasa Indonesia. Pemanggil
+ * (layar lihat desktop & mobile) menyodorkan `instant`-nya; bila tidak, label
+ * jatuh ke Bahasa Indonesia sebagai cadangan.
+ */
+export type TerjemahFn = (kunci: string, params?: any) => string;
+
 const FLEET_UDARA = 1000;
 const FLEET_LAUT = 1001;
 
@@ -88,7 +98,7 @@ function tanggalRingkas(v: any): string {
  * `remarks_3` dan `remarks_4` BERBEDA ARTI menurut modanya — pada darat nomor
  * polisi dan supir, pada laut/udara nama penyedia dan nomor rujukan.
  */
-function barisPengiriman(x: any): BarisTampil {
+function barisPengiriman(x: any, terjemah?: TerjemahFn): BarisTampil {
   const fleet = Number(x?.fleet_id);
   const laut = fleet === FLEET_LAUT;
   const udara = fleet === FLEET_UDARA;
@@ -96,7 +106,16 @@ function barisPengiriman(x: any): BarisTampil {
 
   const dari = x?.remarks_1 ?? '';
   const ke = x?.remarks_2 ?? '';
-  const judul = dari || ke ? `${dari || '—'} → ${ke || '—'}` : 'Pengiriman';
+
+  // Label DUA baris terpisah, bukan "asal → tujuan" satu baris.
+  //
+  // Satu baris membuat tujuannya terpotong ellipsis di belakang alamat asal
+  // yang panjang — yang membacanya hanya melihat asalnya dan bingung ini mau
+  // dikirim ke mana. Dipisah "Dari" dan "Ke", masing-masing pada barisnya,
+  // dengan label yang mengikuti bahasa aplikasi.
+  const lDari = terjemah ? terjemah('poItem.dari') : 'Dari';
+  const lKe = terjemah ? terjemah('poItem.ke') : 'Ke';
+  const judul = dari ? `${lDari}: ${dari}` : lDari;
 
   const moda = laut ? 'Laut' : udara ? 'Udara' : 'Darat';
   const armada = darat ? NAMA_ARMADA[fleet] : '';
@@ -104,6 +123,8 @@ function barisPengiriman(x: any): BarisTampil {
   return {
     judul,
     rincian: [
+      // Tujuan sebagai baris pertama rincian, tepat di bawah asalnya.
+      ...isi(`${lKe}: ${ke || '—'}`),
       ...isi(armada ? `${moda} · ${armada}` : moda),
       ...isi(
         darat
@@ -191,7 +212,7 @@ function barisUpah(x: any): BarisTampil {
   };
 }
 
-const PETA: Record<string, (x: any) => BarisTampil> = {
+const PETA: Record<string, (x: any, terjemah?: TerjemahFn) => BarisTampil> = {
   A: barisPengiriman,
   B: barisSewa,
   C: barisBarang,
@@ -217,8 +238,12 @@ const PETA: Record<string, (x: any) => BarisTampil> = {
  * varian baru yang belum dipetakan tetap menampilkan nama dan catatannya,
  * hanya tanpa rincian khusus.
  */
-export function barisTampil(purchaseType: any, x: any): BarisTampil {
+export function barisTampil(
+  purchaseType: any,
+  x: any,
+  terjemah?: TerjemahFn,
+): BarisTampil {
   const kode = String(purchaseType ?? '').toUpperCase();
   const f = PETA[kode] ?? PETA[String(purchaseType ?? '')] ?? barisBarang;
-  return f(x);
+  return f(x, terjemah);
 }

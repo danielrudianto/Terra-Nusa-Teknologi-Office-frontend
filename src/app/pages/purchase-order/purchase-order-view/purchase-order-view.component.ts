@@ -650,13 +650,18 @@ export class PurchaseOrderViewComponent
    * dan tanpa pemetaan ini daftar barangnya hanya berupa tujuh tanggal,
    * tanpa satu pun keterangan tentang dari mana ke mana.
    */
+  /** Penerjemah untuk label baris (mis. "Dari"/"Ke") — ikut bahasa aplikasi. */
+  private readonly terjemahBaris = (kunci: string, params?: any): string =>
+    this.translate.instant(kunci, params);
+
   barisJudul(item: any): string {
-    return barisTampil(this.data?.purchaseType, item).judul;
+    return barisTampil(this.data?.purchaseType, item, this.terjemahBaris).judul;
   }
 
   /** Baris kecil di bawah judul; kosong bila tidak ada yang perlu disebut. */
   barisRincian(item: any): string[] {
-    return barisTampil(this.data?.purchaseType, item).rincian;
+    return barisTampil(this.data?.purchaseType, item, this.terjemahBaris)
+      .rincian;
   }
 
   /**

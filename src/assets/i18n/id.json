@@ -4788,5 +4788,9 @@
     "tombol": "Pasang",
     "iosLangkah1": "Ketuk tombol Bagikan di Safari",
     "iosLangkah2": "Pilih \"Tambahkan ke Layar Utama\""
+  },
+  "poItem": {
+    "dari": "Dari",
+    "ke": "Ke"
   }
 }

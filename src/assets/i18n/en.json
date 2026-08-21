@@ -4788,5 +4788,9 @@
     "tombol": "Install",
     "iosLangkah1": "Tap the Share button in Safari",
     "iosLangkah2": "Choose \"Add to Home Screen\""
+  },
+  "poItem": {
+    "dari": "From",
+    "ke": "To"
   }
 }

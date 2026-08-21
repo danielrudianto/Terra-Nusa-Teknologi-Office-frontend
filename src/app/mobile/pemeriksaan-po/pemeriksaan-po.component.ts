@@ -149,7 +149,7 @@ export class PemeriksaanPoComponent implements OnInit {
   get barang(): { judul: string; rincian: string[]; qty: string; nilai: number }[] {
     const items = this.dipilih?.items ?? [];
     return items.map((x: any) => {
-      const t = barisTampil(this.dipilih?.purchaseType, x);
+      const t = barisTampil(this.dipilih?.purchaseType, x, (k, p) => this.translate.instant(k, p));
       const q = Number(x?.quantity) || 0;
       const satuan = (x?.unit ?? '').toString().trim();
       return {
