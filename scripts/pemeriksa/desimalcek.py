@@ -48,7 +48,14 @@ PERSEN = {"ppn", "pphPercentage"}
 
 INPUT = re.compile(r"<input\b[^>]*?/?>", re.S)
 KENDALI = re.compile(r'formControlName="(\w+)"')
+# Dua cara membatasi desimal di aplikasi ini, dan KEDUANYA harus diperiksa:
+#   decimalScale="4"      — atribut ngx-mask tersendiri
+#   mask="separator.4"    — jumlah desimal ditulis di dalam pola masknya
+# Sebelumnya hanya bentuk pertama yang dibaca, sehingga isian ber-`separator.2`
+# lolos: harga satuan empat desimal dipotong menjadi dua tanpa peringatan —
+# 42,8571 tercatat 42,85 — dan pemeriksa tetap hijau.
 SKALA = re.compile(r'decimalScale="(\d+)"')
+SKALA_MASK = re.compile(r'mask="separator\.(\d+)"')
 
 
 def berawalan_rupiah(html: str, akhir_input: int, blok: str) -> bool:
@@ -73,7 +80,8 @@ def periksa(jalur: str) -> list[str]:
     temuan = []
     for m in INPUT.finditer(html):
         blok = m.group(0)
-        skala = SKALA.search(blok)
+        # Skala dari `decimalScale=` bila ada, kalau tidak dari pola masknya.
+        skala = SKALA.search(blok) or SKALA_MASK.search(blok)
         if not skala:
             continue
 

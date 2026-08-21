@@ -3,6 +3,7 @@ import { FormArray, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import moment from 'moment';
 
 import { ApiService } from './api.service';
 
@@ -158,6 +159,24 @@ export class AdendumService {
       // antar varian, dan hanya layarnya yang tahu cara membangunnya.
       if (formGroup.get(k) instanceof FormArray) return;
       if (sumber[k] === undefined || sumber[k] === null) return;
+      /*
+       * Tanggal DIUBAH menjadi moment lebih dulu.
+       *
+       * Pemilih tanggal memakai adapter moment (`provideMomentDateAdapter`),
+       * dan modelnya harus berupa objek moment. Menaruh untai mentah
+       * "2026-04-04" ke sana tidak dikenali adapternya: kolomnya kosong,
+       * lalu terisi hari ini saat disentuh — sehingga dokumen yang disunting
+       * seolah bertanggal hari ini, bukan tanggal aslinya.
+       *
+       * `moment(untai)` menerima ISO maupun "YYYY-MM-DD"; yang tidak dapat
+       * diurai dibiarkan apa adanya agar tidak menukar tanggal sah dengan
+       * "Invalid date".
+       */
+      if (k === 'date') {
+        const m = moment(sumber[k]);
+        nilai[k] = m.isValid() ? m : sumber[k];
+        return;
+      }
       nilai[k] = sumber[k];
     });
 
