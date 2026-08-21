@@ -16,6 +16,7 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { PurchaseViewComponent } from '../purchase-view/purchase-view.component';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { PurchaseUpdateComponent } from '../purchase-update/purchase-update.component';
+import { PurchaseUpdateMetaComponent } from '../purchase-update-meta/purchase-update-meta.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -232,6 +233,39 @@ export class PurchaseListComponent {
         id: id,
       },
     });
+  }
+
+  /**
+   * Level pengguna, untuk membatasi sunting meta pembelian LUAR.
+   *
+   * `permissionService` sendiri privat; getter ini membuka HANYA angka
+   * levelnya ke templat. Servernya tetap yang memutuskan — level 5 di sini
+   * hanya menyembunyikan tombol yang pasti akan ditolak, bukan pengaman.
+   */
+  get userLevel(): number {
+    return this.permissionService.level();
+  }
+
+  /**
+   * Sunting META pembelian LUAR (bukan internal).
+   *
+   * Membetulkan tanggal / nomor faktur / nomor kuitansi yang salah ketik —
+   * dan DPP/PPN/PPh selama belum ada pembayaran. Dialognya sendiri yang
+   * memuat datanya; di sini hanya membuka dan menyegarkan daftar bila ada
+   * yang benar-benar berubah.
+   */
+  openUpdateMeta(id: number) {
+    this.dialog
+      .open(PurchaseUpdateMetaComponent, {
+        data: { id },
+        width: '460px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil) => {
+        if (hasil === 'updated') this.fetchData(this.page);
+      });
   }
 
   /**

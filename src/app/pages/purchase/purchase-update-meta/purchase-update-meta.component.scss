@@ -1,0 +1,204 @@
+.pum {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+  width: 100%;
+  max-width: 460px;
+  box-sizing: border-box;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+/* header — sama irama dengan dialog pembelian lain */
+.pum-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.1rem 1.35rem !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #e7ecfb) 0%,
+    var(--surface-2, #f3f6ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e3e6eb);
+  cursor: grab;
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    margin-right: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+.pum-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(21, 77, 236, 0.1);
+  color: var(--brand, #154dec);
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.pum-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0;
+}
+.pum-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+.pum-content {
+  padding: 1rem 1.35rem 0.5rem !important;
+  overflow-x: hidden;
+}
+
+.pum-muat {
+  display: grid;
+  place-items: center;
+  padding: 2.5rem 0;
+}
+
+/* pita info dokumen */
+.pum-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.9rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f5f7fb);
+  border: 1px solid var(--line, #eef0f3);
+  &__baris {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    mat-icon {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+      color: var(--muted, #6b7280);
+    }
+  }
+}
+
+.pum-seksi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  margin: 0.2rem 0 0.65rem;
+}
+.pum-kunci {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--warn, #b4690e);
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.pum-catatan {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0.55rem 0.7rem;
+  margin-bottom: 0.85rem;
+  border-radius: 10px;
+  background: rgba(180, 105, 14, 0.08);
+  border: 1px solid rgba(180, 105, 14, 0.25);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--ink, #16181d);
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--warn, #b4690e);
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+.pum-dua {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.pum-garis {
+  margin: 0.4rem 0 1rem !important;
+  border-top-color: var(--line, #eef0f3) !important;
+}
+
+.pum-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #eef2fe);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink, #16181d);
+  &__nilai {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--brand, #154dec);
+  }
+}
+
+.pum-aksi {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.85rem 1.35rem 1.1rem;
+  border-top: 1px solid var(--line, #eef0f3);
+  button {
+    border-radius: 11px !important;
+    font-weight: 600 !important;
+    min-width: 96px;
+    letter-spacing: 0;
+  }
+  ::ng-deep mat-spinner circle {
+    stroke: #fff;
+  }
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}

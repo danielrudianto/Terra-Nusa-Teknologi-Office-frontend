@@ -197,9 +197,27 @@ export class PurchaseUpdateComponent {
           projectName: data.projectName,
           purchaseOrderName: data.purchaseOrderName,
           purchaseType: data.purchaseType,
-          supplierID: data.supplier_id,
-          supplierName: `${data.supplier_name}, ${data.supplier_prefix}`,
-          supplierAddress: `${data.supplier_address}, ${data.supplier_city}, ${data.supplier_province}`,
+          /*
+           * Pemasok ada di OBJEK `supplier`, bukan di bidang `supplier_*`.
+           *
+           * `GET purchases/{id}` sudah lama menyusun ulang kolom pemasoknya
+           * menjadi satu objek `data.supplier = {id, name, address, ...}` dan
+           * MEMBUANG bidang `supplier_id`, `supplier_name`, dan seterusnya.
+           * Layar ini masih membaca bidang lama yang sudah tidak ada, sehingga
+           * yang muncul "undefined, undefined" — dan `supplierID` kosong
+           * membuat penyimpanan gagal validasi diam-diam.
+           */
+          supplierID: data.supplier?.id,
+          supplierName: [data.supplier?.name, data.supplier?.prefix]
+            .filter((x: any) => x != null && x !== '')
+            .join(', '),
+          supplierAddress: [
+            data.supplier?.address,
+            data.supplier?.city,
+            data.supplier?.province,
+          ]
+            .filter((x: any) => x != null && x !== '')
+            .join(', '),
           /*
            * Keadaan dokumen IKUT DIMUAT.
            *

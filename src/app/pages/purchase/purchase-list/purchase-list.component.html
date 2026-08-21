@@ -465,23 +465,51 @@
                 Aman diulang: hasilnya diturunkan dari pembayaran yang ada,
                 bukan ditambahkan padanya.
               -->
-              <button
-                mat-menu-item
-                *appCan="'payment_outgoing:update'"
-                (click)="selaraskanLunas(purchase.id)"
-              >
-                <mat-icon>sync</mat-icon
-                ><span>{{ "purchase.selaraskanLunas" | translate }}</span>
-              </button>
-              <button
-                mat-menu-item
-                *appCan="'purchase:update'"
-                [disabled]="purchase.isInternal == false"
-                (click)="openUpdateInternal(purchase.id)"
-              >
-                <mat-icon>edit</mat-icon
-                ><span>{{ "purchase.menuUpdateInternal" | translate }}</span>
-              </button>
+              <!--
+                Selaraskan status lunas HANYA untuk pembelian luar.
+
+                Pembelian internal adalah dokumen kepentingan internal yang
+                tidak pernah dibayar — tidak ada pembayaran untuk diselaraskan,
+                jadi tombolnya hanya membingungkan bila ikut muncul di sana.
+              -->
+              @if (!purchase.isInternal) {
+                <button
+                  mat-menu-item
+                  *appCan="'payment_outgoing:update'"
+                  (click)="selaraskanLunas(purchase.id)"
+                >
+                  <mat-icon>sync</mat-icon
+                  ><span>{{ "purchase.selaraskanLunas" | translate }}</span>
+                </button>
+              }
+              <!--
+                Dua jalur sunting yang berbeda dokumennya:
+
+                  * INTERNAL  -> "Update Internal": membongkar seluruh isi
+                    dokumen internal (dokumen perusahaan sendiri).
+                  * LUAR      -> "Update": hanya membetulkan meta yang salah
+                    ketik (tanggal, faktur, kuitansi) — dan nilai selama belum
+                    ada pembayaran. Hanya level 5, diperiksa lagi di server.
+              -->
+              @if (purchase.isInternal) {
+                <button
+                  mat-menu-item
+                  *appCan="'purchase:update'"
+                  (click)="openUpdateInternal(purchase.id)"
+                >
+                  <mat-icon>edit</mat-icon
+                  ><span>{{ "purchase.menuUpdateInternal" | translate }}</span>
+                </button>
+              } @else if (userLevel >= 5) {
+                <button
+                  mat-menu-item
+                  *appCan="'purchase:update'"
+                  (click)="openUpdateMeta(purchase.id)"
+                >
+                  <mat-icon>edit</mat-icon
+                  ><span>{{ "purchase.menuUpdate" | translate }}</span>
+                </button>
+              }
             </mat-menu>
           </td>
         </ng-container>

@@ -1,0 +1,143 @@
+<div class="pum">
+  <div class="pum-head" mat-dialog-title appDialogGeser>
+    <span class="pum-badge"><mat-icon>edit_note</mat-icon></span>
+    <div class="pum-head__text">
+      <h2 class="pum-title">{{ "purchaseMeta.title" | translate }}</h2>
+      <span class="pum-sub">{{ "purchaseMeta.subtitle" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="pum-content">
+    @if (memuat) {
+      <div class="pum-muat"><mat-spinner diameter="34" /></div>
+    } @else {
+      <!-- Ringkas: dokumen mana yang sedang dibetulkan. -->
+      <div class="pum-info">
+        <div class="pum-info__baris">
+          <mat-icon>storefront</mat-icon>
+          <span>{{ pemasok || "—" }}</span>
+        </div>
+        @if (nomorPO) {
+          <div class="pum-info__baris">
+            <mat-icon>tag</mat-icon>
+            <span>{{ nomorPO }}</span>
+          </div>
+        }
+      </div>
+
+      <form [formGroup]="meta" (ngSubmit)="simpan()">
+        <div class="pum-seksi">{{ "purchaseMeta.metaSection" | translate }}</div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseMeta.date" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="picker" />
+          <mat-datepicker #picker />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseMeta.invoiceName" | translate }}</mat-label>
+          <input matInput type="text" formControlName="invoiceName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseMeta.receiptName" | translate }}</mat-label>
+          <input matInput type="text" formControlName="receiptName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseMeta.taxInvoiceName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxInvoiceName"
+            maxlength="17"
+          />
+          <mat-hint>{{ "purchaseMeta.taxInvoiceHint" | translate }}</mat-hint>
+        </mat-form-field>
+      </form>
+
+      <mat-divider class="pum-garis" />
+
+      <form [formGroup]="nilai">
+        <div class="pum-seksi pum-seksi--nilai">
+          <span>{{ "purchaseMeta.valueSection" | translate }}</span>
+          @if (adaPembayaran) {
+            <span class="pum-kunci"><mat-icon>lock</mat-icon>{{ "purchaseMeta.locked" | translate }}</span>
+          }
+        </div>
+
+        @if (adaPembayaran) {
+          <div class="pum-catatan">
+            <mat-icon>info</mat-icon>
+            <span>{{ "purchaseMeta.lockedNote" | translate }}</span>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseMeta.dpp" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="dpp"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.2"
+          />
+        </mat-form-field>
+
+        <div class="pum-dua">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "purchaseMeta.ppn" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="ppn"
+              suffix=" %"
+              mask="separator.2"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "purchaseMeta.pph" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="pphPercentage"
+              suffix=" %"
+              mask="separator.2"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="pum-total">
+          <span>{{ "purchaseMeta.total" | translate }}</span>
+          <span class="pum-total__nilai">{{ total | number: "1.0-2" }}</span>
+        </div>
+      </form>
+    }
+  </mat-dialog-content>
+
+  <div class="pum-aksi">
+    <button mat-button type="button" (click)="tutup()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="memuat || menyimpan || meta.invalid"
+      (click)="simpan()"
+    >
+      @if (menyimpan) {
+        <mat-spinner diameter="18" />
+      } @else {
+        {{ "common.save" | translate }}
+      }
+    </button>
+  </div>
+</div>

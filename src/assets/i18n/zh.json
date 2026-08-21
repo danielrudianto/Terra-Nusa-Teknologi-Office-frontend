@@ -390,7 +390,8 @@
     "lunasGagal": "同步付款状态失败。",
     "belumDibayar": "{{n}} 张采购发票尚未结清",
     "belumDibayarKet": "尚无到期项，但仍需留意。",
-    "lewatTempoKet": "其中 {{n}} 张已逾期——{{nilai}}"
+    "lewatTempoKet": "其中 {{n}} 张已逾期——{{nilai}}",
+    "menuUpdate": "更新"
   },
   "purchaseDraft": {
     "title": "采购草稿",
@@ -4736,5 +4737,23 @@
     },
     "disalin": "已复制",
     "salin": "复制"
+  },
+  "purchaseMeta": {
+    "title": "更新采购",
+    "subtitle": "在不重建单据的情况下修正采购信息",
+    "metaSection": "信息",
+    "valueSection": "金额",
+    "date": "日期",
+    "invoiceName": "发票编号",
+    "receiptName": "收据编号",
+    "taxInvoiceName": "税务发票编号",
+    "taxInvoiceHint": "如尚无税务发票，请留空",
+    "dpp": "计税基础（DPP）",
+    "ppn": "增值税",
+    "pph": "预扣税",
+    "total": "合计",
+    "locked": "已锁定",
+    "lockedNote": "该采购已有付款记录，金额无法更改。如确需修正金额，请先取消付款。",
+    "forbiddenLevel": "只有 5 级用户才能更新此采购。"
   }
 }

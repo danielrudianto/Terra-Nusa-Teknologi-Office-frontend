@@ -390,7 +390,8 @@
     "lunasGagal": "Gagal menyelaraskan status lunas.",
     "belumDibayar": "{{n}} tagihan pembelian belum lunas",
     "belumDibayarKet": "Belum ada yang jatuh tempo, tetapi tetap perlu dipantau.",
-    "lewatTempoKet": "{{n}} di antaranya sudah lewat jatuh tempo — {{nilai}}"
+    "lewatTempoKet": "{{n}} di antaranya sudah lewat jatuh tempo — {{nilai}}",
+    "menuUpdate": "Ubah"
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -4736,5 +4737,23 @@
     },
     "disalin": "Disalin",
     "salin": "Salin"
+  },
+  "purchaseMeta": {
+    "title": "Ubah Pembelian",
+    "subtitle": "Betulkan keterangan pembelian tanpa membongkar dokumennya",
+    "metaSection": "Keterangan",
+    "valueSection": "Nilai",
+    "date": "Tanggal",
+    "invoiceName": "Nomor invoice",
+    "receiptName": "Nomor kuitansi",
+    "taxInvoiceName": "Nomor faktur pajak",
+    "taxInvoiceHint": "Kosongkan bila belum ada faktur pajaknya",
+    "dpp": "DPP",
+    "ppn": "PPN",
+    "pph": "PPh",
+    "total": "Total",
+    "locked": "Terkunci",
+    "lockedNote": "Nilai tidak bisa diubah karena pembelian ini sudah ada pembayarannya. Batalkan dulu pembayarannya bila nominalnya memang perlu dibetulkan.",
+    "forbiddenLevel": "Hanya pengguna level 5 yang bisa mengubah pembelian ini."
   }
 }

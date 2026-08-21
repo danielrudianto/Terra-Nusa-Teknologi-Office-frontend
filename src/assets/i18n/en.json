@@ -390,7 +390,8 @@
     "lunasGagal": "Failed to resync the paid status.",
     "belumDibayar": "{{n}} purchase invoices not yet settled",
     "belumDibayarKet": "None are due yet, but they still need watching.",
-    "lewatTempoKet": "{{n}} of them are past due — {{nilai}}"
+    "lewatTempoKet": "{{n}} of them are past due — {{nilai}}",
+    "menuUpdate": "Update"
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -4736,5 +4737,23 @@
     },
     "disalin": "Copied",
     "salin": "Copy"
+  },
+  "purchaseMeta": {
+    "title": "Update Purchase",
+    "subtitle": "Correct a purchase’s details without rebuilding the document",
+    "metaSection": "Details",
+    "valueSection": "Values",
+    "date": "Date",
+    "invoiceName": "Invoice number",
+    "receiptName": "Receipt number",
+    "taxInvoiceName": "Tax invoice number",
+    "taxInvoiceHint": "Leave empty if there is no tax invoice yet",
+    "dpp": "Tax base (DPP)",
+    "ppn": "VAT",
+    "pph": "WHT",
+    "total": "Total",
+    "locked": "Locked",
+    "lockedNote": "The values cannot be changed because this purchase already has payments. Cancel the payments first if the amounts really need correcting.",
+    "forbiddenLevel": "Only level 5 users can update this purchase."
   }
 }
