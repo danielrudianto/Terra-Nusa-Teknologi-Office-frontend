@@ -120,7 +120,7 @@
 
                   <span class="pov-item__meta">
                     {{ item.quantity }} {{ item.unit }} ×
-                    {{ item.price | number: "1.0-0" }}
+                    {{ item.price | number: "1.0-4" }}
                   </span>
                   <!--
                     Mobilisasi disebut tersendiri.
@@ -132,12 +132,12 @@
                   @if (mobilisasiBaris(item) > 0) {
                     <span class="pov-item__meta pov-item__mob">
                       + {{ "purchaseOrder.viewMobilisasi" | translate }}
-                      {{ mobilisasiBaris(item) | number: "1.0-0" }}
+                      {{ mobilisasiBaris(item) | number: "1.0-2" }}
                     </span>
                   }
                 </span>
                 <span class="pov-item__amount">
-                  Rp {{ lineTotal(item) | number: "1.0-0" }}
+                  Rp {{ lineTotal(item) | number: "1.0-2" }}
                 </span>
               </div>
             }
@@ -146,7 +146,7 @@
                 "purchaseOrder.viewSubtotal" | translate
               }}</span>
               <span class="pov-item__amount"
-                >Rp {{ subTotal | number: "1.0-0" }}</span
+                >Rp {{ subTotal | number: "1.0-2" }}</span
               >
             </div>
 
@@ -167,7 +167,7 @@
                   <small>{{ ppnPersen | number: "1.0-2" }}%</small>
                 </span>
                 <span class="pov-item__amount"
-                  >+ Rp {{ ppnNilai | number: "1.0-0" }}</span
+                  >+ Rp {{ ppnNilai | number: "1.0-2" }}</span
                 >
               </div>
             }
@@ -186,7 +186,7 @@
                   terang-terangan supaya tidak terbaca sebagai biaya tambahan.
                 -->
                 <span class="pov-item__amount pov-item__amount--kurang"
-                  >− Rp {{ pphNilai | number: "1.0-0" }}</span
+                  >− Rp {{ pphNilai | number: "1.0-2" }}</span
                 >
               </div>
             }
@@ -197,7 +197,7 @@
                   {{ "purchaseOrder.viewNilaiLain" | translate }}
                 </span>
                 <span class="pov-item__amount"
-                  >+ Rp {{ nilaiLain | number: "1.0-0" }}</span
+                  >+ Rp {{ nilaiLain | number: "1.0-2" }}</span
                 >
               </div>
             }
@@ -208,7 +208,7 @@
                   "purchaseOrder.viewTotalAkhir" | translate
                 }}</span>
                 <span class="pov-item__amount"
-                  >Rp {{ totalAkhir | number: "1.0-0" }}</span
+                  >Rp {{ totalAkhir | number: "1.0-2" }}</span
                 >
               </div>
             }
@@ -322,10 +322,10 @@
                 "poForm.hargaMelompatKet"
                   | translate
                     : {
-                        lama: (h.sebelumnya | number: "1.0-0"),
+                        lama: (h.sebelumnya | number: "1.0-2"),
                         satuan: h.satuan,
                         nomor: h.nomor,
-                        baru: (h.sekarang | number: "1.0-0"),
+                        baru: (h.sekarang | number: "1.0-2"),
                         kali: h.rasio
                       }
               }}
@@ -345,7 +345,7 @@
                     : {
                         nomor: d.number,
                         pembuat: d.pembuat,
-                        nilai: (d.dpp | number: "1.0-0")
+                        nilai: (d.dpp | number: "1.0-2")
                       }
               }}
             </p>

@@ -142,7 +142,7 @@
                   </span>
                 </span>
                 <span class="po641-line__amt"
-                  >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                  >Rp {{ lineTotal(i) | number: "1.0-2" }}</span
                 >
                 <button
                   mat-icon-button
@@ -281,14 +281,14 @@
         <div class="po641-summary">
           <div class="po641-summary__row">
             <span>{{ "common.subtotalDpp" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="po641-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="po641-summary__row po641-summary__row--total">
             <span>{{ "common.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>
@@ -375,7 +375,7 @@
               {{ getFeeGroupAt(i).value.task || ('hardcoded.biayaBelumDiisi' | translate) }}
             </span>
             <span class="po641-line__amt"
-              >Rp {{ getFeeGroupAt(i).value.amount | number: "1.0-0" }}</span
+              >Rp {{ getFeeGroupAt(i).value.amount | number: "1.0-2" }}</span
             >
             <button
               mat-icon-button
@@ -422,7 +422,7 @@
         <span class="po641-spacer"></span>
         @if (hasOfficialFee) {
           <span class="po641-line__amt"
-            >Perkiraan total: Rp {{ officialFeeTotal | number: "1.0-0" }}</span
+            >Perkiraan total: Rp {{ officialFeeTotal | number: "1.0-2" }}</span
           >
         }
       </div>

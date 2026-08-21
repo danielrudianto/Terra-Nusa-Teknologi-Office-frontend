@@ -221,7 +221,7 @@
                   {{ getFormGroupAt(i).value.task || ('hardcoded.belumDiisi' | translate) }}
                 </span>
                 <span class="po651-line__amt"
-                  >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                  >Rp {{ lineTotal(i) | number: "1.0-2" }}</span
                 >
                 @if (t.length > 1) {
                   <button
@@ -320,14 +320,14 @@
           <div class="po651-summary">
             <div class="po651-summary__row">
               <span>{{ "po511.subtotalDpp" | translate }}</span
-              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+              ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
             </div>
             <div class="po651-summary__row">
-              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
             </div>
             <div class="po651-summary__row po651-summary__row--total">
               <span>{{ "po651.total" | translate }}</span
-              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+              ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
             </div>
           </div>
         </div>

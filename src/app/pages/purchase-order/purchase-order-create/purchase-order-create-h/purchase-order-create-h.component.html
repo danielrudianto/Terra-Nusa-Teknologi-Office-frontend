@@ -727,7 +727,7 @@
                   }}</span>
                   @if (!isLumpSum) {
                     <span class="poh-scope__amt"
-                      >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                      >Rp {{ lineTotal(i) | number: "1.0-2" }}</span
                     >
                   }
                   <button
@@ -818,14 +818,14 @@
           <div class="poh-summary">
             <div class="poh-summary__row">
               <span>{{ "po511.subtotalDpp" | translate }}</span
-              ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+              ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
             </div>
             <div class="poh-summary__row">
-              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+              <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
             </div>
             <div class="poh-summary__row poh-summary__row--total">
               <span>{{ "po651.total" | translate }}</span
-              ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+              ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
             </div>
           </div>
         </div>

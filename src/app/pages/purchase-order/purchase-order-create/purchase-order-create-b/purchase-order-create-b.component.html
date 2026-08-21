@@ -181,7 +181,7 @@
                   </span>
                 </div>
                 <div class="pob-renttotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  Rp {{ lineTotal(i) | number: "1.0-2" }}
                   <!--
                     Rincian muncul HANYA bila ada mobilisasi.
 
@@ -192,9 +192,9 @@
                   @if (lineMobilisasi(i)) {
                     <span class="pob-rentrinci">
                       {{ "poB.sewa" | translate }}
-                      {{ lineSewa(i) | number: "1.0-0" }}
+                      {{ lineSewa(i) | number: "1.0-2" }}
                       + {{ "poB.mobDemob" | translate }}
-                      {{ lineMobilisasi(i) | number: "1.0-0" }}
+                      {{ lineMobilisasi(i) | number: "1.0-2" }}
                     </span>
                   }
                 </div>
@@ -451,14 +451,14 @@
         <div class="pob-summary">
           <div class="pob-summary__row">
             <span>{{ "common.subtotalDpp" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="pob-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="pob-summary__row pob-summary__row--total">
             <span>{{ "common.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>

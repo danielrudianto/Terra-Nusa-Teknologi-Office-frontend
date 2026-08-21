@@ -148,7 +148,7 @@
                 {{ getFormGroupAt(i).value.trainingType || ('hardcoded.belumDipilih' | translate) }}
               </span>
               <span class="po652-line__amt"
-                >Rp {{ lineTotal(i) | number: "1.0-0" }}</span
+                >Rp {{ lineTotal(i) | number: "1.0-2" }}</span
               >
               @if (t.length > 1) {
                 <button
@@ -283,14 +283,14 @@
           </div>
           <div class="po652-summary__row">
             <span>{{ "common.subtotalDpp" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="po652-summary__row">
-            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            <span>PPN</span><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="po652-summary__row po652-summary__row--total">
             <span>{{ "common.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>

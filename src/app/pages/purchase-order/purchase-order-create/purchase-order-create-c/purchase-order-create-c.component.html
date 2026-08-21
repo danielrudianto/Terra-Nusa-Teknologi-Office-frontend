@@ -166,7 +166,7 @@
                   }}</span>
                 </div>
                 <div class="poc-itemtotal">
-                  Rp {{ lineTotal(i) | number: "1.0-0" }}
+                  Rp {{ lineTotal(i) | number: "1.0-2" }}
                 </div>
                 <button
                   mat-icon-button
@@ -270,11 +270,11 @@
         <div class="poc-summary">
           <div class="poc-summary__row">
             <span>{{ "poForm.subtotal" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="poc-summary__row">
             <span>{{ "poForm.ppn" | translate }}</span
-            ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            ><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
 
           <!-- fuel-specific tax inputs -->
@@ -301,23 +301,23 @@
                 placeholder="0"
               />
               <mat-hint
-                >% dari DPP = Rp {{ pbbkbAmount | number: "1.0-0" }}</mat-hint
+                >% dari DPP = Rp {{ pbbkbAmount | number: "1.0-2" }}</mat-hint
               >
             </mat-form-field>
           </div>
 
           <div class="poc-summary__row" *ngIf="pbbkbAmount > 0">
             <span>{{ "poC.pbbkb" | translate }}</span
-            ><span>+ Rp {{ pbbkbAmount | number: "1.0-0" }}</span>
+            ><span>+ Rp {{ pbbkbAmount | number: "1.0-2" }}</span>
           </div>
           <div class="poc-summary__row" *ngIf="pph22Amount > 0">
             <span>{{ "poC.pph22" | translate }}</span
-            ><span>+ Rp {{ pph22Amount | number: "1.0-0" }}</span>
+            ><span>+ Rp {{ pph22Amount | number: "1.0-2" }}</span>
           </div>
 
           <div class="poc-summary__row poc-summary__row--total">
             <span>{{ "poForm.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>

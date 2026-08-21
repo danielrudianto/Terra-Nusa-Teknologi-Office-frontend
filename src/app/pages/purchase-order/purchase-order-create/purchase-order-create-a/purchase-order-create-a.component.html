@@ -348,7 +348,7 @@
                 <span class="poa-leg__amt"
                   >Rp
                   {{
-                    lineTotal(getFormGroupAt(i).value) | number: "1.0-0"
+                    lineTotal(getFormGroupAt(i).value) | number: "1.0-2"
                   }}</span
                 >
                 <button
@@ -724,15 +724,15 @@
         <div class="poa-summary">
           <div class="poa-summary__row">
             <span>{{ "po511.subtotalDpp" | translate }}</span
-            ><span>Rp {{ subTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ subTotal | number: "1.0-2" }}</span>
           </div>
           <div class="poa-summary__row">
             <span>PPN {{ ppnRate }}%</span
-            ><span>Rp {{ ppnAmount | number: "1.0-0" }}</span>
+            ><span>Rp {{ ppnAmount | number: "1.0-2" }}</span>
           </div>
           <div class="poa-summary__row poa-summary__row--total">
             <span>{{ "common.total" | translate }}</span
-            ><span>Rp {{ grandTotal | number: "1.0-0" }}</span>
+            ><span>Rp {{ grandTotal | number: "1.0-2" }}</span>
           </div>
         </div>
       </div>
