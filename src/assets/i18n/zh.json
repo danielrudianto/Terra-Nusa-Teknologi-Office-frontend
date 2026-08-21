@@ -819,7 +819,10 @@
     "ppnTanpaFaktur": "尚无税务发票的进项",
     "ppnTanpaFakturNote": "金额真实存在，但在开具税务发票之前不能减少应缴款。",
     "ppnBilaLengkap": "若所有发票均已开具",
-    "ppnUnduhRincian": "下载明细（Excel）"
+    "ppnUnduhRincian": "下载明细（Excel）",
+    "ppnSubtotalBulan": "本期差额",
+    "ppnKompensasi": "上期多缴结转抵扣",
+    "ppnLebihBayarNote": "可结转至下一期抵扣。"
   },
   "dashboardReimbursement": {
     "dialogTitle": "今日报销",

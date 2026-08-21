@@ -68,6 +68,9 @@
           </ng-container>
         </span>
         <span class="pp-verdict__value">Rp {{ selisihAbs | number: "1.0-0" }}</span>
+        <span class="pp-verdict__note" *ngIf="posisi.status === 'lebih_bayar'">
+          {{ "taxing.ppnLebihBayarNote" | translate }}
+        </span>
         <span class="pp-verdict__note">{{ "taxing.ppnEstimasiNote" | translate }}</span>
       </div>
 
@@ -79,6 +82,14 @@
       <div class="pp-row">
         <span class="pp-row__key">{{ "taxing.ppnMasukanKredit" | translate }}</span>
         <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.masukanKreditable.total | number: "1.0-0" }}</span>
+      </div>
+      <div class="pp-row" *ngIf="posisi.kompensasiMasukLalu > 0">
+        <span class="pp-row__key">{{ "taxing.ppnSubtotalBulan" | translate }}</span>
+        <span class="pp-row__val">Rp {{ posisi.selisihBulanIni | number: "1.0-0" }}</span>
+      </div>
+      <div class="pp-row" *ngIf="posisi.kompensasiMasukLalu > 0">
+        <span class="pp-row__key">{{ "taxing.ppnKompensasi" | translate }}</span>
+        <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.kompensasiMasukLalu | number: "1.0-0" }}</span>
       </div>
       <div class="pp-row pp-row--sum">
         <span class="pp-row__key">{{ "taxing.ppnSelisih" | translate }}</span>

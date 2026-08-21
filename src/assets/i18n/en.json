@@ -819,7 +819,10 @@
     "ppnTanpaFaktur": "Input without tax invoice",
     "ppnTanpaFakturNote": "The amount is real, but cannot reduce the payment until its tax invoice is issued.",
     "ppnBilaLengkap": "If all invoices are issued",
-    "ppnUnduhRincian": "Download details (Excel)"
+    "ppnUnduhRincian": "Download details (Excel)",
+    "ppnSubtotalBulan": "Current period difference",
+    "ppnKompensasi": "Carried-over overpayment credit",
+    "ppnLebihBayarNote": "Can be carried over to the next period."
   },
   "dashboardReimbursement": {
     "dialogTitle": "Today's Reimbursements",

@@ -819,7 +819,10 @@
     "ppnTanpaFaktur": "Masukan belum ada faktur pajak",
     "ppnTanpaFakturNote": "Nilainya nyata, tetapi belum bisa mengurangi setoran sampai fakturnya terbit.",
     "ppnBilaLengkap": "Bila semua faktur terbit",
-    "ppnUnduhRincian": "Unduh rincian (Excel)"
+    "ppnUnduhRincian": "Unduh rincian (Excel)",
+    "ppnSubtotalBulan": "Selisih masa ini",
+    "ppnKompensasi": "Kompensasi lebih bayar masa lalu",
+    "ppnLebihBayarNote": "Dapat dikompensasikan ke masa berikutnya."
   },
   "dashboardReimbursement": {
     "dialogTitle": "Reimbursement Hari Ini",
