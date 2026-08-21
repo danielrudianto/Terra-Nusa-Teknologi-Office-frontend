@@ -121,6 +121,10 @@
   z-index: 10;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  /* Enam tab bila tab pemeriksaan ikut (procurement level 3 / level 4+). */
+  &.mkr-bawah--enam {
+    grid-template-columns: repeat(6, 1fr);
+  }
   background: var(--surface);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   backdrop-filter: saturate(1.4) blur(12px);

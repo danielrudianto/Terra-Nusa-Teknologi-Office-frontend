@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -459,7 +460,7 @@ export class PurchaseOrderCreate63Component {
       task: ['', [Validators.required, Validators.maxLength(100)]],
       item_id: [null],
       sku: [''],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: ['LS', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       note: [''],
@@ -481,7 +482,7 @@ export class PurchaseOrderCreate63Component {
       item_id: [item.id, Validators.required],
       sku: [item.sku],
       description: [item.description],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: [item.unit || 'pcs', Validators.required],
       /*
        * Satuan menurut MASTER BARANG, disimpan terpisah.

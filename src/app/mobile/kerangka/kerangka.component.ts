@@ -40,6 +40,18 @@ export class KerangkaComponent {
   }
 
   /**
+   * Tab pemeriksaan hanya untuk yang berwenang memeriksa — cerminan
+   * `boleh_memeriksa` di server: level 4 ke atas selalu; level 3 hanya bila
+   * procurement. Bagi yang lain bilah bawah tetap lima tab seperti semula.
+   */
+  get bolehMemeriksa(): boolean {
+    const lv = this.izin.level();
+    if (lv >= 4) return true;
+    if (lv < 3) return false;
+    return this.izin.inDepartment('procurement');
+  }
+
+  /**
    * Keluar: token dibuang, lalu halaman dimuat ULANG.
    *
    * Bukan sekadar berpindah rute. Layanan izin menyimpan level dan divisi

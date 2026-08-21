@@ -6,6 +6,7 @@ import {
   pembulatanSah,
 } from '../../../../helpers/nilai-baris.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -496,7 +497,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
     return this.formBuilder.group({
       task: ['', [Validators.required, Validators.maxLength(100)]],
       asset: [''], // aset yang diperbaiki -> remarks_2
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: ['LS', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       // Jumlah yang DITULIS; kosong berarti volume kali harga.
@@ -519,7 +520,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
       sku: [item.sku],
       description: [item.description],
       asset: [''], // aset tujuan sparepart -> remarks_2
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: [item.unit || 'pcs', Validators.required],
       /*
        * Satuan menurut MASTER BARANG, disimpan terpisah.

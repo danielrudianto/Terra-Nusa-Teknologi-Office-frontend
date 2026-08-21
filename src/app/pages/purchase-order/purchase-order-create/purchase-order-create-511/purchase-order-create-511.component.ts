@@ -6,6 +6,7 @@ import {
   pembulatanSah,
 } from '../../../../helpers/nilai-baris.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -450,7 +451,7 @@ export class PurchaseOrderCreate511Component implements OnInit {
        * itu baru ketahuan saat barangnya datang.
        */
       unitMaster: [item.unit || ''],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       price: [0, [Validators.required, Validators.min(0)]],
       // Jumlah yang DITULIS; kosong berarti volume kali harga.
       amount: [null as number | null],

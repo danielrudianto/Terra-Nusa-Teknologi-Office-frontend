@@ -29,11 +29,17 @@
     dan pegangan yang bergeser itulah yang membuat orang salah tekan — pada
     layar yang isinya menyetujui dan menghapus.
   -->
-  <nav class="mkr-bawah">
+  <nav class="mkr-bawah" [class.mkr-bawah--enam]="bolehMemeriksa">
     <a routerLink="/" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">
       <mat-icon>home</mat-icon>
       <span>{{ "mobile.nav.beranda" | translate }}</span>
     </a>
+    @if (bolehMemeriksa) {
+      <a routerLink="/Pemeriksaan" routerLinkActive="on">
+        <mat-icon>pending_actions</mat-icon>
+        <span>{{ "mobile.nav.periksa" | translate }}</span>
+      </a>
+    }
     <a routerLink="/Persetujuan" routerLinkActive="on">
       <mat-icon>fact_check</mat-icon>
       <span>{{ "mobile.nav.po" | translate }}</span>

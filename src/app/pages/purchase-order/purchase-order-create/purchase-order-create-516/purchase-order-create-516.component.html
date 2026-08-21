@@ -23,6 +23,15 @@
         </div>
       </div>
     }
+    @if (isAdendum) {
+      <div class="pou-banner pou-banner--adendum">
+        <mat-icon>difference</mat-icon>
+        <div>
+          <strong>{{ "poForm.adendumSelisihJudul" | translate }}</strong>
+          <span>{{ "poForm.adendumSelisihKeterangan" | translate }}</span>
+        </div>
+      </div>
+    }
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <!-- ===== 1. Informasi PO ===== -->
     <div class="po516-card">
@@ -187,6 +196,7 @@
                     formControlName="quantity"
                     thousandSeparator=" "
                     mask="separator.4"
+                    [allowNegativeNumbers]="isAdendum"
                     placeholder="0"
                   />
                 </mat-form-field>

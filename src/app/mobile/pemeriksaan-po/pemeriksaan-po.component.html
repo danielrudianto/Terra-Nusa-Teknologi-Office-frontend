@@ -1,12 +1,21 @@
-<h1 class="mpo-judul">{{ "mobile.po.judul" | translate }}</h1>
-<p class="mpo-sub">{{ "mobile.po.sub" | translate }}</p>
+<h1 class="mpo-judul">{{ "mobile.periksa.judul" | translate }}</h1>
+<p class="mpo-sub">{{ "mobile.periksa.sub" | translate }}</p>
 
 @if (sedangMemuat) {
   <div class="mpo-muat"><mat-spinner diameter="32" /></div>
+} @else if (!bolehMemeriksa()) {
+  <!--
+    Bukan daftar kosong: yang tidak berwenang memeriksa perlu tahu SEBABNYA,
+    bukan mengira dokumennya habis.
+  -->
+  <div class="mpo-kosong">
+    <mat-icon>lock</mat-icon>
+    <div>{{ "mobile.periksa.takBerwenang" | translate }}</div>
+  </div>
 } @else if (!daftar.length) {
   <div class="mpo-kosong">
     <mat-icon>task_alt</mat-icon>
-    <div>{{ "mobile.po.kosong" | translate }}</div>
+    <div>{{ "mobile.periksa.kosong" | translate }}</div>
   </div>
 } @else {
   @for (po of daftar; track po.id) {
@@ -26,8 +35,8 @@
       </div>
       <div class="mpo-tanda">
         <span class="mpo-lencana mpo-lencana--jenis">{{ jenis(po) }}</span>
-        <span class="mpo-lencana mpo-lencana--periksa">
-          <mat-icon>verified</mat-icon>{{ "mobile.po.sudahDiperiksa" | translate }}
+        <span class="mpo-lencana mpe-lencana--tunggu">
+          <mat-icon>pending_actions</mat-icon>{{ "mobile.periksa.belumDiperiksa" | translate }}
         </span>
       </div>
     </button>
@@ -35,12 +44,10 @@
 }
 
 <!--
-  Rincian, KLAUSUL, dan persetujuannya.
+  Rincian, KLAUSUL, dan pemeriksaannya.
 
-  Tombol setuju baru hidup setelah klausulnya ditandai dibaca. Satu ketukan
-  pada baris daftar, di ponsel yang dipegang sambil berjalan, adalah cara
-  paling mudah menandatangani sesuatu yang tidak dibaca — jadi persetujuannya
-  ada di dalam, di bawah isi perjanjian yang sebenarnya.
+  Tombol tandai baru hidup setelah isinya ditandai dibaca — memeriksa berarti
+  membaca harga, volume, dan spesifikasinya, bukan satu ketukan refleks.
 -->
 @if (dipilih) {
   <div class="mpo-tirai" (click)="tutup()">
@@ -73,19 +80,8 @@
 
         <dt>{{ "mobile.po.total" | translate }}</dt>
         <dd class="mpo-rinci__total">{{ nilai(dipilih) | number: "1.0-2" }}</dd>
-
-        <dt>{{ "mobile.po.diperiksa" | translate }}</dt>
-        <dd>{{ dipilih.checkedByName || "—" }}</dd>
       </dl>
 
-      <!--
-        Daftar barang, dapat DIBUKA-TUTUP.
-
-        Tertutup saat panel dibuka: sebagian besar keputusan cukup dari nomor,
-        pemasok, dan nilainya di atas. Yang perlu memeriksa rincinya membukanya
-        — dan pada dokumen berbaris banyak, daftar yang selalu terbentang
-        mendorong klausul serta tombolnya jauh ke bawah.
-      -->
       @if (jumlahBarang) {
         <div class="mpo-barang">
           <button
@@ -125,7 +121,7 @@
         </div>
       }
 
-      <!-- Poin perjanjian: yang sebenarnya harus dibaca sebelum menyetujui. -->
+      <!-- Poin perjanjian: yang sebenarnya harus dibaca sebelum diperiksa. -->
       <div class="mpo-klausul">
         <div class="mpo-klausul__judul">
           <mat-icon>gavel</mat-icon>
@@ -166,45 +162,28 @@
           <span>{{ sebab | translate }}</span>
         </div>
       } @else if (klausul.length) {
-        <!--
-          TETAP terlihat setelah dicentang, bukan hilang.
-
-          Centang yang lenyap begitu ditekan menghilangkan satu-satunya tanda
-          bahwa langkah itu sudah dilewati — yang membukanya kembali tidak tahu
-          apakah ia sudah mengonfirmasi atau belum. Dibiarkan tampil dan
-          tercentang, sekaligus dapat ditarik untuk mengunci lagi.
-        -->
         <label class="mpo-baca" [class.mpo-baca--tercentang]="sudahBaca">
           <input
             type="checkbox"
             [checked]="sudahBaca"
             (change)="tandaiBaca($any($event.target).checked)"
           />
-          <span>{{ "mobile.po.sudahBaca" | translate }}</span>
+          <span>{{ "mobile.periksa.sudahBaca" | translate }}</span>
         </label>
       }
 
       <div class="mpo-aksi">
-        @if (bolehSetujui(dipilih)) {
+        @if (bolehTandai(dipilih)) {
           <button
             mat-flat-button
             color="primary"
             type="button"
-            [disabled]="!bolehTekanSetuju(dipilih) || sedangKirim"
-            (click)="setujui(dipilih)"
+            [disabled]="!bolehTekanTandai(dipilih) || sedangKirim"
+            (click)="tandai(dipilih)"
           >
-            {{ "mobile.po.setujui" | translate }}
+            {{ "mobile.periksa.tandai" | translate }}
           </button>
         }
-        <button
-          mat-stroked-button
-          color="warn"
-          type="button"
-          [disabled]="sedangKirim"
-          (click)="tolak(dipilih)"
-        >
-          {{ "mobile.po.tolak" | translate }}
-        </button>
         <button mat-button type="button" (click)="tutup()">
           {{ "mobile.batal" | translate }}
         </button>

@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -331,7 +332,7 @@ export class PurchaseOrderCreateAComponent implements OnInit {
       amount: [0, [Validators.required, Validators.min(1)]],
       // Volume & satuan mengikuti bentuk tagihan vendor: jasa antar udara
       // kerap ditagih per kilogram, bukan lump sum.
-      quantity: [1, [Validators.required, Validators.min(1)]],
+      quantity: [1, volumeValidators(this.isAdendum, 1)],
       // Penulisan disamakan dengan formulir lain ('LS'). Dokumen lama yang
       // menyimpan 'Ls' tetap terbaca karena pembandingnya tidak peduli
       // huruf besar-kecil.

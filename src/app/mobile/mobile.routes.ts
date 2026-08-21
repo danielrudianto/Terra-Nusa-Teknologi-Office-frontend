@@ -59,6 +59,18 @@ export const MOBILE_ROUTES: Routes = [
           ),
       },
       {
+        /*
+         * Pemeriksaan — tahap SEBELUM persetujuan, untuk procurement level 3
+         * (dan level 4 ke atas). Servernya yang menolak yang tak berwenang;
+         * penjaga level yang sama seperti layar lain sudah memadai di sini.
+         */
+        path: 'Pemeriksaan',
+        loadComponent: () =>
+          import('./pemeriksaan-po/pemeriksaan-po.component').then(
+            (m) => m.PemeriksaanPoComponent,
+          ),
+      },
+      {
         path: 'Reimbursement',
         loadComponent: () =>
           import('./persetujuan-reimbursement/persetujuan-reimbursement.component').then(

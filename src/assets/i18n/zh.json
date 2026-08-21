@@ -2024,6 +2024,8 @@
     "submitUbah": "保存修改",
     "ubahJudulBanner": "保存修改，并非批准",
     "ubahKeteranganBanner": "文件仍为草稿状态，仍需照常批准。每次保存后版本号递增。",
+    "adendumSelisihJudul": "填写差额，而非总量",
+    "adendumSelisihKeterangan": "补充协议是在主单据基础上增加或减少。只需填写数量的变化——例如增加 5，而不是 105。系统会自动与主单据相加。",
     "confirmReadTunggu": "请先阅读文件——{{detik}} 秒后可勾选。",
     "hargaMelompat": "价格与上次相差很大",
     "hargaMelompatKet": "上次为 Rp {{lama}}/{{satuan}}（{{nomor}}）。现在 Rp {{baru}} — 相差 {{kali}} 倍。请在签发前复核。",
@@ -4617,6 +4619,7 @@
     "batal": "取消",
     "nav": {
       "beranda": "首页",
+      "periksa": "审核",
       "po": "采购订单",
       "reimbursement": "报销",
       "pembelian": "采购",
@@ -4626,6 +4629,7 @@
       "judul": "等待您决定",
       "sub": "仅审批与报告，其余请用桌面版。",
       "menunggu": "等待审批",
+      "perluPeriksa": "等待审核",
       "laporan": "各项目毛利报告",
       "hapus": "搜索后删除采购",
       "halo": "你好",
@@ -4656,6 +4660,17 @@
       "tanpaKlausul": "此单据没有协议条款。",
       "sudahBaca": "我已阅读以上条款。",
       "barang": "明细"
+    },
+    "periksa": {
+      "judul": "采购订单审核",
+      "sub": "批准前等待审核的单据。",
+      "kosong": "没有等待审核的单据。",
+      "takBerwenang": "审核仅限采购部三级，或四级及以上。",
+      "belumDiperiksa": "未审核",
+      "buatanSendiri": "此单据由您创建，不能由您审核，请交由他人。",
+      "sudahBaca": "我已阅读并审核以上单据内容。",
+      "tandai": "标记为已审核",
+      "selesai": "{{nomor}} 已标记为已审核"
     },
     "reimbursement": {
       "judul": "报销审批",

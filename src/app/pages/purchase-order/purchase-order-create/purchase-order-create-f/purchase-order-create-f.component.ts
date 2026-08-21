@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
@@ -662,7 +663,7 @@ export class PurchaseOrderCreateFComponent {
       // Spesifikasi bebas teks: diameter besi (D25), mutu beton (K-300),
       // atau apa pun yang membedakan tarifnya.
       spec: ['', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(1)]],
+      quantity: [1, volumeValidators(this.isAdendum, 1)],
       price: [0, [Validators.required, Validators.min(0)]],
     });
   }
@@ -763,7 +764,7 @@ export class PurchaseOrderCreateFComponent {
        * itu baru ketahuan saat barangnya datang.
        */
       unitMaster: [item.unit || ''],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       price: [0, [Validators.required, Validators.min(0)]],
       remarks: [''],
     });

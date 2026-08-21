@@ -1,0 +1,10 @@
+/*
+ * Hanya TAMBAHAN di atas gaya bersama `mpo-*` (dipakai kembali lewat
+ * styleUrls dari layar persetujuan). Di sini cuma lencana status yang
+ * berbeda: dokumen di layar ini MENUNGGU diperiksa, bukan sudah — jadi
+ * nadanya perhatian (kuning), bukan tuntas (hijau).
+ */
+.mpe-lencana--tunggu {
+  background: var(--warn-soft, #fdf4e3);
+  color: var(--warn-fg, #8a5a06);
+}

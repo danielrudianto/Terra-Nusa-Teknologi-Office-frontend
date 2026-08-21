@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { Component, inject } from '@angular/core';
@@ -214,7 +215,7 @@ export class PurchaseOrderCreate652Component {
         issuer: [''],
         startDate: [''],
         endDate: [''],
-        quantity: [1, [Validators.required, Validators.min(0.01)]],
+        quantity: [1, volumeValidators(this.isAdendum)],
         unit: ['peserta', Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
       }),

@@ -700,6 +700,12 @@ export class PurchaseOrderListComponent {
             quantity: Number(it.quantity) || 0,
             unit: it.unit,
             price: Number(it.price) || 0,
+            // Jumlah baris yang DITULIS (koreksi pembulatan). Tanpa ini,
+            // cetak ulang jatuh ke perkalian biasa dan menampilkan
+            // 299.999,70 untuk baris yang jumlah tertulisnya 300.000 —
+            // berbeda dari dokumen yang ditandatangani vendor. `nilaiBaris`
+            // di helper cetak memakainya bila ada; null = dihitung biasa.
+            amount: it.amount ?? null,
           })),
           includePpn: Number(data.ppn) > 0,
           templateVersion: data.templateVersion,
@@ -1218,6 +1224,10 @@ export class PurchaseOrderListComponent {
               quantity: Number(it.quantity) || 0,
               unit: it.unit,
               price: Number(it.price) || 0,
+              // Jumlah tertulis (koreksi pembulatan) harus ikut, sama
+              // seperti jalur cetak umum — tanpa ini 5.1.2 mencetak
+              // 299.999,70 alih-alih 300.000 yang ditulis.
+              amount: it.amount ?? null,
             })),
             includePpn: Number(data.ppn) > 0,
             clauseContext: {

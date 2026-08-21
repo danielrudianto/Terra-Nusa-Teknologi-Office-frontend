@@ -9,6 +9,7 @@ import { catchError } from 'rxjs/operators';
 
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
+import { PermissionService } from '../../services/permission.service';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -29,11 +30,26 @@ import { AccountService } from '../../services/account.service';
 export class BerandaComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
+  private readonly izin = inject(PermissionService);
   private readonly router = inject(Router);
 
   jumlahPo = 0;
   jumlahReimbursement = 0;
+  jumlahPeriksa = 0;
   sedangMemuat = false;
+
+  /**
+   * Pengguna ini berwenang MEMERIKSA — cerminan `boleh_memeriksa` di server:
+   * level 4 ke atas selalu; level 3 hanya bila procurement. Kartu pemeriksaan
+   * hanya muncul bila ini benar, supaya yang tidak bertugas memeriksa tidak
+   * melihat pekerjaan yang bukan miliknya.
+   */
+  bolehMemeriksa(): boolean {
+    const lv = this.izin.level();
+    if (lv >= 4) return true;
+    if (lv < 3) return false;
+    return this.izin.inDepartment('procurement');
+  }
 
   get namaDepan(): string {
     // Nama depan saja: sapaan di ponsel yang menyebut nama lengkap terbaca
@@ -42,9 +58,16 @@ export class BerandaComponent implements OnInit {
     return nama.split(/\s+/)[0] || nama;
   }
 
-  /** Total yang menunggu keputusan, lintas kedua jenis. */
+  /**
+   * Total yang menunggu keputusan.
+   *
+   * Pemeriksaan ikut dihitung HANYA bagi yang berwenang memeriksa — bagi yang
+   * lain angka itu bukan pekerjaannya, dan memasukkannya membuat beranda
+   * menjanjikan tugas yang tidak ada di layar mana pun untuknya.
+   */
   get totalMenunggu(): number {
-    return this.jumlahPo + this.jumlahReimbursement;
+    const periksa = this.bolehMemeriksa() ? this.jumlahPeriksa : 0;
+    return this.jumlahPo + this.jumlahReimbursement + periksa;
   }
 
   ngOnInit(): void {
@@ -77,6 +100,8 @@ export class BerandaComponent implements OnInit {
            */
           const po = res?.po?.data ?? res?.po?.items ?? [];
           this.jumlahPo = po.filter((x: any) => !!x?.isChecked).length;
+          // Menunggu DIPERIKSA: kebalikan saringannya — yang belum diperiksa.
+          this.jumlahPeriksa = po.filter((x: any) => !x?.isChecked).length;
 
           const rb = res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
           this.jumlahReimbursement = rb.length;

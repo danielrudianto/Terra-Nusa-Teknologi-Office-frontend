@@ -627,6 +627,20 @@ html[data-density="compact"] {
   }
 }
 
+/*
+ * Varian adendum: nadanya informatif, bukan peringatan.
+ *
+ * Banner "isi selisih" bukan peringatan kesalahan — ia menjelaskan cara kerja
+ * adendum (jumlah yang diisi adalah PERUBAHAN, bukan total). Warnanya dibuat
+ * berbeda dari banner kuning "menyimpan perubahan" supaya keduanya tidak
+ * terbaca sebagai peringatan yang sama.
+ */
+.pou-banner--adendum {
+  background: var(--brand-soft, #e7ecfb);
+  border-color: var(--border, #d7deea);
+  color: var(--brand-ink, #0f3fd0);
+}
+
 
 /* ===================================================================
    LAYAR KECIL

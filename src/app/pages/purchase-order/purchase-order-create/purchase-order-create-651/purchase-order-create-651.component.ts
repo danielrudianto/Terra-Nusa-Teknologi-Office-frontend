@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
@@ -240,7 +241,7 @@ export class PurchaseOrderCreate651Component {
         // kuota: nama paket/slot | peserta: jenis pemeriksaan
         task: ['', [Validators.required, Validators.maxLength(120)]],
         note: [''],
-        quantity: [1, [Validators.required, Validators.min(0.01)]],
+        quantity: [1, volumeValidators(this.isAdendum)],
         unit: [this.isKuota ? 'slot' : 'peserta', Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
       }),

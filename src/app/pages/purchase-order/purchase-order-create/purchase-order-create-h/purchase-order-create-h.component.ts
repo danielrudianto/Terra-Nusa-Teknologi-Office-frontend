@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -752,7 +753,7 @@ export class PurchaseOrderCreateHComponent implements OnInit {
   private buildScope(): FormGroup {
     return this.formBuilder.group({
       task: ['', [Validators.required, Validators.maxLength(100)]],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: ['LS', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
     });

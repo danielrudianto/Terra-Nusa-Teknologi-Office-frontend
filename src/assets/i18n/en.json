@@ -2024,6 +2024,8 @@
     "submitUbah": "Save changes",
     "ubahJudulBanner": "Saving changes, not approving",
     "ubahKeteranganBanner": "The document stays in Draft and still needs approval as usual. Its revision number increases each time it is saved.",
+    "adendumSelisihJudul": "Enter the difference, not the total",
+    "adendumSelisihKeterangan": "An addendum adds to or subtracts from the parent document. Enter only the CHANGE in quantity — for example add 5, not 105. The system automatically adds it to the parent document.",
     "confirmReadTunggu": "Please read the document first — this can be ticked in {{detik}} seconds.",
     "hargaMelompat": "Price differs greatly from last time",
     "hargaMelompatKet": "Last was Rp {{lama}}/{{satuan}} on {{nomor}}. Now Rp {{baru}} — {{kali}}× that. Please re-check before issuing.",
@@ -4617,6 +4619,7 @@
     "batal": "Cancel",
     "nav": {
       "beranda": "Home",
+      "periksa": "Check",
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
       "pembelian": "Purchase",
@@ -4626,6 +4629,7 @@
       "judul": "Waiting for your decision",
       "sub": "Approvals and reports only. Everything else is on desktop.",
       "menunggu": "awaiting approval",
+      "perluPeriksa": "awaiting check",
       "laporan": "Margin report per project",
       "hapus": "Search then delete a purchase",
       "halo": "Hi",
@@ -4656,6 +4660,17 @@
       "tanpaKlausul": "This document has no agreement terms.",
       "sudahBaca": "I have read the terms above.",
       "barang": "Line items"
+    },
+    "periksa": {
+      "judul": "Purchase Order Check",
+      "sub": "Awaiting a check before approval.",
+      "kosong": "Nothing is awaiting a check.",
+      "takBerwenang": "Checking is only for procurement level 3, or level 4 and above.",
+      "belumDiperiksa": "Not checked",
+      "buatanSendiri": "You created this document, so you cannot check it. Ask someone else.",
+      "sudahBaca": "I have read and checked the document above.",
+      "tandai": "Mark as Checked",
+      "selesai": "{{nomor}} marked as checked"
     },
     "reimbursement": {
       "judul": "Reimbursement Approval",

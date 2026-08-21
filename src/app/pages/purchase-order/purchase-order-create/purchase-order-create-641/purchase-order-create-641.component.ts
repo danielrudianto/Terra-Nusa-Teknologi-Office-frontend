@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -334,7 +335,7 @@ export class PurchaseOrderCreate641Component {
       // Dihitung sejak berkas dinyatakan lengkap, bukan sejak SPK terbit:
       // vendor tidak bisa mulai sebelum dokumen dari AKN masuk semua.
       targetDays: [null, [Validators.min(0)]],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: ['dokumen', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
     });

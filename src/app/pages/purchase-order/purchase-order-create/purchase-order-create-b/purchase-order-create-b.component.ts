@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClauseLineComponent } from '../../../../components/clause-line/clause-line.component';
 import { PurchaseOrderTypeSwitcher } from '../../../../services/purchase-order-type-switcher.service';
@@ -387,7 +388,7 @@ export class PurchaseOrderCreateBComponent implements OnInit {
        */
       jumlahUnit: [1, [Validators.required, Validators.min(0.01)]],
       satuanUnit: ['set'],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      quantity: [1, volumeValidators(this.isAdendum)],
       unit: [sumber.unit || 'hari', Validators.required],
       /*
        * Satuan menurut katalognya, disimpan untuk PEMBANDING.

@@ -26,6 +26,22 @@
 
 <div class="mbr-seksi">{{ "mobile.beranda.perluKeputusan" | translate }}</div>
 
+<!--
+  Kartu pemeriksaan hanya untuk yang berwenang memeriksa (procurement level 3
+  atau level 4 ke atas). Ditaruh DI ATAS persetujuan: pemeriksaan adalah tahap
+  yang lebih dulu, dan yang bertugas memeriksa membukanya lebih sering.
+-->
+@if (bolehMemeriksa()) {
+  <button type="button" class="mbr-petak" (click)="ke('/Pemeriksaan')">
+    <mat-icon>pending_actions</mat-icon>
+    <span class="mbr-petak__teks">
+      <span class="mbr-petak__judul">{{ "mobile.nav.periksa" | translate }}</span>
+      <span class="mbr-petak__ket">{{ "mobile.beranda.perluPeriksa" | translate }}</span>
+    </span>
+    <span class="mbr-petak__angka" [class.nol]="jumlahPeriksa === 0">{{ jumlahPeriksa }}</span>
+  </button>
+}
+
 <button type="button" class="mbr-petak" (click)="ke('/Persetujuan')">
   <mat-icon>fact_check</mat-icon>
   <span class="mbr-petak__teks">

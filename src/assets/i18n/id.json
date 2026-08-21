@@ -2024,6 +2024,8 @@
     "submitUbah": "Simpan perubahan",
     "ubahJudulBanner": "Menyimpan perubahan, bukan menyetujui",
     "ubahKeteranganBanner": "Dokumen tetap berstatus Draf dan masih perlu disetujui seperti biasa. Nomor revisinya bertambah setiap kali disimpan.",
+    "adendumSelisihJudul": "Isi selisihnya, bukan jumlah total",
+    "adendumSelisihKeterangan": "Adendum menambah atau mengurangi dokumen induk. Tulis hanya PERUBAHAN jumlahnya — misalnya tambah 5, bukan 105. Sistem otomatis menjumlahkannya dengan dokumen induk.",
     "confirmReadTunggu": "Silakan baca dokumennya terlebih dahulu — pernyataan ini dapat dicentang dalam {{detik}} detik.",
     "hargaMelompat": "Harga berbeda jauh dari terakhir kali",
     "hargaMelompatKet": "Terakhir Rp {{lama}}/{{satuan}} pada {{nomor}}. Sekarang Rp {{baru}} — {{kali}}× lipat. Periksa kembali sebelum menerbitkan.",
@@ -4617,6 +4619,7 @@
     "batal": "Batal",
     "nav": {
       "beranda": "Beranda",
+      "periksa": "Periksa",
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
       "pembelian": "Pembelian",
@@ -4626,6 +4629,7 @@
       "judul": "Yang menunggu keputusan",
       "sub": "Hanya persetujuan dan laporan. Selebihnya di aplikasi desktop.",
       "menunggu": "menunggu persetujuan",
+      "perluPeriksa": "menunggu diperiksa",
       "laporan": "Laporan margin per proyek",
       "hapus": "Cari lalu hapus pembelian",
       "halo": "Halo",
@@ -4656,6 +4660,17 @@
       "tanpaKlausul": "Dokumen ini tidak memuat poin perjanjian.",
       "sudahBaca": "Saya sudah membaca poin perjanjian di atas.",
       "barang": "Daftar barang"
+    },
+    "periksa": {
+      "judul": "Pemeriksaan Purchase Order",
+      "sub": "Yang menunggu diperiksa sebelum disetujui.",
+      "kosong": "Tidak ada yang menunggu diperiksa.",
+      "takBerwenang": "Pemeriksaan hanya untuk procurement level 3, atau level 4 ke atas.",
+      "belumDiperiksa": "Belum diperiksa",
+      "buatanSendiri": "Dokumen ini buatan Anda sendiri, jadi tidak dapat Anda periksa. Mintakan kepada pengguna lain.",
+      "sudahBaca": "Saya sudah membaca dan memeriksa isi dokumen di atas.",
+      "tandai": "Tandai Diperiksa",
+      "selesai": "{{nomor}} ditandai diperiksa"
     },
     "reimbursement": {
       "judul": "Persetujuan Reimbursement",

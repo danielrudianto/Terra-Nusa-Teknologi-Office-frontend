@@ -23,6 +23,15 @@
         </div>
       </div>
     }
+    @if (isAdendum) {
+      <div class="pou-banner pou-banner--adendum">
+        <mat-icon>difference</mat-icon>
+        <div>
+          <strong>{{ "poForm.adendumSelisihJudul" | translate }}</strong>
+          <span>{{ "poForm.adendumSelisihKeterangan" | translate }}</span>
+        </div>
+      </div>
+    }
   <!--
     Bentuk dipilih di layar, bukan lewat dialog: dialog yang ditutup membuat
     bentuknya tetap kosong tanpa jalan kembali selain memuat ulang halaman.
