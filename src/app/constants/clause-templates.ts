@@ -1,4 +1,5 @@
 import {
+  formatDate,
   namaProyekCetak,
   rupiahDokumen,
 } from '../helpers/purchase-order-shared.helper';
@@ -3667,11 +3668,18 @@ const H_CLAUSES: ClauseTemplate[] = [
       }
 
       // Tanggal selesai boleh kosong: pekerjaan berjalan sampai tuntas.
+      //
+      // Tanggalnya DIFORMAT — bukan ditempel mentah. Yang tersimpan berupa ISO
+      // ("2026-07-27T17:00:00.000Z"), dan menempelkannya apa adanya membuat
+      // dokumen resmi bertuliskan cap waktu UTC, bukan tanggal yang terbaca
+      // manusia. `formatDate` mengubahnya menjadi "27 Juli 2026" — sama dengan
+      // tanggal dokumen lainnya.
       if (ctx.startDate) {
+        const mulai = formatDate(ctx.startDate);
         lines.push(
           ctx.endDate
-            ? `Waktu pelaksanaan: ${ctx.startDate} sampai dengan ${ctx.endDate}.`
-            : `Waktu pelaksanaan: ${ctx.startDate} sampai dengan pekerjaan selesai.`,
+            ? `Waktu pelaksanaan: ${mulai} sampai dengan ${formatDate(ctx.endDate)}.`
+            : `Waktu pelaksanaan: ${mulai} sampai dengan pekerjaan selesai.`,
         );
       }
 
