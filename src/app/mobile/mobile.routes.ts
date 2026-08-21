@@ -54,24 +54,21 @@ export const MOBILE_ROUTES: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'Persetujuan',
-        loadComponent: () =>
-          import('./persetujuan-po/persetujuan-po.component').then(
-            (m) => m.PersetujuanPoComponent,
-          ),
-      },
-      {
         /*
-         * Pemeriksaan — tahap SEBELUM persetujuan, untuk procurement level 3
-         * (dan level 4 ke atas). Servernya yang menolak yang tak berwenang;
-         * penjaga level yang sama seperti layar lain sudah memadai di sini.
+         * Purchase Order — SATU tab, memeriksa DAN menyetujui, dipilih lewat
+         * sakelar di dalamnya menurut wewenang. `?mode=periksa|setujui` dan
+         * `?open=<id>` (deep link dari notifikasi) dibaca komponennya.
          */
-        path: 'Pemeriksaan',
+        path: 'Purchase-order',
         loadComponent: () =>
-          import('./pemeriksaan-po/pemeriksaan-po.component').then(
-            (m) => m.PemeriksaanPoComponent,
+          import('./purchase-order/purchase-order.component').then(
+            (m) => m.PurchaseOrderComponent,
           ),
       },
+      // Rute lama diarahkan ke tab gabungan supaya tautan/notifikasi lama
+      // tetap sampai.
+      { path: 'Persetujuan', redirectTo: 'Purchase-order', pathMatch: 'full' },
+      { path: 'Pemeriksaan', redirectTo: 'Purchase-order', pathMatch: 'full' },
       {
         path: 'Reimbursement',
         loadComponent: () =>
@@ -80,6 +77,15 @@ export const MOBILE_ROUTES: Routes = [
           ),
       },
       {
+        path: 'Pengaturan',
+        loadComponent: () =>
+          import('./pengaturan/pengaturan.component').then(
+            (m) => m.PengaturanComponent,
+          ),
+      },
+      {
+        // Disembunyikan dari navigasi (tidak mendesak), tetapi rutenya tetap
+        // ada agar tautan lama tidak menjadi 404.
         path: 'Pembelian',
         loadComponent: () =>
           import('./hapus-pembelian/hapus-pembelian.component').then(
@@ -103,6 +109,20 @@ export const MOBILE_ROUTES: Routes = [
       },
       {
         path: 'Proyek/:code',
+        loadComponent: () =>
+          import(
+            '../pages/project/project-report/project-report.component'
+          ).then((m) => m.ProjectReportComponent),
+      },
+      {
+        /*
+         * ALIAS. Daftar margin (komponen desktop yang dipakai bersama)
+         * menavigasi ke `/Project/Report/:code` — jalur DESKTOP. Tanpa rute
+         * ini, di mobile ia jatuh ke `**` lalu balik ke beranda: itulah sebab
+         * "klik proyek malah kembali ke halaman awal". Dipetakan ke laporan
+         * yang sama.
+         */
+        path: 'Project/Report/:code',
         loadComponent: () =>
           import(
             '../pages/project/project-report/project-report.component'

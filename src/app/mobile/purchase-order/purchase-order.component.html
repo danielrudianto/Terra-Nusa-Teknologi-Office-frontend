@@ -1,0 +1,38 @@
+<h1 class="mpo-judul">{{ "mobile.nav.po" | translate }}</h1>
+
+@if (adaSakelar) {
+  <!-- Sakelar Periksa / Setujui — hanya bila keduanya boleh. -->
+  <div class="mpo-sakelar" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      [class.on]="mode === 'periksa'"
+      [attr.aria-selected]="mode === 'periksa'"
+      (click)="pilih('periksa')"
+    >
+      <mat-icon>fact_check</mat-icon>
+      {{ "mobile.nav.periksa" | translate }}
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [class.on]="mode === 'setujui'"
+      [attr.aria-selected]="mode === 'setujui'"
+      (click)="pilih('setujui')"
+    >
+      <mat-icon>verified</mat-icon>
+      {{ "mobile.po.setujui" | translate }}
+    </button>
+  </div>
+} @else {
+  <p class="mpo-sub">
+    {{ (mode === "periksa" ? "mobile.periksa.sub" : "mobile.po.sub") | translate }}
+  </p>
+}
+
+<!-- Instans terpisah per mode agar berganti mode memuat ulang datanya. -->
+@if (mode === "periksa") {
+  <app-po-daftar mode="periksa" />
+} @else {
+  <app-po-daftar mode="setujui" />
+}

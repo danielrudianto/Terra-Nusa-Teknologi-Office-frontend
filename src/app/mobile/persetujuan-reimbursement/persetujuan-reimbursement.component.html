@@ -1,27 +1,67 @@
 <h1 class="mrb-judul">{{ "mobile.reimbursement.judul" | translate }}</h1>
 <p class="mrb-sub">{{ "mobile.reimbursement.sub" | translate }}</p>
 
-@if (sedangMemuat) {
-  <div class="mrb-muat"><mat-spinner diameter="32" /></div>
-} @else if (!daftar.length) {
-  <div class="mrb-kosong">
-    <mat-icon>task_alt</mat-icon>
-    <div>{{ "mobile.reimbursement.kosong" | translate }}</div>
+<div
+  class="pod"
+  appTarikSegarkan
+  [sedangSegar]="sedangSegar"
+  (segarkan)="segarkan()"
+  appScrollBawah
+  [mati]="habis || sedangMuatLagi || sedangMemuat"
+  (dekatBawah)="muatLagi()"
+>
+  <!-- Pencarian MENEMPEL di bawah kepala. -->
+  <div class="pod-cari">
+    <mat-icon>search</mat-icon>
+    <input
+      [formControl]="cariCtrl"
+      type="search"
+      inputmode="search"
+      autocapitalize="none"
+      autocorrect="off"
+      spellcheck="false"
+      [placeholder]="'mobile.reimbursement.cariPlaceholder' | translate"
+    />
+    @if (cariCtrl.value) {
+      <button type="button" class="pod-cari__hapus" (click)="cariCtrl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
   </div>
-} @else {
-  @for (r of daftar; track r.id) {
-    <button type="button" class="mrb-kartu" (click)="buka(r)">
-      <div class="mrb-baris1">
-        <span class="mrb-nomor">{{ r.name || r.id }}</span>
-        <span class="mrb-nilai">{{ nilai(r) | number: "1.0-0" }}</span>
+
+  @if (sedangMemuat) {
+    <div class="mrb-muat"><mat-spinner diameter="32" /></div>
+  } @else if (!daftar.length) {
+    <div class="mrb-kosong">
+      <mat-icon>task_alt</mat-icon>
+      <div>
+        {{
+          (cariCtrl.value ? "mobile.po.takAdaCari" : "mobile.reimbursement.kosong")
+            | translate
+        }}
       </div>
-      <div class="mrb-baris2">
-        <span class="mrb-nama">{{ r.bankAccountName || "\u2014" }}</span>
-        <span class="mrb-tanggal">{{ r.date | date: "d MMM y" }}</span>
-      </div>
-    </button>
+    </div>
+  } @else {
+    @for (r of daftar; track r.id) {
+      <button type="button" class="mrb-kartu" (click)="buka(r)">
+        <div class="mrb-baris1">
+          <span class="mrb-nomor">{{ r.name || r.id }}</span>
+          <span class="mrb-nilai">{{ nilai(r) | number: "1.0-0" }}</span>
+        </div>
+        <div class="mrb-baris2">
+          <span class="mrb-nama">{{ r.bankAccountName || "\u2014" }}</span>
+          <span class="mrb-tanggal">{{ r.date | date: "d MMM y" }}</span>
+        </div>
+      </button>
+    }
+
+    @if (sedangMuatLagi) {
+      <div class="pod-lagi"><mat-spinner diameter="24" /></div>
+    } @else if (habis && daftar.length > 6) {
+      <div class="pod-habis">{{ "mobile.po.habis" | translate }}</div>
+    }
   }
-}
+</div>
 
 @if (dipilih) {
   <div class="mrb-tirai" (click)="tutup()">

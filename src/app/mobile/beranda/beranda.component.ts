@@ -1,9 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
+import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -25,7 +26,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-beranda',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, TranslatePipe],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslatePipe,
+    TarikSegarkanDirective,
+  ],
   templateUrl: './beranda.component.html',
   styleUrls: ['./beranda.component.scss'],
 })
@@ -123,7 +130,9 @@ export class BerandaComponent implements OnInit {
   }
 
   muat(): void {
-    this.sedangMemuat = true;
+    // Saat tarik-segarkan, indikator tarikannya yang berputar — hero tidak
+    // perlu ikut berganti jadi spinner.
+    if (!this.sedangSegar) this.sedangMemuat = true;
     forkJoin({
       po: this.api
         .get('purchase-orders', { status: 'pending', page: 1, page_size: 50 })
@@ -159,10 +168,26 @@ export class BerandaComponent implements OnInit {
       // `sedangMemuat` dimatikan SESUDAH permintaannya selesai, bukan di
       // baris berikutnya — yang sebelumnya mematikannya seketika, sehingga
       // pemuatnya tidak pernah terlihat dan angkanya melonjak dari nol.
-      .add(() => (this.sedangMemuat = false));
+      .add(() => {
+        this.sedangMemuat = false;
+        this.sedangSegar = false;
+      });
+  }
+
+  /** Tarik-untuk-menyegarkan: muat ulang DATANYA, bukan halamannya. */
+  sedangSegar = false;
+  segarkan(): void {
+    this.sedangSegar = true;
+    this.muat();
   }
 
   ke(jalur: string): void {
     this.router.navigate([jalur]);
+  }
+
+  /** Ke tab Purchase Order pada mode tertentu (periksa / setujui). */
+  kePO(mode: 'periksa' | 'setujui'): void {
+    const extras: NavigationExtras = { queryParams: { mode } };
+    this.router.navigate(['/Purchase-order'], extras);
   }
 }

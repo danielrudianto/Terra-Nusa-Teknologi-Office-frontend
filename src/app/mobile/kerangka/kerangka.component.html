@@ -1,5 +1,5 @@
 <div class="mkr">
-  <header class="mkr-atas">
+  <header class="mkr-atas" #kepala>
     <div class="mkr-merek">
       <span class="mkr-merek__nama">TerraBot</span>
       <span class="mkr-merek__tanda">{{ "mobile.tanda" | translate }}</span>
@@ -29,18 +29,17 @@
     dan pegangan yang bergeser itulah yang membuat orang salah tekan — pada
     layar yang isinya menyetujui dan menghapus.
   -->
-  <nav class="mkr-bawah" [class.mkr-bawah--enam]="bolehMemeriksa">
+  <!--
+    Empat tab saja — ikon & teksnya jadi lebih besar dan mudah dijangkau.
+    Periksa masuk ke dalam tab Purchase Order (lewat sakelar), Pembelian
+    disembunyikan sementara, dan Proyek diakses dari kartu di beranda.
+  -->
+  <nav class="mkr-bawah">
     <a routerLink="/" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">
       <mat-icon>home</mat-icon>
       <span>{{ "mobile.nav.beranda" | translate }}</span>
     </a>
-    @if (bolehMemeriksa) {
-      <a routerLink="/Pemeriksaan" routerLinkActive="on">
-        <mat-icon>pending_actions</mat-icon>
-        <span>{{ "mobile.nav.periksa" | translate }}</span>
-      </a>
-    }
-    <a routerLink="/Persetujuan" routerLinkActive="on">
+    <a routerLink="/Purchase-order" routerLinkActive="on">
       <mat-icon>fact_check</mat-icon>
       <span>{{ "mobile.nav.po" | translate }}</span>
     </a>
@@ -48,13 +47,9 @@
       <mat-icon>receipt_long</mat-icon>
       <span>{{ "mobile.nav.reimbursement" | translate }}</span>
     </a>
-    <a routerLink="/Pembelian" routerLinkActive="on">
-      <mat-icon>delete_sweep</mat-icon>
-      <span>{{ "mobile.nav.pembelian" | translate }}</span>
-    </a>
-    <a routerLink="/Proyek" routerLinkActive="on">
-      <mat-icon>insights</mat-icon>
-      <span>{{ "mobile.nav.proyek" | translate }}</span>
+    <a routerLink="/Pengaturan" routerLinkActive="on">
+      <mat-icon>settings</mat-icon>
+      <span>{{ "mobile.nav.setelan" | translate }}</span>
     </a>
   </nav>
 </div>

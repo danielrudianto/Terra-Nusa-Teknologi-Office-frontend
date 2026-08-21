@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -79,6 +79,9 @@ export class PemeriksaanPoComponent implements OnInit {
   private readonly pesanServer = inject(ServerMessageService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  /** Disematkan di tab gabungan PO — judulnya disembunyikan, toggle yang jadi kepala. */
+  @Input() sematkan = false;
 
   daftar: any[] = [];
   sedangMemuat = false;

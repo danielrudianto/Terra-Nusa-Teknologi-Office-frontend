@@ -427,9 +427,25 @@ html[data-theme="dark"] {
 html {
   height: 100%;
   width: 100%;
-  min-width: 600px;
   /* text-size preference scales all rem-based typography */
   font-size: calc(16px * var(--app-text-scale, 1));
+}
+
+/*
+ * `min-width: 600px` HANYA untuk layar lebar.
+ *
+ * Aplikasi desktop tidak boleh menyempit di bawah 600px — tata letaknya pecah.
+ * Tetapi PONSEL harus mengikuti lebar perangkatnya: memaksa 600px di layar
+ * ~400px membuat peramban MEMPERKECIL seluruh halaman agar 600px muat,
+ * menyisakan whitespace dan memaksa pengguna mencubit-zoom untuk membaca.
+ * Itulah sebab tampilan mobile terasa "lebarnya tidak otomatis". Digerbang di
+ * balik media query, ponsel memperoleh lebar perangkatnya, desktop tetap
+ * seperti semula.
+ */
+@media (min-width: 600px) {
+  html {
+    min-width: 600px;
+  }
 }
 
 body {
@@ -1101,4 +1117,27 @@ html[data-density="compact"] {
   width: 18px;
   height: 18px;
   font-size: 18px;
+}
+
+/* ===================================================================
+   PONSEL: tarik-untuk-menyegarkan
+   =================================================================== */
+
+/*
+ * Matikan tarik-muat-ulang BAWAAN peramban.
+ *
+ * Di Android, menarik dari puncak memuat ULANG seluruh halaman. Aplikasi ini
+ * menggantinya dengan penyegaran DATA sendiri (TarikSegarkanDirective), jadi
+ * yang bawaan harus dimatikan agar keduanya tidak bertabrakan. `contain` juga
+ * mencegah gulir merembet ke halaman di baliknya.
+ */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Spinner indikator tarik-segarkan (dipakai lewat style inline direktifnya). */
+@keyframes mob-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

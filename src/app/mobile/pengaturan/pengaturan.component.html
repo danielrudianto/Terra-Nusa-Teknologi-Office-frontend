@@ -1,0 +1,36 @@
+<h1 class="mst-judul">{{ "mobile.setelan.judul" | translate }}</h1>
+
+<!-- Kartu akun -->
+<div class="mst-akun">
+  <span class="mst-akun__bulat">{{ inisial }}</span>
+  <div class="mst-akun__teks">
+    <span class="mst-akun__nama">{{ nama }}</span>
+    <span class="mst-akun__level">{{ "mobile.level" | translate }} {{ level }}</span>
+  </div>
+</div>
+
+<!-- Tema -->
+<div class="mst-seksi">{{ "mobile.setelan.tema" | translate }}</div>
+<div class="mst-tema">
+  @for (p of pilihanTema; track p.nilai) {
+    <button
+      type="button"
+      class="mst-tema__opsi"
+      [class.on]="tema === p.nilai"
+      (click)="pilihTema(p.nilai)"
+    >
+      <mat-icon>{{ p.ikon }}</mat-icon>
+      <span>{{ p.kunci | translate }}</span>
+      @if (tema === p.nilai) {
+        <mat-icon class="mst-tema__cek">check_circle</mat-icon>
+      }
+    </button>
+  }
+</div>
+
+<!-- Keluar -->
+<div class="mst-seksi">{{ "mobile.setelan.akun" | translate }}</div>
+<button type="button" class="mst-keluar" (click)="keluar()">
+  <mat-icon>logout</mat-icon>
+  <span>{{ "mobile.setelan.keluar" | translate }}</span>
+</button>

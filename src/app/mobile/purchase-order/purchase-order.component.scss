@@ -1,0 +1,67 @@
+/* Kepala tab PO + sakelar Periksa/Setujui. Kelas `mpo-judul/mpo-sub` datang
+   dari gaya bersama; di sini hanya sakelarnya. */
+:host {
+  display: block;
+}
+
+.mpo-judul {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  margin: 0 0 0.6rem;
+}
+
+.mpo-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.9rem;
+}
+
+.mpo-sakelar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+  padding: 0.28rem;
+  margin: 0 0 1rem;
+  background: var(--surface-2, var(--hover));
+  border: 1px solid var(--border);
+  border-radius: 999px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.6rem 0.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &.on {
+      background: var(--brand);
+      color: var(--on-brand);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--brand) 40%, transparent);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpo-sakelar button {
+    transition: none;
+  }
+}

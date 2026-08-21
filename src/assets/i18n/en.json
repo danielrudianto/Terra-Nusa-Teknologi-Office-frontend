@@ -4625,7 +4625,8 @@
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
       "pembelian": "Purchase",
-      "proyek": "Project"
+      "proyek": "Project",
+      "setelan": "Settings"
     },
     "beranda": {
       "judul": "Waiting for your decision",
@@ -4661,7 +4662,11 @@
       "poinPerjanjian": "Agreement terms",
       "tanpaKlausul": "This document has no agreement terms.",
       "sudahBaca": "I have read the terms above.",
-      "barang": "Line items"
+      "barang": "Line items",
+      "cariPlaceholder": "Search PO number or project",
+      "takAdaCari": "Nothing matches your search.",
+      "habis": "That's everything.",
+      "takBerwenang": "You are not authorized to approve purchase orders."
     },
     "periksa": {
       "judul": "Purchase Order Check",
@@ -4686,7 +4691,8 @@
       "tolak": "Reject",
       "disetujui": "{{nomor}} approved",
       "ditolak": "{{nomor}} rejected",
-      "ajuanSendiri": "This is your own claim, so you cannot approve it."
+      "ajuanSendiri": "This is your own claim, so you cannot approve it.",
+      "cariPlaceholder": "Search number, name, or item"
     },
     "pembelian": {
       "judul": "Delete Purchase",
@@ -4707,6 +4713,15 @@
       "judul": "PO notifications",
       "aktif": "On — you’ll be alerted on new POs",
       "mati": "Turn on to be alerted on new POs"
+    },
+    "setelan": {
+      "judul": "Settings",
+      "tema": "Theme",
+      "terang": "Light",
+      "gelap": "Dark",
+      "ikutDevice": "Follow Device",
+      "akun": "Account",
+      "keluar": "Log out"
     }
   }
 }

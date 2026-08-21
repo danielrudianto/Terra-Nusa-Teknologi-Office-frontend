@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -63,6 +63,9 @@ export class PersetujuanPoComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
+
+  /** Disematkan di tab gabungan PO — judulnya disembunyikan. */
+  @Input() sematkan = false;
 
   daftar: any[] = [];
   sedangMemuat = false;

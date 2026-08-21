@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 export type TextScale = 'sm' | 'md' | 'lg';
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 /** Jumlah baris per halaman pada seluruh daftar. */
 export type PageSize = 10 | 25 | 50 | 100;
 
@@ -234,8 +234,54 @@ export class SettingsService {
     return this._textScale;
   }
 
+  /** Preferensi yang DIPILIH: 'light' | 'dark' | 'system'. */
   get theme(): ThemeMode {
     return this._theme;
+  }
+
+  /** Nilai yang BERLAKU sekarang — 'system' diselesaikan ke device. */
+  get resolvedTheme(): 'light' | 'dark' {
+    if (this._theme === 'system') {
+      return this.sistemGelap() ? 'dark' : 'light';
+    }
+    return this._theme;
+  }
+
+  /** Peramban ini sedang gelap menurut setelan perangkat? */
+  private sistemGelap(): boolean {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        !!window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Ikuti perubahan tema perangkat saat preferensinya 'system'.
+   *
+   * Dipasang sekali; hanya menerapkan ulang bila yang dipilih memang
+   * 'system' — kalau pengguna mengunci ke terang/gelap, perubahan perangkat
+   * tidak boleh menimpanya.
+   */
+  private pantauSistem(): void {
+    try {
+      if (typeof window === 'undefined' || !window.matchMedia) return;
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const ubah = () => {
+        if (this._theme === 'system') {
+          this.applyTheme();
+          this.applyBrandColor();
+        }
+      };
+      if (mq.addEventListener) mq.addEventListener('change', ubah);
+      else if ((mq as any).addListener) (mq as any).addListener(ubah);
+    } catch {
+      /* tidak fatal */
+    }
   }
 
   get brandColor(): BrandColor {
@@ -290,8 +336,14 @@ export class SettingsService {
     const savedText = localStorage.getItem(TEXT_KEY) as TextScale | null;
     const savedTheme = localStorage.getItem(THEME_KEY) as ThemeMode | null;
     if (savedText && savedText in SCALE_FACTOR) this._textScale = savedText;
-    if (savedTheme === 'light' || savedTheme === 'dark')
+    if (
+      savedTheme === 'light' ||
+      savedTheme === 'dark' ||
+      savedTheme === 'system'
+    )
       this._theme = savedTheme;
+    // Pantau perubahan tema perangkat (berlaku hanya saat preferensi 'system').
+    this.pantauSistem();
     const savedBrand = localStorage.getItem(BRAND_KEY) as BrandColor | null;
     if (savedBrand && savedBrand in BRAND_COLORS) this._brandColor = savedBrand;
     const savedPageSize = Number(localStorage.getItem(PAGE_SIZE_KEY));
@@ -336,7 +388,7 @@ export class SettingsService {
 
   private applyBrandColor(): void {
     const c = BRAND_COLORS[this._brandColor];
-    const dark = this._theme === 'dark';
+    const dark = this.resolvedTheme === 'dark';
     const root = document.documentElement;
     const base = dark ? c.baseDark : c.base;
     const soft = dark ? c.softDark : c.soft;
@@ -378,7 +430,9 @@ export class SettingsService {
   }
 
   private applyTheme(): void {
-    // Plumbing only for now — full dark styling needs color tokens migrated.
-    document.documentElement.setAttribute('data-theme', this._theme);
+    // 'system' diselesaikan ke terang/gelap sesuai perangkat sebelum dipasang
+    // — CSS memakai selektor `data-theme`, jadi atributnya harus berisi nilai
+    // yang KONKRET, bukan 'system'.
+    document.documentElement.setAttribute('data-theme', this.resolvedTheme);
   }
 }

@@ -1,4 +1,11 @@
-import { Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,10 +29,41 @@ import { PermissionService } from '../../services/permission.service';
   templateUrl: './kerangka.component.html',
   styleUrls: ['./kerangka.component.scss'],
 })
-export class KerangkaComponent {
+export class KerangkaComponent implements AfterViewInit, OnDestroy {
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);
   private readonly router = inject(Router);
+
+  @ViewChild('kepala') kepala?: ElementRef<HTMLElement>;
+  private ro?: ResizeObserver;
+
+  /**
+   * Tinggi kepala diekspos sebagai `--tinggi-kepala`.
+   *
+   * Kepala menempel di puncak; kotak cari pada daftar juga menempel, tepat DI
+   * BAWAHNYA. Tanpa nilai tinggi kepala yang sebenarnya, keduanya bertumpuk.
+   * Diukur nyata (skala teks dapat mengubahnya) dan diperbarui saat berubah.
+   */
+  ngAfterViewInit(): void {
+    const el = this.kepala?.nativeElement;
+    if (!el) return;
+    const set = () =>
+      document.documentElement.style.setProperty(
+        '--tinggi-kepala',
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      );
+    set();
+    try {
+      this.ro = new ResizeObserver(set);
+      this.ro.observe(el);
+    } catch {
+      /* peramban lama tanpa ResizeObserver: nilai awal tetap dipakai */
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.ro?.disconnect();
+  }
 
   get nama(): string {
     return this.akun.displayName;

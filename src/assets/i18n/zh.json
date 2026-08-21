@@ -4625,7 +4625,8 @@
       "po": "采购订单",
       "reimbursement": "报销",
       "pembelian": "采购",
-      "proyek": "项目"
+      "proyek": "项目",
+      "setelan": "设置"
     },
     "beranda": {
       "judul": "等待您决定",
@@ -4661,7 +4662,11 @@
       "poinPerjanjian": "协议条款",
       "tanpaKlausul": "此单据没有协议条款。",
       "sudahBaca": "我已阅读以上条款。",
-      "barang": "明细"
+      "barang": "明细",
+      "cariPlaceholder": "搜索采购单号或项目",
+      "takAdaCari": "没有匹配的结果。",
+      "habis": "已全部加载。",
+      "takBerwenang": "您无权批准采购单。"
     },
     "periksa": {
       "judul": "采购订单审核",
@@ -4686,7 +4691,8 @@
       "tolak": "拒绝",
       "disetujui": "{{nomor}} 已批准",
       "ditolak": "{{nomor}} 已拒绝",
-      "ajuanSendiri": "这是您自己的申请，不能由您批准。"
+      "ajuanSendiri": "这是您自己的申请，不能由您批准。",
+      "cariPlaceholder": "搜索编号、名称或项目"
     },
     "pembelian": {
       "judul": "删除采购",
@@ -4707,6 +4713,15 @@
       "judul": "采购单通知",
       "aktif": "已开启——有新采购单会提醒你",
       "mati": "开启后有新采购单会提醒你"
+    },
+    "setelan": {
+      "judul": "设置",
+      "tema": "主题",
+      "terang": "浅色",
+      "gelap": "深色",
+      "ikutDevice": "跟随系统",
+      "akun": "账户",
+      "keluar": "退出登录"
     }
   }
 }

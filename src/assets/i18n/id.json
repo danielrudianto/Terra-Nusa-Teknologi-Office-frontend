@@ -4625,7 +4625,8 @@
       "po": "Purchase Order",
       "reimbursement": "Reimbursement",
       "pembelian": "Pembelian",
-      "proyek": "Proyek"
+      "proyek": "Proyek",
+      "setelan": "Pengaturan"
     },
     "beranda": {
       "judul": "Yang menunggu keputusan",
@@ -4661,7 +4662,11 @@
       "poinPerjanjian": "Poin perjanjian",
       "tanpaKlausul": "Dokumen ini tidak memuat poin perjanjian.",
       "sudahBaca": "Saya sudah membaca poin perjanjian di atas.",
-      "barang": "Daftar barang"
+      "barang": "Daftar barang",
+      "cariPlaceholder": "Cari nomor PO atau proyek",
+      "takAdaCari": "Tidak ada yang cocok dengan pencarian.",
+      "habis": "Sudah semua.",
+      "takBerwenang": "Anda tidak berwenang menyetujui purchase order."
     },
     "periksa": {
       "judul": "Pemeriksaan Purchase Order",
@@ -4686,7 +4691,8 @@
       "tolak": "Tolak",
       "disetujui": "{{nomor}} disetujui",
       "ditolak": "{{nomor}} ditolak",
-      "ajuanSendiri": "Pengajuan ini milik Anda sendiri, jadi tidak dapat Anda setujui."
+      "ajuanSendiri": "Pengajuan ini milik Anda sendiri, jadi tidak dapat Anda setujui.",
+      "cariPlaceholder": "Cari nomor, nama, atau item"
     },
     "pembelian": {
       "judul": "Hapus Pembelian",
@@ -4707,6 +4713,15 @@
       "judul": "Notifikasi PO",
       "aktif": "Menyala — ada PO baru langsung diberi tahu",
       "mati": "Nyalakan untuk diberi tahu PO baru"
+    },
+    "setelan": {
+      "judul": "Pengaturan",
+      "tema": "Tema",
+      "terang": "Terang",
+      "gelap": "Gelap",
+      "ikutDevice": "Ikuti Perangkat",
+      "akun": "Akun",
+      "keluar": "Keluar"
     }
   }
 }

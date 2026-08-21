@@ -1,56 +1,92 @@
-@if (!sematkan) {
-  <h1 class="mpo-judul">{{ "mobile.periksa.judul" | translate }}</h1>
-  <p class="mpo-sub">{{ "mobile.periksa.sub" | translate }}</p>
-}
+<div
+  class="pod"
+  appTarikSegarkan
+  [sedangSegar]="sedangSegar"
+  (segarkan)="segarkan()"
+  appScrollBawah
+  [mati]="habis || sedangMuatLagi || sedangMemuat"
+  (dekatBawah)="muatLagi()"
+>
+  <!-- Pencarian MENEMPEL di bawah kepala saat digulir. -->
+  <div class="pod-cari">
+    <mat-icon>search</mat-icon>
+    <input
+      [formControl]="cariCtrl"
+      type="search"
+      inputmode="search"
+      autocapitalize="none"
+      autocorrect="off"
+      spellcheck="false"
+      [placeholder]="'mobile.po.cariPlaceholder' | translate"
+    />
+    @if (cariCtrl.value) {
+      <button type="button" class="pod-cari__hapus" (click)="cariCtrl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
 
-@if (sedangMemuat) {
-  <div class="mpo-muat"><mat-spinner diameter="32" /></div>
-} @else if (!bolehMemeriksa()) {
-  <!--
-    Bukan daftar kosong: yang tidak berwenang memeriksa perlu tahu SEBABNYA,
-    bukan mengira dokumennya habis.
-  -->
-  <div class="mpo-kosong">
-    <mat-icon>lock</mat-icon>
-    <div>{{ "mobile.periksa.takBerwenang" | translate }}</div>
-  </div>
-} @else if (!daftar.length) {
-  <div class="mpo-kosong">
-    <mat-icon>task_alt</mat-icon>
-    <div>{{ "mobile.periksa.kosong" | translate }}</div>
-  </div>
-} @else {
-  @for (po of daftar; track po.id) {
-    <button type="button" class="mpo-kartu" (click)="buka(po)">
-      <div class="mpo-kepala">
-        <span class="mpo-ikon"><mat-icon>{{ ikon(po) }}</mat-icon></span>
-        <div class="mpo-kepala__teks">
-          <div class="mpo-baris1">
-            <span class="mpo-nomor">{{ po.name }}</span>
-            <span class="mpo-nilai">{{ nilai(po) | number: "1.0-2" }}</span>
-          </div>
-          <div class="mpo-baris2">
-            <span class="mpo-nama">{{ po.supplierName || "—" }}</span>
-            <span class="mpo-tanggal">{{ po.date | date: "d MMM y" }}</span>
+  @if (sedangMemuat) {
+    <div class="mpo-muat"><mat-spinner diameter="32" /></div>
+  } @else if (mode === 'periksa' && !bolehMemeriksa()) {
+    <div class="mpo-kosong">
+      <mat-icon>lock</mat-icon>
+      <div>{{ "mobile.periksa.takBerwenang" | translate }}</div>
+    </div>
+  } @else if (!daftar.length) {
+    <div class="mpo-kosong">
+      <mat-icon>task_alt</mat-icon>
+      <div>
+        {{
+          (cariCtrl.value
+            ? "mobile.po.takAdaCari"
+            : mode === "periksa"
+              ? "mobile.periksa.kosong"
+              : "mobile.po.kosong"
+          ) | translate
+        }}
+      </div>
+    </div>
+  } @else {
+    @for (po of daftar; track po.id) {
+      <button type="button" class="mpo-kartu" (click)="buka(po)">
+        <div class="mpo-kepala">
+          <span class="mpo-ikon"><mat-icon>{{ ikon(po) }}</mat-icon></span>
+          <div class="mpo-kepala__teks">
+            <div class="mpo-baris1">
+              <span class="mpo-nomor">{{ po.name }}</span>
+              <span class="mpo-nilai">{{ nilai(po) | number: "1.0-2" }}</span>
+            </div>
+            <div class="mpo-baris2">
+              <span class="mpo-nama">{{ po.supplierName || "—" }}</span>
+              <span class="mpo-tanggal">{{ po.date | date: "d MMM y" }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="mpo-tanda">
-        <span class="mpo-lencana mpo-lencana--jenis">{{ jenis(po) }}</span>
-        <span class="mpo-lencana mpe-lencana--tunggu">
-          <mat-icon>pending_actions</mat-icon>{{ "mobile.periksa.belumDiperiksa" | translate }}
-        </span>
-      </div>
-    </button>
+        <div class="mpo-tanda">
+          <span class="mpo-lencana mpo-lencana--jenis">{{ jenis(po) }}</span>
+          @if (mode === "periksa") {
+            <span class="mpo-lencana mpe-lencana--tunggu">
+              <mat-icon>pending_actions</mat-icon>{{ "mobile.periksa.belumDiperiksa" | translate }}
+            </span>
+          } @else {
+            <span class="mpo-lencana mpo-lencana--periksa">
+              <mat-icon>verified</mat-icon>{{ "mobile.po.sudahDiperiksa" | translate }}
+            </span>
+          }
+        </div>
+      </button>
+    }
+
+    @if (sedangMuatLagi) {
+      <div class="pod-lagi"><mat-spinner diameter="24" /></div>
+    } @else if (habis && daftar.length > 6) {
+      <div class="pod-habis">{{ "mobile.po.habis" | translate }}</div>
+    }
   }
-}
+</div>
 
-<!--
-  Rincian, KLAUSUL, dan pemeriksaannya.
-
-  Tombol tandai baru hidup setelah isinya ditandai dibaca — memeriksa berarti
-  membaca harga, volume, dan spesifikasinya, bukan satu ketukan refleks.
--->
+<!-- Panel rincian + aksi (periksa / setujui). -->
 @if (dipilih) {
   <div class="mpo-tirai" (click)="tutup()">
     <div class="mpo-panel" (click)="$event.stopPropagation()">
@@ -67,21 +103,20 @@
       <dl class="mpo-rinci">
         <dt>{{ "mobile.po.pemasok" | translate }}</dt>
         <dd>{{ dipilih.supplierName || "—" }}</dd>
-
         <dt>{{ "mobile.po.tanggal" | translate }}</dt>
         <dd>{{ dipilih.date | date: "d MMMM y" }}</dd>
-
         <dt>{{ "mobile.po.proyek" | translate }}</dt>
         <dd>{{ dipilih.projectName || "—" }}</dd>
-
         <dt>{{ "mobile.po.dpp" | translate }}</dt>
         <dd>{{ dipilih.dpp | number: "1.0-2" }}</dd>
-
         <dt>{{ "mobile.po.ppn" | translate }}</dt>
         <dd>{{ dipilih.ppn || 0 }}%</dd>
-
         <dt>{{ "mobile.po.total" | translate }}</dt>
         <dd class="mpo-rinci__total">{{ nilai(dipilih) | number: "1.0-2" }}</dd>
+        @if (mode === "setujui") {
+          <dt>{{ "mobile.po.diperiksa" | translate }}</dt>
+          <dd>{{ dipilih.checkedByName || "—" }}</dd>
+        }
       </dl>
 
       @if (jumlahBarang) {
@@ -97,11 +132,8 @@
               {{ "mobile.po.barang" | translate }}
               <span class="mpo-barang__jumlah">{{ jumlahBarang }}</span>
             </span>
-            <mat-icon class="mpo-barang__panah" [class.buka]="barangTerbuka">
-              expand_more
-            </mat-icon>
+            <mat-icon class="mpo-barang__panah" [class.buka]="barangTerbuka">expand_more</mat-icon>
           </button>
-
           @if (barangTerbuka) {
             <ul class="mpo-barang__daftar">
               @for (b of barang; track $index) {
@@ -123,19 +155,15 @@
         </div>
       }
 
-      <!-- Poin perjanjian: yang sebenarnya harus dibaca sebelum diperiksa. -->
       <div class="mpo-klausul">
         <div class="mpo-klausul__judul">
           <mat-icon>gavel</mat-icon>
           {{ "mobile.po.poinPerjanjian" | translate }}
         </div>
-
         @if (memuatRincian) {
           <div class="mpo-muat"><mat-spinner diameter="26" /></div>
         } @else if (!klausul.length) {
-          <p class="mpo-klausul__kosong">
-            {{ "mobile.po.tanpaKlausul" | translate }}
-          </p>
+          <p class="mpo-klausul__kosong">{{ "mobile.po.tanpaKlausul" | translate }}</p>
         } @else {
           @for (bagian of klausul; track $index) {
             @if (bagian.title) {
@@ -170,20 +198,33 @@
             [checked]="sudahBaca"
             (change)="tandaiBaca($any($event.target).checked)"
           />
-          <span>{{ "mobile.periksa.sudahBaca" | translate }}</span>
+          <span>{{
+            (mode === "periksa" ? "mobile.periksa.sudahBaca" : "mobile.po.sudahBaca") | translate
+          }}</span>
         </label>
       }
 
       <div class="mpo-aksi">
-        @if (bolehTandai(dipilih)) {
+        @if (bolehTindak(dipilih)) {
           <button
             mat-flat-button
             color="primary"
             type="button"
-            [disabled]="!bolehTekanTandai(dipilih) || sedangKirim"
-            (click)="tandai(dipilih)"
+            [disabled]="!bolehTekanTindak(dipilih) || sedangKirim"
+            (click)="tindak(dipilih)"
           >
-            {{ "mobile.periksa.tandai" | translate }}
+            {{ (mode === "periksa" ? "mobile.periksa.tandai" : "mobile.po.setujui") | translate }}
+          </button>
+        }
+        @if (mode === "setujui" && bisaSetujui()) {
+          <button
+            mat-stroked-button
+            color="warn"
+            type="button"
+            [disabled]="sedangKirim"
+            (click)="tolak(dipilih)"
+          >
+            {{ "mobile.po.tolak" | translate }}
           </button>
         }
         <button mat-button type="button" (click)="tutup()">

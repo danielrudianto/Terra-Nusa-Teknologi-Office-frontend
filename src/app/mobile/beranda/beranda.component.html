@@ -1,112 +1,106 @@
-<!-- Sapaan: aplikasi yang dipakai sendiri, bukan halaman formulir. -->
-<div class="mbr-sapa">
-  <span class="mbr-sapa__halo">{{ "mobile.beranda.halo" | translate }},</span>
-  <span class="mbr-sapa__nama">{{ namaDepan }}</span>
-</div>
+<div
+  class="mbr"
+  appTarikSegarkan
+  [sedangSegar]="sedangSegar"
+  (segarkan)="segarkan()"
+>
+  <!-- Sapaan: aplikasi yang dipakai sendiri, bukan halaman formulir. -->
+  <div class="mbr-sapa">
+    <span class="mbr-sapa__halo">{{ "mobile.beranda.halo" | translate }},</span>
+    <span class="mbr-sapa__nama">{{ namaDepan }}</span>
+  </div>
 
-<!--
-  Kartu utama: berapa yang menunggu, sebelum apa pun yang lain.
-  Yang membuka aplikasi ini ingin tahu satu hal — ada yang perlu diputuskan
-  atau tidak. Jawabannya di sini, besar, tanpa harus membuka layar lain.
--->
-<div class="mbr-hero" [class.mbr-hero--kosong]="totalMenunggu === 0">
-  @if (sedangMemuat) {
-    <mat-spinner diameter="28" />
-  } @else {
-    <div class="mbr-hero__angka">{{ totalMenunggu }}</div>
-    <div class="mbr-hero__teks">
-      @if (totalMenunggu === 0) {
-        {{ "mobile.beranda.tuntas" | translate }}
-      } @else {
-        {{ "mobile.beranda.menungguTotal" | translate }}
-      }
-    </div>
-  }
-</div>
-
-<div class="mbr-seksi">{{ "mobile.beranda.perluKeputusan" | translate }}</div>
-
-<!--
-  Kartu pemeriksaan hanya untuk yang berwenang memeriksa (procurement level 3
-  atau level 4 ke atas). Ditaruh DI ATAS persetujuan: pemeriksaan adalah tahap
-  yang lebih dulu, dan yang bertugas memeriksa membukanya lebih sering.
--->
-@if (bolehMemeriksa()) {
-  <button type="button" class="mbr-petak" (click)="ke('/Pemeriksaan')">
-    <mat-icon>pending_actions</mat-icon>
-    <span class="mbr-petak__teks">
-      <span class="mbr-petak__judul">{{ "mobile.nav.periksa" | translate }}</span>
-      <span class="mbr-petak__ket">{{ "mobile.beranda.perluPeriksa" | translate }}</span>
-    </span>
-    <span class="mbr-petak__angka" [class.nol]="jumlahPeriksa === 0">{{ jumlahPeriksa }}</span>
-  </button>
-}
-
-<button type="button" class="mbr-petak" (click)="ke('/Persetujuan')">
-  <mat-icon>fact_check</mat-icon>
-  <span class="mbr-petak__teks">
-    <span class="mbr-petak__judul">{{ "mobile.nav.po" | translate }}</span>
-    <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
-  </span>
-  <span class="mbr-petak__angka" [class.nol]="jumlahPo === 0">{{ jumlahPo }}</span>
-</button>
-
-<button type="button" class="mbr-petak" (click)="ke('/Reimbursement')">
-  <mat-icon>receipt_long</mat-icon>
-  <span class="mbr-petak__teks">
-    <span class="mbr-petak__judul">{{ "mobile.nav.reimbursement" | translate }}</span>
-    <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
-  </span>
-  <span class="mbr-petak__angka" [class.nol]="jumlahReimbursement === 0">{{
-    jumlahReimbursement
-  }}</span>
-</button>
-
-<!--
-  Notifikasi push — hanya untuk yang berwenang memeriksa, dan hanya bila
-  perangkatnya mendukung. Menyalakannya baru meminta izin; sebelum itu tidak
-  ada permintaan yang mengganggu.
--->
-@if (bolehMemeriksa() && pushDidukung) {
-  <button
-    type="button"
-    class="mbr-petak"
-    [disabled]="pushSedangProses"
-    (click)="pushAktif ? matikanNotif() : aktifkanNotif()"
-  >
-    <mat-icon>{{ pushAktif ? "notifications_active" : "notifications_off" }}</mat-icon>
-    <span class="mbr-petak__teks">
-      <span class="mbr-petak__judul">{{ "mobile.notif.judul" | translate }}</span>
-      <span class="mbr-petak__ket">{{
-        (pushAktif ? "mobile.notif.aktif" : "mobile.notif.mati") | translate
-      }}</span>
-    </span>
-    @if (pushSedangProses) {
-      <mat-spinner diameter="20" />
+  <!--
+    Kartu utama: berapa yang menunggu, sebelum apa pun yang lain.
+  -->
+  <div class="mbr-hero" [class.mbr-hero--kosong]="totalMenunggu === 0">
+    @if (sedangMemuat) {
+      <mat-spinner diameter="28" />
     } @else {
-      <mat-icon class="mbr-petak__panah">{{
-        pushAktif ? "toggle_on" : "toggle_off"
-      }}</mat-icon>
+      <div class="mbr-hero__angka">{{ totalMenunggu }}</div>
+      <div class="mbr-hero__teks">
+        @if (totalMenunggu === 0) {
+          {{ "mobile.beranda.tuntas" | translate }}
+        } @else {
+          {{ "mobile.beranda.menungguTotal" | translate }}
+        }
+      </div>
     }
+  </div>
+
+  <div class="mbr-seksi">{{ "mobile.beranda.perluKeputusan" | translate }}</div>
+
+  <!--
+    Kartu pemeriksaan hanya untuk yang berwenang memeriksa. Membuka tab
+    Purchase Order langsung pada mode "Periksa".
+  -->
+  @if (bolehMemeriksa()) {
+    <button type="button" class="mbr-petak" (click)="kePO('periksa')">
+      <mat-icon>pending_actions</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.nav.periksa" | translate }}</span>
+        <span class="mbr-petak__ket">{{ "mobile.beranda.perluPeriksa" | translate }}</span>
+      </span>
+      <span class="mbr-petak__angka" [class.nol]="jumlahPeriksa === 0">{{ jumlahPeriksa }}</span>
+    </button>
+  }
+
+  <button type="button" class="mbr-petak" (click)="kePO('setujui')">
+    <mat-icon>fact_check</mat-icon>
+    <span class="mbr-petak__teks">
+      <span class="mbr-petak__judul">{{ "mobile.nav.po" | translate }}</span>
+      <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
+    </span>
+    <span class="mbr-petak__angka" [class.nol]="jumlahPo === 0">{{ jumlahPo }}</span>
   </button>
-}
 
-<div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
+  <button type="button" class="mbr-petak" (click)="ke('/Reimbursement')">
+    <mat-icon>receipt_long</mat-icon>
+    <span class="mbr-petak__teks">
+      <span class="mbr-petak__judul">{{ "mobile.nav.reimbursement" | translate }}</span>
+      <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
+    </span>
+    <span class="mbr-petak__angka" [class.nol]="jumlahReimbursement === 0">{{
+      jumlahReimbursement
+    }}</span>
+  </button>
 
-<button type="button" class="mbr-petak" (click)="ke('/Proyek')">
-  <mat-icon>insights</mat-icon>
-  <span class="mbr-petak__teks">
-    <span class="mbr-petak__judul">{{ "mobile.nav.proyek" | translate }}</span>
-    <span class="mbr-petak__ket">{{ "mobile.beranda.laporan" | translate }}</span>
-  </span>
-  <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
-</button>
+  <!--
+    Notifikasi push — hanya untuk yang berwenang memeriksa, dan hanya bila
+    perangkatnya mendukung.
+  -->
+  @if (bolehMemeriksa() && pushDidukung) {
+    <button
+      type="button"
+      class="mbr-petak"
+      [disabled]="pushSedangProses"
+      (click)="pushAktif ? matikanNotif() : aktifkanNotif()"
+    >
+      <mat-icon>{{ pushAktif ? "notifications_active" : "notifications_off" }}</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.notif.judul" | translate }}</span>
+        <span class="mbr-petak__ket">{{
+          (pushAktif ? "mobile.notif.aktif" : "mobile.notif.mati") | translate
+        }}</span>
+      </span>
+      @if (pushSedangProses) {
+        <mat-spinner diameter="20" />
+      } @else {
+        <mat-icon class="mbr-petak__panah">{{
+          pushAktif ? "toggle_on" : "toggle_off"
+        }}</mat-icon>
+      }
+    </button>
+  }
 
-<button type="button" class="mbr-petak mbr-petak--awas" (click)="ke('/Pembelian')">
-  <mat-icon>delete_sweep</mat-icon>
-  <span class="mbr-petak__teks">
-    <span class="mbr-petak__judul">{{ "mobile.nav.pembelian" | translate }}</span>
-    <span class="mbr-petak__ket">{{ "mobile.beranda.hapus" | translate }}</span>
-  </span>
-  <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
-</button>
+  <div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
+
+  <button type="button" class="mbr-petak" (click)="ke('/Proyek')">
+    <mat-icon>insights</mat-icon>
+    <span class="mbr-petak__teks">
+      <span class="mbr-petak__judul">{{ "mobile.nav.proyek" | translate }}</span>
+      <span class="mbr-petak__ket">{{ "mobile.beranda.laporan" | translate }}</span>
+    </span>
+    <mat-icon class="mbr-petak__panah">chevron_right</mat-icon>
+  </button>
+</div>

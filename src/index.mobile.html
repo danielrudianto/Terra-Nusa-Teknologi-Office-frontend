@@ -15,6 +15,20 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta name="theme-color" content="#3f6ad8" />
+
+    <!--
+      PWA: ditambahkan ke Layar Utama, aplikasi terbuka PENUH LAYAR tanpa bilah
+      alamat (display: standalone di manifest). Di peramban biasa bilah
+      alamatnya memang tidak bisa disembunyikan — itu kendali peramban, bukan
+      halaman; jalan satu-satunya adalah "Add to Home Screen".
+    -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TerraBot" />
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
