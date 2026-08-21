@@ -114,15 +114,14 @@ export class PoDaftarComponent implements OnInit {
     }
   }
 
-  private cocokMode(x: any): boolean {
-    // Periksa: yang BELUM diperiksa. Setujui: yang SUDAH diperiksa & menunggu
-    // persetujuan — urutan dua tahap yang sama dengan desktop.
-    return this.mode === 'periksa' ? !x?.isChecked : !!x?.isChecked;
-  }
-
   /**
    * Muat daftar. `reset` mengulang dari halaman satu (pemuatan pertama, ganti
    * pencarian, atau tarik-segarkan); selain itu menambah halaman berikutnya.
+   *
+   * Penyaringan tahap (periksa/setujui) dilakukan SERVER lewat `checked`, bukan
+   * di sini. Sebelumnya disaring per-halaman di layar — dan dokumen yang cocok
+   * tetapi berada di halaman berikutnya tidak pernah tampil, sehingga daftarnya
+   * terlihat KOSONG saat dibuka padahal berandanya menghitung ada.
    */
   muat(reset: boolean): void {
     if (reset) {
@@ -137,7 +136,9 @@ export class PoDaftarComponent implements OnInit {
     const kata = (this.cariCtrl.value || '').trim();
     this.api
       .get('purchase-orders', {
-        status: 'pending',
+        // Hanya draf (belum disetujui), disaring per tahap di server.
+        status: 'draft',
+        checked: this.mode === 'periksa' ? false : true,
         keyword: kata || undefined,
         page: this.page,
         page_size: this.pageSize,
@@ -149,8 +150,7 @@ export class PoDaftarComponent implements OnInit {
           const mentah: any[] = res?.data ?? res?.items ?? [];
           // Halaman penuh berarti mungkin masih ada; kurang dari itu = habis.
           if (mentah.length < this.pageSize) this.habis = true;
-          const cocok = mentah.filter((x) => this.cocokMode(x));
-          this.daftar = reset ? cocok : [...this.daftar, ...cocok];
+          this.daftar = reset ? mentah : [...this.daftar, ...mentah];
         },
         error: () => {
           if (reset) this.gagal('notify.loadFailed');

@@ -4721,7 +4721,10 @@
       "gelap": "Dark",
       "ikutDevice": "Follow Device",
       "akun": "Account",
-      "keluar": "Log out"
+      "keluar": "Log out",
+      "notifikasi": "Notifications",
+      "notifNyala": "Notifications turned on for this device.",
+      "notifMati": "Notifications turned off for this device."
     }
   }
 }

@@ -97,6 +97,59 @@
   }
 }
 
+.mst-notif {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease;
+
+  > mat-icon {
+    flex: none;
+    color: var(--muted);
+  }
+  &.on {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    > mat-icon {
+      color: var(--brand);
+    }
+  }
+
+  &__teks {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  &__judul {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  &__ket {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  &__toggle {
+    flex: none;
+    color: var(--brand);
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
 .mst-keluar {
   width: 100%;
   display: flex;

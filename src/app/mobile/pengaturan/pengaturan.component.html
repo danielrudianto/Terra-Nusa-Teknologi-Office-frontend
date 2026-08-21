@@ -28,6 +28,33 @@
   }
 </div>
 
+<!-- Notifikasi (hanya untuk pemeriksa PO) -->
+@if (bolehMemeriksa && pushDidukung) {
+  <div class="mst-seksi">{{ "mobile.setelan.notifikasi" | translate }}</div>
+  <button
+    type="button"
+    class="mst-notif"
+    [class.on]="pushAktif"
+    [disabled]="pushSedangProses"
+    (click)="pushAktif ? matikanNotif() : aktifkanNotif()"
+  >
+    <mat-icon>{{ pushAktif ? "notifications_active" : "notifications_off" }}</mat-icon>
+    <span class="mst-notif__teks">
+      <span class="mst-notif__judul">{{ "mobile.notif.judul" | translate }}</span>
+      <span class="mst-notif__ket">{{
+        (pushAktif ? "mobile.notif.aktif" : "mobile.notif.mati") | translate
+      }}</span>
+    </span>
+    @if (pushSedangProses) {
+      <mat-spinner diameter="20" />
+    } @else {
+      <mat-icon class="mst-notif__toggle">{{
+        pushAktif ? "toggle_on" : "toggle_off"
+      }}</mat-icon>
+    }
+  </button>
+}
+
 <!-- Keluar -->
 <div class="mst-seksi">{{ "mobile.setelan.akun" | translate }}</div>
 <button type="button" class="mst-keluar" (click)="keluar()">

@@ -119,8 +119,10 @@
   right: 0;
   bottom: 0;
   z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Flex, bukan grid tetap: jumlah tab bisa 3 atau 4 (tab Reimbursement
+     hilang bagi yang tak berwenang menyetujuinya), dan flex membaginya rata
+     berapa pun jumlahnya. */
+  display: flex;
   background: var(--surface);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   backdrop-filter: saturate(1.4) blur(12px);
@@ -137,12 +139,15 @@
     align-items: center;
     /* Empat tab, jadi ada ruang: ikon & teks dibesarkan. */
     gap: 0.28rem;
-    padding: 0.6rem 0.2rem 0.55rem;
+    padding: 0.6rem 0.35rem 0.55rem;
     text-decoration: none;
     color: var(--faint);
     min-height: 58px;
     justify-content: center;
     position: relative;
+    /* Bagi rata; agar label bisa dipangkas, sel flex harus boleh menyempit. */
+    flex: 1 1 0;
+    min-width: 0;
     -webkit-tap-highlight-color: transparent;
     transition:
       color 0.16s ease,
@@ -161,7 +166,13 @@
       letter-spacing: 0.01em;
       text-align: center;
       line-height: 1.15;
+      /* SATU baris; yang kepanjangan dipangkas dengan elipsis (…) — dua baris
+         terbaca miring dan tidak rapi. */
       width: 100%;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &:active {

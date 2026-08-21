@@ -78,15 +78,13 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Tab pemeriksaan hanya untuk yang berwenang memeriksa — cerminan
-   * `boleh_memeriksa` di server: level 4 ke atas selalu; level 3 hanya bila
-   * procurement. Bagi yang lain bilah bawah tetap lima tab seperti semula.
+   * Tab Reimbursement hanya untuk yang BERWENANG menyetujuinya
+   * (`reimbursement:approve`). Level 3 yang bukan accounting tidak memilikinya,
+   * jadi tabnya tidak ditawarkan — bukan sekadar dinonaktifkan — supaya tidak
+   * tertekan tak sengaja.
    */
-  get bolehMemeriksa(): boolean {
-    const lv = this.izin.level();
-    if (lv >= 4) return true;
-    if (lv < 3) return false;
-    return this.izin.inDepartment('procurement');
+  get bisaReimbursement(): boolean {
+    return this.izin.can('reimbursement', 'approve');
   }
 
   /**

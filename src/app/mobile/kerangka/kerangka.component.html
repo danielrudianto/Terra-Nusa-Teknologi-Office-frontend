@@ -43,10 +43,12 @@
       <mat-icon>fact_check</mat-icon>
       <span>{{ "mobile.nav.po" | translate }}</span>
     </a>
-    <a routerLink="/Reimbursement" routerLinkActive="on">
-      <mat-icon>receipt_long</mat-icon>
-      <span>{{ "mobile.nav.reimbursement" | translate }}</span>
-    </a>
+    @if (bisaReimbursement) {
+      <a routerLink="/Reimbursement" routerLinkActive="on">
+        <mat-icon>receipt_long</mat-icon>
+        <span>{{ "mobile.nav.reimbursement" | translate }}</span>
+      </a>
+    }
     <a routerLink="/Pengaturan" routerLinkActive="on">
       <mat-icon>settings</mat-icon>
       <span>{{ "mobile.nav.setelan" | translate }}</span>

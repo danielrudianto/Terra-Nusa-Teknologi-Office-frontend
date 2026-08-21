@@ -4721,7 +4721,10 @@
       "gelap": "深色",
       "ikutDevice": "跟随系统",
       "akun": "账户",
-      "keluar": "退出登录"
+      "keluar": "退出登录",
+      "notifikasi": "通知",
+      "notifNyala": "已在此设备开启通知。",
+      "notifMati": "已在此设备关闭通知。"
     }
   }
 }

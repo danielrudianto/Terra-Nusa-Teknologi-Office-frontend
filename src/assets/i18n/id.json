@@ -4721,7 +4721,10 @@
       "gelap": "Gelap",
       "ikutDevice": "Ikuti Perangkat",
       "akun": "Akun",
-      "keluar": "Keluar"
+      "keluar": "Keluar",
+      "notifikasi": "Notifikasi",
+      "notifNyala": "Notifikasi dinyalakan di perangkat ini.",
+      "notifMati": "Notifikasi dimatikan di perangkat ini."
     }
   }
 }

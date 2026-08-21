@@ -11,8 +11,6 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { AccountService } from '../../services/account.service';
 import { PermissionService } from '../../services/permission.service';
-import { PushService } from '../../services/push.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
  * Beranda mobile: berapa yang menunggu, dan jalan ke sana.
@@ -40,53 +38,17 @@ export class BerandaComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly akun = inject(AccountService);
   private readonly izin = inject(PermissionService);
-  private readonly push = inject(PushService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
-
-  /** Perangkat ini mendukung notifikasi push? */
-  get pushDidukung(): boolean {
-    return this.push.didukung();
-  }
-
-  /** Perangkat ini sedang berlangganan notifikasi? */
-  get pushAktif(): boolean {
-    return this.push.berlangganan();
-  }
-
-  get pushSedangProses(): boolean {
-    return this.push.sedangProses();
-  }
-
-  /**
-   * Nyalakan/matikan notifikasi di perangkat ini.
-   *
-   * Ditawarkan HANYA kepada yang berwenang memeriksa: merekalah yang perlu
-   * tahu begitu ada PO baru. Yang lain tidak diberi tombol yang tak berguna
-   * baginya.
-   */
-  async aktifkanNotif(): Promise<void> {
-    const galat = await this.push.aktifkan();
-    if (galat) {
-      this.snackBar.open(galat, 'Tutup', { duration: 6000 });
-    } else {
-      this.snackBar.open('Notifikasi dinyalakan di perangkat ini.', 'Tutup', {
-        duration: 3000,
-      });
-    }
-  }
-
-  async matikanNotif(): Promise<void> {
-    await this.push.matikan();
-    this.snackBar.open('Notifikasi dimatikan di perangkat ini.', 'Tutup', {
-      duration: 3000,
-    });
-  }
 
   jumlahPo = 0;
   jumlahReimbursement = 0;
   jumlahPeriksa = 0;
   sedangMemuat = false;
+
+  /** Boleh menyetujui reimbursement (mis. accounting / level berwenang). */
+  bisaReimbursement(): boolean {
+    return this.izin.can('reimbursement', 'approve');
+  }
 
   /**
    * Pengguna ini berwenang MEMERIKSA — cerminan `boleh_memeriksa` di server:
@@ -117,25 +79,38 @@ export class BerandaComponent implements OnInit {
    */
   get totalMenunggu(): number {
     const periksa = this.bolehMemeriksa() ? this.jumlahPeriksa : 0;
-    return this.jumlahPo + this.jumlahReimbursement + periksa;
+    const reim = this.bisaReimbursement() ? this.jumlahReimbursement : 0;
+    return this.jumlahPo + reim + periksa;
   }
 
   ngOnInit(): void {
     this.muat();
-    // Daftarkan service worker & segarkan status langganan — hanya menyiapkan,
-    // tidak meminta izin apa pun sampai pengguna menekan tombolnya.
-    if (this.bolehMemeriksa()) {
-      void this.push.init();
-    }
   }
 
   muat(): void {
     // Saat tarik-segarkan, indikator tarikannya yang berputar — hero tidak
     // perlu ikut berganti jadi spinner.
     if (!this.sedangSegar) this.sedangMemuat = true;
+    // Angka diambil dari `count` server (bukan menghitung larik satu halaman)
+    // — sama dengan penyaring di layar PO, sehingga beranda dan layarnya tidak
+    // pernah menyebut jumlah yang berbeda. page_size 1: kita hanya perlu
+    // angkanya, bukan datanya.
     forkJoin({
+      periksa: this.api
+        .get('purchase-orders', {
+          status: 'draft',
+          checked: false,
+          page: 1,
+          page_size: 1,
+        })
+        .pipe(catchError(() => of(null))),
       po: this.api
-        .get('purchase-orders', { status: 'pending', page: 1, page_size: 50 })
+        .get('purchase-orders', {
+          status: 'draft',
+          checked: true,
+          page: 1,
+          page_size: 1,
+        })
         .pipe(catchError(() => of(null))),
       reimbursement: this.api
         .get('reimbursements', {
@@ -148,20 +123,12 @@ export class BerandaComponent implements OnInit {
     })
       .subscribe({
         next: (res: any) => {
-          /*
-           * Yang belum diperiksa TIDAK dihitung.
-           *
-           * Sama dengan saringan di layar persetujuannya: dokumen yang belum
-           * diperiksa memang belum dapat disetujui, dan menghitungnya membuat
-           * beranda menjanjikan pekerjaan yang tidak ada di layar berikutnya.
-           */
-          const po = res?.po?.data ?? res?.po?.items ?? [];
-          this.jumlahPo = po.filter((x: any) => !!x?.isChecked).length;
-          // Menunggu DIPERIKSA: kebalikan saringannya — yang belum diperiksa.
-          this.jumlahPeriksa = po.filter((x: any) => !x?.isChecked).length;
+          this.jumlahPeriksa = Number(res?.periksa?.count) || 0;
+          this.jumlahPo = Number(res?.po?.count) || 0;
 
           const rb = res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
-          this.jumlahReimbursement = rb.length;
+          this.jumlahReimbursement =
+            Number(res?.reimbursement?.count) || rb.length || 0;
         },
         error: () => {},
       })
