@@ -632,8 +632,9 @@ export class PurchaseOrderCreateCComponent {
       templateVersion: this.templateVersion,
       // fuel tax columns
       pbbkb: this.pbbkbAmount,
-      // PPh22 BBM disimpan sebagai otherValue (penambah), sesuai pola data purchases
-      otherValue: this.pph22Amount > 0 ? this.pph22Amount : null,
+      // PPh22 BBM disimpan sebagai otherValue (penambah), sesuai pola data purchases.
+      // Nol saat tidak ada — bukan null; `otherValue` di server bertipe angka.
+      otherValue: this.pph22Amount > 0 ? this.pph22Amount : 0,
       // Nilainya mengikuti daftar bersama `jenis-nilai-lain.ts` — huruf
       // kecil. Untai 'PPH22' tidak cocok dengan pilihan mana pun, sehingga
       // layar yang menampilkannya jatuh ke pilihan kosong.
