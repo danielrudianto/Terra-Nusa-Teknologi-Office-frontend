@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -481,6 +482,7 @@ export class PurchaseOrderCreate63Component {
       task: [''],
       item_id: [item.id, Validators.required],
       sku: [item.sku],
+      brand: [item.brand ?? ''],
       description: [item.description],
       quantity: [1, volumeValidators(this.isAdendum)],
       unit: [item.unit || 'pcs', Validators.required],
@@ -728,7 +730,12 @@ export class PurchaseOrderCreate63Component {
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
         return {
-          name: this.isGoods ? x.description || x.name : x.task,
+          name: this.isGoods
+            ? namaBarangCetak(
+                { item_id: x.item_id, sku: x.sku, brand: x.brand },
+                x.description || x.name,
+              ) || x.sku || ''
+            : x.task,
           remarks: x.note,
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,

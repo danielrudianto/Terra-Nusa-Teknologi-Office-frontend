@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { CanDirective } from '../../../directives/can.directive';
 import { konteksKlausulTenagaKerja } from '../../../helpers/klausul-tenaga-kerja.helper';
 import { namaPemasokBaris } from '../../../helpers/purchase-order-shared.helper';
+import { namaBarangCetak } from '../../../helpers/purchase-order-shared.helper';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -721,7 +722,16 @@ export class PurchaseOrderListComponent {
             // (item_description); `task` dipakai PO jasa/tenaga kerja.
             // item_description = barang katalog, equipment_name = alat
             // sewa (PO B), task = PO jasa/tenaga kerja.
+            //
+            // Barang katalog (punya item_id) dicetak `[SKU] - Deskripsi Ex.
+            // Merek` dengan `[SKU]` tebal; bila join master gagal (barang
+            // dihapus) hasilnya kosong dan jatuh ke rantai lama di bawah.
             name:
+              (it.item_id &&
+                namaBarangCetak(
+                  { item_id: it.item_id, sku: it.sku, brand: it.brand },
+                  it.item_description,
+                )) ||
               it.item_description ||
               it.equipment_name ||
               it.task ||
@@ -966,7 +976,13 @@ export class PurchaseOrderListComponent {
             poType: data.purchaseType,
             items: (data.items || []).map((it: any) => ({
               name: barang
-                ? it.item_description || it.sku || ''
+                ? namaBarangCetak(
+                    { item_id: it.item_id, sku: it.sku, brand: it.brand },
+                    it.item_description,
+                  ) ||
+                  it.item_description ||
+                  it.sku ||
+                  ''
                 : it.task || '',
               remarks: it.remarks_1 || '',
               quantity: Number(it.quantity) || 0,
@@ -1248,7 +1264,13 @@ export class PurchaseOrderListComponent {
             items: (data.items || []).map((it: any) => ({
               name: jasa
                 ? it.task || ''
-                : it.item_description || it.sku || '',
+                : namaBarangCetak(
+                    { item_id: it.item_id, sku: it.sku, brand: it.brand },
+                    it.item_description,
+                  ) ||
+                  it.item_description ||
+                  it.sku ||
+                  '',
               // remarks_2 = aset yang dirawat, remarks_1 = catatan baris.
               remarks: [it.remarks_2, it.remarks_1]
                 .filter(Boolean)

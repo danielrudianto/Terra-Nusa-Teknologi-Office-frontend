@@ -746,3 +746,39 @@ export function namaProyekCetak(kode?: string | null): string {
   if (!k) return '';
   return _namaProyek.get(k.toUpperCase()) || k;
 }
+
+/**
+ * Nama barang sebagaimana DICETAK: `[SKU] - Deskripsi Ex. Merek`.
+ *
+ * Hanya `[SKU]` yang ditebalkan; deskripsi dan mereknya biasa. Contoh:
+ * `[012] - Industrial plug 2 Pole + E 16A 250V IP44; biru Ex. Fortress`.
+ *
+ * Hanya barang katalog — yang punya `item_id` — diberi awalan SKU dan merek.
+ * Baris jasa/alat (tanpa `item_id`) dikembalikan apa adanya, sebab tidak
+ * punya SKU maupun merek yang berarti. Bagian yang kosong dilewati: tanpa
+ * deskripsi tidak ada tanda hubung menggantung, tanpa merek tidak ada "Ex."
+ * kosong.
+ *
+ * Nilai baliknya bisa berupa untai biasa ATAU susunan rich-text pdfmake
+ * (`[{ text, bold }, ...]`) — sel tabel `{ text: item.name }` menerima
+ * keduanya, sehingga `[SKU]` dapat ditebalkan tanpa mengubah pemanggilnya.
+ */
+export function namaBarangCetak(item: any, deskripsi?: string | null): any {
+  const punyaItemId =
+    item?.item_id !== null &&
+    item?.item_id !== undefined &&
+    item?.item_id !== '';
+  const sku = String(item?.sku ?? '').trim();
+  const merek = String(item?.brand ?? '').trim();
+  const d = String(deskripsi ?? item?.description ?? '').trim();
+
+  // Barang non-katalog (tanpa item_id) atau tanpa SKU: apa adanya.
+  if (!punyaItemId || !sku) return d;
+
+  let ekor = '';
+  if (d) ekor += ` - ${d}`;
+  if (merek) ekor += ` Ex. ${merek}`;
+  return ekor
+    ? [{ text: `[${sku}]`, bold: true }, ekor]
+    : { text: `[${sku}]`, bold: true };
+}

@@ -25,6 +25,8 @@ export interface BarisDokumen {
   item_description?: string | null;
   equipment_name?: string | null;
   sku?: string | null;
+  /** Merek dari master barang; server melabelinya `brand`. */
+  brand?: string | null;
   equipment_id?: number | null;
   fleet_id?: number | null;
   task?: string | null;
@@ -79,11 +81,14 @@ const dasar = (x: BarisDokumen, isUbah: boolean) => ({
   quantity: volume(x, isUbah),
   unit: x.unit ?? '',
   price: Number(x.price) || 0,
-  // Disertakan pada SETIAP varian: yang punya isian `description` atau
-  // `sku` akan terisi, yang tidak punya mengabaikannya — `patchValue`
+  // Disertakan pada SETIAP varian: yang punya isian `description`, `sku`,
+  // atau `brand` akan terisi, yang tidak punya mengabaikannya — `patchValue`
   // melewati kunci yang tidak ada di formulirnya.
   description: namaBarang(x),
   sku: x.sku ?? '',
+  // Merek katalog, dipakai cetak "Ex. <merek>"; ikut dibalikkan agar cetak
+  // ulang dokumen yang disunting tetap menampilkannya.
+  brand: x.brand ?? '',
 });
 
 /**

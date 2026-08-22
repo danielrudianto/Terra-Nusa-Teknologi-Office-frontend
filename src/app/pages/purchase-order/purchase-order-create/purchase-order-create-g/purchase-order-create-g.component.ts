@@ -44,6 +44,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { printPurchaseOrderG } from '../../../../helpers/purchase-order-g.helper';
+import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
 import { ProjectSelectorComponent } from '../../../../components/project-selector/project-selector.component';
 import { tanggalLokal } from '../../../../utils/tanggal';
 import { firstValueFrom } from 'rxjs';
@@ -498,6 +499,7 @@ export class PurchaseOrderCreateGComponent implements OnInit {
     return this.formBuilder.group({
       item_id: [item.id, Validators.required],
       sku: [item.sku],
+      brand: [item.brand ?? ''],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
       /*
@@ -739,7 +741,11 @@ export class PurchaseOrderCreateGComponent implements OnInit {
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
         return {
-          name: x.description || x.sku || '',
+          name:
+            namaBarangCetak(
+              { item_id: x.item_id, sku: x.sku, brand: x.brand },
+              x.description,
+            ) || x.sku || '',
           quantity: Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,

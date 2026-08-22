@@ -5,6 +5,7 @@ import {
   nilaiHitung,
   pembulatanSah,
 } from '../../../../helpers/nilai-baris.helper';
+import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
@@ -518,6 +519,7 @@ export class PurchaseOrderCreate512Component implements OnInit {
     return this.formBuilder.group({
       item_id: [item.id, Validators.required],
       sku: [item.sku],
+      brand: [item.brand ?? ''],
       description: [item.description],
       asset: [''], // aset tujuan sparepart -> remarks_2
       quantity: [1, volumeValidators(this.isAdendum)],
@@ -846,7 +848,12 @@ export class PurchaseOrderCreate512Component implements OnInit {
         const x = c.getRawValue();
         return {
           // Barang memakai deskripsi katalog; jasa memakai uraian pekerjaan.
-          name: this.isGoods ? x.description : x.task,
+          name: this.isGoods
+            ? namaBarangCetak(
+                { item_id: x.item_id, sku: x.sku, brand: x.brand },
+                x.description,
+              ) || x.sku || ''
+            : x.task,
           // Aset yang dirawat ikut dicetak agar dokumen bisa ditelusuri ke
           // alat mana; tanpa ini satu-satunya penanda hanya nomor PO.
           remarks: [x.asset, x.note].filter(Boolean).join(' — '),

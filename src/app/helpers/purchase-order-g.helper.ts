@@ -30,7 +30,7 @@ import {
 // virtual file system. Konfigurasinya dikirim langsung ke createPdf().
 
 export interface IPurchaseOrderGItem {
-  name: string;
+  name: any; // untai biasa atau rich-text pdfmake ([SKU] tebal)
   /** Catatan per baris; dicetak kecil di bawah nama barang. */
   remarks?: string; // nama pekerjaan / barang
   quantity: number;

@@ -5,6 +5,7 @@ import {
   nilaiHitung,
   pembulatanSah,
 } from '../../../../helpers/nilai-baris.helper';
+import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject, OnInit } from '@angular/core';
@@ -448,6 +449,7 @@ export class PurchaseOrderCreate511Component implements OnInit {
     return this.formBuilder.group({
       item_id: [item.id, Validators.required],
       sku: [item.sku],
+      brand: [item.brand ?? ''],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
       /*
@@ -731,7 +733,11 @@ export class PurchaseOrderCreate511Component implements OnInit {
       items: this.t.controls.map((c) => {
         const x = c.getRawValue();
         return {
-          name: x.description || x.sku || '',
+          name:
+            namaBarangCetak(
+              { item_id: x.item_id, sku: x.sku, brand: x.brand },
+              x.description,
+            ) || x.sku || '',
           quantity: x.unit === 'LS' ? 1 : Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,

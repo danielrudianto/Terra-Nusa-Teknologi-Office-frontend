@@ -26,7 +26,7 @@ import {
 } from './purchase-order-shared.helper';
 
 export interface IPurchaseOrderCItem {
-  name: string;
+  name: any; // untai biasa atau rich-text pdfmake ([SKU] tebal)
   /** Catatan per baris; dicetak kecil di bawah nama barang. */
   remarks?: string;
   quantity: number;

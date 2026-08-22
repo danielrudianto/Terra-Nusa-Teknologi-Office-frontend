@@ -1,4 +1,5 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import {
   TOLERANSI_PEMBULATAN,
@@ -782,6 +783,7 @@ export class PurchaseOrderCreateFComponent {
     return this.formBuilder.group({
       item_id: [item.id, Validators.required],
       sku: [item.sku],
+      brand: [item.brand ?? ''],
       description: [item.description],
       unit: [item.unit || '', Validators.required],
       /*
@@ -1196,7 +1198,11 @@ export class PurchaseOrderCreateFComponent {
         : this.t.controls.map((c) => {
             const x = c.getRawValue();
             return {
-              name: x.description || x.sku || '',
+              name:
+            namaBarangCetak(
+              { item_id: x.item_id, sku: x.sku, brand: x.brand },
+              x.description,
+            ) || x.sku || '',
               quantity: Number(x.quantity) || 0,
               unit: x.unit,
               price: Number(x.price) || 0,
