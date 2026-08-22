@@ -241,6 +241,31 @@
                     placeholder="0"
                   />
                 </mat-form-field>
+                <!--
+                  Jumlah baris yang DITULIS (opsional).
+                  Kosong berarti dihitung biasa (volume × harga). Ada karena
+                  harga satuan tersimpan empat desimal dan sebagian pembelian
+                  tidak pernah bulat pada ketelitian itu — isian ini membetulkan
+                  pembulatannya, dalam batas toleransi.
+                -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "poForm.jumlahBaris" | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="amount"
+                    thousandSeparator=" "
+                    mask="separator.2"
+                    [placeholder]="(hitungBaris(i) | number: '1.0-2') ?? ''"
+                  />
+                  <span matPrefix>Rp&nbsp;</span>
+                  @if (jumlahMenyimpang(i)) {
+                    <mat-error>{{
+                      "poForm.jumlahMenyimpang" | translate: { batas: TOLERANSI }
+                    }}</mat-error>
+                  } @else {
+                    <mat-hint>{{ "poForm.jumlahBarisKet" | translate }}</mat-hint>
+                  }
+                </mat-form-field>
                 <mat-form-field appearance="outline" class="poc-itemremarks">
                   <mat-label>{{ "poForm.remarks" | translate }}</mat-label>
                   <input

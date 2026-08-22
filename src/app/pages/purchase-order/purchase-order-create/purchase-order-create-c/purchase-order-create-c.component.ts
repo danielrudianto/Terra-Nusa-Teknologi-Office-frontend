@@ -1,5 +1,12 @@
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { namaBarangCetak } from '../../../../helpers/purchase-order-shared.helper';
+import {
+  TOLERANSI_PEMBULATAN,
+  jumlahBaris,
+  nilaiBaris,
+  nilaiHitung,
+  pembulatanSah,
+} from '../../../../helpers/nilai-baris.helper';
 import { volumeValidators } from '../../../../helpers/volume-adendum.helper';
 import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -421,6 +428,16 @@ export class PurchaseOrderCreateCComponent {
       unitMaster: [item.unit || ''],
       quantity: [1, volumeValidators(this.isAdendum)],
       price: [0, [Validators.required, Validators.min(0)]],
+      /*
+       * Jumlah baris yang DITULIS; kosong berarti dihitung biasa.
+       *
+       * Harga satuan tersimpan empat desimal, dan sebagian pembelian tidak
+       * pernah bulat pada ketelitian itu: 7.000 liter seharga Rp 300.000
+       * berarti Rp 42,857142… per liter, dan yang tersimpan 42,8571 —
+       * dokumennya tercetak Rp 299.999,70. Isian ini membetulkan pembulatan
+       * itu, dalam batas toleransi.
+       */
+      amount: [null as number | null],
       remarks: [''],
     });
   }
@@ -450,12 +467,15 @@ export class PurchaseOrderCreateCComponent {
   }
 
   // ----- live summary (read-only, safe getters) -----
+  /**
+   * Total dokumen — lewat `jumlahBaris()`, memakai jumlah tertulis bila ada.
+   *
+   * Dulu dijumlah sebagai `price * quantity` sendiri; itu membatalkan guna
+   * jumlah tertulis — barisnya menampilkan Rp 300.000 sesuai yang diketik,
+   * sementara totalnya menjumlahkan Rp 299.999,70. Sekarang keduanya searah.
+   */
   get rawTotal(): number {
-    return this.t.value.reduce(
-      (acc: number, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+    return jumlahBaris(this.t.getRawValue());
   }
 
   get subTotal(): number {
@@ -485,10 +505,31 @@ export class PurchaseOrderCreateCComponent {
   }
 
   get lineTotal(): (i: number) => number {
-    return (i: number) => {
-      const g = this.getFormGroupAt(i).value;
-      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
-    };
+    return (i: number) => nilaiBaris(this.getFormGroupAt(i).getRawValue());
+  }
+
+  readonly TOLERANSI = TOLERANSI_PEMBULATAN;
+
+  /** Volume kali harga, tanpa pembetulan — dipakai sebagai pembanding/placeholder. */
+  hitungBaris(i: number): number {
+    return nilaiHitung(this.getFormGroupAt(i).getRawValue());
+  }
+
+  /**
+   * Jumlah yang ditulis menyimpang terlalu jauh dari volume kali harga.
+   *
+   * Di luar batas ini yang salah bukan pembulatannya melainkan harga
+   * satuannya — dokumen tidak boleh terbit dengan angka yang tak bisa
+   * dicocokkan dengan perkaliannya.
+   */
+  jumlahMenyimpang(i: number): boolean {
+    const v = this.getFormGroupAt(i).getRawValue();
+    return !pembulatanSah(v.amount, v);
+  }
+
+  /** Ada baris yang jumlah tertulisnya menyimpang; dokumen belum boleh terbit. */
+  get adaJumlahMenyimpang(): boolean {
+    return this.t.controls.some((_c, i) => this.jumlahMenyimpang(i));
   }
 
   openSupplierSelector() {
@@ -657,6 +698,8 @@ export class PurchaseOrderCreateCComponent {
           quantity: x.unit === 'LS' ? 1 : x.quantity,
           price: x.price,
           unit: x.unit,
+          // Jumlah yang DITULIS (koreksi pembulatan); kosong = dihitung biasa.
+          amount: x.amount ?? null,
           remarks_1: x.remarks,
           // SKU tidak disalin ke sini: sudah tersimpan di master_item
           // dan ikut terbaca lewat item_id saat PO dibuka kembali.
@@ -727,6 +770,9 @@ export class PurchaseOrderCreateCComponent {
           quantity: Number(x.quantity) || 0,
           unit: x.unit,
           price: Number(x.price) || 0,
+          // Jumlah tertulis (koreksi pembulatan); helper cetak memakainya
+          // lewat `nilaiBaris` bila ada, null = dihitung biasa.
+          amount: x.amount ?? null,
           // Catatan per baris ikut dicetak di bawah nama barang.
           remarks: x.remarks,
         };
@@ -835,6 +881,26 @@ export class PurchaseOrderCreateCComponent {
    * SPK mengikat kedua pihak dan tidak dapat diubah setelah terbit.
    */
   async onSubmit(): Promise<void> {
+    /*
+     * Jumlah yang menyimpang dihentikan DI SINI.
+     *
+     * Server membuang jumlah tertulis yang di luar batas tanpa menolak
+     * dokumennya — barisnya diam-diam kembali ke volume kali harga. Tanpa
+     * penjagaan ini, yang mengetik nilai di luar toleransi menyimpan dengan
+     * lega, tidak diberi tahu apa pun, dan baru tahu dari lembar di tangan
+     * vendor.
+     */
+    if (this.adaJumlahMenyimpang) {
+      this.snackBar.open(
+        this.translate.instant('poForm.jumlahMenyimpangCegah', {
+          batas: TOLERANSI_PEMBULATAN,
+        }),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
     const setuju = await firstValueFrom(
       this.dialog
         .open(PurchaseOrderViewComponent, {

@@ -137,7 +137,12 @@ export const BALIK_BARIS: Record<
     remarks: x.remarks_1 ?? '',
     amount: x.amount ?? null,
   }),
-  c: (x, u) => ({ ...dasar(x, u), item_id: x.item_id, remarks: x.remarks_1 ?? '' }),
+  c: (x, u) => ({
+    ...dasar(x, u),
+    item_id: x.item_id,
+    amount: x.amount ?? null,
+    remarks: x.remarks_1 ?? '',
+  }),
   g: (x, u) => ({
     ...dasar(x, u),
     item_id: x.item_id,
