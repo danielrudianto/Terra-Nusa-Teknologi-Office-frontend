@@ -88,6 +88,16 @@ export class KerangkaComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Tab CoP hanya untuk yang BERWENANG menyetujuinya
+   * (`certificate_of_payment:approve`). Sama seperti reimbursement, tabnya
+   * tidak ditawarkan sama sekali kepada yang tidak berwenang — bukan sekadar
+   * dinonaktifkan — supaya tidak tertekan tak sengaja.
+   */
+  get bisaCop(): boolean {
+    return this.izin.can('certificate_of_payment', 'approve');
+  }
+
+  /**
    * Keluar: token dibuang, lalu halaman dimuat ULANG.
    *
    * Bukan sekadar berpindah rute. Layanan izin menyimpan level dan divisi

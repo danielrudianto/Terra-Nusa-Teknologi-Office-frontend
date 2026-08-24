@@ -1,0 +1,153 @@
+.cop-create {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cop-kartu {
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+
+  &__judul {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+.cop-pilih {
+  width: 100%;
+  max-width: 620px;
+}
+
+.cop-pemasok {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.cop-spk-terkunci {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.5;
+  }
+}
+
+.cop-baris-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+}
+
+.cop-petunjuk {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/*
+  Tabel pagu bisa lebih lebar dari layar — terutama pada level yang melihat
+  kolom harga. Digulirkan di dalam wadahnya sendiri supaya halamannya tidak
+  ikut bergeser ke samping.
+*/
+.cop-tabel-bungkus {
+  overflow-x: auto;
+}
+
+.cop-tabel {
+  width: 100%;
+  min-width: 720px;
+}
+
+.cop-angka {
+  text-align: right;
+}
+
+.cop-ket {
+  display: block;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.cop-sisa {
+  font-weight: 600;
+
+  &--habis {
+    opacity: 0.45;
+  }
+}
+
+.cop-input {
+  width: 110px;
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  text-align: right;
+  font: inherit;
+
+  &:focus {
+    outline: 2px solid var(--mat-sys-primary, #3f6ad8);
+    outline-offset: -1px;
+  }
+
+  &:disabled {
+    background: rgba(0, 0, 0, 0.04);
+    cursor: not-allowed;
+  }
+
+  &--teks {
+    width: 180px;
+    text-align: left;
+  }
+
+  &--salah {
+    border-color: #d32f2f;
+  }
+}
+
+.cop-salah {
+  display: block;
+  margin-top: 4px;
+  color: #d32f2f;
+  font-size: 12px;
+
+  &--blok {
+    margin-top: 12px;
+    font-size: 13px;
+  }
+}
+
+.cop-total {
+  margin: 16px 0 0;
+  text-align: right;
+  font-size: 15px;
+}
+
+.cop-catatan {
+  width: 100%;
+}
+
+.cop-aksi {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cop-kosong {
+  margin: 8px 0 0;
+  opacity: 0.6;
+  font-size: 14px;
+}

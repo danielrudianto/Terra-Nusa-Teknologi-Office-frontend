@@ -202,7 +202,8 @@
     "hrd": "HRD",
     "hrCandidate": "Pelamar",
     "hrQuestion": "Bank Soal",
-    "tender": "Tender"
+    "tender": "Tender",
+    "certificateOfPayment": "Certificate of Payment"
   },
   "status": {
     "paid": "Lunas",
@@ -4662,7 +4663,8 @@
       "reimbursement": "Reimbursement",
       "pembelian": "Pembelian",
       "proyek": "Proyek",
-      "setelan": "Pengaturan"
+      "setelan": "Pengaturan",
+      "cop": "CoP"
     },
     "beranda": {
       "judul": "Yang menunggu keputusan",
@@ -4772,7 +4774,15 @@
       "aplikasi": "Aplikasi"
     },
     "disalin": "Disalin",
-    "salin": "Salin"
+    "salin": "Salin",
+    "cop": {
+      "judul": "Persetujuan CoP",
+      "sub": "Certificate of payment yang menunggu persetujuan Anda",
+      "cariPlaceholder": "Cari nomor, proyek, atau SPK",
+      "kosong": "Tidak ada CoP yang menunggu persetujuan.",
+      "sudahDiperiksa": "Sudah diperiksa",
+      "sudahBaca": "Saya sudah membaca rincian volume di atas"
+    }
   },
   "purchaseMeta": {
     "title": "Ubah Pembelian",
@@ -4814,5 +4824,62 @@
   "poItem": {
     "dari": "Dari",
     "ke": "Ke"
+  },
+  "cop": {
+    "judul": "Certificate of Payment",
+    "subjudul": "Berita acara progres pekerjaan atas SPK",
+    "judulBuat": "Buat Certificate of Payment",
+    "judulUbah": "Ubah Certificate of Payment",
+    "judulLihat": "Certificate of Payment",
+    "subjudulBuat": "Isi volume pekerjaan yang terlaksana pada periode ini",
+    "subjudulLihat": "Rincian progres dan tahap persetujuannya",
+    "kembaliDaftar": "Kembali ke daftar",
+    "buatBaru": "Buat CoP",
+    "belumAda": "Belum ada certificate of payment.",
+    "langkahSpk": "1. Pilih SPK",
+    "langkahPeriode": "2. Periode pekerjaan",
+    "langkahVolume": "3. Volume terlaksana",
+    "spk": "SPK",
+    "spkHanyaSpk": "Hanya surat perintah kerja yang sudah disetujui yang dapat dipilih.",
+    "tidakAdaSpk": "Belum ada SPK yang dapat dijadikan dasar CoP.",
+    "spkTanpaBaris": "SPK ini tidak memiliki baris pekerjaan.",
+    "proyek": "Proyek",
+    "nomor": "Nomor",
+    "tanggal": "Tanggal",
+    "periode": "Periode",
+    "periodeAwal": "Periode awal",
+    "periodeAkhir": "Periode akhir",
+    "pekerjaan": "Pekerjaan",
+    "satuan": "Satuan",
+    "pagu": "Volume SPK",
+    "terpakai": "Sudah dipakai",
+    "sisa": "Sisa",
+    "volume": "Volume",
+    "harga": "Harga satuan",
+    "jumlah": "Jumlah",
+    "nilai": "Nilai",
+    "total": "Total",
+    "dariPagu": "dari",
+    "catatan": "Catatan",
+    "catatanBaris": "Keterangan",
+    "keadaan": "Keadaan",
+    "keadaan_draft": "Draf",
+    "keadaan_diperiksa": "Diperiksa",
+    "keadaan_disetujui": "Disetujui",
+    "pembuat": "Dibuat oleh",
+    "dibuat": "Dibuat",
+    "diperiksa": "Diperiksa",
+    "disetujui": "Disetujui",
+    "belum": "Belum",
+    "periksa": "Tandai diperiksa",
+    "cabutPeriksa": "Cabut pemeriksaan",
+    "setujui": "Setujui",
+    "sudahDisetujui": "Sudah disetujui",
+    "tersimpan": "Certificate of payment tersimpan.",
+    "isiMinimalSatu": "Isi volume minimal satu baris pekerjaan.",
+    "melebihiSisa": "Melebihi sisa",
+    "adaYangMelebihi": "Ada volume yang melebihi sisa SPK. Bila volumenya memang bertambah, SPK harus diadendum lebih dahulu.",
+    "petunjukVolume": "Isi hanya baris yang dikerjakan pada periode ini. Sisa menunjukkan berapa yang masih boleh disertifikasi.",
+    "tersetujui": "Certificate of payment disetujui."
   }
 }

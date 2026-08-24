@@ -43,6 +43,12 @@
       <mat-icon>fact_check</mat-icon>
       <span>{{ "mobile.nav.po" | translate }}</span>
     </a>
+    @if (bisaCop) {
+      <a routerLink="/Certificate-of-payment" routerLinkActive="on">
+        <mat-icon>verified</mat-icon>
+        <span>{{ "mobile.nav.cop" | translate }}</span>
+      </a>
+    }
     @if (bisaReimbursement) {
       <a routerLink="/Reimbursement" routerLinkActive="on">
         <mat-icon>receipt_long</mat-icon>

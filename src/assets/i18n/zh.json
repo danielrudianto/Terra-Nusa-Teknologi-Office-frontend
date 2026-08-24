@@ -202,7 +202,8 @@
     "hrd": "人力资源",
     "hrCandidate": "应聘者",
     "hrQuestion": "题库",
-    "tender": "招标"
+    "tender": "招标",
+    "certificateOfPayment": "付款证书"
   },
   "status": {
     "paid": "已付款",
@@ -4662,7 +4663,8 @@
       "reimbursement": "报销",
       "pembelian": "采购",
       "proyek": "项目",
-      "setelan": "设置"
+      "setelan": "设置",
+      "cop": "证书"
     },
     "beranda": {
       "judul": "等待您决定",
@@ -4772,7 +4774,15 @@
       "aplikasi": "应用"
     },
     "disalin": "已复制",
-    "salin": "复制"
+    "salin": "复制",
+    "cop": {
+      "judul": "付款证书审批",
+      "sub": "等待您审批的付款证书",
+      "cariPlaceholder": "搜索编号、项目或工作指令",
+      "kosong": "没有待审批的付款证书。",
+      "sudahDiperiksa": "已检查",
+      "sudahBaca": "我已阅读上述工程量明细"
+    }
   },
   "purchaseMeta": {
     "title": "更新采购",
@@ -4814,5 +4824,62 @@
   "poItem": {
     "dari": "从",
     "ke": "至"
+  },
+  "cop": {
+    "judul": "付款证书",
+    "subjudul": "基于工作指令的工程进度证明",
+    "judulBuat": "创建付款证书",
+    "judulUbah": "编辑付款证书",
+    "judulLihat": "付款证书",
+    "subjudulBuat": "填写本期已完成的工程量",
+    "subjudulLihat": "进度明细与审批阶段",
+    "kembaliDaftar": "返回列表",
+    "buatBaru": "创建付款证书",
+    "belumAda": "暂无付款证书。",
+    "langkahSpk": "1. 选择工作指令",
+    "langkahPeriode": "2. 工作周期",
+    "langkahVolume": "3. 完成工程量",
+    "spk": "工作指令",
+    "spkHanyaSpk": "只能选择已批准的工作指令。",
+    "tidakAdaSpk": "暂无可用于付款证书的工作指令。",
+    "spkTanpaBaris": "该工作指令没有明细行。",
+    "proyek": "项目",
+    "nomor": "编号",
+    "tanggal": "日期",
+    "periode": "周期",
+    "periodeAwal": "起始日期",
+    "periodeAkhir": "结束日期",
+    "pekerjaan": "工作项",
+    "satuan": "单位",
+    "pagu": "合同工程量",
+    "terpakai": "已使用",
+    "sisa": "剩余",
+    "volume": "工程量",
+    "harga": "单价",
+    "jumlah": "金额",
+    "nilai": "价值",
+    "total": "合计",
+    "dariPagu": "共",
+    "catatan": "备注",
+    "catatanBaris": "说明",
+    "keadaan": "状态",
+    "keadaan_draft": "草稿",
+    "keadaan_diperiksa": "已检查",
+    "keadaan_disetujui": "已批准",
+    "pembuat": "创建人",
+    "dibuat": "创建",
+    "diperiksa": "检查",
+    "disetujui": "批准",
+    "belum": "待处理",
+    "periksa": "标记为已检查",
+    "cabutPeriksa": "撤销检查",
+    "setujui": "批准",
+    "sudahDisetujui": "已批准",
+    "tersimpan": "付款证书已保存。",
+    "isiMinimalSatu": "请至少填写一项工程量。",
+    "melebihiSisa": "超出剩余量",
+    "adaYangMelebihi": "部分工程量超出工作指令剩余量。若工程量确有增加，须先办理工作指令补充协议。",
+    "petunjukVolume": "仅填写本期施工的项目。剩余列显示还可证明的数量。",
+    "tersetujui": "付款证书已批准。"
   }
 }

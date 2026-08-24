@@ -1,0 +1,175 @@
+<h1 class="mcp-judul">{{ "mobile.cop.judul" | translate }}</h1>
+<p class="mcp-sub">{{ "mobile.cop.sub" | translate }}</p>
+
+<div
+  class="pod"
+  appTarikSegarkan
+  [sedangSegar]="sedangSegar"
+  (segarkan)="segarkan()"
+  appScrollBawah
+  [mati]="habis || sedangMuatLagi || sedangMemuat"
+  (dekatBawah)="muatLagi()"
+>
+  <div class="pod-cari">
+    <mat-icon>search</mat-icon>
+    <input
+      [formControl]="cariCtrl"
+      type="search"
+      inputmode="search"
+      autocapitalize="none"
+      autocorrect="off"
+      spellcheck="false"
+      (input)="cari()"
+      [placeholder]="'mobile.cop.cariPlaceholder' | translate"
+    />
+    @if (cariCtrl.value) {
+      <button
+        type="button"
+        class="pod-cari__hapus"
+        (click)="cariCtrl.setValue(''); cari()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (sedangMemuat) {
+    <div class="mcp-muat"><mat-spinner diameter="32" /></div>
+  } @else if (!daftar.length) {
+    <div class="mcp-kosong">
+      <mat-icon>task_alt</mat-icon>
+      <div>{{ "mobile.cop.kosong" | translate }}</div>
+    </div>
+  } @else {
+    @for (c of daftar; track c.id) {
+      <button type="button" class="mcp-kartu" (click)="buka(c)">
+        <div class="mcp-baris1">
+          <span class="mcp-nomor">{{ c.name }}</span>
+          <span class="mcp-tanggal">{{ c.date | date: "d MMM y" }}</span>
+        </div>
+        <div class="mcp-baris2">
+          <span class="mcp-proyek">{{ c.projectName }}</span>
+        </div>
+        <div class="mcp-baris3">
+          <mat-icon>description</mat-icon>
+          <span>{{ c.purchaseOrderName || "—" }}</span>
+        </div>
+        <div class="mcp-baris4">
+          <span class="mcp-pil">
+            <mat-icon>fact_check</mat-icon>
+            {{ "mobile.cop.sudahDiperiksa" | translate }}
+            @if (c.checkedByName) {
+              · {{ c.checkedByName }}
+            }
+          </span>
+        </div>
+      </button>
+    }
+
+    @if (sedangMuatLagi) {
+      <div class="pod-kaki"><mat-spinner diameter="24" /></div>
+    }
+  }
+</div>
+
+<!-- ===== Rincian & persetujuan ===== -->
+@if (dipilih) {
+  <div class="mcp-tirai" (click)="tutup()"></div>
+  <section class="mcp-lembar" appGeserTutup (tutup)="tutup()">
+    <div class="mcp-pegangan"></div>
+
+    @if (memuatRincian) {
+      <div class="mcp-muat"><mat-spinner diameter="32" /></div>
+    } @else {
+      <h2 class="mcp-lembar__judul">{{ dipilih.name }}</h2>
+      <p class="mcp-lembar__sub">
+        {{ dipilih.projectName }} · {{ dipilih.purchaseOrderName }}
+      </p>
+
+      <dl class="mcp-info">
+        <div>
+          <dt>{{ "cop.tanggal" | translate }}</dt>
+          <dd>{{ dipilih.date | date: "d MMM y" }}</dd>
+        </div>
+        @if (dipilih.periodStart) {
+          <div>
+            <dt>{{ "cop.periode" | translate }}</dt>
+            <dd>
+              {{ dipilih.periodStart | date: "d MMM" }} –
+              {{ dipilih.periodEnd | date: "d MMM" }}
+            </dd>
+          </div>
+        }
+        <div>
+          <dt>{{ "cop.dibuat" | translate }}</dt>
+          <dd>{{ dipilih.createdByName || "—" }}</dd>
+        </div>
+        <div>
+          <dt>{{ "cop.diperiksa" | translate }}</dt>
+          <dd>{{ dipilih.checkedByName || "—" }}</dd>
+        </div>
+      </dl>
+
+      <!--
+        Baris pekerjaan ditampilkan LENGKAP, bukan diringkas jadi total saja:
+        yang menyetujui perlu melihat pekerjaan apa dan berapa volumenya.
+      -->
+      <ul class="mcp-item">
+        @for (i of dipilih.items || []; track i.id) {
+          <li>
+            <div class="mcp-item__nama">{{ i.task || "—" }}</div>
+            <div class="mcp-item__angka">
+              <span class="mcp-item__vol">
+                {{ i.quantity | number: "1.0-2" }} {{ i.unit }}
+                @if (i.paguBaris) {
+                  <em>{{ "cop.dariPagu" | translate }} {{ i.paguBaris | number: "1.0-2" }}</em>
+                }
+              </span>
+              @if (bolehLihatNilai && i.amount !== undefined) {
+                <span class="mcp-item__nilai">{{ i.amount | number: "1.0-0" }}</span>
+              }
+            </div>
+            @if (i.remarks) {
+              <div class="mcp-item__ket">{{ i.remarks }}</div>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (bolehLihatNilai && total(dipilih) !== null) {
+        <p class="mcp-total">
+          {{ "cop.total" | translate }}
+          <strong>{{ total(dipilih) | number: "1.0-0" }}</strong>
+        </p>
+      }
+
+      @if (dipilih.note) {
+        <p class="mcp-catatan">{{ dipilih.note }}</p>
+      }
+
+      <label class="mcp-baca">
+        <input
+          type="checkbox"
+          [checked]="sudahBaca"
+          (change)="tandaiBaca($any($event.target).checked)"
+        />
+        <span>{{ "mobile.cop.sudahBaca" | translate }}</span>
+      </label>
+
+      <div class="mcp-aksi">
+        <button type="button" class="mcp-batal" (click)="tutup()">
+          {{ "common.cancel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="mcp-setujui"
+          [disabled]="!sudahBaca || sedangKirim"
+          (click)="setujui()"
+        >
+          <mat-icon>verified</mat-icon>
+          {{ "cop.setujui" | translate }}
+        </button>
+      </div>
+    }
+  </section>
+}

@@ -1,0 +1,149 @@
+<div class="cop-list">
+  <app-header-title
+    [title]="'cop.judul' | translate"
+    [description]="'cop.subjudul' | translate"
+    [actionButtonLabel]="bolehBuat() ? ('cop.buatBaru' | translate) : null"
+    (onActionButtonClicked)="buat()"
+  />
+
+  <div class="cl-toolbar">
+    <app-refresh-button [memuat]="memuat()" (muatUlang)="muat()" />
+  </div>
+
+  @if (memuat()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <div class="cl-tabel-bungkus">
+    <table mat-table [dataSource]="data()" class="cl-tabel">
+      <ng-container matColumnDef="nomor">
+        <th mat-header-cell *matHeaderCellDef>{{ "cop.nomor" | translate }}</th>
+        <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="spk">
+        <th mat-header-cell *matHeaderCellDef>{{ "cop.spk" | translate }}</th>
+        <td mat-cell *matCellDef="let c">{{ c.purchaseOrderName || "-" }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="proyek">
+        <th mat-header-cell *matHeaderCellDef>{{ "cop.proyek" | translate }}</th>
+        <td mat-cell *matCellDef="let c">{{ c.projectName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tanggal">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "cop.tanggal" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let c">
+          {{ c.date | date: "dd/MM/yyyy" }}
+          @if (c.periodStart && c.periodEnd) {
+            <span class="cl-periode">
+              {{ c.periodStart | date: "dd/MM" }} –
+              {{ c.periodEnd | date: "dd/MM" }}
+            </span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="keadaan">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "cop.keadaan" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let c">
+          <span class="cl-lencana" [class]="'cl-lencana--' + keadaan(c)">
+            {{ "cop.keadaan_" + keadaan(c) | translate }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pembuat">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ "cop.pembuat" | translate }}
+        </th>
+        <td mat-cell *matCellDef="let c">{{ c.createdByName || "-" }}</td>
+      </ng-container>
+
+      @if (bolehLihatNilai()) {
+        <ng-container matColumnDef="nilai">
+          <th mat-header-cell *matHeaderCellDef class="cl-angka">
+            {{ "cop.nilai" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let c" class="cl-angka">
+            {{ nilaiTotal(c) === null ? "-" : (nilaiTotal(c) | number: "1.0-2") }}
+          </td>
+        </ng-container>
+      }
+
+      <ng-container matColumnDef="aksi">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let c" class="cl-aksi">
+          <button
+            mat-icon-button
+            [matTooltip]="'common.view' | translate"
+            (click)="buka(c)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <!--
+              Menyunting hanya SELAMA belum diperiksa. Setelah itu isinya sudah
+              menjadi dasar orang lain memutuskan.
+            -->
+            @if (!c.isChecked) {
+              <button mat-menu-item (click)="ubah(c)">
+                <mat-icon>edit</mat-icon>
+                <span>{{ "common.edit" | translate }}</span>
+              </button>
+            }
+
+            @if (bolehPeriksa() && !c.isChecked) {
+              <button mat-menu-item (click)="periksa(c, true)">
+                <mat-icon>fact_check</mat-icon>
+                <span>{{ "cop.periksa" | translate }}</span>
+              </button>
+            }
+
+            @if (bolehPeriksa() && c.isChecked && !c.isApproved) {
+              <button mat-menu-item (click)="periksa(c, false)">
+                <mat-icon>undo</mat-icon>
+                <span>{{ "cop.cabutPeriksa" | translate }}</span>
+              </button>
+            }
+
+            @if (bolehSetujui() && c.isChecked && !c.isApproved) {
+              <button mat-menu-item (click)="setujui(c)">
+                <mat-icon>verified</mat-icon>
+                <span>{{ "cop.setujui" | translate }}</span>
+              </button>
+            }
+
+            <button mat-menu-item (click)="hapus(c)">
+              <mat-icon>delete</mat-icon>
+              <span>{{ "common.delete" | translate }}</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="kolom"></tr>
+      <tr mat-row *matRowDef="let row; columns: kolom"></tr>
+    </table>
+  </div>
+
+  @if (!memuat() && !data().length) {
+    <p class="cl-kosong">{{ "cop.belumAda" | translate }}</p>
+  }
+
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="ukuran"
+    [pageIndex]="halaman"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="gantiHalaman($event)"
+  />
+</div>

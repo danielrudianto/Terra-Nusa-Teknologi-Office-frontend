@@ -1,0 +1,289 @@
+/*
+ * Persetujuan CoP di ponsel.
+ *
+ * Ukuran ketuk dijaga besar dan jarak antar kartu longgar: yang memakainya
+ * kerap berdiri, dan dua tombol berdekatan pada layar kecil adalah cara
+ * paling mudah menyetujui dokumen yang salah.
+ */
+
+.mcp-judul {
+  margin: 0 16px 2px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.mcp-sub {
+  margin: 0 16px 12px;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.mcp-muat,
+.mcp-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 16px;
+  opacity: 0.65;
+  text-align: center;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.mcp-kartu {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 10px;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+
+  &:active {
+    background: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.mcp-baris1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mcp-nomor {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.mcp-tanggal {
+  font-size: 12px;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.mcp-baris2 {
+  margin-top: 2px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.mcp-baris3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.6;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.mcp-baris4 {
+  margin-top: 8px;
+}
+
+.mcp-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(63, 106, 216, 0.12);
+  color: #2b4fa0;
+  font-size: 11px;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ---- lembar rincian ---- */
+
+.mcp-tirai {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 40;
+}
+
+.mcp-lembar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 41;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+
+  &__judul {
+    margin: 8px 0 2px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  &__sub {
+    margin: 0 0 14px;
+    font-size: 13px;
+    opacity: 0.65;
+  }
+}
+
+.mcp-pegangan {
+  width: 38px;
+  height: 4px;
+  margin: 4px auto 6px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.mcp-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 0 14px;
+
+  dt {
+    font-size: 11px;
+    opacity: 0.55;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.mcp-item {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+
+  li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  &__nama {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__angka {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 2px;
+    font-size: 13px;
+  }
+
+  &__vol em {
+    font-style: normal;
+    opacity: 0.5;
+    font-size: 12px;
+    margin-left: 4px;
+  }
+
+  &__nilai {
+    font-weight: 600;
+  }
+
+  &__ket {
+    margin-top: 2px;
+    font-size: 12px;
+    opacity: 0.6;
+  }
+}
+
+.mcp-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  font-size: 15px;
+}
+
+.mcp-catatan {
+  margin: 0 0 14px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 13px;
+}
+
+/*
+  Penghenti langkah sebelum menyetujui.
+
+  Dibuat selebar layar dan tinggi supaya ia benar-benar terbaca, bukan
+  kotak kecil yang tercentang tanpa sengaja saat menggulir.
+*/
+.mcp-baca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+
+  input {
+    width: 20px;
+    height: 20px;
+    flex: none;
+  }
+}
+
+.mcp-aksi {
+  display: flex;
+  gap: 10px;
+
+  button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 48px;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.mcp-batal {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+.mcp-setujui {
+  border: none;
+  background: #2e7d32;
+  color: #fff;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

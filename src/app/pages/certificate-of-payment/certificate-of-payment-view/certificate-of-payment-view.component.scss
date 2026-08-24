@@ -1,0 +1,109 @@
+.cop-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cv-kartu {
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cv-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 0;
+
+  dt {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-bottom: 2px;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  &__lebar {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+  Tiga tangan digambar sebagai rantai, bukan tiga kolom terpisah: urutannya
+  yang berarti — dokumen berjalan dari kiri ke kanan, dan yang kosong
+  menunjukkan di mana ia sedang menunggu.
+*/
+.cv-tangan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  &__satu {
+    display: flex;
+    flex-direction: column;
+    min-width: 140px;
+  }
+
+  &__label {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+  &--kosong strong {
+    opacity: 0.45;
+    font-weight: 400;
+    font-style: italic;
+  }
+}
+
+.cv-panah {
+  opacity: 0.3;
+}
+
+.cv-tabel-bungkus {
+  overflow-x: auto;
+}
+
+.cv-tabel {
+  width: 100%;
+  min-width: 640px;
+}
+
+.cv-angka {
+  text-align: right;
+}
+
+.cv-dari {
+  display: block;
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+.cv-total {
+  margin: 16px 0 0;
+  text-align: right;
+  font-size: 15px;
+}
+
+.cv-aksi {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cv-selesai {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #2e7d32;
+  font-weight: 500;
+}

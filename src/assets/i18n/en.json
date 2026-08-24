@@ -202,7 +202,8 @@
     "hrd": "HR",
     "hrCandidate": "Candidates",
     "hrQuestion": "Question Bank",
-    "tender": "Tenders"
+    "tender": "Tenders",
+    "certificateOfPayment": "Certificate of Payment"
   },
   "status": {
     "paid": "Paid",
@@ -4662,7 +4663,8 @@
       "reimbursement": "Reimbursement",
       "pembelian": "Purchase",
       "proyek": "Project",
-      "setelan": "Settings"
+      "setelan": "Settings",
+      "cop": "CoP"
     },
     "beranda": {
       "judul": "Waiting for your decision",
@@ -4772,7 +4774,15 @@
       "aplikasi": "App"
     },
     "disalin": "Copied",
-    "salin": "Copy"
+    "salin": "Copy",
+    "cop": {
+      "judul": "CoP approval",
+      "sub": "Certificates of payment awaiting your approval",
+      "cariPlaceholder": "Search number, project, or work order",
+      "kosong": "No certificate of payment awaiting approval.",
+      "sudahDiperiksa": "Checked",
+      "sudahBaca": "I have read the volume details above"
+    }
   },
   "purchaseMeta": {
     "title": "Update Purchase",
@@ -4814,5 +4824,62 @@
   "poItem": {
     "dari": "From",
     "ke": "To"
+  },
+  "cop": {
+    "judul": "Certificate of Payment",
+    "subjudul": "Work progress certificate against a work order",
+    "judulBuat": "Create Certificate of Payment",
+    "judulUbah": "Edit Certificate of Payment",
+    "judulLihat": "Certificate of Payment",
+    "subjudulBuat": "Enter the volume of work completed in this period",
+    "subjudulLihat": "Progress details and approval stages",
+    "kembaliDaftar": "Back to list",
+    "buatBaru": "Create CoP",
+    "belumAda": "No certificate of payment yet.",
+    "langkahSpk": "1. Select work order",
+    "langkahPeriode": "2. Work period",
+    "langkahVolume": "3. Completed volume",
+    "spk": "Work order",
+    "spkHanyaSpk": "Only approved work orders can be selected.",
+    "tidakAdaSpk": "No work order available for a CoP yet.",
+    "spkTanpaBaris": "This work order has no line items.",
+    "proyek": "Project",
+    "nomor": "Number",
+    "tanggal": "Date",
+    "periode": "Period",
+    "periodeAwal": "Period start",
+    "periodeAkhir": "Period end",
+    "pekerjaan": "Work item",
+    "satuan": "Unit",
+    "pagu": "Contract volume",
+    "terpakai": "Already used",
+    "sisa": "Remaining",
+    "volume": "Volume",
+    "harga": "Unit price",
+    "jumlah": "Amount",
+    "nilai": "Value",
+    "total": "Total",
+    "dariPagu": "of",
+    "catatan": "Notes",
+    "catatanBaris": "Remarks",
+    "keadaan": "Status",
+    "keadaan_draft": "Draft",
+    "keadaan_diperiksa": "Checked",
+    "keadaan_disetujui": "Approved",
+    "pembuat": "Created by",
+    "dibuat": "Created",
+    "diperiksa": "Checked",
+    "disetujui": "Approved",
+    "belum": "Pending",
+    "periksa": "Mark as checked",
+    "cabutPeriksa": "Undo check",
+    "setujui": "Approve",
+    "sudahDisetujui": "Already approved",
+    "tersimpan": "Certificate of payment saved.",
+    "isiMinimalSatu": "Enter volume for at least one work item.",
+    "melebihiSisa": "Exceeds remaining",
+    "adaYangMelebihi": "Some volumes exceed the remaining work order quantity. If the volume genuinely increased, the work order must be amended first.",
+    "petunjukVolume": "Fill in only the items worked on this period. Remaining shows how much may still be certified.",
+    "tersetujui": "Certificate of payment approved."
   }
 }

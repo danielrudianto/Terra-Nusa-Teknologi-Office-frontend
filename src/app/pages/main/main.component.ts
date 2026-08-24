@@ -192,6 +192,17 @@ export class MainComponent {
           route: '/Purchase-order',
         },
         {
+          /*
+           * Certificate of Payment ditaruh SESUDAH purchase order.
+           *
+           * Urutan menu mengikuti urutan pekerjaannya: SPK terbit lebih
+           * dulu, progresnya disertifikasi sesudahnya.
+           */
+          name: 'nav.certificateOfPayment',
+          icon: 'purchase-invoice.svg',
+          route: '/Certificate-of-payment',
+        },
+        {
           name: 'nav.income',
           icon: 'income.svg',
           route: '/Income',

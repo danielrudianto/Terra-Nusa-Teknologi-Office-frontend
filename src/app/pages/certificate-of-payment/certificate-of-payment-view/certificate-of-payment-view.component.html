@@ -1,0 +1,197 @@
+<div class="cop-view">
+  <app-header-title
+    [title]="cop()?.name || ('cop.judulLihat' | translate)"
+    [description]="'cop.subjudulLihat' | translate"
+    [backLink]="'/Certificate-of-payment'"
+    [backLabel]="'cop.kembaliDaftar' | translate"
+  />
+
+  @if (memuat()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (cop(); as c) {
+    <!-- ===== Keterangan dokumen ===== -->
+    <section class="cv-kartu">
+      <dl class="cv-info">
+        <div>
+          <dt>{{ "cop.spk" | translate }}</dt>
+          <dd>{{ c.purchaseOrderName || "-" }}</dd>
+        </div>
+        <div>
+          <dt>{{ "cop.proyek" | translate }}</dt>
+          <dd>{{ c.projectName }}</dd>
+        </div>
+        <div>
+          <dt>{{ "cop.tanggal" | translate }}</dt>
+          <dd>{{ c.date | date: "dd MMMM yyyy" }}</dd>
+        </div>
+        @if (c.periodStart || c.periodEnd) {
+          <div>
+            <dt>{{ "cop.periode" | translate }}</dt>
+            <dd>
+              {{ c.periodStart | date: "dd/MM/yyyy" }} –
+              {{ c.periodEnd | date: "dd/MM/yyyy" }}
+            </dd>
+          </div>
+        }
+        @if (c.note) {
+          <div class="cv-info__lebar">
+            <dt>{{ "cop.catatan" | translate }}</dt>
+            <dd>{{ c.note }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+
+    <!-- ===== Tiga tangan ===== -->
+    <!--
+      Ditampilkan berdampingan, bukan sebagai keterangan kecil: yang hendak
+      menyetujui perlu melihat SIAPA yang mencatat dan siapa yang memeriksa
+      sebelum ia menambahkan namanya sendiri.
+    -->
+    <section class="cv-kartu">
+      <div class="cv-tangan">
+        <div class="cv-tangan__satu">
+          <span class="cv-tangan__label">{{ "cop.dibuat" | translate }}</span>
+          <strong>{{ c.createdByName || "-" }}</strong>
+        </div>
+        <mat-icon class="cv-panah">chevron_right</mat-icon>
+        <div class="cv-tangan__satu" [class.cv-tangan--kosong]="!c.isChecked">
+          <span class="cv-tangan__label">{{ "cop.diperiksa" | translate }}</span>
+          <strong>{{
+            c.isChecked ? c.checkedByName || "-" : ("cop.belum" | translate)
+          }}</strong>
+        </div>
+        <mat-icon class="cv-panah">chevron_right</mat-icon>
+        <div class="cv-tangan__satu" [class.cv-tangan--kosong]="!c.isApproved">
+          <span class="cv-tangan__label">{{ "cop.disetujui" | translate }}</span>
+          <strong>{{
+            c.isApproved ? c.approvedByName || "-" : ("cop.belum" | translate)
+          }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Baris pekerjaan ===== -->
+    <section class="cv-kartu">
+      <div class="cv-tabel-bungkus">
+        <table mat-table [dataSource]="c.items || []" class="cv-tabel">
+          <ng-container matColumnDef="pekerjaan">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "cop.pekerjaan" | translate }}
+            </th>
+            <td mat-cell *matCellDef="let i">{{ i.task || "-" }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="satuan">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "cop.satuan" | translate }}
+            </th>
+            <td mat-cell *matCellDef="let i">{{ i.unit || "-" }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="volume">
+            <th mat-header-cell *matHeaderCellDef class="cv-angka">
+              {{ "cop.volume" | translate }}
+            </th>
+            <td mat-cell *matCellDef="let i" class="cv-angka">
+              {{ i.quantity | number: "1.0-2" }}
+              @if (i.paguBaris) {
+                <span class="cv-dari">
+                  {{ "cop.dariPagu" | translate }}
+                  {{ i.paguBaris | number: "1.0-2" }}
+                </span>
+              }
+            </td>
+          </ng-container>
+
+          @if (bolehLihatNilai()) {
+            <ng-container matColumnDef="harga">
+              <th mat-header-cell *matHeaderCellDef class="cv-angka">
+                {{ "cop.harga" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let i" class="cv-angka">
+                {{ i.price | number: "1.0-2" }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="jumlah">
+              <th mat-header-cell *matHeaderCellDef class="cv-angka">
+                {{ "cop.jumlah" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let i" class="cv-angka">
+                {{ i.amount | number: "1.0-2" }}
+              </td>
+            </ng-container>
+          }
+
+          <ng-container matColumnDef="catatan">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "cop.catatanBaris" | translate }}
+            </th>
+            <td mat-cell *matCellDef="let i">{{ i.remarks || "-" }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="kolom"></tr>
+          <tr mat-row *matRowDef="let row; columns: kolom"></tr>
+        </table>
+      </div>
+
+      @if (bolehLihatNilai() && total !== null) {
+        <p class="cv-total">
+          {{ "cop.total" | translate }}:
+          <strong>{{ total | number: "1.0-2" }}</strong>
+        </p>
+      }
+    </section>
+
+    <!-- ===== Tindakan ===== -->
+    <section class="cv-kartu cv-aksi">
+      @if (!c.isChecked) {
+        <button mat-stroked-button (click)="ubah()">
+          <mat-icon>edit</mat-icon>
+          {{ "common.edit" | translate }}
+        </button>
+      }
+
+      @if (bolehPeriksa() && !c.isChecked) {
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="bekerja()"
+          (click)="periksa(true)"
+        >
+          <mat-icon>fact_check</mat-icon>
+          {{ "cop.periksa" | translate }}
+        </button>
+      }
+
+      @if (bolehPeriksa() && c.isChecked && !c.isApproved) {
+        <button mat-stroked-button [disabled]="bekerja()" (click)="periksa(false)">
+          <mat-icon>undo</mat-icon>
+          {{ "cop.cabutPeriksa" | translate }}
+        </button>
+      }
+
+      @if (bolehSetujui() && c.isChecked && !c.isApproved) {
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="bekerja()"
+          (click)="setujui()"
+        >
+          <mat-icon>verified</mat-icon>
+          {{ "cop.setujui" | translate }}
+        </button>
+      }
+
+      @if (c.isApproved) {
+        <p class="cv-selesai">
+          <mat-icon>check_circle</mat-icon>
+          {{ "cop.sudahDisetujui" | translate }}
+        </p>
+      }
+    </section>
+  }
+</div>

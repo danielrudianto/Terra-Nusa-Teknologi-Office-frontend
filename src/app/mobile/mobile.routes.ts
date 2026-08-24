@@ -70,6 +70,22 @@ export const MOBILE_ROUTES: Routes = [
       { path: 'Persetujuan', redirectTo: 'Purchase-order', pathMatch: 'full' },
       { path: 'Pemeriksaan', redirectTo: 'Purchase-order', pathMatch: 'full' },
       {
+        /*
+         * Certificate of Payment — TAHAP TERAKHIR SAJA.
+         *
+         * Pengisiannya tetap di desktop (kantor lapangan punya komputer):
+         * tabel pagu berkolom banyak tidak dapat diisi dengan benar sambil
+         * berjalan. Yang dibawa ke sini hanya keputusan menyetujui — dan
+         * itu cocok dengan penjaga level aplikasi ini (3 ke atas), sehingga
+         * gerbangnya tidak perlu dilonggarkan.
+         */
+        path: 'Certificate-of-payment',
+        loadComponent: () =>
+          import('./persetujuan-cop/persetujuan-cop.component').then(
+            (m) => m.PersetujuanCopComponent,
+          ),
+      },
+      {
         path: 'Reimbursement',
         loadComponent: () =>
           import('./persetujuan-reimbursement/persetujuan-reimbursement.component').then(

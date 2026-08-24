@@ -254,6 +254,59 @@ export const routes: Routes = [
         data: { title: 'Activity', permission: 'audit_log:read' , panduan: 'aktivitas' },
       },
       {
+        /*
+         * Certificate of Payment — berita acara progres atas SPK.
+         *
+         * Izinnya `certificate_of_payment:read`, dan dari situ pula menu
+         * sampingnya disaring: butir menu membaca izin dari definisi rutenya
+         * sendiri, sehingga tidak perlu didaftarkan dua kali.
+         */
+        path: 'Certificate-of-payment',
+        canActivate: [permissionGuard],
+        loadComponent: () =>
+          import('./pages/certificate-of-payment/certificate-of-payment.component').then(
+            (m) => m.CertificateOfPaymentComponent,
+          ),
+        data: {
+          title: 'Certificate of Payment',
+          permission: 'certificate_of_payment:read',
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/certificate-of-payment/certificate-of-payment-list/certificate-of-payment-list.component').then(
+                (m) => m.CertificateOfPaymentListComponent,
+              ),
+            data: { title: 'Certificate of Payment' },
+          },
+          {
+            path: 'Create',
+            loadComponent: () =>
+              import('./pages/certificate-of-payment/certificate-of-payment-create/certificate-of-payment-create.component').then(
+                (m) => m.CertificateOfPaymentCreateComponent,
+              ),
+            data: { title: 'Certificate of Payment' },
+          },
+          {
+            path: 'Edit/:id',
+            loadComponent: () =>
+              import('./pages/certificate-of-payment/certificate-of-payment-create/certificate-of-payment-create.component').then(
+                (m) => m.CertificateOfPaymentCreateComponent,
+              ),
+            data: { title: 'Certificate of Payment' },
+          },
+          {
+            path: 'View/:id',
+            loadComponent: () =>
+              import('./pages/certificate-of-payment/certificate-of-payment-view/certificate-of-payment-view.component').then(
+                (m) => m.CertificateOfPaymentViewComponent,
+              ),
+            data: { title: 'Certificate of Payment' },
+          },
+        ],
+      },
+      {
         path: 'Purchase-order',
         canActivate: [permissionGuard],
         loadComponent: () =>

@@ -1,0 +1,73 @@
+.cop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cl-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cl-tabel-bungkus {
+  overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+.cl-tabel {
+  width: 100%;
+  min-width: 820px;
+}
+
+.cl-angka {
+  text-align: right;
+}
+
+.cl-periode {
+  display: block;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/*
+  Lencana keadaan.
+
+  Tiga keadaan dibedakan warnanya karena masing-masing menuntut orang yang
+  berbeda: draf menunggu pemeriksa, diperiksa menunggu penyetuju, disetujui
+  sudah selesai.
+*/
+.cl-lencana {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--draft {
+    background: rgba(0, 0, 0, 0.07);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  &--diperiksa {
+    background: rgba(63, 106, 216, 0.12);
+    color: #2b4fa0;
+  }
+
+  &--disetujui {
+    background: rgba(46, 125, 50, 0.12);
+    color: #2e7d32;
+  }
+}
+
+.cl-aksi {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cl-kosong {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
