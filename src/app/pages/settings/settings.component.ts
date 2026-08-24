@@ -113,26 +113,23 @@ export class SettingsComponent implements OnInit {
     this.profileFormGroup.disable();
     this.fetchProfile();
 
-    // Daftarkan service worker & segarkan status langganan, tapi hanya bila
-    // pengguna ini memang penerima notifikasi (pemeriksa) — selain mereka
-    // tidak ditawari, jadi tidak perlu mendaftarkan apa pun.
-    if (this.bolehMemeriksa) void this.push.init();
+    // Daftarkan service worker & segarkan status langganan.
+    void this.push.init();
   }
 
   // ---- Notifikasi -------------------------------------------------------
 
   /**
-   * Notifikasi PO ditawarkan HANYA kepada penerimanya: para pemeriksa.
+   * Notifikasi ditawarkan ke SEMUA pengguna.
    *
-   * Sama persis dengan aturan di ponsel — level 4 ke atas, atau level 3 yang
-   * berada di divisi pengadaan. Server pun hanya mengirim ke mereka; tombol
-   * bagi yang lain hanya menyalakan langganan yang tidak akan pernah berbunyi.
+   * Dulu hanya pemeriksa — merekalah satu-satunya penerima. Sejak rantai
+   * kabarnya lengkap (PO baru -> pemeriksa; selesai diperiksa -> penyetuju
+   * DAN pembuat; disetujui/ditolak -> pembuat), setiap orang yang pernah
+   * membuat PO adalah penerima, dan menyembunyikan tombolnya dari mereka
+   * berarti kabar yang tidak pernah sampai.
    */
   get bolehMemeriksa(): boolean {
-    const lv = this.izin.level();
-    if (lv >= 4) return true;
-    if (lv < 3) return false;
-    return this.izin.inDepartment('procurement');
+    return true;
   }
 
   get pushDidukung(): boolean {

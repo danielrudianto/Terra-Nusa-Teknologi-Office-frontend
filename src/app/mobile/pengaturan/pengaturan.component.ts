@@ -46,19 +46,17 @@ export class PengaturanComponent implements OnInit {
   readonly pwa = inject(PwaPasangService);
 
   ngOnInit(): void {
-    // Daftarkan service worker & segarkan status langganan bila pengguna ini
-    // memang penerima notifikasi (pemeriksa).
-    if (this.bolehMemeriksa) {
-      void this.push.init();
-    }
+    // Daftarkan service worker & segarkan status langganan.
+    void this.push.init();
   }
 
-  /** Notifikasi PO ditawarkan hanya kepada penerimanya: para pemeriksa. */
+  /**
+   * Notifikasi ditawarkan ke SEMUA pengguna — rantai kabarnya kini lengkap
+   * (pemeriksa, penyetuju, dan pembuat sama-sama penerima), jadi tidak ada
+   * lagi orang yang menyalakan langganan yang tak akan pernah berbunyi.
+   */
   get bolehMemeriksa(): boolean {
-    const lv = this.izin.level();
-    if (lv >= 4) return true;
-    if (lv < 3) return false;
-    return this.izin.inDepartment('procurement');
+    return true;
   }
 
   get pushDidukung(): boolean {
