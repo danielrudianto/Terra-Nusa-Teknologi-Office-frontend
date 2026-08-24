@@ -8,10 +8,13 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
@@ -34,13 +37,15 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatChipsModule,
-    MatTooltipModule,
     MatProgressBarModule,
     TranslateModule,
     HeaderTitleComponent,
@@ -58,6 +63,14 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly izin = inject(PermissionService);
 
   readonly data = signal<CertificateOfPayment[]>([]);
+  /**
+   * Kata pencarian.
+   *
+   * Dikirim ke server, bukan dipakai menyaring `data()`: daftar ini dipenggal
+   * per halaman, dan menyaring satu halaman hanya mencari di baris yang
+   * kebetulan sedang terbuka.
+   */
+  readonly cari = new FormControl<string>('');
   /** Penyaring keadaan: '', 'draft', 'diperiksa', 'disetujui'. */
   readonly saring = signal<string>('');
   readonly total = signal(0);
@@ -128,6 +141,22 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    /*
+     * Jeda 300ms sebelum server ditanya.
+     *
+     * Tanpa jeda, mengetik "R501" mengirimkan empat permintaan yang
+     * jawabannya dapat tiba tidak berurutan — dan yang tiba terakhir,
+     * jawaban untuk "R50", menimpa jawaban yang benar.
+     */
+    this.cari.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        // Kembali ke halaman pertama: hasil pencarian baru hampir selalu
+        // lebih pendek, dan bertahan di halaman ketiga menampilkan daftar
+        // kosong untuk kata yang sebenarnya ada hasilnya.
+        this.halaman = 0;
+        void this.muat();
+      });
     void this.muat();
   }
 
@@ -143,7 +172,11 @@ export class CertificateOfPaymentListComponent implements OnInit {
     this.memuat.set(true);
     try {
       const hasil: any = await firstValueFrom(
-        this.service.daftar({ page: this.halaman, pageSize: this.ukuran }),
+        this.service.daftar({
+          page: this.halaman,
+          pageSize: this.ukuran,
+          keyword: (this.cari.value || '').trim() || undefined,
+        }),
       );
       this.data.set(hasil?.data || []);
       this.total.set(hasil?.total || 0);
@@ -182,6 +215,11 @@ export class CertificateOfPaymentListComponent implements OnInit {
 
   ubah(c: CertificateOfPayment): void {
     this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
+  }
+
+  /** Buka lembar periksa — tandanya dibubuhkan di sana, sebagai akibat simpan. */
+  bukaPeriksa(c: CertificateOfPayment): void {
+    this.router.navigate(['/Certificate-of-payment/Periksa', c.id]);
   }
 
   async periksa(c: CertificateOfPayment, checked: boolean): Promise<void> {

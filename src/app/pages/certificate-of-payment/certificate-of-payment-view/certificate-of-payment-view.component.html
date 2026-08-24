@@ -444,12 +444,20 @@
         </button>
       }
 
+      <!--
+        MEMBUKA lembar periksa, bukan membubuhkan tandanya di sini.
+
+        Memeriksa bukan satu ketukan: volumenya dibaca ulang, yang keliru
+        dibetulkan, lalu potongan dan tambahannya diputuskan. Tandanya
+        terbubuh di ujung pekerjaan itu — sebagai akibat menyimpan — supaya
+        "sudah diperiksa" selalu berarti ada yang benar-benar menelaahnya.
+      -->
       @if (bolehPeriksa() && !c.isChecked) {
         <button
           mat-flat-button
           color="primary"
           [disabled]="bekerja()"
-          (click)="periksa(true)"
+          (click)="bukaPeriksa()"
         >
           <mat-icon>fact_check</mat-icon>
           {{ "cop.periksa" | translate }}

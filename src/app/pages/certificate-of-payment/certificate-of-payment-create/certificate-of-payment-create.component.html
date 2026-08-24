@@ -1,11 +1,18 @@
-<div class="cop-create">
-  <app-header-title
-    [title]="(copId ? 'cop.judulUbah' : 'cop.judulBuat') | translate"
-    [description]="'cop.subjudulBuat' | translate"
-    [backLink]="'/Certificate-of-payment'"
-    [backLabel]="'cop.kembaliDaftar' | translate"
-  />
+<!--
+  Kepala halaman DI LUAR wadah, persis seperti formulir pembelian.
 
+  Yang di dalamnya dibatasi lebarnya; kepala halaman tidak. Menempatkan
+  keduanya sama membuat judulnya ikut menyempit dan tidak lagi sebaris
+  dengan judul layar lain yang dibuka bergantian sepanjang hari.
+-->
+<app-header-title
+  [title]="(copId ? 'cop.judulUbah' : 'cop.judulBuat') | translate"
+  [description]="'cop.subjudulBuat' | translate"
+  [backLink]="'/Certificate-of-payment'"
+  [backLabel]="'cop.kembaliDaftar' | translate"
+/>
+
+<div class="cop-create">
   @if (memuat()) {
     <mat-progress-bar mode="indeterminate" />
   }
@@ -149,12 +156,15 @@
       </div>
 
       <!--
-        SATU KARTU PER PEKERJAAN, bukan baris tabel.
+        SATU KARTU PER PEKERJAAN, DIBELAH DUA.
 
-        Tabel memaksa keterangan menjadi kotak satu baris yang isinya tidak
-        terbaca, dan pada layar sempit kolomnya bergeser keluar. Kartu
-        memberi keterangan ruang penuh, dan sisa pagu dapat ditampilkan
-        besar — angka itulah yang paling sering dibaca saat mengisi.
+        Kiri yang SUDAH tercantum pada SPK — nama pekerjaan, volume kontrak,
+        yang sudah dipakai, dan sisanya. Kanan yang HARUS diisi. Pembagian
+        itu menjawab pertanyaan pertama yang muncul di layar ini: mana yang
+        sekadar dibaca, dan mana yang menunggu diketik.
+
+        Tabel tidak dipakai: keterangan di sini kerap satu kalimat penuh, dan
+        kotak satu baris di dalam sel membuatnya tidak terbaca.
       -->
       <div class="cop-daftar">
         @for (b of baris(); track b.purchaseOrderItemID) {
@@ -164,40 +174,55 @@
             [class.cop-item--salah]="melebihi(b)"
             [class.cop-item--habis]="sisaBoleh(b) <= 0"
           >
-            <header class="cop-item__kepala">
+            <!-- ---- KIRI: yang sudah tercantum ---- -->
+            <div class="cop-item__sisi cop-item__sisi--kiri">
+              <span class="cop-item__cap">{{
+                "cop.sisiKontrak" | translate
+              }}</span>
+
               <div class="cop-item__nama">
                 {{ b.task || "-" }}
                 @if (b.keterangan) {
                   <span class="cop-item__ket">{{ b.keterangan }}</span>
                 }
               </div>
-            </header>
 
-            <!-- Pagu: kontrak, terpakai, sisa. Sisa dibuat paling menonjol. -->
-            <div class="cop-item__pagu">
-              <div>
-                <dt>{{ "cop.pagu" | translate }}</dt>
-                <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
-              </div>
-              <div>
-                <dt>{{ "cop.terpakai" | translate }}</dt>
-                <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
-              </div>
-              <div class="cop-item__sisa">
-                <dt>{{ "cop.sisa" | translate }}</dt>
-                <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
-              </div>
+              <!-- Pagu: kontrak, terpakai, sisa. Sisa dibuat paling menonjol
+                   karena angka itulah yang paling sering dibaca saat mengisi. -->
+              <dl class="cop-item__pagu">
+                <div>
+                  <dt>{{ "cop.pagu" | translate }}</dt>
+                  <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+                <div>
+                  <dt>{{ "cop.terpakai" | translate }}</dt>
+                  <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+                <div class="cop-item__sisa">
+                  <dt>{{ "cop.sisa" | translate }}</dt>
+                  <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+              </dl>
             </div>
 
-            <div class="cop-item__isian">
+            <!-- ---- KANAN: yang diisikan ---- -->
+            <div class="cop-item__sisi cop-item__sisi--kanan">
+              <span class="cop-item__cap">{{ "cop.sisiIsian" | translate }}</span>
+
               <mat-form-field appearance="outline" class="cop-vol">
                 <mat-label>{{ "cop.volume" | translate }}</mat-label>
                 <!--
-                  `type="text"` + ngx-mask, BUKAN `type="number"`.
+                  `type="text"` + ngx-mask lewat FormControl.
 
                   Isian angka bawaan peramban tidak dapat diberi pemisah
                   ribuan, dan volume enam digit tanpa pemisah ("124500")
                   adalah tempat paling mudah salah membaca satu nol.
+
+                  Kontrolnya reaktif, bukan `[value]` + `(input)`: ngx-mask
+                  memformat lewat ControlValueAccessor, dan `[value]` yang
+                  dipasang ulang tiap deteksi perubahan menimpa hasil
+                  formatnya seketika — mask terpasang tetapi tidak pernah
+                  terlihat bekerja.
 
                   Dua desimal mengikuti kolomnya — `quantity` tersimpan
                   DECIMAL(12,2), sama dengan volume pada SPK yang menjadi
@@ -213,11 +238,7 @@
                   decimalScale="2"
                   mask="separator.2"
                   [validation]="false"
-                  [value]="nilai(b.purchaseOrderItemID) ?? ''"
-                  (input)="
-                    setNilai(b.purchaseOrderItemID, $any($event.target).value)
-                  "
-                  [disabled]="sisaBoleh(b) <= 0"
+                  [formControl]="kontrolVol(b.purchaseOrderItemID)"
                 />
                 <span matSuffix class="cop-satuan">{{ b.unit }}</span>
                 @if (melebihi(b)) {
@@ -225,29 +246,28 @@
                 }
               </mat-form-field>
 
+              <!-- Keterangan: TEXTAREA. Yang ditulis di sini kerap kalimat —
+                   "cor tertunda hujan, dilanjut sore" — bukan satu kata. -->
+              <mat-form-field appearance="outline" class="cop-ket-field">
+                <mat-label>{{ "cop.catatanBaris" | translate }}</mat-label>
+                <textarea
+                  matInput
+                  rows="2"
+                  cdkTextareaAutosize
+                  [value]="catatanBaris()[b.purchaseOrderItemID] || ''"
+                  (input)="
+                    setCatatan(b.purchaseOrderItemID, $any($event.target).value)
+                  "
+                ></textarea>
+              </mat-form-field>
+
+              @if (melebihi(b)) {
+                <p class="cop-salah">
+                  <mat-icon>error_outline</mat-icon>
+                  {{ "cop.melebihiSisaPanjang" | translate }}
+                </p>
+              }
             </div>
-
-            <!-- Keterangan: TEXTAREA. Yang ditulis di sini kerap kalimat —
-                 "cor tertunda hujan, dilanjut sore" — bukan satu kata. -->
-            <mat-form-field appearance="outline" class="cop-ket-field">
-              <mat-label>{{ "cop.catatanBaris" | translate }}</mat-label>
-              <textarea
-                matInput
-                rows="2"
-                cdkTextareaAutosize
-                [value]="catatanBaris()[b.purchaseOrderItemID] || ''"
-                (input)="
-                  setCatatan(b.purchaseOrderItemID, $any($event.target).value)
-                "
-              ></textarea>
-            </mat-form-field>
-
-            @if (melebihi(b)) {
-              <p class="cop-salah">
-                <mat-icon>error_outline</mat-icon>
-                {{ "cop.melebihiSisaPanjang" | translate }}
-              </p>
-            }
           </article>
         }
       </div>

@@ -162,6 +162,17 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     if (c) this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
   }
 
+  /**
+   * Buka lembar periksa.
+   *
+   * Tandanya dibubuhkan DI SANA, sebagai akibat menyimpan — bukan di sini
+   * sebagai tindakan tersendiri. Lihat catatan pada rute `Periksa/:id`.
+   */
+  bukaPeriksa(): void {
+    const c = this.cop();
+    if (c) this.router.navigate(['/Certificate-of-payment/Periksa', c.id]);
+  }
+
   // ---- unduh ----------------------------------------------------------
 
   readonly mengunduh = signal(false);

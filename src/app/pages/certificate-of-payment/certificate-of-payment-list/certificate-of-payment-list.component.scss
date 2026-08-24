@@ -48,6 +48,23 @@
   color: var(--muted, #5f6672);
 }
 
+/* Kotak pencarian: bentuknya sama dengan daftar purchase order (`pol-search`)
+   supaya yang berpindah antar daftar tidak mencarinya di tempat lain. */
+.cl-search {
+  width: 100%;
+  max-width: 400px;
+}
+
+:host ::ng-deep .cl-search .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+:host ::ng-deep .cl-search .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: var(--faint, #9aa0ab);
+  margin: 0 6px 0 4px;
+}
+
 .cl-open {
   /* Tombol ikon yang dikecilkan harus memusatkan isinya sendiri. */
   display: inline-flex;
@@ -61,4 +78,17 @@
 .cl-aksi {
   white-space: nowrap;
   text-align: right;
+}
+
+/*
+ * Baris yang dapat difokus.
+ *
+ * Latar sorot dan `cursor: pointer` sudah datang dari campuran `daftar`;
+ * yang belum ada hanya penanda fokus papan tik. Tanpa garis ini, yang
+ * berpindah dengan Tab tidak dapat melihat baris mana yang akan terbuka
+ * saat Enter ditekan.
+ */
+.cl-baris:focus-visible {
+  outline: 2px solid var(--brand, #154dec);
+  outline-offset: -2px;
 }

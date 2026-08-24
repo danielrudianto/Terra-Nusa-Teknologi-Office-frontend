@@ -304,6 +304,22 @@ export const routes: Routes = [
               ),
             data: { title: 'Certificate of Payment' },
           },
+          {
+            /*
+             * Tahap dua — pemeriksaan, sebagai FORMULIR tersendiri.
+             *
+             * Bukan tombol pada daftar: yang menekan tombol belum tentu
+             * membuka dokumennya, sedangkan tanda "sudah diperiksa" dibaca
+             * penyetuju sebagai pernyataan bahwa angkanya sudah ditelaah.
+             * Di lembar ini tandanya terbubuh sebagai akibat menyimpan.
+             */
+            path: 'Periksa/:id',
+            loadComponent: () =>
+              import('./pages/certificate-of-payment/certificate-of-payment-check/certificate-of-payment-check.component').then(
+                (m) => m.CertificateOfPaymentCheckComponent,
+              ),
+            data: { title: 'Certificate of Payment' },
+          },
         ],
       },
       {

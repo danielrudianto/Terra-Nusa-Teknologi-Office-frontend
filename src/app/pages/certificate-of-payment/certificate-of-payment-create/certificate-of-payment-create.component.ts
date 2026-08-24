@@ -93,6 +93,20 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   /** Volume yang diketik, per `purchaseOrderItemID`. */
   readonly isian = signal<Record<number, number | null>>({});
   /**
+   * Satu FormControl per baris — BUKAN `[value]` + `(input)`.
+   *
+   * ngx-mask memformat lewat ControlValueAccessor. Tanpa kontrol, `[value]`
+   * menuliskan ulang angka mentah ke kotaknya pada tiap putaran deteksi
+   * perubahan, tepat setelah mask selesai memformat — sehingga yang mengetik
+   * "25000" melihat "25000", bukan "25.000", dan pemisah ribuan yang justru
+   * menjadi alasan mask dipasang tidak pernah muncul.
+   *
+   * Nilai yang tersimpan di kontrol sudah bersih (tanpa pemisah, titik
+   * sebagai koma desimal), jadi `Number()` cukup — tidak perlu lagi
+   * membongkar teks berformat sendiri.
+   */
+  private kontrol = new Map<number, FormControl<string | null>>();
+  /**
    * Volume yang SUDAH tersimpan pada CoP ini (mode sunting).
    *
    * Dikembalikan ke sisa pagu saat menghitung batas: volume milik CoP ini
@@ -225,6 +239,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   lepasSpk(): void {
     this.spkTerpilih.set(null);
     this.baris.set([]);
+    this.kontrol.clear();
     this.isian.set({});
     this.catatanBaris.set({});
     this.volumeAwal.set({});
@@ -252,8 +267,45 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       this.pesan(e);
       this.baris.set([]);
     } finally {
+      // Dibangun SEGERA setelah barisnya ada, di dalam `finally`, supaya
+      // templat tidak pernah sempat menggambar kotak yang kontrolnya belum
+      // dibuat — `[formControl]` dengan nilai kosong melempar galat.
+      this.bangunKontrol();
       this.memuat.set(false);
     }
+  }
+
+  /**
+   * Siapkan satu kontrol per baris pekerjaan.
+   *
+   * Nilai awalnya diambil dari `isian()`, sehingga mode sunting cukup mengisi
+   * `isian` lebih dulu lalu memuat pagunya — tidak ada langkah ketiga yang
+   * dapat terlupa.
+   */
+  private bangunKontrol(): void {
+    const isi = this.isian();
+    this.kontrol = new Map();
+    this.baris().forEach((b) => {
+      const id = b.purchaseOrderItemID;
+      const awal = isi[id];
+      const c = new FormControl<string | null>(
+        awal === null || awal === undefined ? '' : String(awal),
+      );
+      if (this.sisaBoleh(b) <= 0) c.disable({ emitEvent: false });
+      c.valueChanges.subscribe((v) => this.terimaVolume(id, v));
+      this.kontrol.set(id, c);
+    });
+  }
+
+  /** Kontrol baris; dibuat kosong bila diminta sebelum pagunya termuat. */
+  kontrolVol(barisId: number): FormControl<string | null> {
+    let c = this.kontrol.get(barisId);
+    if (!c) {
+      c = new FormControl<string | null>('');
+      c.valueChanges.subscribe((v) => this.terimaVolume(barisId, v));
+      this.kontrol.set(barisId, c);
+    }
+    return c;
   }
 
   private async muatUntukSunting(id: number): Promise<void> {
@@ -278,8 +330,15 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
         date: null,
       };
       this.spkTerpilih.set(spk as SpkKandidat);
-      await this.muatPagu(cop.purchaseOrderID);
 
+      /*
+       * Isian dipasang SEBELUM pagunya dimuat.
+       *
+       * `muatPagu` yang membangun kontrol tiap baris, dan kontrol itu
+       * mengambil nilai awalnya dari `isian`. Urutan terbalik membuat
+       * kotaknya tergambar kosong pada dokumen yang sebenarnya sudah berisi
+       * — lalu menyimpannya menghapus volume yang sudah tercatat.
+       */
       const isi: Record<number, number | null> = {};
       const cat: Record<number, string> = {};
       (cop.items || []).forEach((i: any) => {
@@ -293,6 +352,8 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
           Object.entries(isi).map(([k, v]) => [Number(k), Number(v) || 0]),
         ),
       );
+
+      await this.muatPagu(cop.purchaseOrderID);
     } catch (e) {
       this.pesan(e);
     } finally {
@@ -307,21 +368,20 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   }
 
   /**
-   * Terima teks BERFORMAT dari ngx-mask ("1.234,56") menjadi angka.
+   * Nilai yang datang dari kontrol bermask.
    *
-   * `Number("1.234,56")` menghasilkan NaN, dan NaN yang lolos ke muatan
-   * menjadi `null` di JSON — volume yang diketik lenyap tanpa pesan apa pun.
+   * ngx-mask menyimpan angka BERSIH pada kontrolnya — pemisah ribuan sudah
+   * dilepas dan koma desimal sudah menjadi titik ("1.234,56" tersimpan
+   * sebagai "1234.56"). Karena itu `Number()` sudah cukup; membongkar teks
+   * berformat sendiri di sini justru akan salah membaca titiknya.
    */
-  private static keAngka(teks: string): number | null {
+  private terimaVolume(barisId: number, teks: string | null): void {
     const bersih = (teks ?? '').toString().trim();
-    if (!bersih) return null;
-    const angka = Number(bersih.replace(/\./g, '').replace(',', '.'));
-    return Number.isFinite(angka) ? angka : null;
-  }
-
-  setNilai(barisId: number, nilai: string): void {
-    const angka = CertificateOfPaymentCreateComponent.keAngka(nilai);
-    this.isian.update((s) => ({ ...s, [barisId]: angka }));
+    const angka = bersih === '' ? null : Number(bersih);
+    this.isian.update((s) => ({
+      ...s,
+      [barisId]: angka !== null && Number.isFinite(angka) ? angka : null,
+    }));
   }
 
   setCatatan(barisId: number, teks: string): void {

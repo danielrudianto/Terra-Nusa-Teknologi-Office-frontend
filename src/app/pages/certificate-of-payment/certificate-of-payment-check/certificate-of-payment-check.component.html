@@ -1,0 +1,402 @@
+<app-header-title
+  [title]="'cop.judulPeriksa' | translate"
+  [description]="'cop.subjudulPeriksa' | translate"
+  [backLink]="'/Certificate-of-payment'"
+  [backLabel]="'cop.kembaliDaftar' | translate"
+/>
+
+<div class="cop-create">
+  @if (memuat()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (cop(); as c) {
+    <!-- ===== 1. DOKUMEN ===== -->
+    <section class="cop-kartu">
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">1</span>{{ "cop.langkahBaca" | translate }}
+      </h2>
+
+      <div class="cop-banner cop-banner--pilih">
+        <mat-icon>description</mat-icon>
+        <div>
+          <strong>{{ c.name }}</strong>
+          <span>
+            {{ c.purchaseOrderName || "—" }} · {{ c.projectName }}
+          </span>
+        </div>
+      </div>
+
+      <div class="cop-baris-form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "cop.tanggal" | translate }}</mat-label>
+          <input matInput [matDatepicker]="dp" [formControl]="tanggal" />
+          <mat-datepicker-toggle matSuffix [for]="dp" />
+          <mat-datepicker #dp />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "cop.periodeAwal" | translate }} *</mat-label>
+          <input matInput [matDatepicker]="dp1" [formControl]="periodeAwal" />
+          <mat-datepicker-toggle matSuffix [for]="dp1" />
+          <mat-datepicker #dp1 />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "cop.periodeAkhir" | translate }} *</mat-label>
+          <input matInput [matDatepicker]="dp2" [formControl]="periodeAkhir" />
+          <mat-datepicker-toggle matSuffix [for]="dp2" />
+          <mat-datepicker #dp2 />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- ===== 2. VOLUME & NILAI ===== -->
+    <section class="cop-kartu">
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">2</span>{{ "cop.langkahPeriksaVolume" | translate }}
+      </h2>
+
+      <div class="cop-banner">
+        <mat-icon>fact_check</mat-icon>
+        <div>
+          <strong>{{ "cop.tahapDuaJudul" | translate }}</strong>
+          <span>{{ "cop.periksaPetunjuk" | translate }}</span>
+        </div>
+      </div>
+
+      <!--
+        Kartu dibelah dua, sama seperti lembar pengisian — tetapi sisi kiri
+        kini MEMUAT HARGA. Di sinilah rupiah pertama kali muncul, dan
+        bentuk yang sudah dikenal membuat yang memeriksa langsung tahu di
+        mana harus membaca dan di mana harus mengetik.
+      -->
+      <div class="cop-daftar">
+        @for (b of baris(); track b.purchaseOrderItemID) {
+          <article
+            class="cop-item"
+            [class.cop-item--terisi]="(nilai(b.purchaseOrderItemID) || 0) > 0"
+            [class.cop-item--salah]="melebihi(b)"
+          >
+            <div class="cop-item__sisi cop-item__sisi--kiri">
+              <span class="cop-item__cap">{{ "cop.sisiKontrak" | translate }}</span>
+
+              <div class="cop-item__nama">
+                {{ b.task || "-" }}
+                @if (b.keterangan) {
+                  <span class="cop-item__ket">{{ b.keterangan }}</span>
+                }
+              </div>
+
+              <dl class="cop-item__pagu">
+                <div>
+                  <dt>{{ "cop.pagu" | translate }}</dt>
+                  <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+                <div>
+                  <dt>{{ "cop.terpakai" | translate }}</dt>
+                  <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+                <div>
+                  <dt>{{ "cop.hargaSatuan" | translate }}</dt>
+                  <dd>{{ b.price | number: "1.0-2" }}</dd>
+                </div>
+                <div class="cop-item__sisa">
+                  <dt>{{ "cop.sisa" | translate }}</dt>
+                  <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="cop-item__sisi cop-item__sisi--kanan">
+              <span class="cop-item__cap">{{ "cop.sisiPeriksa" | translate }}</span>
+
+              <mat-form-field appearance="outline" class="cop-vol">
+                <mat-label>{{ "cop.volume" | translate }}</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  inputmode="decimal"
+                  thousandSeparator="."
+                  decimalMarker=","
+                  decimalScale="2"
+                  mask="separator.2"
+                  [validation]="false"
+                  [formControl]="kontrolVol(b.purchaseOrderItemID)"
+                />
+                <span matSuffix class="cop-satuan">{{ b.unit }}</span>
+                @if (melebihi(b)) {
+                  <mat-error>{{ "cop.melebihiSisa" | translate }}</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Jumlah baris bergerak saat volumenya diketik: akibat tiap
+                   angka terlihat seketika, tanpa menyimpan lebih dulu. -->
+              <div class="cop-item__jumlah">
+                <span>{{ "cop.jumlahBaris" | translate }}</span>
+                <strong>{{ jumlahBaris(b) | number: "1.0-2" }}</strong>
+              </div>
+
+              <mat-form-field appearance="outline" class="cop-ket-field">
+                <mat-label>{{ "cop.catatanBaris" | translate }}</mat-label>
+                <textarea
+                  matInput
+                  rows="2"
+                  cdkTextareaAutosize
+                  [value]="catatanBaris()[b.purchaseOrderItemID] || ''"
+                  (input)="
+                    setCatatan(b.purchaseOrderItemID, $any($event.target).value)
+                  "
+                ></textarea>
+              </mat-form-field>
+
+              @if (melebihi(b)) {
+                <p class="cop-salah">
+                  <mat-icon>error_outline</mat-icon>
+                  {{ "cop.melebihiSisaPanjang" | translate }}
+                </p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      <div class="cop-total">
+        <span>{{ "cop.nilaiKotor" | translate }}</span>
+        <strong>{{ kotor | number: "1.0-2" }}</strong>
+      </div>
+    </section>
+
+    <!-- ===== 3. POTONGAN & TAMBAHAN ===== -->
+    <section class="cop-kartu">
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">3</span>{{ "cop.langkahPenyesuaian" | translate }}
+      </h2>
+
+      <!--
+        Seluruhnya PILIHAN.
+
+        Banyak progres memang dibayar penuh; mewajibkan isian di sini hanya
+        melahirkan baris nol rupiah yang harus dibaca orang berikutnya.
+      -->
+      <div class="cop-banner cop-banner--lanjut">
+        <mat-icon>tune</mat-icon>
+        <div>
+          <strong>{{ "cop.penyesuaianOpsionalJudul" | translate }}</strong>
+          <span>{{ "cop.penyesuaianOpsional" | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Sisa uang muka & retensi: berapa lagi yang masih boleh dipotong. -->
+      @if (syarat; as sy) {
+        <div class="cv-pagu">
+          <div class="cv-pagu__satu">
+            <span class="cv-pagu__judul">
+              {{ "cop.uangMuka" | translate }}
+              <em>{{ sy.dpPercentage | number: "1.0-2" }}%</em>
+            </span>
+            <dl class="cv-pagu__angka">
+              <div>
+                <dt>{{ "cop.pagu" | translate }}</dt>
+                <dd>{{ sy.dpPagu | number: "1.0-0" }}</dd>
+              </div>
+              <div>
+                <dt>{{ "cop.terpakai" | translate }}</dt>
+                <dd>{{ sy.dpTerpakai | number: "1.0-0" }}</dd>
+              </div>
+              <div class="cv-pagu__sisa">
+                <dt>{{ "cop.sisa" | translate }}</dt>
+                <dd>{{ sy.dpSisa | number: "1.0-0" }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="cv-pagu__satu">
+            <span class="cv-pagu__judul">
+              {{ "cop.retensi" | translate }}
+              <em>{{ sy.retentionPercentage | number: "1.0-2" }}%</em>
+            </span>
+            <dl class="cv-pagu__angka">
+              <div>
+                <dt>{{ "cop.pagu" | translate }}</dt>
+                <dd>{{ sy.retensiPagu | number: "1.0-0" }}</dd>
+              </div>
+              <div>
+                <dt>{{ "cop.terpakai" | translate }}</dt>
+                <dd>{{ sy.retensiTerpakai | number: "1.0-0" }}</dd>
+              </div>
+              <div class="cv-pagu__sisa">
+                <dt>{{ "cop.sisa" | translate }}</dt>
+                <dd>{{ sy.retensiSisa | number: "1.0-0" }}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      }
+
+      @for (a of penyesuaian(); track $index) {
+        <div class="cv-adj-baris" [class.cv-adj-baris--salah]="barisSalah(a)">
+          <mat-form-field appearance="outline" class="cv-adj-jenis" subscriptSizing="dynamic">
+            <mat-label>{{ "cop.jenis" | translate }}</mat-label>
+            <mat-select
+              [value]="a.kind"
+              (selectionChange)="
+                setBaris($index, {
+                  kind: $event.value,
+                  category:
+                    $event.value === 'deduction' ? 'uang_muka' : 'biaya_luar_kontrak'
+                })
+              "
+            >
+              <mat-option value="deduction">{{ "cop.potongan" | translate }}</mat-option>
+              <mat-option value="addition">{{ "cop.tambahan" | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="cv-adj-kat" subscriptSizing="dynamic">
+            <mat-label>{{ "cop.kategori" | translate }}</mat-label>
+            <mat-select
+              [value]="a.category"
+              (selectionChange)="setBaris($index, { category: $event.value })"
+            >
+              @for (k of kategoriUntuk(a.kind); track k) {
+                <mat-option [value]="k">{{ "cop.kat_" + k | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="cv-adj-label" subscriptSizing="dynamic">
+            <mat-label>{{ "cop.keteranganPenyesuaian" | translate }}</mat-label>
+            <input
+              matInput
+              [value]="a.label || ''"
+              (input)="setBaris($index, { label: $any($event.target).value })"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="cv-adj-nominal" subscriptSizing="dynamic">
+            <mat-label>{{ "cop.nominal" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              thousandSeparator="."
+              decimalMarker=","
+              decimalScale="2"
+              mask="separator.2"
+              [validation]="false"
+              [value]="a.amount || ''"
+              (input)="
+                setBaris($index, {
+                  amount: keAngka($any($event.target).value)
+                })
+              "
+            />
+          </mat-form-field>
+
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'common.delete' | translate"
+            (click)="hapusBaris($index)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+
+      <div class="cv-adj-tambah">
+        <button mat-stroked-button type="button" (click)="tambahBaris('deduction')">
+          <mat-icon>remove</mat-icon>
+          {{ "cop.tambahPotongan" | translate }}
+        </button>
+        <button mat-stroked-button type="button" (click)="tambahBaris('addition')">
+          <mat-icon>add</mat-icon>
+          {{ "cop.tambahTambahan" | translate }}
+        </button>
+      </div>
+
+      <!-- Ringkasan bergerak saat diketik: yang mengisi melihat akibat tiap
+           barisnya tanpa menyimpan lebih dahulu. -->
+      <dl class="cv-ringkas">
+        <div>
+          <dt>{{ "cop.nilaiKotor" | translate }}</dt>
+          <dd>{{ kotor | number: "1.0-2" }}</dd>
+        </div>
+        <div class="cv-ringkas--kurang">
+          <dt>{{ "cop.totalPotongan" | translate }}</dt>
+          <dd>{{ potongan | number: "1.0-2" }}</dd>
+        </div>
+        <div class="cv-ringkas--tambah">
+          <dt>{{ "cop.totalTambahan" | translate }}</dt>
+          <dd>{{ tambahan | number: "1.0-2" }}</dd>
+        </div>
+        <div class="cv-ringkas__bersih">
+          <dt>{{ "cop.nilaiBersih" | translate }}</dt>
+          <dd>{{ bersih | number: "1.0-2" }}</dd>
+        </div>
+      </dl>
+
+      @if (bersihNegatif) {
+        <p class="cop-salah">
+          <mat-icon>error_outline</mat-icon>
+          {{ "cop.bersihNegatif" | translate }}
+        </p>
+      }
+      @if (adaBarisSalah) {
+        <p class="cop-salah">
+          <mat-icon>error_outline</mat-icon>
+          {{ "cop.penyesuaianBelumSah" | translate }}
+        </p>
+      }
+    </section>
+
+    <!-- ===== 4. SIMPAN ===== -->
+    <section class="cop-kartu">
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">4</span>{{ "cop.langkahTutup" | translate }}
+      </h2>
+
+      <mat-form-field appearance="outline" class="cop-catatan">
+        <mat-label>{{ "cop.catatan" | translate }}</mat-label>
+        <textarea matInput rows="3" [formControl]="catatan"></textarea>
+      </mat-form-field>
+
+      <!--
+        SATU tombol.
+
+        Tandanya terbubuh sebagai akibat menyimpan, bukan sebagai tindakan
+        tersendiri — supaya "sudah diperiksa" selalu berarti seseorang
+        benar-benar membaca dan memutuskan isinya.
+      -->
+      <div class="cop-aksi">
+        <button mat-stroked-button type="button" (click)="batal()">
+          {{ "common.cancel" | translate }}
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="!bolehSimpan"
+          (click)="simpan()"
+        >
+          <mat-icon>fact_check</mat-icon>
+          {{ "cop.simpanDanPeriksa" | translate }}
+        </button>
+      </div>
+
+      @if (!periodeSah) {
+        <p class="cop-salah cop-salah--blok">
+          <mat-icon>error_outline</mat-icon>
+          {{ "cop.periodeWajib" | translate }}
+        </p>
+      }
+      @if (adaYangMelebihi) {
+        <p class="cop-salah cop-salah--blok">
+          <mat-icon>error_outline</mat-icon>
+          {{ "cop.adaYangMelebihi" | translate }}
+        </p>
+      }
+    </section>
+  }
+</div>

@@ -7,6 +7,30 @@
   />
 
   <div class="cl-toolbar">
+    <!--
+      Pencariannya DI SERVER, bukan menyaring baris yang sedang tampil.
+
+      Daftar ini dipenggal per halaman; menyaring satu halaman di peramban
+      hanya mencari di dua puluh baris yang kebetulan terbuka, dan yang
+      dicari kerap ada di halaman ketiga — layar lalu menjawab "tidak ada"
+      untuk dokumen yang jelas ada.
+    -->
+    <mat-form-field
+      subscriptSizing="dynamic"
+      appearance="outline"
+      class="cl-search"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        autocomplete="off"
+        [formControl]="cari"
+        [placeholder]="'cop.cariPlaceholder' | translate"
+      />
+    </mat-form-field>
+
     <mat-chip-listbox
       class="cl-chips"
       [disabled]="memuat()"
@@ -104,16 +128,19 @@
 
       <ng-container matColumnDef="aksi">
         <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let c" class="cl-aksi">
-          <button
-            mat-icon-button
-            class="cl-open"
-            [matTooltip]="'common.view' | translate"
-            (click)="buka(c)"
-          >
-            <mat-icon>visibility</mat-icon>
-          </button>
+        <!--
+          Sel ini MENAHAN kliknya.
 
+          Barisnya sendiri yang membuka dokumen; tanpa `stopPropagation`,
+          menekan menu titik tiga akan membuka dokumennya sekaligus — dan
+          "hapus" yang ditekan dari daftar berakhir pada layar rincian.
+        -->
+        <td
+          mat-cell
+          *matCellDef="let c"
+          class="cl-aksi"
+          (click)="$event.stopPropagation()"
+        >
           <button mat-icon-button class="cl-open" [matMenuTriggerFor]="menu">
             <mat-icon>more_vert</mat-icon>
           </button>
@@ -132,8 +159,15 @@
                 <span>{{ "cop.unduhPdf" | translate }}</span>
               </button>
             }
+            <!--
+              MEMBUKA lembar periksa, bukan langsung membubuhkan tandanya.
+
+              Menandai dari daftar dapat dilakukan tanpa membuka dokumennya
+              sama sekali — sedangkan penyetuju membaca tanda itu sebagai
+              pernyataan bahwa angkanya sudah ditelaah.
+            -->
             @if (bolehPeriksa() && !c.isChecked) {
-              <button mat-menu-item (click)="periksa(c, true)">
+              <button mat-menu-item (click)="bukaPeriksa(c)">
                 <mat-icon>fact_check</mat-icon>
                 <span>{{ "cop.periksa" | translate }}</span>
               </button>
@@ -159,7 +193,27 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="kolom"></tr>
-      <tr mat-row *matRowDef="let row; columns: kolom"></tr>
+      <!--
+        BARISNYA yang diklik, bukan ikon mata.
+
+        Membuka dokumen adalah hal paling sering dilakukan di layar ini, dan
+        menaruhnya di balik ikon selebar 40px membuat yang paling sering
+        justru paling sulit dikenai. Barisnya sendiri sudah menjadi sasaran
+        yang jelas — tinggal ditekan.
+
+        `tabindex` dan `keydown.enter` menyertainya karena baris tabel tidak
+        dapat difokus dengan sendirinya; tanpa keduanya daftar ini hanya
+        dapat dipakai dengan tetikus.
+      -->
+      <tr
+        mat-row
+        *matRowDef="let row; columns: kolom"
+        class="cl-baris"
+        tabindex="0"
+        (click)="buka(row)"
+        (keydown.enter)="buka(row)"
+        (keydown.space)="$event.preventDefault(); buka(row)"
+      ></tr>
     </table>
 
     @if (!memuat() && !terlihat().length) {
