@@ -65,6 +65,41 @@ export interface BarisCoP extends BarisCoPInput {
   amount?: number;
 }
 
+/** Kategori potongan yang dikenali server. */
+export const KATEGORI_POTONGAN = [
+  'uang_muka',
+  'retensi',
+  'denda',
+  'pph',
+  'lain_lain',
+] as const;
+
+/** Kategori tambahan yang dikenali server. */
+export const KATEGORI_TAMBAHAN = ['biaya_luar_kontrak', 'lain_lain'] as const;
+
+/**
+ * Satu baris potongan atau tambahan.
+ *
+ * `amount` SELALU positif — arahnya ditentukan `kind`. Server menolak nilai
+ * nol atau negatif, jadi layar tidak perlu (dan tidak boleh) memakai tanda
+ * minus untuk menyatakan potongan.
+ */
+export interface PenyesuaianCoP {
+  id?: number;
+  kind: 'deduction' | 'addition';
+  category: string;
+  label?: string | null;
+  amount: number;
+  note?: string | null;
+}
+
+export interface RingkasanNilai {
+  grossAmount: number;
+  deductionTotal: number;
+  additionTotal: number;
+  netAmount: number;
+}
+
 export interface CertificateOfPayment {
   id: number;
   name: string;
@@ -86,6 +121,12 @@ export interface CertificateOfPayment {
   approvedBy?: number | null;
   approvedByName?: string | null;
   items?: BarisCoP[];
+  /** Hanya untuk level 2 ke atas — server tidak mengirimkannya ke level 1. */
+  adjustments?: PenyesuaianCoP[];
+  grossAmount?: number;
+  deductionTotal?: number;
+  additionTotal?: number;
+  netAmount?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -157,6 +198,19 @@ export class CertificateOfPaymentService {
     },
   ) {
     return this.api.put(`${CertificateOfPaymentService.JALUR}/${id}`, body);
+  }
+
+  /**
+   * Ganti SELURUH potongan & tambahan.
+   *
+   * Dikirim utuh, bukan per baris: server menggantinya seluruhnya, sehingga
+   * layar cukup mengirimkan susunan yang dikehendaki.
+   */
+  simpanPenyesuaian(id: number, adjustments: PenyesuaianCoP[]) {
+    return this.api.put(
+      `${CertificateOfPaymentService.JALUR}/${id}/adjustments`,
+      { adjustments },
+    );
   }
 
   periksa(id: number, checked: boolean) {

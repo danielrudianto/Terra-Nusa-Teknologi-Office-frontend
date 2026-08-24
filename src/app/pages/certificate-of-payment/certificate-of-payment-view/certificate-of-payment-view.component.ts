@@ -4,6 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -13,6 +17,9 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import {
   CertificateOfPayment,
   CertificateOfPaymentService,
+  KATEGORI_POTONGAN,
+  KATEGORI_TAMBAHAN,
+  PenyesuaianCoP,
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
@@ -30,6 +37,10 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   imports: [
     CommonModule,
     MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
@@ -51,6 +62,20 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   readonly cop = signal<CertificateOfPayment | null>(null);
   readonly memuat = signal(false);
   readonly bekerja = signal(false);
+
+  /**
+   * Salinan penyesuaian yang sedang disunting.
+   *
+   * Disalin, bukan disunting langsung pada `cop()`: yang batal menyimpan
+   * harus kembali ke keadaan semula, dan menyunting di tempat membuat
+   * "batal" tidak membatalkan apa pun.
+   */
+  readonly penyesuaian = signal<PenyesuaianCoP[]>([]);
+  readonly menyuntingPenyesuaian = signal(false);
+  readonly menyimpanPenyesuaian = signal(false);
+
+  readonly KATEGORI_POTONGAN = KATEGORI_POTONGAN;
+  readonly KATEGORI_TAMBAHAN = KATEGORI_TAMBAHAN;
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
   readonly bolehPeriksa = computed(() => this.izin.level() >= 2);
@@ -84,6 +109,9 @@ export class CertificateOfPaymentViewComponent implements OnInit {
         this.service.detail(id),
       )) as CertificateOfPayment;
       this.cop.set(hasil);
+      this.penyesuaian.set(
+        (hasil.adjustments || []).map((a) => ({ ...a })),
+      );
     } catch (e) {
       this.pesan(e);
     } finally {
@@ -128,5 +156,117 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   ubah(): void {
     const c = this.cop();
     if (c) this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
+  }
+
+  // ---- potongan & tambahan -------------------------------------------
+
+  /**
+   * Boleh menyunting penyesuaian?
+   *
+   * Pemeriksa ke atas, dan HANYA selama belum disetujui — nilai yang sudah
+   * disetujui adalah nilai yang akan ditagihkan. Cerminan aturan server;
+   * yang menegakkan tetap server.
+   */
+  get bolehSuntingPenyesuaian(): boolean {
+    return this.bolehPeriksa() && !this.cop()?.isApproved;
+  }
+
+  mulaiSunting(): void {
+    this.penyesuaian.set(
+      (this.cop()?.adjustments || []).map((a) => ({ ...a })),
+    );
+    this.menyuntingPenyesuaian.set(true);
+  }
+
+  batalSunting(): void {
+    this.penyesuaian.set(
+      (this.cop()?.adjustments || []).map((a) => ({ ...a })),
+    );
+    this.menyuntingPenyesuaian.set(false);
+  }
+
+  tambahBaris(kind: 'deduction' | 'addition'): void {
+    this.penyesuaian.update((s) => [
+      ...s,
+      {
+        kind,
+        category: kind === 'deduction' ? 'uang_muka' : 'biaya_luar_kontrak',
+        label: null,
+        amount: 0,
+        note: null,
+      },
+    ]);
+  }
+
+  hapusBaris(i: number): void {
+    this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
+  }
+
+  setBaris(i: number, bagian: Partial<PenyesuaianCoP>): void {
+    this.penyesuaian.update((s) =>
+      s.map((b, idx) => (idx === i ? { ...b, ...bagian } : b)),
+    );
+  }
+
+  kategoriUntuk(kind: string): readonly string[] {
+    return kind === 'deduction' ? KATEGORI_POTONGAN : KATEGORI_TAMBAHAN;
+  }
+
+  /** Hitungan sementara di layar — server tetap yang menghitung final. */
+  get kotorSunting(): number {
+    return Number(this.cop()?.grossAmount || 0);
+  }
+
+  get potonganSunting(): number {
+    return this.penyesuaian()
+      .filter((a) => a.kind === 'deduction')
+      .reduce((t, a) => t + Number(a.amount || 0), 0);
+  }
+
+  get tambahanSunting(): number {
+    return this.penyesuaian()
+      .filter((a) => a.kind === 'addition')
+      .reduce((t, a) => t + Number(a.amount || 0), 0);
+  }
+
+  get bersihSunting(): number {
+    return this.kotorSunting - this.potonganSunting + this.tambahanSunting;
+  }
+
+  /** Baris yang belum sah — ditandai sebelum dikirim, bukan sesudah ditolak. */
+  barisSalah(a: PenyesuaianCoP): boolean {
+    if (!a.amount || Number(a.amount) <= 0) return true;
+    if (a.category === 'lain_lain' && !(a.label || '').trim()) return true;
+    return false;
+  }
+
+  get adaBarisSalah(): boolean {
+    return this.penyesuaian().some((a) => this.barisSalah(a));
+  }
+
+  get bersihNegatif(): boolean {
+    return this.bersihSunting < 0;
+  }
+
+  async simpanPenyesuaian(): Promise<void> {
+    const c = this.cop();
+    if (!c || this.adaBarisSalah || this.bersihNegatif) return;
+    this.menyimpanPenyesuaian.set(true);
+    try {
+      await firstValueFrom(
+        this.service.simpanPenyesuaian(c.id, this.penyesuaian()),
+      );
+      this.menyuntingPenyesuaian.set(false);
+      await this.muat();
+      this.snackBar.open(
+        this.translate.instant('cop.penyesuaianTersimpan'),
+        this.translate.instant('common.close'),
+        { duration: 3000 },
+      );
+    } catch (e) {
+      this.pesan(e);
+    } finally {
+      this.menyimpanPenyesuaian.set(false);
+    }
   }
 }
