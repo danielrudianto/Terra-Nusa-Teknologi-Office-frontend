@@ -4917,6 +4917,19 @@
     "unduhPdf": "Download PDF",
     "unduhBap": "Download BAP only",
     "mengunduh": "Preparing file…",
-    "semua": "All"
+    "semua": "All",
+    "tahapSatuJudul": "Stage 1 — record volume",
+    "tahapSatu": "Enter the volume actually completed. No monetary figures appear at this stage, whoever fills it in.",
+    "tahapDuaJudul": "Stage 2 — checking & values",
+    "tahapDua": "Once saved, the checker re-reads the volume and handles the money: advance recovery, retention, penalties, and additions.",
+    "tahapDuaLayarJudul": "Stage 2 — checking & values",
+    "tahapDuaLayar": "Re-read the volume above, then set the deductions and additions. Advance recovery and retention are pre-computed from the work order terms.",
+    "dpSeluruhnya": "Total advance",
+    "sudahDikembalikan": "Already recovered",
+    "retensiSeluruhnya": "Total retention",
+    "sudahDitahan": "Already withheld",
+    "terisiOtomatis": "Advance recovery, retention, and income tax have been filled in from the work order terms — adjust if this period was agreed differently.",
+    "periodeWajib": "The work period is required.",
+    "periodeTerbalik": "Period end cannot precede period start."
   }
 }

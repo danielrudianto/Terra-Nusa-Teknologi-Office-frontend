@@ -106,19 +106,32 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ "cop.periodeAwal" | translate }}</mat-label>
-          <input matInput [matDatepicker]="dp1" [formControl]="periodeAwal" />
+          <mat-label>{{ "cop.periodeAwal" | translate }} *</mat-label>
+          <input matInput required [matDatepicker]="dp1" [formControl]="periodeAwal" />
           <mat-datepicker-toggle matSuffix [for]="dp1" />
           <mat-datepicker #dp1 />
+          @if (periodeAwal.touched && !periodeAwal.value) {
+            <mat-error>{{ "cop.periodeWajib" | translate }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ "cop.periodeAkhir" | translate }}</mat-label>
-          <input matInput [matDatepicker]="dp2" [formControl]="periodeAkhir" />
+          <mat-label>{{ "cop.periodeAkhir" | translate }} *</mat-label>
+          <input matInput required [matDatepicker]="dp2" [formControl]="periodeAkhir" />
           <mat-datepicker-toggle matSuffix [for]="dp2" />
           <mat-datepicker #dp2 />
+          @if (periodeAkhir.touched && !periodeAkhir.value) {
+            <mat-error>{{ "cop.periodeWajib" | translate }}</mat-error>
+          }
         </mat-form-field>
       </div>
+
+      @if (periodeTerbalik) {
+        <p class="cop-salah">
+          <mat-icon>error_outline</mat-icon>
+          {{ "cop.periodeTerbalik" | translate }}
+        </p>
+      }
     </section>
 
     <!-- ===== 3. VOLUME ===== -->
@@ -128,10 +141,10 @@
       </h2>
 
       <div class="cop-banner">
-        <mat-icon>info</mat-icon>
+        <mat-icon>straighten</mat-icon>
         <div>
-          <strong>{{ "cop.petunjukVolumeJudul" | translate }}</strong>
-          <span>{{ "cop.petunjukVolume" | translate }}</span>
+          <strong>{{ "cop.tahapSatuJudul" | translate }}</strong>
+          <span>{{ "cop.tahapSatu" | translate }}</span>
         </div>
       </div>
 
@@ -158,12 +171,6 @@
                   <span class="cop-item__ket">{{ b.keterangan }}</span>
                 }
               </div>
-              @if (bolehLihatNilai() && b.price !== undefined) {
-                <div class="cop-item__harga">
-                  {{ b.price | number: "1.0-2" }}
-                  <em>/ {{ b.unit }}</em>
-                </div>
-              }
             </header>
 
             <!-- Pagu: kontrak, terpakai, sisa. Sisa dibuat paling menonjol. -->
@@ -218,12 +225,6 @@
                 }
               </mat-form-field>
 
-              @if (bolehLihatNilai() && jumlahBaris(b) !== null) {
-                <div class="cop-item__jumlah">
-                  <span>{{ "cop.jumlah" | translate }}</span>
-                  <strong>{{ jumlahBaris(b) | number: "1.0-2" }}</strong>
-                </div>
-              }
             </div>
 
             <!-- Keterangan: TEXTAREA. Yang ditulis di sini kerap kalimat —
@@ -255,12 +256,6 @@
         <p class="cop-kosong">{{ "cop.spkTanpaBaris" | translate }}</p>
       }
 
-      @if (bolehLihatNilai() && totalNilai !== null) {
-        <div class="cop-total">
-          <span>{{ "cop.nilaiPekerjaan" | translate }}</span>
-          <strong>{{ totalNilai | number: "1.0-2" }}</strong>
-        </div>
-      }
     </section>
 
     <!-- ===== 4. CATATAN & SIMPAN ===== -->
@@ -282,11 +277,24 @@
         sekali. Banner ini menjawab "di mana potongannya" tanpa membuat
         siapa pun mencarinya di layar yang salah.
       -->
+      <!--
+        DUA TAHAP, BUKAN DUA LEVEL.
+
+        Lembar ini adalah TAHAP PENCATATAN VOLUME — dan ia tetap tahap
+        volume siapa pun yang mengerjakannya, termasuk pemilik. Karena itu
+        tidak ada satu pun angka rupiah di layar ini, bahkan bagi yang
+        berwenang melihatnya.
+
+        Menampilkan harga "karena levelnya boleh" mengaburkan batas
+        tahapnya: yang mengisi mulai menimbang nilainya sambil mencatat
+        volume, padahal yang diminta di sini hanya satu — berapa yang
+        benar-benar terlaksana.
+      -->
       <div class="cop-banner cop-banner--lanjut">
         <mat-icon>tune</mat-icon>
         <div>
-          <strong>{{ "cop.penyesuaianDimanaJudul" | translate }}</strong>
-          <span>{{ "cop.penyesuaianDimana" | translate }}</span>
+          <strong>{{ "cop.tahapDuaJudul" | translate }}</strong>
+          <span>{{ "cop.tahapDua" | translate }}</span>
         </div>
       </div>
 
@@ -298,7 +306,7 @@
           mat-flat-button
           color="primary"
           type="button"
-          [disabled]="menyimpan() || adaYangMelebihi || !adaIsian"
+          [disabled]="menyimpan() || adaYangMelebihi || !adaIsian || !periodeSah"
           (click)="simpan()"
         >
           <mat-icon>save</mat-icon>

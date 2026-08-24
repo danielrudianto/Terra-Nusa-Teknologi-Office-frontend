@@ -4917,6 +4917,19 @@
     "unduhPdf": "Unduh PDF",
     "unduhBap": "Unduh BAP saja",
     "mengunduh": "Menyiapkan berkas…",
-    "semua": "Semua"
+    "semua": "Semua",
+    "tahapSatuJudul": "Tahap 1 — catat volume",
+    "tahapSatu": "Isi volume yang benar-benar terlaksana. Di tahap ini tidak ada angka rupiah sama sekali, siapa pun yang mengisinya.",
+    "tahapDuaJudul": "Tahap 2 — pemeriksaan & nilai",
+    "tahapDua": "Setelah tersimpan, pemeriksa membaca ulang volumenya lalu mengurus uangnya: uang muka, retensi, denda, dan penambahan.",
+    "tahapDuaLayarJudul": "Tahap 2 — pemeriksaan & nilai",
+    "tahapDuaLayar": "Baca ulang volume di atas, lalu atur potongan dan tambahannya. Uang muka dan retensi sudah dihitungkan dari syarat SPK.",
+    "dpSeluruhnya": "Uang muka seluruhnya",
+    "sudahDikembalikan": "Sudah dikembalikan",
+    "retensiSeluruhnya": "Retensi seluruhnya",
+    "sudahDitahan": "Sudah ditahan",
+    "terisiOtomatis": "Uang muka, retensi, dan PPh sudah diisikan dari syarat SPK — silakan dibetulkan bila periode ini disepakati lain.",
+    "periodeWajib": "Periode pekerjaan wajib diisi.",
+    "periodeTerbalik": "Periode akhir tidak boleh mendahului periode awal."
   }
 }

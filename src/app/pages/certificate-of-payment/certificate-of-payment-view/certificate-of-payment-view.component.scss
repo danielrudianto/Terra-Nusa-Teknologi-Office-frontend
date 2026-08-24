@@ -252,3 +252,82 @@
 .cv-pemisah {
   flex: 1 1 auto;
 }
+
+/* ---- banner tahap & panel sisa ---- */
+
+.cv-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+
+  .mat-icon { flex: 0 0 auto; width: 20px; height: 20px; font-size: 20px; margin-top: 1px; }
+  div { display: flex; flex-direction: column; gap: 2px; }
+  strong { font-size: 13px; font-weight: 600; }
+  span { font-size: 12.5px; opacity: 0.9; }
+}
+
+/*
+  Sisa uang muka & retensi berdampingan.
+
+  Bentuknya sengaja sama dengan pagu volume pada layar pengisian: keduanya
+  menjawab pertanyaan yang sama — berapa lagi yang masih boleh — dan yang
+  memakainya tidak perlu belajar dua bentuk untuk satu maksud.
+*/
+.cv-pagu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  &__satu {
+    flex: 1 1 260px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.035);
+  }
+
+  &__judul {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 8px;
+
+    em {
+      font-style: normal;
+      font-weight: 400;
+      opacity: 0.6;
+      margin-left: 4px;
+    }
+  }
+
+  &__angka {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    dt { font-size: 11px; opacity: 0.6; margin-bottom: 1px; }
+    dd { margin: 0; font-size: 13px; font-weight: 600; }
+  }
+
+  &__sisa dd {
+    color: var(--brand-strong, #0f3fd0);
+    font-size: 15px;
+  }
+}
+
+.cv-saran {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: var(--brand-strong, #0f3fd0);
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}

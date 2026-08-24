@@ -21,6 +21,7 @@ import {
   KATEGORI_POTONGAN,
   KATEGORI_TAMBAHAN,
   PenyesuaianCoP,
+  SyaratSpk,
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
@@ -205,11 +206,74 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     return this.bolehPeriksa() && !this.cop()?.isApproved;
   }
 
+  get syarat(): SyaratSpk | null {
+    return this.cop()?.spkSyarat || null;
+  }
+
+  /**
+   * Buka penyunting penyesuaian — dengan uang muka & retensi SUDAH TERISI.
+   *
+   * MENGAPA DIISIKAN, BUKAN DIBIARKAN KOSONG
+   *
+   * Uang muka dibayarkan di depan lalu dikembalikan sedikit demi sedikit
+   * dari tiap progres; retensi ditahan dari tiap progres sampai masa
+   * pemeliharaan berakhir. Keduanya berlaku pada SETIAP periode, bukan
+   * sekali di awal — dan yang berlaku setiap periode adalah yang paling
+   * mudah terlewat pada periode kelima.
+   *
+   * Angkanya SARAN, bukan kunci: pemeriksa tetap dapat membetulkannya bila
+   * periode itu memang disepakati lain, dan menghapus barisnya bila memang
+   * tidak dipotong.
+   *
+   * Hanya diisikan bila belum ada penyesuaian sama sekali — membuka ulang
+   * CoP yang sudah diatur tidak boleh menimpa keputusan yang sudah diambil.
+   */
   mulaiSunting(): void {
-    this.penyesuaian.set(
-      (this.cop()?.adjustments || []).map((a) => ({ ...a })),
-    );
+    const ada = (this.cop()?.adjustments || []).map((a) => ({ ...a }));
+    if (ada.length) {
+      this.penyesuaian.set(ada);
+      this.menyuntingPenyesuaian.set(true);
+      return;
+    }
+
+    const sy = this.syarat;
+    const saran: PenyesuaianCoP[] = [];
+    if (sy && sy.saranUangMuka > 0) {
+      saran.push({
+        kind: 'deduction',
+        category: 'uang_muka',
+        label: null,
+        amount: sy.saranUangMuka,
+        note: null,
+      });
+    }
+    if (sy && sy.saranRetensi > 0) {
+      saran.push({
+        kind: 'deduction',
+        category: 'retensi',
+        label: null,
+        amount: sy.saranRetensi,
+        note: null,
+      });
+    }
+    if (sy && sy.saranPph > 0) {
+      saran.push({
+        kind: 'deduction',
+        category: 'pph',
+        label: sy.pphCode ? `${sy.pphCode}` : null,
+        amount: sy.saranPph,
+        note: null,
+      });
+    }
+    this.penyesuaian.set(saran);
     this.menyuntingPenyesuaian.set(true);
+  }
+
+  /** Baris saran terisi otomatis? Dipakai menandainya di layar. */
+  get adaSaran(): boolean {
+    const sy = this.syarat;
+    if (!sy) return false;
+    return sy.saranUangMuka > 0 || sy.saranRetensi > 0 || sy.saranPph > 0;
   }
 
   batalSunting(): void {

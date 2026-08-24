@@ -152,6 +152,80 @@
     -->
     @if (bolehLihatNilai()) {
       <section class="cv-kartu">
+        <!--
+          TAHAP DUA.
+
+          Layar pembuatan hanya mencatat volume — siapa pun yang mengisinya.
+          Di sinilah volume itu dibaca ulang dan uangnya diurus: uang muka,
+          retensi, denda, dan penambahan. Dua tahap, bukan dua level.
+        -->
+        <div class="cv-banner">
+          <mat-icon>payments</mat-icon>
+          <div>
+            <strong>{{ "cop.tahapDuaLayarJudul" | translate }}</strong>
+            <span>{{ "cop.tahapDuaLayar" | translate }}</span>
+          </div>
+        </div>
+
+        <!--
+          Sisa uang muka & retensi.
+
+          Uang muka dikembalikan sedikit demi sedikit dari tiap progres;
+          tanpa angka sisa ini, yang memeriksa tidak punya cara mengetahui
+          berapa lagi yang masih harus dikembalikan selain membuka seluruh
+          CoP sebelumnya satu per satu.
+        -->
+        @if (syarat; as sy) {
+          @if (sy.dpPagu > 0 || sy.retensiPagu > 0) {
+            <div class="cv-pagu">
+              @if (sy.dpPagu > 0) {
+                <div class="cv-pagu__satu">
+                  <span class="cv-pagu__judul">
+                    {{ "cop.kat_uang_muka" | translate }}
+                    <em>{{ sy.dpPercentage | number: "1.0-2" }}%</em>
+                  </span>
+                  <div class="cv-pagu__angka">
+                    <div>
+                      <dt>{{ "cop.dpSeluruhnya" | translate }}</dt>
+                      <dd>{{ sy.dpPagu | number: "1.0-0" }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ "cop.sudahDikembalikan" | translate }}</dt>
+                      <dd>{{ sy.dpTerpakai | number: "1.0-0" }}</dd>
+                    </div>
+                    <div class="cv-pagu__sisa">
+                      <dt>{{ "cop.sisa" | translate }}</dt>
+                      <dd>{{ sy.dpSisa | number: "1.0-0" }}</dd>
+                    </div>
+                  </div>
+                </div>
+              }
+              @if (sy.retensiPagu > 0) {
+                <div class="cv-pagu__satu">
+                  <span class="cv-pagu__judul">
+                    {{ "cop.kat_retensi" | translate }}
+                    <em>{{ sy.retentionPercentage | number: "1.0-2" }}%</em>
+                  </span>
+                  <div class="cv-pagu__angka">
+                    <div>
+                      <dt>{{ "cop.retensiSeluruhnya" | translate }}</dt>
+                      <dd>{{ sy.retensiPagu | number: "1.0-0" }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ "cop.sudahDitahan" | translate }}</dt>
+                      <dd>{{ sy.retensiTerpakai | number: "1.0-0" }}</dd>
+                    </div>
+                    <div class="cv-pagu__sisa">
+                      <dt>{{ "cop.sisa" | translate }}</dt>
+                      <dd>{{ sy.retensiSisa | number: "1.0-0" }}</dd>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+
         <div class="cv-kepala">
           <h2 class="cv-kartu__judul">{{ "cop.penyesuaian" | translate }}</h2>
           @if (bolehSuntingPenyesuaian && !menyuntingPenyesuaian()) {
@@ -187,6 +261,12 @@
         } @else {
           <!-- ---- tampilan sunting ---- -->
           <div class="cv-adj-sunting">
+            @if (adaSaran) {
+              <p class="cv-saran">
+                <mat-icon>auto_awesome</mat-icon>
+                {{ "cop.terisiOtomatis" | translate }}
+              </p>
+            }
             @for (a of penyesuaian(); track $index) {
               <div class="cv-adj-baris" [class.cv-adj-baris--salah]="barisSalah(a)">
                 <mat-form-field appearance="outline" class="cv-adj-jenis">

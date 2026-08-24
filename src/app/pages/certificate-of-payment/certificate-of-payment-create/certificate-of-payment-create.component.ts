@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -104,26 +104,30 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   readonly catatanBaris = signal<Record<number, string>>({});
 
   readonly tanggal = new FormControl<Date | null>(new Date());
-  readonly periodeAwal = new FormControl<Date | null>(null);
-  readonly periodeAkhir = new FormControl<Date | null>(null);
+  /*
+   * Periode WAJIB — cerminan aturan server.
+   *
+   * Sebuah berita acara progres tanpa rentang tanggal tidak dapat dibaca:
+   * ia menyatakan "sekian volume terlaksana" tanpa menyebut kapan. Ia juga
+   * yang tercetak pada lembar BAP.
+   */
+  readonly periodeAwal = new FormControl<Date | null>(null, Validators.required);
+  readonly periodeAkhir = new FormControl<Date | null>(null, Validators.required);
   readonly catatan = new FormControl<string>('');
   readonly cariSpk = new FormControl<string>('');
 
-  /**
-   * Boleh melihat nilai rupiah?
+  /*
+   * TIDAK ADA `bolehLihatNilai` di layar ini — dan itu disengaja.
    *
-   * Cerminan `LEVEL_COP_LIHAT_NILAI` di server. Dipakai HANYA untuk memutuskan
-   * kolomnya digambar atau tidak — bukan sebagai pengamanan. Yang mengamankan
-   * adalah server yang tidak mengirimkan angkanya.
+   * Lembar ini TAHAP PENCATATAN VOLUME. Ia tetap tahap volume siapa pun
+   * yang mengerjakannya: orang lapangan, manajer, maupun pemilik. Uang
+   * ditangani di tahap berikutnya, pada layar rincian.
+   *
+   * Sebelumnya layar ini menggambar harga bila levelnya mencukupi, dan
+   * akibatnya batas tahapnya kabur — pemilik yang membuat CoP melihat
+   * lembar yang berbeda dari yang dilihat orang lapangan untuk pekerjaan
+   * yang sama, lalu keduanya membicarakan dua hal berlainan.
    */
-  readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
-
-  get kolom(): string[] {
-    const dasar = ['pekerjaan', 'satuan', 'pagu', 'terpakai', 'sisa', 'volume'];
-    return this.bolehLihatNilai()
-      ? [...dasar, 'harga', 'jumlah', 'catatan']
-      : [...dasar, 'catatan'];
-  }
 
   /** Sampaikan pesan server APA ADANYA — di situlah sisa pagu tertulis. */
   private pesan(e: any): void {
@@ -344,19 +348,22 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     return this.baris().some((b) => this.melebihi(b));
   }
 
+  /** Periode terisi DAN urutannya masuk akal. */
+  get periodeSah(): boolean {
+    const a = this.periodeAwal.value;
+    const b = this.periodeAkhir.value;
+    if (!a || !b) return false;
+    return b.getTime() >= a.getTime();
+  }
+
+  get periodeTerbalik(): boolean {
+    const a = this.periodeAwal.value;
+    const b = this.periodeAkhir.value;
+    return !!a && !!b && b.getTime() < a.getTime();
+  }
+
   get adaIsian(): boolean {
     return Object.values(this.isian()).some((v) => v !== null && v > 0);
-  }
-
-  jumlahBaris(b: BarisPagu): number | null {
-    if (!this.bolehLihatNilai() || b.price === undefined) return null;
-    const v = this.nilai(b.purchaseOrderItemID);
-    return v === null ? null : v * b.price;
-  }
-
-  get totalNilai(): number | null {
-    if (!this.bolehLihatNilai()) return null;
-    return this.baris().reduce((t, b) => t + (this.jumlahBaris(b) || 0), 0);
   }
 
   // ---- simpan ----------------------------------------------------------
@@ -389,6 +396,15 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   async simpan(): Promise<void> {
     const spk = this.spkTerpilih();
     if (!spk) return;
+
+    if (!this.periodeSah) {
+      this.snackBar.open(
+        this.translate.instant('cop.periodeWajib'),
+        this.translate.instant('common.close'),
+        { duration: 4000 },
+      );
+      return;
+    }
 
     const items = this.susunItems();
     if (!items.length) {

@@ -96,6 +96,32 @@ export interface PenyesuaianCoP {
   note?: string | null;
 }
 
+/**
+ * Syarat pembayaran menurut SPK, beserta sisa yang masih boleh dipotong.
+ *
+ * Hanya sampai ke level 2 ke atas — server tidak mengirimkannya ke lapangan.
+ */
+export interface SyaratSpk {
+  pphCode?: string | null;
+  pphTaxObject?: string | null;
+  pphPercentage: number;
+  dpPercentage: number;
+  retentionPercentage: number;
+  nilaiKontrak: number;
+  /** Uang muka: seluruhnya, yang sudah dikembalikan, dan sisanya. */
+  dpPagu: number;
+  dpTerpakai: number;
+  dpSisa: number;
+  /** Retensi: seluruhnya, yang sudah ditahan, dan sisanya. */
+  retensiPagu: number;
+  retensiTerpakai: number;
+  retensiSisa: number;
+  /** Saran nominal untuk periode ini; sudah dibatasi sisanya. */
+  saranPph: number;
+  saranUangMuka: number;
+  saranRetensi: number;
+}
+
 export interface RingkasanNilai {
   grossAmount: number;
   deductionTotal: number;
@@ -130,6 +156,7 @@ export interface CertificateOfPayment {
   deductionTotal?: number;
   additionTotal?: number;
   netAmount?: number;
+  spkSyarat?: SyaratSpk;
 }
 
 @Injectable({ providedIn: 'root' })

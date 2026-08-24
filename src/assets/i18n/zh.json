@@ -4917,6 +4917,19 @@
     "unduhPdf": "下载 PDF",
     "unduhBap": "仅下载 BAP",
     "mengunduh": "正在准备文件…",
-    "semua": "全部"
+    "semua": "全部",
+    "tahapSatuJudul": "第一阶段 — 记录工程量",
+    "tahapSatu": "填写实际完成的工程量。此阶段不显示任何金额，无论由谁填写。",
+    "tahapDuaJudul": "第二阶段 — 检查与金额",
+    "tahapDua": "保存后，检查人复核工程量并处理金额：预付款抵扣、质保金、罚款及增加项。",
+    "tahapDuaLayarJudul": "第二阶段 — 检查与金额",
+    "tahapDuaLayar": "复核上方工程量，然后设置扣减与增加项。预付款抵扣与质保金已按工作指令条款预先计算。",
+    "dpSeluruhnya": "预付款总额",
+    "sudahDikembalikan": "已抵扣",
+    "retensiSeluruhnya": "质保金总额",
+    "sudahDitahan": "已扣留",
+    "terisiOtomatis": "预付款抵扣、质保金与所得税已按工作指令条款填入 — 若本期另有约定请修改。",
+    "periodeWajib": "工作周期为必填项。",
+    "periodeTerbalik": "结束日期不得早于起始日期。"
   }
 }
