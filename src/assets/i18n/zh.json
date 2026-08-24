@@ -4905,6 +4905,18 @@
     "kat_denda": "罚款",
     "kat_pph": "所得税",
     "kat_lain_lain": "其他",
-    "kat_biaya_luar_kontrak": "合同外费用"
+    "kat_biaya_luar_kontrak": "合同外费用",
+    "cariSpkPlaceholder": "输入工作指令编号或项目名称…",
+    "minimalTigaHuruf": "请输入至少 3 个字符以搜索工作指令。",
+    "gantiSpk": "更换工作指令",
+    "langkahTutup": "备注与保存",
+    "petunjukVolumeJudul": "填写实际完成的工程量",
+    "melebihiSisaPanjang": "此工程量超出工作指令剩余量。若确有增加，须先办理补充协议。",
+    "penyesuaianDimanaJudul": "扣减与增加在下一阶段填写",
+    "penyesuaianDimana": "预付款抵扣、质保金、罚款及增加项由检查人在文档保存后于详情页填写。",
+    "unduhPdf": "下载 PDF",
+    "unduhBap": "仅下载 BAP",
+    "mengunduh": "正在准备文件…",
+    "semua": "全部"
   }
 }

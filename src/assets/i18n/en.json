@@ -4905,6 +4905,18 @@
     "kat_denda": "Penalty",
     "kat_pph": "Income tax",
     "kat_lain_lain": "Other",
-    "kat_biaya_luar_kontrak": "Out-of-contract cost"
+    "kat_biaya_luar_kontrak": "Out-of-contract cost",
+    "cariSpkPlaceholder": "Type work order number or project name…",
+    "minimalTigaHuruf": "Type at least 3 characters to search work orders.",
+    "gantiSpk": "Change work order",
+    "langkahTutup": "Notes & save",
+    "petunjukVolumeJudul": "Enter the volume actually completed",
+    "melebihiSisaPanjang": "This volume exceeds the remaining work order quantity. If it genuinely increased, the work order must be amended first.",
+    "penyesuaianDimanaJudul": "Deductions & additions come at the next stage",
+    "penyesuaianDimana": "Advance recovery, retention, penalties, and additions are entered by the checker on the detail screen after this document is saved.",
+    "unduhPdf": "Download PDF",
+    "unduhBap": "Download BAP only",
+    "mengunduh": "Preparing file…",
+    "semua": "All"
   }
 }

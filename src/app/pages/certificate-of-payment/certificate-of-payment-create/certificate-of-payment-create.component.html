@@ -1,8 +1,6 @@
 <div class="cop-create">
   <app-header-title
-    [title]="
-      (copId ? 'cop.judulUbah' : 'cop.judulBuat') | translate
-    "
+    [title]="(copId ? 'cop.judulUbah' : 'cop.judulBuat') | translate"
     [description]="'cop.subjudulBuat' | translate"
     [backLink]="'/Certificate-of-payment'"
     [backLabel]="'cop.kembaliDaftar' | translate"
@@ -13,47 +11,92 @@
   }
 
   <!-- ===== 1. PILIH SPK ===== -->
-  <!--
-    Daftar ini hanya memuat SPK. Purchase order pembelian barang tidak pernah
-    sampai ke sini — server yang menyaringnya, bukan layar.
-  -->
   <section class="cop-kartu">
-    <h2 class="cop-kartu__judul">{{ "cop.langkahSpk" | translate }}</h2>
+    <h2 class="cop-kartu__judul">
+      <span class="cop-langkah">1</span>{{ "cop.langkahSpk" | translate }}
+    </h2>
 
     @if (!copId) {
+      <!--
+        AUTOCOMPLETE, bukan select.
+
+        Select memuat seluruh SPK lebih dulu; jumlahnya bertambah tiap bulan
+        dan tidak pernah berkurang, sehingga layar makin lama makin lambat
+        dibuka untuk memilih satu baris. Pencariannya di SERVER, jadi jumlah
+        SPK tidak lagi punya batas atas.
+      -->
       <mat-form-field appearance="outline" class="cop-pilih">
         <mat-label>{{ "cop.spk" | translate }}</mat-label>
-        <mat-select
-          [value]="spkTerpilih()?.id ?? null"
-          (selectionChange)="pilihSpkById($event.value)"
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [formControl]="cariSpk"
+          [matAutocomplete]="auto"
+          [placeholder]="'cop.cariSpkPlaceholder' | translate"
+          autocomplete="off"
+        />
+        @if (mencariSpk()) {
+          <mat-spinner matSuffix diameter="18" />
+        }
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          [displayWith]="tampilSpk"
+          (optionSelected)="pilihSpk($event.option.value)"
         >
           @for (s of spkList(); track s.id) {
-            <mat-option [value]="s.id">
-              {{ s.name }} — {{ s.projectName }}
-              @if (s.supplierName) {
-                <span class="cop-pemasok">({{ s.supplierName }})</span>
-              }
+            <mat-option [value]="s">
+              <div class="cop-opsi">
+                <span class="cop-opsi__nomor">{{ s.name }}</span>
+                <span class="cop-opsi__ket">
+                  {{ s.projectName }}@if (s.supplierName) { · {{ s.supplierName }} }
+                </span>
+              </div>
             </mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
         <mat-hint>{{ "cop.spkHanyaSpk" | translate }}</mat-hint>
       </mat-form-field>
 
-      @if (!memuat() && !spkList().length) {
+      @if (kurangKarakter()) {
+        <p class="cop-petunjuk-cari">
+          <mat-icon>keyboard</mat-icon>
+          {{ "cop.minimalTigaHuruf" | translate }}
+        </p>
+      } @else if (!mencariSpk() && sudahMencari() && !spkList().length) {
         <p class="cop-kosong">{{ "cop.tidakAdaSpk" | translate }}</p>
       }
-    } @else {
-      <p class="cop-spk-terkunci">
-        <mat-icon>lock</mat-icon>
-        {{ spkTerpilih()?.name }} — {{ spkTerpilih()?.projectName }}
-      </p>
+    }
+
+    @if (spkTerpilih(); as s) {
+      <div class="cop-banner cop-banner--pilih">
+        <mat-icon>description</mat-icon>
+        <div>
+          <strong>{{ s.name }}</strong>
+          <span>
+            {{ s.projectName }}@if (s.supplierName) { · {{ s.supplierName }} }
+          </span>
+        </div>
+        @if (!copId) {
+          <button
+            mat-icon-button
+            type="button"
+            class="cop-banner__ganti"
+            [attr.aria-label]="'cop.gantiSpk' | translate"
+            (click)="lepasSpk()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
     }
   </section>
 
   @if (spkTerpilih()) {
     <!-- ===== 2. PERIODE ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">{{ "cop.langkahPeriode" | translate }}</h2>
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">2</span>{{ "cop.langkahPeriode" | translate }}
+      </h2>
       <div class="cop-baris-form">
         <mat-form-field appearance="outline">
           <mat-label>{{ "cop.tanggal" | translate }}</mat-label>
@@ -80,125 +123,132 @@
 
     <!-- ===== 3. VOLUME ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">{{ "cop.langkahVolume" | translate }}</h2>
-      <p class="cop-petunjuk">{{ "cop.petunjukVolume" | translate }}</p>
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">3</span>{{ "cop.langkahVolume" | translate }}
+      </h2>
 
-      <div class="cop-tabel-bungkus">
-        <table mat-table [dataSource]="baris()" class="cop-tabel">
-          <ng-container matColumnDef="pekerjaan">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "cop.pekerjaan" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b">
-              {{ b.task || "-" }}
-              @if (b.keterangan) {
-                <span class="cop-ket">{{ b.keterangan }}</span>
+      <div class="cop-banner">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>{{ "cop.petunjukVolumeJudul" | translate }}</strong>
+          <span>{{ "cop.petunjukVolume" | translate }}</span>
+        </div>
+      </div>
+
+      <!--
+        SATU KARTU PER PEKERJAAN, bukan baris tabel.
+
+        Tabel memaksa keterangan menjadi kotak satu baris yang isinya tidak
+        terbaca, dan pada layar sempit kolomnya bergeser keluar. Kartu
+        memberi keterangan ruang penuh, dan sisa pagu dapat ditampilkan
+        besar — angka itulah yang paling sering dibaca saat mengisi.
+      -->
+      <div class="cop-daftar">
+        @for (b of baris(); track b.purchaseOrderItemID) {
+          <article
+            class="cop-item"
+            [class.cop-item--terisi]="(nilai(b.purchaseOrderItemID) || 0) > 0"
+            [class.cop-item--salah]="melebihi(b)"
+            [class.cop-item--habis]="sisaBoleh(b) <= 0"
+          >
+            <header class="cop-item__kepala">
+              <div class="cop-item__nama">
+                {{ b.task || "-" }}
+                @if (b.keterangan) {
+                  <span class="cop-item__ket">{{ b.keterangan }}</span>
+                }
+              </div>
+              @if (bolehLihatNilai() && b.price !== undefined) {
+                <div class="cop-item__harga">
+                  {{ b.price | number: "1.0-2" }}
+                  <em>/ {{ b.unit }}</em>
+                </div>
               }
-            </td>
-          </ng-container>
+            </header>
 
-          <ng-container matColumnDef="satuan">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "cop.satuan" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b">{{ b.unit || "-" }}</td>
-          </ng-container>
+            <!-- Pagu: kontrak, terpakai, sisa. Sisa dibuat paling menonjol. -->
+            <div class="cop-item__pagu">
+              <div>
+                <dt>{{ "cop.pagu" | translate }}</dt>
+                <dd>{{ b.pagu | number: "1.0-2" }} {{ b.unit }}</dd>
+              </div>
+              <div>
+                <dt>{{ "cop.terpakai" | translate }}</dt>
+                <dd>{{ b.terpakai | number: "1.0-2" }} {{ b.unit }}</dd>
+              </div>
+              <div class="cop-item__sisa">
+                <dt>{{ "cop.sisa" | translate }}</dt>
+                <dd>{{ sisaBoleh(b) | number: "1.0-2" }} {{ b.unit }}</dd>
+              </div>
+            </div>
 
-          <ng-container matColumnDef="pagu">
-            <th mat-header-cell *matHeaderCellDef class="cop-angka">
-              {{ "cop.pagu" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b" class="cop-angka">
-              {{ b.pagu | number: "1.0-2" }}
-            </td>
-          </ng-container>
+            <div class="cop-item__isian">
+              <mat-form-field appearance="outline" class="cop-vol">
+                <mat-label>{{ "cop.volume" | translate }}</mat-label>
+                <!--
+                  `type="text"` + ngx-mask, BUKAN `type="number"`.
 
-          <ng-container matColumnDef="terpakai">
-            <th mat-header-cell *matHeaderCellDef class="cop-angka">
-              {{ "cop.terpakai" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b" class="cop-angka">
-              {{ b.terpakai | number: "1.0-2" }}
-            </td>
-          </ng-container>
+                  Isian angka bawaan peramban tidak dapat diberi pemisah
+                  ribuan, dan volume enam digit tanpa pemisah ("124500")
+                  adalah tempat paling mudah salah membaca satu nol.
 
-          <ng-container matColumnDef="sisa">
-            <th mat-header-cell *matHeaderCellDef class="cop-angka">
-              {{ "cop.sisa" | translate }}
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let b"
-              class="cop-angka cop-sisa"
-              [class.cop-sisa--habis]="sisaBoleh(b) <= 0"
-            >
-              {{ sisaBoleh(b) | number: "1.0-2" }}
-            </td>
-          </ng-container>
+                  Dua desimal mengikuti kolomnya — `quantity` tersimpan
+                  DECIMAL(12,2), sama dengan volume pada SPK yang menjadi
+                  pagunya. Mengizinkan empat di layar hanya membuat dua
+                  digit terakhir hilang diam-diam saat disimpan.
+                -->
+                <input
+                  matInput
+                  type="text"
+                  inputmode="decimal"
+                  thousandSeparator="."
+                  decimalMarker=","
+                  decimalScale="2"
+                  mask="separator.2"
+                  [validation]="false"
+                  [value]="nilai(b.purchaseOrderItemID) ?? ''"
+                  (input)="
+                    setNilai(b.purchaseOrderItemID, $any($event.target).value)
+                  "
+                  [disabled]="sisaBoleh(b) <= 0"
+                />
+                <span matSuffix class="cop-satuan">{{ b.unit }}</span>
+                @if (melebihi(b)) {
+                  <mat-error>{{ "cop.melebihiSisa" | translate }}</mat-error>
+                }
+              </mat-form-field>
 
-          <ng-container matColumnDef="volume">
-            <th mat-header-cell *matHeaderCellDef class="cop-angka">
-              {{ "cop.volume" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b" class="cop-angka">
-              <input
-                class="cop-input"
-                type="number"
-                min="0"
-                step="any"
-                [class.cop-input--salah]="melebihi(b)"
-                [value]="nilai(b.purchaseOrderItemID) ?? ''"
-                (input)="setNilai(b.purchaseOrderItemID, $any($event.target).value)"
-                [disabled]="sisaBoleh(b) <= 0"
-              />
-              @if (melebihi(b)) {
-                <span class="cop-salah">{{ "cop.melebihiSisa" | translate }}</span>
+              @if (bolehLihatNilai() && jumlahBaris(b) !== null) {
+                <div class="cop-item__jumlah">
+                  <span>{{ "cop.jumlah" | translate }}</span>
+                  <strong>{{ jumlahBaris(b) | number: "1.0-2" }}</strong>
+                </div>
               }
-            </td>
-          </ng-container>
+            </div>
 
-          <!--
-            Kolom harga & jumlah HANYA digambar bila levelnya boleh melihat.
-            Bagi level 1 datanya memang tidak dikirim server, sehingga
-            menggambarnya pun hanya menghasilkan sel kosong.
-          -->
-          @if (bolehLihatNilai()) {
-            <ng-container matColumnDef="harga">
-              <th mat-header-cell *matHeaderCellDef class="cop-angka">
-                {{ "cop.harga" | translate }}
-              </th>
-              <td mat-cell *matCellDef="let b" class="cop-angka">
-                {{ b.price | number: "1.0-2" }}
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="jumlah">
-              <th mat-header-cell *matHeaderCellDef class="cop-angka">
-                {{ "cop.jumlah" | translate }}
-              </th>
-              <td mat-cell *matCellDef="let b" class="cop-angka">
-                {{ jumlahBaris(b) | number: "1.0-2" }}
-              </td>
-            </ng-container>
-          }
-
-          <ng-container matColumnDef="catatan">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "cop.catatanBaris" | translate }}
-            </th>
-            <td mat-cell *matCellDef="let b">
-              <input
-                class="cop-input cop-input--teks"
-                type="text"
+            <!-- Keterangan: TEXTAREA. Yang ditulis di sini kerap kalimat —
+                 "cor tertunda hujan, dilanjut sore" — bukan satu kata. -->
+            <mat-form-field appearance="outline" class="cop-ket-field">
+              <mat-label>{{ "cop.catatanBaris" | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="2"
+                cdkTextareaAutosize
                 [value]="catatanBaris()[b.purchaseOrderItemID] || ''"
-                (input)="setCatatan(b.purchaseOrderItemID, $any($event.target).value)"
-              />
-            </td>
-          </ng-container>
+                (input)="
+                  setCatatan(b.purchaseOrderItemID, $any($event.target).value)
+                "
+              ></textarea>
+            </mat-form-field>
 
-          <tr mat-header-row *matHeaderRowDef="kolom"></tr>
-          <tr mat-row *matRowDef="let row; columns: kolom"></tr>
-        </table>
+            @if (melebihi(b)) {
+              <p class="cop-salah">
+                <mat-icon>error_outline</mat-icon>
+                {{ "cop.melebihiSisaPanjang" | translate }}
+              </p>
+            }
+          </article>
+        }
       </div>
 
       @if (!memuat() && !baris().length) {
@@ -206,19 +256,39 @@
       }
 
       @if (bolehLihatNilai() && totalNilai !== null) {
-        <p class="cop-total">
-          {{ "cop.total" | translate }}:
+        <div class="cop-total">
+          <span>{{ "cop.nilaiPekerjaan" | translate }}</span>
           <strong>{{ totalNilai | number: "1.0-2" }}</strong>
-        </p>
+        </div>
       }
     </section>
 
     <!-- ===== 4. CATATAN & SIMPAN ===== -->
     <section class="cop-kartu">
+      <h2 class="cop-kartu__judul">
+        <span class="cop-langkah">4</span>{{ "cop.langkahTutup" | translate }}
+      </h2>
+
       <mat-form-field appearance="outline" class="cop-catatan">
         <mat-label>{{ "cop.catatan" | translate }}</mat-label>
         <textarea matInput rows="3" [formControl]="catatan"></textarea>
       </mat-form-field>
+
+      <!--
+        Potongan & tambahan TIDAK diisi di sini.
+
+        Nilainya baru terlihat mulai pemeriksa, dan yang mengisi lembar ini
+        kerap orang lapangan yang memang tidak menerima angka rupiah sama
+        sekali. Banner ini menjawab "di mana potongannya" tanpa membuat
+        siapa pun mencarinya di layar yang salah.
+      -->
+      <div class="cop-banner cop-banner--lanjut">
+        <mat-icon>tune</mat-icon>
+        <div>
+          <strong>{{ "cop.penyesuaianDimanaJudul" | translate }}</strong>
+          <span>{{ "cop.penyesuaianDimana" | translate }}</span>
+        </div>
+      </div>
 
       <div class="cop-aksi">
         <button mat-stroked-button type="button" (click)="batal()">
@@ -238,6 +308,7 @@
 
       @if (adaYangMelebihi) {
         <p class="cop-salah cop-salah--blok">
+          <mat-icon>error_outline</mat-icon>
           {{ "cop.adaYangMelebihi" | translate }}
         </p>
       }

@@ -248,14 +248,25 @@
 
                 <mat-form-field appearance="outline" class="cv-adj-nominal">
                   <mat-label>{{ "cop.nominal" | translate }}</mat-label>
+                  <!--
+                    Empat desimal, mengikuti kolomnya: `amount` tersimpan
+                    DECIMAL(17,4). Berbeda dari volume yang hanya dua —
+                    volume mengikuti pagu SPK, nominal mengikuti uang.
+                  -->
                   <input
                     matInput
-                    type="number"
-                    min="0"
-                    step="any"
+                    type="text"
+                    inputmode="decimal"
+                    thousandSeparator="."
+                    decimalMarker=","
+                    decimalScale="4"
+                    mask="separator.4"
+                    [validation]="false"
                     [value]="a.amount || ''"
                     (input)="
-                      setBaris($index, { amount: +$any($event.target).value })
+                      setBaris($index, {
+                        amount: keAngka($any($event.target).value)
+                      })
                     "
                   />
                 </mat-form-field>
@@ -334,6 +345,18 @@
 
     <!-- ===== Tindakan ===== -->
     <section class="cv-kartu cv-aksi">
+      <!-- Unduhan di kiri: ia bukan keputusan, hanya mengambil berkas. -->
+      @if (bolehLihatNilai()) {
+        <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
+          <mat-icon>picture_as_pdf</mat-icon>
+          {{ "cop.unduhPdf" | translate }}
+        </button>
+        <button mat-button [disabled]="mengunduh()" (click)="unduh(true)">
+          {{ "cop.unduhBap" | translate }}
+        </button>
+        <span class="cv-pemisah"></span>
+      }
+
       @if (!c.isChecked) {
         <button mat-stroked-button (click)="ubah()">
           <mat-icon>edit</mat-icon>

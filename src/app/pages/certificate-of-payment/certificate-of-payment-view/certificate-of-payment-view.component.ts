@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -44,9 +45,11 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
+    NgxMaskDirective,
     TranslateModule,
     HeaderTitleComponent,
   ],
+  providers: [provideNgxMask()],
   templateUrl: './certificate-of-payment-view.component.html',
   styleUrl: './certificate-of-payment-view.component.scss',
 })
@@ -158,6 +161,37 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     if (c) this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
   }
 
+  // ---- unduh ----------------------------------------------------------
+
+  readonly mengunduh = signal(false);
+
+  async unduh(hanyaBap = false): Promise<void> {
+    const c = this.cop();
+    if (!c) return;
+    this.mengunduh.set(true);
+    try {
+      const berkas = (await firstValueFrom(
+        hanyaBap ? this.service.unduhBap(c.id) : this.service.unduhPdf(c.id),
+      )) as Blob;
+      const aman = (c.name || 'CoP').replace(/\//g, '-');
+      this.simpanBerkas(berkas, `${aman}${hanyaBap ? '-BAP' : ''}.pdf`);
+    } catch (e) {
+      this.pesan(e);
+    } finally {
+      this.mengunduh.set(false);
+    }
+  }
+
+  /** URL sementaranya dicabut setelah dipakai supaya tidak menahan memori. */
+  private simpanBerkas(blob: Blob, nama: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nama;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // ---- potongan & tambahan -------------------------------------------
 
   /**
@@ -200,6 +234,20 @@ export class CertificateOfPaymentViewComponent implements OnInit {
 
   hapusBaris(i: number): void {
     this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
+  }
+
+  /**
+   * Teks bermask ("1.234.567,8912") menjadi angka.
+   *
+   * `Number` tidak mengerti titik ribuan dan koma desimal; hasilnya NaN,
+   * dan NaN yang lolos ke muatan menjadi `null` di JSON — nominal yang
+   * diketik lenyap tanpa pesan apa pun.
+   */
+  keAngka(teks: string): number {
+    const bersih = (teks ?? '').toString().trim();
+    if (!bersih) return 0;
+    const angka = Number(bersih.replace(/\./g, '').replace(',', '.'));
+    return Number.isFinite(angka) ? angka : 0;
   }
 
   setBaris(i: number, bagian: Partial<PenyesuaianCoP>): void {

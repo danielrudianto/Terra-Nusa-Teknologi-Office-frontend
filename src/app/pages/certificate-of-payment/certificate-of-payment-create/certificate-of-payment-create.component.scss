@@ -11,34 +11,122 @@
   padding: 20px;
 
   &__judul {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0 0 16px;
     font-size: 15px;
     font-weight: 600;
   }
 }
 
+/* Nomor langkah: urutan pengisian terbaca sekilas, tanpa membaca judulnya. */
+.cop-langkah {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-strong, #0f3fd0);
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+
+/*
+  Banner senada dengan formulir pembelian (`pc-banner`).
+
+  Bentuknya sengaja sama: yang memakainya berpindah antara kedua layar
+  sepanjang hari, dan dua bentuk pemberitahuan yang berbeda untuk maksud
+  yang sama membuat keduanya sama-sama kurang diperhatikan.
+*/
+.cop-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-top: 1px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  span {
+    font-size: 12.5px;
+    opacity: 0.9;
+  }
+
+  &--pilih {
+    margin-bottom: 0;
+    align-items: center;
+  }
+
+  &--lanjut {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: inherit;
+  }
+
+  &__ganti {
+    margin-left: auto;
+    flex: none;
+  }
+}
+
 .cop-pilih {
   width: 100%;
-  max-width: 620px;
+  max-width: 640px;
 }
 
-.cop-pemasok {
-  opacity: 0.6;
-  font-size: 12px;
+.cop-opsi {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  &__nomor {
+    font-weight: 600;
+  }
+
+  &__ket {
+    font-size: 12px;
+    opacity: 0.65;
+  }
 }
 
-.cop-spk-terkunci {
+.cop-petunjuk-cari {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-weight: 500;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  opacity: 0.6;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    opacity: 0.5;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -52,77 +140,151 @@
   }
 }
 
-.cop-petunjuk {
-  margin: -8px 0 16px;
-  font-size: 13px;
-  opacity: 0.7;
+/* ---- daftar pekerjaan sebagai kartu ---- */
+
+.cop-daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/*
-  Tabel pagu bisa lebih lebar dari layar — terutama pada level yang melihat
-  kolom harga. Digulirkan di dalam wadahnya sendiri supaya halamannya tidak
-  ikut bergeser ke samping.
-*/
-.cop-tabel-bungkus {
-  overflow-x: auto;
-}
+.cop-item {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, background 0.15s;
 
-.cop-tabel {
-  width: 100%;
-  min-width: 720px;
-}
-
-.cop-angka {
-  text-align: right;
-}
-
-.cop-ket {
-  display: block;
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-.cop-sisa {
-  font-weight: 600;
-
-  &--habis {
-    opacity: 0.45;
-  }
-}
-
-.cop-input {
-  width: 110px;
-  padding: 6px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 6px;
-  text-align: right;
-  font: inherit;
-
-  &:focus {
-    outline: 2px solid var(--mat-sys-primary, #3f6ad8);
-    outline-offset: -1px;
+  &__kepala {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
   }
 
-  &:disabled {
-    background: rgba(0, 0, 0, 0.04);
-    cursor: not-allowed;
+  &__nama {
+    font-weight: 600;
+    font-size: 14px;
   }
 
-  &--teks {
-    width: 180px;
-    text-align: left;
+  &__ket {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.6;
+    margin-top: 2px;
+  }
+
+  &__harga {
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.75;
+
+    em {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+  }
+
+  /* Pagu / terpakai / sisa berdampingan; sisa dibuat menonjol karena
+     angka itulah yang paling sering dibaca saat mengisi. */
+  &__pagu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.035);
+
+    dt {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-bottom: 1px;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  &__sisa dd {
+    color: var(--brand-strong, #0f3fd0);
+    font-size: 15px;
+  }
+
+  &__isian {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__jumlah {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 8px;
+
+    span {
+      font-size: 11px;
+      opacity: 0.6;
+    }
+
+    strong {
+      font-size: 15px;
+    }
+  }
+
+  /* Yang sudah diisi ditandai supaya sekilas terlihat mana yang dikerjakan. */
+  &--terisi {
+    border-color: rgba(63, 106, 216, 0.45);
+    background: rgba(63, 106, 216, 0.03);
   }
 
   &--salah {
-    border-color: #d32f2f;
+    border-color: rgba(211, 47, 47, 0.6);
+    background: rgba(211, 47, 47, 0.03);
+  }
+
+  &--habis {
+    opacity: 0.6;
   }
 }
 
-.cop-salah {
-  display: block;
-  margin-top: 4px;
-  color: #d32f2f;
+.cop-vol {
+  flex: 0 0 190px;
+}
+
+.cop-satuan {
   font-size: 12px;
+  opacity: 0.6;
+  padding-left: 4px;
+}
+
+.cop-ket-field {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.cop-salah {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: #d32f2f;
+  font-size: 12.5px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
 
   &--blok {
     margin-top: 12px;
@@ -131,9 +293,17 @@
 }
 
 .cop-total {
-  margin: 16px 0 0;
-  text-align: right;
-  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+
+  strong {
+    font-size: 18px;
+  }
 }
 
 .cop-catatan {

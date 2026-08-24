@@ -4905,6 +4905,18 @@
     "kat_denda": "Denda",
     "kat_pph": "PPh",
     "kat_lain_lain": "Lain-lain",
-    "kat_biaya_luar_kontrak": "Biaya di luar kontrak"
+    "kat_biaya_luar_kontrak": "Biaya di luar kontrak",
+    "cariSpkPlaceholder": "Ketik nomor SPK atau nama proyek…",
+    "minimalTigaHuruf": "Ketik minimal 3 huruf untuk mencari SPK.",
+    "gantiSpk": "Ganti SPK",
+    "langkahTutup": "Catatan & simpan",
+    "petunjukVolumeJudul": "Isi volume yang benar-benar terlaksana",
+    "melebihiSisaPanjang": "Volume ini melebihi sisa SPK. Bila volumenya memang bertambah, SPK harus diadendum lebih dahulu.",
+    "penyesuaianDimanaJudul": "Potongan & tambahan diisi di tahap berikutnya",
+    "penyesuaianDimana": "Potongan uang muka, retensi, denda, dan penambahan diisi pemeriksa pada layar rincian setelah dokumen ini tersimpan.",
+    "unduhPdf": "Unduh PDF",
+    "unduhBap": "Unduh BAP saja",
+    "mengunduh": "Menyiapkan berkas…",
+    "semua": "Semua"
   }
 }

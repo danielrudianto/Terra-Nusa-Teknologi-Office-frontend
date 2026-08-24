@@ -1,73 +1,64 @@
-.cop-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cl-toolbar {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.cl-tabel-bungkus {
-  overflow-x: auto;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-}
-
-.cl-tabel {
-  width: 100%;
-  min-width: 820px;
-}
-
-.cl-angka {
-  text-align: right;
-}
-
-.cl-periode {
-  display: block;
-  font-size: 12px;
-  opacity: 0.6;
-}
+@use "../../../styles/daftar" as daftar;
 
 /*
-  Lencana keadaan.
+ * Kerangka papannya BERSAMA seluruh daftar lain.
+ *
+ * Sebelumnya berkas ini menata tabelnya sendiri — garis kotak di setiap sel,
+ * kepala kolom berlatar abu — dan hasilnya berdiri sendiri di antara daftar
+ * Pembelian, Purchase Order, dan Tender yang semuanya senada. Yang memakainya
+ * berpindah antar daftar sepanjang hari; satu daftar yang bentuknya lain
+ * terbaca seperti bagian dari aplikasi yang berbeda.
+ */
+@include daftar.daftar("cl", ".cop-list");
 
-  Tiga keadaan dibedakan warnanya karena masing-masing menuntut orang yang
-  berbeda: draf menunggu pemeriksa, diperiksa menunggu penyetuju, disetujui
-  sudah selesai.
-*/
-.cl-lencana {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
+/* ===== warna per keping penyaring ===== */
+@include daftar.fchip("cl", "semua", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
+@include daftar.fchip("cl", "draft", var(--warn-bg, #fdf0e3), var(--warn-fg, #a2651a), var(--warn-fg, #e0942e));
+@include daftar.fchip("cl", "diperiksa", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
+@include daftar.fchip("cl", "disetujui", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
 
-  &--draft {
-    background: rgba(0, 0, 0, 0.07);
-    color: rgba(0, 0, 0, 0.7);
-  }
+/*
+ * Keadaan dokumen.
+ *
+ * Tiga saja, dan urutannya adalah perjalanan dokumennya: draf menunggu
+ * pemeriksa, diperiksa menunggu penyetuju, disetujui sudah selesai. Warnanya
+ * mengikuti arti yang sama di daftar lain — kuning menunggu, biru berjalan,
+ * hijau selesai — supaya tidak perlu dipelajari ulang.
+ */
+.cl-chip--draft {
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
+  .cl-chip__dot { background: var(--warn-fg, #e0942e); }
+}
+.cl-chip--diperiksa {
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  .cl-chip__dot { background: var(--brand, #154dec); }
+}
+.cl-chip--disetujui {
+  background: var(--ok-bg, #e6f6ec);
+  color: var(--ok-fg, #1a7f45);
+  .cl-chip__dot { background: var(--ok-fg, #22a75a); }
+}
 
-  &--diperiksa {
-    background: rgba(63, 106, 216, 0.12);
-    color: #2b4fa0;
-  }
+/* Periode kerja di bawah tanggalnya — keterangan, bukan baris tersendiri. */
+.cl-periode {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted, #5f6672);
+}
 
-  &--disetujui {
-    background: rgba(46, 125, 50, 0.12);
-    color: #2e7d32;
-  }
+.cl-open {
+  /* Tombol ikon yang dikecilkan harus memusatkan isinya sendiri. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 0;
 }
 
 .cl-aksi {
   white-space: nowrap;
   text-align: right;
-}
-
-.cl-kosong {
-  padding: 24px;
-  text-align: center;
-  opacity: 0.6;
 }

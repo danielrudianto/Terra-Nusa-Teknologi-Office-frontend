@@ -8,12 +8,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { TextFieldModule } from '@angular/cdk/text-field';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import {
@@ -53,9 +58,14 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatAutocompleteModule,
+    TextFieldModule,
+    NgxMaskDirective,
     TranslateModule,
     HeaderTitleComponent,
   ],
+  providers: [provideNgxMask()],
   templateUrl: './certificate-of-payment-create.component.html',
   styleUrl: './certificate-of-payment-create.component.scss',
 })
@@ -75,6 +85,8 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   readonly menyimpan = signal(false);
 
   readonly spkList = signal<SpkKandidat[]>([]);
+  readonly mencariSpk = signal(false);
+  readonly sudahMencari = signal(false);
   readonly spkTerpilih = signal<SpkKandidat | null>(null);
   readonly baris = signal<BarisPagu[]>([]);
 
@@ -122,42 +134,99 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     );
   }
 
+  /** Huruf paling sedikit sebelum server ditanya. */
+  static readonly MINIMAL_HURUF = 3;
+
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
     this.copId = id ? Number(id) : null;
 
-    await this.muatSpk();
+    /*
+     * TIDAK memuat seluruh SPK di awal.
+     *
+     * Jumlahnya bertambah tiap bulan dan tidak pernah berkurang; memuatnya
+     * lebih dulu membuat layar makin lama makin lambat dibuka hanya untuk
+     * memilih satu baris. Server ditanya setelah tiga huruf diketik.
+     */
+    this.cariSpk.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((v) => {
+        // Yang terpilih dikembalikan sebagai objek oleh `displayWith`;
+        // itu bukan pengetikan baru dan tidak perlu memanggil server.
+        if (typeof v !== 'string') return;
+        void this.cariSpkKeServer(v || '');
+      });
 
     if (this.copId) {
       await this.muatUntukSunting(this.copId);
       return;
     }
 
-    // Datang dari layar SPK dengan `?spk=<id>`: langsung pilihkan.
+    // Datang dari layar SPK dengan `?spk=<id>`: dicari sekali lalu dipilih.
     const dariSpk = this.route.snapshot.queryParamMap.get('spk');
-    if (dariSpk) {
-      const ada = this.spkList().find((s) => s.id === Number(dariSpk));
-      if (ada) await this.pilihSpk(ada);
-    }
+    if (dariSpk) await this.pilihSpkDariId(Number(dariSpk));
   }
 
-  async muatSpk(): Promise<void> {
-    this.memuat.set(true);
+  kurangKarakter(): boolean {
+    const v = this.cariSpk.value;
+    const teks = typeof v === 'string' ? v : '';
+    return (
+      !this.spkTerpilih() &&
+      teks.trim().length < CertificateOfPaymentCreateComponent.MINIMAL_HURUF
+    );
+  }
+
+  private async cariSpkKeServer(kata: string): Promise<void> {
+    const bersih = (kata || '').trim();
+    if (bersih.length < CertificateOfPaymentCreateComponent.MINIMAL_HURUF) {
+      this.spkList.set([]);
+      this.sudahMencari.set(false);
+      return;
+    }
+    this.mencariSpk.set(true);
     try {
       const hasil = (await firstValueFrom(
-        this.service.daftarSpk(undefined, this.cariSpk.value || undefined),
+        this.service.daftarSpk(undefined, bersih),
       )) as SpkKandidat[];
       this.spkList.set(hasil || []);
+      this.sudahMencari.set(true);
     } catch (e) {
       this.pesan(e);
+      this.spkList.set([]);
     } finally {
-      this.memuat.set(false);
+      this.mencariSpk.set(false);
     }
   }
 
-  async pilihSpkById(id: number | null): Promise<void> {
-    const spk = this.spkList().find((s) => s.id === id);
-    if (spk) await this.pilihSpk(spk);
+  /** Yang ditampilkan pada kotak setelah satu SPK dipilih. */
+  tampilSpk(s: SpkKandidat | string | null): string {
+    if (!s || typeof s === 'string') return (s as string) || '';
+    return s.name;
+  }
+
+  private async pilihSpkDariId(id: number): Promise<void> {
+    if (!id) return;
+    try {
+      const hasil = (await firstValueFrom(
+        this.service.daftarSpk(undefined, undefined),
+      )) as SpkKandidat[];
+      const ada = (hasil || []).find((s) => s.id === id);
+      if (ada) await this.pilihSpk(ada);
+    } catch (e) {
+      this.pesan(e);
+    }
+  }
+
+  /** Lepas pilihan supaya SPK lain dapat dicari. */
+  lepasSpk(): void {
+    this.spkTerpilih.set(null);
+    this.baris.set([]);
+    this.isian.set({});
+    this.catatanBaris.set({});
+    this.volumeAwal.set({});
+    this.spkList.set([]);
+    this.sudahMencari.set(false);
+    this.cariSpk.setValue('');
   }
 
   async pilihSpk(spk: SpkKandidat): Promise<void> {
@@ -233,8 +302,21 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     return this.isian()[barisId] ?? null;
   }
 
+  /**
+   * Terima teks BERFORMAT dari ngx-mask ("1.234,56") menjadi angka.
+   *
+   * `Number("1.234,56")` menghasilkan NaN, dan NaN yang lolos ke muatan
+   * menjadi `null` di JSON — volume yang diketik lenyap tanpa pesan apa pun.
+   */
+  private static keAngka(teks: string): number | null {
+    const bersih = (teks ?? '').toString().trim();
+    if (!bersih) return null;
+    const angka = Number(bersih.replace(/\./g, '').replace(',', '.'));
+    return Number.isFinite(angka) ? angka : null;
+  }
+
   setNilai(barisId: number, nilai: string): void {
-    const angka = nilai === '' ? null : Number(nilai);
+    const angka = CertificateOfPaymentCreateComponent.keAngka(nilai);
     this.isian.update((s) => ({ ...s, [barisId]: angka }));
   }
 
@@ -320,8 +402,9 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
 
     this.menyimpan.set(true);
     try {
+      let hasil: any = null;
       if (this.copId) {
-        await firstValueFrom(
+        hasil = await firstValueFrom(
           this.service.ubah(this.copId, {
             date: this.tanggalTeks(this.tanggal.value) || undefined,
             periodStart: this.tanggalTeks(this.periodeAwal.value),
@@ -331,7 +414,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
           }),
         );
       } else {
-        await firstValueFrom(
+        hasil = await firstValueFrom(
           this.service.buat({
             purchaseOrderID: spk.id,
             date: this.tanggalTeks(this.tanggal.value) as string,
@@ -348,7 +431,18 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
         this.translate.instant('common.close'),
         { duration: 3000 },
       );
-      this.router.navigate(['/Certificate-of-payment']);
+      /*
+       * Menuju RINCIAN, bukan kembali ke daftar.
+       *
+       * Di layar itulah potongan & tambahan diisi, dan di situ pula tombol
+       * periksa berada — dokumen yang baru dibuat memang menunggu keduanya.
+       */
+      const id = this.copId || (hasil as any)?.certificateOfPaymentID;
+      if (id) {
+        this.router.navigate(['/Certificate-of-payment/View', id]);
+      } else {
+        this.router.navigate(['/Certificate-of-payment']);
+      }
     } catch (e) {
       // Pesan server disampaikan APA ADANYA — di situlah tertulis berapa
       // sisa pagunya dan bahwa SPK perlu diadendum.

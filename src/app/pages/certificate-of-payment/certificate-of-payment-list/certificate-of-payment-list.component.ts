@@ -58,6 +58,8 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly izin = inject(PermissionService);
 
   readonly data = signal<CertificateOfPayment[]>([]);
+  /** Penyaring keadaan: '', 'draft', 'diperiksa', 'disetujui'. */
+  readonly saring = signal<string>('');
   readonly total = signal(0);
   readonly memuat = signal(false);
 
@@ -72,10 +74,57 @@ export class CertificateOfPaymentListComponent implements OnInit {
   readonly bolehSetujui = computed(() => this.izin.level() >= 3);
 
   get kolom(): string[] {
-    const dasar = ['nomor', 'spk', 'proyek', 'tanggal', 'keadaan', 'pembuat'];
+    // Nomor SPK ikut di dalam sel nomor CoP sebagai baris kedua, sehingga
+    // tidak perlu kolom sendiri — daftar jadi muat tanpa digulir menyamping.
+    const dasar = ['nomor', 'proyek', 'tanggal', 'keadaan', 'pembuat'];
     return this.bolehLihatNilai()
       ? [...dasar, 'nilai', 'aksi']
       : [...dasar, 'aksi'];
+  }
+
+  /**
+   * Baris yang lolos penyaring.
+   *
+   * Disaring DI LAYAR, bukan lewat server: keadaan dokumen tidak tersimpan
+   * sebagai satu kolom melainkan disimpulkan dari `isChecked`/`isApproved`,
+   * dan menambah parameter untuk itu berarti aturan yang sama ditulis di
+   * dua tempat.
+   */
+  readonly terlihat = computed(() => {
+    const s = this.saring();
+    if (!s) return this.data();
+    return this.data().filter((c) => this.keadaan(c) === s);
+  });
+
+  pilihSaring(nilai: string): void {
+    this.saring.set(nilai || '');
+  }
+
+  /** Unduh CoP + lampiran BAP sebagai satu berkas PDF. */
+  async unduh(c: CertificateOfPayment): Promise<void> {
+    try {
+      const berkas = (await firstValueFrom(
+        this.service.unduhPdf(c.id),
+      )) as Blob;
+      this.simpanBerkas(berkas, `${(c.name || 'CoP').replace(/\//g, '-')}.pdf`);
+    } catch (e) {
+      this.pesan(e);
+    }
+  }
+
+  /**
+   * Simpan blob sebagai unduhan.
+   *
+   * URL sementaranya DICABUT setelah dipakai: tanpa itu tiap unduhan
+   * menahan berkasnya di memori peramban sampai tabnya ditutup.
+   */
+  private simpanBerkas(blob: Blob, nama: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nama;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   ngOnInit(): void {

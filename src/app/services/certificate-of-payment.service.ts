@@ -1,5 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+
 import { ApiService } from './api.service';
 
 /**
@@ -132,8 +135,35 @@ export interface CertificateOfPayment {
 @Injectable({ providedIn: 'root' })
 export class CertificateOfPaymentService {
   private readonly api = inject(ApiService);
+  private readonly http = inject(HttpClient);
 
   private static readonly JALUR = 'certificate-of-payments';
+
+  /**
+   * PDF diambil langsung lewat HttpClient, bukan `ApiService`.
+   *
+   * `ApiService` selalu menguraikan jawabannya sebagai JSON; berkas PDF yang
+   * diurai begitu menjadi rusak sebelum sempat disimpan. Yang diperlukan
+   * `responseType: 'blob'`, dan itu tidak dapat dinyatakan lewat pembungkusnya.
+   */
+  private headerUnduh(): Record<string, string> {
+    const akses = localStorage.getItem('access_token') ?? '';
+    return akses ? { Authorization: `Bearer ${akses}` } : {};
+  }
+
+  unduhPdf(id: number) {
+    return this.http.get(
+      `${environment.url}${CertificateOfPaymentService.JALUR}/${id}/pdf`,
+      { headers: this.headerUnduh(), responseType: 'blob' },
+    );
+  }
+
+  unduhBap(id: number) {
+    return this.http.get(
+      `${environment.url}${CertificateOfPaymentService.JALUR}/${id}/bap-pdf`,
+      { headers: this.headerUnduh(), responseType: 'blob' },
+    );
+  }
 
   /**
    * SPK yang boleh dijadikan dasar CoP.
