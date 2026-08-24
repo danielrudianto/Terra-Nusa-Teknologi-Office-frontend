@@ -212,3 +212,44 @@
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
+
+/* Baris kode & objek PPh — klasifikasi, selalu boleh diubah */
+.pum-pph {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface-2, #fafbfc);
+}
+.pum-pph__isi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.pum-pph__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint, #9aa0ab);
+}
+.pum-pph__nilai {
+  font-size: 0.9rem;
+  color: var(--ink, #16181d);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pum-pph__kosong {
+  font-size: 0.9rem;
+  color: var(--muted, #6b7280);
+  font-style: italic;
+}
+.pum-pph__btn {
+  flex: 0 0 auto;
+}

@@ -10,9 +10,12 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   MAT_DIALOG_DATA,
+  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
+import { IPPh } from 'src/app/utils/pph';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -76,6 +79,7 @@ export class PurchaseUpdateMetaComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: number },
     private dialog: MatDialogRef<PurchaseUpdateMetaComponent>,
+    private pilih: MatDialog,
   ) {}
 
   memuat = true;
@@ -95,6 +99,11 @@ export class PurchaseUpdateMetaComponent {
     ]),
     receiptName: new FormControl('', Validators.maxLength(100)),
     taxInvoiceName: new FormControl('', Validators.maxLength(17)),
+    // Kode & objek PPh: KLASIFIKASI, bukan nominal. Selalu boleh dibetulkan
+    // (mis. kode lupa diisi) meski sudah ada pembayaran — dipilih lewat
+    // pemilih PPh, tidak diketik bebas.
+    pphCode: new FormControl(''),
+    pphTaxObject: new FormControl(''),
   });
 
   nilai: FormGroup = new FormGroup({
@@ -124,6 +133,8 @@ export class PurchaseUpdateMetaComponent {
           invoiceName: d?.invoiceName,
           receiptName: d?.receiptName,
           taxInvoiceName: d?.taxInvoiceName,
+          pphCode: d?.pphCode ?? '',
+          pphTaxObject: d?.pphTaxObject ?? '',
         });
 
         this.nilaiAwal = {
@@ -144,6 +155,59 @@ export class PurchaseUpdateMetaComponent {
         this.dialog.close();
       },
     }).add(() => (this.memuat = false));
+  }
+
+  /** Ringkasan PPh terpilih, untuk ditampilkan. */
+  get pphRingkas(): string {
+    const kode = this.meta.get('pphCode')?.value;
+    const objek = this.meta.get('pphTaxObject')?.value;
+    if (!kode && !objek) return '';
+    return [kode, objek].filter(Boolean).join(' — ');
+  }
+
+  /**
+   * Buka pemilih objek PPh — sama dengan yang dipakai saat membuat pembelian.
+   *
+   * Kode & objek SELALU boleh diperbarui (klasifikasi). Tarifnya hanya diikuti
+   * bila belum ada pembayaran; bila sudah ada, tarif terkunci — kode/objek
+   * tetap dibetulkan, dan bila tarif objek barunya berbeda, penggunanya diberi
+   * tahu bahwa yang diperbarui hanya klasifikasinya.
+   */
+  ubahPph(): void {
+    this.pilih
+      .open(PphSelectorComponent, {})
+      .afterClosed()
+      .subscribe((hasil: any) => {
+        if (!hasil) return;
+
+        if (hasil.hapus) {
+          this.meta.patchValue({ pphCode: '', pphTaxObject: '' });
+          if (!this.adaPembayaran) this.nilai.get('pphPercentage')?.setValue(0);
+          else if (this.nilaiAwal.pphPercentage !== 0) this.peringatanTarifTerkunci();
+          this.meta.markAsDirty();
+          return;
+        }
+
+        const pph = hasil as IPPh;
+        this.meta.patchValue({
+          pphCode: pph.code,
+          pphTaxObject: pph.taxObjectName,
+        });
+        if (!this.adaPembayaran) {
+          this.nilai.get('pphPercentage')?.setValue(pph.tariff);
+        } else if (Number(pph.tariff) !== this.nilaiAwal.pphPercentage) {
+          this.peringatanTarifTerkunci();
+        }
+        this.meta.markAsDirty();
+      });
+  }
+
+  private peringatanTarifTerkunci(): void {
+    this.snackBar.open(
+      this.translate.instant('purchaseMeta.tarifTerkunci'),
+      'Close',
+      { duration: 6000 },
+    );
   }
 
   /** Total dokumen (tanpa PPh), untuk kecocokan mata. */
@@ -178,6 +242,9 @@ export class PurchaseUpdateMetaComponent {
         this.meta.get('taxInvoiceName')?.value === ''
           ? null
           : this.meta.get('taxInvoiceName')?.value,
+      // Kode & objek PPh selalu ikut — klasifikasi, tidak terkunci pembayaran.
+      pphCode: this.meta.get('pphCode')?.value || null,
+      pphTaxObject: this.meta.get('pphTaxObject')?.value || null,
     };
 
     // Nilai HANYA dikirim bila memang boleh diubah dan memang berubah —

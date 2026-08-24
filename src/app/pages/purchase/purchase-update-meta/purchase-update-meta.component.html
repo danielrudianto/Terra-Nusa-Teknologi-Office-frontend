@@ -59,6 +59,30 @@
           />
           <mat-hint>{{ "purchaseMeta.taxInvoiceHint" | translate }}</mat-hint>
         </mat-form-field>
+
+        <!--
+          Kode & objek PPh — klasifikasi, bukan nominal. Selalu boleh
+          dibetulkan (mis. kode lupa diisi) meski sudah ada pembayaran.
+          Dipilih lewat pemilih PPh, bukan diketik bebas.
+        -->
+        <div class="pum-pph">
+          <div class="pum-pph__isi">
+            <span class="pum-pph__label">{{ "purchaseMeta.pphObjek" | translate }}</span>
+            @if (pphRingkas) {
+              <span class="pum-pph__nilai">{{ pphRingkas }}</span>
+            } @else {
+              <span class="pum-pph__kosong">{{ "purchaseMeta.pphKosong" | translate }}</span>
+            }
+          </div>
+          <button
+            type="button"
+            mat-stroked-button
+            class="pum-pph__btn"
+            (click)="ubahPph()"
+          >
+            <mat-icon>edit</mat-icon>{{ "purchaseMeta.pphUbah" | translate }}
+          </button>
+        </div>
       </ng-container>
 
       <mat-divider class="pum-garis" />
