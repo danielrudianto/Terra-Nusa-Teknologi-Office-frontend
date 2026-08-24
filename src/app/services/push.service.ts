@@ -80,9 +80,26 @@ export class PushService {
     }
     this.sedangProses.set(true);
     try {
+      // Pop-up izin HANYA muncul selama statusnya masih `default` (belum
+      // pernah dijawab). Begitu ditolak atau pop-upnya ditutup berulang kali,
+      // peramban membungkamnya permanen dan TIDAK ADA cara memunculkannya
+      // lagi dari kode — satu-satunya jalan membukanya dari ikon gembok.
+      // Karena itu tiap keadaan diberi pesan yang menyebut jalan keluarnya,
+      // bukan sekadar "gagal".
       const izin = await Notification.requestPermission();
+      if (izin === 'denied') {
+        return (
+          'Notifikasi DIBLOKIR oleh peramban untuk situs ini. ' +
+          'Buka: ketuk ikon gembok di samping alamat situs → Izin → ' +
+          'Notifikasi → Izinkan, lalu muat ulang halaman ini.'
+        );
+      }
       if (izin !== 'granted') {
-        return 'Izin notifikasi belum diberikan.';
+        return (
+          'Pop-up izin tertutup tanpa dijawab. Coba sekali lagi dan pilih ' +
+          '"Izinkan" saat peramban bertanya. Bila pop-up tidak muncul, cek ' +
+          'ikon lonceng/gembok di samping alamat situs.'
+        );
       }
 
       if (!this.registration) {
@@ -101,22 +118,44 @@ export class PushService {
         return 'Notifikasi belum diaktifkan di server.';
       }
 
-      let sub = await this.registration.pushManager.getSubscription();
-      if (!sub) {
-        sub = await this.registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(publicKey),
-        });
+      // Tahap langganan dipisah try-nya: kegagalan di sini datang dari
+      // LAYANAN PUSH peramban/perangkat (bukan dari server kita), dan pesan
+      // "coba lagi" untuk kegagalan semacam itu hanya membuang waktu orang.
+      let sub: PushSubscription | null = null;
+      try {
+        sub = await this.registration.pushManager.getSubscription();
+        if (!sub) {
+          sub = await this.registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: this.urlBase64ToUint8Array(publicKey),
+          });
+        }
+      } catch (e: any) {
+        console.warn('Langganan push ditolak peramban', e);
+        return (
+          'Peramban gagal membuat langganan push' +
+          (e?.name ? ` (${e.name})` : '') +
+          '. Biasanya karena layanan push perangkat sedang tidak tersedia — ' +
+          'coba dari jaringan lain, atau pastikan peramban versi terbaru.'
+        );
       }
 
       const raw = sub.toJSON() as any;
-      await firstValueFrom(
-        this.api.post('push/subscribe', {
-          endpoint: raw.endpoint,
-          keys: { p256dh: raw.keys?.p256dh, auth: raw.keys?.auth },
-          userAgent: navigator.userAgent,
-        }),
-      );
+      try {
+        await firstValueFrom(
+          this.api.post('push/subscribe', {
+            endpoint: raw.endpoint,
+            keys: { p256dh: raw.keys?.p256dh, auth: raw.keys?.auth },
+            userAgent: navigator.userAgent,
+          }),
+        );
+      } catch (e: any) {
+        console.warn('Pendaftaran langganan ke server gagal', e);
+        return (
+          'Perangkat ini berhasil siap menerima notifikasi, tetapi gagal ' +
+          'didaftarkan ke server. Periksa koneksi lalu coba lagi.'
+        );
+      }
       this.berlangganan.set(true);
       return null;
     } catch (e: any) {
