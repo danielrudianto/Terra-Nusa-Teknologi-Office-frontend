@@ -26,7 +26,6 @@ import {
   buildLegalServiceClauses,
   buildMandorClauses,
   buildManpowerClauses,
-  buildPasal5,
   buildTrainingClauses,
   buildTransportBillingTerms,
   buildTransportClauses,
@@ -132,7 +131,12 @@ export function susunKlausulDokumen(data: any): ClauseSection[] {
       );
       tambah('Kewajiban', custom.kewajiban || []);
       tambah('Keterangan', custom.keterangan || []);
-      tambah('Penagihan dan Pembayaran', buildPasal5(custom, custom.billingDocuments));
+      // Pasal "Penagihan dan Pembayaran" TIDAK ditampilkan di PRATINJAU —
+      // sama seperti jenis lain (lihat `penagihan = null` di atas). Isinya
+      // bagian lampiran yang panjang dan membuat pratinjau ramai. CETAK/PDF
+      // PO-H TIDAK berubah: `printPurchaseOrderH` merakit `pasal5` sendiri
+      // lewat `buildPasal5`, jadi dokumen di atas kertas tetap lengkap.
+      // tambah('Penagihan dan Pembayaran', buildPasal5(custom, custom.billingDocuments));
 
       return tutup(bagian);
     }
