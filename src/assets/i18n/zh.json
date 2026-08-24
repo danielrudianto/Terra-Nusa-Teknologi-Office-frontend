@@ -4790,7 +4790,11 @@
     "total": "合计",
     "locked": "已锁定",
     "lockedNote": "该采购已有付款记录，金额无法更改。如确需修正金额，请先取消付款。",
-    "forbiddenLevel": "只有 5 级用户才能更新此采购。"
+    "forbiddenLevel": "只有 5 级用户才能更新此采购。",
+    "pphObjek": "预扣税对象",
+    "pphKosong": "尚未设置 — 请选择预扣税对象",
+    "pphUbah": "修改预扣税",
+    "tarifTerkunci": "已存在付款，因此预扣税率已锁定。代码和对象已更新，但税率保持不变。"
   },
   "poReissue": {
     "menu": "重新签发（强制编号）",

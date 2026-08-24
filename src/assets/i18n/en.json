@@ -4790,7 +4790,11 @@
     "total": "Total",
     "locked": "Locked",
     "lockedNote": "The values cannot be changed because this purchase already has payments. Cancel the payments first if the amounts really need correcting.",
-    "forbiddenLevel": "Only level 5 users can update this purchase."
+    "forbiddenLevel": "Only level 5 users can update this purchase.",
+    "pphObjek": "WHT object",
+    "pphKosong": "Not set — pick a WHT object",
+    "pphUbah": "Edit WHT",
+    "tarifTerkunci": "A payment already exists, so the WHT rate is locked. The code & object are updated, but the rate is left unchanged."
   },
   "poReissue": {
     "menu": "Reissue (force number)",

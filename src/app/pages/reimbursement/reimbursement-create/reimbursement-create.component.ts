@@ -102,7 +102,7 @@ export class ReimbursementCreateComponent {
     items: new FormArray([]),
     projectName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[A-Z0-9]{3,5}$/),
+      Validators.pattern(/^[A-Z0-9]{4,5}$/),
     ]),
     purchaseType: new FormControl('', Validators.required),
     bankName: new FormControl('', [Validators.required, Validators.maxLength(100)]),

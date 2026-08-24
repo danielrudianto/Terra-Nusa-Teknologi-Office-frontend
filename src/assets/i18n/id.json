@@ -4790,7 +4790,11 @@
     "total": "Total",
     "locked": "Terkunci",
     "lockedNote": "Nilai tidak bisa diubah karena pembelian ini sudah ada pembayarannya. Batalkan dulu pembayarannya bila nominalnya memang perlu dibetulkan.",
-    "forbiddenLevel": "Hanya pengguna level 5 yang bisa mengubah pembelian ini."
+    "forbiddenLevel": "Hanya pengguna level 5 yang bisa mengubah pembelian ini.",
+    "pphObjek": "Objek PPh",
+    "pphKosong": "Belum ada — pilih objek PPh",
+    "pphUbah": "Ubah PPh",
+    "tarifTerkunci": "Sudah ada pembayaran, jadi tarif PPh terkunci. Kode & objeknya tetap diperbarui, tapi tarifnya tidak diubah."
   },
   "poReissue": {
     "menu": "Terbitkan ulang (paksa nomor)",
