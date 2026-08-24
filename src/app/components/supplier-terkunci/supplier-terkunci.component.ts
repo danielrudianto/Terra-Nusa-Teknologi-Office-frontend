@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -35,14 +35,25 @@ import { TranslatePipe } from '@ngx-translate/core';
 
       <!--
         Alasannya disebut, bukan hanya digembok.
-        
+
         Gembok tanpa keterangan membuat yang membukanya bertanya-tanya apakah
         ini kesalahan; satu baris penjelasan menutup pertanyaan itu.
+
+        Bila kartunya justru DAPAT diganti, gembok itu ditukar dengan
+        tindakannya — kartu yang sama dipakai untuk pilihan yang sudah
+        diambil, bukan hanya untuk yang terkunci.
       -->
-      <span class="sptk__kunci">
-        <mat-icon>lock</mat-icon>
-        {{ kunciTeks | translate }}
-      </span>
+      @if (aksiTeks) {
+        <button type="button" class="sptk__aksi" (click)="aksi.emit()">
+          <mat-icon>swap_horiz</mat-icon>
+          {{ aksiTeks | translate }}
+        </button>
+      } @else {
+        <span class="sptk__kunci">
+          <mat-icon>lock</mat-icon>
+          {{ kunciTeks | translate }}
+        </span>
+      }
     </div>
   `,
   styles: [
@@ -110,6 +121,38 @@ import { TranslatePipe } from '@ngx-translate/core';
         height: 14px;
         font-size: 14px;
       }
+
+      /*
+       * Tindakan mengganti.
+
+       * Sengaja setenang keterangan gemboknya — sama kecil, sama redup, di
+       * tempat yang sama. Yang berpindah antara layar sunting (tergembok)
+       * dan layar pengisian (dapat diganti) melihat kartu yang sama; hanya
+       * baris terakhirnya yang berbeda.
+       */
+      .sptk__aksi {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        align-self: flex-start;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.72rem;
+        color: var(--brand, #154dec);
+      }
+
+      .sptk__aksi:hover {
+        text-decoration: underline;
+      }
+
+      .sptk__aksi .mat-icon {
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+      }
     `,
   ],
 })
@@ -126,4 +169,15 @@ export class SupplierTerkunciComponent {
    * menyalin gayanya ke komponen kedua yang harus dijaga sejalan.
    */
   @Input() kunciTeks = 'poForm.pemasokTerkunci';
+
+  /**
+   * Kunci i18n tindakan pengganti gemboknya.
+   *
+   * Dibiarkan kosong pada kartu yang memang terkunci. Diisi bila pilihannya
+   * masih dapat diubah — kartunya lalu menampilkan tindakan itu, bukan
+   * gembok, tanpa perlu bentuk kartu kedua yang harus dijaga sejalan.
+   */
+  @Input() aksiTeks: string | null = null;
+
+  @Output() aksi = new EventEmitter<void>();
 }

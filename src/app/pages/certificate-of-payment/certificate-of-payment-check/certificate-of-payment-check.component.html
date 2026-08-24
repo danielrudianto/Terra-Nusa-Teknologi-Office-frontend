@@ -13,19 +13,19 @@
   @if (cop(); as c) {
     <!-- ===== 1. DOKUMEN ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">1</span>{{ "cop.langkahBaca" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahBaca" | translate }}</div>
 
-      <div class="cop-banner cop-banner--pilih">
-        <mat-icon>description</mat-icon>
-        <div>
-          <strong>{{ c.name }}</strong>
-          <span>
-            {{ c.purchaseOrderName || "—" }} · {{ c.projectName }}
-          </span>
-        </div>
-      </div>
+      <!--
+        Dokumen yang sedang diperiksa: kartu yang SAMA dengan dokumen
+        terkunci pada formulir purchase order. Di sini ia memang terkunci —
+        yang memeriksa tidak memilih dokumen, ia dibawa ke dokumennya.
+      -->
+      <app-supplier-terkunci
+        [label]="'cop.dokumenDiperiksa' | translate"
+        [nama]="c.name"
+        [alamat]="(c.purchaseOrderName || '—') + ' · ' + c.projectName"
+        [kunciTeks]="'cop.dokumenTerkunci'"
+      />
 
       <div class="cop-baris-form">
         <mat-form-field appearance="outline">
@@ -53,9 +53,7 @@
 
     <!-- ===== 2. VOLUME & NILAI ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">2</span>{{ "cop.langkahPeriksaVolume" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahPeriksaVolume" | translate }}</div>
 
       <div class="cop-banner">
         <mat-icon>fact_check</mat-icon>
@@ -169,9 +167,7 @@
 
     <!-- ===== 3. POTONGAN & TAMBAHAN ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">3</span>{{ "cop.langkahPenyesuaian" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahPenyesuaian" | translate }}</div>
 
       <!--
         Seluruhnya PILIHAN.
@@ -353,9 +349,7 @@
 
     <!-- ===== 4. SIMPAN ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">4</span>{{ "cop.langkahTutup" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahTutup" | translate }}</div>
 
       <mat-form-field appearance="outline" class="cop-catatan">
         <mat-label>{{ "cop.catatan" | translate }}</mat-label>

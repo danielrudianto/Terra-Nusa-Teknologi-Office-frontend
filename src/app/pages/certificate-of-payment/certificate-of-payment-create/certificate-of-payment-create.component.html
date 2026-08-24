@@ -19,9 +19,7 @@
 
   <!-- ===== 1. PILIH SPK ===== -->
   <section class="cop-kartu">
-    <h2 class="cop-kartu__judul">
-      <span class="cop-langkah">1</span>{{ "cop.langkahSpk" | translate }}
-    </h2>
+    <div class="cop-kartu__judul">{{ "cop.langkahSpk" | translate }}</div>
 
     @if (!copId) {
       <!--
@@ -74,36 +72,33 @@
       }
     }
 
+    <!--
+      SPK yang sudah dipilih memakai kartu yang SAMA dengan dokumen terkunci
+      pada formulir purchase order (`app-supplier-terkunci`).
+
+      Sebelumnya ia berupa banner biru dengan tombol silang — bentuk yang
+      tidak ada padanannya di layar mana pun. Keduanya menyatakan hal yang
+      sama: "ini dokumen yang sedang dipegang". Satu bentuk untuk satu
+      maksud; bedanya hanya baris terakhir — di sini dapat diganti, di sana
+      tergembok.
+    -->
     @if (spkTerpilih(); as s) {
-      <div class="cop-banner cop-banner--pilih">
-        <mat-icon>description</mat-icon>
-        <div>
-          <strong>{{ s.name }}</strong>
-          <span>
-            {{ s.projectName }}@if (s.supplierName) { · {{ s.supplierName }} }
-          </span>
-        </div>
-        @if (!copId) {
-          <button
-            mat-icon-button
-            type="button"
-            class="cop-banner__ganti"
-            [attr.aria-label]="'cop.gantiSpk' | translate"
-            (click)="lepasSpk()"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        }
-      </div>
+      <app-supplier-terkunci
+        [label]="'cop.spkTerpilih' | translate"
+        [nama]="s.name"
+        [alamat]="
+          s.projectName + (s.supplierName ? ' · ' + s.supplierName : '')
+        "
+        [aksiTeks]="copId ? null : 'cop.gantiSpk'"
+        (aksi)="lepasSpk()"
+      />
     }
   </section>
 
   @if (spkTerpilih()) {
     <!-- ===== 2. PERIODE ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">2</span>{{ "cop.langkahPeriode" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahPeriode" | translate }}</div>
       <div class="cop-baris-form">
         <mat-form-field appearance="outline">
           <mat-label>{{ "cop.tanggal" | translate }}</mat-label>
@@ -143,9 +138,7 @@
 
     <!-- ===== 3. VOLUME ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">3</span>{{ "cop.langkahVolume" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahVolume" | translate }}</div>
 
       <div class="cop-banner">
         <mat-icon>straighten</mat-icon>
@@ -280,9 +273,7 @@
 
     <!-- ===== 4. CATATAN & SIMPAN ===== -->
     <section class="cop-kartu">
-      <h2 class="cop-kartu__judul">
-        <span class="cop-langkah">4</span>{{ "cop.langkahTutup" | translate }}
-      </h2>
+      <div class="cop-kartu__judul">{{ "cop.langkahTutup" | translate }}</div>
 
       <mat-form-field appearance="outline" class="cop-catatan">
         <mat-label>{{ "cop.catatan" | translate }}</mat-label>

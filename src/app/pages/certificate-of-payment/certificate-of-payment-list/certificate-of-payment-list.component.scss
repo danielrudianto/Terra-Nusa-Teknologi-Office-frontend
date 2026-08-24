@@ -81,6 +81,30 @@
 }
 
 /*
+ * Lebar kolom yang DITEGAKKAN untuk dua kolom terakhir.
+ *
+ * Tanpa ini keduanya melar mengikuti sisa ruang, dan nilai bersih terlempar
+ * ke tepi kanan layar — terpisah jauh dari nama proyek dan tanggal yang
+ * justru dibandingkan bersamanya. Pada layar lebar jaraknya bisa setengah
+ * meja, dan mata harus menyeberang kolom kosong untuk mencocokkan satu
+ * baris.
+ *
+ * Angka rata kanan DI DALAM kolomnya sendiri — itu yang membuat digit
+ * ribuan sejajar antarbaris — tetapi kolomnya sendiri tidak lagi selebar
+ * sisa halaman.
+ */
+:host ::ng-deep .mat-column-nilai {
+  width: 150px;
+  max-width: 150px;
+}
+
+:host ::ng-deep .mat-column-aksi {
+  width: 56px;
+  max-width: 56px;
+  padding-right: 8px;
+}
+
+/*
  * Baris yang dapat difokus.
  *
  * Latar sorot dan `cursor: pointer` sudah datang dari campuran `daftar`;

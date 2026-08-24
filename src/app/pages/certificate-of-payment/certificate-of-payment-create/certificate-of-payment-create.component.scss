@@ -9,12 +9,22 @@
  */
 :host {
   display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Sudut & warna fokus isian disamakan dengan `poa`. */
+:host ::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-focus-outline-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-caret-color: var(--brand, #154dec);
+  --mdc-outlined-text-field-focus-label-text-color: var(--brand, #154dec);
+  --mat-select-focused-arrow-color: var(--brand, #154dec);
 }
 
 .cop-create {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0;
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
@@ -31,30 +41,24 @@
     0 4px 16px rgba(16, 24, 40, 0.05)
   );
   padding: 1.5rem;
+  margin-bottom: 1.25rem;
 
+  /*
+     Judul seksi persis `poa-section__title` pada formulir purchase order.
+
+     Sebelumnya ia judul tebal 15px berlingkaran nomor — bentuk yang tidak
+     ada padanannya di layar lain. Yang mengerjakan CoP mengerjakan purchase
+     order pada hari yang sama; dua bentuk judul untuk maksud yang sama
+     membuat salah satunya terbaca seperti aplikasi lain.
+  */
   &__judul {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0 0 16px;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--faint, #9aa0ab);
+    margin-bottom: 0.9rem;
   }
-}
-
-/* Nomor langkah: urutan pengisian terbaca sekilas, tanpa membaca judulnya. */
-.cop-langkah {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--brand-soft, #e7ecfb);
-  color: var(--brand-strong, #0f3fd0);
-  font-size: 12px;
-  font-weight: 700;
-  flex: none;
 }
 
 /*
@@ -100,21 +104,12 @@
     opacity: 0.9;
   }
 
-  &--pilih {
-    margin-bottom: 0;
-    align-items: center;
-  }
-
   &--lanjut {
     background: rgba(0, 0, 0, 0.04);
     border-color: rgba(0, 0, 0, 0.08);
     color: inherit;
   }
 
-  &__ganti {
-    margin-left: auto;
-    flex: none;
-  }
 }
 
 .cop-pilih {

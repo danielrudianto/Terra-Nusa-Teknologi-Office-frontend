@@ -21,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
+import { SupplierTerkunciComponent } from 'src/app/components/supplier-terkunci/supplier-terkunci.component';
 import {
   BarisCoPInput,
   BarisPagu,
@@ -64,6 +65,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     NgxMaskDirective,
     TranslateModule,
     HeaderTitleComponent,
+    SupplierTerkunciComponent,
   ],
   providers: [provideNgxMask()],
   templateUrl: './certificate-of-payment-create.component.html',

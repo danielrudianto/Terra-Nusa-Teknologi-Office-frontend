@@ -4836,9 +4836,9 @@
     "kembaliDaftar": "Kembali ke daftar",
     "buatBaru": "Buat CoP",
     "belumAda": "Belum ada certificate of payment.",
-    "langkahSpk": "1. Pilih SPK",
-    "langkahPeriode": "2. Periode pekerjaan",
-    "langkahVolume": "3. Volume terlaksana",
+    "langkahSpk": "Pilih SPK",
+    "langkahPeriode": "Periode pekerjaan",
+    "langkahVolume": "Volume terlaksana",
     "spk": "SPK",
     "spkHanyaSpk": "Hanya surat perintah kerja yang sudah disetujui yang dapat dipilih.",
     "tidakAdaSpk": "Belum ada SPK yang dapat dijadikan dasar CoP.",
@@ -4936,9 +4936,9 @@
     "cariPlaceholder": "Cari nomor CoP, SPK, proyek, atau pemasok",
     "judulPeriksa": "Periksa Certificate of Payment",
     "subjudulPeriksa": "Baca ulang volumenya, lalu tentukan potongan dan tambahannya.",
-    "langkahBaca": "1. Dokumen",
-    "langkahPeriksaVolume": "2. Periksa volume & nilai",
-    "langkahPenyesuaian": "3. Potongan & tambahan",
+    "langkahBaca": "Dokumen",
+    "langkahPeriksaVolume": "Periksa volume & nilai",
+    "langkahPenyesuaian": "Potongan & tambahan",
     "periksaPetunjuk": "Volume masih dapat dibetulkan di sini. Nilai rupiah muncul mulai tahap ini.",
     "sisiPeriksa": "Yang diperiksa",
     "penyesuaianOpsionalJudul": "Semuanya pilihan",
@@ -4952,6 +4952,9 @@
     "jenis": "Jenis",
     "keteranganPenyesuaian": "Keterangan",
     "uangMuka": "Uang muka",
-    "retensi": "Retensi"
+    "retensi": "Retensi",
+    "spkTerpilih": "SPK yang dipilih",
+    "dokumenDiperiksa": "Dokumen yang diperiksa",
+    "dokumenTerkunci": "Dokumen tidak dapat diganti saat memeriksa"
   }
 }
