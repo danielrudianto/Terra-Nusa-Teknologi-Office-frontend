@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, Optional, computed, inject, signal } from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -31,16 +37,50 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   imports: [
     CommonModule,
     MatTableModule,
+    MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
     TranslateModule,
     HeaderTitleComponent,
+    DialogGeserDirective,
   ],
   templateUrl: './certificate-of-payment-view.component.html',
   styleUrl: './certificate-of-payment-view.component.scss',
 })
 export class CertificateOfPaymentViewComponent implements OnInit {
+  /**
+   * Dibuka sebagai DIALOG, bukan halaman.
+   *
+   * Ditentukan dari ada tidaknya `MAT_DIALOG_DATA`, bukan dari sebuah
+   * masukan yang harus diingat pemanggilnya: yang membuka lewat
+   * `dialog.open` selalu mendapatkannya, dan yang membuka lewat rute tidak
+   * pernah. Tidak ada yang perlu diingat, jadi tidak ada yang dapat lupa.
+   */
+  readonly modeDialog: boolean;
+
+  constructor(
+    @Optional() @Inject(MAT_DIALOG_DATA) private dialogData: { id?: number } | null,
+    @Optional()
+    private dialogRef: MatDialogRef<CertificateOfPaymentViewComponent> | null,
+  ) {
+    this.modeDialog = !!dialogData?.id;
+  }
+
+  /**
+   * Dialog ditutup dengan menyampaikan APAKAH ada yang berubah.
+   *
+   * Daftar di belakangnya memuat keadaan dokumen; menutup setelah menyetujui
+   * tanpa mengabarkannya membuat lencananya tetap "diperiksa" sampai
+   * halamannya dimuat ulang — dan yang membacanya menyimpulkan
+   * persetujuannya gagal.
+   */
+  private adaPerubahan = false;
+
+  tutupDialog(): void {
+    this.dialogRef?.close(this.adaPerubahan);
+  }
+
   private readonly service = inject(CertificateOfPaymentService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -81,7 +121,9 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   }
 
   async muat(): Promise<void> {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id =
+      Number(this.dialogData?.id) ||
+      Number(this.route.snapshot.paramMap.get('id'));
     if (!id) return;
     this.memuat.set(true);
     try {
@@ -96,6 +138,13 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     }
   }
 
+  /** Keadaan dokumen, untuk lencana pada kepala dialog. */
+  keadaan(c: CertificateOfPayment): 'draft' | 'diperiksa' | 'disetujui' {
+    if (c.isApproved) return 'disetujui';
+    if (c.isChecked) return 'diperiksa';
+    return 'draft';
+  }
+
   get total(): number | null {
     const c = this.cop();
     if (!this.bolehLihatNilai() || !c?.items) return null;
@@ -108,6 +157,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     this.bekerja.set(true);
     try {
       await firstValueFrom(this.service.periksa(c.id, checked));
+      this.adaPerubahan = true;
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -122,6 +172,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     this.bekerja.set(true);
     try {
       await firstValueFrom(this.service.setujui(c.id));
+      this.adaPerubahan = true;
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -132,7 +183,9 @@ export class CertificateOfPaymentViewComponent implements OnInit {
 
   ubah(): void {
     const c = this.cop();
-    if (c) this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
+    if (!c) return;
+    this.dialogRef?.close(this.adaPerubahan);
+    this.router.navigate(['/Certificate-of-payment/Edit', c.id]);
   }
 
   /**
@@ -143,7 +196,12 @@ export class CertificateOfPaymentViewComponent implements OnInit {
    */
   bukaPeriksa(): void {
     const c = this.cop();
-    if (c) this.router.navigate(['/Certificate-of-payment/Periksa', c.id]);
+    if (!c) return;
+    // Dialognya ditutup lebih dulu: tanpa itu rutenya berganti di belakang
+    // dialog yang masih menutupi layar, dan yang menekannya melihat lembar
+    // periksa hanya setelah menutup sesuatu yang tampak tidak berhubungan.
+    this.dialogRef?.close(this.adaPerubahan);
+    this.router.navigate(['/Certificate-of-payment/Periksa', c.id]);
   }
 
   // ---- unduh ----------------------------------------------------------

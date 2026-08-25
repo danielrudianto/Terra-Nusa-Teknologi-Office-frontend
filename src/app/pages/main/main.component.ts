@@ -199,7 +199,13 @@ export class MainComponent {
            * dulu, progresnya disertifikasi sesudahnya.
            */
           name: 'nav.certificateOfPayment',
-          icon: 'purchase-invoice.svg',
+          // Lambang DOKUMEN bercentang, bukan keranjang belanja.
+          //
+          // Keranjang dipinjam dari faktur pembelian saat menu ini baru
+          // ditambahkan. CoP bukan pembelian: ia berita acara yang dibaca,
+          // diperiksa, dan ditandatangani — dan lambang keranjang membuatnya
+          // dicari di kelompok pembelian oleh yang membuka menu.
+          icon: 'certificate-of-payment.svg',
           route: '/Certificate-of-payment',
         },
         {

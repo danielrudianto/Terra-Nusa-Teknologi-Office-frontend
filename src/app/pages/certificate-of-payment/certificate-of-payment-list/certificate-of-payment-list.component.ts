@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
@@ -19,6 +20,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { RefreshButtonComponent } from 'src/app/components/refresh-button/refresh-button.component';
+import { CertificateOfPaymentViewComponent } from '../certificate-of-payment-view/certificate-of-payment-view.component';
 import {
   CertificateOfPayment,
   CertificateOfPaymentService,
@@ -60,6 +62,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
   private readonly service = inject(CertificateOfPaymentService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
   readonly izin = inject(PermissionService);
@@ -239,8 +242,33 @@ export class CertificateOfPaymentListComponent implements OnInit {
     this.router.navigate(['/Certificate-of-payment/Create']);
   }
 
+  /**
+   * Buka dokumen sebagai DIALOG, bukan berpindah halaman.
+   *
+   * Membaca satu CoP adalah pekerjaan sekilas: melihat volumenya, melihat
+   * siapa yang sudah menandatangani, lalu kembali. Berpindah halaman
+   * membuang kata pencarian, penyaring, urutan, dan halaman yang sedang
+   * dibuka — dan yang memeriksa sepuluh dokumen berturut-turut harus
+   * menyusunnya ulang sepuluh kali.
+   *
+   * Yang bukan sekilas — memeriksa, menyunting — tetap berpindah halaman;
+   * keduanya menutup dialognya lebih dulu.
+   */
   buka(c: CertificateOfPayment): void {
-    this.router.navigate(['/Certificate-of-payment/View', c.id]);
+    this.dialog
+      .open(CertificateOfPaymentViewComponent, {
+        data: { id: c.id },
+        width: '900px',
+        maxWidth: '94vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((berubah) => {
+        // Dimuat ulang HANYA bila ada yang berubah. Memuat ulang setiap kali
+        // dialog ditutup membuat daftar berkedip tiap kali orang sekadar
+        // melihat-lihat.
+        if (berubah) void this.muat();
+      });
   }
 
   ubah(c: CertificateOfPayment): void {

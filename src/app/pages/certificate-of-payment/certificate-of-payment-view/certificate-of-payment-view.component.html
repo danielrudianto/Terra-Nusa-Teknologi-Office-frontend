@@ -1,11 +1,67 @@
-<div class="cop-view">
-  <app-header-title
-    [title]="cop()?.name || ('cop.judulLihat' | translate)"
-    [description]="'cop.subjudulLihat' | translate"
-    [backLink]="'/Certificate-of-payment'"
-    [backLabel]="'cop.kembaliDaftar' | translate"
-  />
+<!--
+  SATU KOMPONEN, DUA WADAH.
 
+  Dibuka sebagai HALAMAN lewat rute `View/:id`, dan sebagai DIALOG dari
+  daftar. Isinya sama persis — hanya bingkainya yang berbeda — sehingga
+  ditulis sekali dalam `#isiDokumen` lalu dipasang di kedua tempat.
+
+  Menyalinnya menjadi dua templat akan membuat keduanya berselisih pada
+  perubahan berikutnya, dan yang tertinggal tidak menimbulkan galat apa
+  pun: hanya satu jalan masuk yang diam-diam menampilkan dokumen lama.
+-->
+@if (modeDialog) {
+  <div class="cv-dlg">
+    <div class="cv-dlg__head" mat-dialog-title appDialogGeser>
+      <span class="cv-dlg__ikon"><mat-icon>fact_check</mat-icon></span>
+      <div class="cv-dlg__teks">
+        <h2 class="cv-dlg__judul">
+          {{ cop()?.name || ("cop.judulLihat" | translate) }}
+        </h2>
+        <span class="cv-dlg__sub">{{ cop()?.purchaseOrderName || "—" }}</span>
+      </div>
+
+      @if (cop(); as c) {
+        <span class="cv-dlg__lencana" [class]="'cv-dlg__lencana--' + keadaan(c)">
+          {{ "cop.keadaan_" + keadaan(c) | translate }}
+        </span>
+      }
+
+      <button
+        mat-icon-button
+        class="cv-dlg__tutup"
+        [attr.aria-label]="'common.close' | translate"
+        (click)="tutupDialog()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-dialog-content class="cv-dlg__isi">
+      <ng-container *ngTemplateOutlet="isiDokumen" />
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="cv-dlg__kaki">
+      <ng-container *ngTemplateOutlet="tombolAksi" />
+    </mat-dialog-actions>
+  </div>
+} @else {
+  <div class="cop-view">
+    <app-header-title
+      [title]="cop()?.name || ('cop.judulLihat' | translate)"
+      [description]="'cop.subjudulLihat' | translate"
+      [backLink]="'/Certificate-of-payment'"
+      [backLabel]="'cop.kembaliDaftar' | translate"
+    />
+
+    <ng-container *ngTemplateOutlet="isiDokumen" />
+
+    <section class="cv-kartu cv-aksi">
+      <ng-container *ngTemplateOutlet="tombolAksi" />
+    </section>
+  </div>
+}
+
+<ng-template #isiDokumen>
   @if (memuat()) {
     <mat-progress-bar mode="indeterminate" />
   }
@@ -287,9 +343,11 @@
         <p class="cv-catatan-dpp">{{ "cop.catatanDpp" | translate }}</p>
       </section>
     }
+  }
+</ng-template>
 
-    <!-- ===== Tindakan ===== -->
-    <section class="cv-kartu cv-aksi">
+<ng-template #tombolAksi>
+  @if (cop(); as c) {
       <!-- Unduhan di kiri: ia bukan keputusan, hanya mengambil berkas. -->
       @if (bolehLihatNilai()) {
         <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
@@ -354,6 +412,5 @@
           {{ "cop.sudahDisetujui" | translate }}
         </p>
       }
-    </section>
   }
-</div>
+</ng-template>
