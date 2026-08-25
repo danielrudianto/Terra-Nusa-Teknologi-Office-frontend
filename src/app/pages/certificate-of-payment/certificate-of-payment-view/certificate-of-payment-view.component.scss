@@ -509,10 +509,20 @@
   max-height: 70vh;
 
   /* Kartu di dalam dialog tidak perlu bayangan: dialognya sendiri sudah
-     terangkat dari halaman, dan bayangan berlapis membuatnya keruh. */
+     terangkat dari halaman, dan bayangan berlapis membuatnya keruh.
+
+     Jaraknya diberikan DI SINI, bukan diwarisi dari `.cop-view`: kartu-kartu
+     itu digambar ke dalam `mat-dialog-content`, sedangkan jarak antar kartu
+     berasal dari `gap` milik `.cop-view` yang tidak ikut ke dalam dialog —
+     hasilnya seluruh kartu berdempet tanpa sela. */
   .cv-kartu {
     box-shadow: none;
     border: 0.5px solid var(--border, #e3e6eb);
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -523,4 +533,100 @@
   flex-wrap: wrap;
   padding: 0.9rem 1.5rem !important;
   border-top: 1px solid var(--line, #e6e9ee);
+}
+
+
+/*
+  Pajak & jumlah yang dibayarkan.
+
+  Terpisah dari ringkasan di atasnya oleh garis: yang di atas menyusun DPP,
+  yang di sini menghitung dari DPP itu. Dua hal berbeda yang kebetulan
+  bertetangga, dan tanpa pemisah keduanya terbaca sebagai satu daftar
+  panjang yang tidak jelas mana jumlahnya.
+*/
+.cv-pajak {
+  margin: 1.1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line, #eef0f3);
+
+  > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0;
+  }
+
+  dt {
+    font-size: 0.86rem;
+    color: var(--muted, #6b7280);
+
+    em {
+      font-style: normal;
+      opacity: 0.75;
+      margin-left: 0.3rem;
+    }
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--tambah {
+    color: var(--ok-fg, #1a7f45);
+  }
+
+  /* PPh: keterangan, bukan hitungan. Diredupkan supaya tidak terbaca
+     sebagai baris yang ikut dijumlahkan. */
+  &__ket {
+    dd {
+      font-weight: 500;
+      color: var(--muted, #6b7280);
+    }
+
+    span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+  }
+
+  &__total {
+    margin-top: 0.35rem;
+    padding-top: 0.7rem !important;
+    border-top: 1px solid var(--line, #eef0f3);
+
+    dt {
+      font-weight: 700;
+      color: var(--ink, #16181d);
+      font-size: 0.92rem;
+    }
+
+    dd {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+  }
+}
+
+/* Keterangan pengganti tombol unduh CoP yang belum boleh ditekan.
+   Ditulis, bukan sekadar tombol mati: tombol abu tanpa sebab dibaca sebagai
+   layar rusak, dan yang membacanya menekan berulang kali. */
+.cv-belum-unduh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--muted, #9aa1b1);
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
 }

@@ -93,9 +93,6 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   readonly memuat = signal(false);
   readonly bekerja = signal(false);
 
- readonly menyuntingPenyesuaian = signal(false);
-  readonly menyimpanPenyesuaian = signal(false);
-
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
   readonly bolehPeriksa = computed(() => this.izin.level() >= 2);
@@ -248,5 +245,41 @@ export class CertificateOfPaymentViewComponent implements OnInit {
    */
   get syarat(): SyaratSpk | null {
     return this.cop()?.spkSyarat || null;
+  }
+
+  // ---- pajak & jumlah yang dibayarkan ----------------------------------
+
+  /** Tarif PPN menurut SPK; 0 berarti dokumen ini tidak kena PPN. */
+  get tarifPpn(): number {
+    return Number(this.syarat?.ppn || 0);
+  }
+
+  get nilaiPpn(): number {
+    return (Number(this.cop()?.netAmount || 0) * this.tarifPpn) / 100;
+  }
+
+  /**
+   * PPh yang SUDAH dipotong pada dokumen ini.
+   *
+   * Dibaca dari daftar potongannya, BUKAN dihitung dari tarif SPK. Yang
+   * memeriksa boleh membetulkan angkanya — periode ini mungkin disepakati
+   * lain — dan menghitungnya ulang dari tarif akan menampilkan angka yang
+   * berbeda dari yang benar-benar dipotong tepat di sebelahnya.
+   */
+  get nilaiPph(): number {
+    return (this.cop()?.adjustments || [])
+      .filter((a) => a.kind === 'deduction' && a.category === 'pph')
+      .reduce((t, a) => t + Number(a.amount || 0), 0);
+  }
+
+  /**
+   * Yang benar-benar berpindah ke rekening pemasok.
+   *
+   * DPP + PPN. PPh tidak dikurangkan lagi di sini: ia sudah berada di daftar
+   * potongan yang membentuk DPP, dan menguranginya dua kali membuat angka
+   * ini lebih kecil daripada yang tertagih.
+   */
+  get totalDibayar(): number {
+    return Number(this.cop()?.netAmount || 0) + this.nilaiPpn;
   }
 }

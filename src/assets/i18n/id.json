@@ -4967,6 +4967,7 @@
     "pernyataanVolume": "Saya sudah memeriksa volume di atas dan menyatakan angkanya benar.",
     "jumlahPekerjaan": "{{n}} pekerjaan",
     "paguHabisJudul": "Ada pagu yang habis setelah ini",
-    "paguHabisKet": "{{n}} baris pekerjaan tidak akan punya sisa lagi. Untuk menambah volume setelah ini, SPK-nya harus diadendum lebih dulu."
+    "paguHabisKet": "{{n}} baris pekerjaan tidak akan punya sisa lagi. Untuk menambah volume setelah ini, SPK-nya harus diadendum lebih dulu.",
+    "unduhSetelahDiperiksa": "Dapat diunduh setelah diperiksa"
   }
 }

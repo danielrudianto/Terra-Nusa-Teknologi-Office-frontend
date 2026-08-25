@@ -4967,6 +4967,7 @@
     "pernyataanVolume": "I have checked the volumes above and confirm they are correct.",
     "jumlahPekerjaan": "{{n}} work items",
     "paguHabisJudul": "Some quotas will be used up",
-    "paguHabisKet": "{{n}} work item(s) will have nothing left. Adding volume after this requires an addendum to the SPK first."
+    "paguHabisKet": "{{n}} work item(s) will have nothing left. Adding volume after this requires an addendum to the SPK first.",
+    "unduhSetelahDiperiksa": "Downloadable once checked"
   }
 }

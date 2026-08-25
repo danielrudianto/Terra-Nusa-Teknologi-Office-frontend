@@ -106,6 +106,8 @@ export interface SyaratSpk {
   pphCode?: string | null;
   pphTaxObject?: string | null;
   pphPercentage: number;
+  /** Tarif PPN menurut SPK; 0 berarti dokumen ini tidak kena PPN. */
+  ppn: number;
   dpPercentage: number;
   retentionPercentage: number;
   nilaiKontrak: number;

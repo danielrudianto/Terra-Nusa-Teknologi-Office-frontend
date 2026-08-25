@@ -4967,6 +4967,7 @@
     "pernyataanVolume": "我已核对以上工程量并确认无误。",
     "jumlahPekerjaan": "{{n}} 项工作",
     "paguHabisJudul": "部分额度将被用尽",
-    "paguHabisKet": "{{n}} 项工作将无余量。此后若要增加工程量，需先对 SPK 做补充协议。"
+    "paguHabisKet": "{{n}} 项工作将无余量。此后若要增加工程量，需先对 SPK 做补充协议。",
+    "unduhSetelahDiperiksa": "核对后方可下载"
   }
 }

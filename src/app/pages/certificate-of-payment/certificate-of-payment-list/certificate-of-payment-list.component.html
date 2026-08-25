@@ -191,7 +191,9 @@
                 <span>{{ "common.edit" | translate }}</span>
               </button>
             }
-            @if (bolehLihatNilai()) {
+            <!-- Unduhan CoP hanya untuk yang SUDAH diperiksa; lihat
+                 catatan pada layar rincian. -->
+            @if (bolehLihatNilai() && c.isChecked) {
               <button mat-menu-item (click)="unduh(c)">
                 <mat-icon>picture_as_pdf</mat-icon>
                 <span>{{ "cop.unduhPdf" | translate }}</span>

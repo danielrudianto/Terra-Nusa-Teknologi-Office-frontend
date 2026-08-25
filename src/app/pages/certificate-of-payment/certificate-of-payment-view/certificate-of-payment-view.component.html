@@ -209,21 +209,6 @@
     @if (bolehLihatNilai()) {
       <section class="cv-kartu">
         <!--
-          TAHAP DUA.
-
-          Layar pembuatan hanya mencatat volume — siapa pun yang mengisinya.
-          Di sinilah volume itu dibaca ulang dan uangnya diurus: uang muka,
-          retensi, denda, dan penambahan. Dua tahap, bukan dua level.
-        -->
-        <div class="cv-banner">
-          <mat-icon>payments</mat-icon>
-          <div>
-            <strong>{{ "cop.tahapDuaLayarJudul" | translate }}</strong>
-            <span>{{ "cop.tahapDuaLayar" | translate }}</span>
-          </div>
-        </div>
-
-        <!--
           Sisa uang muka & retensi.
 
           Uang muka dikembalikan sedikit demi sedikit dari tiap progres;
@@ -336,10 +321,68 @@
             </dd>
           </div>
           <div class="cv-ringkas__bersih">
-            <dt>{{ "cop.nilaiBersih" | translate }}</dt>
+            <dt>{{ "cop.subtotalDpp" | translate }}</dt>
             <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
           </div>
         </dl>
+
+        <!--
+          Pajak dan jumlah yang benar-benar dibayarkan.
+
+          Ringkasan di atas berhenti pada DPP — dasar pengenaan pajak — dan
+          itu bukan angka yang berpindah ke rekening pemasok. Yang membaca
+          lembar ini untuk menyiapkan pembayaran harus menghitung sendiri
+          PPN-nya di kalkulator, dan hasil hitung tangan itulah yang paling
+          sering berselisih dengan fakturnya.
+
+          Barisnya hanya digambar bila memang ADA. Dokumen tanpa PPN yang
+          menampilkan "PPN 0%" membuat yang membacanya berhenti memastikan
+          apakah tarifnya lupa diisi.
+        -->
+        <dl class="cv-pajak">
+          <div>
+            <dt>{{ "cop.subtotalDpp" | translate }}</dt>
+            <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
+          </div>
+
+          @if (tarifPpn > 0) {
+            <div>
+              <dt>
+                {{ "cop.ppn" | translate }}
+                <em>{{ tarifPpn | number: "1.0-2" }}%</em>
+              </dt>
+              <dd class="cv-pajak--tambah">+{{ nilaiPpn | number: "1.0-2" }}</dd>
+            </div>
+          }
+
+          <!--
+            PPh ditampilkan sebagai KETERANGAN, tidak dikurangkan lagi.
+
+            Ia sudah berada di daftar potongan di atas — itulah tempatnya
+            pada lembar CoP yang dicetak. Mengurangkannya sekali lagi di
+            sini membuat totalnya lebih kecil daripada yang tertagih.
+          -->
+          @if (nilaiPph > 0) {
+            <div class="cv-pajak__ket">
+              <dt>
+                {{ "cop.pph" | translate }}
+                @if (syarat?.pphCode) {
+                  <em>{{ syarat?.pphCode }}</em>
+                }
+              </dt>
+              <dd>
+                −{{ nilaiPph | number: "1.0-2" }}
+                <span>{{ "cop.sudahDipotongDiAtas" | translate }}</span>
+              </dd>
+            </div>
+          }
+
+          <div class="cv-pajak__total">
+            <dt>{{ "cop.totalDibayar" | translate }}</dt>
+            <dd>{{ totalDibayar | number: "1.0-2" }}</dd>
+          </div>
+        </dl>
+
         <p class="cv-catatan-dpp">{{ "cop.catatanDpp" | translate }}</p>
       </section>
     }
@@ -349,11 +392,29 @@
 <ng-template #tombolAksi>
   @if (cop(); as c) {
       <!-- Unduhan di kiri: ia bukan keputusan, hanya mengambil berkas. -->
+      <!--
+        CoP baru dapat diunduh SETELAH diperiksa; BAP kapan saja.
+
+        Lembar CoP menyatakan nilai tagihan, dan sebelum diperiksa angkanya
+        belum ditelaah siapa pun. Begitu keluar dari pencetak ia tidak dapat
+        dibedakan dari yang sudah benar. Cerminan aturan server; yang
+        menegakkan tetap server.
+
+        BAP justru sebaliknya — itulah lembar yang dibawa ke lapangan untuk
+        diperiksa lebih dahulu.
+      -->
       @if (bolehLihatNilai()) {
-        <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
-          <mat-icon>picture_as_pdf</mat-icon>
-          {{ "cop.unduhPdf" | translate }}
-        </button>
+        @if (c.isChecked) {
+          <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
+            <mat-icon>picture_as_pdf</mat-icon>
+            {{ "cop.unduhPdf" | translate }}
+          </button>
+        } @else {
+          <span class="cv-belum-unduh">
+            <mat-icon>lock</mat-icon>
+            {{ "cop.unduhSetelahDiperiksa" | translate }}
+          </span>
+        }
         <button mat-button [disabled]="mengunduh()" (click)="unduh(true)">
           {{ "cop.unduhBap" | translate }}
         </button>
