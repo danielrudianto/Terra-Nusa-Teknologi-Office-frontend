@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,6 +23,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { SupplierTerkunciComponent } from 'src/app/components/supplier-terkunci/supplier-terkunci.component';
+import { CertificateOfPaymentPratinjauComponent } from '../certificate-of-payment-pratinjau/certificate-of-payment-pratinjau.component';
 import {
   BarisCoPInput,
   BarisPagu,
@@ -76,6 +78,7 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
   private readonly izin = inject(PermissionService);
@@ -477,6 +480,43 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       );
       return;
     }
+
+    /*
+     * PRATINJAU LEBIH DAHULU, simpan setelah dinyatakan terbaca.
+     *
+     * Yang tersimpan di sini menjadi dasar penagihan, dan volume yang
+     * keliru satu digit baru ketahuan setelah pemeriksa membandingkannya
+     * dengan lapangan — kalau ketahuan. Sampai saat itu ia sudah memakan
+     * pagu baris yang seharusnya tersedia untuk periode berikutnya.
+     *
+     * Bentuknya sama dengan pratinjau purchase order karena maksudnya
+     * memang sama: memindahkan koreksi ke saat masih murah.
+     */
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(CertificateOfPaymentPratinjauComponent, {
+          data: CertificateOfPaymentPratinjauComponent.dari(
+            spk,
+            this.baris(),
+            this.isian(),
+            this.catatanBaris(),
+            this.volumeAwal(),
+            {
+              tanggal: this.tanggal.value,
+              periodeAwal: this.periodeAwal.value,
+              periodeAkhir: this.periodeAkhir.value,
+              catatan: this.catatan.value || null,
+              menyunting: !!this.copId,
+            },
+          ),
+          width: '860px',
+          maxWidth: '96vw',
+          autoFocus: false,
+          disableClose: true,
+        })
+        .afterClosed(),
+    );
+    if (!setuju) return;
 
     this.menyimpan.set(true);
     try {

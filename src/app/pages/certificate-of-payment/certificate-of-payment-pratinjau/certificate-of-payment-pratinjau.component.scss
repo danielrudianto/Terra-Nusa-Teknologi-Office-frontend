@@ -1,0 +1,350 @@
+/*
+ * Pratinjau CoP.
+ *
+ * Nilai warnanya lewat token `--*`, sama seperti pratinjau purchase order
+ * (`pov-*`) yang bentuknya ditiru di sini: tema gelap mengganti token yang
+ * sama, dan warna yang ditulis langsung tidak ikut berganti.
+ */
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.cp-judul {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+
+  .mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--brand, #154dec);
+  }
+}
+
+.cp-isi {
+  max-height: 62vh;
+}
+
+/* ---- kepala dokumen ---- */
+
+.cp-kepala {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem 1.25rem;
+  margin: 0 0 1.1rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  border: 0.5px solid var(--border, #e3e6eb);
+
+  dt {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--muted, #9aa1b1);
+    margin-bottom: 0.15rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  &__lebar {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- tabel ---- */
+
+.cp-tabel-bungkus {
+  overflow-x: auto;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+}
+
+.cp-tabel {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+
+  thead th {
+    background: var(--surface-2, #fafbfc);
+    padding: 0.6rem 0.85rem;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+    border-bottom: 1px solid var(--line, #eef0f3);
+  }
+
+  tbody td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--line, #eef0f3);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /*
+     Kolom volume ditonjolkan.
+
+     Ia satu-satunya angka yang benar-benar diputuskan orang di lembar
+     sebelumnya; sisanya keterangan yang membantu menilainya. Tanpa penegasan
+     ini kelimanya terbaca sama penting, dan yang memeriksa harus membaca
+     kepala kolom untuk tahu mana yang dicarinya.
+  */
+  &__utama {
+    background: var(--brand-soft, #f2f5ff);
+    font-weight: 700;
+  }
+}
+
+.cp-num {
+  text-align: right;
+  white-space: nowrap;
+
+  em {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.74rem;
+    color: var(--muted, #9aa1b1);
+    margin-left: 0.15rem;
+  }
+}
+
+.cp-nama {
+  display: block;
+  font-weight: 600;
+}
+
+.cp-ket {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  margin-top: 0.1rem;
+}
+
+.cp-catatan {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+  margin-top: 0.3rem;
+  font-style: italic;
+
+  .mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+}
+
+.cp-baris--habis {
+  background: rgba(224, 148, 46, 0.06);
+}
+
+/* ---- catatan dokumen ---- */
+
+.cp-blok {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+
+  &__label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--faint, #9aa0ab);
+    margin-bottom: 0.3rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+}
+
+/*
+ * Warnanya WASPADA, bukan bahaya.
+ *
+ * Menghabiskan pagu sering kali benar. Merah pada sesuatu yang sering benar
+ * membuat orang berhenti membacanya, dan peringatan yang sungguh-sungguh
+ * penting ikut terlewat.
+ */
+.cp-waspada {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 0.5px solid rgba(224, 148, 46, 0.35);
+  color: var(--warn-fg, #a2651a);
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.84rem;
+  }
+
+  p {
+    margin: 0.15rem 0 0;
+    font-size: 0.79rem;
+    line-height: 1.5;
+  }
+}
+
+/* ---- pernyataan ---- */
+
+.cp-konfirmasi {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line, #e6e9ee);
+}
+
+.cp-syarat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.7rem;
+}
+
+.cp-syarat__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--muted, #9aa1b1);
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+
+  &.is-ok {
+    color: var(--ok-fg, #1a7f45);
+  }
+}
+
+.cp-cek {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    margin-top: 0.15rem;
+    accent-color: var(--brand, #154dec);
+    cursor: pointer;
+  }
+
+  &--menunggu {
+    opacity: 0.55;
+    cursor: not-allowed;
+
+    input {
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ---- kaki ---- */
+
+.cp-kaki {
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e6e9ee);
+  display: flex;
+  align-items: center;
+}
+
+.cp-jumlah {
+  font-size: 0.78rem;
+  color: var(--muted, #9aa1b1);
+}
+
+.cp-pemisah {
+  flex: 1 1 auto;
+}
+
+.cp-batal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border, #dfe3ea);
+  background: var(--surface, #fff);
+  color: var(--muted, #6b7280);
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.84rem;
+  padding: 0.48rem 1.15rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+.cp-simpan {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.4rem;
+  margin-left: 0.6rem;
+  background: var(--brand, #154dec);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  .mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--brand-strong, #0f3fd0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

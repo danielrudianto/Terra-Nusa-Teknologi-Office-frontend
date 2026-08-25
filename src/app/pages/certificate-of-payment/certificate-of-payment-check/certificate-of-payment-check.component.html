@@ -238,70 +238,129 @@
         </div>
       }
 
-      @for (a of penyesuaian(); track $index) {
-        <div class="cv-adj-baris" [class.cv-adj-baris--salah]="barisSalah(a)">
-          <mat-form-field appearance="outline" class="cv-adj-jenis" subscriptSizing="dynamic">
-            <mat-label>{{ "cop.jenis" | translate }}</mat-label>
-            <mat-select
-              [value]="a.kind"
-              (selectionChange)="
-                setBaris($index, {
-                  kind: $event.value,
-                  category:
-                    $event.value === 'deduction' ? 'uang_muka' : 'biaya_luar_kontrak'
-                })
-              "
-            >
-              <mat-option value="deduction">{{ "cop.potongan" | translate }}</mat-option>
-              <mat-option value="addition">{{ "cop.tambahan" | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <!--
+        SATU BARIS, TANPA KOTAK.
 
-          <mat-form-field appearance="outline" class="cv-adj-kat" subscriptSizing="dynamic">
-            <mat-label>{{ "cop.kategori" | translate }}</mat-label>
-            <mat-select
-              [value]="a.category"
-              (selectionChange)="setBaris($index, { category: $event.value })"
-            >
-              @for (k of kategoriUntuk(a.kind); track k) {
-                <mat-option [value]="k">{{ "cop.kat_" + k | translate }}</mat-option>
+        Sebelumnya tiap baris dibungkus kotak bersudut yang di dalamnya
+        berisi empat kotak isian lagi. Kotak di dalam kotak membuat matanya
+        berhenti pada bingkainya, bukan pada angkanya — dan baris kosong
+        yang baru ditambahkan langsung bergaris merah, seolah sudah salah
+        sebelum sempat diisi.
+
+        Sekarang barisnya dipisah garis tipis saja, dan yang merah hanya
+        yang benar-benar sudah disentuh lalu ditinggalkan belum lengkap.
+      -->
+      <div class="cop-adj">
+        @for (a of penyesuaian(); track $index) {
+          <div class="cop-adj__baris" [class.cop-adj__baris--salah]="tampakSalah($index)">
+            <mat-form-field appearance="outline" class="cop-adj__jenis" subscriptSizing="dynamic">
+              <mat-label>{{ "cop.jenis" | translate }}</mat-label>
+              <mat-select
+                [value]="a.kind"
+                (selectionChange)="gantiJenis($index, $event.value)"
+              >
+                <mat-option value="deduction">{{ "cop.potongan" | translate }}</mat-option>
+                <mat-option value="addition">{{ "cop.tambahan" | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="cop-adj__kat" subscriptSizing="dynamic">
+              <mat-label>{{ "cop.kategori" | translate }}</mat-label>
+              <mat-select
+                [value]="a.category"
+                (selectionChange)="gantiKategori($index, $event.value)"
+              >
+                @for (k of kategoriUntuk(a.kind); track k) {
+                  <mat-option [value]="k">{{ "cop.kat_" + k | translate }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="cop-adj__label" subscriptSizing="dynamic">
+              <mat-label>{{ "cop.keteranganPenyesuaian" | translate }}</mat-label>
+              <input
+                matInput
+                [formControl]="kontrolLabel($index)"
+                [placeholder]="saranLabel(a) || ''"
+              />
+            </mat-form-field>
+
+            <!--
+              PERSEN atau NOMINAL.
+
+              Uang muka dan retensi disepakati sebagai PERSENTASE — "DP 20%",
+              bukan "DP dua ratus juta". Memaksa memasukkan nominalnya berarti
+              yang memeriksa harus mengalikannya sendiri di kalkulator tiap
+              periode, dan hasil kali tangan itulah yang paling sering salah.
+              Dendanya justru sebaliknya: ia nominal yang disepakati.
+
+              Yang TERSIMPAN selalu nominal — persen hanya cara memasukkannya.
+            -->
+            <div class="cop-adj__satuan">
+              <button
+                type="button"
+                [class.on]="modeNilai[$index] !== 'persen'"
+                (click)="gantiMode($index, 'nominal')"
+              >
+                Rp
+              </button>
+              <button
+                type="button"
+                [class.on]="modeNilai[$index] === 'persen'"
+                (click)="gantiMode($index, 'persen')"
+              >
+                %
+              </button>
+            </div>
+
+            <mat-form-field appearance="outline" class="cop-adj__nominal" subscriptSizing="dynamic">
+              <mat-label>{{
+                (modeNilai[$index] === "persen" ? "cop.persenDariProgres" : "cop.nominal")
+                  | translate
+              }}</mat-label>
+              <input
+                matInput
+                type="text"
+                inputmode="decimal"
+                thousandSeparator=" "
+                decimalScale="2"
+                mask="separator.2"
+                [validation]="false"
+                [formControl]="kontrolNominal($index)"
+              />
+              @if (modeNilai[$index] === "persen") {
+                <span matSuffix class="cop-adj__persen">%</span>
               }
-            </mat-select>
-          </mat-form-field>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="cv-adj-label" subscriptSizing="dynamic">
-            <mat-label>{{ "cop.keteranganPenyesuaian" | translate }}</mat-label>
-            <input
-              matInput
-              [value]="a.label || ''"
-              (input)="setBaris($index, { label: $any($event.target).value })"
-            />
-          </mat-form-field>
+            <button
+              mat-icon-button
+              type="button"
+              class="cop-adj__hapus"
+              [attr.aria-label]="'common.delete' | translate"
+              (click)="hapusBaris($index)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
 
-          <mat-form-field appearance="outline" class="cv-adj-nominal" subscriptSizing="dynamic">
-            <mat-label>{{ "cop.nominal" | translate }}</mat-label>
-            <input
-              matInput
-              type="text"
-              inputmode="decimal"
-              thousandSeparator=" "
-              decimalScale="2"
-              mask="separator.2"
-              [validation]="false"
-              [formControl]="kontrolNominal($index)"
-            />
-          </mat-form-field>
+            <!--
+              Hasil kalinya ditampilkan seketika.
 
-          <button
-            mat-icon-button
-            type="button"
-            [attr.aria-label]="'common.delete' | translate"
-            (click)="hapusBaris($index)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      }
+              Persen yang diketik tanpa memperlihatkan rupiahnya sama saja
+              memindahkan kalkulator ke kepala orang: yang memutuskan tetap
+              perlu tahu berapa yang benar-benar dipotong sebelum menekan
+              simpan.
+            -->
+            @if (modeNilai[$index] === "persen") {
+              <p class="cop-adj__hitung">
+                {{ persenBaris($index) | number: "1.0-2" }}% ×
+                {{ kotor | number: "1.0-2" }} =
+                <strong>{{ a.amount | number: "1.0-2" }}</strong>
+              </p>
+            }
+          </div>
+        }
+      </div>
 
       <div class="cv-adj-tambah">
         <button mat-stroked-button type="button" (click)="tambahBaris('deduction')">

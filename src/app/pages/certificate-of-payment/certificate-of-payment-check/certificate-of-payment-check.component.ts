@@ -262,6 +262,10 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
       ...s,
       [barisId]: angka !== null && Number.isFinite(angka) ? angka : null,
     }));
+    // Nilai kotor berubah, dan potongan berpersen dihitung DARINYA.
+    // Tanpa ini, uang muka 20% tetap memakai nilai kotor yang sudah tidak
+    // berlaku — tepat pada layar tempat keputusannya diambil.
+    this.hitungUlangSemuaPersen();
   }
 
   setCatatan(barisId: number, teks: string): void {
@@ -338,6 +342,7 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     this.susunKontrolNominal();
   }
 
+
   hapusBaris(i: number): void {
     this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
     this.susunKontrolNominal();
@@ -348,6 +353,187 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
       s.map((b, idx) => (idx === i ? { ...b, ...bagian } : b)),
     );
   }
+
+  // ---- persen atau nominal --------------------------------------------
+
+  /**
+   * Cara memasukkan nilai tiap baris: 'nominal' atau 'persen'.
+   *
+   * MENGAPA ADA PILIHAN
+   *
+   * Uang muka dan retensi disepakati sebagai PERSENTASE — kontraknya
+   * berbunyi "uang muka 20%", bukan "uang muka dua ratus juta". Memaksa
+   * memasukkan nominalnya berarti yang memeriksa mengalikannya sendiri di
+   * kalkulator setiap periode, dan hasil kali tangan itulah yang paling
+   * sering salah. Denda justru sebaliknya: ia memang nominal yang
+   * disepakati, bukan persentase.
+   *
+   * YANG TERSIMPAN SELALU NOMINAL. Persen hanya cara memasukkannya, dan
+   * server tidak perlu tahu apa pun tentang ini.
+   *
+   * DASAR PERKALIANNYA nilai kotor PERIODE INI, bukan nilai kontrak. Itulah
+   * yang tercetak pada lembar CoP ("20% x Rp <kotor> = ..."), dan itu pula
+   * yang membuat pengembalian uang muka menutup dirinya sendiri: bila tiap
+   * progres dipotong 20%, saat progres mencapai 100% yang dikembalikan tepat
+   * sebesar uang mukanya.
+   */
+  modeNilai: ('nominal' | 'persen')[] = [];
+
+  /** Persen yang diketik per baris; hanya dipakai saat modenya 'persen'. */
+  private persen: number[] = [];
+
+  persenBaris(i: number): number {
+    return this.persen[i] || 0;
+  }
+
+  /**
+   * Kategori yang WAJARNYA dimasukkan sebagai persen.
+   *
+   * Sekadar tebakan awal — modenya tetap dapat ditukar. Yang ditebak benar
+   * menghemat satu ketukan; yang ditebak salah tidak menghalangi apa pun.
+   */
+  private static modeBawaan(kategori: string): 'nominal' | 'persen' {
+    return kategori === 'uang_muka' ||
+      kategori === 'retensi' ||
+      kategori === 'pph'
+      ? 'persen'
+      : 'nominal';
+  }
+
+  gantiMode(i: number, mode: 'nominal' | 'persen'): void {
+    if (this.modeNilai[i] === mode) return;
+    this.modeNilai[i] = mode;
+
+    const a = this.penyesuaian()[i];
+    const c = this.kontrolNominal(i);
+    if (mode === 'persen') {
+      // Nominal yang sudah ada diterjemahkan menjadi persennya, supaya
+      // menukar mode tidak menghapus angka yang sudah diputuskan.
+      const p = this.kotor ? (Number(a?.amount || 0) / this.kotor) * 100 : 0;
+      this.persen[i] = p;
+      c.setValue(p ? String(Number(p.toFixed(4))) : '', { emitEvent: false });
+    } else {
+      c.setValue(a?.amount ? String(a.amount) : '', { emitEvent: false });
+    }
+    this.hitungUlangBaris(i);
+  }
+
+  /** Susun ulang nominal baris dari apa yang tersimpan di kontrolnya. */
+  private hitungUlangBaris(i: number): void {
+    const teks = (this.kontrolNominal(i).value ?? '').toString().trim();
+    const angka = teks === '' ? 0 : Number(teks);
+    const bersih = Number.isFinite(angka) ? angka : 0;
+
+    if (this.modeNilai[i] === 'persen') {
+      this.persen[i] = bersih;
+      this.setBaris(i, { amount: (this.kotor * bersih) / 100 });
+    } else {
+      this.setBaris(i, { amount: bersih });
+    }
+  }
+
+  /**
+   * Hitung ulang SELURUH baris berpersen.
+   *
+   * Dipanggil saat volume berubah: dasar perkaliannya ikut berubah, dan
+   * potongan yang tidak ikut dihitung ulang akan tetap memakai nilai kotor
+   * yang sudah tidak berlaku — tepat pada layar tempat keputusannya diambil.
+   */
+  private hitungUlangSemuaPersen(): void {
+    this.penyesuaian().forEach((_, i) => {
+      if (this.modeNilai[i] === 'persen') this.hitungUlangBaris(i);
+    });
+  }
+
+  // ---- baris yang sudah disentuh ---------------------------------------
+
+  /**
+   * Baris ditandai merah hanya setelah DISENTUH.
+   *
+   * Baris yang baru ditambahkan memang belum lengkap — itu bukan kesalahan,
+   * itu keadaan awalnya. Menandainya merah seketika membuat layar terbaca
+   * seolah sudah salah sebelum ada yang mengetik apa pun, dan warna merah
+   * yang muncul tanpa sebab membuat merah yang sungguh berarti ikut
+   * diabaikan.
+   */
+  private disentuh = new Set<number>();
+
+  tampakSalah(i: number): boolean {
+    if (!this.disentuh.has(i)) return false;
+    const a = this.penyesuaian()[i];
+    return a ? this.barisSalah(a) : false;
+  }
+
+  // ---- jenis, kategori, keterangan -------------------------------------
+
+  gantiJenis(i: number, kind: 'deduction' | 'addition'): void {
+    const kategori = kind === 'deduction' ? 'uang_muka' : 'biaya_luar_kontrak';
+    this.setBaris(i, { kind, category: kategori });
+    this.sesuaikanKategori(i, kategori);
+  }
+
+  gantiKategori(i: number, kategori: string): void {
+    this.setBaris(i, { category: kategori });
+    this.sesuaikanKategori(i, kategori);
+  }
+
+  /**
+   * Ikutkan keterangan dan mode pada kategori yang baru dipilih.
+   *
+   * Sebelumnya keterangannya tinggal apa adanya: memilih "PPh" mengisinya
+   * "PPh 23", lalu menukar kategorinya ke "Denda" meninggalkan baris denda
+   * berketerangan "PPh 23" — dan itulah yang tercetak di lembar CoP.
+   *
+   * Yang diganti HANYA keterangan yang memang berasal dari saran; yang
+   * diketik sendiri tidak disentuh. Orang yang menulis nomor surat dendanya
+   * lalu membetulkan kategorinya tidak boleh kehilangan tulisannya.
+   */
+  private sesuaikanKategori(i: number, kategori: string): void {
+    const c = this.kontrolLabel(i);
+    const sekarang = (c.value || '').trim();
+    const daftarSaran = this.semuaSaranLabel();
+    if (!sekarang || daftarSaran.includes(sekarang)) {
+      const saran = this.saranLabelKategori(kategori);
+      c.setValue(saran || '', { emitEvent: false });
+      this.setBaris(i, { label: saran || null });
+    }
+
+    this.modeNilai[i] = CertificateOfPaymentCheckComponent.modeBawaan(kategori);
+    this.hitungUlangBaris(i);
+  }
+
+  /** Keterangan yang disarankan untuk sebuah kategori. */
+  private saranLabelKategori(kategori: string): string | null {
+    if (kategori === 'pph') return this.syarat?.pphCode || null;
+    return null;
+  }
+
+  saranLabel(a: PenyesuaianCoP): string | null {
+    return this.saranLabelKategori(a.category);
+  }
+
+  /** Seluruh keterangan yang pernah disarankan; dipakai membedakan ketikan. */
+  private semuaSaranLabel(): string[] {
+    return [this.syarat?.pphCode].filter(Boolean) as string[];
+  }
+
+  // ---- keterangan sebagai kontrol --------------------------------------
+
+  private label: FormControl<string | null>[] = [];
+
+  kontrolLabel(i: number): FormControl<string | null> {
+    let c = this.label[i];
+    if (!c) {
+      c = new FormControl<string | null>(this.penyesuaian()[i]?.label ?? '');
+      c.valueChanges.subscribe((v) => {
+        this.disentuh.add(i);
+        this.setBaris(i, { label: (v || '').trim() || null });
+      });
+      this.label[i] = c;
+    }
+    return c;
+  }
+
 
   // ---- nominal penyesuaian ------------------------------------------
 
@@ -371,10 +557,12 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     if (!c) {
       const awal = this.penyesuaian()[i]?.amount;
       c = new FormControl<string | null>(awal ? String(awal) : '');
-      c.valueChanges.subscribe((v) => {
-        const bersih = (v ?? '').toString().trim();
-        const angka = bersih === '' ? 0 : Number(bersih);
-        this.setBaris(i, { amount: Number.isFinite(angka) ? angka : 0 });
+      // Nilainya TIDAK langsung menjadi nominal: bila modenya persen, yang
+      // diketik adalah persentase dan nominalnya hasil kali. `hitungUlangBaris`
+      // yang memutuskan — satu tempat, supaya kedua mode tidak berselisih.
+      c.valueChanges.subscribe(() => {
+        this.disentuh.add(i);
+        this.hitungUlangBaris(i);
       });
       this.nominal[i] = c;
     }
@@ -391,7 +579,30 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
    */
   private susunKontrolNominal(): void {
     this.nominal = [];
-    this.penyesuaian().forEach((_, i) => this.kontrolNominal(i));
+    this.label = [];
+    this.disentuh = new Set<number>();
+    const daftar = this.penyesuaian();
+    this.modeNilai = daftar.map((a) =>
+      CertificateOfPaymentCheckComponent.modeBawaan(a.category),
+    );
+    this.persen = daftar.map((a) =>
+      this.kotor ? (Number(a.amount || 0) / this.kotor) * 100 : 0,
+    );
+    daftar.forEach((a, i) => {
+      const c = this.kontrolNominal(i);
+      // Baris berpersen menampilkan PERSENNYA, bukan nominalnya — kalau
+      // tidak, angka yang tampak dan satuan di sebelahnya tidak cocok.
+      const tampil =
+        this.modeNilai[i] === 'persen'
+          ? this.persen[i]
+            ? String(Number(this.persen[i].toFixed(4)))
+            : ''
+          : a.amount
+            ? String(a.amount)
+            : '';
+      c.setValue(tampil, { emitEvent: false });
+      this.kontrolLabel(i).setValue(a.label ?? '', { emitEvent: false });
+    });
   }
 
   get potongan(): number {

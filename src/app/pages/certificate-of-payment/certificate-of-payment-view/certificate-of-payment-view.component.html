@@ -226,191 +226,62 @@
           }
         }
 
-        <div class="cv-kepala">
-          <h2 class="cv-kartu__judul">{{ "cop.penyesuaian" | translate }}</h2>
-          @if (bolehSuntingPenyesuaian && !menyuntingPenyesuaian()) {
-            <button mat-stroked-button (click)="mulaiSunting()">
-              <mat-icon>tune</mat-icon>
-              {{ "cop.aturPenyesuaian" | translate }}
-            </button>
-          }
-        </div>
+        <!--
+          BACA SAJA. Menyuntingnya di lembar periksa, bukan di sini.
 
-        @if (!menyuntingPenyesuaian()) {
-          <!-- ---- tampilan baca ---- -->
-          @if (!(c.adjustments || []).length) {
-            <p class="cv-kosong">{{ "cop.tanpaPenyesuaian" | translate }}</p>
-          } @else {
-            <ul class="cv-adj">
-              @for (a of c.adjustments; track a.id) {
-                <li [class.cv-adj--tambah]="a.kind === 'addition'">
-                  <span class="cv-adj__nama">
-                    {{ "cop.kat_" + a.category | translate }}
-                    @if (a.label) {
-                      <em>{{ a.label }}</em>
-                    }
-                  </span>
-                  <span class="cv-adj__nilai">
-                    {{ a.kind === "deduction" ? "−" : "+" }}
-                    {{ a.amount | number: "1.0-2" }}
-                  </span>
-                </li>
-              }
-            </ul>
-          }
+          Sebelumnya layar ini memuat penyunting potongan lengkap dengan
+          tombol simpannya sendiri, DAN tombol "tandai sudah diperiksa" di
+          kakinya. Dua tempat mengerjakan satu pekerjaan yang sama, dan
+          urutannya tidak pernah jelas: apakah menyimpan potongan sudah
+          berarti memeriksa, atau masih harus menekan tombol satunya?
+
+          Sekarang satu pintu — lembar periksa — dan tandanya terbubuh
+          sebagai akibat menyimpan di sana.
+        -->
+        <h2 class="cv-kartu__judul">{{ "cop.penyesuaian" | translate }}</h2>
+
+        @if (!(c.adjustments || []).length) {
+          <p class="cv-kosong">{{ "cop.tanpaPenyesuaian" | translate }}</p>
         } @else {
-          <!-- ---- tampilan sunting ---- -->
-          <div class="cv-adj-sunting">
-            @if (adaSaran) {
-              <p class="cv-saran">
-                <mat-icon>auto_awesome</mat-icon>
-                {{ "cop.terisiOtomatis" | translate }}
-              </p>
+          <ul class="cv-adj">
+            @for (a of c.adjustments; track a.id) {
+              <li [class.cv-adj--tambah]="a.kind === 'addition'">
+                <span class="cv-adj__nama">
+                  {{ "cop.kat_" + a.category | translate }}
+                  @if (a.label) {
+                    <em>{{ a.label }}</em>
+                  }
+                </span>
+                <span class="cv-adj__nilai">
+                  {{ a.kind === "deduction" ? "−" : "+" }}
+                  {{ a.amount | number: "1.0-2" }}
+                </span>
+              </li>
             }
-            @for (a of penyesuaian(); track $index) {
-              <div class="cv-adj-baris" [class.cv-adj-baris--salah]="barisSalah(a)">
-                <mat-form-field appearance="outline" class="cv-adj-jenis">
-                  <mat-label>{{ "cop.jenisPenyesuaian" | translate }}</mat-label>
-                  <mat-select
-                    [value]="a.kind"
-                    (selectionChange)="
-                      setBaris($index, {
-                        kind: $event.value,
-                        category:
-                          $event.value === 'deduction'
-                            ? 'uang_muka'
-                            : 'biaya_luar_kontrak'
-                      })
-                    "
-                  >
-                    <mat-option value="deduction">{{
-                      "cop.potongan" | translate
-                    }}</mat-option>
-                    <mat-option value="addition">{{
-                      "cop.tambahan" | translate
-                    }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="cv-adj-kat">
-                  <mat-label>{{ "cop.kategori" | translate }}</mat-label>
-                  <mat-select
-                    [value]="a.category"
-                    (selectionChange)="setBaris($index, { category: $event.value })"
-                  >
-                    @for (k of kategoriUntuk(a.kind); track k) {
-                      <mat-option [value]="k">{{
-                        "cop.kat_" + k | translate
-                      }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-
-                <!-- Keterangan WAJIB pada lain-lain: tanpa itu barisnya
-                     tidak berarti apa pun bulan depan. -->
-                <mat-form-field
-                  appearance="outline"
-                  class="cv-adj-label"
-                  [class.cv-adj-label--wajib]="a.category === 'lain_lain'"
-                >
-                  <mat-label>{{
-                    (a.category === "lain_lain"
-                      ? "cop.keteranganWajib"
-                      : "cop.keteranganOpsional"
-                    ) | translate
-                  }}</mat-label>
-                  <input
-                    matInput
-                    [value]="a.label || ''"
-                    (input)="setBaris($index, { label: $any($event.target).value })"
-                  />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="cv-adj-nominal">
-                  <mat-label>{{ "cop.nominal" | translate }}</mat-label>
-                  <!--
-                    Empat desimal, mengikuti kolomnya: `amount` tersimpan
-                    DECIMAL(17,4). Berbeda dari volume yang hanya dua —
-                    volume mengikuti pagu SPK, nominal mengikuti uang.
-                  -->
-                  <input
-                    matInput
-                    type="text"
-                    inputmode="decimal"
-                    thousandSeparator=" "
-                    decimalScale="4"
-                    mask="separator.4"
-                    [validation]="false"
-                    [formControl]="kontrolNominal($index)"
-                  />
-                </mat-form-field>
-
-                <button
-                  mat-icon-button
-                  type="button"
-                  [attr.aria-label]="'common.delete' | translate"
-                  (click)="hapusBaris($index)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            }
-
-            <div class="cv-adj-tambah">
-              <button mat-stroked-button (click)="tambahBaris('deduction')">
-                <mat-icon>remove</mat-icon>
-                {{ "cop.tambahPotongan" | translate }}
-              </button>
-              <button mat-stroked-button (click)="tambahBaris('addition')">
-                <mat-icon>add</mat-icon>
-                {{ "cop.tambahTambahan" | translate }}
-              </button>
-            </div>
-
-            @if (bersihNegatif) {
-              <p class="cv-salah">{{ "cop.bersihNegatif" | translate }}</p>
-            }
-
-            <div class="cv-adj-aksi">
-              <button mat-stroked-button (click)="batalSunting()">
-                {{ "common.cancel" | translate }}
-              </button>
-              <button
-                mat-flat-button
-                color="primary"
-                [disabled]="
-                  menyimpanPenyesuaian() || adaBarisSalah || bersihNegatif
-                "
-                (click)="simpanPenyesuaian()"
-              >
-                <mat-icon>save</mat-icon>
-                {{ "common.save" | translate }}
-              </button>
-            </div>
-          </div>
+          </ul>
         }
 
         <!-- ---- ringkasan ---- -->
         <dl class="cv-ringkas">
           <div>
             <dt>{{ "cop.nilaiPekerjaan" | translate }}</dt>
-            <dd>{{ (menyuntingPenyesuaian() ? kotorSunting : c.grossAmount) | number: "1.0-2" }}</dd>
+            <dd>{{ c.grossAmount | number: "1.0-2" }}</dd>
           </div>
           <div>
             <dt>{{ "cop.totalPotongan" | translate }}</dt>
             <dd class="cv-ringkas--kurang">
-              −{{ (menyuntingPenyesuaian() ? potonganSunting : c.deductionTotal) | number: "1.0-2" }}
+              −{{ c.deductionTotal | number: "1.0-2" }}
             </dd>
           </div>
           <div>
             <dt>{{ "cop.totalTambahan" | translate }}</dt>
             <dd class="cv-ringkas--tambah">
-              +{{ (menyuntingPenyesuaian() ? tambahanSunting : c.additionTotal) | number: "1.0-2" }}
+              +{{ c.additionTotal | number: "1.0-2" }}
             </dd>
           </div>
           <div class="cv-ringkas__bersih">
             <dt>{{ "cop.nilaiBersih" | translate }}</dt>
-            <dd>{{ (menyuntingPenyesuaian() ? bersihSunting : c.netAmount) | number: "1.0-2" }}</dd>
+            <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
           </div>
         </dl>
         <p class="cv-catatan-dpp">{{ "cop.catatanDpp" | translate }}</p>

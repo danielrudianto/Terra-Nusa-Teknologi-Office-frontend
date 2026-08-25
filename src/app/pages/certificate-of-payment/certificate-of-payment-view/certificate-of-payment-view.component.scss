@@ -66,29 +66,95 @@
   opacity: 0.3;
 }
 
-.cv-tabel-bungkus {
-  overflow-x: auto;
-}
+/*
+  Tabel baris pekerjaan.
 
+  Sebelumnya ia memakai ukuran bawaan Material: teks 12px, sel rapat, kepala
+  kolom setipis isinya. Pada kartu selebar ini hasilnya sepetak kecil di
+  tengah ruang kosong — dan justru inilah tabel yang paling lama dibaca
+  orang di layar ini, karena di sinilah volume dicocokkan dengan lapangan.
+
+  Kepala kolom dibedakan tegas dari isinya (kecil, huruf besar, redup —
+  sama seperti daftar lain), barisnya diberi tinggi, dan angkanya dinaikkan
+  supaya terbaca dari jarak duduk biasa.
+*/
 .cv-tabel {
   width: 100%;
   min-width: 640px;
+
+  ::ng-deep &.mat-mdc-table {
+    background: transparent;
+  }
+
+  ::ng-deep .mat-mdc-header-row {
+    height: auto;
+    background: var(--surface-2, #fafbfc);
+  }
+
+  ::ng-deep .mat-mdc-header-cell {
+    padding: 0.75rem 1rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted, #6b7280);
+    border-bottom: 1px solid var(--line, #eef0f3);
+  }
+
+  ::ng-deep .mat-mdc-row {
+    height: auto;
+  }
+
+  ::ng-deep .mat-mdc-cell {
+    padding: 0.85rem 1rem;
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--line, #eef0f3);
+  }
+
+  ::ng-deep .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+}
+
+/* Bungkusnya diberi bingkai sekali, bukan tiap selnya. */
+.cv-tabel-bungkus {
+  overflow-x: auto;
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
 }
 
 .cv-angka {
   text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nama pekerjaan: yang dicari lebih dulu tiap kali barisnya dibaca. */
+.cv-tabel ::ng-deep .mat-column-pekerjaan {
+  font-weight: 600;
+}
+
+.cv-tabel ::ng-deep .mat-column-jumlah {
+  font-weight: 700;
 }
 
 .cv-dari {
   display: block;
-  font-size: 12px;
+  font-size: 0.75rem;
   opacity: 0.55;
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 .cv-total {
   margin: 16px 0 0;
   text-align: right;
-  font-size: 15px;
+  font-size: 0.95rem;
+
+  strong {
+    font-size: 1.15rem;
+    margin-left: 0.35rem;
+  }
 }
 
 .cv-aksi {

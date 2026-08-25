@@ -8,6 +8,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -39,6 +40,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,
+    MatSortModule,
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
@@ -71,6 +73,26 @@ export class CertificateOfPaymentListComponent implements OnInit {
    * kebetulan sedang terbuka.
    */
   readonly cari = new FormControl<string>('');
+
+  /*
+   * Pengurutan DI SERVER, sama seperti pencariannya.
+   *
+   * Mengurutkan di layar hanya mengurutkan dua puluh baris yang kebetulan
+   * terbuka. Yang mencari CoP bernilai terbesar akan menemukan yang terbesar
+   * DI HALAMAN INI — angka yang tidak berarti apa-apa, dan tidak ada apa pun
+   * di layar yang memberitahu bahwa itulah yang barusan terjadi.
+   */
+  readonly urutKolom = signal<string>('');
+  readonly urutArah = signal<SortDirection>('');
+
+  gantiUrutan(s: Sort): void {
+    this.urutKolom.set(s.direction ? s.active : '');
+    this.urutArah.set(s.direction);
+    // Kembali ke halaman pertama: urutan baru membuat "halaman ketiga"
+    // menunjuk baris yang sama sekali lain.
+    this.halaman = 0;
+    void this.muat();
+  }
   /** Penyaring keadaan: '', 'draft', 'diperiksa', 'disetujui'. */
   readonly saring = signal<string>('');
   readonly total = signal(0);
@@ -89,7 +111,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
   get kolom(): string[] {
     // Nomor SPK ikut di dalam sel nomor CoP sebagai baris kedua, sehingga
     // tidak perlu kolom sendiri — daftar jadi muat tanpa digulir menyamping.
-    const dasar = ['nomor', 'proyek', 'tanggal', 'keadaan', 'pembuat'];
+    const dasar = ['nomor', 'pemasok', 'proyek', 'tanggal', 'keadaan', 'pembuat'];
     return this.bolehLihatNilai()
       ? [...dasar, 'nilai', 'aksi']
       : [...dasar, 'aksi'];
@@ -176,6 +198,8 @@ export class CertificateOfPaymentListComponent implements OnInit {
           page: this.halaman,
           pageSize: this.ukuran,
           keyword: (this.cari.value || '').trim() || undefined,
+          sortBy: this.urutKolom() || undefined,
+          sortDir: this.urutArah() || undefined,
         }),
       );
       this.data.set(hasil?.data || []);

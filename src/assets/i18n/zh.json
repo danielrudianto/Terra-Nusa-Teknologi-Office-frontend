@@ -4956,6 +4956,17 @@
     "spkTerpilih": "所选 SPK",
     "dokumenDiperiksa": "正在核对的文件",
     "dokumenTerkunci": "核对期间不可更换文件",
-    "pemasokIkutSpk": "供应商随 SPK 确定"
+    "pemasokIkutSpk": "供应商随 SPK 确定",
+    "pratinjauBuat": "保存前请核对",
+    "pratinjauUbah": "核对修改内容",
+    "sisaSetelah": "之后余量",
+    "tungguDetik": "等待 {{detik}} 秒",
+    "tungguSelesai": "等待完成",
+    "gulirSelesai": "已阅至末尾",
+    "gulirSisa": "请先滚动到末尾",
+    "pernyataanVolume": "我已核对以上工程量并确认无误。",
+    "jumlahPekerjaan": "{{n}} 项工作",
+    "paguHabisJudul": "部分额度将被用尽",
+    "paguHabisKet": "{{n}} 项工作将无余量。此后若要增加工程量，需先对 SPK 做补充协议。"
   }
 }

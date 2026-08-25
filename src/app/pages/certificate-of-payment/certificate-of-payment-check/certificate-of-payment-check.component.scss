@@ -532,3 +532,98 @@
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
+
+
+/* ---- penyunting potongan & tambahan ----
+   Gaya `cv-adj-*` lama sengaja tidak dipakai lagi: ia membungkus tiap baris
+   dalam kotak bersudut yang di dalamnya berisi empat kotak isian, sehingga
+   mata berhenti pada bingkainya. Yang di bawah ini memisahkan baris dengan
+   garis tipis saja. */
+
+.cop-adj {
+  border-top: 1px solid var(--line, #eef0f3);
+  margin-bottom: 0.9rem;
+
+  &__baris {
+    display: grid;
+    grid-template-columns:
+      minmax(120px, 0.8fr) minmax(150px, 1fr) minmax(160px, 1.4fr)
+      auto minmax(140px, 0.9fr) 40px;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line, #eef0f3);
+
+    /* Merah hanya untuk yang SUDAH disentuh lalu ditinggalkan belum
+       lengkap; baris baru bukan kesalahan, ia keadaan awal. */
+    &--salah {
+      background: rgba(211, 47, 47, 0.035);
+      box-shadow: inset 3px 0 0 0 rgba(211, 47, 47, 0.55);
+      padding-left: 0.6rem;
+    }
+  }
+
+  &__hapus {
+    justify-self: end;
+    color: var(--faint, #9aa0ab);
+  }
+
+  /* Hasil kali persen: satu baris keterangan di bawah isian, melintasi
+     seluruh kolom. */
+  &__hitung {
+    grid-column: 1 / -1;
+    margin: 0.15rem 0 0;
+    font-size: 0.76rem;
+    color: var(--muted, #6b7280);
+
+    strong {
+      color: var(--ink, #16181d);
+    }
+  }
+
+  &__persen {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    padding-left: 4px;
+  }
+}
+
+/*
+  Pemilih satuan: Rp atau %.
+
+  Dua tombol berdempet, bukan dropdown — pilihannya hanya dua, dan yang
+  sedang berlaku harus terbaca tanpa dibuka lebih dulu.
+*/
+.cop-adj__satuan {
+  display: inline-flex;
+  border: 1px solid var(--border, #dfe3ea);
+  border-radius: 9px;
+  overflow: hidden;
+
+  button {
+    border: 0;
+    background: var(--surface, #fff);
+    color: var(--muted, #6b7280);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.42rem 0.6rem;
+    cursor: pointer;
+    min-width: 34px;
+
+    &.on {
+      background: var(--brand, #154dec);
+      color: #fff;
+    }
+
+    &:not(.on):hover {
+      background: var(--hover, #f3f6ff);
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .cop-adj__baris {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}

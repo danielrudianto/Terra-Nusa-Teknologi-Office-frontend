@@ -59,9 +59,23 @@
   }
 
   <div class="cl-card">
-    <table mat-table [dataSource]="terlihat()">
+    <!--
+      Pengurutan DI SERVER, seperti pencariannya.
+
+      `matSortDisableClear` dilepas dengan sengaja: keadaan ketiga —
+      "tidak diurutkan" — mengembalikan daftar ke urutan bawaan (terbaru di
+      atas), dan itu keadaan yang memang berguna.
+    -->
+    <table
+      mat-table
+      matSort
+      [matSortActive]="urutKolom()"
+      [matSortDirection]="urutArah()"
+      (matSortChange)="gantiUrutan($event)"
+      [dataSource]="terlihat()"
+    >
       <ng-container matColumnDef="nomor">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <span class="cl-th">{{ "cop.nomor" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
@@ -70,8 +84,25 @@
         </td>
       </ng-container>
 
+      <!--
+        Pemasok berdiri sebagai kolom sendiri.
+
+        Nomor CoP menyebut SPK-nya, tetapi nomor SPK tidak menyebut siapa
+        yang ditagih. Yang membuka daftar ini mencari "CoP-nya Subadi",
+        bukan "CoP-nya 084-SPK-R501-H2" — dan tanpa kolom ini ia harus
+        membuka satu per satu untuk menemukannya.
+      -->
+      <ng-container matColumnDef="pemasok">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <span class="cl-th">{{ "poForm.supplier" | translate }}</span>
+        </th>
+        <td mat-cell *matCellDef="let c">
+          <span class="cl-primary">{{ c.supplierName || "—" }}</span>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="proyek">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <span class="cl-th">{{ "cop.proyek" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
@@ -80,7 +111,7 @@
       </ng-container>
 
       <ng-container matColumnDef="tanggal">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <span class="cl-th">{{ "cop.tanggal" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
@@ -95,7 +126,7 @@
       </ng-container>
 
       <ng-container matColumnDef="keadaan">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <span class="cl-th">{{ "cop.keadaan" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
@@ -107,7 +138,7 @@
       </ng-container>
 
       <ng-container matColumnDef="pembuat">
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
           <span class="cl-th">{{ "cop.pembuat" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
@@ -117,7 +148,7 @@
 
       @if (bolehLihatNilai()) {
         <ng-container matColumnDef="nilai">
-          <th mat-header-cell *matHeaderCellDef>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
             <span class="cl-th cl-th--right">{{ "cop.nilaiBersih" | translate }}</span>
           </th>
           <td mat-cell *matCellDef="let c" class="cl-num">
@@ -222,13 +253,22 @@
         <div>{{ "cop.belumAda" | translate }}</div>
       </div>
     }
-  </div>
 
-  <mat-paginator
-    [length]="total()"
-    [pageSize]="ukuran"
-    [pageIndex]="halaman"
-    [pageSizeOptions]="[10, 20, 50]"
-    (page)="gantiHalaman($event)"
-  />
+    <!--
+      Pemenggal halaman DI DALAM kartunya, sama seperti daftar purchase order
+      dan pembelian.
+
+      Ia menerangkan tabel di atasnya — "1–20 dari 84" tidak berarti apa-apa
+      tanpa tabel yang dihitungnya. Di luar kartu ia melayang sendirian, dan
+      daftar ini menjadi satu-satunya yang bentuknya lain di antara daftar
+      yang dibuka bergantian sepanjang hari.
+    -->
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="ukuran"
+      [pageIndex]="halaman"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="gantiHalaman($event)"
+    />
+  </div>
 </div>

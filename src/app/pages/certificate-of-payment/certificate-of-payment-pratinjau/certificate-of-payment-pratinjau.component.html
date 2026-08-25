@@ -1,0 +1,177 @@
+<h2 mat-dialog-title class="cp-judul">
+  <mat-icon>fact_check</mat-icon>
+  {{ (data.menyunting ? "cop.pratinjauUbah" : "cop.pratinjauBuat") | translate }}
+</h2>
+
+<mat-dialog-content #isi class="cp-isi" (scroll)="padaGulir($any($event.target))">
+  <!--
+    Kepala dokumen: SPK, pemasok, proyek, periode.
+
+    Diletakkan di atas tabel karena inilah yang paling sering salah — CoP
+    yang benar isinya tetapi menempel pada SPK yang keliru tidak dapat
+    dibetulkan dengan menyunting volume.
+  -->
+  <dl class="cp-kepala">
+    <div>
+      <dt>{{ "cop.spk" | translate }}</dt>
+      <dd>{{ data.spk.name }}</dd>
+    </div>
+    <div>
+      <dt>{{ "poForm.supplier" | translate }}</dt>
+      <dd>{{ data.spk.supplierName || "—" }}</dd>
+    </div>
+    <div>
+      <dt>{{ "cop.proyek" | translate }}</dt>
+      <dd>{{ data.spk.projectName }}</dd>
+    </div>
+    <div>
+      <dt>{{ "cop.tanggal" | translate }}</dt>
+      <dd>{{ data.tanggal | date: "dd MMMM yyyy" }}</dd>
+    </div>
+    <div class="cp-kepala__lebar">
+      <dt>{{ "cop.periode" | translate }}</dt>
+      <dd>
+        {{ data.periodeAwal | date: "dd MMMM yyyy" }} –
+        {{ data.periodeAkhir | date: "dd MMMM yyyy" }}
+      </dd>
+    </div>
+  </dl>
+
+  <!--
+    TIDAK ADA KOLOM RUPIAH.
+
+    Lembar ini pratinjau tahap pencatatan volume, dan tahap itu tetap volume
+    siapa pun yang mengerjakannya. Uang muncul pertama kali di lembar
+    periksa — lihat catatan pada komponennya.
+  -->
+  <div class="cp-tabel-bungkus">
+    <table class="cp-tabel">
+      <thead>
+        <tr>
+          <th>{{ "cop.pekerjaan" | translate }}</th>
+          <th class="cp-num">{{ "cop.pagu" | translate }}</th>
+          <th class="cp-num">{{ "cop.terpakai" | translate }}</th>
+          <th class="cp-num cp-tabel__utama">{{ "cop.volume" | translate }}</th>
+          <th class="cp-num">{{ "cop.sisaSetelah" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of data.baris; track b.purchaseOrderItemID) {
+          <tr [class.cp-baris--habis]="b.sisaSetelah <= 0">
+            <td>
+              <span class="cp-nama">{{ b.task || "-" }}</span>
+              @if (b.keterangan) {
+                <span class="cp-ket">{{ b.keterangan }}</span>
+              }
+              @if (b.catatan) {
+                <span class="cp-catatan">
+                  <mat-icon>notes</mat-icon>{{ b.catatan }}
+                </span>
+              }
+            </td>
+            <td class="cp-num">
+              {{ b.pagu | number: "1.0-2" }} <em>{{ b.unit }}</em>
+            </td>
+            <td class="cp-num">{{ b.terpakai | number: "1.0-2" }}</td>
+            <td class="cp-num cp-tabel__utama">
+              {{ b.volume | number: "1.0-2" }} <em>{{ b.unit }}</em>
+            </td>
+            <td class="cp-num">{{ b.sisaSetelah | number: "1.0-2" }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (data.catatan) {
+    <div class="cp-blok">
+      <span class="cp-blok__label">{{ "cop.catatan" | translate }}</span>
+      <p>{{ data.catatan }}</p>
+    </div>
+  }
+
+  <!--
+    Baris yang pagunya HABIS setelah ini.
+
+    Bukan kesalahan — menghabiskan pagu memang wajar pada periode terakhir.
+    Tetapi setelah tersimpan, baris itu tidak dapat di-CoP-kan lagi tanpa
+    SPK-nya diadendum lebih dulu, dan itu lebih baik diketahui sekarang
+    daripada bulan depan saat progresnya sudah berjalan.
+  -->
+  @if (barisHabis.length) {
+    <div class="cp-waspada">
+      <mat-icon>info</mat-icon>
+      <div>
+        <strong>{{ "cop.paguHabisJudul" | translate }}</strong>
+        <p>
+          {{
+            "cop.paguHabisKet" | translate: { n: barisHabis.length }
+          }}
+        </p>
+      </div>
+    </div>
+  }
+
+  <!--
+    Pernyataan yang menanggung.
+
+    Tiga syarat yang harus benar bersamaan; keterangan di bawahnya
+    menyebutkan mana yang belum terpenuhi, supaya tombol yang mati tidak
+    terbaca sebagai layar yang rusak.
+  -->
+  <div class="cp-konfirmasi">
+    <div class="cp-syarat">
+      <span class="cp-syarat__item" [class.is-ok]="!masihMenunggu">
+        <mat-icon>{{
+          masihMenunggu ? "hourglass_top" : "check_circle"
+        }}</mat-icon>
+        @if (masihMenunggu) {
+          {{ "cop.tungguDetik" | translate: { detik: sisaDetik } }}
+        } @else {
+          {{ "cop.tungguSelesai" | translate }}
+        }
+      </span>
+      <span class="cp-syarat__item" [class.is-ok]="sudahSampaiBawah">
+        <mat-icon>{{
+          sudahSampaiBawah ? "check_circle" : "vertical_align_bottom"
+        }}</mat-icon>
+        @if (sudahSampaiBawah) {
+          {{ "cop.gulirSelesai" | translate }}
+        } @else {
+          {{ "cop.gulirSisa" | translate }}
+        }
+      </span>
+    </div>
+
+    <label
+      class="cp-cek"
+      [class.cp-cek--menunggu]="masihMenunggu || !sudahSampaiBawah"
+    >
+      <input
+        type="checkbox"
+        [(ngModel)]="dibaca"
+        [disabled]="masihMenunggu || !sudahSampaiBawah"
+      />
+      <span>{{ "cop.pernyataanVolume" | translate }}</span>
+    </label>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="cp-kaki">
+  <span class="cp-jumlah">
+    {{ "cop.jumlahPekerjaan" | translate: { n: jumlahBaris } }}
+  </span>
+  <span class="cp-pemisah"></span>
+  <button type="button" class="cp-batal" (click)="batal()">
+    {{ "common.cancel" | translate }}
+  </button>
+  <button
+    type="button"
+    class="cp-simpan"
+    [disabled]="!bolehSimpan"
+    (click)="simpan()"
+  >
+    <mat-icon>save</mat-icon>
+    {{ "common.save" | translate }}
+  </button>
+</mat-dialog-actions>

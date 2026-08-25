@@ -4956,6 +4956,17 @@
     "spkTerpilih": "SPK yang dipilih",
     "dokumenDiperiksa": "Dokumen yang diperiksa",
     "dokumenTerkunci": "Dokumen tidak dapat diganti saat memeriksa",
-    "pemasokIkutSpk": "Pemasok mengikuti SPK-nya"
+    "pemasokIkutSpk": "Pemasok mengikuti SPK-nya",
+    "pratinjauBuat": "Periksa sebelum disimpan",
+    "pratinjauUbah": "Periksa perubahannya",
+    "sisaSetelah": "Sisa setelah ini",
+    "tungguDetik": "Tunggu {{detik}} detik",
+    "tungguSelesai": "Jeda selesai",
+    "gulirSelesai": "Sudah dibaca sampai bawah",
+    "gulirSisa": "Gulir sampai bawah dulu",
+    "pernyataanVolume": "Saya sudah memeriksa volume di atas dan menyatakan angkanya benar.",
+    "jumlahPekerjaan": "{{n}} pekerjaan",
+    "paguHabisJudul": "Ada pagu yang habis setelah ini",
+    "paguHabisKet": "{{n}} baris pekerjaan tidak akan punya sisa lagi. Untuk menambah volume setelah ini, SPK-nya harus diadendum lebih dulu."
   }
 }

@@ -1,16 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatOptionModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -19,9 +13,6 @@ import { HeaderTitleComponent } from 'src/app/components/header-title/header-tit
 import {
   CertificateOfPayment,
   CertificateOfPaymentService,
-  KATEGORI_POTONGAN,
-  KATEGORI_TAMBAHAN,
-  PenyesuaianCoP,
   SyaratSpk,
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
@@ -39,20 +30,13 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    NgxMaskDirective,
     TranslateModule,
     HeaderTitleComponent,
   ],
-  providers: [provideNgxMask()],
   templateUrl: './certificate-of-payment-view.component.html',
   styleUrl: './certificate-of-payment-view.component.scss',
 })
@@ -69,19 +53,9 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   readonly memuat = signal(false);
   readonly bekerja = signal(false);
 
-  /**
-   * Salinan penyesuaian yang sedang disunting.
-   *
-   * Disalin, bukan disunting langsung pada `cop()`: yang batal menyimpan
-   * harus kembali ke keadaan semula, dan menyunting di tempat membuat
-   * "batal" tidak membatalkan apa pun.
-   */
-  readonly penyesuaian = signal<PenyesuaianCoP[]>([]);
-  readonly menyuntingPenyesuaian = signal(false);
+ readonly menyuntingPenyesuaian = signal(false);
   readonly menyimpanPenyesuaian = signal(false);
 
-  readonly KATEGORI_POTONGAN = KATEGORI_POTONGAN;
-  readonly KATEGORI_TAMBAHAN = KATEGORI_TAMBAHAN;
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
   readonly bolehPeriksa = computed(() => this.izin.level() >= 2);
@@ -115,9 +89,6 @@ export class CertificateOfPaymentViewComponent implements OnInit {
         this.service.detail(id),
       )) as CertificateOfPayment;
       this.cop.set(hasil);
-      this.penyesuaian.set(
-        (hasil.adjustments || []).map((a) => ({ ...a })),
-      );
     } catch (e) {
       this.pesan(e);
     } finally {
@@ -209,225 +180,15 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   // ---- potongan & tambahan -------------------------------------------
 
   /**
-   * Boleh menyunting penyesuaian?
+   * Syarat pembayaran menurut SPK.
    *
-   * Pemeriksa ke atas, dan HANYA selama belum disetujui — nilai yang sudah
-   * disetujui adalah nilai yang akan ditagihkan. Cerminan aturan server;
-   * yang menegakkan tetap server.
+   * Yang tersisa di layar ini dari seluruh urusan potongan: panel sisa uang
+   * muka & retensi, yang sifatnya KETERANGAN. Penyuntingannya sendiri sudah
+   * pindah ke lembar periksa — dua tempat mengerjakan satu pekerjaan yang
+   * sama membuat urutannya tidak pernah jelas, dan yang membukanya harus
+   * menebak apakah menyimpan potongan sudah berarti memeriksa.
    */
-  get bolehSuntingPenyesuaian(): boolean {
-    return this.bolehPeriksa() && !this.cop()?.isApproved;
-  }
-
   get syarat(): SyaratSpk | null {
     return this.cop()?.spkSyarat || null;
-  }
-
-  /**
-   * Buka penyunting penyesuaian — dengan uang muka & retensi SUDAH TERISI.
-   *
-   * MENGAPA DIISIKAN, BUKAN DIBIARKAN KOSONG
-   *
-   * Uang muka dibayarkan di depan lalu dikembalikan sedikit demi sedikit
-   * dari tiap progres; retensi ditahan dari tiap progres sampai masa
-   * pemeliharaan berakhir. Keduanya berlaku pada SETIAP periode, bukan
-   * sekali di awal — dan yang berlaku setiap periode adalah yang paling
-   * mudah terlewat pada periode kelima.
-   *
-   * Angkanya SARAN, bukan kunci: pemeriksa tetap dapat membetulkannya bila
-   * periode itu memang disepakati lain, dan menghapus barisnya bila memang
-   * tidak dipotong.
-   *
-   * Hanya diisikan bila belum ada penyesuaian sama sekali — membuka ulang
-   * CoP yang sudah diatur tidak boleh menimpa keputusan yang sudah diambil.
-   */
-  mulaiSunting(): void {
-    const ada = (this.cop()?.adjustments || []).map((a) => ({ ...a }));
-    if (ada.length) {
-      this.penyesuaian.set(ada);
-      this.susunKontrolNominal();
-      this.menyuntingPenyesuaian.set(true);
-      return;
-    }
-
-    const sy = this.syarat;
-    const saran: PenyesuaianCoP[] = [];
-    if (sy && sy.saranUangMuka > 0) {
-      saran.push({
-        kind: 'deduction',
-        category: 'uang_muka',
-        label: null,
-        amount: sy.saranUangMuka,
-        note: null,
-      });
-    }
-    if (sy && sy.saranRetensi > 0) {
-      saran.push({
-        kind: 'deduction',
-        category: 'retensi',
-        label: null,
-        amount: sy.saranRetensi,
-        note: null,
-      });
-    }
-    if (sy && sy.saranPph > 0) {
-      saran.push({
-        kind: 'deduction',
-        category: 'pph',
-        label: sy.pphCode ? `${sy.pphCode}` : null,
-        amount: sy.saranPph,
-        note: null,
-      });
-    }
-    this.penyesuaian.set(saran);
-    this.susunKontrolNominal();
-    this.menyuntingPenyesuaian.set(true);
-  }
-
-  /** Baris saran terisi otomatis? Dipakai menandainya di layar. */
-  get adaSaran(): boolean {
-    const sy = this.syarat;
-    if (!sy) return false;
-    return sy.saranUangMuka > 0 || sy.saranRetensi > 0 || sy.saranPph > 0;
-  }
-
-  batalSunting(): void {
-    this.penyesuaian.set(
-      (this.cop()?.adjustments || []).map((a) => ({ ...a })),
-    );
-    this.susunKontrolNominal();
-    this.menyuntingPenyesuaian.set(false);
-  }
-
-  tambahBaris(kind: 'deduction' | 'addition'): void {
-    this.penyesuaian.update((s) => [
-      ...s,
-      {
-        kind,
-        category: kind === 'deduction' ? 'uang_muka' : 'biaya_luar_kontrak',
-        label: null,
-        amount: 0,
-        note: null,
-      },
-    ]);
-    this.susunKontrolNominal();
-  }
-
-  hapusBaris(i: number): void {
-    this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
-    this.susunKontrolNominal();
-  }
-
-  // ---- nominal penyesuaian ------------------------------------------
-
-  /**
-   * Satu FormControl per baris penyesuaian — BUKAN `[value]` + `(input)`.
-   *
-   * Alasannya sama dengan kotak volume: ngx-mask memformat lewat
-   * ControlValueAccessor, dan `[value]` yang dipasang ulang tiap putaran
-   * deteksi perubahan menimpa hasil formatnya seketika. Mask terpasang,
-   * tetapi pemisah ribuannya tidak pernah terlihat.
-   *
-   * Sekaligus menghapus keharusan membongkar teks berformat sendiri:
-   * kontrol menyimpan angka BERSIH ("1234567.89"), sehingga `Number()`
-   * sudah cukup — tidak ada lagi tebakan apakah sebuah titik berarti
-   * pemisah ribuan atau pemisah desimal.
-   */
-  private nominal: FormControl<string | null>[] = [];
-
-  kontrolNominal(i: number): FormControl<string | null> {
-    let c = this.nominal[i];
-    if (!c) {
-      const awal = this.penyesuaian()[i]?.amount;
-      c = new FormControl<string | null>(awal ? String(awal) : '');
-      c.valueChanges.subscribe((v) => {
-        const bersih = (v ?? '').toString().trim();
-        const angka = bersih === '' ? 0 : Number(bersih);
-        this.setBaris(i, { amount: Number.isFinite(angka) ? angka : 0 });
-      });
-      this.nominal[i] = c;
-    }
-    return c;
-  }
-
-  /**
-   * Susun ulang kontrol nominal mengikuti daftar penyesuaian.
-   *
-   * Dipanggil setiap kali daftarnya berubah panjang. Barisnya dilacak
-   * `$index`, sehingga menghapus baris ke-2 menggeser seluruh baris di
-   * bawahnya — kontrol yang tidak ikut digeser akan menempel pada baris
-   * yang salah, dan nominal berpindah ke kategori orang lain.
-   */
-  private susunKontrolNominal(): void {
-    this.nominal = [];
-    this.penyesuaian().forEach((_, i) => this.kontrolNominal(i));
-  }
-
-  setBaris(i: number, bagian: Partial<PenyesuaianCoP>): void {
-    this.penyesuaian.update((s) =>
-      s.map((b, idx) => (idx === i ? { ...b, ...bagian } : b)),
-    );
-  }
-
-  kategoriUntuk(kind: string): readonly string[] {
-    return kind === 'deduction' ? KATEGORI_POTONGAN : KATEGORI_TAMBAHAN;
-  }
-
-  /** Hitungan sementara di layar — server tetap yang menghitung final. */
-  get kotorSunting(): number {
-    return Number(this.cop()?.grossAmount || 0);
-  }
-
-  get potonganSunting(): number {
-    return this.penyesuaian()
-      .filter((a) => a.kind === 'deduction')
-      .reduce((t, a) => t + Number(a.amount || 0), 0);
-  }
-
-  get tambahanSunting(): number {
-    return this.penyesuaian()
-      .filter((a) => a.kind === 'addition')
-      .reduce((t, a) => t + Number(a.amount || 0), 0);
-  }
-
-  get bersihSunting(): number {
-    return this.kotorSunting - this.potonganSunting + this.tambahanSunting;
-  }
-
-  /** Baris yang belum sah — ditandai sebelum dikirim, bukan sesudah ditolak. */
-  barisSalah(a: PenyesuaianCoP): boolean {
-    if (!a.amount || Number(a.amount) <= 0) return true;
-    if (a.category === 'lain_lain' && !(a.label || '').trim()) return true;
-    return false;
-  }
-
-  get adaBarisSalah(): boolean {
-    return this.penyesuaian().some((a) => this.barisSalah(a));
-  }
-
-  get bersihNegatif(): boolean {
-    return this.bersihSunting < 0;
-  }
-
-  async simpanPenyesuaian(): Promise<void> {
-    const c = this.cop();
-    if (!c || this.adaBarisSalah || this.bersihNegatif) return;
-    this.menyimpanPenyesuaian.set(true);
-    try {
-      await firstValueFrom(
-        this.service.simpanPenyesuaian(c.id, this.penyesuaian()),
-      );
-      this.menyuntingPenyesuaian.set(false);
-      await this.muat();
-      this.snackBar.open(
-        this.translate.instant('cop.penyesuaianTersimpan'),
-        this.translate.instant('common.close'),
-        { duration: 3000 },
-      );
-    } catch (e) {
-      this.pesan(e);
-    } finally {
-      this.menyimpanPenyesuaian.set(false);
-    }
   }
 }

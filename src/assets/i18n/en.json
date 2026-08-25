@@ -4956,6 +4956,17 @@
     "spkTerpilih": "Selected SPK",
     "dokumenDiperiksa": "Document being checked",
     "dokumenTerkunci": "The document cannot be changed while checking",
-    "pemasokIkutSpk": "The supplier follows the SPK"
+    "pemasokIkutSpk": "The supplier follows the SPK",
+    "pratinjauBuat": "Review before saving",
+    "pratinjauUbah": "Review your changes",
+    "sisaSetelah": "Remaining after",
+    "tungguDetik": "Wait {{detik}}s",
+    "tungguSelesai": "Pause complete",
+    "gulirSelesai": "Scrolled to the end",
+    "gulirSisa": "Scroll to the end first",
+    "pernyataanVolume": "I have checked the volumes above and confirm they are correct.",
+    "jumlahPekerjaan": "{{n}} work items",
+    "paguHabisJudul": "Some quotas will be used up",
+    "paguHabisKet": "{{n}} work item(s) will have nothing left. Adding volume after this requires an addendum to the SPK first."
   }
 }
