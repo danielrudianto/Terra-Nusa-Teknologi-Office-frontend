@@ -82,16 +82,32 @@
       maksud; bedanya hanya baris terakhir — di sini dapat diganti, di sana
       tergembok.
     -->
+    <!--
+      DUA kartu, persis seperti layar sunting purchase order: dokumennya
+      lebih dulu, pemasoknya di bawahnya.
+
+      Pemasok berdiri sendiri, bukan diselipkan sebagai anak kalimat di
+      bawah nomor SPK. Ia yang ditagih, dan alamatnya yang membedakan dua
+      pemasok bernama mirip — keterangan sepenting itu tidak pantas menjadi
+      penggalan setelah tanda titik tengah.
+    -->
     @if (spkTerpilih(); as s) {
-      <app-supplier-terkunci
-        [label]="'cop.spkTerpilih' | translate"
-        [nama]="s.name"
-        [alamat]="
-          s.projectName + (s.supplierName ? ' · ' + s.supplierName : '')
-        "
-        [aksiTeks]="copId ? null : 'cop.gantiSpk'"
-        (aksi)="lepasSpk()"
-      />
+      <div class="cop-terkunci">
+        <app-supplier-terkunci
+          [label]="'cop.spkTerpilih' | translate"
+          [nama]="s.name"
+          [alamat]="s.projectName"
+          [aksiTeks]="copId ? null : 'cop.gantiSpk'"
+          (aksi)="lepasSpk()"
+        />
+
+        <app-supplier-terkunci
+          [label]="'poForm.supplier' | translate"
+          [nama]="s.supplierName"
+          [alamat]="s.supplierAddress"
+          [kunciTeks]="'cop.pemasokIkutSpk'"
+        />
+      </div>
     }
   </section>
 
@@ -226,8 +242,7 @@
                   matInput
                   type="text"
                   inputmode="decimal"
-                  thousandSeparator="."
-                  decimalMarker=","
+                  thousandSeparator=" "
                   decimalScale="2"
                   mask="separator.2"
                   [validation]="false"

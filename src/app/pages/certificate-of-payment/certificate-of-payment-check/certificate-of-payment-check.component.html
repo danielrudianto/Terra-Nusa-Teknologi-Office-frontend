@@ -16,16 +16,25 @@
       <div class="cop-kartu__judul">{{ "cop.langkahBaca" | translate }}</div>
 
       <!--
-        Dokumen yang sedang diperiksa: kartu yang SAMA dengan dokumen
-        terkunci pada formulir purchase order. Di sini ia memang terkunci —
-        yang memeriksa tidak memilih dokumen, ia dibawa ke dokumennya.
+        Dokumen dan pemasoknya: DUA kartu, sama seperti layar sunting
+        purchase order. Di sini keduanya memang terkunci — yang memeriksa
+        tidak memilih dokumen, ia dibawa ke dokumennya.
       -->
-      <app-supplier-terkunci
-        [label]="'cop.dokumenDiperiksa' | translate"
-        [nama]="c.name"
-        [alamat]="(c.purchaseOrderName || '—') + ' · ' + c.projectName"
-        [kunciTeks]="'cop.dokumenTerkunci'"
-      />
+      <div class="cop-terkunci">
+        <app-supplier-terkunci
+          [label]="'cop.dokumenDiperiksa' | translate"
+          [nama]="c.name"
+          [alamat]="(c.purchaseOrderName || '—') + ' · ' + c.projectName"
+          [kunciTeks]="'cop.dokumenTerkunci'"
+        />
+
+        <app-supplier-terkunci
+          [label]="'poForm.supplier' | translate"
+          [nama]="c.supplierName || null"
+          [alamat]="c.supplierAddress || null"
+          [kunciTeks]="'cop.pemasokIkutSpk'"
+        />
+      </div>
 
       <div class="cop-baris-form">
         <mat-form-field appearance="outline">
@@ -115,8 +124,7 @@
                   matInput
                   type="text"
                   inputmode="decimal"
-                  thousandSeparator="."
-                  decimalMarker=","
+                  thousandSeparator=" "
                   decimalScale="2"
                   mask="separator.2"
                   [validation]="false"
@@ -276,17 +284,11 @@
               matInput
               type="text"
               inputmode="decimal"
-              thousandSeparator="."
-              decimalMarker=","
+              thousandSeparator=" "
               decimalScale="2"
               mask="separator.2"
               [validation]="false"
-              [value]="a.amount || ''"
-              (input)="
-                setBaris($index, {
-                  amount: keAngka($any($event.target).value)
-                })
-              "
+              [formControl]="kontrolNominal($index)"
             />
           </mat-form-field>
 

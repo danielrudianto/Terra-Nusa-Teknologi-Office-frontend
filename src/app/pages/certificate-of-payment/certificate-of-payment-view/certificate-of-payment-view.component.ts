@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -38,6 +39,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -243,6 +245,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     const ada = (this.cop()?.adjustments || []).map((a) => ({ ...a }));
     if (ada.length) {
       this.penyesuaian.set(ada);
+      this.susunKontrolNominal();
       this.menyuntingPenyesuaian.set(true);
       return;
     }
@@ -277,6 +280,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
       });
     }
     this.penyesuaian.set(saran);
+    this.susunKontrolNominal();
     this.menyuntingPenyesuaian.set(true);
   }
 
@@ -291,6 +295,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     this.penyesuaian.set(
       (this.cop()?.adjustments || []).map((a) => ({ ...a })),
     );
+    this.susunKontrolNominal();
     this.menyuntingPenyesuaian.set(false);
   }
 
@@ -305,24 +310,57 @@ export class CertificateOfPaymentViewComponent implements OnInit {
         note: null,
       },
     ]);
+    this.susunKontrolNominal();
   }
 
   hapusBaris(i: number): void {
     this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
+    this.susunKontrolNominal();
+  }
+
+  // ---- nominal penyesuaian ------------------------------------------
+
+  /**
+   * Satu FormControl per baris penyesuaian — BUKAN `[value]` + `(input)`.
+   *
+   * Alasannya sama dengan kotak volume: ngx-mask memformat lewat
+   * ControlValueAccessor, dan `[value]` yang dipasang ulang tiap putaran
+   * deteksi perubahan menimpa hasil formatnya seketika. Mask terpasang,
+   * tetapi pemisah ribuannya tidak pernah terlihat.
+   *
+   * Sekaligus menghapus keharusan membongkar teks berformat sendiri:
+   * kontrol menyimpan angka BERSIH ("1234567.89"), sehingga `Number()`
+   * sudah cukup — tidak ada lagi tebakan apakah sebuah titik berarti
+   * pemisah ribuan atau pemisah desimal.
+   */
+  private nominal: FormControl<string | null>[] = [];
+
+  kontrolNominal(i: number): FormControl<string | null> {
+    let c = this.nominal[i];
+    if (!c) {
+      const awal = this.penyesuaian()[i]?.amount;
+      c = new FormControl<string | null>(awal ? String(awal) : '');
+      c.valueChanges.subscribe((v) => {
+        const bersih = (v ?? '').toString().trim();
+        const angka = bersih === '' ? 0 : Number(bersih);
+        this.setBaris(i, { amount: Number.isFinite(angka) ? angka : 0 });
+      });
+      this.nominal[i] = c;
+    }
+    return c;
   }
 
   /**
-   * Teks bermask ("1.234.567,8912") menjadi angka.
+   * Susun ulang kontrol nominal mengikuti daftar penyesuaian.
    *
-   * `Number` tidak mengerti titik ribuan dan koma desimal; hasilnya NaN,
-   * dan NaN yang lolos ke muatan menjadi `null` di JSON — nominal yang
-   * diketik lenyap tanpa pesan apa pun.
+   * Dipanggil setiap kali daftarnya berubah panjang. Barisnya dilacak
+   * `$index`, sehingga menghapus baris ke-2 menggeser seluruh baris di
+   * bawahnya — kontrol yang tidak ikut digeser akan menempel pada baris
+   * yang salah, dan nominal berpindah ke kategori orang lain.
    */
-  keAngka(teks: string): number {
-    const bersih = (teks ?? '').toString().trim();
-    if (!bersih) return 0;
-    const angka = Number(bersih.replace(/\./g, '').replace(',', '.'));
-    return Number.isFinite(angka) ? angka : 0;
+  private susunKontrolNominal(): void {
+    this.nominal = [];
+    this.penyesuaian().forEach((_, i) => this.kontrolNominal(i));
   }
 
   setBaris(i: number, bagian: Partial<PenyesuaianCoP>): void {

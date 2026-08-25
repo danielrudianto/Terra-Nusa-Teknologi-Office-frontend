@@ -337,17 +337,11 @@
                     matInput
                     type="text"
                     inputmode="decimal"
-                    thousandSeparator="."
-                    decimalMarker=","
+                    thousandSeparator=" "
                     decimalScale="4"
                     mask="separator.4"
                     [validation]="false"
-                    [value]="a.amount || ''"
-                    (input)="
-                      setBaris($index, {
-                        amount: keAngka($any($event.target).value)
-                      })
-                    "
+                    [formControl]="kontrolNominal($index)"
                   />
                 </mat-form-field>
 

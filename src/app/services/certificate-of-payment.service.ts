@@ -47,6 +47,7 @@ export interface SpkKandidat {
   projectName: string;
   purchaseType: string;
   supplierName: string | null;
+  supplierAddress: string | null;
   date: string | null;
   /** Hanya untuk level 2 ke atas. */
   dpp?: number;
@@ -135,6 +136,8 @@ export interface CertificateOfPayment {
   number: number;
   purchaseOrderID: number;
   purchaseOrderName?: string;
+  supplierName?: string | null;
+  supplierAddress?: string | null;
   projectName: string;
   date: string;
   periodStart?: string | null;

@@ -4955,6 +4955,7 @@
     "retensi": "Retensi",
     "spkTerpilih": "SPK yang dipilih",
     "dokumenDiperiksa": "Dokumen yang diperiksa",
-    "dokumenTerkunci": "Dokumen tidak dapat diganti saat memeriksa"
+    "dokumenTerkunci": "Dokumen tidak dapat diganti saat memeriksa",
+    "pemasokIkutSpk": "Pemasok mengikuti SPK-nya"
   }
 }

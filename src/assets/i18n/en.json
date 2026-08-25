@@ -4955,6 +4955,7 @@
     "retensi": "Retention",
     "spkTerpilih": "Selected SPK",
     "dokumenDiperiksa": "Document being checked",
-    "dokumenTerkunci": "The document cannot be changed while checking"
+    "dokumenTerkunci": "The document cannot be changed while checking",
+    "pemasokIkutSpk": "The supplier follows the SPK"
   }
 }

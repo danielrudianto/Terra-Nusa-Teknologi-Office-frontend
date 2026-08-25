@@ -521,3 +521,14 @@
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 }
+
+/*
+  Dua kartu terkunci bertumpuk — dokumennya lebih dulu, pemasoknya di
+  bawahnya. Susunan yang sama dengan layar sunting purchase order.
+*/
+.cop-terkunci {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}

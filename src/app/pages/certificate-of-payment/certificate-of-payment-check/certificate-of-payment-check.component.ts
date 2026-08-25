@@ -189,6 +189,7 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     const ada = (c.adjustments || []).map((a) => ({ ...a }));
     if (ada.length) {
       this.penyesuaian.set(ada);
+      this.susunKontrolNominal();
       return;
     }
 
@@ -222,6 +223,7 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
       });
     }
     this.penyesuaian.set(saran);
+    this.susunKontrolNominal();
   }
 
   // ------------------------------------------------------------------
@@ -333,10 +335,12 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
         note: null,
       },
     ]);
+    this.susunKontrolNominal();
   }
 
   hapusBaris(i: number): void {
     this.penyesuaian.update((s) => s.filter((_, idx) => idx !== i));
+    this.susunKontrolNominal();
   }
 
   setBaris(i: number, bagian: Partial<PenyesuaianCoP>): void {
@@ -345,12 +349,49 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     );
   }
 
-  /** Teks bermask ("1.234.567,89") menjadi angka. */
-  keAngka(teks: string): number {
-    const bersih = (teks ?? '').toString().trim();
-    if (!bersih) return 0;
-    const angka = Number(bersih.replace(/\./g, '').replace(',', '.'));
-    return Number.isFinite(angka) ? angka : 0;
+  // ---- nominal penyesuaian ------------------------------------------
+
+  /**
+   * Satu FormControl per baris penyesuaian — BUKAN `[value]` + `(input)`.
+   *
+   * Alasannya sama dengan kotak volume: ngx-mask memformat lewat
+   * ControlValueAccessor, dan `[value]` yang dipasang ulang tiap putaran
+   * deteksi perubahan menimpa hasil formatnya seketika. Mask terpasang,
+   * tetapi pemisah ribuannya tidak pernah terlihat.
+   *
+   * Sekaligus menghapus keharusan membongkar teks berformat sendiri:
+   * kontrol menyimpan angka BERSIH ("1234567.89"), sehingga `Number()`
+   * sudah cukup — tidak ada lagi tebakan apakah sebuah titik berarti
+   * pemisah ribuan atau pemisah desimal.
+   */
+  private nominal: FormControl<string | null>[] = [];
+
+  kontrolNominal(i: number): FormControl<string | null> {
+    let c = this.nominal[i];
+    if (!c) {
+      const awal = this.penyesuaian()[i]?.amount;
+      c = new FormControl<string | null>(awal ? String(awal) : '');
+      c.valueChanges.subscribe((v) => {
+        const bersih = (v ?? '').toString().trim();
+        const angka = bersih === '' ? 0 : Number(bersih);
+        this.setBaris(i, { amount: Number.isFinite(angka) ? angka : 0 });
+      });
+      this.nominal[i] = c;
+    }
+    return c;
+  }
+
+  /**
+   * Susun ulang kontrol nominal mengikuti daftar penyesuaian.
+   *
+   * Dipanggil setiap kali daftarnya berubah panjang. Barisnya dilacak
+   * `$index`, sehingga menghapus baris ke-2 menggeser seluruh baris di
+   * bawahnya — kontrol yang tidak ikut digeser akan menempel pada baris
+   * yang salah, dan nominal berpindah ke kategori orang lain.
+   */
+  private susunKontrolNominal(): void {
+    this.nominal = [];
+    this.penyesuaian().forEach((_, i) => this.kontrolNominal(i));
   }
 
   get potongan(): number {

@@ -4955,6 +4955,7 @@
     "retensi": "保留金",
     "spkTerpilih": "所选 SPK",
     "dokumenDiperiksa": "正在核对的文件",
-    "dokumenTerkunci": "核对期间不可更换文件"
+    "dokumenTerkunci": "核对期间不可更换文件",
+    "pemasokIkutSpk": "供应商随 SPK 确定"
   }
 }
