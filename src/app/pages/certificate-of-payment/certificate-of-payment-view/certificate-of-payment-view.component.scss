@@ -4,9 +4,22 @@
   gap: 16px;
 }
 
+/*
+  Latar kartu diambil dari `--surface`, BUKAN `--mat-sys-surface`.
+
+  Token `--mat-sys-*` tidak pernah didefinisikan di aplikasi ini — temanya
+  disusun sendiri di `styles.scss` dengan nama `--surface`, `--ink`, dan
+  seterusnya. Akibatnya `var(--mat-sys-surface, #fff)` SELALU jatuh ke
+  cadangannya, dan seluruh kartu tetap putih pada tema gelap sekalipun
+  temanya sudah berpindah. Cadangan yang tidak pernah gagal justru
+  menyembunyikan bahwa nama variabelnya keliru.
+
+  Garisnya ikut: `rgba(0, 0, 0, 0.08)` di atas latar gelap sama saja
+  dengan tidak bergaris.
+*/
 .cv-kartu {
-  background: var(--mat-sys-surface, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 12px;
   padding: 20px;
 }
@@ -170,7 +183,7 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  color: #2e7d32;
+  color: var(--ok-fg, #2e7d32);
   font-weight: 500;
 }
 
@@ -203,7 +216,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid var(--line, #eef0f3);
   }
 
   &__nama em {
@@ -215,11 +228,11 @@
   &__nilai {
     font-weight: 600;
     white-space: nowrap;
-    color: #c62828;
+    color: var(--bad-fg, #c62828);
   }
 
   &--tambah .cv-adj__nilai {
-    color: #2e7d32;
+    color: var(--ok-fg, #2e7d32);
   }
 }
 
@@ -268,7 +281,7 @@
 
 .cv-salah {
   margin: 10px 0 0;
-  color: #d32f2f;
+  color: var(--bad-fg, #d32f2f);
   font-size: 13px;
 }
 
@@ -282,7 +295,7 @@
   gap: 12px;
   margin: 18px 0 0;
   padding-top: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--line, #eef0f3);
 
   dt {
     font-size: 12px;
@@ -296,11 +309,11 @@
   }
 
   &--kurang {
-    color: #c62828;
+    color: var(--bad-fg, #c62828);
   }
 
   &--tambah {
-    color: #2e7d32;
+    color: var(--ok-fg, #2e7d32);
   }
 
   &__bersih dd {
@@ -355,7 +368,7 @@
     flex: 1 1 260px;
     padding: 12px 14px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.035);
+    background: var(--surface-2, #fafbfc);
   }
 
   &__judul {
@@ -580,8 +593,17 @@
     color: var(--ok-fg, #1a7f45);
   }
 
-  /* PPh: keterangan, bukan hitungan. Diredupkan supaya tidak terbaca
-     sebagai baris yang ikut dijumlahkan. */
+  &--kurang {
+    color: var(--bad-fg, #c62828);
+  }
+
+  /*
+    PPh: keterangan, bukan hitungan.
+
+    Diredupkan dan tidak diberi garis jumlah supaya tidak terbaca sebagai
+    baris yang ikut mengurangi total di atasnya — nilainya memang tidak
+    dipotong pada dokumen ini.
+  */
   &__ket {
     dd {
       font-weight: 500;
@@ -680,7 +702,7 @@
     padding: 0.25rem 0.65rem;
     border-radius: 999px;
     background: var(--ok-fg, #1a7f45);
-    color: #fff;
+    color: var(--on-brand, #fff);
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;

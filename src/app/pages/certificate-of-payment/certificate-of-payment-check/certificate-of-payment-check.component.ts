@@ -213,15 +213,12 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
         note: null,
       });
     }
-    if (sy && sy.saranPph > 0) {
-      saran.push({
-        kind: 'deduction',
-        category: 'pph',
-        label: sy.pphCode || null,
-        amount: sy.saranPph,
-        note: null,
-      });
-    }
+    // PPh tidak disarankan sebagai potongan.
+    //
+    // Ia dipotong pada pembelian, bukan di sini; menyarankannya berarti
+    // nilai yang sama dikurangkan dua kali, dan yang memeriksa tidak punya
+    // cara mengetahui bahwa yang disarankan layar ini sudah dipotong di
+    // tempat lain.
     this.penyesuaian.set(saran);
     this.susunKontrolNominal();
   }
@@ -393,9 +390,7 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
    * menghemat satu ketukan; yang ditebak salah tidak menghalangi apa pun.
    */
   private static modeBawaan(kategori: string): 'nominal' | 'persen' {
-    return kategori === 'uang_muka' ||
-      kategori === 'retensi' ||
-      kategori === 'pph'
+    return kategori === 'uang_muka' || kategori === 'retensi'
       ? 'persen'
       : 'nominal';
   }
@@ -502,9 +497,14 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     this.hitungUlangBaris(i);
   }
 
-  /** Keterangan yang disarankan untuk sebuah kategori. */
-  private saranLabelKategori(kategori: string): string | null {
-    if (kategori === 'pph') return this.syarat?.pphCode || null;
+  /**
+   * Keterangan yang disarankan untuk sebuah kategori.
+   *
+   * Belum ada satu pun kategori yang punya saran sejak PPh dikeluarkan.
+   * Fungsinya dipertahankan karena `sesuaikanKategori` bergantung padanya
+   * untuk memutuskan apakah keterangan yang sudah diketik boleh ditimpa.
+   */
+  private saranLabelKategori(_kategori: string): string | null {
     return null;
   }
 

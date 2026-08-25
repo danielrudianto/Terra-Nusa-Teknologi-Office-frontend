@@ -393,35 +393,50 @@
             </div>
           }
 
-          <!--
-            PPh ditampilkan sebagai KETERANGAN, tidak dikurangkan lagi.
+          <div class="cv-pajak__total">
+            <dt>{{ "cop.totalDibayar" | translate }}</dt>
+            <dd>{{ totalDibayar | number: "1.0-2" }}</dd>
+          </div>
 
-            Ia sudah berada di daftar potongan di atas — itulah tempatnya
-            pada lembar CoP yang dicetak. Mengurangkannya sekali lagi di
-            sini membuat totalnya lebih kecil daripada yang tertagih.
+          <!--
+            PPh dihitung dari tarif SPK dikali DPP, bukan dibaca dari daftar
+            potongan — di sana ia memang tidak ada, dan tidak akan pernah ada.
+
+            Letaknya SETELAH total, dan itu disengaja: ia bukan bagian dari
+            hitungan yang menghasilkan total, melainkan keterangan tentang
+            apa yang terjadi sesudahnya. Meletakkannya di atas total membuat
+            yang membaca menjumlahkan sendiri kolomnya dan mendapat angka
+            yang berbeda dari yang tercetak di sebelahnya.
           -->
           @if (nilaiPph > 0) {
             <div class="cv-pajak__ket">
               <dt>
                 {{ "cop.pph" | translate }}
+                <em>{{ tarifPph | number: "1.0-2" }}%</em>
                 @if (syarat?.pphCode) {
                   <em>{{ syarat?.pphCode }}</em>
                 }
               </dt>
               <dd>
                 −{{ nilaiPph | number: "1.0-2" }}
-                <span>{{ "cop.sudahDipotongDiAtas" | translate }}</span>
+                <span>{{ "cop.pphSaatPembayaran" | translate }}</span>
               </dd>
             </div>
           }
-
-          <div class="cv-pajak__total">
-            <dt>{{ "cop.totalDibayar" | translate }}</dt>
-            <dd>{{ totalDibayar | number: "1.0-2" }}</dd>
-          </div>
         </dl>
 
         <p class="cv-catatan-dpp">{{ "cop.catatanDpp" | translate }}</p>
+
+        <!--
+          Diberitahukan HANYA bila PPh-nya memang ada.
+
+          Baris PPh di atas mengurangi total, sedangkan potongannya sendiri
+          tidak muncul di daftar potongan CoP — tanpa keterangan ini, yang
+          mencari potongan itu akan menyangka daftarnya kurang lengkap.
+        -->
+        @if (nilaiPph > 0) {
+          <p class="cv-catatan-dpp">{{ "cop.catatanPajak" | translate }}</p>
+        }
       </section>
     }
   }

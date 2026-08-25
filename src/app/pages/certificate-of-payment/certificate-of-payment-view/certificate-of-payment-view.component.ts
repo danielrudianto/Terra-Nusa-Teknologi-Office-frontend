@@ -317,26 +317,41 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     return (Number(this.cop()?.netAmount || 0) * this.tarifPpn) / 100;
   }
 
-  /**
-   * PPh yang SUDAH dipotong pada dokumen ini.
-   *
-   * Dibaca dari daftar potongannya, BUKAN dihitung dari tarif SPK. Yang
-   * memeriksa boleh membetulkan angkanya — periode ini mungkin disepakati
-   * lain — dan menghitungnya ulang dari tarif akan menampilkan angka yang
-   * berbeda dari yang benar-benar dipotong tepat di sebelahnya.
-   */
-  get nilaiPph(): number {
-    return (this.cop()?.adjustments || [])
-      .filter((a) => a.kind === 'deduction' && a.category === 'pph')
-      .reduce((t, a) => t + Number(a.amount || 0), 0);
+  /** Tarif PPh menurut SPK; 0 berarti dokumen ini memang tidak dipotong PPh. */
+  get tarifPph(): number {
+    return Number(this.syarat?.pphPercentage || 0);
   }
 
   /**
-   * Yang benar-benar berpindah ke rekening pemasok.
+   * PPh atas periode ini — KETERANGAN, bukan potongan.
    *
-   * DPP + PPN. PPh tidak dikurangkan lagi di sini: ia sudah berada di daftar
-   * potongan yang membentuk DPP, dan menguranginya dua kali membuat angka
-   * ini lebih kecil daripada yang tertagih.
+   * Dihitung dari tarif SPK dikali DPP, sama persis dengan yang dikerjakan
+   * formulir pembelian (`pphPercentage * dpp / 100`). Inilah angka yang
+   * nanti benar-benar dipotong ketika CoP ini ditagihkan, dan menampilkan
+   * angka yang berbeda dari yang akan terpotong membuat lembar ini tidak
+   * dapat dipakai menyiapkan pembayaran.
+   *
+   * TIDAK dibaca dari daftar penyesuaian. `pph` sudah dikeluarkan dari
+   * kategori potongan CoP — ia dipotong sekali di pembelian, bukan dua kali
+   * — sehingga membacanya dari sana selalu menghasilkan nol, dan barisnya
+   * tidak pernah muncul sekalipun SPK-nya jelas memuat tarif PPh.
+   */
+  get nilaiPph(): number {
+    return (Number(this.cop()?.netAmount || 0) * this.tarifPph) / 100;
+  }
+
+  /**
+   * Nilai tagihan periode ini: DPP + PPN.
+   *
+   * PPh TIDAK dikurangkan di sini, dan itu disengaja. Angka ini harus sama
+   * persis dengan "Total Progress Periode Ini" pada lembar CoP yang
+   * tercetak — satu dokumen yang menyatakan dua jumlah berbeda di layar dan
+   * di kertas adalah dokumen yang tidak dapat dipakai membayar, dan
+   * selisihnya baru ketahuan setelah transfernya jalan.
+   *
+   * Pemotongan PPh terjadi pada pembelian yang menagihkan CoP ini. Ia
+   * ditampilkan sebagai keterangan di sebelah total, bukan sebagai
+   * pengurang.
    */
   get totalDibayar(): number {
     return Number(this.cop()?.netAmount || 0) + this.nilaiPpn;

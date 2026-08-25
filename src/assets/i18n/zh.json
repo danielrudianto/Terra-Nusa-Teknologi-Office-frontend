@@ -4977,6 +4977,12 @@
     "belumDitagihkan": "尚未开票",
     "belumDitagihkanKet": "本文件已批准，可以开票。",
     "buatPembelian": "创建采购",
-    "copTidakSiapTagih": "此 CoP 无法开票 —— 可能已有采购单，或尚未批准。"
+    "copTidakSiapTagih": "此 CoP 无法开票 —— 可能已有采购单，或尚未批准。",
+    "subtotalDpp": "小计（计税基础）",
+    "ppn": "增值税",
+    "pph": "预扣所得税",
+    "totalDibayar": "应付总额",
+    "catatanPajak": "预扣所得税不减少本次请款金额。它按合同税率在依据本付款证书开具的采购单上扣除。",
+    "pphSaatPembayaran": "付款时扣除"
   }
 }

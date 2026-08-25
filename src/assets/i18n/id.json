@@ -4977,6 +4977,12 @@
     "belumDitagihkan": "Belum ditagihkan",
     "belumDitagihkanKet": "Dokumen ini sudah disetujui dan siap dibuatkan pembelian.",
     "buatPembelian": "Buat pembelian",
-    "copTidakSiapTagih": "CoP ini tidak dapat ditagihkan — mungkin sudah ada pembeliannya, atau belum disetujui."
+    "copTidakSiapTagih": "CoP ini tidak dapat ditagihkan — mungkin sudah ada pembeliannya, atau belum disetujui.",
+    "subtotalDpp": "Subtotal (DPP)",
+    "ppn": "PPN",
+    "pph": "PPh",
+    "totalDibayar": "Total dibayarkan",
+    "catatanPajak": "PPh tidak mengurangi nilai tagihan ini. Ia dipotong pada pembelian yang menagihkan certificate of payment ini, sesuai tarif SPK.",
+    "pphSaatPembayaran": "dipotong saat pembayaran"
   }
 }

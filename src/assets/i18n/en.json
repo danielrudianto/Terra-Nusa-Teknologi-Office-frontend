@@ -4977,6 +4977,12 @@
     "belumDitagihkan": "Not yet billed",
     "belumDitagihkanKet": "This document is approved and ready to be billed.",
     "buatPembelian": "Create purchase",
-    "copTidakSiapTagih": "This CoP cannot be billed — it may already have a purchase, or is not yet approved."
+    "copTidakSiapTagih": "This CoP cannot be billed — it may already have a purchase, or is not yet approved.",
+    "subtotalDpp": "Subtotal (tax base)",
+    "ppn": "VAT",
+    "pph": "Withholding tax",
+    "totalDibayar": "Total payable",
+    "catatanPajak": "Withholding tax does not reduce this invoice value. It is deducted on the purchase raised against this certificate of payment, at the contract rate.",
+    "pphSaatPembayaran": "withheld at payment"
   }
 }

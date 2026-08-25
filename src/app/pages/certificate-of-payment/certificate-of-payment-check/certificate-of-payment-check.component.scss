@@ -115,8 +115,8 @@
   }
 
   &--lanjut {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.08);
+    background: var(--surface-2, #fafbfc);
+    border-color: var(--border, #e3e6eb);
     color: inherit;
   }
 
@@ -191,7 +191,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border, #e3e6eb);
   border-radius: 12px;
   overflow: hidden;
   transition:
@@ -203,8 +203,8 @@
     min-width: 0;
 
     &--kiri {
-      background: rgba(0, 0, 0, 0.02);
-      border-right: 1px solid rgba(0, 0, 0, 0.08);
+      background: var(--surface-2, #fafbfc);
+      border-right: 1px solid var(--line, #eef0f3);
     }
   }
 
@@ -251,7 +251,7 @@
     margin: 0;
     padding: 12px 14px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--surface-2, #fafbfc);
 
     > div {
       display: flex;
@@ -276,7 +276,7 @@
 
   &__sisa {
     padding-top: 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.09);
+    border-top: 1px solid var(--line, #eef0f3);
 
     dt {
       font-weight: 600;
@@ -311,7 +311,7 @@
 
     &__sisi--kiri {
       border-right: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid var(--line, #eef0f3);
     }
   }
 }
@@ -335,7 +335,7 @@
   align-items: center;
   gap: 6px;
   margin: 6px 0 0;
-  color: #d32f2f;
+  color: var(--bad-fg, #d32f2f);
   font-size: 12.5px;
 
   mat-icon {
@@ -356,7 +356,7 @@
   align-items: baseline;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--line, #eef0f3);
   font-size: 14px;
 
   strong {
@@ -428,7 +428,7 @@
 
 .cv-salah {
   margin: 10px 0 0;
-  color: #d32f2f;
+  color: var(--bad-fg, #d32f2f);
   font-size: 13px;
 }
 
@@ -442,7 +442,7 @@
   gap: 12px;
   margin: 18px 0 0;
   padding-top: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--line, #eef0f3);
 
   dt {
     font-size: 12px;
@@ -456,11 +456,11 @@
   }
 
   &--kurang {
-    color: #c62828;
+    color: var(--bad-fg, #c62828);
   }
 
   &--tambah {
-    color: #2e7d32;
+    color: var(--ok-fg, #2e7d32);
   }
 
   &__bersih dd {
@@ -479,7 +479,7 @@
     flex: 1 1 260px;
     padding: 12px 14px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.035);
+    background: var(--surface-2, #fafbfc);
   }
 
   &__judul {
@@ -613,7 +613,7 @@
 
     &.on {
       background: var(--brand, #154dec);
-      color: #fff;
+      color: var(--on-brand, #fff);
     }
 
     &:not(.on):hover {

@@ -69,12 +69,23 @@ export interface BarisCoP extends BarisCoPInput {
   amount?: number;
 }
 
-/** Kategori potongan yang dikenali server. */
+/**
+ * Kategori potongan yang dikenali server.
+ *
+ * PPh SENGAJA TIDAK ADA DI SINI, sama seperti di `KATEGORI_POTONGAN` milik
+ * server. Ia dipotong sekali pada PEMBELIAN, dan mencatatnya juga sebagai
+ * potongan CoP berarti nilai yang sama dikurangkan dua kali. Daftar ini
+ * mengisi pilihan pada lembar periksa: selama `pph` masih tercantum, yang
+ * memilihnya akan mengirim kategori yang pasti ditolak server — galat 400
+ * atas pilihan yang layar itu sendiri yang menawarkan.
+ *
+ * Di lembar tampilan PPh tetap tampak, sebagai KETERANGAN yang dihitung
+ * dari tarif SPK.
+ */
 export const KATEGORI_POTONGAN = [
   'uang_muka',
   'retensi',
   'denda',
-  'pph',
   'lain_lain',
 ] as const;
 
@@ -120,7 +131,6 @@ export interface SyaratSpk {
   retensiTerpakai: number;
   retensiSisa: number;
   /** Saran nominal untuk periode ini; sudah dibatasi sisanya. */
-  saranPph: number;
   saranUangMuka: number;
   saranRetensi: number;
 }

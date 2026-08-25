@@ -329,7 +329,7 @@
   padding: 0.6rem 1.4rem;
   margin-left: 0.6rem;
   background: var(--brand, #154dec);
-  color: #fff;
+  color: var(--on-brand, #fff);
   cursor: pointer;
   transition: background 0.15s ease;
 
