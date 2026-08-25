@@ -217,6 +217,12 @@ export class CertificateOfPaymentListComponent implements OnInit {
     void this.muat();
   }
 
+  /** Huruf pertama nama pemasok; "?" bila tidak ada. */
+  inisialPemasok(c: CertificateOfPayment): string {
+    const nama = (c.supplierName || '').trim();
+    return nama ? nama.charAt(0).toUpperCase() : '?';
+  }
+
   /** Keadaan dokumen, untuk lencana. */
   keadaan(c: CertificateOfPayment): 'draft' | 'diperiksa' | 'disetujui' {
     if (c.isApproved) return 'disetujui';

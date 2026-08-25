@@ -97,7 +97,14 @@
           <span class="cl-th">{{ "poForm.supplier" | translate }}</span>
         </th>
         <td mat-cell *matCellDef="let c">
-          <span class="cl-primary">{{ c.supplierName || "—" }}</span>
+          <!-- Kelas avatarnya datang dari campuran `daftar`, sama seperti
+               daftar purchase order dan pemasok. -->
+          <div class="cl-supplier">
+            <span class="cl-avatar">{{ inisialPemasok(c) }}</span>
+            <div class="cl-supplier__text">
+              <span class="cl-primary">{{ c.supplierName || "—" }}</span>
+            </div>
+          </div>
         </td>
       </ng-container>
 

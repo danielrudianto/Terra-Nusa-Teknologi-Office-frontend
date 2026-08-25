@@ -549,18 +549,14 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
         this.translate.instant('common.close'),
         { duration: 3000 },
       );
-      /*
-       * Menuju RINCIAN, bukan kembali ke daftar.
-       *
-       * Di layar itulah potongan & tambahan diisi, dan di situ pula tombol
-       * periksa berada — dokumen yang baru dibuat memang menunggu keduanya.
-       */
-      const id = this.copId || (hasil as any)?.certificateOfPaymentID;
-      if (id) {
-        this.router.navigate(['/Certificate-of-payment/View', id]);
-      } else {
-        this.router.navigate(['/Certificate-of-payment']);
-      }
+      // Kembali ke DAFTAR.
+      //
+      // Sebelumnya menuju layar rincian, dengan alasan potongan diisi di
+      // sana. Alasan itu sudah tidak berlaku sejak potongan pindah ke
+      // lembar periksa — yang baru selesai mencatat volume tidak punya
+      // urusan lagi dengan dokumen ini, dan yang berikutnya dikerjakannya
+      // hampir selalu CoP lain.
+      this.router.navigate(['/Certificate-of-payment']);
     } catch (e) {
       // Pesan server disampaikan APA ADANYA — di situlah tertulis berapa
       // sisa pagunya dan bahwa SPK perlu diadendum.
