@@ -147,6 +147,28 @@
   }
 }
 
+/*
+  Butir PEMBAYARAN.
+
+  Disorot dengan latar lembut dan garis tepi kiri, bukan dengan warna teks:
+  butirnya kerap dua-tiga baris, dan teks berwarna sepanjang itu terbaca
+  seperti peringatan padahal isinya ketentuan biasa. Yang perlu ditandai
+  letaknya — supaya mata menemukannya tanpa membaca seluruh pasal.
+
+  Warnanya sama dengan penanda "menunggu" di tempat lain: ini hal yang perlu
+  DIPERHATIKAN, bukan kesalahan.
+*/
+.mpo-klausul__bayar {
+  position: relative;
+  list-style-position: outside;
+  background: var(--warn-bg, #fdf0e3);
+  border-left: 3px solid var(--warn-fg, #e0942e);
+  border-radius: 0 8px 8px 0;
+  padding: 0.4rem 0.6rem 0.4rem 0.55rem;
+  margin-left: -0.35rem;
+  font-weight: 500;
+}
+
 .mpo-klausul__sub {
   margin: 0.2rem 0 0.4rem;
   padding-left: 1rem;

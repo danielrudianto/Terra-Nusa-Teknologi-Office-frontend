@@ -54,6 +54,39 @@
     <span class="mbr-petak__angka" [class.nol]="jumlahPo === 0">{{ jumlahPo }}</span>
   </button>
 
+  <!--
+    Certificate of payment: dua kartu, karena dua pekerjaan yang berbeda.
+
+    Memeriksa membaca ulang volumenya lalu memutuskan potongan; menyetujui
+    menanggung nilai tagihannya. Menggabungkan keduanya menjadi satu angka
+    membuat yang membacanya tidak tahu mana yang menunggu DIRINYA.
+  -->
+  @if (bisaPeriksaCop()) {
+    <button type="button" class="mbr-petak" (click)="keCop('draft')">
+      <mat-icon>fact_check</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.beranda.copPeriksa" | translate }}</span>
+        <span class="mbr-petak__ket">{{ "mobile.beranda.perluPeriksa" | translate }}</span>
+      </span>
+      <span class="mbr-petak__angka" [class.nol]="jumlahCopPeriksa === 0">{{
+        jumlahCopPeriksa
+      }}</span>
+    </button>
+  }
+
+  @if (bisaSetujuiCop()) {
+    <button type="button" class="mbr-petak" (click)="keCop('diperiksa')">
+      <mat-icon>task_alt</mat-icon>
+      <span class="mbr-petak__teks">
+        <span class="mbr-petak__judul">{{ "mobile.beranda.copSetujui" | translate }}</span>
+        <span class="mbr-petak__ket">{{ "mobile.beranda.menunggu" | translate }}</span>
+      </span>
+      <span class="mbr-petak__angka" [class.nol]="jumlahCopSetujui === 0">{{
+        jumlahCopSetujui
+      }}</span>
+    </button>
+  }
+
   @if (bisaReimbursement()) {
     <button type="button" class="mbr-petak" (click)="ke('/Reimbursement')">
       <mat-icon>receipt_long</mat-icon>

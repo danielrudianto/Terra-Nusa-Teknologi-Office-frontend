@@ -4677,7 +4677,9 @@
       "tuntas": "Semua sudah tuntas",
       "menungguTotal": "menunggu keputusan Anda",
       "perluKeputusan": "Perlu keputusan",
-      "lainnya": "Lainnya"
+      "lainnya": "Lainnya",
+      "copPeriksa": "CoP perlu diperiksa",
+      "copSetujui": "CoP perlu disetujui"
     },
     "po": {
       "judul": "Persetujuan Purchase Order",
@@ -4704,7 +4706,8 @@
       "cariPlaceholder": "Cari nomor PO atau proyek",
       "takAdaCari": "Tidak ada yang cocok dengan pencarian.",
       "habis": "Sudah semua.",
-      "takBerwenang": "Anda tidak berwenang menyetujui purchase order."
+      "takBerwenang": "Anda tidak berwenang menyetujui purchase order.",
+      "pekerjaan": "Daftar pekerjaan"
     },
     "periksa": {
       "judul": "Pemeriksaan Purchase Order",
@@ -4968,6 +4971,12 @@
     "jumlahPekerjaan": "{{n}} pekerjaan",
     "paguHabisJudul": "Ada pagu yang habis setelah ini",
     "paguHabisKet": "{{n}} baris pekerjaan tidak akan punya sisa lagi. Untuk menambah volume setelah ini, SPK-nya harus diadendum lebih dulu.",
-    "unduhSetelahDiperiksa": "Dapat diunduh setelah diperiksa"
+    "unduhSetelahDiperiksa": "Dapat diunduh setelah diperiksa",
+    "sudahDitagihkan": "Sudah ditagihkan",
+    "sudahLunas": "Lunas",
+    "belumDitagihkan": "Belum ditagihkan",
+    "belumDitagihkanKet": "Dokumen ini sudah disetujui dan siap dibuatkan pembelian.",
+    "buatPembelian": "Buat pembelian",
+    "copTidakSiapTagih": "CoP ini tidak dapat ditagihkan — mungkin sudah ada pembeliannya, atau belum disetujui."
   }
 }

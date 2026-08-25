@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { nilaiUang } from '../../../utils/angka';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -14,6 +14,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
+import {
+  CertificateOfPaymentService,
+  CoPSiapTagih,
+} from 'src/app/services/certificate-of-payment.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
@@ -192,6 +197,8 @@ export class PurchaseCreateComponent {
   constructor(
     private apiService: ApiService,
     private dialog: MatDialog,
+    private route: ActivatedRoute,
+    private layananCop: CertificateOfPaymentService,
     private snackBar: MatSnackBar,
     private clipboard: Clipboard,
   ) {}
@@ -311,7 +318,90 @@ export class PurchaseCreateComponent {
     },
   );
 
+  /**
+   * CoP yang sedang ditagihkan, bila layar ini dibuka dari sana.
+   *
+   * Dikirim ke server saat menyimpan. Itulah yang mengikat pembelian ini
+   * pada certificate of payment-nya — dan yang membuat CoP-nya tidak dapat
+   * ditagihkan dua kali.
+   */
+  copTerpilih: CoPSiapTagih | null = null;
+
+  /**
+   * Muat CoP dari `?cop=<id>` lalu isikan formulirnya.
+   *
+   * Dibaca dari SERVER, bukan disalin lewat state navigasi: angka yang
+   * dibaca sendiri selalu yang terkini, dan tidak ada salinan yang dapat
+   * basi di antara dua layar.
+   *
+   * Nilai yang diisikan:
+   *   dpp  = nilai BERSIH CoP (kotor − potongan + tambahan);
+   *   ppn  = tarif SPK;
+   *   pph  = tarif SPK — dipotong DI SINI, bukan di CoP.
+   */
+  private async muatDariCop(copId: number): Promise<void> {
+    try {
+      const daftar = (await firstValueFrom(
+        this.layananCop.siapTagih(),
+      )) as CoPSiapTagih[];
+      const c = (daftar || []).find((x) => x.id === copId);
+      if (!c) {
+        // Tidak ada di daftar "siap tagih" berarti sudah ditagihkan, atau
+        // belum disetujui. Formulirnya tetap terbuka — hanya tanpa isian
+        // otomatis, dan dengan sebabnya disebutkan.
+        this.snackBar.open(
+          this.translate.instant('cop.copTidakSiapTagih'),
+          this.translate.instant('common.close'),
+          { duration: 6000 },
+        );
+        return;
+      }
+
+      this.copTerpilih = c;
+      this.muatTagihanPo(c.purchaseOrderName);
+      this.poTerpilihId = c.purchaseOrderID ?? null;
+      this.poTerpilihNomor = String(c.purchaseOrderName || '');
+
+      this.metaFormGroup.patchValue({
+        purchaseOrderName: c.purchaseOrderName,
+        supplierID: c.supplierID,
+        supplierName: c.supplierName,
+        supplierAddress: c.supplierAddress,
+        projectName: c.projectName,
+        purchaseType: c.purchaseType,
+      });
+
+      if (c.supplierID) this.fetchFrequentPaymentBySupplierID(c.supplierID);
+
+      this.valueFormGroup.patchValue({
+        dpp: c.netAmount,
+        ppn: this.tarifPpnSebagaiPilihan(c.ppn),
+        pphCode: c.pphCode,
+        pphTaxObject: c.pphTaxObject,
+        pphPercentage: c.pphPercentage,
+      });
+
+      // CoP-nya memang dilampirkan — itu dasar tagihannya.
+      this.attachmentFormGroup.patchValue({ isCopAttached: true });
+
+      // Urutannya sama dengan jalur purchase order: jenis DITETAPKAN
+      // sesudah nilainya, kalau tidak PPh yang baru dipasang ikut
+      // dikosongkan langganan `documentType`.
+      this.terapkanJenisDariNomor(c.purchaseOrderName);
+      this.calculateTotal();
+    } catch (e) {
+      this.snackBar.open(
+        this.serverMessage.terjemahkan(e),
+        this.translate.instant('common.close'),
+        { duration: 6000 },
+      );
+    }
+  }
+
   ngOnInit() {
+    const dariCop = Number(this.route.snapshot.queryParamMap.get('cop'));
+    if (dariCop) void this.muatDariCop(dariCop);
+
     this.filteredOptions = this.options.slice();
     this.fetchBankAccounts();
 
@@ -983,6 +1073,8 @@ export class PurchaseCreateComponent {
       isTaxInvoiceAttached:
         this.attachmentFormGroup.controls['isTaxInvoiceAttached'].value,
       isCopAttached: this.attachmentFormGroup.controls['isCopAttached'].value,
+      // Pengikat ke certificate of payment; kosong untuk pembelian biasa.
+      certificateOfPaymentID: this.copTerpilih?.id ?? null,
       isCopyPurchaseOrderAttached:
         this.attachmentFormGroup.controls['isCopyPurchaseOrderAttached'].value,
       bankName: this.paymentFormGroup.controls['bankName'].value,

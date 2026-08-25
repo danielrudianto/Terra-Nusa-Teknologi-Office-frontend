@@ -15,8 +15,7 @@ import { PermissionService } from '../../services/permission.service';
 import { ServerMessageService } from '../../services/server-message.service';
 import {
   susunKlausulDokumen,
-  klausulSubDaftar,
-} from '../../helpers/klausul-dokumen.helper';
+  klausulSubDaftar, adalahKlausulPembayaran } from '../../helpers/klausul-dokumen.helper';
 import { ClauseSection } from '../../constants/clause-templates';
 import { purchaseTypeLabel } from '../../constants/purchase-type-label.constant';
 import { barisTampil } from '../../constants/baris-tampil-po';
@@ -225,6 +224,17 @@ export class PoDaftarComponent implements OnInit {
   isiKlausul(x: string | string[]): string {
     return Array.isArray(x) ? '' : String(x ?? '');
   }
+  /**
+   * Butir ini menyangkut PEMBAYARAN, jadi disorot.
+   *
+   * Ketentuan pembayaran terselip sebagai butir biasa di tengah pasal, dan
+   * di sana ia tenggelam: yang menyetujui membaca dua puluh butir berbobot
+   * sama, padahal satu di antaranya menentukan kapan uang keluar.
+   */
+  sorotPembayaran(x: string | string[]): boolean {
+    return adalahKlausulPembayaran(x);
+  }
+
   subKlausul(x: string | string[]): string[] {
     return Array.isArray(x) ? x : [];
   }
@@ -294,10 +304,40 @@ export class PoDaftarComponent implements OnInit {
   jenis(po: any): string {
     return purchaseTypeLabel(this.translate, po?.purchaseType);
   }
-  ikon(po: any): string {
+  /**
+   * BENTUK dokumen: surat perintah kerja, perjanjian kerja sama, atau
+   * purchase order.
+   *
+   * Dibaca dari nomornya, dan menjadi SATU-SATUNYA sumber bagi ikon maupun
+   * judul daftar barisnya. Sebelumnya ikonnya menyimpulkan sendiri sementara
+   * judulnya selalu "Daftar barang" — sehingga SPK jasa tampil beriKON
+   * pekerjaan tetapi berjudul barang, dan tidak ada satu pun barang di
+   * dalamnya.
+   */
+  bentukDokumen(po: any): 'spk' | 'pks' | 'po' {
     const nomor = String(po?.name ?? '');
-    if (/-SPK-/i.test(nomor)) return 'engineering';
-    if (/-PKS-/i.test(nomor)) return 'handshake';
+    if (/-SPK-/i.test(nomor)) return 'spk';
+    if (/-PKS-/i.test(nomor)) return 'pks';
+    return 'po';
+  }
+
+  /**
+   * Judul daftar baris dokumen.
+   *
+   * SPK memerintahkan PEKERJAAN, bukan menyerahkan barang; barisnya berisi
+   * volume jasa, satuan jam, dan tugas. "Daftar barang" di atasnya membuat
+   * yang membacanya mencari nama barang yang memang tidak pernah ada.
+   */
+  judulBaris(po: any): string {
+    return this.bentukDokumen(po) === 'po'
+      ? 'mobile.po.barang'
+      : 'mobile.po.pekerjaan';
+  }
+
+  ikon(po: any): string {
+    const bentuk = this.bentukDokumen(po);
+    if (bentuk === 'spk') return 'engineering';
+    if (bentuk === 'pks') return 'handshake';
     return 'inventory_2';
   }
 

@@ -4677,7 +4677,9 @@
       "tuntas": "All caught up",
       "menungguTotal": "awaiting your decision",
       "perluKeputusan": "Needs a decision",
-      "lainnya": "Other"
+      "lainnya": "Other",
+      "copPeriksa": "CoPs to check",
+      "copSetujui": "CoPs to approve"
     },
     "po": {
       "judul": "Purchase Order Approval",
@@ -4704,7 +4706,8 @@
       "cariPlaceholder": "Search PO number or project",
       "takAdaCari": "Nothing matches your search.",
       "habis": "That's everything.",
-      "takBerwenang": "You are not authorized to approve purchase orders."
+      "takBerwenang": "You are not authorized to approve purchase orders.",
+      "pekerjaan": "Work items"
     },
     "periksa": {
       "judul": "Purchase Order Check",
@@ -4968,6 +4971,12 @@
     "jumlahPekerjaan": "{{n}} work items",
     "paguHabisJudul": "Some quotas will be used up",
     "paguHabisKet": "{{n}} work item(s) will have nothing left. Adding volume after this requires an addendum to the SPK first.",
-    "unduhSetelahDiperiksa": "Downloadable once checked"
+    "unduhSetelahDiperiksa": "Downloadable once checked",
+    "sudahDitagihkan": "Already billed",
+    "sudahLunas": "Paid",
+    "belumDitagihkan": "Not yet billed",
+    "belumDitagihkanKet": "This document is approved and ready to be billed.",
+    "buatPembelian": "Create purchase",
+    "copTidakSiapTagih": "This CoP cannot be billed — it may already have a purchase, or is not yet approved."
   }
 }

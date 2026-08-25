@@ -129,6 +129,44 @@
       </div>
     </section>
 
+    <!-- ===== Penagihan ===== -->
+    <!--
+      Pertanyaan yang paling sering dibawa ke layar ini setelah dokumennya
+      disetujui: "ini sudah ditagihkan belum?". Sebelumnya jawabannya hanya
+      ada di daftar pembelian, dan yang mencarinya harus menebak nomor
+      fakturnya lebih dahulu.
+    -->
+    @if (tagihan(); as t) {
+      @if (t.ditagihkan && t.pembelian; as p) {
+        <section class="cv-kartu cv-tagih cv-tagih--sudah">
+          <mat-icon>receipt_long</mat-icon>
+          <div>
+            <strong>{{ "cop.sudahDitagihkan" | translate }}</strong>
+            <span>
+              {{ t.pembelian?.invoiceName || "—" }}
+              @if (t.pembelian?.date) {
+                · {{ t.pembelian?.date | date: "dd MMM yyyy" }}
+              }
+              @if (t.pembelian?.createdByName) {
+                · {{ t.pembelian?.createdByName }}
+              }
+            </span>
+          </div>
+          @if (t.pembelian?.isPaid) {
+            <span class="cv-tagih__lunas">{{ "cop.sudahLunas" | translate }}</span>
+          }
+        </section>
+      } @else if (c.isApproved) {
+        <section class="cv-kartu cv-tagih">
+          <mat-icon>request_quote</mat-icon>
+          <div>
+            <strong>{{ "cop.belumDitagihkan" | translate }}</strong>
+            <span>{{ "cop.belumDitagihkanKet" | translate }}</span>
+          </div>
+        </section>
+      }
+    }
+
     <!-- ===== Baris pekerjaan ===== -->
     <section class="cv-kartu">
       <div class="cv-tabel-bungkus">
@@ -452,6 +490,17 @@
         <button mat-stroked-button [disabled]="bekerja()" (click)="periksa(false)">
           <mat-icon>undo</mat-icon>
           {{ "cop.cabutPeriksa" | translate }}
+        </button>
+      }
+
+      <!--
+        Membuat pembelian: hanya untuk yang SUDAH disetujui dan BELUM
+        ditagihkan. Cerminan aturan server; yang menegakkan tetap server.
+      -->
+      @if (bolehBuatPembelian) {
+        <button mat-flat-button color="primary" (click)="buatPembelian()">
+          <mat-icon>request_quote</mat-icon>
+          {{ "cop.buatPembelian" | translate }}
         </button>
       }
 

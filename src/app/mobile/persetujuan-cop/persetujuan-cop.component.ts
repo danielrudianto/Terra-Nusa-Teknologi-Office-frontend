@@ -192,8 +192,13 @@ export class PersetujuanCopComponent implements OnInit {
           'Close',
           { duration: 3000 },
         );
+        const id = this.dipilih?.id;
         this.tutup();
-        this.muat(true);
+        // Baris yang baru disetujui dibuang di tempat, daftarnya TIDAK
+        // dimuat ulang — lihat catatan yang sama pada layar persetujuan
+        // purchase order: memuat ulang melemparkan halaman kembali ke atas,
+        // dan yang menyetujui berturut-turut harus menggulir dari nol lagi.
+        this.daftar = this.daftar.filter((x: any) => x?.id !== id);
       },
       error: (e) => this.pesan(e),
       complete: () => (this.sedangKirim = false),

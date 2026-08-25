@@ -630,3 +630,59 @@
     font-size: 15px;
   }
 }
+
+/*
+  Keadaan penagihan.
+
+  Bentuknya banner, bukan satu baris di antara keterangan lain: ia menjawab
+  pertanyaan yang dibawa orang ke layar ini, bukan melengkapi yang sudah
+  dibacanya.
+*/
+.cv-tagih {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    color: var(--muted, #9aa1b1);
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.9rem;
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: var(--muted, #6b7280);
+  }
+
+  &--sudah {
+    border-color: rgba(26, 127, 69, 0.35);
+    background: var(--ok-bg, #e6f6ec);
+
+    .mat-icon,
+    strong {
+      color: var(--ok-fg, #1a7f45);
+    }
+  }
+
+  &__lunas {
+    flex: 0 0 auto;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: var(--ok-fg, #1a7f45);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+}

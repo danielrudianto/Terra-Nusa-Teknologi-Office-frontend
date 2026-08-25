@@ -13,7 +13,7 @@ import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -61,6 +61,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
 export class CertificateOfPaymentListComponent implements OnInit {
   private readonly service = inject(CertificateOfPaymentService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
@@ -121,21 +122,23 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   /**
-   * Baris yang lolos penyaring.
+   * Baris yang tampil.
    *
-   * Disaring DI LAYAR, bukan lewat server: keadaan dokumen tidak tersimpan
-   * sebagai satu kolom melainkan disimpulkan dari `isChecked`/`isApproved`,
-   * dan menambah parameter untuk itu berarti aturan yang sama ditulis di
-   * dua tempat.
+   * Penyaringnya sudah dikerjakan SERVER — lihat `keadaan` pada rute daftar.
+   * Sebelumnya disaring di sini, dan itu keliru pada daftar berhalaman: yang
+   * tersaring hanya dua puluh baris yang kebetulan terbuka, sementara
+   * pemenggal halaman di bawahnya tetap menyebut jumlah SELURUHNYA. Memilih
+   * "Draf" pada daftar berisi ratusan dokumen lalu menampilkan tiga baris di
+   * atas keterangan "1–20 dari 340".
    */
-  readonly terlihat = computed(() => {
-    const s = this.saring();
-    if (!s) return this.data();
-    return this.data().filter((c) => this.keadaan(c) === s);
-  });
+  readonly terlihat = computed(() => this.data());
 
   pilihSaring(nilai: string): void {
     this.saring.set(nilai || '');
+    // Kembali ke halaman pertama: penyaring baru membuat "halaman ketiga"
+    // menunjuk baris yang sama sekali lain.
+    this.halaman = 0;
+    void this.muat();
   }
 
   /** Unduh CoP + lampiran BAP sebagai satu berkas PDF. */
@@ -166,6 +169,13 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Datang dari beranda ponsel dengan `?keadaan=draft|diperiksa`: keping
+    // penyaringnya sudah terpilih saat layar terbuka, sehingga yang menekan
+    // kartu "CoP perlu diperiksa" langsung melihat yang perlu diperiksa —
+    // bukan seluruh daftar yang harus disaring ulang tangan.
+    const awal = this.route.snapshot.queryParamMap.get('keadaan');
+    if (awal) this.saring.set(awal);
+
     /*
      * Jeda 300ms sebelum server ditanya.
      *
@@ -203,6 +213,7 @@ export class CertificateOfPaymentListComponent implements OnInit {
           keyword: (this.cari.value || '').trim() || undefined,
           sortBy: this.urutKolom() || undefined,
           sortDir: this.urutArah() || undefined,
+          keadaan: this.saring() || undefined,
         }),
       );
       this.data.set(hasil?.data || []);

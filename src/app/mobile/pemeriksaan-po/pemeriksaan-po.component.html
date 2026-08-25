@@ -92,9 +92,9 @@
             (click)="barangTerbuka = !barangTerbuka"
             [attr.aria-expanded]="barangTerbuka"
           >
-            <mat-icon>inventory_2</mat-icon>
+            <mat-icon>{{ ikon(dipilih) }}</mat-icon>
             <span class="mpo-barang__judul">
-              {{ "mobile.po.barang" | translate }}
+              {{ judulBaris(dipilih) | translate }}
               <span class="mpo-barang__jumlah">{{ jumlahBarang }}</span>
             </span>
             <mat-icon class="mpo-barang__panah" [class.buka]="barangTerbuka">
@@ -150,7 +150,12 @@
                     }
                   </ul>
                 } @else {
-                  <li>{{ isiKlausul(butir) }}</li>
+                  <!-- Butir pembayaran disorot: ia yang menentukan kapan uang
+                       keluar, dan tanpa penanda ia terbaca sama beratnya
+                       dengan sembilan belas butir lain di sekelilingnya. -->
+                  <li [class.mpo-klausul__bayar]="sorotPembayaran(butir)">
+                    {{ isiKlausul(butir) }}
+                  </li>
                 }
               }
             </ol>

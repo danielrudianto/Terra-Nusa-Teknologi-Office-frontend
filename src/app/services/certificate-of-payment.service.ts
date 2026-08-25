@@ -164,6 +164,43 @@ export interface CertificateOfPayment {
   spkSyarat?: SyaratSpk;
 }
 
+/** Keadaan penagihan sebuah CoP. */
+export interface TagihanCoP {
+  ditagihkan: boolean;
+  pembelian: {
+    id: number;
+    invoiceName?: string | null;
+    date?: string | null;
+    lastStatus?: string | null;
+    isPaid?: boolean;
+    createdByName?: string | null;
+    dpp?: number;
+  } | null;
+}
+
+/** CoP yang sudah disetujui dan belum ditagihkan. */
+export interface CoPSiapTagih {
+  id: number;
+  name: string;
+  number: number;
+  projectName: string;
+  date: string | null;
+  periodStart: string | null;
+  periodEnd: string | null;
+  netAmount: number;
+  purchaseOrderID: number;
+  purchaseOrderName: string;
+  purchaseType: string;
+  supplierID: number;
+  supplierName: string | null;
+  supplierAddress: string | null;
+  /** Tarif dari SPK — PPh dipotong di PEMBELIAN, bukan di CoP. */
+  ppn: number;
+  pphCode: string | null;
+  pphTaxObject: string | null;
+  pphPercentage: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CertificateOfPaymentService {
   private readonly api = inject(ApiService);
@@ -286,6 +323,24 @@ export class CertificateOfPaymentService {
     return this.api.patch(
       `${CertificateOfPaymentService.JALUR}/${id}/approve`,
       {},
+    );
+  }
+
+  /** Sudah ditagihkan lewat pembelian mana? */
+  tagihan(id: number) {
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/${id}/tagihan`,
+      {},
+    );
+  }
+
+  /** CoP yang siap ditagihkan; dibaca formulir pembelian. */
+  siapTagih(keyword?: string) {
+    const params: Record<string, string> = {};
+    if (keyword) params['keyword'] = keyword;
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/siap-tagih`,
+      params,
     );
   }
 

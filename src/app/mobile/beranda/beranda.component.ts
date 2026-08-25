@@ -43,6 +43,9 @@ export class BerandaComponent implements OnInit {
   jumlahPo = 0;
   jumlahReimbursement = 0;
   jumlahPeriksa = 0;
+  /** CoP yang belum diperiksa, dan yang sudah diperiksa tetapi belum disetujui. */
+  jumlahCopPeriksa = 0;
+  jumlahCopSetujui = 0;
   sedangMemuat = false;
 
   /** Boleh menyetujui reimbursement (mis. accounting / level berwenang). */
@@ -56,6 +59,22 @@ export class BerandaComponent implements OnInit {
    * hanya muncul bila ini benar, supaya yang tidak bertugas memeriksa tidak
    * melihat pekerjaan yang bukan miliknya.
    */
+  /**
+   * Berwenang atas certificate of payment.
+   *
+   * Memeriksa mulai level 2, menyetujui mulai level 3 — cerminan
+   * `boleh_memeriksa_cop` dan `boleh_menyetujui_cop` di server. Kartunya
+   * hanya muncul bila benar: beranda yang menjanjikan pekerjaan yang tidak
+   * ada layarnya bagi pembacanya lebih buruk daripada beranda yang kosong.
+   */
+  bisaPeriksaCop(): boolean {
+    return this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 2;
+  }
+
+  bisaSetujuiCop(): boolean {
+    return this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 3;
+  }
+
   bolehMemeriksa(): boolean {
     const lv = this.izin.level();
     if (lv >= 4) return true;
@@ -80,7 +99,9 @@ export class BerandaComponent implements OnInit {
   get totalMenunggu(): number {
     const periksa = this.bolehMemeriksa() ? this.jumlahPeriksa : 0;
     const reim = this.bisaReimbursement() ? this.jumlahReimbursement : 0;
-    return this.jumlahPo + reim + periksa;
+    const copP = this.bisaPeriksaCop() ? this.jumlahCopPeriksa : 0;
+    const copS = this.bisaSetujuiCop() ? this.jumlahCopSetujui : 0;
+    return this.jumlahPo + reim + periksa + copP + copS;
   }
 
   ngOnInit(): void {
@@ -120,11 +141,31 @@ export class BerandaComponent implements OnInit {
           pageSize: 50,
         })
         .pipe(catchError(() => of(null))),
+      // Angkanya dibaca dari `total` jawaban server, dengan `keadaan`
+      // disaring DI SANA. Menghitung larik satu halaman akan berhenti di
+      // dua puluh berapa pun banyaknya yang sebenarnya menunggu.
+      copPeriksa: this.api
+        .get('certificate-of-payments/', {
+          keadaan: 'draft',
+          page: 0,
+          pageSize: 1,
+        })
+        .pipe(catchError(() => of(null))),
+      copSetujui: this.api
+        .get('certificate-of-payments/', {
+          keadaan: 'diperiksa',
+          page: 0,
+          pageSize: 1,
+        })
+        .pipe(catchError(() => of(null))),
     })
       .subscribe({
         next: (res: any) => {
           this.jumlahPeriksa = Number(res?.periksa?.count) || 0;
           this.jumlahPo = Number(res?.po?.count) || 0;
+
+          this.jumlahCopPeriksa = Number(res?.copPeriksa?.total) || 0;
+          this.jumlahCopSetujui = Number(res?.copSetujui?.total) || 0;
 
           const rb = res?.reimbursement?.data ?? res?.reimbursement?.items ?? [];
           this.jumlahReimbursement =
@@ -150,6 +191,13 @@ export class BerandaComponent implements OnInit {
 
   ke(jalur: string): void {
     this.router.navigate([jalur]);
+  }
+
+  /** Ke daftar CoP, disaring pada keadaan yang ditunjuk kartunya. */
+  keCop(keadaan: 'draft' | 'diperiksa'): void {
+    this.router.navigate(['/Certificate-of-payment'], {
+      queryParams: { keadaan },
+    });
   }
 
   /** Ke tab Purchase Order pada mode tertentu (periksa / setujui). */

@@ -20,6 +20,7 @@ import {
   CertificateOfPayment,
   CertificateOfPaymentService,
   SyaratSpk,
+  TagihanCoP,
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
@@ -93,6 +94,17 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   readonly memuat = signal(false);
   readonly bekerja = signal(false);
 
+  /**
+   * Keadaan penagihan.
+   *
+   * Dibaca terpisah dari dokumennya, dan KEGAGALANNYA tidak menghentikan
+   * apa pun: yang membuka layar ini kebanyakan datang untuk membaca
+   * volumenya, dan dokumen yang tidak mau terbuka karena satu keterangan
+   * tambahan gagal dimuat jauh lebih mengganggu daripada keterangan yang
+   * tidak muncul.
+   */
+  readonly tagihan = signal<TagihanCoP | null>(null);
+
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
   readonly bolehPeriksa = computed(() => this.izin.level() >= 2);
@@ -128,11 +140,58 @@ export class CertificateOfPaymentViewComponent implements OnInit {
         this.service.detail(id),
       )) as CertificateOfPayment;
       this.cop.set(hasil);
+      void this.muatTagihan(id);
     } catch (e) {
       this.pesan(e);
     } finally {
       this.memuat.set(false);
     }
+  }
+
+  private async muatTagihan(id: number): Promise<void> {
+    // Hanya untuk yang boleh melihat rupiah — jawabannya menyebut DPP
+    // pembeliannya.
+    if (!this.bolehLihatNilai()) return;
+    try {
+      this.tagihan.set(
+        (await firstValueFrom(this.service.tagihan(id))) as TagihanCoP,
+      );
+    } catch {
+      // Sengaja diam: lihat catatan pada `tagihan`.
+      this.tagihan.set(null);
+    }
+  }
+
+  /**
+   * Boleh dibuatkan pembelian?
+   *
+   * Cerminan aturan server — sudah disetujui dan belum ditagihkan. Yang
+   * menegakkan tetap server, termasuk indeks unik pada basis data yang
+   * menahan dua permintaan bersamaan.
+   */
+  get bolehBuatPembelian(): boolean {
+    return (
+      this.bolehLihatNilai() &&
+      !!this.cop()?.isApproved &&
+      this.tagihan() !== null &&
+      !this.tagihan()!.ditagihkan
+    );
+  }
+
+  /**
+   * Menuju formulir pembelian dengan CoP ini sebagai dasarnya.
+   *
+   * Lewat parameter rute, bukan dengan menyalin isian ke sana: formulir
+   * pembelian yang membaca sendiri dari server mendapat angka TERKINI, dan
+   * tidak ada salinan yang dapat basi di antara dua layar.
+   */
+  buatPembelian(): void {
+    const c = this.cop();
+    if (!c) return;
+    this.dialogRef?.close(this.adaPerubahan);
+    this.router.navigate(['/Purchase/Create'], {
+      queryParams: { cop: c.id },
+    });
   }
 
   /** Keadaan dokumen, untuk lencana pada kepala dialog. */

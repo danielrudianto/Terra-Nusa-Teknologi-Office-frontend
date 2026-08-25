@@ -322,3 +322,45 @@ export function lingkupKerjaH(data: any): ClauseSection[] | null {
   }
   return null;
 }
+
+/*
+ * Kata yang menandai butir TERMIN PEMBAYARAN.
+ *
+ * Halaman "tata cara penagihan" sudah tidak ditampilkan di pratinjau, tetapi
+ * ketentuan pembayarannya tidak hilang: sebagian besar penyusun klausul
+ * menyelipkannya sebagai butir biasa di tengah pasal — dan di sanalah ia
+ * tenggelam. Yang menyetujui membaca dua puluh butir dengan bobot yang sama,
+ * padahal satu di antaranya menentukan kapan uang keluar.
+ *
+ * Dicocokkan pada TEKSNYA, bukan pada nomor butir atau nama pasal: letaknya
+ * berbeda di tiap jenis dokumen, dan daftar posisi akan tertinggal pada jenis
+ * berikutnya yang ditambahkan. Teksnya sendiri tidak berpindah.
+ */
+const KATA_PEMBAYARAN = [
+  'termin',
+  'pembayaran',
+  'dibayarkan',
+  'pelunasan',
+  'uang muka',
+  'down payment',
+  'retensi',
+  'jatuh tempo',
+  'tempo',
+  'hari kerja setelah',
+  'hari setelah',
+];
+
+/**
+ * Butir ini berbicara tentang KAPAN dan BAGAIMANA uang dibayarkan?
+ *
+ * Dipakai pratinjau untuk menyorotinya. Menyorot terlalu banyak sama tidak
+ * bergunanya dengan tidak menyorot sama sekali, jadi yang dicocokkan hanya
+ * kata yang benar-benar menyangkut pembayaran — bukan setiap butir yang
+ * kebetulan menyebut angka rupiah.
+ */
+export function adalahKlausulPembayaran(butir: string | string[]): boolean {
+  const teks = (Array.isArray(butir) ? butir.join(' ') : String(butir ?? ''))
+    .toLowerCase();
+  if (!teks.trim()) return false;
+  return KATA_PEMBAYARAN.some((k) => teks.includes(k));
+}
