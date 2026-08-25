@@ -392,7 +392,15 @@
     "belumDibayar": "{{n}} tagihan pembelian belum lunas",
     "belumDibayarKet": "Belum ada yang jatuh tempo, tetapi tetap perlu dipantau.",
     "lewatTempoKet": "{{n}} di antaranya sudah lewat jatuh tempo — {{nilai}}",
-    "menuUpdate": "Ubah"
+    "menuUpdate": "Ubah",
+    "isiDari": "Isi dari",
+    "sumberPo": "Purchase order",
+    "sumberCop": "Certificate of payment",
+    "lepasCop": "Lepaskan tautan certificate of payment",
+    "adaCopBelumDitagih": "SPK ini punya certificate of payment yang belum ditagihkan",
+    "adaCopBelumDitagihKet": "Pembelian tetap boleh disimpan manual. Memakai CoP-nya membuat nilai dan pajaknya terisi dari dokumen yang sudah disetujui.",
+    "pilihCopSekarang": "Pilih CoP",
+    "copTerkunci": "otomatis, karena pembelian ini menagihkan sebuah CoP"
   },
   "purchaseDraft": {
     "title": "Draft Pembelian",
@@ -4987,6 +4995,9 @@
     "bagianRingkasan": "Ringkasan",
     "bagianPersetujuan": "Alur persetujuan",
     "bagianPekerjaan": "Baris pekerjaan",
-    "bagianNilai": "Nilai & potongan"
+    "bagianNilai": "Nilai & potongan",
+    "pilihJudul": "Pilih certificate of payment",
+    "pilihSub": "Hanya yang sudah disetujui dan belum ditagihkan.",
+    "pilihKosong": "Tidak ada CoP yang siap ditagihkan."
   }
 }

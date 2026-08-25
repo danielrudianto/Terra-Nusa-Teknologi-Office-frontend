@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { PermissionService } from 'src/app/services/permission.service';
 import { SalarySlipEmployeePickerComponent } from '../salary-slip-employee-picker/salary-slip-employee-picker.component';
 import { TranslateService } from '@ngx-translate/core';
 import { CanDirective } from '../../../directives/can.directive';
@@ -76,6 +77,19 @@ export const MY_FORMATS = {
 export class SalarySlipListComponent {
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
+
+  /**
+   * Izin dibaca dari templat, menggantikan `*appCan` pada tombol lamanya.
+   *
+   * Tombol "buat slip" kini berada di slot `app-header-title`, dan slot itu
+   * menerima LABEL — bukan templat — sehingga penjagaannya tidak dapat
+   * ditulis sebagai arahan struktural lagi. `null` membuat tombolnya tidak
+   * digambar sama sekali, sama seperti `*appCan` sebelumnya.
+   *
+   * `permissions()` adalah sinyal, jadi tombolnya muncul sendiri begitu
+   * peta izinnya masuk — izin dimuat SETELAH layar tampil.
+   */
+  readonly izin = inject(PermissionService);
   /**
    * Buka pemilih karyawan dan periode.
    *

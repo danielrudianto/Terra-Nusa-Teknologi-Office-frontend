@@ -7,17 +7,7 @@
   ></app-header-title>
 
   <div class="pol-toolbar">
-    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="pol-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
-      <input
-        autocomplete="off"
-            type="search"
-        matInput
-        [placeholder]="'purchaseOrder.searchPlaceholder' | translate"
-        [formControl]="searchControl"
-      />
-    </mat-form-field>
+
 
     <!--
       Tombol penyaring dengan lencana jumlah.
@@ -67,6 +57,27 @@
       <mat-icon>table_view</mat-icon>
       {{ "poRekap.menu" | translate }}
     </button>
+
+    <!--
+      Pencarian berdiri TEPAT sebelum tombol muat ulang.
+
+      Keduanya dipakai berurutan — mencari, lalu menyegarkan — dan
+      tombol lain yang menyelip di antaranya memisahkan dua kendali
+      yang seharusnya bersebelahan. Sebelumnya pencarian berada
+      paling kiri sementara muat ulang di ujung kanan, terpisah
+      selebar layar.
+    -->
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="pol-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        autocomplete="off"
+            type="search"
+        matInput
+        [placeholder]="'purchaseOrder.searchPlaceholder' | translate"
+        [formControl]="searchControl"
+      />
+    </mat-form-field>
 
     <app-refresh-button
       [memuat]="isLoading"

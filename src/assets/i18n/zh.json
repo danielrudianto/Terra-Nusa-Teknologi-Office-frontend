@@ -392,7 +392,15 @@
     "belumDibayar": "{{n}} 张采购发票尚未结清",
     "belumDibayarKet": "尚无到期项，但仍需留意。",
     "lewatTempoKet": "其中 {{n}} 张已逾期——{{nilai}}",
-    "menuUpdate": "更新"
+    "menuUpdate": "更新",
+    "isiDari": "填充来源",
+    "sumberPo": "采购订单",
+    "sumberCop": "付款证书",
+    "lepasCop": "解除付款证书关联",
+    "adaCopBelumDitagih": "该工作令有尚未开票的付款证书",
+    "adaCopBelumDitagihKet": "仍可手动保存本次采购。使用该证书可从已审批文件中带出金额与税率。",
+    "pilihCopSekarang": "选择证书",
+    "copTerkunci": "自动设置，因为本次采购正在为一份付款证书开票"
   },
   "purchaseDraft": {
     "title": "采购草稿",
@@ -4987,6 +4995,9 @@
     "bagianRingkasan": "摘要",
     "bagianPersetujuan": "审批流程",
     "bagianPekerjaan": "工程明细",
-    "bagianNilai": "金额与扣减"
+    "bagianNilai": "金额与扣减",
+    "pilihJudul": "选择付款证书",
+    "pilihSub": "仅显示已审批且尚未开票的证书。",
+    "pilihKosong": "没有可开票的付款证书。"
   }
 }

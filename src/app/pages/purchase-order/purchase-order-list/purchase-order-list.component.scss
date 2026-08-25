@@ -28,9 +28,19 @@ $hover: var(--hover, #f6f8ff);
   flex-wrap: wrap;
   margin: 0.25rem 0 1rem;
 }
+/*
+  Pencarian didorong ke KANAN; muat ulang mengikutinya.
+
+  Dorongannya pindah ke sini dari tombol yang dahulu mengawali
+  kelompok kanan. Keduanya sama-sama merapatkan sesuatu ke tepi kanan,
+  tetapi yang dahulu menyeret tombol itu ikut serta — sehingga tombol
+  yang sebenarnya sebuah tindakan berdiri di antara pencarian dan
+  penyaring, dan susunannya berbeda dari daftar Pembelian.
+*/
 .pol-search {
   width: 100%;
   max-width: 400px;
+  margin-left: auto;
 }
 .pol-search .mat-mdc-form-field {
 }
@@ -394,7 +404,6 @@ $hover: var(--hover, #f6f8ff);
  * tombolnya menempel pada kotak pencarian dan terbaca seolah bagian darinya.
  */
 .pol-rekap {
-  margin-left: auto;
 }
 
 .pol-rekap {

@@ -24,9 +24,19 @@
    * `subscriptSizing`, bukan margin.
    */
 }
+/*
+  Pencarian didorong ke KANAN; muat ulang mengikutinya.
+
+  Dorongannya pindah ke sini dari tombol yang dahulu mengawali
+  kelompok kanan. Keduanya sama-sama merapatkan sesuatu ke tepi kanan,
+  tetapi yang dahulu menyeret tombol itu ikut serta — sehingga tombol
+  yang sebenarnya sebuah tindakan berdiri di antara pencarian dan
+  penyaring, dan susunannya berbeda dari daftar Pembelian.
+*/
 .ssl-search {
   width: 100%;
   max-width: 400px;
+  margin-left: auto;
 }
 .ssl-month {
   width: 210px;
@@ -269,7 +279,6 @@
 /* Tombol kirim semua: bentuknya sekunder terhadap tombol buat, karena ini
    menyelesaikan pekerjaan yang sudah ada — bukan memulai yang baru. */
 .ssl-send {
-  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -1,0 +1,80 @@
+<div class="cpk">
+  <div class="cpk__head" mat-dialog-title>
+    <span class="cpk__ikon"><mat-icon>fact_check</mat-icon></span>
+    <div class="cpk__teks">
+      <h2 class="cpk__judul">{{ "cop.pilihJudul" | translate }}</h2>
+      <span class="cpk__sub">{{ "cop.pilihSub" | translate }}</span>
+    </div>
+    <button
+      mat-icon-button
+      class="cpk__tutup"
+      [attr.aria-label]="'common.close' | translate"
+      (click)="tutup()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="cpk__isi">
+    <mat-form-field
+      subscriptSizing="dynamic"
+      appearance="outline"
+      class="cpk__cari"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        autocomplete="off"
+        [formControl]="cari"
+        [placeholder]="'cop.cariPlaceholder' | translate"
+      />
+    </mat-form-field>
+
+    @if (memuat()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    @if (galat()) {
+      <p class="cpk__galat">{{ galat() }}</p>
+    }
+
+    @if (!memuat() && !galat() && !daftar().length) {
+      <div class="cpk__kosong">
+        <mat-icon>fact_check</mat-icon>
+        <span>{{ "cop.pilihKosong" | translate }}</span>
+      </div>
+    }
+
+    <ul class="cpk__daftar">
+      @for (c of daftar(); track c.id) {
+        <li>
+          <button type="button" class="cpk__baris" (click)="pilih(c)">
+            <span class="cpk__avatar">{{ inisial(c) }}</span>
+            <span class="cpk__kolom">
+              <span class="cpk__nomor">{{ c.name }}</span>
+              <span class="cpk__ket">
+                {{ c.supplierName || "—" }} · {{ c.purchaseOrderName }}
+              </span>
+              <span class="cpk__ket cpk__ket--kecil">
+                {{ c.projectName }}
+                @if (c.periodStart && c.periodEnd) {
+                  · {{ c.periodStart | date: "d MMM" }} –
+                  {{ c.periodEnd | date: "d MMM y" }}
+                }
+              </span>
+            </span>
+            <span class="cpk__nilai">{{ c.netAmount | number: "1.0-0" }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="cpk__kaki">
+    <button mat-button (click)="tutup()">
+      {{ "common.cancel" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

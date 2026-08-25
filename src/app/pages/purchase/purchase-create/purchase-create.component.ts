@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { nilaiUang } from '../../../utils/angka';
 import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { ServerMessageService } from 'src/app/services/server-message.service';
@@ -45,6 +45,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
+import { CertificateOfPaymentPilihComponent } from '../../certificate-of-payment/certificate-of-payment-pilih/certificate-of-payment-pilih.component';
+import { PermissionService } from 'src/app/services/permission.service';
 import { PurchaseOrderRingkasComponent } from '../../../components/purchase-order-ringkas/purchase-order-ringkas.component';
 import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
@@ -327,6 +329,84 @@ export class PurchaseCreateComponent {
    */
   copTerpilih: CoPSiapTagih | null = null;
 
+  private readonly izin = inject(PermissionService);
+  private readonly layananCopPilih = inject(CertificateOfPaymentService);
+
+  /**
+   * Daftar CoP milik SPK yang sedang dipilih dan belum ditagihkan.
+   *
+   * Dipakai peringatan, bukan penghalang: SPK lama yang terbit sebelum
+   * certificate of payment ada tetap harus dapat ditagih manual.
+   */
+  readonly copBelumDitagih = signal<CoPSiapTagih[]>([]);
+
+  /**
+   * Nilai rupiah CoP hanya dibuka level 2 ke atas — server menolak yang
+   * lain dengan 403. Menggambar tombolnya untuk yang pasti ditolak hanya
+   * memindahkan penolakannya ke dalam dialog yang sudah terbuka.
+   */
+  bolehPakaiCop(): boolean {
+    return (
+      this.izin.can('certificate_of_payment', 'read') && this.izin.level() >= 2
+    );
+  }
+
+  /**
+   * Buka pemilih CoP.
+   *
+   * `sempitkanKeSpk` mempersempitnya pada SPK yang sedang dipilih — dipakai
+   * tombol pada peringatan, supaya yang menekannya langsung melihat CoP
+   * yang baru saja disebutkan alih-alih seluruh daftar.
+   */
+  pilihCop(sempitkanKeSpk = false): void {
+    this.dialog
+      .open(CertificateOfPaymentPilihComponent, {
+        maxWidth: '96vw',
+        autoFocus: false,
+        data: {
+          purchaseOrderID: sempitkanKeSpk ? this.poTerpilihId : null,
+        },
+      })
+      .afterClosed()
+      .subscribe((c: CoPSiapTagih | undefined) => {
+        if (c) this.terapkanCop(c);
+      });
+  }
+
+  /**
+   * Lepaskan tautannya.
+   *
+   * Isian yang telanjur terisi SENGAJA dibiarkan. Yang menekan "lepas"
+   * menyatakan dokumen ini bukan tagihan atas CoP itu — ia tidak menyatakan
+   * bahwa pemasok, proyek, dan nilainya salah. Mengosongkan seluruh formulir
+   * di sini akan membuang pekerjaan yang tidak diminta siapa pun untuk
+   * dibuang, dan tidak ada cara mengembalikannya.
+   */
+  lepasCop(): void {
+    this.copTerpilih = null;
+    this.attachmentFormGroup.patchValue({ isCopAttached: false });
+    this.periksaCopSpk(this.poTerpilihId);
+  }
+
+  /**
+   * Adakah CoP SPK ini yang belum ditagihkan?
+   *
+   * Dipanggil tiap kali SPK-nya berganti. Diam-diam gagal bila jawabannya
+   * galat: ini keterangan tambahan, dan layar yang menolak dipakai karena
+   * peringatannya tidak dapat dimuat adalah layar yang lebih buruk daripada
+   * layar tanpa peringatan.
+   */
+  private periksaCopSpk(poId: number | null): void {
+    if (!poId || !this.bolehPakaiCop()) {
+      this.copBelumDitagih.set([]);
+      return;
+    }
+    this.layananCopPilih.siapTagih(undefined, poId).subscribe({
+      next: (d) => this.copBelumDitagih.set((d as CoPSiapTagih[]) || []),
+      error: () => this.copBelumDitagih.set([]),
+    });
+  }
+
   /**
    * Muat CoP dari `?cop=<id>` lalu isikan formulirnya.
    *
@@ -357,38 +437,7 @@ export class PurchaseCreateComponent {
         return;
       }
 
-      this.copTerpilih = c;
-      this.muatTagihanPo(c.purchaseOrderName);
-      this.poTerpilihId = c.purchaseOrderID ?? null;
-      this.poTerpilihNomor = String(c.purchaseOrderName || '');
-
-      this.metaFormGroup.patchValue({
-        purchaseOrderName: c.purchaseOrderName,
-        supplierID: c.supplierID,
-        supplierName: c.supplierName,
-        supplierAddress: c.supplierAddress,
-        projectName: c.projectName,
-        purchaseType: c.purchaseType,
-      });
-
-      if (c.supplierID) this.fetchFrequentPaymentBySupplierID(c.supplierID);
-
-      this.valueFormGroup.patchValue({
-        dpp: c.netAmount,
-        ppn: this.tarifPpnSebagaiPilihan(c.ppn),
-        pphCode: c.pphCode,
-        pphTaxObject: c.pphTaxObject,
-        pphPercentage: c.pphPercentage,
-      });
-
-      // CoP-nya memang dilampirkan — itu dasar tagihannya.
-      this.attachmentFormGroup.patchValue({ isCopAttached: true });
-
-      // Urutannya sama dengan jalur purchase order: jenis DITETAPKAN
-      // sesudah nilainya, kalau tidak PPh yang baru dipasang ikut
-      // dikosongkan langganan `documentType`.
-      this.terapkanJenisDariNomor(c.purchaseOrderName);
-      this.calculateTotal();
+      this.terapkanCop(c);
     } catch (e) {
       this.snackBar.open(
         this.serverMessage.terjemahkan(e),
@@ -396,6 +445,58 @@ export class PurchaseCreateComponent {
         { duration: 6000 },
       );
     }
+  }
+
+  /**
+   * Isikan formulir dari sebuah CoP.
+   *
+   * SATU jalan untuk kedua pintu masuknya — `?cop=<id>` dari layar CoP dan
+   * tombol "Certificate of payment" pada baris sumber. Menyalinnya menjadi
+   * dua akan membuat keduanya berselisih pada perubahan berikutnya, dan
+   * yang tertinggal tidak menimbulkan galat apa pun: hanya satu pintu yang
+   * diam-diam lupa mengisi satu isian.
+   *
+   * Nilai yang diisikan:
+   *   dpp  = nilai BERSIH CoP (kotor − potongan + tambahan);
+   *   ppn  = tarif SPK;
+   *   pph  = tarif SPK — dipotong DI SINI, bukan di CoP.
+   */
+  private terapkanCop(c: CoPSiapTagih): void {
+    this.copTerpilih = c;
+    this.muatTagihanPo(c.purchaseOrderName);
+    this.poTerpilihId = c.purchaseOrderID ?? null;
+    this.poTerpilihNomor = String(c.purchaseOrderName || '');
+
+    this.metaFormGroup.patchValue({
+      purchaseOrderName: c.purchaseOrderName,
+      supplierID: c.supplierID,
+      supplierName: c.supplierName,
+      supplierAddress: c.supplierAddress,
+      projectName: c.projectName,
+      purchaseType: c.purchaseType,
+    });
+
+    if (c.supplierID) this.fetchFrequentPaymentBySupplierID(c.supplierID);
+
+    this.valueFormGroup.patchValue({
+      dpp: c.netAmount,
+      ppn: this.tarifPpnSebagaiPilihan(c.ppn),
+      pphCode: c.pphCode,
+      pphTaxObject: c.pphTaxObject,
+      pphPercentage: c.pphPercentage,
+    });
+
+    // CoP-nya memang dilampirkan — itu dasar tagihannya.
+    this.attachmentFormGroup.patchValue({ isCopAttached: true });
+
+    // Peringatannya tidak perlu lagi: CoP-nya justru sedang dipakai.
+    this.copBelumDitagih.set([]);
+
+    // Urutannya sama dengan jalur purchase order: jenis DITETAPKAN
+    // sesudah nilainya, kalau tidak PPh yang baru dipasang ikut
+    // dikosongkan langganan `documentType`.
+    this.terapkanJenisDariNomor(c.purchaseOrderName);
+    this.calculateTotal();
   }
 
   ngOnInit() {
@@ -514,6 +615,10 @@ export class PurchaseCreateComponent {
         this.tagihanPo = [];
         this.nilaiPo = 0;
         this.memuatTagihanPo = false;
+        // Peringatan CoP menyebut SPK TERTENTU; begitu SPK-nya tidak lagi
+        // dikenali, peringatan yang tertinggal menunjuk dokumen yang sudah
+        // tidak ada hubungannya dengan yang sedang diisi.
+        this.copBelumDitagih.set([]);
       }
       this.terapkanJenisDariNomor(nomor);
     });
@@ -574,6 +679,7 @@ export class PurchaseCreateComponent {
           this.poTerpilihNomor = String(cocok.name || '');
           this.nilaiPo = this.nilaiTagihan(cocok);
           this.muatTagihanPo(cocok.name);
+          this.periksaCopSpk(this.poTerpilihId);
         },
         // Gagal mencari TIDAK menghalangi pengisian; hanya bandingannya yang
         // tidak muncul.
@@ -842,6 +948,7 @@ export class PurchaseCreateComponent {
         this.nilaiPo = this.nilaiTagihan(po);
         this.poTerpilihId = po.id ?? null;
         this.poTerpilihNomor = String(po.purchaseOrderName || '');
+        this.periksaCopSpk(this.poTerpilihId);
 
         this.metaFormGroup.patchValue({
           purchaseOrderName: po.purchaseOrderName,

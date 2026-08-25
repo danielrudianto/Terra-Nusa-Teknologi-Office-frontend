@@ -392,7 +392,15 @@
     "belumDibayar": "{{n}} purchase invoices not yet settled",
     "belumDibayarKet": "None are due yet, but they still need watching.",
     "lewatTempoKet": "{{n}} of them are past due — {{nilai}}",
-    "menuUpdate": "Update"
+    "menuUpdate": "Update",
+    "isiDari": "Fill from",
+    "sumberPo": "Purchase order",
+    "sumberCop": "Certificate of payment",
+    "lepasCop": "Detach certificate of payment",
+    "adaCopBelumDitagih": "This work order has a certificate of payment that has not been billed",
+    "adaCopBelumDitagihKet": "You can still save this purchase manually. Using the certificate fills the value and taxes from the approved document.",
+    "pilihCopSekarang": "Select certificate",
+    "copTerkunci": "set automatically, because this purchase bills a certificate of payment"
   },
   "purchaseDraft": {
     "title": "Purchase Draft",
@@ -4987,6 +4995,9 @@
     "bagianRingkasan": "Summary",
     "bagianPersetujuan": "Approval flow",
     "bagianPekerjaan": "Work items",
-    "bagianNilai": "Value & deductions"
+    "bagianNilai": "Value & deductions",
+    "pilihJudul": "Select certificate of payment",
+    "pilihSub": "Only approved certificates not yet billed.",
+    "pilihKosong": "No certificate of payment is ready to bill."
   }
 }

@@ -435,3 +435,174 @@
   font-size: 0.78rem;
   line-height: 1.4;
 }
+
+/* =====================================================================
+   Baris SUMBER ISIAN
+   =====================================================================
+
+   Bukan gerbang di awal formulir melainkan dua jalan pintas yang boleh
+   diabaikan — karena itu bentuknya tombol garis, bukan kartu pilihan
+   sebesar layar. Yang tidak memakainya cukup terus mengetik ke bawah.
+*/
+.pc-sumber {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+}
+
+.pc-sumber__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+}
+
+.pc-sumber__tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brand, #154dec);
+    background: var(--hover, #f6f8ff);
+  }
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    color: var(--muted, #6b7280);
+  }
+}
+
+/* Penanda tautan yang SUDAH terpasang; warnanya aksen supaya tidak
+   tertukar dengan tombol di sebelahnya yang masih menawarkan pilihan. */
+.pc-sumber__keping {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  > mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.pc-sumber__lepas {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(0 0 0 / 0.08);
+  }
+}
+
+/* =====================================================================
+   Peringatan CoP belum ditagihkan
+   =====================================================================
+
+   Bentuknya mengikuti `pov-waspada` pada layar Purchase Order: satu kotak
+   berwarna peringatan dengan judul tebal dan keterangan sebaris. Ia TIDAK
+   menghalangi apa pun — hanya memberi tahu, beserta jalan pintasnya.
+*/
+.pc-ingat {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--warn-bg, #fdf0e3);
+  border: 0.5px solid var(--warn-fg, #a2651a);
+  color: var(--warn-fg, #a2651a);
+
+  > mat-icon {
+    flex: 0 0 auto;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: 0.86rem;
+  }
+
+  span {
+    font-size: 0.8rem;
+    opacity: 0.9;
+  }
+}
+
+.pc-ingat__aksi {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(0 0 0 / 0.06);
+  }
+}
+
+/* Sebab togel "CoP dilampirkan" tidak dapat dipencet. Tanpa keterangan,
+   togel mati terbaca sebagai kerusakan. */
+.pc-terkunci {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.74rem;
+  color: var(--muted, #6b7280);
+  font-style: italic;
+}

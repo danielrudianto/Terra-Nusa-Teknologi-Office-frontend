@@ -1,7 +1,18 @@
 <div class="eol">
-  <app-header-title
+    <!--
+    Tombol "buat baru" berada di SLOT HEADER, bukan di bilah alat.
+
+    Delapan belas daftar lain menaruhnya di pojok kanan atas lewat
+    `actionButtonLabel`; bilah alat di bawahnya hanya berisi penyaring,
+    pencarian, dan muat ulang. Yang memakainya berpindah antar daftar
+    sepanjang hari, dan tombol yang letaknya berpindah-pindah harus dicari
+    ulang tiap kali.
+  -->
+<app-header-title
     [title]="'expenseOpponent.title' | translate"
     [description]="'expenseOpponent.description' | translate"
+    [actionButtonLabel]="'expenseOpponent.addOpponent' | translate"
+    (onActionButtonClicked)="createOpponent()"
   ></app-header-title>
 
   <!-- toolbar -->
@@ -20,10 +31,6 @@
 
     <span class="eol-spacer"></span>
 
-    <button type="button" class="eol-add" (click)="createOpponent()">
-      <mat-icon>add</mat-icon>
-      {{ "expenseOpponent.addOpponent" | translate }}
-    </button>
     <!--
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
       pencarian, penyaring, dan halaman ke keadaan awal.

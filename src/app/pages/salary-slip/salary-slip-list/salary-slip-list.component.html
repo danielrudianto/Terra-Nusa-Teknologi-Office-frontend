@@ -1,21 +1,22 @@
 <div class="salary-slip-list">
-  <app-header-title
+    <!--
+    Tombol "buat baru" berada di SLOT HEADER, bukan di bilah alat.
+
+    Delapan belas daftar lain menaruhnya di pojok kanan atas lewat
+    `actionButtonLabel`; bilah alat di bawahnya hanya berisi penyaring,
+    pencarian, dan muat ulang. Yang memakainya berpindah antar daftar
+    sepanjang hari, dan tombol yang letaknya berpindah-pindah harus dicari
+    ulang tiap kali.
+  -->
+<app-header-title
     [title]="'salarySlip.title' | translate"
     [description]="'salarySlip.description' | translate"
+    [actionButtonLabel]="izin.can('salary_slip', 'create') ? ('salarySlip.createButton' | translate) : null"
+    (onActionButtonClicked)="buatSlip()"
   />
 
   <div class="ssl-toolbar">
-    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-search">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
-      <input
-        autocomplete="off"
-        matInput
-        type="search"
-        [placeholder]="'salarySlip.searchPlaceholder' | translate"
-        [formControl]="formControl"
-      />
-    </mat-form-field>
+
 
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-month">
       <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
@@ -55,19 +56,31 @@
     <!--
       Buat slip langsung dari sini, tanpa lewat Data Master → Karyawan.
     -->
-    <button
-      type="button"
-      class="ssl-add"
-      *appCan="'salary_slip:create'"
-      (click)="buatSlip()"
-    >
-      <mat-icon>add</mat-icon>
-      <span>{{ "salarySlip.createButton" | translate }}</span>
-    </button>
     <!--
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
       pencarian, penyaring, dan halaman ke keadaan awal.
     -->
+    <!--
+      Pencarian berdiri TEPAT sebelum tombol muat ulang.
+
+      Keduanya dipakai berurutan — mencari, lalu menyegarkan — dan
+      tombol lain yang menyelip di antaranya memisahkan dua kendali
+      yang seharusnya bersebelahan. Sebelumnya pencarian berada
+      paling kiri sementara muat ulang di ujung kanan, terpisah
+      selebar layar.
+    -->
+    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        autocomplete="off"
+        matInput
+        type="search"
+        [placeholder]="'salarySlip.searchPlaceholder' | translate"
+        [formControl]="formControl"
+      />
+    </mat-form-field>
+
     <app-refresh-button
       [memuat]="false"
       (muatUlang)="fetchSalarySlips()"

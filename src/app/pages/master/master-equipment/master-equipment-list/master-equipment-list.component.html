@@ -1,10 +1,35 @@
 <div class="me">
-  <app-header-title
+    <!--
+    Tombol "buat baru" berada di SLOT HEADER, bukan di bilah alat.
+
+    Delapan belas daftar lain menaruhnya di pojok kanan atas lewat
+    `actionButtonLabel`; bilah alat di bawahnya hanya berisi penyaring,
+    pencarian, dan muat ulang. Yang memakainya berpindah antar daftar
+    sepanjang hari, dan tombol yang letaknya berpindah-pindah harus dicari
+    ulang tiap kali.
+  -->
+<app-header-title
     [title]="'masterEquipment.title' | translate"
     [description]="'masterEquipment.description' | translate"
+    [actionButtonLabel]="'masterEquipment.addEquipment' | translate"
+    (onActionButtonClicked)="createItem()"
   ></app-header-title>
 
   <div class="me-toolbar">
+    <!--
+      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
+      pencarian, penyaring, dan halaman ke keadaan awal.
+    -->
+    <!--
+      Pencarian berdiri TEPAT sebelum tombol muat ulang.
+
+      Susunannya sama dengan daftar Pembelian: penyaring dan tindakan
+      di kiri, lalu pencarian dan muat ulang sebagai satu kelompok di
+      kanan. Sebelumnya pencarian berada paling kiri sementara sebuah
+      `<span class="me-spacer">` mendorong tombol-tombolnya ke kanan —
+      hasilnya pencarian dan muat ulang terpisah selebar layar,
+      padahal keduanya dipakai berurutan.
+    -->
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="me-search">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>{{ "common.search" | translate }}</mat-label>
@@ -16,14 +41,7 @@
         [formControl]="searchControl"
       />
     </mat-form-field>
-    <span class="me-spacer"></span>
-    <button type="button" class="me-btn me-btn--brand" (click)="createItem()">
-      <mat-icon>add</mat-icon> {{ "masterEquipment.addEquipment" | translate }}
-    </button>
-    <!--
-      Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
-      pencarian, penyaring, dan halaman ke keadaan awal.
-    -->
+
     <app-refresh-button
       [memuat]="isLoading"
       (muatUlang)="fetch()"

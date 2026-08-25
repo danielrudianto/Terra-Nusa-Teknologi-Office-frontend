@@ -344,10 +344,18 @@ export class CertificateOfPaymentService {
     );
   }
 
-  /** CoP yang siap ditagihkan; dibaca formulir pembelian. */
-  siapTagih(keyword?: string) {
+  /**
+   * CoP yang siap ditagihkan; dibaca formulir pembelian.
+   *
+   * `purchaseOrderID` mempersempitnya pada satu SPK — dipakai untuk
+   * memperingatkan bahwa SPK yang barusan dipilih masih menyisakan CoP yang
+   * belum ditagihkan. Jalan keluarnya SAMA dengan daftar pemilihnya, supaya
+   * peringatan tidak pernah menyebut dokumen yang tidak ada di daftar itu.
+   */
+  siapTagih(keyword?: string, purchaseOrderID?: number) {
     const params: Record<string, string> = {};
     if (keyword) params['keyword'] = keyword;
+    if (purchaseOrderID) params['purchaseOrderID'] = String(purchaseOrderID);
     return this.api.get(
       `${CertificateOfPaymentService.JALUR}/siap-tagih`,
       params,

@@ -8,29 +8,15 @@
 
   <div class="cl-toolbar">
     <!--
-      Pencariannya DI SERVER, bukan menyaring baris yang sedang tampil.
+      URUTANNYA PENTING: keping penyaring, lalu pencarian, lalu muat ulang.
 
-      Daftar ini dipenggal per halaman; menyaring satu halaman di peramban
-      hanya mencari di dua puluh baris yang kebetulan terbuka, dan yang
-      dicari kerap ada di halaman ketiga — layar lalu menjawab "tidak ada"
-      untuk dokumen yang jelas ada.
+      Campuran `daftar` memberi `margin-left: auto` kepada ANAK KEDUA —
+      itulah yang mendorong pencarian ke kanan dan menyisakan keping di
+      kiri, persis seperti daftar Pembelian. Ketika pencarian yang ditaruh
+      lebih dulu, dorongan itu jatuh pada kepingnya: pencarian menempel
+      kiri, keping melayang ke kanan, dan susunannya terbalik dari seluruh
+      daftar lain tanpa satu pun aturan yang tampak keliru.
     -->
-    <mat-form-field
-      subscriptSizing="dynamic"
-      appearance="outline"
-      class="cl-search"
-    >
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>{{ "common.search" | translate }}</mat-label>
-      <input
-        matInput
-        type="search"
-        autocomplete="off"
-        [formControl]="cari"
-        [placeholder]="'cop.cariPlaceholder' | translate"
-      />
-    </mat-form-field>
-
     <mat-chip-listbox
       [disabled]="memuat()"
       [value]="saring()"
@@ -49,6 +35,22 @@
         "cop.keadaan_disetujui" | translate
       }}</mat-chip-option>
     </mat-chip-listbox>
+
+    <mat-form-field
+      subscriptSizing="dynamic"
+      appearance="outline"
+      class="cl-search"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "common.search" | translate }}</mat-label>
+      <input
+        matInput
+        type="search"
+        autocomplete="off"
+        [formControl]="cari"
+        [placeholder]="'cop.cariPlaceholder' | translate"
+      />
+    </mat-form-field>
 
     <app-refresh-button [memuat]="memuat()" (muatUlang)="muat()" />
   </div>
@@ -299,14 +301,31 @@
         (keydown.enter)="buka(row)"
         (keydown.space)="$event.preventDefault(); buka(row)"
       ></tr>
-    </table>
 
-    @if (!memuat() && !terlihat().length) {
-      <div class="cl-empty">
-        <mat-icon>fact_check</mat-icon>
-        <div>{{ "cop.belumAda" | translate }}</div>
-      </div>
-    }
+      <!--
+        Keadaan kosong digambar sebagai BARIS TABEL, bukan div di bawahnya.
+
+        Campuran `daftar` menata kalimatnya lewat `.cl-norow .cl-empty` —
+        ikon besar redup di tengah dengan ruang lapang, sama seperti daftar
+        Pendapatan Lain, Aset, dan Pinjaman. Ditaruh di luar tabel, kelas
+        `cl-empty` tidak punya leluhur `cl-norow` sehingga tidak ada satu
+        pun aturan yang mengenainya: ikonnya kembali seukuran teks dan
+        menempel kiri, tanpa galat maupun peringatan.
+
+        `*matNoDataRow` juga yang menentukan KAPAN ia muncul — Material
+        menggambarnya hanya ketika sumber datanya kosong, jadi syaratnya
+        tidak perlu ditulis ulang dan tidak dapat berselisih dengan isi
+        tabelnya.
+      -->
+      <tr class="mat-row cl-norow" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="kolom.length">
+          <div class="cl-empty">
+            <mat-icon>fact_check</mat-icon>
+            <span>{{ "cop.belumAda" | translate }}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
 
     <!--
       Pemenggal halaman DI DALAM kartunya, sama seperti daftar purchase order

@@ -28,14 +28,25 @@ $hover: var(--hover, #f6f8ff);
   flex-wrap: wrap;
   margin: 0.25rem 0 1rem;
 }
+
+/*
+  Pencarian didorong ke KANAN, dan tombol muat ulang mengikutinya.
+
+  Dorongannya dipasang pada kotak pencarian — anak pertama dari
+  kelompok kanan — bukan pada tombol muat ulang. Dipasang di
+  tombolnya, hanya tombol itu yang terbang ke tepi kanan sementara
+  kotak pencarian tertinggal di kiri, dan keduanya terpisah oleh
+  ruang kosong selebar layar.
+
+  Lebarnya tetap dibatasi: kotak pencarian selebar layar tidak
+  membantu siapa pun dan hanya menjauhkan tombolnya dari mata.
+*/
 .mi-search {
   width: 100%;
   max-width: 400px;
+  margin-left: auto;
 }
 .mi-search .mat-mdc-form-field {
-}
-.mi-spacer {
-  flex: 1;
 }
 :host ::ng-deep .mi-search .mat-mdc-text-field-wrapper {
   border-radius: 14px;

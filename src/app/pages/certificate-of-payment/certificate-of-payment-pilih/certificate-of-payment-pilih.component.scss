@@ -1,0 +1,208 @@
+/*
+  Pemilih CoP.
+
+  Bentuknya mengikuti kepala dialog pada layar Purchase Order dan tampilan
+  CoP: ikon berlatar lembut, judul, keterangan sebaris, tombol tutup di
+  kanan. Dialog dengan maksud serupa yang bentuknya berbeda terbaca seperti
+  bagian dari aplikasi lain.
+*/
+.cpk {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.cpk__head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--line, #eef0f3);
+
+  /* Material menyisipkan pseudo-elemen sendiri pada `mat-dialog-title`. */
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+.cpk__ikon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  display: grid;
+  place-items: center;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.cpk__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cpk__judul {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.cpk__sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+}
+
+.cpk__tutup {
+  flex: 0 0 auto;
+  color: var(--muted, #6b7280);
+}
+
+.cpk__isi {
+  padding: 1.25rem 1.5rem !important;
+  max-height: 70vh;
+  min-width: min(560px, 86vw);
+}
+
+.cpk__cari {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .cpk__cari .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  background: var(--surface, #ffffff);
+}
+:host ::ng-deep .cpk__cari .mat-mdc-form-field-icon-prefix > .mat-icon {
+  color: var(--faint, #9aa0ab);
+  margin: 0 6px 0 4px;
+}
+
+.cpk__galat {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--bad-fg, #c62828);
+}
+
+/* Bentuknya sama dengan keadaan kosong pada daftar: ikon besar redup di
+   tengah dengan ruang lapang, bukan sebaris teks yang menempel kiri. */
+.cpk__kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: var(--faint, #9aa0ab);
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--faint, #cfd4dc);
+  }
+}
+
+.cpk__daftar {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*
+  Tiap baris adalah TOMBOL, bukan `li` yang dipasangi `(click)`.
+
+  Baris yang dapat ditekan tetapi bukan tombol tidak dapat dicapai papan
+  ketik dan tidak diumumkan pembaca layar sebagai sesuatu yang dapat
+  ditekan — dan tidak ada galat apa pun yang menyatakannya.
+*/
+.cpk__baris {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--brand, #154dec);
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+.cpk__avatar {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand, #154dec);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cpk__kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cpk__nomor {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cpk__ket {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+
+  &--kecil {
+    font-size: 0.72rem;
+    color: var(--faint, #9aa0ab);
+  }
+}
+
+.cpk__nilai {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cpk__kaki {
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line, #eef0f3);
+  justify-content: flex-end;
+}

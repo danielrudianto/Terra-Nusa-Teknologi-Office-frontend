@@ -4,6 +4,79 @@
 ></app-header-title>
 
 <div class="pc">
+  <!--
+    SUMBER ISIAN — bukan gerbang di awal.
+
+    "Dari CoP" dan "manual" menghasilkan dokumen yang sama persis dengan
+    isian yang sama persis; CoP hanya mengisikan lebih dulu. Menjadikannya
+    pilihan wajib di awal justru mengunci yang baru menyadari ada CoP-nya
+    setelah separuh formulir terisi — ia harus mengulang dari nol.
+
+    Certificate of payment juga bukan LAWAN purchase order melainkan
+    bagiannya: tiap CoP milik satu SPK, sehingga memilih CoP mengisi nomor
+    SPK-nya sekaligus. Keduanya tidak pernah bersaing atas isian yang sama.
+  -->
+  <div class="pc-sumber">
+    <span class="pc-sumber__label">{{ "purchase.isiDari" | translate }}</span>
+
+    <button
+      type="button"
+      class="pc-sumber__tombol"
+      (click)="bukaPemilihPO()"
+    >
+      <mat-icon>receipt_long</mat-icon>
+      {{ "purchase.sumberPo" | translate }}
+    </button>
+
+    @if (bolehPakaiCop()) {
+      <button type="button" class="pc-sumber__tombol" (click)="pilihCop()">
+        <mat-icon>fact_check</mat-icon>
+        {{ "purchase.sumberCop" | translate }}
+      </button>
+    }
+
+    <!--
+      Keping penanda: dokumen ini BENAR-BENAR tertaut, bukan sekadar
+      terisi. Tanpa penanda yang terlihat, satu-satunya cara mengetahui
+      tautannya adalah membuka pembeliannya setelah tersimpan.
+    -->
+    @if (copTerpilih; as c) {
+      <span class="pc-sumber__keping">
+        <mat-icon>fact_check</mat-icon>
+        {{ c.name }}
+        <button
+          type="button"
+          class="pc-sumber__lepas"
+          [attr.aria-label]="'purchase.lepasCop' | translate"
+          (click)="lepasCop()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    }
+  </div>
+
+  <!--
+    Peringatan, BUKAN penghalang.
+
+    SPK lama yang terbit sebelum certificate of payment ada tetap harus
+    dapat ditagih; menolaknya menghentikan pekerjaan yang sah. Yang
+    diperlukan hanya supaya yang lupa menjadi tahu — beserta tombol untuk
+    langsung memakainya.
+  -->
+  @if (!copTerpilih && copBelumDitagih().length) {
+    <div class="pc-ingat">
+      <mat-icon>info</mat-icon>
+      <div>
+        <strong>{{ "purchase.adaCopBelumDitagih" | translate }}</strong>
+        <span>{{ "purchase.adaCopBelumDitagihKet" | translate }}</span>
+      </div>
+      <button type="button" class="pc-ingat__aksi" (click)="pilihCop(true)">
+        {{ "purchase.pilihCopSekarang" | translate }}
+      </button>
+    </div>
+  }
+
   <div class="pc-card">
     <div class="pc-cardhead">
       <div class="pc-section__title">
@@ -602,12 +675,29 @@
       >
       <br />
 
+      <!--
+        Togel ini MENGIKUTI tautannya begitu ada CoP yang dipilih.
+
+        Ia daftar periksa berkas: "lembar CoP-nya ikut dilampirkan". Selama
+        dipencet tangan, ia dapat menyatakan hal yang berlawanan dengan
+        `certificateOfPaymentID` — dokumen yang jelas menagihkan sebuah CoP
+        tercatat "tanpa CoP", atau sebaliknya. Dua penanda tentang satu hal
+        yang boleh berselisih akan berselisih.
+
+        Bila TIDAK ada tautan, ia tetap dapat dipencet: sebagian CoP masih
+        berupa kertas di luar sistem, dan menguncinya mati akan membuat
+        kelengkapan berkas yang nyata tidak dapat dicatat sama sekali.
+      -->
       <mat-slide-toggle
         color="primary"
         class="my-2"
         formControlName="isCopAttached"
+        [disabled]="!!copTerpilih"
         >{{ "purchaseCreate.attCoP" | translate }}</mat-slide-toggle
       >
+      @if (copTerpilih) {
+        <span class="pc-terkunci">{{ "purchase.copTerkunci" | translate }}</span>
+      }
       <br />
 
       <mat-slide-toggle

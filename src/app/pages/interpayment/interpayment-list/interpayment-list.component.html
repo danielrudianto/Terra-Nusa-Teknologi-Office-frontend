@@ -1,7 +1,18 @@
 <div class="interpayment-list">
-  <app-header-title
+    <!--
+    Tombol "buat baru" berada di SLOT HEADER, bukan di bilah alat.
+
+    Delapan belas daftar lain menaruhnya di pojok kanan atas lewat
+    `actionButtonLabel`; bilah alat di bawahnya hanya berisi penyaring,
+    pencarian, dan muat ulang. Yang memakainya berpindah antar daftar
+    sepanjang hari, dan tombol yang letaknya berpindah-pindah harus dicari
+    ulang tiap kali.
+  -->
+<app-header-title
     [title]="'interpayment.title' | translate"
     [description]="'interpayment.description' | translate"
+    [actionButtonLabel]="'interpayment.createNew' | translate"
+    (onActionButtonClicked)="createNewInterpayment()"
   />
 
   <!-- ===== toolbar: date range (kiri) + add (kanan) ===== -->
@@ -29,10 +40,6 @@
       </mat-form-field>
     </form>
 
-    <button class="ip-add" (click)="createNewInterpayment()">
-      <mat-icon>add</mat-icon>
-      {{ "interpayment.createNew" | translate }}
-    </button>
     <!--
       Muat ulang DATANYA saja, bukan halamannya. `Ctrl+R` mengembalikan
       pencarian, penyaring, dan halaman ke keadaan awal.
