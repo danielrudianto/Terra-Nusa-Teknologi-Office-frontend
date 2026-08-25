@@ -9,7 +9,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -42,7 +41,6 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatSortModule,
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
@@ -85,18 +83,58 @@ export class CertificateOfPaymentListComponent implements OnInit {
    * terbuka. Yang mencari CoP bernilai terbesar akan menemukan yang terbesar
    * DI HALAMAN INI — angka yang tidak berarti apa-apa, dan tidak ada apa pun
    * di layar yang memberitahu bahwa itulah yang barusan terjadi.
+   *
+   * Bawaan `tanggal` menurun — SAMA dengan urutan bawaan server.
+   *
+   * Server mengurutkan `c.date DESC, c.id DESC` bila tidak diberi kolom, dan
+   * `tanggal` menurun menghasilkan perintah yang persis sama. Jadi menyetel
+   * bawaan di sini tidak mengubah baris yang keluar; ia hanya membuat kepala
+   * kolomnya JUJUR — sebelumnya daftar jelas terurut menurut tanggal
+   * sementara ketujuh kolomnya sama-sama menampilkan ikon "belum diurutkan".
    */
-  readonly urutKolom = signal<string>('');
-  readonly urutArah = signal<SortDirection>('');
+  readonly urutKolom = signal<string>('tanggal');
+  readonly urutArah = signal<'asc' | 'desc'>('desc');
 
-  gantiUrutan(s: Sort): void {
-    this.urutKolom.set(s.direction ? s.active : '');
-    this.urutArah.set(s.direction);
+  /**
+   * Tekan kolom yang sama membalik arah; kolom lain mulai dari menaik.
+   *
+   * Persis perilaku `changeSortBy` pada daftar Pembelian dan Purchase Order.
+   * Keadaan ketiga — "tidak diurutkan" — SENGAJA tidak ada: ia tidak ada di
+   * kedua daftar itu, dan satu daftar yang butuh tiga ketukan untuk kembali
+   * ke awal sementara dua lainnya butuh dua adalah perbedaan yang hanya
+   * ditemukan dengan salah menekan.
+   */
+  gantiUrutan(kolom: string): void {
+    if (this.urutKolom() === kolom) {
+      this.urutArah.set(this.urutArah() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.urutKolom.set(kolom);
+      this.urutArah.set('asc');
+    }
     // Kembali ke halaman pertama: urutan baru membuat "halaman ketiga"
     // menunjuk baris yang sama sekali lain.
     this.halaman = 0;
     void this.muat();
   }
+
+  /** Kolom inikah yang sedang mengurutkan? Menentukan ikonnya redup atau tidak. */
+  diurutkan(kolom: string): boolean {
+    return this.urutKolom() === kolom;
+  }
+
+  /**
+   * Ikon kepala kolom.
+   *
+   * `unfold_more` yang redup pada kolom yang sedang tidak mengurutkan bukan
+   * hiasan: tanpanya tidak ada tanda sama sekali bahwa judulnya dapat
+   * ditekan, dan pengurutannya hanya ditemukan orang yang kebetulan
+   * menekannya.
+   */
+  urutIkon(kolom: string): string {
+    if (!this.diurutkan(kolom)) return 'unfold_more';
+    return this.urutArah() === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down';
+  }
+
   /** Penyaring keadaan: '', 'draft', 'diperiksa', 'disetujui'. */
   readonly saring = signal<string>('');
   readonly total = signal(0);

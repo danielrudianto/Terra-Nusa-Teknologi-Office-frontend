@@ -4983,6 +4983,10 @@
     "pph": "预扣所得税",
     "totalDibayar": "应付总额",
     "catatanPajak": "预扣所得税不减少本次请款金额。它按合同税率在依据本付款证书开具的采购单上扣除。",
-    "pphSaatPembayaran": "付款时扣除"
+    "pphSaatPembayaran": "付款时扣除",
+    "bagianRingkasan": "摘要",
+    "bagianPersetujuan": "审批流程",
+    "bagianPekerjaan": "工程明细",
+    "bagianNilai": "金额与扣减"
   }
 }

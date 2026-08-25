@@ -5,23 +5,63 @@
 }
 
 /*
-  Latar kartu diambil dari `--surface`, BUKAN `--mat-sys-surface`.
+  SATU papan untuk seluruh dokumen — hanya dipakai pada mode halaman.
 
-  Token `--mat-sys-*` tidak pernah didefinisikan di aplikasi ini — temanya
-  disusun sendiri di `styles.scss` dengan nama `--surface`, `--ink`, dan
-  seterusnya. Akibatnya `var(--mat-sys-surface, #fff)` SELALU jatuh ke
-  cadangannya, dan seluruh kartu tetap putih pada tema gelap sekalipun
-  temanya sudah berpindah. Cadangan yang tidak pernah gagal justru
-  menyembunyikan bahwa nama variabelnya keliru.
+  Di dalam dialog, `mat-dialog-content` sendiri yang menjadi papannya, dan
+  papan di dalam papan hanya menambah bingkai yang tidak berarti apa-apa.
 
-  Garisnya ikut: `rgba(0, 0, 0, 0.08)` di atas latar gelap sama saja
-  dengan tidak bergaris.
+  Latarnya diambil dari `--surface`, BUKAN `--mat-sys-surface`. Token
+  `--mat-sys-*` tidak pernah didefinisikan di aplikasi ini — temanya disusun
+  sendiri di `styles.scss` dengan nama `--surface`, `--ink`, dan seterusnya.
+  Akibatnya `var(--mat-sys-surface, #fff)` SELALU jatuh ke cadangannya, dan
+  papannya tetap putih pada tema gelap sekalipun temanya sudah berpindah —
+  cadangan yang tidak pernah gagal justru menyembunyikan bahwa nama
+  variabelnya keliru. Garisnya ikut: `rgba(0, 0, 0, 0.08)` di atas latar
+  gelap sama saja dengan tidak bergaris.
 */
-.cv-kartu {
+.cv-panel {
   background: var(--surface, #fff);
   border: 1px solid var(--border, #e3e6eb);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 1.35rem 1.5rem;
+}
+
+/*
+  Bagian dokumen — DATAR, dipisah judul, bukan dikotak-kotak.
+
+  Bentuknya sengaja sama persis dengan `.pov-section` pada layar Purchase
+  Order: judul kecil berhuruf besar, redup, dengan satu garis di bawahnya.
+  Sebelumnya tiap bagian di sini adalah kartu tersendiri lengkap dengan
+  bingkai dan bayangannya — dan kartu bertumpuk membuat tiap bagian terbaca
+  seperti dokumen terpisah, padahal ringkasan, tanda tangan, baris
+  pekerjaan, dan nilainya adalah satu lembar yang sama.
+*/
+.cv-section {
+  margin-bottom: 1.35rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.cv-section__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #6b7280);
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line, #eef0f4);
+}
+
+/* Judul di DALAM sebuah bagian — satu tingkat di bawah `cv-section__title`,
+   jadi tanpa garis dan tanpa huruf besar seluruhnya. */
+.cv-subjudul {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  margin: 1.1rem 0 0.55rem;
 }
 
 .cv-info {
@@ -189,21 +229,14 @@
 
 /* ---- potongan & tambahan ---- */
 
-.cv-kepala {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-
-  .cv-kartu__judul {
-    margin: 0;
-  }
-}
-
-.cv-kartu__judul {
-  font-size: 15px;
-  font-weight: 600;
+/* "Tanpa potongan & tambahan". Kelasnya dipakai templat sejak awal tetapi
+   tidak pernah punya aturan, sehingga kalimatnya tampil sekuat isi
+   dokumennya — padahal ia justru menyatakan tidak ada isi. */
+.cv-kosong {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+  font-style: italic;
 }
 
 .cv-adj {
@@ -521,22 +554,13 @@
   padding: 1.25rem 1.5rem !important;
   max-height: 70vh;
 
-  /* Kartu di dalam dialog tidak perlu bayangan: dialognya sendiri sudah
-     terangkat dari halaman, dan bayangan berlapis membuatnya keruh.
+  /* Tidak ada apa pun yang perlu ditimpa di sini lagi.
 
-     Jaraknya diberikan DI SINI, bukan diwarisi dari `.cop-view`: kartu-kartu
-     itu digambar ke dalam `mat-dialog-content`, sedangkan jarak antar kartu
-     berasal dari `gap` milik `.cop-view` yang tidak ikut ke dalam dialog —
-     hasilnya seluruh kartu berdempet tanpa sela. */
-  .cv-kartu {
-    box-shadow: none;
-    border: 0.5px solid var(--border, #e3e6eb);
-    margin-bottom: 1rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+     Bagian dokumen kini datar — jaraknya dibawa `.cv-section` sendiri, dan
+     ia sama saja di halaman maupun di dalam dialog. Dulu tiap bagian adalah
+     kartu, dan jarak antar kartu berasal dari `gap` milik `.cop-view` yang
+     tidak ikut masuk ke `mat-dialog-content`; itulah yang harus ditambal di
+     sini. */
 }
 
 .cv-dlg__kaki {
@@ -660,10 +684,24 @@
   pertanyaan yang dibawa orang ke layar ini, bukan melengkapi yang sudah
   dibacanya.
 */
+/*
+  Keadaan penagihan — TETAP berkotak, sekalipun bagian lain sudah datar.
+
+  Ia bukan bagian dokumen melainkan pemberitahuan tentangnya, sama seperti
+  `.pov-waspada` pada layar Purchase Order. Kotaknya diberikan di sini,
+  bukan dipinjam dari kartu seperti dahulu: sejak bagian dokumen datar,
+  tidak ada lagi yang memberinya bingkai, dan tanpa aturan ini ia terbaca
+  sebagai satu paragraf lepas di tengah lembar.
+*/
 .cv-tagih {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin: 0 0 1.35rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 0.5px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #fafbfc);
 
   .mat-icon {
     flex: 0 0 auto;
@@ -688,7 +726,7 @@
   }
 
   &--sudah {
-    border-color: rgba(26, 127, 69, 0.35);
+    border-color: var(--ok-fg, #1a7f45);
     background: var(--ok-bg, #e6f6ec);
 
     .mat-icon,

@@ -4983,6 +4983,10 @@
     "pph": "PPh",
     "totalDibayar": "Total dibayarkan",
     "catatanPajak": "PPh tidak mengurangi nilai tagihan ini. Ia dipotong pada pembelian yang menagihkan certificate of payment ini, sesuai tarif SPK.",
-    "pphSaatPembayaran": "dipotong saat pembayaran"
+    "pphSaatPembayaran": "dipotong saat pembayaran",
+    "bagianRingkasan": "Ringkasan",
+    "bagianPersetujuan": "Alur persetujuan",
+    "bagianPekerjaan": "Baris pekerjaan",
+    "bagianNilai": "Nilai & potongan"
   }
 }

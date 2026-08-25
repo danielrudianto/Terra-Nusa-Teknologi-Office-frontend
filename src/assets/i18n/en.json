@@ -4983,6 +4983,10 @@
     "pph": "Withholding tax",
     "totalDibayar": "Total payable",
     "catatanPajak": "Withholding tax does not reduce this invoice value. It is deducted on the purchase raised against this certificate of payment, at the contract rate.",
-    "pphSaatPembayaran": "withheld at payment"
+    "pphSaatPembayaran": "withheld at payment",
+    "bagianRingkasan": "Summary",
+    "bagianPersetujuan": "Approval flow",
+    "bagianPekerjaan": "Work items",
+    "bagianNilai": "Value & deductions"
   }
 }

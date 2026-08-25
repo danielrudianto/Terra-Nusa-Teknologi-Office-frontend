@@ -32,7 +32,6 @@
     </mat-form-field>
 
     <mat-chip-listbox
-      class="cl-chips"
       [disabled]="memuat()"
       [value]="saring()"
       (change)="pilihSaring($event.value)"
@@ -55,28 +54,44 @@
   </div>
 
   @if (memuat()) {
-    <div class="cl-loadingbar"><div class="cl-indeterminate"></div></div>
+    <!--
+      Bilah muatnya berisi `<span>`, bukan `<div>`.
+
+      Campuran `daftar` menata bagian yang bergerak lewat `.cl-loadingbar
+      span` — sebuah `div` di dalamnya tidak dijangkau aturan apa pun, dan
+      hasilnya bilah abu yang diam di tempat tanpa satu pun galat atau
+      peringatan. Seluruh daftar lain memakai bentuk yang sama.
+    -->
+    <div class="cl-loadingbar"><span></span></div>
   }
 
   <div class="cl-card">
     <!--
       Pengurutan DI SERVER, seperti pencariannya.
 
-      `matSortDisableClear` dilepas dengan sengaja: keadaan ketiga —
-      "tidak diurutkan" — mengembalikan daftar ke urutan bawaan (terbaru di
-      atas), dan itu keadaan yang memang berguna.
+      Kepala kolomnya digambar TANGAN, bukan dengan `mat-sort-header`.
+
+      Daftar Pembelian dan Purchase Order sudah memakai bentuk ini lebih
+      dulu: judul kolom, lalu `arrow_drop_up`/`arrow_drop_down` bila kolom
+      itu yang sedang mengurutkan, dan `unfold_more` yang redup bila bukan.
+      `mat-sort-header` menggambar panah kecil miliknya sendiri yang hanya
+      muncul saat disentuh tetikus — bentuk yang sama sekali lain. Yang
+      memakainya berpindah antar ketiga daftar sepanjang hari, dan satu
+      daftar yang kepala kolomnya berbeda terbaca seperti bagian dari
+      aplikasi lain.
+
+      Kelas `cl-th`, `cl-th__idle`, dan `cl-th--right` datang dari campuran
+      `daftar` yang sama — sudah ada sejak awal, hanya belum dipakai di sini.
     -->
-    <table
-      mat-table
-      matSort
-      [matSortActive]="urutKolom()"
-      [matSortDirection]="urutArah()"
-      (matSortChange)="gantiUrutan($event)"
-      [dataSource]="terlihat()"
-    >
+    <table mat-table [dataSource]="terlihat()">
       <ng-container matColumnDef="nomor">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "cop.nomor" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('nomor')">
+          <span class="cl-th">
+            {{ "cop.nomor" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('nomor')">{{
+              urutIkon("nomor")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <span class="cl-primary">{{ c.name }}</span>
@@ -93,8 +108,13 @@
         membuka satu per satu untuk menemukannya.
       -->
       <ng-container matColumnDef="pemasok">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "poForm.supplier" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('pemasok')">
+          <span class="cl-th">
+            {{ "poForm.supplier" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('pemasok')">{{
+              urutIkon("pemasok")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <!-- Kelas avatarnya datang dari campuran `daftar`, sama seperti
@@ -109,8 +129,13 @@
       </ng-container>
 
       <ng-container matColumnDef="proyek">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "cop.proyek" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('proyek')">
+          <span class="cl-th">
+            {{ "cop.proyek" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('proyek')">{{
+              urutIkon("proyek")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <span class="cl-tag">{{ c.projectName }}</span>
@@ -118,8 +143,13 @@
       </ng-container>
 
       <ng-container matColumnDef="tanggal">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "cop.tanggal" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('tanggal')">
+          <span class="cl-th">
+            {{ "cop.tanggal" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('tanggal')">{{
+              urutIkon("tanggal")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <span class="cl-date">{{ c.date | date: "d MMM y" }}</span>
@@ -133,8 +163,13 @@
       </ng-container>
 
       <ng-container matColumnDef="keadaan">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "cop.keadaan" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('keadaan')">
+          <span class="cl-th">
+            {{ "cop.keadaan" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('keadaan')">{{
+              urutIkon("keadaan")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <span class="cl-chip" [class]="'cl-chip--' + keadaan(c)">
@@ -145,8 +180,13 @@
       </ng-container>
 
       <ng-container matColumnDef="pembuat">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <span class="cl-th">{{ "cop.pembuat" | translate }}</span>
+        <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('pembuat')">
+          <span class="cl-th">
+            {{ "cop.pembuat" | translate }}
+            <mat-icon [class.cl-th__idle]="!diurutkan('pembuat')">{{
+              urutIkon("pembuat")
+            }}</mat-icon>
+          </span>
         </th>
         <td mat-cell *matCellDef="let c">
           <span class="cl-secondary">{{ c.createdByName || "—" }}</span>
@@ -155,8 +195,13 @@
 
       @if (bolehLihatNilai()) {
         <ng-container matColumnDef="nilai">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            <span class="cl-th cl-th--right">{{ "cop.nilaiBersih" | translate }}</span>
+          <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('nilai')">
+            <span class="cl-th cl-th--right">
+              {{ "cop.nilaiBersih" | translate }}
+              <mat-icon [class.cl-th__idle]="!diurutkan('nilai')">{{
+                urutIkon("nilai")
+              }}</mat-icon>
+            </span>
           </th>
           <td mat-cell *matCellDef="let c" class="cl-num">
             {{ c.netAmount | number: "1.0-0" }}

@@ -53,11 +53,21 @@
       [backLabel]="'cop.kembaliDaftar' | translate"
     />
 
-    <ng-container *ngTemplateOutlet="isiDokumen" />
+    <!--
+      Satu papan, BUKAN satu kartu per bagian.
 
-    <section class="cv-kartu cv-aksi">
+      Bentuknya mengikuti layar Purchase Order: bagian-bagiannya dipisah
+      judul kecil berhuruf besar dengan garis bawah, bukan kotak berbayang
+      sendiri-sendiri. Kartu bertumpuk membuat tiap bagian terbaca seperti
+      dokumen terpisah, padahal semuanya satu lembar yang sama.
+    -->
+    <div class="cv-panel">
+      <ng-container *ngTemplateOutlet="isiDokumen" />
+    </div>
+
+    <div class="cv-panel cv-aksi">
       <ng-container *ngTemplateOutlet="tombolAksi" />
-    </section>
+    </div>
   </div>
 }
 
@@ -68,7 +78,8 @@
 
   @if (cop(); as c) {
     <!-- ===== Keterangan dokumen ===== -->
-    <section class="cv-kartu">
+    <section class="cv-section">
+      <div class="cv-section__title">{{ "cop.bagianRingkasan" | translate }}</div>
       <dl class="cv-info">
         <div>
           <dt>{{ "cop.spk" | translate }}</dt>
@@ -106,7 +117,8 @@
       menyetujui perlu melihat SIAPA yang mencatat dan siapa yang memeriksa
       sebelum ia menambahkan namanya sendiri.
     -->
-    <section class="cv-kartu">
+    <section class="cv-section">
+      <div class="cv-section__title">{{ "cop.bagianPersetujuan" | translate }}</div>
       <div class="cv-tangan">
         <div class="cv-tangan__satu">
           <span class="cv-tangan__label">{{ "cop.dibuat" | translate }}</span>
@@ -138,7 +150,7 @@
     -->
     @if (tagihan(); as t) {
       @if (t.ditagihkan && t.pembelian; as p) {
-        <section class="cv-kartu cv-tagih cv-tagih--sudah">
+        <section class="cv-tagih cv-tagih--sudah">
           <mat-icon>receipt_long</mat-icon>
           <div>
             <strong>{{ "cop.sudahDitagihkan" | translate }}</strong>
@@ -157,7 +169,7 @@
           }
         </section>
       } @else if (c.isApproved) {
-        <section class="cv-kartu cv-tagih">
+        <section class="cv-tagih">
           <mat-icon>request_quote</mat-icon>
           <div>
             <strong>{{ "cop.belumDitagihkan" | translate }}</strong>
@@ -168,7 +180,8 @@
     }
 
     <!-- ===== Baris pekerjaan ===== -->
-    <section class="cv-kartu">
+    <section class="cv-section">
+      <div class="cv-section__title">{{ "cop.bagianPekerjaan" | translate }}</div>
       <div class="cv-tabel-bungkus">
         <table mat-table [dataSource]="c.items || []" class="cv-tabel">
           <ng-container matColumnDef="pekerjaan">
@@ -245,7 +258,8 @@
       dikirim server kepadanya.
     -->
     @if (bolehLihatNilai()) {
-      <section class="cv-kartu">
+      <section class="cv-section">
+        <div class="cv-section__title">{{ "cop.bagianNilai" | translate }}</div>
         <!--
           Sisa uang muka & retensi.
 
@@ -317,7 +331,7 @@
           Sekarang satu pintu — lembar periksa — dan tandanya terbubuh
           sebagai akibat menyimpan di sana.
         -->
-        <h2 class="cv-kartu__judul">{{ "cop.penyesuaian" | translate }}</h2>
+        <div class="cv-subjudul">{{ "cop.penyesuaian" | translate }}</div>
 
         @if (!(c.adjustments || []).length) {
           <p class="cv-kosong">{{ "cop.tanpaPenyesuaian" | translate }}</p>
