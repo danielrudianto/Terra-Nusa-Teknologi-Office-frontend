@@ -110,15 +110,31 @@ export class LoanPaymentCreateComponent {
       .get('loans/payments/' + this.data.loanID, {})
       .subscribe({
         next: (data: any) => {
+          /*
+           * `isDelete`, BUKAN `is_delete`.
+           *
+           * Jalan keluarnya mengembalikan baris `payments_outgoing` apa
+           * adanya, dan kolomnya bernama `isDelete`. Membaca `is_delete`
+           * menghasilkan `undefined`, dan `undefined == false` bernilai
+           * salah — sehingga penyaringnya membuang SELURUH pembayaran,
+           * jumlahnya nol, dan sisa tagihannya sama dengan utang penuh.
+           *
+           * Pinjaman sepuluh juta yang sudah dibayar delapan juta menawarkan
+           * sepuluh juta sekali lagi. Tidak ada galat yang muncul: nama
+           * kolom yang keliru hanya menghasilkan daftar kosong.
+           */
+          const sudahDibayar = (data.payments || [])
+            .filter((x: any) => !x.isDelete)
+            .reduce((a: number, b: any) => a + Number(b.amount || 0), 0);
+
+          // `debt` adalah POKOK pinjaman, bukan sisanya — server pun
+          // menyimpulkan lunas dengan `utang - dibayar < 5`.
           const totalAmount =
-            data.loan.debt -
-            data.payments
-              .filter((x: any) => x.is_delete == false)
-              .reduce((a: any, b: any) => {
-                return a + b.amount;
-              }, 0);
+            Math.round((Number(data.loan.debt || 0) - sudahDibayar) * 100) /
+            100;
+
           this.totalAmount = totalAmount;
-          // set validators maximum amount
+
           this.formGroup
             .get('amount')
             ?.setValidators([
@@ -126,13 +142,21 @@ export class LoanPaymentCreateComponent {
               Validators.min(1),
               Validators.max(totalAmount),
             ]);
+          this.formGroup.get('amount')?.updateValueAndValidity();
 
+          /*
+           * `data.loan.date`, BUKAN `data.purchase.dueDate`.
+           *
+           * Jalan keluar ini menjawab `{loan, payments}`; `data.purchase`
+           * tidak pernah ada. Membacanya melempar TypeError di dalam `next`
+           * — bukan di `error` — sehingga `patchValue` tidak pernah jalan
+           * dan dialognya terbuka dengan tanggal serta nominal kosong,
+           * tanpa satu pun pesan yang menerangkannya.
+           */
           this.formGroup.patchValue({
-            date: new Date(data.purchase.dueDate),
+            date: new Date(data.loan.date),
             amount: totalAmount,
           });
-
-          this.totalAmount = totalAmount;
         },
         error: (error) => {
           console.error('Error fetching purchase data:', error);

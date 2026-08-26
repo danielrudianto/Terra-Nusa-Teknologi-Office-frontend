@@ -23,6 +23,23 @@
 
     @if (!copId) {
       <!--
+        Syaratnya diangkat menjadi BANNER, bukan `mat-hint`.
+
+        Sebagai hint ia bercetak kecil di bawah kotak isian dan baru terbaca
+        setelah kotaknya ditekan — padahal ia menjawab pertanyaan yang
+        muncul LEBIH DULU: "kenapa SPK yang saya cari tidak ada di daftar?".
+        Jawabannya harus berada di jalur baca sebelum pencariannya dimulai,
+        bukan sesudah pencariannya gagal.
+      -->
+      <div class="cop-banner">
+        <mat-icon>verified</mat-icon>
+        <div>
+          <strong>{{ "cop.spkHanyaSpkJudul" | translate }}</strong>
+          <span>{{ "cop.spkHanyaSpk" | translate }}</span>
+        </div>
+      </div>
+
+      <!--
         AUTOCOMPLETE, bukan select.
 
         Select memuat seluruh SPK lebih dulu; jumlahnya bertambah tiap bulan
@@ -59,7 +76,6 @@
             </mat-option>
           }
         </mat-autocomplete>
-        <mat-hint>{{ "cop.spkHanyaSpk" | translate }}</mat-hint>
       </mat-form-field>
 
       @if (kurangKarakter()) {
@@ -115,6 +131,23 @@
     <!-- ===== 2. PERIODE ===== -->
     <section class="cop-kartu">
       <div class="cop-kartu__judul">{{ "cop.langkahPeriode" | translate }}</div>
+
+      <!--
+        Arti periodenya disebutkan, bukan disimpulkan dari nama isiannya.
+
+        "Periode awal" dan "periode akhir" tidak menerangkan apa pun tentang
+        HARI YANG IKUT DIHITUNG. Yang mengisi harus menebak apakah tanggal
+        akhirnya termasuk, dan tebakan itu berbeda-beda antar orang — dari
+        situlah dua CoP berurutan yang sama-sama memuat tanggal 12 lahir.
+      -->
+      <div class="cop-banner">
+        <mat-icon>event_available</mat-icon>
+        <div>
+          <strong>{{ "cop.periodeJudul" | translate }}</strong>
+          <span>{{ "cop.periodeKet" | translate }}</span>
+        </div>
+      </div>
+
       <div class="cop-baris-form">
         <mat-form-field appearance="outline">
           <mat-label>{{ "cop.tanggal" | translate }}</mat-label>
@@ -124,7 +157,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ "cop.periodeAwal" | translate }} *</mat-label>
+          <mat-label>{{ "cop.periodeAwal" | translate }}</mat-label>
           <input matInput required [matDatepicker]="dp1" [formControl]="periodeAwal" />
           <mat-datepicker-toggle matSuffix [for]="dp1" />
           <mat-datepicker #dp1 />
@@ -134,7 +167,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ "cop.periodeAkhir" | translate }} *</mat-label>
+          <mat-label>{{ "cop.periodeAkhir" | translate }}</mat-label>
           <input matInput required [matDatepicker]="dp2" [formControl]="periodeAkhir" />
           <mat-datepicker-toggle matSuffix [for]="dp2" />
           <mat-datepicker #dp2 />
@@ -144,7 +177,23 @@
         </mat-form-field>
       </div>
 
-      @if (periodeTerbalik) {
+      <!--
+        Keadaannya disebutkan berurutan, dan hanya SATU yang tampil.
+
+        "Belum lengkap" menyuruh mengisi; "terbalik" menyuruh menukar
+        urutannya. Menampilkan keduanya sekaligus membuat yang membaca
+        memeriksa hal yang bukan penyebabnya.
+
+        Yang pertama tidak menunggu kotaknya disentuh: tombol simpan sudah
+        mati sejak layar dibuka, dan sebab yang baru muncul setelah disentuh
+        tidak dapat ditemukan tanpa menebak lebih dahulu.
+      -->
+      @if (periodeBelumLengkap) {
+        <p class="cop-wajib">
+          <mat-icon>info</mat-icon>
+          {{ "cop.periodeWajibKet" | translate }}
+        </p>
+      } @else if (periodeTerbalik) {
         <p class="cop-salah">
           <mat-icon>error_outline</mat-icon>
           {{ "cop.periodeTerbalik" | translate }}

@@ -119,30 +119,18 @@
     menyebutkan mana yang belum terpenuhi, supaya tombol yang mati tidak
     terbaca sebagai layar yang rusak.
   -->
-  <div class="cp-konfirmasi">
-    <div class="cp-syarat">
-      <span class="cp-syarat__item" [class.is-ok]="!masihMenunggu">
-        <mat-icon>{{
-          masihMenunggu ? "hourglass_top" : "check_circle"
-        }}</mat-icon>
-        @if (masihMenunggu) {
-          {{ "cop.tungguDetik" | translate: { detik: sisaDetik } }}
-        } @else {
-          {{ "cop.tungguSelesai" | translate }}
-        }
-      </span>
-      <span class="cp-syarat__item" [class.is-ok]="sudahSampaiBawah">
-        <mat-icon>{{
-          sudahSampaiBawah ? "check_circle" : "vertical_align_bottom"
-        }}</mat-icon>
-        @if (sudahSampaiBawah) {
-          {{ "cop.gulirSelesai" | translate }}
-        } @else {
-          {{ "cop.gulirSisa" | translate }}
-        }
-      </span>
-    </div>
+  <!--
+    Bentuknya SAMA dengan kaki pratinjau purchase order: satu garis
+    pemisah, satu pernyataan bercentang, lalu keterangan sebaris di
+    bawahnya.
 
+    Dua keping syarat yang berdiri sendiri sebelumnya menyatakan hal yang
+    sama dengan cara yang tidak ada padanannya di layar mana pun — dan
+    keduanya tetap terbaca "belum boleh" tanpa menyebutkan apa yang harus
+    dikerjakan. Sebabnya kini diletakkan tepat di tempat orang mencarinya:
+    di bawah pernyataan yang tidak dapat dicentang.
+  -->
+  <div class="cp-konfirmasi">
     <label
       class="cp-cek"
       [class.cp-cek--menunggu]="masihMenunggu || !sudahSampaiBawah"
@@ -154,6 +142,16 @@
       />
       <span>{{ "cop.pernyataanVolume" | translate }}</span>
     </label>
+
+    <p class="cp-sebab">
+      @if (masihMenunggu) {
+        {{ "cop.tungguDetik" | translate: { detik: sisaDetik } }}
+      } @else if (!sudahSampaiBawah) {
+        {{ "cop.gulirSisa" | translate }}
+      } @else {
+        {{ "cop.pernyataanVolumeKet" | translate }}
+      }
+    </p>
   </div>
 </mat-dialog-content>
 

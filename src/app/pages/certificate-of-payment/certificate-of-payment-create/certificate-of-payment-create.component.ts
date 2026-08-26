@@ -24,10 +24,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { SupplierTerkunciComponent } from 'src/app/components/supplier-terkunci/supplier-terkunci.component';
 import { CertificateOfPaymentPratinjauComponent } from '../certificate-of-payment-pratinjau/certificate-of-payment-pratinjau.component';
+import { CertificateOfPaymentTindihComponent } from '../certificate-of-payment-tindih/certificate-of-payment-tindih.component';
 import {
   BarisCoPInput,
   BarisPagu,
   CertificateOfPaymentService,
+  CoPTindih,
   SpkKandidat,
 } from 'src/app/services/certificate-of-payment.service';
 import { PermissionService } from 'src/app/services/permission.service';
@@ -427,6 +429,22 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
     return !!a && !!b && b.getTime() < a.getTime();
   }
 
+  /**
+   * Salah satu tanggal periode belum diisi.
+   *
+   * Dipisah dari `periodeTerbalik` karena keduanya menyuruh hal yang
+   * berbeda: yang ini "isi dulu", yang itu "tukar urutannya". Satu pesan
+   * untuk dua keadaan membuat yang membacanya memeriksa hal yang salah.
+   *
+   * TIDAK menunggu `touched`. Tombol simpannya sudah mati sejak layar
+   * dibuka, dan keterangan yang baru muncul setelah kotaknya disentuh
+   * membuat sebab matinya tidak dapat ditemukan tanpa menebak-nebak lebih
+   * dahulu.
+   */
+  get periodeBelumLengkap(): boolean {
+    return !this.periodeAwal.value || !this.periodeAkhir.value;
+  }
+
   get adaIsian(): boolean {
     return Object.values(this.isian()).some((v) => v !== null && v > 0);
   }
@@ -458,6 +476,63 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       }));
   }
 
+  /**
+   * Adakah CoP lain atas SPK ini yang periodenya bertindih?
+   *
+   * Mengembalikan `true` bila boleh lanjut — entah karena tidak ada yang
+   * bertindih, karena pemeriksaannya gagal dimuat, atau karena orangnya
+   * menyatakan lanjut setelah melihat dokumen pembandingnya.
+   */
+  private async lolosPeriksaTindih(spk: SpkKandidat): Promise<boolean> {
+    const mulai = this.tanggalIso(this.periodeAwal.value);
+    const selesai = this.tanggalIso(this.periodeAkhir.value);
+    if (!spk.id || !mulai || !selesai) return true;
+
+    let bertindih: CoPTindih[] = [];
+    try {
+      const jawab = (await firstValueFrom(
+        this.service.periodeTindih(spk.id, mulai, selesai, this.copId),
+      )) as { bertindih: CoPTindih[] };
+      bertindih = jawab?.bertindih || [];
+    } catch {
+      // Diam-diam dilewati; lihat catatan pada pemanggilnya.
+      return true;
+    }
+    if (!bertindih.length) return true;
+
+    return !!(await firstValueFrom(
+      this.dialog
+        .open(CertificateOfPaymentTindihComponent, {
+          data: {
+            spk: spk.name,
+            mulai: this.periodeAwal.value,
+            selesai: this.periodeAkhir.value,
+            bertindih,
+          },
+          maxWidth: '96vw',
+          autoFocus: false,
+        })
+        .afterClosed(),
+    ));
+  }
+
+  /**
+   * Tanggal sebagai `YYYY-MM-DD` menurut waktu SETEMPAT.
+   *
+   * `toISOString()` mengubahnya ke UTC lebih dulu. Di WIB (UTC+7) tanggal 1
+   * pukul 00:00 menjadi tanggal 31 bulan sebelumnya — dan periode yang
+   * dikirim ke pemeriksaan tindih bergeser satu hari dari yang terlihat di
+   * layar, tepat pada batas bulan tempat periode CoP paling sering jatuh.
+   */
+  private tanggalIso(n: Date | string | null): string | null {
+    if (!n) return null;
+    const d = n instanceof Date ? n : new Date(n);
+    if (isNaN(d.getTime())) return null;
+    const b = String(d.getMonth() + 1).padStart(2, '0');
+    const h = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${b}-${h}`;
+  }
+
   async simpan(): Promise<void> {
     const spk = this.spkTerpilih();
     if (!spk) return;
@@ -480,6 +555,20 @@ export class CertificateOfPaymentCreateComponent implements OnInit {
       );
       return;
     }
+
+    /*
+     * PERIODE BERTINDIH DIPERIKSA SEBELUM PRATINJAU.
+     *
+     * Urutannya disengaja: bila periodenya bertindih, seluruh isi pratinjau
+     * ikut tidak berlaku, dan meminta orang membaca lembar penuh lebih dulu
+     * hanya untuk membatalkannya sesudah itu membuang pekerjaan yang sudah
+     * dilakukannya.
+     *
+     * Gagal memeriksa TIDAK menghalangi simpan. Ini keterangan tambahan;
+     * layar yang menolak dipakai karena peringatannya tidak dapat dimuat
+     * lebih buruk daripada layar tanpa peringatan.
+     */
+    if (!(await this.lolosPeriksaTindih(spk))) return;
 
     /*
      * PRATINJAU LEBIH DAHULU, simpan setelah dinyatakan terbaca.

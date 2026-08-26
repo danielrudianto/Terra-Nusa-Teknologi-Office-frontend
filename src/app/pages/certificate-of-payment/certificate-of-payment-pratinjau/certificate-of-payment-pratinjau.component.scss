@@ -231,29 +231,21 @@
   border-top: 1px solid var(--line, #e6e9ee);
 }
 
-.cp-syarat {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
-  margin-bottom: 0.7rem;
-}
 
-.cp-syarat__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+
+/*
+  Sebab pernyataannya belum dapat dicentang — atau artinya bila sudah.
+
+  Namanya `cp-sebab`, BUKAN `cp-ket`: kelas itu sudah dipakai keterangan
+  baris pekerjaan di atas. Aturan kedua bernama sama akan menimpanya, dan
+  seluruh keterangan pekerjaan diam-diam bergeser menjorok satu setengah
+  rem tanpa ada yang mengubahnya.
+*/
+.cp-sebab {
+  margin: 0.35rem 0 0 1.6rem;
   font-size: 0.76rem;
-  color: var(--muted, #9aa1b1);
-
-  .mat-icon {
-    width: 15px;
-    height: 15px;
-    font-size: 15px;
-  }
-
-  &.is-ok {
-    color: var(--ok-fg, #1a7f45);
-  }
+  color: var(--muted, #6b7280);
+  line-height: 1.5;
 }
 
 .cp-cek {

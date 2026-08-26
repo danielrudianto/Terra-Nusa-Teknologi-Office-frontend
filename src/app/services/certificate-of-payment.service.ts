@@ -189,6 +189,17 @@ export interface TagihanCoP {
 }
 
 /** CoP yang sudah disetujui dan belum ditagihkan. */
+/** Satu CoP yang periodenya bertindih dengan yang sedang disusun. */
+export interface CoPTindih {
+  id: number;
+  name: string;
+  number: number;
+  date: string | null;
+  periodStart: string | null;
+  periodEnd: string | null;
+  keadaan: 'draft' | 'diperiksa' | 'disetujui';
+}
+
 export interface CoPSiapTagih {
   id: number;
   name: string;
@@ -358,6 +369,32 @@ export class CertificateOfPaymentService {
     if (purchaseOrderID) params['purchaseOrderID'] = String(purchaseOrderID);
     return this.api.get(
       `${CertificateOfPaymentService.JALUR}/siap-tagih`,
+      params,
+    );
+  }
+
+  /**
+   * CoP lain atas SPK yang sama yang periodenya bertindih.
+   *
+   * Dibaca SEBELUM menyimpan. Jawabannya peringatan, bukan penolakan:
+   * server tetap menerima dokumen yang bertindih, karena kadang memang
+   * disengaja — sertifikasi ulang setelah perbaikan memakai rentang yang
+   * sama.
+   */
+  periodeTindih(
+    purchaseOrderID: number,
+    periodStart: string,
+    periodEnd: string,
+    kecualiCopID?: number | null,
+  ) {
+    const params: Record<string, string> = {
+      purchaseOrderID: String(purchaseOrderID),
+      periodStart,
+      periodEnd,
+    };
+    if (kecualiCopID) params['kecualiCopID'] = String(kecualiCopID);
+    return this.api.get(
+      `${CertificateOfPaymentService.JALUR}/periode-tindih`,
       params,
     );
   }

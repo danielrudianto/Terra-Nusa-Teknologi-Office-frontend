@@ -316,6 +316,30 @@
   width: 100%;
 }
 
+/*
+  "Periode wajib diisi" — keterangan, bukan galat.
+
+  Warnanya redup, bukan merah: belum diisi pada layar yang baru dibuka
+  adalah keadaan yang WAJAR, dan menandainya merah sejak detik pertama
+  membuat orang mengira ada yang salah pada isian yang belum disentuh
+  siapa pun. Yang merah disimpan untuk periode terbalik — di situ memang
+  ada yang keliru.
+*/
+.cop-wajib {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  color: var(--muted, #6b7280);
+  font-size: 12.5px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .cop-salah {
   display: flex;
   align-items: center;

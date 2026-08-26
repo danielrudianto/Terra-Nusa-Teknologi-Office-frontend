@@ -4998,6 +4998,18 @@
     "bagianNilai": "Nilai & potongan",
     "pilihJudul": "Pilih certificate of payment",
     "pilihSub": "Hanya yang sudah disetujui dan belum ditagihkan.",
-    "pilihKosong": "Tidak ada CoP yang siap ditagihkan."
+    "pilihKosong": "Tidak ada CoP yang siap ditagihkan.",
+    "spkHanyaSpkJudul": "Hanya surat perintah kerja yang disetujui",
+    "periodeJudul": "Periode cut-off pekerjaan",
+    "periodeKet": "Rentang tanggal pekerjaan yang disertifikasi pada CoP ini. Kedua tanggal IKUT DIHITUNG — periode berikutnya harus mulai sehari setelah tanggal akhir di sini.",
+    "pernyataanVolumeKet": "Setelah tersimpan, volume ini memakai pagu SPK dan menjadi dasar penagihan.",
+    "tindihJudul": "Periode bertindih dengan CoP lain",
+    "tindihKet": "CoP berikut atas SPK yang sama memuat tanggal yang juga ada di periode ini. Pekerjaan pada hari yang bertindih berisiko disertifikasi dan ditagih dua kali.",
+    "tindihPeriodeIni": "Periode yang sedang disusun",
+    "tindihHari": "{{n}} hari bertindih",
+    "tindihBolehLanjut": "Bila memang disengaja — misalnya sertifikasi ulang setelah perbaikan — silakan lanjutkan. Bila tidak, betulkan tanggalnya lebih dahulu.",
+    "tindihPerbaiki": "Betulkan tanggal",
+    "tindihLanjut": "Lanjutkan",
+    "periodeWajibKet": "Periode awal dan periode akhir wajib diisi sebelum CoP dapat disimpan."
   }
 }

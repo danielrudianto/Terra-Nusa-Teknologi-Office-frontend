@@ -164,18 +164,58 @@ export class ReimbursementPaymentCreateComponent {
           );
         });
 
-        const amount = data.reimbursement_items.reduce(
-          (a: any, b: any) => a + b.amount,
+        const nilaiDokumen = data.reimbursement_items.reduce(
+          (a: number, b: any) => a + Number(b.amount || 0),
           0,
         );
 
+        /*
+         * SISA tagihan, bukan nilai dokumennya.
+         *
+         * Pembayaran yang sudah masuk dikurangkan lebih dulu — sama seperti
+         * pembayaran pembelian, biaya, dan pinjaman. Tanpa itu, dokumen yang
+         * sudah dibayar sebagian menawarkan nilai penuh sekali lagi.
+         *
+         * `isDelete` disaring: pembayaran yang dibatalkan tidak mengurangi
+         * apa pun, dan menghitungnya membuat sisanya lebih kecil daripada
+         * yang sebenarnya masih harus dibayar.
+         */
+        const sudahDibayar = (data.payments || [])
+          .filter((x: any) => !x.isDelete)
+          .reduce((s: number, p: any) => s + Number(p.amount || 0), 0);
+
+        const sisa = Math.round((nilaiDokumen - sudahDibayar) * 100) / 100;
+
         this.valueFormGroup.patchValue({
-          total: amount,
+          total: nilaiDokumen,
         });
+
+        /*
+         * `totalAmount` HARUS diisi di sini.
+         *
+         * `sudahLunas` membacanya, dan nilai awalnya nol. Selama tidak
+         * pernah diisi, `0 <= 5` selalu benar — setiap reimbursement dibuka
+         * dengan banner "sudah lunas" dan tombol simpan yang mati, termasuk
+         * yang belum pernah dibayar sepeser pun. Tidak ada galat yang
+         * muncul: nilainya sah, hanya tidak pernah berpindah dari nol.
+         *
+         * Ketiga layar pembayaran lain sudah mengisinya; hanya yang ini
+         * tertinggal.
+         */
+        this.totalAmount = sisa;
+
+        this.formGroup
+          .get('amount')
+          ?.setValidators([
+            Validators.required,
+            Validators.min(0.01),
+            Validators.max(sisa),
+          ]);
+        this.formGroup.get('amount')?.updateValueAndValidity();
 
         this.formGroup.patchValue({
           date: new Date(data.reimbursement.dueDate),
-          amount: amount,
+          amount: sisa,
         });
       },
       error: (error) => {

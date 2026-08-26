@@ -4998,6 +4998,18 @@
     "bagianNilai": "Value & deductions",
     "pilihJudul": "Select certificate of payment",
     "pilihSub": "Only approved certificates not yet billed.",
-    "pilihKosong": "No certificate of payment is ready to bill."
+    "pilihKosong": "No certificate of payment is ready to bill.",
+    "spkHanyaSpkJudul": "Approved work orders only",
+    "periodeJudul": "Work cut-off period",
+    "periodeKet": "The date range of work certified on this certificate. BOTH dates are included — the next period must start the day after the end date here.",
+    "pernyataanVolumeKet": "Once saved, these volumes consume the work-order allowance and become the basis for billing.",
+    "tindihJudul": "Period overlaps another certificate",
+    "tindihKet": "The certificates below, on the same work order, include dates that also fall in this period. Work on the overlapping days risks being certified and billed twice.",
+    "tindihPeriodeIni": "Period being drafted",
+    "tindihHari": "{{n}} overlapping days",
+    "tindihBolehLanjut": "If this is intended — a re-certification after rework, for instance — go ahead. Otherwise correct the dates first.",
+    "tindihPerbaiki": "Correct the dates",
+    "tindihLanjut": "Continue",
+    "periodeWajibKet": "Both the start and end of the period are required before this certificate can be saved."
   }
 }

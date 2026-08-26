@@ -4998,6 +4998,18 @@
     "bagianNilai": "金额与扣减",
     "pilihJudul": "选择付款证书",
     "pilihSub": "仅显示已审批且尚未开票的证书。",
-    "pilihKosong": "没有可开票的付款证书。"
+    "pilihKosong": "没有可开票的付款证书。",
+    "spkHanyaSpkJudul": "仅限已审批的工作令",
+    "periodeJudul": "工程结算期间",
+    "periodeKet": "本付款证书所认证工程的日期范围。起讫两天均计入——下一期间须从本期结束日的次日开始。",
+    "pernyataanVolumeKet": "保存后，这些工程量将占用工作令额度并成为开票依据。",
+    "tindihJudul": "期间与其他付款证书重叠",
+    "tindihKet": "同一工作令下的以下付款证书包含本期间内的日期。重叠日的工程可能被重复认证和重复开票。",
+    "tindihPeriodeIni": "正在编制的期间",
+    "tindihHari": "重叠 {{n}} 天",
+    "tindihBolehLanjut": "若属有意为之——例如返工后的重新认证——可继续。否则请先更正日期。",
+    "tindihPerbaiki": "更正日期",
+    "tindihLanjut": "继续",
+    "periodeWajibKet": "保存本付款证书前，期间的起始日和结束日均为必填。"
   }
 }

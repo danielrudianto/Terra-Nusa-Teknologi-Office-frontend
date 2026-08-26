@@ -1,0 +1,63 @@
+<div class="ctd">
+  <div class="ctd__head" mat-dialog-title>
+    <span class="ctd__ikon"><mat-icon>event_busy</mat-icon></span>
+    <div class="ctd__teks">
+      <h2 class="ctd__judul">{{ "cop.tindihJudul" | translate }}</h2>
+      <span class="ctd__sub">{{ data.spk }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="ctd__isi">
+    <p class="ctd__kalimat">{{ "cop.tindihKet" | translate }}</p>
+
+    <div class="ctd__ini">
+      <span class="ctd__cap">{{ "cop.tindihPeriodeIni" | translate }}</span>
+      <strong>
+        {{ data.mulai | date: "d MMM y" }} – {{ data.selesai | date: "d MMM y" }}
+      </strong>
+    </div>
+
+    <ul class="ctd__daftar">
+      @for (b of data.bertindih; track b.id) {
+        <li class="ctd__baris">
+          <div class="ctd__kolom">
+            <span class="ctd__nomor">{{ b.name }}</span>
+            <span class="ctd__periode">
+              {{ b.periodStart | date: "d MMM y" }} –
+              {{ b.periodEnd | date: "d MMM y" }}
+            </span>
+          </div>
+
+          <div class="ctd__kanan">
+            <span class="ctd__lencana" [class]="'ctd__lencana--' + b.keadaan">
+              {{ "cop.keadaan_" + b.keadaan | translate }}
+            </span>
+            @if (jumlahHari(b); as n) {
+              <span class="ctd__hari">
+                {{ "cop.tindihHari" | translate: { n: n } }}
+              </span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+
+    <!--
+      Disebutkan bahwa ini boleh dilanjutkan, dan kapan itu wajar.
+
+      Tanpa kalimat ini peringatannya terbaca sebagai penolakan, dan yang
+      memang sengaja menyertifikasi ulang akan mengira jalannya buntu lalu
+      mengarang periode yang bukan sebenarnya supaya lolos.
+    -->
+    <p class="ctd__catatan">{{ "cop.tindihBolehLanjut" | translate }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="ctd__kaki">
+    <button mat-button (click)="batal()">
+      {{ "cop.tindihPerbaiki" | translate }}
+    </button>
+    <button mat-flat-button color="primary" (click)="lanjut()">
+      {{ "cop.tindihLanjut" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

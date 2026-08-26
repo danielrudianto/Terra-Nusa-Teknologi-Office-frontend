@@ -1,0 +1,195 @@
+/*
+  Peringatan periode bertindih.
+
+  Warnanya WASPADA, bukan bahaya: bertindih sering kali memang disengaja,
+  dan merah pada sesuatu yang kerap benar membuat orang berhenti membacanya.
+  Bentuk kepalanya mengikuti dialog CoP lain supaya tidak terbaca seperti
+  bagian dari aplikasi yang berbeda.
+*/
+.ctd {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.ctd__head {
+  display: flex !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem 1.5rem !important;
+  margin: 0 !important;
+  background: var(--warn-bg, #fdf0e3);
+  border-bottom: 1px solid var(--warn-fg, #a2651a);
+
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+.ctd__ikon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #fff);
+  color: var(--warn-fg, #a2651a);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.ctd__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ctd__judul {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--warn-fg, #a2651a);
+}
+
+.ctd__sub {
+  font-size: 0.8rem;
+  color: var(--warn-fg, #a2651a);
+  opacity: 0.85;
+}
+
+.ctd__isi {
+  padding: 1.25rem 1.5rem !important;
+  min-width: min(520px, 86vw);
+  max-height: 66vh;
+}
+
+.ctd__kalimat {
+  margin: 0 0 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* Periode yang sedang disusun, sebagai pembanding tetap di atas daftar —
+   tanpa itu tiap baris harus dibandingkan dengan angka yang diingat. */
+.ctd__ini {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  margin-bottom: 0.9rem;
+
+  strong {
+    font-size: 0.92rem;
+  }
+}
+
+.ctd__cap {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.ctd__daftar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ctd__baris {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 10px;
+  background: var(--surface, #fff);
+}
+
+.ctd__kolom {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ctd__nomor {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.ctd__periode {
+  font-size: 0.78rem;
+  color: var(--muted, #6b7280);
+}
+
+.ctd__kanan {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.ctd__lencana {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  &--draft {
+    background: var(--warn-bg, #fdf0e3);
+    color: var(--warn-fg, #a2651a);
+  }
+  &--diperiksa {
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+  }
+  &--disetujui {
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
+  }
+}
+
+/* Jumlah hari yang benar-benar tertindih. Satu hari kemungkinan salah
+   ketik; dua minggu berarti periodenya memang disusun ulang. */
+.ctd__hari {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--warn-fg, #a2651a);
+}
+
+.ctd__catatan {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+.ctd__kaki {
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--line, #eef0f3);
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
