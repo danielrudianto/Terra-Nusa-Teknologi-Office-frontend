@@ -33,9 +33,17 @@
   yang sebenarnya sebuah tindakan berdiri di antara pencarian dan
   penyaring, dan susunannya berbeda dari daftar Pembelian.
 */
+/*
+  Lebarnya lewat `flex`, bukan `width: 100%`.
+
+  Bersama `margin-left: auto`, `width: 100%` membuat ukuran dasar kotaknya
+  selebar seluruh bilah alat — tidak ada ruang sisa yang dapat diserap
+  margin otomatis, dan dorongannya tidak berpengaruh apa pun sekalipun
+  aturannya tertulis jelas.
+*/
 .ssl-search {
-  width: 100%;
-  max-width: 400px;
+  flex: 0 1 400px;
+  min-width: 220px;
   margin-left: auto;
 }
 .ssl-month {

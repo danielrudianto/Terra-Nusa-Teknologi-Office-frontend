@@ -29,9 +29,22 @@
   Lebarnya tetap dibatasi: kotak pencarian selebar layar tidak
   membantu siapa pun dan hanya menjauhkan tombolnya dari mata.
 */
+/*
+  Pencarian didorong ke KANAN — dan lebarnya diberikan lewat `flex`, bukan
+  `width: 100%`.
+
+  Inilah sebab dorongannya tidak bekerja sebelum ini. `width: 100%` membuat
+  ukuran dasar kotaknya selebar seluruh bilah alat, sehingga tidak ada ruang
+  sisa yang dapat diserap `margin-left: auto` — kotaknya tetap menempel
+  kiri sekalipun aturannya sudah tertulis. `flex: 0 1 400px` memberi ukuran
+  dasar 400px yang boleh menyusut, dan sisanya jatuh di sebelah kirinya.
+
+  Bentuknya disalin dari daftar Karyawan, satu-satunya halaman yang
+  susunannya memang sudah benar sejak awal.
+*/
 .bl-search {
-  width: 100%;
-  max-width: 400px;
+  flex: 0 1 400px;
+  min-width: 220px;
   margin-left: auto;
 }
 .bl-spacer {

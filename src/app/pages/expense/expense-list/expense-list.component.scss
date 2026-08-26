@@ -64,11 +64,19 @@
   flex: 0 0 auto;
   white-space: nowrap;
   /*
-   * mat-form-field menyisakan ruang di bawahnya untuk pesan bantuan/kesalahan,
-   * sehingga kotaknya lebih tinggi dari toggle. Tanpa penyesuaian ini toggle
-   * tampak melorot dibanding kolom di sebelahnya.
+   * TANPA kompensasi tinggi.
+   *
+   * Dahulu ada `margin-bottom: 1.34375em` di sini untuk mengimbangi ruang
+   * pesan bantuan yang disisakan `mat-form-field`. Ruang itu sudah tidak
+   * ada sejak kedua kotak di sebelahnya memakai `subscriptSizing="dynamic"`,
+   * sehingga kompensasinya berubah menjadi kelebihan: di dalam bilah alat
+   * yang `align-items: center`, margin bawah tambahan justru mengangkat
+   * togglenya setengah dari nilai itu terhadap kotak di sebelahnya.
+   *
+   * Perataannya kini diserahkan sepenuhnya pada `align-items: center` milik
+   * `.ex-toolbar__right`. Bila kelak tampak melorot lagi, yang perlu
+   * diperiksa `subscriptSizing`, bukan margin.
    */
-  margin-bottom: 1.34375em;
   --mdc-switch-selected-track-color: var(--brand, #154dec);
 }
 

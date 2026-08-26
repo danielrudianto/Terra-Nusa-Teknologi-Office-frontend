@@ -59,8 +59,16 @@ $hover: var(--hover, #f6f8ff);
 }
 
 /* toolbar */
+/*
+  `align-items: center` — tanpa ini anaknya membentang setinggi baris
+  (`stretch`), dan tombol muat ulang yang lebih pendek daripada kotak
+  pencarian duduk menempel sisi atas. Enam daftar lain sudah memilikinya;
+  hanya yang ini tertinggal.
+*/
 .cl-toolbar {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -77,9 +85,22 @@ $hover: var(--hover, #f6f8ff);
   Lebarnya tetap dibatasi: kotak pencarian selebar layar tidak
   membantu siapa pun dan hanya menjauhkan tombolnya dari mata.
 */
+/*
+  Pencarian didorong ke KANAN — dan lebarnya diberikan lewat `flex`, bukan
+  `width: 100%`.
+
+  Inilah sebab dorongannya tidak bekerja sebelum ini. `width: 100%` membuat
+  ukuran dasar kotaknya selebar seluruh bilah alat, sehingga tidak ada ruang
+  sisa yang dapat diserap `margin-left: auto` — kotaknya tetap menempel
+  kiri sekalipun aturannya sudah tertulis. `flex: 0 1 400px` memberi ukuran
+  dasar 400px yang boleh menyusut, dan sisanya jatuh di sebelah kirinya.
+
+  Bentuknya disalin dari daftar Karyawan, satu-satunya halaman yang
+  susunannya memang sudah benar sejak awal.
+*/
 .cl-search {
-  width: 100%;
-  max-width: 400px;
+  flex: 0 1 400px;
+  min-width: 220px;
   margin-left: auto;
 }
 .cl-search .mat-mdc-form-field {

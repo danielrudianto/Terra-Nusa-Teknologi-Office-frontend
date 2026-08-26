@@ -39,6 +39,28 @@ def tanpa_komentar(teks: str) -> str:
     return re.sub(r"<!--.*?-->", "", teks, flags=re.S)
 
 
+def _isi_aturan(css: str, mulai: int) -> str:
+    """
+    Isi satu aturan CSS, dengan kurung bersarang dihitung benar.
+
+    `[^}]*\\}` berhenti pada kurung tutup PERTAMA, yang pada aturan bersarang
+    adalah penutup anaknya — bukan penutup aturannya sendiri. Yang terbaca
+    lalu hanya potongan awal, dan properti sesudahnya luput dari pemeriksaan.
+    """
+    i = css.index("{", mulai)
+    dalam = 0
+    j = i
+    while j < len(css):
+        if css[j] == "{":
+            dalam += 1
+        elif css[j] == "}":
+            dalam -= 1
+            if dalam == 0:
+                return css[i + 1 : j]
+        j += 1
+    return ""
+
+
 def halaman_daftar() -> list[tuple[str, str, str]]:
     """(html, scss, nama) untuk tiap layar daftar yang punya tombol muat ulang."""
     keluar = []
@@ -109,6 +131,26 @@ def periksa(html: str, scss: str, nama: str) -> list[str]:
                 "keping → pencarian → muat ulang"
             )
 
+    pakai_campuran = "@include daftar.daftar" in css
+
+    # --- 2b. anak bilah alat rata TENGAH secara tegak ----------------------
+    #
+    # Tanpa `align-items: center`, anaknya membentang setinggi baris
+    # (`stretch` — bawaan flexbox). Tombol muat ulang yang lebih pendek
+    # daripada kotak pencarian lalu duduk menempel sisi atas, dan
+    # perbedaannya beberapa piksel: cukup terlihat, terlalu kecil untuk
+    # ditebak sebabnya.
+    if not pakai_campuran:
+        badan_bilah = "\n".join(
+            _isi_aturan(css, m.start())
+            for m in re.finditer(rf"(?<![\w-])\.{p}-toolbar\s*\{{", css)
+        )
+        if badan_bilah and "align-items" not in badan_bilah:
+            galat.append(
+                "bilah alat tidak meratakan anaknya secara tegak "
+                "(`align-items: center`)"
+            )
+
     # --- 3. pencarian di kanan, muat ulang di kanannya lagi ---------------
     #
     # Dorongannya harus dipasang pada KOTAK PENCARIAN, bukan pada tombol
@@ -125,7 +167,6 @@ def periksa(html: str, scss: str, nama: str) -> list[str]:
     # sesederhana "pencarian lalu muat ulang" membuat Master Barang — yang
     # punya tombol saring dan impor — lolos tanpa diperiksa sama sekali,
     # padahal di situlah pencariannya tertinggal paling jauh di kiri.
-    pakai_campuran = "@include daftar.daftar" in css
     punya_pencarian = ada_kotak_cari and "app-refresh-button" in urut
 
     # Bilah alat yang isiannya PENYARING, bukan pencarian: penyaringnya
@@ -156,15 +197,39 @@ def periksa(html: str, scss: str, nama: str) -> list[str]:
         # antara lain pada `:host ::ng-deep .el-search .mat-mdc-...` yang
         # menata bagian dalam kotaknya — dan mengambil yang pertama
         # membuat halaman yang sudah benar dilaporkan menyimpang.
+        #
+        # Aturan BERSARANG di dalamnya dibuang lebih dulu. Tanpa itu,
+        # `margin-left: auto` yang tertulis di dalam `.mat-mdc-form-field {}`
+        # ikut terhitung sebagai dorongan pada kotak pencariannya — dan
+        # itulah yang membuat halaman Lawan Transaksi dinyatakan lulus
+        # sementara pencariannya jelas menempel kiri.
         badan_cari = "\n".join(
-            m.group(1)
-            for m in re.finditer(rf"(?m)^\s*\.{p}-search\s*\{{([^}}]*)\}}", css)
+            re.sub(r"[^{};]+\{[^{}]*\}", "", _isi_aturan(css, m.start()))
+            for m in re.finditer(rf"(?<![\w-])\.{p}-search\s*\{{", css)
         )
         # `flex: 1 …` berarti kotaknya TUMBUH mengisi sisa ruang, sehingga
         # muat ulang terdorong ke kanan dengan sendirinya. `flex: 0 1 400px`
         # tidak tumbuh — halaman semacam itu memerlukan `margin-left: auto`.
         cari_didorong = bool(re.search(r"margin-left:\s*auto", badan_cari))
         cari_memanjang = bool(re.search(r"flex:\s*1\b", badan_cari))
+
+        # `margin-left: auto` MANDUL bila lebarnya diberikan `width: 100%`.
+        #
+        # Ukuran dasar kotaknya lalu selebar seluruh bilah alat, sehingga
+        # tidak ada ruang sisa yang dapat diserap margin otomatis — aturannya
+        # tertulis, terbaca benar oleh mata, dan tidak berpengaruh apa pun.
+        # Dua halaman lolos pemeriksaan dengan bentuk ini sebelum seseorang
+        # melaporkannya dari layar.
+        if (
+            cari_didorong
+            and re.search(r"width:\s*100%", badan_cari)
+            and not re.search(r"flex:\s*\d", badan_cari)
+        ):
+            galat.append(
+                "`margin-left: auto` dipasang bersama `width: 100%`; ukuran "
+                "dasarnya memenuhi bilah alat sehingga tidak ada ruang sisa "
+                "untuk diserap — pakai `flex: 0 1 400px` seperti daftar Karyawan"
+            )
 
         # Cara ketiga: mendorong lewat urutan anak, seperti campuran
         # `daftar` dan beberapa halaman yang menyalinnya. Sah, selama yang
