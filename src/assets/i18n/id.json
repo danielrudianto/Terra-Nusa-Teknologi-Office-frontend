@@ -1107,7 +1107,9 @@
     "masaPajakKet": "Bulan pengkreditan PPN masukan. Kosongkan bila fakturnya terbit pada bulan yang sama dengan invoice.",
     "masaPajakKosongkan": "Kembalikan mengikuti tanggal dokumen",
     "masaPajakJauh": "Masa pajak jauh dari tanggal invoice",
-    "masaPajakJauhKet": "Lebih dari tiga bulan setelah tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan — pastikan memang begitu fakturnya."
+    "masaPajakJauhKet": "Lebih dari tiga bulan setelah tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan — pastikan memang begitu fakturnya.",
+    "methodCekGiro": "Cek / Giro",
+    "methodCekGiroHint": "Ditarik atas rekening; giro berjatuh tempo pada tanggal tertentu."
   },
   "reimbursementCreate": {
     "sectionDetail": "Detail",

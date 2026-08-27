@@ -163,6 +163,48 @@ export const PILIHAN_CARA_BAYAR: KartuPilihan[] = [
 ];
 
 /**
+ * Cara bayar yang DITAWARKAN pada formulir pembelian.
+ *
+ * TIGA, bukan lima. Berbeda dari `PILIHAN_CARA_BAYAR` di atas, dan bedanya
+ * disengaja:
+ *
+ *   * `PILIHAN_CARA_BAYAR` adalah daftar LENGKAP — dipakai membaca kembali
+ *     nilai yang sudah tersimpan. Dokumen lama yang bercara bayar `tunai`
+ *     atau `giro` tetap harus terbaca labelnya; menghapusnya dari sana
+ *     membuat dokumen-dokumen itu menampilkan kode mentah, atau kosong.
+ *
+ *   * Daftar ini yang DITAWARKAN. Tunai dikeluarkan karena pembelian
+ *     memang tidak lagi dibayar tunai; cek dan giro digabung menjadi satu
+ *     kartu karena keduanya diperlakukan sama pada dokumennya — sama-sama
+ *     ditarik atas sebuah rekening, dan yang membedakan hanya tanggal
+ *     pencairannya.
+ *
+ * Yang tersimpan untuk kartu gabungan adalah `cek`. Nilai `giro` tidak
+ * dihapus dari mana pun: dokumen lama yang menyimpannya tetap sah, tetap
+ * berlabel, dan tetap masuk `CARA_BAYAR_BERREKENING`.
+ */
+export const CARA_BAYAR_PEMBELIAN: KartuPilihan[] = [
+  {
+    value: 'bank',
+    label: 'purchaseCreate.methodBank',
+    hint: 'purchaseCreate.methodBankHint',
+    icon: 'account_balance',
+  },
+  {
+    value: 'va',
+    label: 'purchaseCreate.methodVa',
+    hint: 'purchaseCreate.methodVaHint',
+    icon: 'pin',
+  },
+  {
+    value: 'cek',
+    label: 'purchaseCreate.methodCekGiro',
+    hint: 'purchaseCreate.methodCekGiroHint',
+    icon: 'note',
+  },
+];
+
+/**
  * Cara bayar yang MEMERLUKAN rekening tujuan.
  *
  * Tunai tidak: uangnya berpindah tangan langsung, dan tidak ada rekening yang

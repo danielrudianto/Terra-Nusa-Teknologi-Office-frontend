@@ -1107,7 +1107,9 @@
     "masaPajakKet": "进项税额抵扣的月份。若发票与单据同月开具，请留空。",
     "masaPajakKosongkan": "恢复为跟随单据日期",
     "masaPajakJauh": "所属期与发票日期相距较远",
-    "masaPajakJauhKet": "晚于单据日期三个月以上，或早于单据日期。仍可保存——请确认发票确实如此。"
+    "masaPajakJauhKet": "晚于单据日期三个月以上，或早于单据日期。仍可保存——请确认发票确实如此。",
+    "methodCekGiro": "支票 / 划拨",
+    "methodCekGiroHint": "从账户中支取；划拨于指定日期到期。"
   },
   "reimbursementCreate": {
     "sectionDetail": "详情",

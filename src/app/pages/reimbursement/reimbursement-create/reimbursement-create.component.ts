@@ -87,11 +87,17 @@ export class ReimbursementCreateComponent {
    * menentukan ke mana dananya dikirim. Dari daftar tarik-turun keduanya
    * tampak sekadar label, dan yang salah pilih baru ketahuan saat rekap.
    *
-   * `PILIHAN_CARA_BAYAR` DIPAKAI BERSAMA dengan pembelian: nilainya sama
-   * ('bank', 'va', 'cash'), dan dua daftar terpisah untuk nilai yang sama
-   * berarti dua tempat yang harus diubah bersamaan — sesuatu yang sudah
-   * terbukti tidak terjadi. Sebelumnya 'cash' di layar ini berlabel "Cek",
-   * sementara di pembelian "Tunai"; nilainya sendiri selalu 'cash'.
+   * `PILIHAN_CARA_BAYAR` adalah daftar LENGKAP, dan layar ini memang
+   * memakainya utuh — termasuk 'cash'. Penggantian uang staf memang kerap
+   * dibayar tunai, dan mengeluarkannya dari sini akan menutup jalur yang
+   * masih dipakai setiap minggu.
+   *
+   * Pembelian TIDAK lagi memakai daftar ini; ia memakai
+   * `CARA_BAYAR_PEMBELIAN` yang hanya berisi tiga. Keduanya sengaja
+   * berbeda: yang satu daftar tawaran, yang satu daftar lengkap untuk
+   * membaca kembali nilai yang sudah tersimpan. Nilainya sendiri tetap
+   * satu himpunan yang sama, sehingga tidak ada dokumen lama yang
+   * kehilangan labelnya.
    */
   readonly pilihanJenisBeban = PILIHAN_JENIS_BEBAN;
   readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;

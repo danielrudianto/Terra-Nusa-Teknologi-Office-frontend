@@ -53,7 +53,7 @@ import { JENIS_NILAI_LAIN } from 'src/app/constants/jenis-nilai-lain';
 import { POLA_NOMOR_PO } from '../../../constants/nomor-dokumen';
 import {
   CARA_BAYAR_BERREKENING,
-  PILIHAN_CARA_BAYAR,
+  CARA_BAYAR_PEMBELIAN,
   PILIHAN_JENIS_DOKUMEN,
   PILIHAN_KELENGKAPAN,
   PILIHAN_LINGKUP,
@@ -148,7 +148,14 @@ export class PurchaseCreateComponent {
   readonly pilihanKelengkapan = PILIHAN_KELENGKAPAN;
   readonly pilihanLingkup = PILIHAN_LINGKUP;
   readonly pilihanPpn = PILIHAN_PPN;
-  readonly pilihanCaraBayar = PILIHAN_CARA_BAYAR;
+  /*
+   * TIGA pilihan, dari daftar khusus pembelian — bukan daftar lengkapnya.
+   *
+   * Daftar lengkap tetap ada dan tetap dipakai membaca kembali dokumen
+   * lama yang bercara bayar `tunai` atau `giro`. Yang ditawarkan di sini
+   * hanya yang masih dipakai.
+   */
+  readonly pilihanCaraBayar = CARA_BAYAR_PEMBELIAN;
 
   /**
    * Cara bayar ini memerlukan rekening tujuan.
