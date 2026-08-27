@@ -107,8 +107,11 @@ export class CertificateOfPaymentViewComponent implements OnInit {
 
 
   readonly bolehLihatNilai = computed(() => this.izin.level() >= 2);
+  /** Membuat CoP (mengisi harga & potongan) — engineering level 2+. */
   readonly bolehPeriksa = computed(() => this.izin.level() >= 2);
-  readonly bolehSetujui = computed(() => this.izin.level() >= 3);
+  /** Menyetujui BAP maupun CoP — keduanya level 4+. */
+  readonly bolehSetujuiBap = computed(() => this.izin.level() >= 4);
+  readonly bolehSetujui = computed(() => this.izin.level() >= 4);
 
   get kolom(): string[] {
     const dasar = ['pekerjaan', 'satuan', 'volume'];
@@ -195,9 +198,10 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   }
 
   /** Keadaan dokumen, untuk lencana pada kepala dialog. */
-  keadaan(c: CertificateOfPayment): 'draft' | 'diperiksa' | 'disetujui' {
+  keadaan(c: CertificateOfPayment): 'draft' | 'bap' | 'dibuat' | 'disetujui' {
     if (c.isApproved) return 'disetujui';
-    if (c.isChecked) return 'diperiksa';
+    if (c.isCopCreated) return 'dibuat';
+    if (c.isBapApproved) return 'bap';
     return 'draft';
   }
 
@@ -222,6 +226,23 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     }
   }
 
+  /** Gerbang 1 — setujui BAP (level 4+). Membuka pengisian harga. */
+  async setujuiBap(): Promise<void> {
+    const c = this.cop();
+    if (!c) return;
+    this.bekerja.set(true);
+    try {
+      await firstValueFrom(this.service.setujuiBap(c.id, true));
+      this.adaPerubahan = true;
+      await this.muat();
+    } catch (e) {
+      this.pesan(e);
+    } finally {
+      this.bekerja.set(false);
+    }
+  }
+
+  /** Gerbang 3 — setujui CoP (level 4+). Siap ditagih. */
   async setujui(): Promise<void> {
     const c = this.cop();
     if (!c) return;

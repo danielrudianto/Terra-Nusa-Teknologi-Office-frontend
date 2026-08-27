@@ -225,9 +225,16 @@
 
 /* ---- pernyataan ---- */
 
+/*
+  Blok pernyataan — disamakan dengan pratinjau purchase order.
+
+  Padatnya (checkbox di kiri, pernyataan, lalu keterangan sebaris menjorok
+  di bawahnya) memakai ukuran yang PERSIS sama dengan `.pov-konfirmasi`,
+  supaya dua dialog yang meminta hal serupa terasa satu keluarga — bukan
+  dua layar yang kebetulan mirip.
+*/
 .cp-konfirmasi {
-  margin-top: 1.1rem;
-  padding-top: 0.9rem;
+  padding: 0.85rem 1.5rem 0.35rem;
   border-top: 1px solid var(--line, #e6e9ee);
 }
 

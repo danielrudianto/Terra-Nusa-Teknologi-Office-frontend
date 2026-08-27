@@ -158,9 +158,15 @@ export interface CertificateOfPayment {
   status: 'draft' | 'approved' | 'cancelled';
   createdBy: number;
   createdByName?: string;
-  isChecked: boolean | number;
-  checkedBy?: number | null;
-  checkedByName?: string | null;
+  /** Gerbang 1 — BAP disetujui (level 4+). Membuka pengisian harga. */
+  isBapApproved: boolean | number;
+  bapApprovedBy?: number | null;
+  bapApprovedByName?: string | null;
+  /** Gerbang 2 — CoP dibuat: harga & potongan diisi (eng level 2+). */
+  isCopCreated: boolean | number;
+  copCreatedBy?: number | null;
+  copCreatedByName?: string | null;
+  /** Gerbang 3 — CoP disetujui (level 4+). Siap ditagih. */
   isApproved: boolean | number;
   approvedBy?: number | null;
   approvedByName?: string | null;
@@ -197,7 +203,7 @@ export interface CoPTindih {
   date: string | null;
   periodStart: string | null;
   periodEnd: string | null;
-  keadaan: 'draft' | 'diperiksa' | 'disetujui';
+  keadaan: 'draft' | 'bap' | 'dibuat' | 'disetujui' | 'diperiksa';
 }
 
 export interface CoPSiapTagih {
@@ -333,6 +339,24 @@ export class CertificateOfPaymentService {
     );
   }
 
+  /**
+   * Setujui / batalkan BAP — GERBANG PERTAMA (level 4+).
+   *
+   * Baru setelah ini harga & potongan boleh diisi.
+   */
+  setujuiBap(id: number, approve = true) {
+    return this.api.patch(
+      `${CertificateOfPaymentService.JALUR}/${id}/approve-bap?approve=${approve}`,
+      {},
+    );
+  }
+
+  /**
+   * Tandai CoP DIBUAT / batalkan — tahap harga & potongan (eng level 2+).
+   *
+   * Rutenya masih `/checked` demi kestabilan, tetapi tahap ini kini
+   * MEMBUAT CoP, bukan "memeriksa".
+   */
   periksa(id: number, checked: boolean) {
     return this.api.patch(
       `${CertificateOfPaymentService.JALUR}/${id}/checked?checked=${checked}`,
@@ -340,6 +364,7 @@ export class CertificateOfPaymentService {
     );
   }
 
+  /** Setujui CoP — GERBANG TERAKHIR (level 4+). Siap ditagih. */
   setujui(id: number) {
     return this.api.patch(
       `${CertificateOfPaymentService.JALUR}/${id}/approve`,

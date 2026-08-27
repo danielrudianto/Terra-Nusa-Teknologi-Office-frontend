@@ -162,6 +162,11 @@
     background: var(--warn-bg, #fdf0e3);
     color: var(--warn-fg, #a2651a);
   }
+  &--bap {
+    background: var(--surface-2, #eef1f6);
+    color: var(--muted, #5f6672);
+  }
+  &--dibuat,
   &--diperiksa {
     background: var(--brand-soft, #e7ecfb);
     color: var(--brand, #154dec);

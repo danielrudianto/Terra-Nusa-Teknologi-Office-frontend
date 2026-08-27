@@ -55,12 +55,16 @@
           <span>{{ c.purchaseOrderName || "—" }}</span>
         </div>
         <div class="mcp-baris4">
-          <span class="mcp-pil">
-            <mat-icon>fact_check</mat-icon>
-            {{ "mobile.cop.sudahDiperiksa" | translate }}
-            @if (c.checkedByName) {
-              · {{ c.checkedByName }}
-            }
+          <span class="mcp-pil" [class.mcp-pil--bap]="tahap(c) === 'bap'">
+            <mat-icon>{{
+              tahap(c) === "bap" ? "assignment_turned_in" : "verified"
+            }}</mat-icon>
+            {{
+              (tahap(c) === "bap"
+                ? "mobile.cop.menungguBap"
+                : "mobile.cop.menungguCop"
+              ) | translate
+            }}
           </span>
         </div>
       </button>
@@ -104,10 +108,18 @@
           <dt>{{ "cop.dibuat" | translate }}</dt>
           <dd>{{ dipilih.createdByName || "—" }}</dd>
         </div>
-        <div>
-          <dt>{{ "cop.diperiksa" | translate }}</dt>
-          <dd>{{ dipilih.checkedByName || "—" }}</dd>
-        </div>
+        @if (dipilih.isBapApproved) {
+          <div>
+            <dt>{{ "cop.bapDisetujui" | translate }}</dt>
+            <dd>{{ dipilih.bapApprovedByName || "—" }}</dd>
+          </div>
+        }
+        @if (dipilih.isCopCreated) {
+          <div>
+            <dt>{{ "cop.copDibuat" | translate }}</dt>
+            <dd>{{ dipilih.copCreatedByName || "—" }}</dd>
+          </div>
+        }
       </dl>
 
       <!--
@@ -166,8 +178,13 @@
           [disabled]="!sudahBaca || sedangKirim"
           (click)="setujui()"
         >
-          <mat-icon>verified</mat-icon>
-          {{ "cop.setujui" | translate }}
+          <mat-icon>{{
+            tahap(dipilih) === "bap" ? "assignment_turned_in" : "verified"
+          }}</mat-icon>
+          {{
+            (tahap(dipilih) === "bap" ? "cop.setujuiBap" : "cop.setujui")
+              | translate
+          }}
         </button>
       </div>
     }

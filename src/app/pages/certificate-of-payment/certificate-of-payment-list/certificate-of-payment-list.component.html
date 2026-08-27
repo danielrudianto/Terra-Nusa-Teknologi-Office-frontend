@@ -28,8 +28,11 @@
       <mat-chip-option class="cl-fchip cl-fchip--draft" value="draft">{{
         "cop.keadaan_draft" | translate
       }}</mat-chip-option>
-      <mat-chip-option class="cl-fchip cl-fchip--diperiksa" value="diperiksa">{{
-        "cop.keadaan_diperiksa" | translate
+      <mat-chip-option class="cl-fchip cl-fchip--bap" value="bap">{{
+        "cop.keadaan_bap" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="cl-fchip cl-fchip--dibuat" value="dibuat">{{
+        "cop.keadaan_dibuat" | translate
       }}</mat-chip-option>
       <mat-chip-option class="cl-fchip cl-fchip--disetujui" value="disetujui">{{
         "cop.keadaan_disetujui" | translate
@@ -230,42 +233,47 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <!-- Menyunting hanya SELAMA belum diperiksa: setelah itu isinya
-                 sudah menjadi dasar orang lain memutuskan. -->
-            @if (!c.isChecked) {
+            <!-- Menyunting hanya SELAMA BAP belum disetujui: setelah itu
+                 volumenya sudah menjadi progres yang diakui sah. -->
+            @if (!c.isBapApproved) {
               <button mat-menu-item (click)="ubah(c)">
                 <mat-icon>edit</mat-icon>
                 <span>{{ "common.edit" | translate }}</span>
               </button>
             }
-            <!-- Unduhan CoP hanya untuk yang SUDAH diperiksa; lihat
+            <!-- Unduhan CoP hanya untuk yang CoP-nya SUDAH dibuat; lihat
                  catatan pada layar rincian. -->
-            @if (bolehLihatNilai() && c.isChecked) {
+            @if (bolehLihatNilai() && c.isCopCreated) {
               <button mat-menu-item (click)="unduh(c)">
                 <mat-icon>picture_as_pdf</mat-icon>
                 <span>{{ "cop.unduhPdf" | translate }}</span>
               </button>
             }
+            <!-- GERBANG 1 — setujui BAP (level 4+). -->
+            @if (bolehSetujuiBap() && !c.isBapApproved) {
+              <button mat-menu-item (click)="setujuiBap(c)">
+                <mat-icon>assignment_turned_in</mat-icon>
+                <span>{{ "cop.setujuiBap" | translate }}</span>
+              </button>
+            }
             <!--
-              MEMBUKA lembar periksa, bukan langsung membubuhkan tandanya.
-
-              Menandai dari daftar dapat dilakukan tanpa membuka dokumennya
-              sama sekali — sedangkan penyetuju membaca tanda itu sebagai
-              pernyataan bahwa angkanya sudah ditelaah.
+              GERBANG 2 — MEMBUKA lembar pengisian harga, bukan langsung
+              membubuhkan tandanya. Hanya setelah BAP disetujui.
             -->
-            @if (bolehPeriksa() && !c.isChecked) {
+            @if (bolehPeriksa() && c.isBapApproved && !c.isCopCreated) {
               <button mat-menu-item (click)="bukaPeriksa(c)">
                 <mat-icon>fact_check</mat-icon>
-                <span>{{ "cop.periksa" | translate }}</span>
+                <span>{{ "cop.buatCop" | translate }}</span>
               </button>
             }
-            @if (bolehPeriksa() && c.isChecked && !c.isApproved) {
+            @if (bolehPeriksa() && c.isCopCreated && !c.isApproved) {
               <button mat-menu-item (click)="periksa(c, false)">
                 <mat-icon>undo</mat-icon>
-                <span>{{ "cop.cabutPeriksa" | translate }}</span>
+                <span>{{ "cop.batalBuatCop" | translate }}</span>
               </button>
             }
-            @if (bolehSetujui() && c.isChecked && !c.isApproved) {
+            <!-- GERBANG 3 — setujui CoP (level 4+). -->
+            @if (bolehSetujui() && c.isCopCreated && !c.isApproved) {
               <button mat-menu-item (click)="setujui(c)">
                 <mat-icon>verified</mat-icon>
                 <span>{{ "cop.setujui" | translate }}</span>

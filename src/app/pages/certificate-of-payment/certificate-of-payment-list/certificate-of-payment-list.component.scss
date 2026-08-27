@@ -14,7 +14,8 @@
 /* ===== warna per keping penyaring ===== */
 @include daftar.fchip("cl", "semua", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
 @include daftar.fchip("cl", "draft", var(--warn-bg, #fdf0e3), var(--warn-fg, #a2651a), var(--warn-fg, #e0942e));
-@include daftar.fchip("cl", "diperiksa", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
+@include daftar.fchip("cl", "bap", var(--surface-2, #eef1f6), var(--muted, #5f6672), var(--muted, #9aa0ab));
+@include daftar.fchip("cl", "dibuat", var(--brand-soft, #e7ecfb), var(--brand, #154dec), var(--brand, #154dec));
 @include daftar.fchip("cl", "disetujui", var(--ok-bg, #e6f6ec), var(--ok-fg, #1a7f45), var(--ok-fg, #22a75a));
 
 /*

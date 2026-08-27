@@ -118,17 +118,33 @@
       sebelum ia menambahkan namanya sendiri.
     -->
     <section class="cv-section">
-      <div class="cv-section__title">{{ "cop.bagianPersetujuan" | translate }}</div>
+      <div class="cv-section__title">{{ "cop.bagianBap" | translate }}</div>
       <div class="cv-tangan">
         <div class="cv-tangan__satu">
           <span class="cv-tangan__label">{{ "cop.dibuat" | translate }}</span>
           <strong>{{ c.createdByName || "-" }}</strong>
         </div>
         <mat-icon class="cv-panah">chevron_right</mat-icon>
-        <div class="cv-tangan__satu" [class.cv-tangan--kosong]="!c.isChecked">
-          <span class="cv-tangan__label">{{ "cop.diperiksa" | translate }}</span>
+        <div class="cv-tangan__satu" [class.cv-tangan--kosong]="!c.isBapApproved">
+          <span class="cv-tangan__label">{{ "cop.disetujui" | translate }}</span>
           <strong>{{
-            c.isChecked ? c.checkedByName || "-" : ("cop.belum" | translate)
+            c.isBapApproved
+              ? c.bapApprovedByName || "-"
+              : ("cop.belum" | translate)
+          }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section">
+      <div class="cv-section__title">{{ "cop.bagianCop" | translate }}</div>
+      <div class="cv-tangan">
+        <div class="cv-tangan__satu" [class.cv-tangan--kosong]="!c.isCopCreated">
+          <span class="cv-tangan__label">{{ "cop.dibuat" | translate }}</span>
+          <strong>{{
+            c.isCopCreated
+              ? c.copCreatedByName || "-"
+              : ("cop.belum" | translate)
           }}</strong>
         </div>
         <mat-icon class="cv-panah">chevron_right</mat-icon>
@@ -471,7 +487,7 @@
         diperiksa lebih dahulu.
       -->
       @if (bolehLihatNilai()) {
-        @if (c.isChecked) {
+        @if (c.isCopCreated) {
           <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
             <mat-icon>picture_as_pdf</mat-icon>
             {{ "cop.unduhPdf" | translate }}
@@ -479,7 +495,7 @@
         } @else {
           <span class="cv-belum-unduh">
             <mat-icon>lock</mat-icon>
-            {{ "cop.unduhSetelahDiperiksa" | translate }}
+            {{ "cop.unduhSetelahDibuat" | translate }}
           </span>
         }
         <button mat-button [disabled]="mengunduh()" (click)="unduh(true)">
@@ -488,7 +504,8 @@
         <span class="cv-pemisah"></span>
       }
 
-      @if (!c.isChecked) {
+      <!-- Volume masih boleh disunting SELAMA BAP belum disetujui. -->
+      @if (!c.isBapApproved) {
         <button mat-stroked-button (click)="ubah()">
           <mat-icon>edit</mat-icon>
           {{ "common.edit" | translate }}
@@ -496,14 +513,26 @@
       }
 
       <!--
-        MEMBUKA lembar periksa, bukan membubuhkan tandanya di sini.
-
-        Memeriksa bukan satu ketukan: volumenya dibaca ulang, yang keliru
-        dibetulkan, lalu potongan dan tambahannya diputuskan. Tandanya
-        terbubuh di ujung pekerjaan itu — sebagai akibat menyimpan — supaya
-        "sudah diperiksa" selalu berarti ada yang benar-benar menelaahnya.
+        GERBANG 1 — setujui BAP (level 4+). Mengesahkan progres lapangan;
+        baru setelah ini harga & potongan boleh diisi.
       -->
-      @if (bolehPeriksa() && !c.isChecked) {
+      @if (bolehSetujuiBap() && !c.isBapApproved) {
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="bekerja()"
+          (click)="setujuiBap()"
+        >
+          <mat-icon>assignment_turned_in</mat-icon>
+          {{ "cop.setujuiBap" | translate }}
+        </button>
+      }
+
+      <!--
+        GERBANG 2 — buat CoP: MEMBUKA lembar pengisian harga & potongan,
+        bukan membubuhkan tandanya di sini. Hanya setelah BAP disetujui.
+      -->
+      @if (bolehPeriksa() && c.isBapApproved && !c.isCopCreated) {
         <button
           mat-flat-button
           color="primary"
@@ -511,14 +540,14 @@
           (click)="bukaPeriksa()"
         >
           <mat-icon>fact_check</mat-icon>
-          {{ "cop.periksa" | translate }}
+          {{ "cop.buatCop" | translate }}
         </button>
       }
 
-      @if (bolehPeriksa() && c.isChecked && !c.isApproved) {
+      @if (bolehPeriksa() && c.isCopCreated && !c.isApproved) {
         <button mat-stroked-button [disabled]="bekerja()" (click)="periksa(false)">
           <mat-icon>undo</mat-icon>
-          {{ "cop.cabutPeriksa" | translate }}
+          {{ "cop.batalBuatCop" | translate }}
         </button>
       }
 
@@ -533,7 +562,8 @@
         </button>
       }
 
-      @if (bolehSetujui() && c.isChecked && !c.isApproved) {
+      <!-- GERBANG 3 — setujui CoP (level 4+). Siap ditagih. -->
+      @if (bolehSetujui() && c.isCopCreated && !c.isApproved) {
         <button
           mat-flat-button
           color="primary"

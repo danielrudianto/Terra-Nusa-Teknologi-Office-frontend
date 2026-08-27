@@ -17,18 +17,18 @@ import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
 /**
  * Menyetujui Certificate of Payment dari ponsel.
  *
- * TAHAP TERAKHIR SAJA
+ * DUA KEPUTUSAN, KEDUANYA DI SINI
  *
- * Pengisian CoP tidak ada di sini: yang mengisi berada di kantor lapangan
- * dengan komputer, dan tabel pagu berkolom banyak tidak dapat diisi dengan
- * benar sambil berjalan. Yang dibawa ke ponsel hanya keputusan terakhirnya —
- * dan itu cocok dengan penjaga level aplikasi ini (3 ke atas), sehingga
- * gerbangnya tidak perlu dilonggarkan sama sekali.
+ * Alurnya punya dua persetujuan level 4 ke atas: menyetujui BAP (mengesahkan
+ * progres lapangan) lalu menyetujui CoP (nilai yang ditagih). Keduanya
+ * keputusan singkat yang cocok dibawa ke ponsel; pengisian harganya TIDAK —
+ * itu tetap di komputer kantor lapangan.
  *
- * YANG DITAMPILKAN HANYA YANG SUDAH DIPERIKSA
+ * YANG DITAMPILKAN HANYA YANG MENUNGGU KEPUTUSAN
  *
- * CoP yang belum diperiksa bukan giliran penyetuju. Menampilkannya hanya
- * membuat daftar penuh dokumen yang tombolnya akan ditolak server.
+ * Yang menunggu setuju BAP (belum disetujui BAP-nya) ATAU menunggu setuju CoP
+ * (CoP sudah dibuat, belum disetujui). Sisanya bukan giliran penyetuju —
+ * menampilkannya hanya membuat daftar penuh tombol yang akan ditolak server.
  */
 @Component({
   selector: 'app-persetujuan-cop',
@@ -115,7 +115,9 @@ export class PersetujuanCopComponent implements OnInit {
           // "menunggu persetujuan" karena layar lain memerlukan semuanya.
           const kata = (this.cariCtrl.value || '').trim().toLowerCase();
           const menunggu = mentah.filter(
-            (c) => c.isChecked && !c.isApproved && !c.isDelete,
+            (c) =>
+              !c.isDelete &&
+              (!c.isBapApproved || (c.isCopCreated && !c.isApproved)),
           );
           const tersaring = kata
             ? menunggu.filter(
@@ -182,13 +184,27 @@ export class PersetujuanCopComponent implements OnInit {
     return c.items.reduce((t: number, i: any) => t + Number(i.amount || 0), 0);
   }
 
+  /** Tahap keputusan CoP ini: 'bap' (gerbang 1) atau 'cop' (gerbang 3). */
+  tahap(c: any): 'bap' | 'cop' {
+    return c && !c.isBapApproved ? 'bap' : 'cop';
+  }
+
   setujui(): void {
     if (!this.dipilih || !this.sudahBaca || this.sedangKirim) return;
     this.sedangKirim = true;
-    this.service.setujui(this.dipilih.id).subscribe({
+    // Satu tombol, dua gerbang: yang belum disetujui BAP-nya menyetujui BAP;
+    // sisanya menyetujui CoP-nya.
+    const tahap = this.tahap(this.dipilih);
+    const aksi$ =
+      tahap === 'bap'
+        ? this.service.setujuiBap(this.dipilih.id, true)
+        : this.service.setujui(this.dipilih.id);
+    aksi$.subscribe({
       next: () => {
         this.snackBar.open(
-          this.translate.instant('cop.tersetujui'),
+          this.translate.instant(
+            tahap === 'bap' ? 'cop.bapTersetujui' : 'cop.tersetujui',
+          ),
           'Close',
           { duration: 3000 },
         );
