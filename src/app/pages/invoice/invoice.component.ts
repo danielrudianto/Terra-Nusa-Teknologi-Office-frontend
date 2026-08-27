@@ -157,9 +157,25 @@ export class InvoiceComponent {
     return this.items.at(i) as FormGroup;
   }
 
+  /**
+   * Angka dari nilai bertopeng ngx-mask.
+   *
+   * Volume kini boleh berdesimal (mis. 12,3456 untuk pengeboran), dan
+   * ngx-mask dapat menuliskan pemisah desimalnya sebagai KOMA. `Number("12,3456")`
+   * menghasilkan NaN — yang lalu jatuh ke 0 dan barisnya tersaring hilang,
+   * persis gejala "insentif bor tidak keluar". Spasi (pemisah ribuan) dibuang,
+   * koma dijadikan titik, baru diangkakan.
+   */
+  private toNum(v: unknown): number {
+    if (typeof v === 'number') return v;
+    const s = String(v ?? '').replace(/\s/g, '').replace(',', '.');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
   lineTotal(i: number): number {
     const v = this.itemAt(i).getRawValue();
-    return (Number(v.quantity) || 0) * (Number(v.price) || 0);
+    return this.toNum(v.quantity) * this.toNum(v.price);
   }
 
   get grandTotal(): number {
@@ -335,7 +351,7 @@ export class InvoiceComponent {
   private get adaInsentifBor(): boolean {
     return this.items.controls.some((c) => {
       const v = c.getRawValue();
-      return v.name === 'Insentif Bor' && (Number(v.quantity) || 0) > 0;
+      return v.name === 'Insentif Bor' && this.toNum(v.quantity) > 0;
     });
   }
 
@@ -624,12 +640,12 @@ export class InvoiceComponent {
           ],
           items: this.items.controls
             .map((c) => c.getRawValue())
-            .filter((x) => (Number(x.quantity) || 0) > 0)
+            .filter((x) => this.toNum(x.quantity) > 0)
             .map((x) => ({
               name: x.name,
-              quantity: Number(x.quantity) || 0,
+              quantity: this.toNum(x.quantity),
               unit: x.unit,
-              price: Number(x.price) || 0,
+              price: this.toNum(x.price),
             })),
           bankAccountNumber: v.bankAccountNumber,
           bankAccountName: v.bankAccountName,
