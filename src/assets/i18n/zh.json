@@ -1101,7 +1101,13 @@
     "methodCekHint": "从账户开出，由收款人兑现。",
     "methodGiro": "本票",
     "methodGiroHint": "从账户开出，于指定日期到期。",
-    "tanpaRekening": "现金支付——没有收款账户，因此不要求填写账户信息。请附上收据。"
+    "tanpaRekening": "现金支付——没有收款账户，因此不要求填写账户信息。请附上收据。",
+    "masaPajak": "增值税所属期",
+    "masaPajakIkutTanggal": "跟随单据日期",
+    "masaPajakKet": "进项税额抵扣的月份。若发票与单据同月开具，请留空。",
+    "masaPajakKosongkan": "恢复为跟随单据日期",
+    "masaPajakJauh": "所属期与发票日期相距较远",
+    "masaPajakJauhKet": "晚于单据日期三个月以上，或早于单据日期。仍可保存——请确认发票确实如此。"
   },
   "reimbursementCreate": {
     "sectionDetail": "详情",
@@ -4815,7 +4821,12 @@
     "pphObjek": "预扣税对象",
     "pphKosong": "尚未设置 — 请选择预扣税对象",
     "pphUbah": "修改预扣税",
-    "tarifTerkunci": "已存在付款，因此预扣税率已锁定。代码和对象已更新，但税率保持不变。"
+    "tarifTerkunci": "已存在付款，因此预扣税率已锁定。代码和对象已更新，但税率保持不变。",
+    "masaPajak": "增值税所属期",
+    "masaPajakIkutTanggal": "跟随单据日期",
+    "masaPajakHint": "进项税额抵扣的月份。留空表示跟随单据日期。",
+    "masaPajakKosongkan": "恢复为跟随单据日期",
+    "masaPajakJauh": "所属期晚于单据日期三个月以上，或早于单据日期。仍可保存。"
   },
   "poReissue": {
     "menu": "重新签发（强制编号）",

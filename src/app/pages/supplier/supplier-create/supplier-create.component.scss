@@ -26,7 +26,7 @@ $line: var(--line, #eef0f3);
   /* Latar rata: gradien bernuansa merek ikut berubah saat pengguna
      mengganti warna tema, sedangkan kepala dialog lain polos. */
   background: var(--surface-2, #fafbfc);
-  border-bottom: 1px solid #e4e9fb;
+  border-bottom: 1px solid var(--line, #e4e9fb);
 
   &__text {
     display: flex;

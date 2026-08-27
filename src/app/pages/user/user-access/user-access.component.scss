@@ -172,7 +172,7 @@
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 0.82rem;
-  border: 0.5px solid #d7deea;
+  border: 0.5px solid var(--border, #d7deea);
   background: var(--surface, #ffffff);
   color: var(--brand, #154dec);
   border-radius: 10px;

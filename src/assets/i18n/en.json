@@ -1101,7 +1101,13 @@
     "methodCekHint": "Drawn on an account; cashed by the recipient.",
     "methodGiro": "Giro",
     "methodGiroHint": "Drawn on an account, due on a set date.",
-    "tanpaRekening": "Paid in cash — there is no destination account, so account details are not requested. Attach the receipt."
+    "tanpaRekening": "Paid in cash — there is no destination account, so account details are not requested. Attach the receipt.",
+    "masaPajak": "VAT tax period",
+    "masaPajakIkutTanggal": "Follows document date",
+    "masaPajakKet": "Month the input VAT is credited. Leave empty when the tax invoice is issued in the same month as the invoice.",
+    "masaPajakKosongkan": "Go back to following the document date",
+    "masaPajakJauh": "Tax period is far from the invoice date",
+    "masaPajakJauhKet": "More than three months after the document date, or before it. Still saveable — make sure that is what the tax invoice says."
   },
   "reimbursementCreate": {
     "sectionDetail": "Detail",
@@ -4815,7 +4821,12 @@
     "pphObjek": "WHT object",
     "pphKosong": "Not set — pick a WHT object",
     "pphUbah": "Edit WHT",
-    "tarifTerkunci": "A payment already exists, so the WHT rate is locked. The code & object are updated, but the rate is left unchanged."
+    "tarifTerkunci": "A payment already exists, so the WHT rate is locked. The code & object are updated, but the rate is left unchanged.",
+    "masaPajak": "VAT tax period",
+    "masaPajakIkutTanggal": "Follows document date",
+    "masaPajakHint": "Month the input VAT is credited. Empty means it follows the document date.",
+    "masaPajakKosongkan": "Go back to following the document date",
+    "masaPajakJauh": "Tax period is more than three months from the document date, or before it. Still saveable."
   },
   "poReissue": {
     "menu": "Reissue (force number)",

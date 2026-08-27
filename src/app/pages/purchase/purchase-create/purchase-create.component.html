@@ -303,6 +303,69 @@
         />
       </mat-form-field>
 
+      <!--
+        MASA PAJAK — hanya muncul bila dokumennya memang kena PPN.
+
+        Dokumen tanpa PPN tidak punya PPN masukan untuk dikreditkan, dan
+        isian yang tidak berpengaruh apa pun tetap akan diisi orang lalu
+        ditanyakan artinya.
+
+        Kosong berarti mengikuti tanggal dokumen — itulah keadaan yang
+        benar untuk sebagian besar pembelian. Yang mengisinya adalah yang
+        faktur pajaknya terbit di bulan berikutnya.
+      -->
+      @if (kenaPpn) {
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ "purchaseCreate.masaPajak" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            readonly
+            [value]="masaPajakTampil"
+            [placeholder]="'purchaseCreate.masaPajakIkutTanggal' | translate"
+            (click)="pilihMasaPajak()"
+          />
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'purchaseCreate.masaPajak' | translate"
+            (click)="pilihMasaPajak()"
+          >
+            <mat-icon>event</mat-icon>
+          </button>
+          @if (metaFormGroup.get("taxPeriod")?.value) {
+            <button
+              matSuffix
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'purchaseCreate.masaPajakKosongkan' | translate"
+              (click)="kosongkanMasaPajak()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <mat-hint>{{ "purchaseCreate.masaPajakKet" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <!--
+          Peringatan, BUKAN penghalang.
+
+          Batas pengkreditan itu ranah pembukuan, bukan ranah layar ini —
+          dan ada keadaan sah yang melewatinya. Yang diperlukan hanya supaya
+          masa yang jauh dari tanggal invoice tidak terisi tanpa disadari.
+        -->
+        @if (masaPajakJauh) {
+          <div class="pc-ingat">
+            <mat-icon>info</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.masaPajakJauh" | translate }}</strong>
+              <span>{{ "purchaseCreate.masaPajakJauhKet" | translate }}</span>
+            </div>
+          </div>
+        }
+      }
+
       <div class="kartu-pilih">
         <div class="kartu-pilih__judul">{{ "purchaseCreate.documentType" | translate }}</div>
         <div class="kartu-pilih__daftar">

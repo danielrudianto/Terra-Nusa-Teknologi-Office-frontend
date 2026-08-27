@@ -1101,7 +1101,13 @@
     "methodCekHint": "Ditarik atas rekening; dicairkan penerimanya.",
     "methodGiro": "Giro",
     "methodGiroHint": "Ditarik atas rekening, berjatuh tempo pada tanggal tertentu.",
-    "tanpaRekening": "Dibayar tunai — tidak ada rekening tujuan, jadi isian rekening tidak diminta. Lampirkan bukti terima."
+    "tanpaRekening": "Dibayar tunai — tidak ada rekening tujuan, jadi isian rekening tidak diminta. Lampirkan bukti terima.",
+    "masaPajak": "Masa pajak PPN",
+    "masaPajakIkutTanggal": "Ikut tanggal dokumen",
+    "masaPajakKet": "Bulan pengkreditan PPN masukan. Kosongkan bila fakturnya terbit pada bulan yang sama dengan invoice.",
+    "masaPajakKosongkan": "Kembalikan mengikuti tanggal dokumen",
+    "masaPajakJauh": "Masa pajak jauh dari tanggal invoice",
+    "masaPajakJauhKet": "Lebih dari tiga bulan setelah tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan — pastikan memang begitu fakturnya."
   },
   "reimbursementCreate": {
     "sectionDetail": "Detail",
@@ -4815,7 +4821,12 @@
     "pphObjek": "Objek PPh",
     "pphKosong": "Belum ada — pilih objek PPh",
     "pphUbah": "Ubah PPh",
-    "tarifTerkunci": "Sudah ada pembayaran, jadi tarif PPh terkunci. Kode & objeknya tetap diperbarui, tapi tarifnya tidak diubah."
+    "tarifTerkunci": "Sudah ada pembayaran, jadi tarif PPh terkunci. Kode & objeknya tetap diperbarui, tapi tarifnya tidak diubah.",
+    "masaPajak": "Masa pajak PPN",
+    "masaPajakIkutTanggal": "Ikut tanggal dokumen",
+    "masaPajakHint": "Bulan pengkreditan PPN masukan. Kosong berarti mengikuti tanggal dokumen.",
+    "masaPajakKosongkan": "Kembalikan mengikuti tanggal dokumen",
+    "masaPajakJauh": "Masa pajak lebih dari tiga bulan dari tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan."
   },
   "poReissue": {
     "menu": "Terbitkan ulang (paksa nomor)",

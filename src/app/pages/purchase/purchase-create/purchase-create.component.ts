@@ -45,6 +45,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { PurchaseOrderPickerComponent } from '../../../components/purchase-order-picker/purchase-order-picker.component';
+import { MonthSelectorComponent } from 'src/app/components/month-selector/month-selector.component';
 import { CertificateOfPaymentPilihComponent } from '../../certificate-of-payment/certificate-of-payment-pilih/certificate-of-payment-pilih.component';
 import { PermissionService } from 'src/app/services/permission.service';
 import { PurchaseOrderRingkasComponent } from '../../../components/purchase-order-ringkas/purchase-order-ringkas.component';
@@ -226,6 +227,7 @@ export class PurchaseCreateComponent {
       invoiceName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
       receiptName: new FormControl('', Validators.maxLength(100)),
       taxInvoiceName: new FormControl('', Validators.maxLength(17)),
+      taxPeriod: new FormControl<Date | null>(null),
       supplierID: new FormControl('', Validators.required),
       supplierName: new FormControl(''),
       supplierAddress: new FormControl(''),
@@ -932,6 +934,85 @@ export class PurchaseCreateComponent {
     });
   }
 
+  // ---- masa pajak -------------------------------------------------------
+
+  /**
+   * Dokumen ini kena PPN?
+   *
+   * Isian masa pajak hanya berarti bila ada PPN masukan yang dikreditkan.
+   * Menampilkannya pada dokumen tanpa PPN membuat orang mengisinya lalu
+   * menanyakan akibatnya — dan jawabannya "tidak ada".
+   */
+  get kenaPpn(): boolean {
+    return Number(this.valueFormGroup.get('ppn')?.value || 0) > 0;
+  }
+
+  /** "Agustus 2026", atau kosong bila mengikuti tanggal dokumen. */
+  get masaPajakTampil(): string {
+    const d = this.metaFormGroup.get('taxPeriod')?.value as Date | null;
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('id-ID', {
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  /**
+   * Masa pajaknya lebih dari tiga bulan setelah tanggal invoice.
+   *
+   * Sekadar PERINGATAN. Batas pengkreditan adalah urusan pembukuan, bukan
+   * urusan layar ini, dan ada keadaan sah yang melewatinya — pembetulan
+   * SPT, misalnya. Yang perlu dicegah hanya masa yang jauh terisi tanpa
+   * disadari.
+   */
+  get masaPajakJauh(): boolean {
+    const masa = this.metaFormGroup.get('taxPeriod')?.value as Date | null;
+    const tanggal = this.metaFormGroup.get('date')?.value as Date | null;
+    if (!masa || !tanggal) return false;
+    const a = new Date(tanggal);
+    const b = new Date(masa);
+    const selisih =
+      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+    return selisih > 3 || selisih < 0;
+  }
+
+  pilihMasaPajak(): void {
+    const sekarang =
+      (this.metaFormGroup.get('taxPeriod')?.value as Date | null) ||
+      (this.metaFormGroup.get('date')?.value as Date | null) ||
+      new Date();
+    const d = new Date(sekarang);
+    this.dialog
+      .open(MonthSelectorComponent, {
+        data: { month: d.getMonth(), year: d.getFullYear() },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil: { month: number; year: number } | undefined) => {
+        if (!hasil) return;
+        // Hari PERTAMA bulannya. Menyimpan tanggal hari ini akan membuat
+        // masa pajak bergeser ke bulan berikutnya bila disimpan pada
+        // tanggal 31 untuk bulan yang hanya punya 30 hari.
+        this.metaFormGroup
+          .get('taxPeriod')
+          ?.setValue(new Date(hasil.year, hasil.month, 1));
+      });
+  }
+
+  /** `YYYY-MM-01` menurut waktu setempat, atau `null` bila mengikuti tanggal. */
+  private masaPajakIso(): string | null {
+    const d = this.metaFormGroup.get('taxPeriod')?.value as Date | null;
+    if (!d) return null;
+    const t = new Date(d);
+    const b = String(t.getMonth() + 1).padStart(2, '0');
+    return `${t.getFullYear()}-${b}-01`;
+  }
+
+  /** Kembali mengikuti tanggal dokumen. */
+  kosongkanMasaPajak(): void {
+    this.metaFormGroup.get('taxPeriod')?.setValue(null);
+  }
+
   bukaPemilihPO(): void {
     this.dialog
       .open(PurchaseOrderPickerComponent, {
@@ -1143,6 +1224,18 @@ export class PurchaseCreateComponent {
         this.metaFormGroup.controls['taxInvoiceName'].value == ''
           ? null
           : this.metaFormGroup.controls['taxInvoiceName'].value,
+      /*
+       * Masa pajak dikirim sebagai `YYYY-MM-01`, MENURUT WAKTU SETEMPAT.
+       *
+       * `toISOString()` mengubahnya ke UTC lebih dulu; di WIB (UTC+7) hari
+       * pertama bulan pukul 00:00 menjadi tanggal terakhir bulan
+       * SEBELUMNYA — dan masa pajaknya mundur satu bulan tanpa satu pun
+       * tanda di layar.
+       *
+       * `null` bila tidak diisi: itulah yang berarti "ikut tanggal
+       * dokumen" bagi server.
+       */
+      taxPeriod: this.masaPajakIso(),
       supplierID: this.metaFormGroup.controls['supplierID'].value,
       supplierName: this.metaFormGroup.controls['supplierName'].value,
       supplierAddress: this.metaFormGroup.controls['supplierAddress'].value,

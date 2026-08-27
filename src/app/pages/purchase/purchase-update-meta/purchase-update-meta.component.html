@@ -61,6 +61,57 @@
         </mat-form-field>
 
         <!--
+          MASA PAJAK — inilah kolom yang paling sering dibetulkan dari layar
+          ini, dan sebabnya selalu sama: faktur pajaknya baru diterima
+          setelah pembeliannya dibayar.
+
+          Tidak ikut terkunci oleh pembayaran. Ia tidak menggeser satu
+          rupiah pun pada dokumennya, hanya memindahkan bulan pengkreditan
+          PPN masukannya.
+        -->
+        @if (kenaPpn) {
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>{{ "purchaseMeta.masaPajak" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              readonly
+              [value]="masaPajakTampil"
+              [placeholder]="'purchaseMeta.masaPajakIkutTanggal' | translate"
+              (click)="pilihMasaPajak()"
+            />
+            <button
+              matSuffix
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'purchaseMeta.masaPajak' | translate"
+              (click)="pilihMasaPajak()"
+            >
+              <mat-icon>event</mat-icon>
+            </button>
+            @if (meta.get("taxPeriod")?.value) {
+              <button
+                matSuffix
+                mat-icon-button
+                type="button"
+                [attr.aria-label]="'purchaseMeta.masaPajakKosongkan' | translate"
+                (click)="kosongkanMasaPajak()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+            <mat-hint>{{ "purchaseMeta.masaPajakHint" | translate }}</mat-hint>
+          </mat-form-field>
+
+          @if (masaPajakJauh) {
+            <p class="pum-ingat">
+              <mat-icon>info</mat-icon>
+              {{ "purchaseMeta.masaPajakJauh" | translate }}
+            </p>
+          }
+        }
+
+        <!--
           Kode & objek PPh — klasifikasi, bukan nominal. Selalu boleh
           dibetulkan (mis. kode lupa diisi) meski sudah ada pembayaran.
           Dipilih lewat pemilih PPh, bukan diketik bebas.

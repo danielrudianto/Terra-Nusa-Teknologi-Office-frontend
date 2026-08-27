@@ -29,6 +29,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { MonthSelectorComponent } from 'src/app/components/month-selector/month-selector.component';
 
 /**
  * Sunting META pembelian LUAR — hanya level 5.
@@ -99,6 +100,11 @@ export class PurchaseUpdateMetaComponent {
     ]),
     receiptName: new FormControl('', Validators.maxLength(100)),
     taxInvoiceName: new FormControl('', Validators.maxLength(17)),
+    // MASA PAJAK pengkreditan PPN masukan. Boleh diubah MESKI sudah ada
+    // pembayaran: ia tidak menggeser satu rupiah pun, hanya memindahkan
+    // bulan pengkreditannya — dan justru inilah yang paling sering perlu
+    // dibetulkan, karena faktur pajaknya kerap datang setelah dibayar.
+    taxPeriod: new FormControl<Date | null>(null),
     // Kode & objek PPh: KLASIFIKASI, bukan nominal. Selalu boleh dibetulkan
     // (mis. kode lupa diisi) meski sudah ada pembayaran — dipilih lewat
     // pemilih PPh, tidak diketik bebas.
@@ -133,6 +139,7 @@ export class PurchaseUpdateMetaComponent {
           invoiceName: d?.invoiceName,
           receiptName: d?.receiptName,
           taxInvoiceName: d?.taxInvoiceName,
+          taxPeriod: d?.taxPeriod ? new Date(d.taxPeriod) : null,
           pphCode: d?.pphCode ?? '',
           pphTaxObject: d?.pphTaxObject ?? '',
         });
@@ -155,6 +162,67 @@ export class PurchaseUpdateMetaComponent {
         this.dialog.close();
       },
     }).add(() => (this.memuat = false));
+  }
+
+  // ---- masa pajak -------------------------------------------------------
+
+  /** Dokumen ini kena PPN? Tanpa PPN, masa pajak tidak berarti apa pun. */
+  get kenaPpn(): boolean {
+    return Number(this.nilai.getRawValue()?.ppn || 0) > 0;
+  }
+
+  /** "Agustus 2026", atau kosong bila mengikuti tanggal dokumen. */
+  get masaPajakTampil(): string {
+    const d = this.meta.get('taxPeriod')?.value as Date | null;
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('id-ID', {
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  /** Lebih dari tiga bulan dari tanggal dokumen — peringatan, bukan larangan. */
+  get masaPajakJauh(): boolean {
+    const masa = this.meta.get('taxPeriod')?.value as Date | null;
+    const tanggal = this.meta.get('date')?.value;
+    if (!masa || !tanggal) return false;
+    const a = new Date(tanggal);
+    const b = new Date(masa);
+    if (isNaN(a.getTime())) return false;
+    const selisih =
+      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+    return selisih > 3 || selisih < 0;
+  }
+
+  pilihMasaPajak(): void {
+    const awal =
+      (this.meta.get('taxPeriod')?.value as Date | null) ||
+      (this.meta.get('date')?.value ? new Date(this.meta.get('date')!.value) : null) ||
+      new Date();
+    const d = new Date(awal);
+    this.pilih
+      .open(MonthSelectorComponent, {
+        data: { month: d.getMonth(), year: d.getFullYear() },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil: { month: number; year: number } | undefined) => {
+        if (!hasil) return;
+        // Hari PERTAMA bulannya — lihat catatan pada formulir pembuatan.
+        this.meta.get('taxPeriod')?.setValue(new Date(hasil.year, hasil.month, 1));
+      });
+  }
+
+  kosongkanMasaPajak(): void {
+    this.meta.get('taxPeriod')?.setValue(null);
+  }
+
+  private masaPajakIso(): string | null {
+    const d = this.meta.get('taxPeriod')?.value as Date | null;
+    if (!d) return null;
+    const t = new Date(d);
+    const b = String(t.getMonth() + 1).padStart(2, '0');
+    return `${t.getFullYear()}-${b}-01`;
   }
 
   /** Ringkasan PPh terpilih, untuk ditampilkan. */
@@ -242,6 +310,9 @@ export class PurchaseUpdateMetaComponent {
         this.meta.get('taxInvoiceName')?.value === ''
           ? null
           : this.meta.get('taxInvoiceName')?.value,
+      // `YYYY-MM-01` menurut waktu SETEMPAT; `toISOString()` akan
+      // memundurkannya satu bulan di WIB. `null` berarti ikut tanggal.
+      taxPeriod: this.masaPajakIso(),
       // Kode & objek PPh selalu ikut — klasifikasi, tidak terkunci pembayaran.
       pphCode: this.meta.get('pphCode')?.value || null,
       pphTaxObject: this.meta.get('pphTaxObject')?.value || null,
