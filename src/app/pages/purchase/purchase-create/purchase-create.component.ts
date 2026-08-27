@@ -505,7 +505,44 @@ export class PurchaseCreateComponent {
     // sesudah nilainya, kalau tidak PPh yang baru dipasang ikut
     // dikosongkan langganan `documentType`.
     this.terapkanJenisDariNomor(c.purchaseOrderName);
+
+    // SESUDAH jenis dokumennya ditetapkan, karena jenis "barang"
+    // mengosongkan PPh lewat langganannya sendiri — menghitung sebelum itu
+    // berarti menghitung dari tarif yang sesaat lagi dibuang.
+    this.hitungUlangPajakDariNilai();
     this.calculateTotal();
+  }
+
+  /**
+   * Susun ulang PPN (Rp.) dan PPh (Rp.) dari DPP serta tarif yang sekarang.
+   *
+   * MENGAPA PERLU
+   *
+   * Nilai rupiah PPh hanya disusun ulang oleh langganan `dpp.valueChanges`,
+   * dan langganan itu membaca `pphPercentage` PADA SAAT ia berjalan.
+   * `patchValue` menyalakan langganan tiap kendali menurut urutan
+   * DEKLARASINYA — `dpp` lebih dulu, `pphPercentage` sesudahnya — sehingga
+   * ketika `dpp` berubah, tarifnya masih nol.
+   *
+   * Itulah yang membuat pembelian yang diisikan dari CoP tampil dengan
+   * tarif 1,75% dan DPP terisi, tetapi PPh (Rp.) tetap nol. Tidak ada galat
+   * sama sekali: angkanya memang dihitung, hanya dari tarif yang belum
+   * sempat masuk.
+   *
+   * `emitEvent: false` supaya penyusunan ulang ini tidak menyalakan
+   * langganan lain dan memulai putaran yang sama sekali lagi.
+   */
+  private hitungUlangPajakDariNilai(): void {
+    const dpp = Number(this.valueFormGroup.get('dpp')?.value || 0);
+    const ppn = Number(this.valueFormGroup.get('ppn')?.value || 0);
+    const pph = Number(this.valueFormGroup.get('pphPercentage')?.value || 0);
+
+    this.valueFormGroup
+      .get('ppnValue')
+      ?.setValue(((dpp * ppn) / 100).toFixed(2), { emitEvent: false });
+    this.valueFormGroup
+      .get('pphValue')
+      ?.setValue(nilaiUang((dpp * pph) / 100), { emitEvent: false });
   }
 
   ngOnInit() {
