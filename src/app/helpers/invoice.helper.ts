@@ -105,6 +105,22 @@ function rupiah(value: number): string {
   });
 }
 
+/**
+ * Volume/kuantitas — sampai 4 angka di belakang koma.
+ *
+ * TERPISAH dari `rupiah()`: nilai rupiah dibulatkan tanpa desimal, tetapi
+ * volume pekerjaan seperti pengeboran memang pecahan (mis. 12,3456 m).
+ * Menyatukan keduanya memaksa memilih satu ketelitian untuk dua hal yang
+ * berbeda. Minimal 0 desimal supaya yang bulat tetap bersih ("7", bukan
+ * "7,0000").
+ */
+function kuantitas(value: number): string {
+  return (Number(value) || 0).toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  });
+}
+
 /** Ubah angka menjadi terbilang; dipakai pada kuitansi. */
 export function terbilang(value: number): string {
   const satuan = [
@@ -159,7 +175,7 @@ function itemsTable(data: IInvoiceDocument, total: number) {
       { text: `${i + 1}.`, alignment: 'center' as Alignment },
       { text: item.name || '-' },
       {
-        text: `${rupiah(item.quantity)} ${item.unit || ''}`.trim(),
+        text: `${kuantitas(item.quantity)} ${item.unit || ''}`.trim(),
         alignment: 'center' as Alignment,
       },
       { text: rupiah(item.price), alignment: 'right' as Alignment },
