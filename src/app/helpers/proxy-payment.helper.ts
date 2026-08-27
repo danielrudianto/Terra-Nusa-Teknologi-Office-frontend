@@ -223,18 +223,27 @@ export class ProxyPaymentHelper {
           layout: 'noBorders',
         },
         {
-          text: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n',
+          // Jeda menuju tanda tangan. DULU 15 baris kosong — itu mendorong
+          // blok tanda tangannya sampai ke dasar halaman, sehingga baris
+          // namanya tidak lagi muat dan meloncat ke halaman berikutnya
+          // (blok tanda tangan tampak "turun ke bawah" dan terbelah dua).
+          // Cukup satu jeda wajar; posisinya kini mengikuti isi surat.
+          text: '\n\n',
         },
         {
+          // `unbreakable`: tabel tanda tangan TIDAK BOLEH terbelah antar
+          // halaman. Bila sisanya tidak cukup, seluruh tabel pindah utuh ke
+          // halaman berikutnya — bukan judulnya di sini, namanya di sana.
+          unbreakable: true,
           table: {
             widths: ['*', '*'],
             body: [
               [
                 {
-                  text: 'Disetujui,\n\n\n\n\n\n\n',
+                  text: 'Disetujui,\n\n\n\n\n',
                 },
                 {
-                  text: 'Diketahui,\n\n\n\n\n\n\n',
+                  text: 'Diketahui,\n\n\n\n\n',
                 },
               ],
               [
