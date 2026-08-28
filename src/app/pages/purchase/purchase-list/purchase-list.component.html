@@ -138,7 +138,7 @@
     <div class="pl-loadingbar" *ngIf="isLoading"><span></span></div>
 
     <div class="table-responsive">
-      <table mat-table [dataSource]="purchases">
+      <table mat-table [dataSource]="purchases" [trackBy]="trackById">
         <!-- Date -->
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('date')">

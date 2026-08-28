@@ -51,6 +51,9 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
   standalone: true,
 })
 export class LoansListComponent {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   constructor(
     private apiService: ApiService,
     private router: Router,

@@ -62,6 +62,9 @@ import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
   standalone: true,
 })
 export class PurchaseListComponent {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   private readonly translate = inject(TranslateService);
   constructor(
     private permissionService: PermissionService,

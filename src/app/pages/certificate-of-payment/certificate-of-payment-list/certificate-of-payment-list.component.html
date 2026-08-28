@@ -88,7 +88,7 @@
       Kelas `cl-th`, `cl-th__idle`, dan `cl-th--right` datang dari campuran
       `daftar` yang sama — sudah ada sejak awal, hanya belum dipakai di sini.
     -->
-    <table mat-table [dataSource]="terlihat()">
+    <table mat-table [dataSource]="terlihat()" [trackBy]="trackById">
       <ng-container matColumnDef="nomor">
         <th mat-header-cell *matHeaderCellDef (click)="gantiUrutan('nomor')">
           <span class="cl-th">

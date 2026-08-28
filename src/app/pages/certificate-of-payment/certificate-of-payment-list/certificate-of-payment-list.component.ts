@@ -57,6 +57,9 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
   styleUrl: './certificate-of-payment-list.component.scss',
 })
 export class CertificateOfPaymentListComponent implements OnInit {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   private readonly service = inject(CertificateOfPaymentService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

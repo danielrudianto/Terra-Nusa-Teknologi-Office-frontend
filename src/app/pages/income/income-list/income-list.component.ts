@@ -62,6 +62,9 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
   standalone: true,
 })
 export class IncomeListComponent {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
   constructor(

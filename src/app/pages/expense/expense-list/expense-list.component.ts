@@ -59,6 +59,9 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
   styleUrl: './expense-list.component.scss',
 })
 export class ExpenseListComponent {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   private readonly serverMessage = inject(ServerMessageService);
   /** map kode expense type -> i18n key. */
   private static readonly EXPENSE_TYPE_MAP: { [k: string]: string } = {

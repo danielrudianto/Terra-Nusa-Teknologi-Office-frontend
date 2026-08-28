@@ -49,6 +49,9 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
   standalone: true,
 })
 export class SalesInvoiceListComponent {
+  /** track by id: hindari render ulang seluruh baris saat data berubah. */
+  trackById = (_: number, row: any): any => row?.id ?? _;
+
   private readonly translate = inject(TranslateService);
   private readonly izin = inject(PermissionService);
   constructor(
