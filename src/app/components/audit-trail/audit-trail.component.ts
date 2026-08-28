@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -60,7 +66,16 @@ export class AuditTrailComponent implements OnChanges {
   isLoading = false;
   hasError = false;
 
-  constructor(private apiService: ApiService) {}
+  /**
+   * `cdr` diperlukan karena komponen ini kerap dipasang DI DALAM tampilan
+   * OnPush (mis. layar view CoP). Datanya tiba lewat `subscribe`, dan tanpa
+   * `markForCheck()` perubahannya tidak pernah ke-render pada induk OnPush —
+   * spinner-nya lalu berputar terus meski `isLoading` sudah `false`.
+   */
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entity'] || changes['entityId']) this.fetch();
@@ -70,6 +85,7 @@ export class AuditTrailComponent implements OnChanges {
     if (!this.entity || !this.entityId) return;
     this.isLoading = true;
     this.hasError = false;
+    this.cdr.markForCheck();
 
     this.apiService
       .get(`audit-logs/${this.entity}/${this.entityId}`, {
@@ -79,12 +95,14 @@ export class AuditTrailComponent implements OnChanges {
         next: (res: any) => {
           this.entries = res?.data ?? [];
           this.isLoading = false;
+          this.cdr.markForCheck();
         },
         error: () => {
           // Riwayat adalah pelengkap; kegagalan memuatnya tidak boleh
           // membuat tampilan detail ikut gagal.
           this.hasError = true;
           this.isLoading = false;
+          this.cdr.markForCheck();
         },
       });
   }
