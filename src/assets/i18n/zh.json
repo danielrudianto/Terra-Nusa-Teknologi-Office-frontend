@@ -931,6 +931,7 @@
     "lanjut": "下一步",
     "nilaiPajak": "金额与税项",
     "hitungTotal": "Hitung total",
+    "hitungTotalDulu": "请先在「金额与税项」卡片中计算总额",
     "kembali": "返回",
     "bikinPaymentSlipOtomatisNggak": "自动生成付款单，无需手动填写。",
     "date": "Date",

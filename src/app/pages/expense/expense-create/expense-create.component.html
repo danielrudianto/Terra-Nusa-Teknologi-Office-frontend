@@ -1,3 +1,14 @@
+<!--
+  SATU HALAMAN, BUKAN STEPPER.
+
+  Bentuknya mengikuti layar Pembelian: kartu-kartu bertumpuk yang semuanya
+  terlihat sekaligus, bukan tiga langkah yang harus dilalui berurutan. Beban
+  jarang sepanjang pembelian, dan memaksanya lewat tiga langkah membuat yang
+  mencatat satu nota kecil menekan "Lanjut" dua kali tanpa alasan.
+
+  Ketiga FormGroup-nya tetap terpisah — hanya bingkainya yang berubah — sehingga
+  logika hitung, validasi, dan simpan di komponennya tidak ikut berubah.
+-->
 <div class="exc">
   <app-header-title
     [title]="'expenseAdmin.pageTitle' | translate"
@@ -6,609 +17,565 @@
     (onActionButtonClicked)="createNewAdministrationExpense()"
   ></app-header-title>
 
-  <mat-stepper [linear]="true" #stepper class="exc-stepper">
-    <!-- ===== STEP 1: META ===== -->
-    <mat-step [stepControl]="metaFormGroup">
-      <form [formGroup]="metaFormGroup" (ngSubmit)="onSubmit()">
-        <ng-template matStepLabel>{{
-          "expense.metaData" | translate
-        }}</ng-template>
+  <!-- ===== KARTU 1: DETAIL BEBAN ===== -->
+  <div class="exc-card">
+    <div class="exc-section__title">
+      {{ "expense.detailExpense" | translate }}
+    </div>
 
-        <div class="exc-card">
-          <div class="exc-section__title">
-            {{ "expense.detailExpense" | translate }}
-          </div>
-          <div class="exc-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.date" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="date"
-                [placeholder]="'expense.date' | translate"
-                [matDatepicker]="picker"
-              />
-              <mat-datepicker-toggle
-                matIconPrefix
-                [for]="picker"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
+    <form [formGroup]="metaFormGroup">
+      <div class="exc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.date" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [placeholder]="'expense.date' | translate"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.dueDate" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="dueDate"
-                [placeholder]="'expense.dueDate' | translate"
-                [matDatepicker]="duePicker"
-              />
-              <mat-datepicker-toggle
-                matIconPrefix
-                [for]="duePicker"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #duePicker></mat-datepicker>
-            </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.dueDate" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="dueDate"
+            [placeholder]="'expense.dueDate' | translate"
+            [matDatepicker]="duePicker"
+          />
+          <mat-datepicker-toggle
+            matIconPrefix
+            [for]="duePicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #duePicker></mat-datepicker>
+        </mat-form-field>
 
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{ "expenseForm.opponent" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="opponentName"
-                type="text"
-                [placeholder]="'expense.pilihOpponent' | translate"
-                readonly
-              />
-              <button
-                matPrefix
-                mat-icon-button
-                (click)="openOpponentSelector()"
-                type="button"
-                [attr.aria-label]="'expense.pilihOpponent' | translate"
-              >
-                <mat-icon>search</mat-icon>
-              </button>
-            </mat-form-field>
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{ "expenseForm.opponent" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="opponentName"
+            type="text"
+            [placeholder]="'expense.pilihOpponent' | translate"
+            readonly
+          />
+          <button
+            matPrefix
+            mat-icon-button
+            (click)="openOpponentSelector()"
+            type="button"
+            [attr.aria-label]="'expense.pilihOpponent' | translate"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
 
-            <mat-form-field
-              appearance="outline"
-              class="exc-span2"
-              *ngIf="metaFormGroup.get('opponentDescription')?.value"
-            >
-              <mat-label>{{
-                "expenseForm.opponentDescription" | translate
-              }}</mat-label>
-              <textarea
-                matInput
-                formControlName="opponentDescription"
-                rows="2"
-                [placeholder]="'expense.opponentDescription' | translate"
-                readonly
-                style="resize: none"
-              ></textarea>
-            </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          class="exc-span2"
+          *ngIf="metaFormGroup.get('opponentDescription')?.value"
+        >
+          <mat-label>{{
+            "expenseForm.opponentDescription" | translate
+          }}</mat-label>
+          <textarea
+            matInput
+            formControlName="opponentDescription"
+            rows="2"
+            [placeholder]="'expense.opponentDescription' | translate"
+            readonly
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.invoiceName" | translate }}</mat-label>
-              <input
-                matInput
-                formControlName="invoiceName"
-                type="text"
-                [placeholder]="'expense.invoiceName' | translate"
-              />
-            </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.invoiceName" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="invoiceName"
+            type="text"
+            [placeholder]="'expense.invoiceName' | translate"
+          />
+        </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.receiptName" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="receiptName"
-                [placeholder]="'expense.receiptName' | translate"
-              />
-            </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.receiptName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="receiptName"
+            [placeholder]="'expense.receiptName' | translate"
+          />
+        </mat-form-field>
 
-            <!--
-              Nomor faktur pajak.
+        <!--
+          Nomor faktur pajak.
 
-              Rekap PPN memuat kolom ini; tanpa isiannya, baris beban selalu
-              kosong di sana dan fakturnya tidak dapat dilacak kembali ke
-              dokumen sumbernya saat dicocokkan konsultan.
-            -->
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.taxInvoiceName" | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="taxInvoiceName"
-                [placeholder]="'expenseForm.taxInvoicePlaceholder' | translate"
-              />
-              <mat-hint>{{ "expenseForm.taxInvoiceHint" | translate }}</mat-hint>
-            </mat-form-field>
+          Rekap PPN memuat kolom ini; tanpa isiannya, baris beban selalu
+          kosong di sana dan fakturnya tidak dapat dilacak kembali ke
+          dokumen sumbernya saat dicocokkan konsultan.
+        -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.taxInvoiceName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="taxInvoiceName"
+            [placeholder]="'expenseForm.taxInvoicePlaceholder' | translate"
+          />
+          <mat-hint>{{ "expenseForm.taxInvoiceHint" | translate }}</mat-hint>
+        </mat-form-field>
 
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{
-                "expenseForm.purchaseType" | translate
-              }}</mat-label>
-              <mat-select formControlName="purchaseType">
-                <mat-optgroup label="Office Expenses">
-                  <mat-option value="5.1.1">{{
-                    "expense.assetPurchase" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.2">{{
-                    "expense.assetMaintenance" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.3">{{
-                    "expense.prepaidRent" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.4">{{
-                    "expense.employeeExpense" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.5">{{
-                    "expense.logistic" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.6"
-                    >{{ "expense.documentHandlingStationaries" | translate }}</mat-option
-                  >
-                  <mat-option value="5.1.7">{{
-                    "expense.utilities" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.12">{{
-                    "expense.software" | translate
-                  }}</mat-option>
-                  <mat-optgroup label="Tax">
-                    <mat-option value="5.1.8.1">PPN</mat-option>
-                    <mat-option value="5.1.8.2"
-                      >{{ "expense.pphPasal23Dan4" | translate }}</mat-option
-                    >
-                    <mat-option value="5.1.8.3">{{
-                      "expense.pph21" | translate
-                    }}</mat-option>
-                    <mat-option value="5.1.8.4">{{
-                      "expense.sptTahunan" | translate
-                    }}</mat-option>
-                    <mat-option value="5.1.8.5"
-                      >{{ "expense.annualTaxReportService" | translate }}</mat-option
-                    >
-                    <mat-option value="5.1.8.6">{{
-                      "expense.penalty" | translate
-                    }}</mat-option>
-                    <mat-option value="5.1.8.7">{{
-                      "expense.taxOnInterest" | translate
-                    }}</mat-option>
-                  </mat-optgroup>
-                  <mat-option value="5.1.14"
-                    >{{ "expense.socialAndCommunityExpense" | translate }}</mat-option
-                  >
-                  <mat-option value="5.1.9">{{
-                    "expense.adminFees" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.10">{{
-                    "expense.interests" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.13">{{
-                    "expense.penaltyFees" | translate
-                  }}</mat-option>
-                  <mat-option value="5.1.11">{{
-                    "expense.roundingUp" | translate
-                  }}</mat-option>
-                  <mat-optgroup label="Marketing">
-                    <mat-option value="6.3.1">{{
-                      "expense.advertising" | translate
-                    }}</mat-option>
-                    <mat-option value="6.3.2"
-                      >{{ "expense.promotionalMerchandise" | translate }}</mat-option
-                    >
-                    <mat-option value="6.3.3">{{
-                      "expense.socialMedia" | translate
-                    }}</mat-option>
-                  </mat-optgroup>
-                  <mat-optgroup label="Legal">
-                    <mat-option value="6.4.1"
-                      >{{ "expense.legalDocumentAktaSbu" | translate }}</mat-option
-                    >
-                    <mat-option value="6.4.2"
-                      >{{ "expense.insurancesMarineCarTplSurety" | translate }}</mat-option
-                    >
-                  </mat-optgroup>
-                  <mat-optgroup label="Human Resources">
-                    <mat-option value="6.5.1">{{
-                      "expense.recruitment" | translate
-                    }}</mat-option>
-                    <mat-option value="6.5.2">{{
-                      "expense.training" | translate
-                    }}</mat-option>
-                    <mat-option value="6.5.3">{{
-                      "expense.healthcare" | translate
-                    }}</mat-option>
-                  </mat-optgroup>
-                </mat-optgroup>
-                <mat-optgroup label="Project Expenses">
-                  <mat-option value="A">{{
-                    "expense.transportation" | translate
-                  }}</mat-option>
-                  <mat-option value="B">{{
-                    "expense.equipmentRental" | translate
-                  }}</mat-option>
-                  <mat-option value="C">{{
-                    "expense.fuel" | translate
-                  }}</mat-option>
-                  <mat-option value="D">{{
-                    "expense.manpower" | translate
-                  }}</mat-option>
-                  <mat-option value="E"
-                    >{{ "expense.coordinationConsumptionAndAccomoda" | translate }}</mat-option
-                  >
-                  <mat-option value="F">{{
-                    "expense.material" | translate
-                  }}</mat-option>
-                  <mat-option value="G"
-                    >{{ "expense.projectSupportingEquipmentAndSuppl" | translate }}</mat-option
-                  >
-                </mat-optgroup>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{
-                "expenseForm.expenseDescription" | translate
-              }}</mat-label>
-              <textarea
-                matInput
-                formControlName="description"
-                rows="3"
-                [placeholder]="'expense.deskripsiMin10Karakter' | translate"
-                style="resize: none"
-              ></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="exc-actions">
-            <span class="exc-spacer"></span>
-            <button
-              matStepperNext
-              class="exc-btn exc-btn--primary"
-              [disabled]="metaFormGroup.invalid"
-            >
-              {{ "expense.lanjut" | translate }}
-            </button>
-          </div>
-        </div>
-      </form>
-    </mat-step>
-
-    <!-- ===== STEP 2: VALUE ===== -->
-    <mat-step [stepControl]="valueFormGroup">
-      <form [formGroup]="valueFormGroup">
-        <ng-template matStepLabel>{{
-          "expense.valueData" | translate
-        }}</ng-template>
-
-        <div class="exc-card">
-          <div class="exc-cardhead">
-            <div class="exc-section__title exc-section__title--flush">{{ "expense.nilaiPajak" | translate }}</div>
-            <button
-              type="button"
-              class="exc-add exc-add--calc"
-              [disabled]="isFinal || !isNumberValid"
-              (click)="calculateTotal()"
-            >
-              <mat-icon>calculate</mat-icon>{{ "expense.hitungTotal" | translate }}</button>
-          </div>
-
-          <div class="exc-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.dpp" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="dpp"
-                [placeholder]="'expense.dpp' | translate"
-                prefix="Rp. "
-                thousandSeparator=" "
-                mask="separator.4"
-              />
-            </mat-form-field>
-
-            <!--
-              PPN diisi persen, nilainya dihitung di sebelahnya.
-
-              Sama seperti pada Pembelian: yang tersimpan nilai rupiahnya,
-              tetapi yang diketik persennya — karena itu yang tertera di
-              faktur pajak.
-            -->
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.ppnPercent" | translate }}</mat-label>
-              <input
-                matInput
-                type="number"
-                formControlName="ppn"
-                [min]="0"
-                [max]="11"
-              />
-              <span matTextSuffix>%</span>
-              <mat-hint>{{ "expenseForm.ppnHint" | translate }}</mat-hint>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.ppnValue" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="ppnValue"
-                readonly
-                prefix="Rp. "
-                thousandSeparator=" "
-                decimalScale="4"
-                mask="separator"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.pbbkb" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="pbbkb"
-                [placeholder]="'expense.pbbkb' | translate"
-                prefix="Rp. "
-                thousandSeparator=" "
-                decimalScale="4"
-                mask="separator"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{ "expenseForm.pph" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="pphCode"
-                [placeholder]="'expense.pphCode' | translate"
-                readonly
-              />
-              <button
-                mat-icon-button
-                matPrefix
-                (click)="openPPHSelector()"
-                type="button"
-                [attr.aria-label]="'expense.pilihPph' | translate"
-              >
-                <mat-icon>search</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{
-                "expenseForm.pphObjectName" | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="pphTaxObject"
-                [placeholder]="'expense.pphObjectName' | translate"
-                readonly
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.pphPercentage" | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="pphPercentage"
-                [placeholder]="'expense.pph' | translate"
-                readonly
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ "expenseForm.pphValue" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="pphValue"
-                [placeholder]="'expense.pphValue' | translate"
-                readonly
-                prefix="Rp. "
-                thousandSeparator=" "
-                decimalScale="4"
-                mask="separator"
-              />
-              <button
-                mat-icon-button
-                matPrefix
-                (click)="openPPHSelector()"
-                type="button"
-                [attr.aria-label]="'expense.pilihPph' | translate"
-              >
-                <mat-icon>search</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="exc-span2 exc-total">
-              <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="total"
-                [placeholder]="'expense.total' | translate"
-                readonly
-                prefix="Rp. "
-                thousandSeparator=" "
-              />
-            </mat-form-field>
-          </div>
-
-          <div class="exc-actions">
-            <button
-              mat-button
-              matStepperPrevious
-              class="exc-btn exc-btn--ghost"
-            >
-              {{ "expense.kembali" | translate }}
-            </button>
-            <span class="exc-spacer"></span>
-            <button
-              matStepperNext
-              class="exc-btn exc-btn--primary"
-              [disabled]="valueFormGroup.invalid || !isFinal"
-            >
-              {{ "expense.lanjut" | translate }}
-            </button>
-          </div>
-        </div>
-      </form>
-    </mat-step>
-
-    <!-- ===== STEP 3: PAYMENT ===== -->
-    <mat-step [stepControl]="paymentFormGroup">
-      <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>{{
-          "expense.paymentData" | translate
-        }}</ng-template>
-
-        <div class="exc-card">
-          <div class="exc-section__title">
-            {{ "common.payment" | translate }}
-          </div>
-          <div class="exc-grid">
-            <mat-form-field appearance="outline" class="exc-span2">
-              <mat-label>{{ "expenseForm.bankName" | translate }}</mat-label>
-              <input
-        autocomplete="off"
-                #input
-                matInput
-                type="search"
-                formControlName="bankName"
-                [placeholder]="'expense.pilihBank' | translate"
-                [matAutocomplete]="auto"
-                (input)="filter()"
-                (focus)="filter()"
-              />
-              <mat-autocomplete requireSelection #auto="matAutocomplete">
-                <mat-option
-                  *ngFor="let option of filteredOptions"
-                  [value]="option.name"
-                  >{{ option.name }}</mat-option
-                >
-              </mat-autocomplete>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.bankAccountName" | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="bankAccountName"
-                [placeholder]="'expense.namaRekening' | translate"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.paymentMethod" | translate
-              }}</mat-label>
-              <!--
-                Nilainya HARUS sama dengan `pilihan-pembelian.ts`.
-
-                Sebelumnya pilihan bernilai `cash` diberi label "Cek" — sehingga
-                yang memilih "Cek" menyimpan pembelian sebagai TUNAI, dan pembelian
-                tunai terbaca sebagai cek pada layar ini. Sejak cek dan giro
-                menjadi cara bayar tersendiri, keduanya bertentangan terang-terangan.
-
-                `Transfer` ikut didaftarkan meski bukan pilihan baru: dua puluh
-                delapan pembelian lama tersimpan dengan nilai itu, dan tanpa
-                pilihannya di sini kotaknya tampil KOSONG pada dokumen-dokumen itu.
-              -->
-              <mat-select formControlName="paymentMethod">
-                <mat-option value="bank">{{
-                  "expense.bankTransfer" | translate
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{ "expenseForm.purchaseType" | translate }}</mat-label>
+          <mat-select formControlName="purchaseType">
+            <mat-optgroup label="Office Expenses">
+              <mat-option value="5.1.1">{{
+                "expense.assetPurchase" | translate
+              }}</mat-option>
+              <mat-option value="5.1.2">{{
+                "expense.assetMaintenance" | translate
+              }}</mat-option>
+              <mat-option value="5.1.3">{{
+                "expense.prepaidRent" | translate
+              }}</mat-option>
+              <mat-option value="5.1.4">{{
+                "expense.employeeExpense" | translate
+              }}</mat-option>
+              <mat-option value="5.1.5">{{
+                "expense.logistic" | translate
+              }}</mat-option>
+              <mat-option value="5.1.6">{{
+                "expense.documentHandlingStationaries" | translate
+              }}</mat-option>
+              <mat-option value="5.1.7">{{
+                "expense.utilities" | translate
+              }}</mat-option>
+              <mat-option value="5.1.12">{{
+                "expense.software" | translate
+              }}</mat-option>
+              <mat-optgroup label="Tax">
+                <mat-option value="5.1.8.1">PPN</mat-option>
+                <mat-option value="5.1.8.2">{{
+                  "expense.pphPasal23Dan4" | translate
                 }}</mat-option>
-                <mat-option value="va">{{
-                  "expense.virtualAccount" | translate
+                <mat-option value="5.1.8.3">{{
+                  "expense.pph21" | translate
                 }}</mat-option>
-                <mat-option value="cek">{{ "expense.cheque" | translate }}</mat-option>
-                <mat-option value="giro">{{ "expense.giro" | translate }}</mat-option>
-                <mat-option value="cash">{{ "expense.cash" | translate }}</mat-option>
-                <mat-option value="Transfer">{{
-                  "expense.transferLama" | translate
+                <mat-option value="5.1.8.4">{{
+                  "expense.sptTahunan" | translate
                 }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+                <mat-option value="5.1.8.5">{{
+                  "expense.annualTaxReportService" | translate
+                }}</mat-option>
+                <mat-option value="5.1.8.6">{{
+                  "expense.penalty" | translate
+                }}</mat-option>
+                <mat-option value="5.1.8.7">{{
+                  "expense.taxOnInterest" | translate
+                }}</mat-option>
+              </mat-optgroup>
+              <mat-option value="5.1.14">{{
+                "expense.socialAndCommunityExpense" | translate
+              }}</mat-option>
+              <mat-option value="5.1.9">{{
+                "expense.adminFees" | translate
+              }}</mat-option>
+              <mat-option value="5.1.10">{{
+                "expense.interests" | translate
+              }}</mat-option>
+              <mat-option value="5.1.13">{{
+                "expense.penaltyFees" | translate
+              }}</mat-option>
+              <mat-option value="5.1.11">{{
+                "expense.roundingUp" | translate
+              }}</mat-option>
+              <mat-optgroup label="Marketing">
+                <mat-option value="6.3.1">{{
+                  "expense.advertising" | translate
+                }}</mat-option>
+                <mat-option value="6.3.2">{{
+                  "expense.promotionalMerchandise" | translate
+                }}</mat-option>
+                <mat-option value="6.3.3">{{
+                  "expense.socialMedia" | translate
+                }}</mat-option>
+              </mat-optgroup>
+              <mat-optgroup label="Legal">
+                <mat-option value="6.4.1">{{
+                  "expense.legalDocumentAktaSbu" | translate
+                }}</mat-option>
+                <mat-option value="6.4.2">{{
+                  "expense.insurancesMarineCarTplSurety" | translate
+                }}</mat-option>
+              </mat-optgroup>
+              <mat-optgroup label="Human Resources">
+                <mat-option value="6.5.1">{{
+                  "expense.recruitment" | translate
+                }}</mat-option>
+                <mat-option value="6.5.2">{{
+                  "expense.training" | translate
+                }}</mat-option>
+                <mat-option value="6.5.3">{{
+                  "expense.healthcare" | translate
+                }}</mat-option>
+              </mat-optgroup>
+            </mat-optgroup>
+            <mat-optgroup label="Project Expenses">
+              <mat-option value="A">{{
+                "expense.transportation" | translate
+              }}</mat-option>
+              <mat-option value="B">{{
+                "expense.equipmentRental" | translate
+              }}</mat-option>
+              <mat-option value="C">{{ "expense.fuel" | translate }}</mat-option>
+              <mat-option value="D">{{
+                "expense.manpower" | translate
+              }}</mat-option>
+              <mat-option value="E">{{
+                "expense.coordinationConsumptionAndAccomoda" | translate
+              }}</mat-option>
+              <mat-option value="F">{{
+                "expense.material" | translate
+              }}</mat-option>
+              <mat-option value="G">{{
+                "expense.projectSupportingEquipmentAndSuppl" | translate
+              }}</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{
-                "expenseForm.bankAccountNumber" | translate
-              }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="bankAccountNumber"
-                [placeholder]="'expense.nomorRekening' | translate"
-              />
-            </mat-form-field>
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{
+            "expenseForm.expenseDescription" | translate
+          }}</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="3"
+            [placeholder]="'expense.deskripsiMin10Karakter' | translate"
+            style="resize: none"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
 
-            <app-bank-account-selector
-              formControlName="bankAccountID"
-              [label]="'expenseForm.bankAccountOrigin' | translate"
-            />
-
-            <mat-form-field appearance="outline" class="exc-span2 exc-total">
-              <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="paymentTotal"
-                [placeholder]="'expense.paymentTotal' | translate"
-                readonly
-                prefix="Rp. "
-                thousandSeparator=" "
-                decimalScale="4"
-                mask="separator"
-              />
-            </mat-form-field>
-          </div>
-
-          <div class="exc-toggle">
-            <div class="exc-toggle__text">
-              <span class="exc-toggle__label">{{
-                "expense.createPaymentSlip" | translate
-              }}</span>
-              <span class="exc-toggle__hint"
-                >{{ "expense.bikinPaymentSlipOtomatisNggak" | translate }}</span
-              >
-            </div>
-            <mat-slide-toggle
-              color="primary"
-              formControlName="createPayment"
-            ></mat-slide-toggle>
-          </div>
-
-          <div class="exc-actions">
-            <button
-              mat-button
-              matStepperPrevious
-              class="exc-btn exc-btn--ghost"
-            >
-              {{ "expense.kembali" | translate }}
-            </button>
-            <span class="exc-spacer"></span>
-            <button
-              class="exc-btn exc-btn--primary"
-              (click)="onSubmit()"
-              [disabled]="!isValid || isSubmitting"
-            >
-              {{ isSubmitting ? ('hardcoded.menyimpan' | translate) : ('hardcoded.submitExpense' | translate) }}
-            </button>
-          </div>
+  <!-- ===== KARTU 2: NILAI & PAJAK ===== -->
+  <div class="exc-card">
+    <form [formGroup]="valueFormGroup">
+      <div class="exc-cardhead">
+        <div class="exc-section__title exc-section__title--flush">
+          {{ "expense.nilaiPajak" | translate }}
         </div>
-      </form>
-    </mat-step>
-  </mat-stepper>
+        <button
+          type="button"
+          class="exc-add exc-add--calc"
+          [disabled]="isFinal || !isNumberValid"
+          (click)="calculateTotal()"
+        >
+          <mat-icon>calculate</mat-icon>{{ "expense.hitungTotal" | translate }}
+        </button>
+      </div>
+
+      <div class="exc-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.dpp" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="dpp"
+            [placeholder]="'expense.dpp' | translate"
+            prefix="Rp. "
+            thousandSeparator=" "
+            mask="separator.4"
+          />
+        </mat-form-field>
+
+        <!--
+          PPN diisi persen, nilainya dihitung di sebelahnya.
+
+          Sama seperti pada Pembelian: yang tersimpan nilai rupiahnya,
+          tetapi yang diketik persennya — karena itu yang tertera di
+          faktur pajak.
+        -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.ppnPercent" | translate }}</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="ppn"
+            [min]="0"
+            [max]="11"
+          />
+          <span matTextSuffix>%</span>
+          <mat-hint>{{ "expenseForm.ppnHint" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.ppnValue" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="ppnValue"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="4"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.pbbkb" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pbbkb"
+            [placeholder]="'expense.pbbkb' | translate"
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="4"
+            mask="separator"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{ "expenseForm.pph" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphCode"
+            [placeholder]="'expense.pphCode' | translate"
+            readonly
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            (click)="openPPHSelector()"
+            type="button"
+            [attr.aria-label]="'expense.pilihPph' | translate"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{ "expenseForm.pphObjectName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphTaxObject"
+            [placeholder]="'expense.pphObjectName' | translate"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.pphPercentage" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphPercentage"
+            [placeholder]="'expense.pph' | translate"
+            readonly
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.pphValue" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="pphValue"
+            [placeholder]="'expense.pphValue' | translate"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="4"
+            mask="separator"
+          />
+          <button
+            mat-icon-button
+            matPrefix
+            (click)="openPPHSelector()"
+            type="button"
+            [attr.aria-label]="'expense.pilihPph' | translate"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="exc-span2 exc-total">
+          <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="total"
+            [placeholder]="'expense.total' | translate"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+          />
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== KARTU 3: PEMBAYARAN ===== -->
+  <div class="exc-card">
+    <div class="exc-section__title">{{ "common.payment" | translate }}</div>
+
+    <form [formGroup]="paymentFormGroup">
+      <div class="exc-grid">
+        <mat-form-field appearance="outline" class="exc-span2">
+          <mat-label>{{ "expenseForm.bankName" | translate }}</mat-label>
+          <input
+            autocomplete="off"
+            #input
+            matInput
+            type="search"
+            formControlName="bankName"
+            [placeholder]="'expense.pilihBank' | translate"
+            [matAutocomplete]="auto"
+            (input)="filter()"
+            (focus)="filter()"
+          />
+          <mat-autocomplete requireSelection #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.name"
+              >{{ option.name }}</mat-option
+            >
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.bankAccountName" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountName"
+            [placeholder]="'expense.namaRekening' | translate"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "expenseForm.paymentMethod" | translate }}</mat-label>
+          <!--
+            Nilainya HARUS sama dengan `pilihan-pembelian.ts`.
+
+            Sebelumnya pilihan bernilai `cash` diberi label "Cek" — sehingga
+            yang memilih "Cek" menyimpan pembelian sebagai TUNAI, dan pembelian
+            tunai terbaca sebagai cek pada layar ini. Sejak cek dan giro
+            menjadi cara bayar tersendiri, keduanya bertentangan terang-terangan.
+
+            `Transfer` ikut didaftarkan meski bukan pilihan baru: dua puluh
+            delapan pembelian lama tersimpan dengan nilai itu, dan tanpa
+            pilihannya di sini kotaknya tampil KOSONG pada dokumen-dokumen itu.
+          -->
+          <mat-select formControlName="paymentMethod">
+            <mat-option value="bank">{{
+              "expense.bankTransfer" | translate
+            }}</mat-option>
+            <mat-option value="va">{{
+              "expense.virtualAccount" | translate
+            }}</mat-option>
+            <mat-option value="cek">{{
+              "expense.cheque" | translate
+            }}</mat-option>
+            <mat-option value="giro">{{
+              "expense.giro" | translate
+            }}</mat-option>
+            <mat-option value="cash">{{
+              "expense.cash" | translate
+            }}</mat-option>
+            <mat-option value="Transfer">{{
+              "expense.transferLama" | translate
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "expenseForm.bankAccountNumber" | translate
+          }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="bankAccountNumber"
+            [placeholder]="'expense.nomorRekening' | translate"
+          />
+        </mat-form-field>
+
+        <app-bank-account-selector
+          formControlName="bankAccountID"
+          [label]="'expenseForm.bankAccountOrigin' | translate"
+        />
+
+        <mat-form-field appearance="outline" class="exc-span2 exc-total">
+          <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="paymentTotal"
+            [placeholder]="'expense.paymentTotal' | translate"
+            readonly
+            prefix="Rp. "
+            thousandSeparator=" "
+            decimalScale="4"
+            mask="separator"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="exc-toggle">
+        <div class="exc-toggle__text">
+          <span class="exc-toggle__label">{{
+            "expense.createPaymentSlip" | translate
+          }}</span>
+          <span class="exc-toggle__hint">{{
+            "expense.bikinPaymentSlipOtomatisNggak" | translate
+          }}</span>
+        </div>
+        <mat-slide-toggle
+          color="primary"
+          formControlName="createPayment"
+        ></mat-slide-toggle>
+      </div>
+
+      <div class="exc-actions">
+        <!--
+          Total masih perlu DIHITUNG sebelum simpan — tombolnya di kartu Nilai
+          di atas. Tanpa itu, "Total dibayar" tetap nol dan slip pembayaran
+          otomatisnya salah. Petunjuk ini menunjuk ke sana ketika isian sudah
+          cukup tetapi belum dihitung, supaya tombol simpan yang mati tidak
+          terbaca sebagai kesalahan.
+        -->
+        @if (!isFinal && isNumberValid) {
+          <span class="exc-hint">
+            <mat-icon>calculate</mat-icon>
+            {{ "expense.hitungTotalDulu" | translate }}
+          </span>
+        }
+        <span class="exc-spacer"></span>
+        <button
+          class="exc-btn exc-btn--primary"
+          (click)="onSubmit()"
+          [disabled]="!isValid || !isFinal || isSubmitting"
+        >
+          {{
+            isSubmitting
+              ? ("hardcoded.menyimpan" | translate)
+              : ("hardcoded.submitExpense" | translate)
+          }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -931,6 +931,7 @@
     "lanjut": "Next",
     "nilaiPajak": "Amount & tax",
     "hitungTotal": "Hitung total",
+    "hitungTotalDulu": "Calculate the total first in the Amount & tax card",
     "kembali": "Back",
     "bikinPaymentSlipOtomatisNggak": "Creates the payment slip automatically — no need to fill it in by hand.",
     "date": "Date",

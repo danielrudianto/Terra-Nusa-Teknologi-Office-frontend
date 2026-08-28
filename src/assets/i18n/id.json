@@ -931,6 +931,7 @@
     "lanjut": "Lanjut",
     "nilaiPajak": "Nilai & Pajak",
     "hitungTotal": "Hitung total",
+    "hitungTotalDulu": "Hitung total dulu di kartu Nilai & Pajak",
     "kembali": "Kembali",
     "bikinPaymentSlipOtomatisNggak": "Bikin payment slip otomatis, nggak perlu isi manual.",
     "date": "Date",
