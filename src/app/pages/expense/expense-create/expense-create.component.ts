@@ -95,7 +95,62 @@ export class ExpenseCreateComponent {
     opponentDescription: new FormControl(''),
     date: new FormControl(new Date(), Validators.required),
     dueDate: new FormControl(new Date(), Validators.required),
+    // Masa yang ditanggung (untuk beban berkala). Default periode berjalan;
+    // hanya dipakai bila kategorinya termasuk MASA_* (lihat `perluMasa`).
+    masaBulan: new FormControl(new Date().getMonth() + 1),
+    masaTahun: new FormControl(new Date().getFullYear()),
   });
+
+  /**
+   * Kategori beban berkala yang periodenya sering beda dari tanggal bayar.
+   *
+   * BULANAN: setoran PPN/PPh, iuran BPJS, premi asuransi.
+   * TAHUNAN: PPh Badan lewat SPT Tahunan (masa = tahun pajaknya).
+   *
+   * Denda pajak SENGAJA tidak di sini: denda diakui pada saat ditetapkan
+   * (tanggal dokumen), bukan menanggung suatu periode.
+   */
+  readonly KATEGORI_MASA_BULANAN = [
+    '5.1.8.1',
+    '5.1.8.2',
+    '5.1.8.3',
+    '6.4.2',
+    '6.5.4',
+    '6.5.5',
+  ];
+  readonly KATEGORI_MASA_TAHUNAN = ['5.1.8.4'];
+
+  readonly bulanList = [
+    { v: 1, n: 'Januari' },
+    { v: 2, n: 'Februari' },
+    { v: 3, n: 'Maret' },
+    { v: 4, n: 'April' },
+    { v: 5, n: 'Mei' },
+    { v: 6, n: 'Juni' },
+    { v: 7, n: 'Juli' },
+    { v: 8, n: 'Agustus' },
+    { v: 9, n: 'September' },
+    { v: 10, n: 'Oktober' },
+    { v: 11, n: 'November' },
+    { v: 12, n: 'Desember' },
+  ];
+  readonly tahunList: number[] = Array.from(
+    { length: new Date().getFullYear() - 2024 + 1 },
+    (_, i) => new Date().getFullYear() - i,
+  );
+
+  get perluMasa(): boolean {
+    const t = this.metaFormGroup.controls['purchaseType'].value;
+    return (
+      this.KATEGORI_MASA_BULANAN.includes(t) ||
+      this.KATEGORI_MASA_TAHUNAN.includes(t)
+    );
+  }
+  get masaTahunan(): boolean {
+    return this.KATEGORI_MASA_TAHUNAN.includes(
+      this.metaFormGroup.controls['purchaseType'].value,
+    );
+  }
 
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl('', [Validators.required, Validators.min(0.01)]),
@@ -299,6 +354,18 @@ export class ExpenseCreateComponent {
       date: dateFormatted,
       dueDate: dueDateFormatted,
       purchaseType: this.metaFormGroup.controls['purchaseType'].value,
+      // Masa yang ditanggung — hanya untuk kategori berkala; selain itu null
+      // (server memperlakukan null sebagai "ikut tanggal dokumen").
+      masaPajak: this.perluMasa
+        ? `${this.metaFormGroup.controls['masaTahun'].value}-${
+            this.masaTahunan
+              ? '01'
+              : String(this.metaFormGroup.controls['masaBulan'].value).padStart(
+                  2,
+                  '0',
+                )
+          }-01`
+        : null,
       description: this.metaFormGroup.controls['description'].value,
       dpp: this.valueFormGroup.controls['dpp'].value,
       /*

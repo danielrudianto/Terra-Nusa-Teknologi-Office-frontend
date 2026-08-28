@@ -308,3 +308,22 @@ $surface: var(--surface, #ffffff);
     line-height: 1.35;
   }
 }
+
+/* Petunjuk kecil di bawah field "Masa" — muncul hanya untuk beban berkala. */
+.exc-masa-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: -0.35rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.74rem;
+  line-height: 1.4;
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--brand, #154dec);
+  }
+}

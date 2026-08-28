@@ -224,6 +224,12 @@
                 <mat-option value="6.5.3">{{
                   "expense.healthcare" | translate
                 }}</mat-option>
+                <mat-option value="6.5.4">{{
+                  "expense.bpjsKetenagakerjaan" | translate
+                }}</mat-option>
+                <mat-option value="6.5.5">{{
+                  "expense.bpjsKesehatan" | translate
+                }}</mat-option>
               </mat-optgroup>
             </mat-optgroup>
             <mat-optgroup label="Project Expenses">
@@ -249,6 +255,33 @@
             </mat-optgroup>
           </mat-select>
         </mat-form-field>
+
+        @if (perluMasa) {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "expenseForm.masaTahun" | translate }}</mat-label>
+            <mat-select formControlName="masaTahun">
+              @for (t of tahunList; track t) {
+                <mat-option [value]="t">{{ t }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          @if (!masaTahunan) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ "expenseForm.masaBulan" | translate }}</mat-label>
+              <mat-select formControlName="masaBulan">
+                @for (b of bulanList; track b.v) {
+                  <mat-option [value]="b.v">{{ b.n }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+
+          <div class="exc-span2 exc-masa-hint">
+            <mat-icon>info</mat-icon>
+            <span>{{ "expenseForm.masaHint" | translate }}</span>
+          </div>
+        }
 
         <mat-form-field appearance="outline" class="exc-span2">
           <mat-label>{{
