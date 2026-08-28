@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -17,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
  * yang tombolnya diam-diam berbeda.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-refresh-button',
   standalone: true,
   imports: [CommonModule, MatIconModule, TranslatePipe],

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,6 +35,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
  * setujui muncul mengikuti wewenang, tetapi keputusannya tetap di server.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-certificate-of-payment-list',
   standalone: true,
   imports: [

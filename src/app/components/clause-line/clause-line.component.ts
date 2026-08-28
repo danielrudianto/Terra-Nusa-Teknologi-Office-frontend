@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
  * teks biasa.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-clause-line',
   standalone: true,
   imports: [CommonModule],

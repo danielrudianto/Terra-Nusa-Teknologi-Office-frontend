@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -19,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
  * Sebagai teks, keadaannya jelas tanpa perlu dicoba.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-supplier-terkunci',
   standalone: true,
   imports: [CommonModule, MatIconModule, TranslatePipe],

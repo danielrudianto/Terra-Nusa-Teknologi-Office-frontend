@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 /**
@@ -12,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core';
  * bagian dari palet aksen.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-logo',
   standalone: true,
   imports: [TranslatePipe],

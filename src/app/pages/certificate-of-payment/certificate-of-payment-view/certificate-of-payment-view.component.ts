@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit, Optional, computed, inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, Optional, computed, inject, signal, ChangeDetectionStrategy} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -33,6 +33,7 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
  * bukan hanya di daftar.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-certificate-of-payment-view',
   standalone: true,
   imports: [

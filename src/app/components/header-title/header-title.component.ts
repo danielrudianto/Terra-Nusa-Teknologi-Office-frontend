@@ -1,11 +1,12 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-header-title',
   imports: [CommonModule, MatIconModule, TranslatePipe],
   templateUrl: './header-title.component.html',

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-side-nav-item',
   imports: [TranslatePipe, CommonModule, RouterModule],
   templateUrl: './side-nav-item.component.html',

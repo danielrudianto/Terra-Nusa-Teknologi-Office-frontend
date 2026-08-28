@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /** Renders a truck silhouette for a given fleet `icon` key. Shared by the
  *  transport PO picker and the fleet-info dialog so the SVGs live in one place. */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-fleet-icon',
   standalone: true,
   imports: [CommonModule],
