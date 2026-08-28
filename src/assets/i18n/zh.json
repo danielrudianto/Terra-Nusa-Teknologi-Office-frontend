@@ -203,7 +203,24 @@
     "hrCandidate": "应聘者",
     "hrQuestion": "题库",
     "tender": "招标",
-    "certificateOfPayment": "付款证书"
+    "certificateOfPayment": "付款证书",
+    "labaRugi": "损益表"
+  },
+  "labaRugi": {
+    "judul": "损益表",
+    "subjudul": "内部版本（权责发生制，公司合并）",
+    "catatan": "数据按凭证日期（权责发生制）和 DPP 金额编制。增值税因可抵扣而不计入，预扣税（PPh）因属于代扣性质而不计入。本报表用于与会计账簿核对。",
+    "bulan": "月份",
+    "tahun": "年份",
+    "bulanIni": "本月",
+    "ytd": "年初至今",
+    "pendapatan": "收入",
+    "hpp": "销货成本",
+    "labaKotor": "毛利",
+    "bebanUsaha": "营业费用",
+    "labaUsaha": "营业利润",
+    "bebanLain": "其他费用",
+    "labaSebelumPajak": "税前利润"
   },
   "status": {
     "paid": "已付款",

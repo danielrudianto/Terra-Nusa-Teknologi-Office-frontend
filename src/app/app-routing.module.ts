@@ -86,6 +86,20 @@ export const routes: Routes = [
         data: { title: 'Dashboard' },
       },
       {
+        /*
+         * Laba rugi — HANYA pemilik usaha (level 5). Batasnya ditegakkan
+         * server (403 di luar level 5); di sidenav pun entrinya hanya muncul
+         * untuk level 5. Tidak dipasang `permissionGuard` karena penjagaannya
+         * berbasis LEVEL, bukan modul divisi.
+         */
+        path: 'Laporan/Laba-rugi',
+        loadComponent: () =>
+          import('./pages/report/laba-rugi/laba-rugi.component').then(
+            (m) => m.LabaRugiComponent,
+          ),
+        data: { title: 'Laba Rugi' },
+      },
+      {
         path: 'PDF',
         loadComponent: () =>
           import('./pages/pdf-main/pdf-main.component').then(

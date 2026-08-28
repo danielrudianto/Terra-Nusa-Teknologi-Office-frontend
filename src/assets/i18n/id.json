@@ -203,7 +203,24 @@
     "hrCandidate": "Pelamar",
     "hrQuestion": "Bank Soal",
     "tender": "Tender",
-    "certificateOfPayment": "Certificate of Payment"
+    "certificateOfPayment": "Certificate of Payment",
+    "labaRugi": "Laba Rugi"
+  },
+  "labaRugi": {
+    "judul": "Laporan Laba Rugi",
+    "subjudul": "Versi internal (basis akrual, konsolidasi perusahaan)",
+    "catatan": "Angka disusun berdasarkan tanggal dokumen (akrual) dan nilai DPP. PPN dikecualikan karena dapat dikreditkan, dan PPh dikecualikan karena bersifat pemotongan. Laporan ini untuk dicocokkan dengan pembukuan akuntan.",
+    "bulan": "Bulan",
+    "tahun": "Tahun",
+    "bulanIni": "Bulan Ini",
+    "ytd": "s/d Bulan Ini",
+    "pendapatan": "Pendapatan",
+    "hpp": "Harga Pokok Penjualan",
+    "labaKotor": "Laba Kotor",
+    "bebanUsaha": "Beban Usaha",
+    "labaUsaha": "Laba Usaha",
+    "bebanLain": "Beban Lain-lain",
+    "labaSebelumPajak": "Laba Sebelum Pajak"
   },
   "status": {
     "paid": "Lunas",

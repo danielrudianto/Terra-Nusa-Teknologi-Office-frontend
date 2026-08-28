@@ -203,7 +203,24 @@
     "hrCandidate": "Candidates",
     "hrQuestion": "Question Bank",
     "tender": "Tenders",
-    "certificateOfPayment": "Certificate of Payment"
+    "certificateOfPayment": "Certificate of Payment",
+    "labaRugi": "Profit & Loss"
+  },
+  "labaRugi": {
+    "judul": "Profit & Loss Statement",
+    "subjudul": "Internal version (accrual basis, company consolidation)",
+    "catatan": "Figures are compiled by document date (accrual) and DPP value. VAT is excluded as it is creditable, and withholding tax (PPh) is excluded as it is a withholding item. This report is meant to be reconciled with the accountant's books.",
+    "bulan": "Month",
+    "tahun": "Year",
+    "bulanIni": "This Month",
+    "ytd": "Year to Date",
+    "pendapatan": "Revenue",
+    "hpp": "Cost of Goods Sold",
+    "labaKotor": "Gross Profit",
+    "bebanUsaha": "Operating Expenses",
+    "labaUsaha": "Operating Profit",
+    "bebanLain": "Other Expenses",
+    "labaSebelumPajak": "Profit Before Tax"
   },
   "status": {
     "paid": "Paid",

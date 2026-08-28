@@ -39,6 +39,20 @@ export class MainComponent {
     private route: ActivatedRoute,
   ) {}
 
+  /**
+   * Level akses pengguna.
+   *
+   * Dibaca dari `permissionService.level()` — SIGNAL yang diisi dari
+   * `permissions/me` di server, sama seperti izin menu lainnya. Bukan dari
+   * `localStorage` user: object itu bisa tertinggal versi lama (mis. login
+   * dari sebelum field `authenticationLevel` ikut disimpan) sehingga level
+   * terbaca 1 dan menu pemilik lenyap tanpa sebab. Karena signal, `computed`
+   * `sideNavItems` ikut menghitung ulang begitu level dari server tiba.
+   */
+  private get level(): number {
+    return this.permissionService.level();
+  }
+
   /*
    * Ambang layar sempit.
    *
@@ -274,6 +288,13 @@ export class MainComponent {
           icon: 'user.svg',
           route: '/User',
         },
+        {
+          // HANYA pemilik usaha (level 5) — lihat penyaring `sideNavItems`.
+          name: 'nav.labaRugi',
+          icon: 'income.svg',
+          route: '/Laporan/Laba-rugi',
+          minLevel: 5,
+        },
       ],
     },
 
@@ -424,8 +445,12 @@ export class MainComponent {
       this.allSideNavItems
         .map((grup: any) => ({
           ...grup,
-          children: (grup.children || []).filter((butir: any) =>
-            boleh(izinRute(butir.route)),
+          children: (grup.children || []).filter(
+            (butir: any) =>
+              boleh(izinRute(butir.route)) &&
+              // Butir ber-`minLevel` hanya untuk level itu ke atas (mis. laba
+              // rugi: hanya pemilik usaha level 5).
+              (!butir.minLevel || this.level >= butir.minLevel),
           ),
         }))
         // Kelompok yang seluruh isinya tersembunyi ikut dibuang agar tidak

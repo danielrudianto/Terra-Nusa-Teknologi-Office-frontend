@@ -1,0 +1,201 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+}
+
+.lr {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.lr-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+.lr-pilih {
+  flex: 0 1 180px;
+  min-width: 150px;
+}
+:host ::ng-deep .lr-pilih .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.lr-catatan {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  border: 0.5px solid var(--brand-soft, #cdd7f7);
+  color: var(--brand-strong, #0f3fd0);
+  font-size: 0.78rem;
+  line-height: 1.45;
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.lr-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--bad-soft, #fdecec);
+  color: var(--bad-fg, #c62828);
+  font-size: 0.85rem;
+}
+
+.lr-card {
+  background: var(--surface, #ffffff);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 16px rgba(16, 24, 40, 0.05);
+}
+
+.lr-tabel {
+  display: flex;
+  flex-direction: column;
+}
+
+.lr-baris {
+  display: grid;
+  grid-template-columns: 1fr 9.5rem 9.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-bottom: 1px solid var(--line, #f1f3f6);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.lr-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--muted, #6b7280);
+  }
+}
+
+.lr-nilai {
+  text-align: right;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+
+  &--kurang {
+    color: var(--bad-fg, #c62828);
+  }
+}
+
+/* kepala kolom */
+.lr-baris--kepala {
+  background: var(--surface-2, #fafbfc);
+
+  .lr-nilai {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--faint, #9aa0ab);
+  }
+}
+
+/* baris pokok (pendapatan) */
+.lr-baris--pokok {
+  .lr-label {
+    font-weight: 600;
+  }
+  .lr-nilai {
+    font-weight: 600;
+  }
+}
+
+/* kepala kelompok yang bisa dibuka */
+.lr-baris--grup {
+  cursor: pointer;
+  user-select: none;
+
+  .lr-label {
+    font-weight: 600;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+  }
+}
+
+/* rincian per kategori */
+.lr-baris--rinci {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  background: var(--surface-2, #fbfcfd);
+
+  .lr-label {
+    padding-left: 1.6rem;
+    font-size: 0.82rem;
+    color: var(--muted, #6b7280);
+  }
+  .lr-nilai {
+    font-size: 0.84rem;
+    color: var(--muted, #6b7280);
+  }
+}
+
+/* subtotal (laba kotor, laba usaha) */
+.lr-baris--subtotal {
+  background: var(--surface-2, #f7f9fc);
+
+  .lr-label {
+    font-weight: 700;
+  }
+  .lr-nilai {
+    font-weight: 700;
+  }
+}
+
+/* total akhir (laba sebelum pajak) */
+.lr-baris--total {
+  background: var(--brand-soft, #eef2fe);
+
+  .lr-label {
+    font-weight: 800;
+    font-size: 0.92rem;
+  }
+  .lr-nilai {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--brand-strong, #0f3fd0);
+  }
+}
+
+@media (max-width: 560px) {
+  .lr-baris {
+    grid-template-columns: 1fr 6.5rem 6.5rem;
+    padding: 0.55rem 0.75rem;
+  }
+  .lr-nilai {
+    font-size: 0.82rem;
+  }
+}
