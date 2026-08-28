@@ -49,6 +49,11 @@ tujuannya belum terisi, sistem menganggapnya kena biaya — lebih baik
 memperkirakan lebih daripada kurang, karena yang berbahaya adalah saldo yang
 ternyata tidak cukup.
 
+Banner ini juga **mengingatkan** untuk mencatat biaya adminnya: begitu ada
+transfer antar-bank, jangan lupa mencatat beban administrasinya lewat tombol
+**Tambah beban administrasi** di menu Beban — kalau tidak, biaya itu tidak
+pernah masuk pembukuan.
+
 ## Memindahkan tanggal bayar
 
 Menu **Pindah tanggal bayar** menggeser jatuh tempo sebuah pembayaran ke

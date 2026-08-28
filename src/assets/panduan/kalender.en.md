@@ -49,6 +49,11 @@ destination bank hasn't been filled in, the system assumes it is chargeable —
 better to overestimate than under, because the dangerous case is a balance that
 turns out not to cover it.
 
+The banner also **reminds** you to record the admin fee: once there is an
+interbank transfer, don't forget to record its administration expense via the
+**Add administration expense** button in the Expenses menu — otherwise that
+cost never reaches the books.
+
 ## Moving a payment date
 
 The **Move payment date** menu shifts a payment's due date to another day. Use

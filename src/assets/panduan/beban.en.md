@@ -62,6 +62,21 @@ method (Bank transfer, Virtual Account, or Cheque).
 The **Create payment slip** switch produces a slip as soon as the expense is
 saved, without going back in through the Payments menu.
 
+## Add administration expense (quick)
+
+The **Add administration expense** button at the top of the Expenses page is a
+shortcut for recording a **bank administration fee** — the charge that appears
+whenever there is an outgoing transfer to a different bank. Its fields are
+short: date, amount, and **origin account**.
+
+Pick the origin account from the list — BRI, Mandiri, or any registered
+account. The bank name, account name, and number follow the chosen account
+automatically, so the fee is recorded against the correct account.
+
+> The calendar helps remind you: on a day with an interbank transfer, the
+> banner in the Payment Calendar shows the estimated admin fee together with a
+> reminder to record it here.
+
 ## After saving
 
 From the Expenses list, click any row to see its details — value breakdown,

@@ -33,6 +33,10 @@ cut-off.
 
 Satu baris per jenis pekerjaan: volume, satuan, harga satuan, dan totalnya.
 
+Volume boleh berdesimal — sampai **empat angka di belakang koma**. Ini untuk
+pekerjaan yang volumenya memang pecahan, seperti pengeboran (mis. `12,3456`).
+Yang bulat tetap tampil bersih (`7`, bukan `7,0000`).
+
 Tulis uraian pekerjaan seperti yang disepakati di lapangan. Baris inilah yang
 dibaca pemasok saat memeriksa tagihannya sendiri — kalau tidak dikenali, dia
 akan bertanya, dan itu memperlambat pembayaran.

@@ -32,6 +32,10 @@ differ by a few days, and it's the cut-off that defines the work period.
 
 One row per type of work: volume, unit, unit price, and total.
 
+Volume may have decimals — up to **four decimal places**. This is for work
+whose volume is genuinely fractional, such as drilling (e.g. `12.3456`). Whole
+numbers still show cleanly (`7`, not `7.0000`).
+
 Write the work description as it was agreed on site. These rows are what the
 supplier reads when checking their own bill — if they don't recognise it,
 they'll ask, and that slows the payment down.

@@ -143,6 +143,42 @@
       ]
     },
     {
+      "id": "certificate-of-payment",
+      "judul": {
+        "id": "Certificate of Payment",
+        "en": "Certificate of Payment",
+        "zh": "付款证书"
+      },
+      "berkas": "certificate-of-payment",
+      "modul": "certificate_of_payment",
+      "ringkas": {
+        "id": "Berita acara progres atas SPK: isi volume, setujui BAP, isi harga, setujui CoP.",
+        "en": "A progress report against an SPK: enter volume, approve the BAP, enter prices, approve the CoP.",
+        "zh": "针对 SPK 的进度报告：填写工作量、审批 BAP、填写价格、审批 CoP。"
+      },
+      "kataKunci": [
+        "CoP",
+        "certificate of payment",
+        "BAP",
+        "berita acara",
+        "berita acara pemeriksaan",
+        "SPK",
+        "progres",
+        "termin",
+        "setujui BAP",
+        "setujui CoP",
+        "uang muka",
+        "retensi",
+        "pagu",
+        "adendum",
+        "penomoran",
+        "approval",
+        "progress",
+        "retention",
+        "down payment"
+      ]
+    },
+    {
       "id": "draft-pembelian",
       "judul": {
         "id": "Draft Pembelian",

@@ -63,6 +63,21 @@ pembayaran (Transfer bank, Virtual Account, atau Cek).
 Sakelar **Buat slip pembayaran** langsung membuat slip begitu beban tersimpan,
 tanpa perlu masuk lagi lewat menu Pembayaran.
 
+## Tambah beban administrasi (cepat)
+
+Tombol **Tambah beban administrasi** di kepala halaman Beban adalah jalur cepat
+untuk mencatat **biaya administrasi bank** — biaya yang muncul tiap ada transfer
+keluar ke rekening beda bank. Isiannya ringkas: tanggal, jumlah, dan **rekening
+asal**.
+
+Pilih rekening asalnya dari daftar — bisa BRI, Mandiri, atau rekening mana pun
+yang terdaftar. Nama bank, nama rekening, dan nomornya otomatis mengikuti
+rekening yang dipilih, jadi biaya adminnya tercatat atas rekening yang benar.
+
+> Kalendernya membantu mengingatkan: pada hari yang ada transfer antar-bank,
+> banner di Kalender Pembayaran menampilkan perkiraan biaya admin sekaligus
+> pengingat untuk mencatatnya di sini.
+
 ## Setelah tersimpan
 
 Dari daftar Beban, klik baris mana pun untuk melihat rinciannya — rincian
