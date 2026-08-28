@@ -73,6 +73,19 @@
       </div>
 
       <!--
+        Volume & periode terkunci sejak BAP disetujui: keduanya sudah
+        disahkan penyetuju BAP, dan server menolak mengubahnya. Kotak volume,
+        tanggal, dan periode di layar ini memang dinonaktifkan — petunjuk ini
+        menjelaskan mengapa, dan ke mana harus pergi bila memang perlu diubah.
+      -->
+      <div class="cop-banner">
+        <mat-icon>lock</mat-icon>
+        <div>
+          <span>{{ "cop.volumeTerkunciBap" | translate }}</span>
+        </div>
+      </div>
+
+      <!--
         Kartu dibelah dua, sama seperti lembar pengisian — tetapi sisi kiri
         kini MEMUAT HARGA. Di sinilah rupiah pertama kali muncul, dan
         bentuk yang sudah dikenal membuat yang memeriksa langsung tahu di
@@ -149,10 +162,8 @@
                   matInput
                   rows="2"
                   cdkTextareaAutosize
+                  readonly
                   [value]="catatanBaris()[b.purchaseOrderItemID] || ''"
-                  (input)="
-                    setCatatan(b.purchaseOrderItemID, $any($event.target).value)
-                  "
                 ></textarea>
               </mat-form-field>
 

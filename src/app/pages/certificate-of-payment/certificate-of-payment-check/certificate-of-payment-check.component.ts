@@ -19,7 +19,6 @@ import { firstValueFrom } from 'rxjs';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import { SupplierTerkunciComponent } from 'src/app/components/supplier-terkunci/supplier-terkunci.component';
 import {
-  BarisCoPInput,
   BarisPagu,
   CertificateOfPayment,
   CertificateOfPaymentService,
@@ -147,6 +146,19 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
       this.periodeAkhir.setValue(c.periodEnd ? new Date(c.periodEnd) : null);
       this.catatan.setValue(c.note || '');
 
+      // Tanggal, periode, dan catatan DIKUNCI di tahap ini.
+      //
+      // Semuanya sudah tetap sejak BAP disetujui — dan justru itulah yang
+      // dibaca dan disahkan penyetuju BAP. Server pun menolak mengubahnya:
+      // `PUT /{id}` digagalkan begitu BAP sudah di-acc. Membiarkan kotaknya
+      // dapat diketik berarti menawarkan suntingan yang pasti ditolak, atau —
+      // lebih buruk — diam-diam tidak tersimpan. Bila volume/periode memang
+      // keliru, persetujuan BAP dibatalkan lebih dahulu.
+      this.tanggal.disable({ emitEvent: false });
+      this.periodeAwal.disable({ emitEvent: false });
+      this.periodeAkhir.disable({ emitEvent: false });
+      this.catatan.disable({ emitEvent: false });
+
       const isi: Record<number, number | null> = {};
       const cat: Record<number, string> = {};
       (c.items || []).forEach((i) => {
@@ -237,6 +249,9 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
         awal === null || awal === undefined ? '' : String(awal),
       );
       c.valueChanges.subscribe((v) => this.terimaVolume(id, v));
+      // Volume terkunci — sudah disahkan bersama BAP. Lihat catatan kunci
+      // pada `muat()`.
+      c.disable({ emitEvent: false });
       this.kontrol.set(id, c);
     });
   }
@@ -246,6 +261,7 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
     if (!c) {
       c = new FormControl<string | null>('');
       c.valueChanges.subscribe((v) => this.terimaVolume(barisId, v));
+      c.disable({ emitEvent: false });
       this.kontrol.set(barisId, c);
     }
     return c;
@@ -657,56 +673,27 @@ export class CertificateOfPaymentCheckComponent implements OnInit {
   // Simpan
   // ------------------------------------------------------------------
 
-  private tanggalTeks(d: Date | null): string | null {
-    if (!d) return null;
-    // Disusun dari bagian LOKAL: `toISOString()` mengubahnya ke UTC lebih
-    // dahulu, dan di WIB tanggal 1 pukul 00:00 tersimpan sebagai tanggal 30
-    // bulan sebelumnya.
-    const bulan = `${d.getMonth() + 1}`.padStart(2, '0');
-    const hari = `${d.getDate()}`.padStart(2, '0');
-    return `${d.getFullYear()}-${bulan}-${hari}`;
-  }
-
-  private susunItems(): BarisCoPInput[] {
-    const isi = this.isian();
-    const cat = this.catatanBaris();
-    return this.baris()
-      .filter((b) => {
-        const v = isi[b.purchaseOrderItemID];
-        return v !== null && v !== undefined && v > 0;
-      })
-      .map((b) => ({
-        purchaseOrderItemID: b.purchaseOrderItemID,
-        quantity: Number(isi[b.purchaseOrderItemID]),
-        remarks: cat[b.purchaseOrderItemID] || null,
-      }));
-  }
-
   /**
-   * Simpan seluruhnya, lalu bubuhkan tandanya.
+   * Simpan potongan & tambahan, lalu tandai CoP DIBUAT.
    *
    * URUTANNYA DISENGAJA
    *
-   * Isi disimpan LEBIH DAHULU, tanda diperiksa PALING AKHIR. Server menolak
-   * menyunting dokumen yang sudah ditandai — urutan terbalik akan menolak
-   * simpanannya sendiri. Dan bila salah satu langkah gagal, yang tertinggal
-   * adalah dokumen yang tersimpan tetapi belum bertanda: keadaan yang dapat
-   * diulang tanpa akibat, berbeda dengan bertanda tetapi belum tersimpan.
+   * Penyesuaian disimpan LEBIH DAHULU, tanda "CoP dibuat" PALING AKHIR.
+   * Server menolak menyunting penyesuaian dokumen yang sudah disetujui — dan
+   * bila salah satu langkah gagal, yang tertinggal adalah CoP yang potongannya
+   * tersimpan tetapi belum bertanda: keadaan yang dapat diulang tanpa akibat.
+   *
+   * VOLUME, PERIODE, TANGGAL, DAN CATATAN TIDAK DIKIRIM DARI SINI.
+   *
+   * Semuanya sudah tetap sejak BAP disetujui, dan `PUT /{id}` ditolak server
+   * begitu BAP di-acc (gerbang "BAP-nya sudah disetujui"). Tahap ini hanya
+   * mengisi nilai rupiah — potongan & tambahan — lalu menutupnya. Bila volume
+   * atau periodenya keliru, persetujuan BAP dibatalkan lebih dahulu.
    */
   async simpan(): Promise<void> {
     if (!this.bolehSimpan) return;
     this.menyimpan.set(true);
     try {
-      await firstValueFrom(
-        this.service.ubah(this.copId, {
-          date: this.tanggalTeks(this.tanggal.value) || undefined,
-          periodStart: this.tanggalTeks(this.periodeAwal.value),
-          periodEnd: this.tanggalTeks(this.periodeAkhir.value),
-          note: this.catatan.value || null,
-          items: this.susunItems(),
-        }),
-      );
-
       await firstValueFrom(
         this.service.simpanPenyesuaian(this.copId, this.penyesuaian()),
       );
