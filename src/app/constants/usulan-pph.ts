@@ -34,6 +34,41 @@ export interface UsulanPPh {
  * yakin akan mencari, sedangkan yang diusulkan keliru akan diterima begitu
  * saja.
  */
+/*
+ * Kode konstruksi PPh 4(2) yang biasa dipakai AKN.
+ *
+ * AKN penyedia jasa konstruksi, sehingga hampir semua tagihannya dipotong
+ * PPh final pasal 4(2). Keempat kode inilah yang dipakai sehari-hari; tarifnya
+ * bergantung KUALIFIKASI AKN dan apakah pekerjaannya terintegrasi, bukan besar
+ * nilainya.
+ *
+ * Dipakai DUA layar dengan arah potongan yang sama — faktur penjualan
+ * (pelanggan memotong AKN) dan kontrak proyek (nilai yang sama, ditetapkan di
+ * muka). Menawarkan pasangan kode berbeda di dua layar membuat bukti potong
+ * tidak cocok dengan dokumennya, dan selisihnya baru ketahuan saat
+ * rekonsiliasi tahunan.
+ *
+ * Urutannya mengikuti yang paling sering dipakai lebih dulu.
+ */
+const USULAN_KONSTRUKSI_AKN: UsulanPPh[] = [
+  {
+    code: '28-409-25',
+    alasan: 'Konstruksi terintegrasi — AKN bersertifikat badan usaha',
+  },
+  {
+    code: '28-409-24',
+    alasan: 'Konstruksi — AKN bersertifikat kualifikasi menengah atau besar',
+  },
+  {
+    code: '28-409-23',
+    alasan: 'Konstruksi — AKN tanpa sertifikat badan usaha',
+  },
+  {
+    code: '28-409-22',
+    alasan: 'Konstruksi — AKN berkualifikasi usaha kecil',
+  },
+];
+
 export const USULAN_PPH: Record<string, UsulanPPh[]> = {
   /*
    * PO-A — transportasi.
@@ -165,29 +200,19 @@ export const USULAN_PPH: Record<string, UsulanPPh[]> = {
   ],
 
   /*
-   * FAKTUR PENJUALAN — yang dipotong PELANGGAN dari tagihan AKN.
+   * FAKTUR PENJUALAN dan KONTRAK PROYEK — yang dipotong PELANGGAN dari
+   * tagihan AKN.
    *
    * Arahnya terbalik dari purchase order: di sini AKN yang dipotong, dan
    * salah kode membuat bukti potong dari pelanggan tidak cocok dengan yang
    * dilaporkan AKN — selisihnya baru ketahuan saat rekonsiliasi tahunan.
    *
-   * AKN penyedia jasa konstruksi, sehingga hampir selalu PPh 4(2). Tarifnya
-   * bergantung KUALIFIKASI AKN sendiri, bukan besar pekerjaannya.
+   * Keduanya memakai daftar yang SAMA (`USULAN_KONSTRUKSI_AKN`): faktur
+   * menagihkan pekerjaan yang nilainya sudah ditetapkan di kontraknya, jadi
+   * dua layar tidak boleh mengusulkan pasangan kode yang berbeda.
    */
-  SALES: [
-    {
-      code: '28-409-22',
-      alasan: 'Pekerjaan konstruksi — AKN berkualifikasi usaha',
-    },
-    {
-      code: '28-409-24',
-      alasan: 'Konstruksi terintegrasi — AKN berkualifikasi usaha',
-    },
-    {
-      code: '24-100-02',
-      alasan: 'Bila yang ditagihkan sewa alat, bukan pekerjaan',
-    },
-  ],
+  SALES: USULAN_KONSTRUKSI_AKN,
+  CONTRACT: USULAN_KONSTRUKSI_AKN,
 
   /* PO-5.1.12 — perangkat lunak. */
   '5112': [

@@ -105,4 +105,27 @@ describe('usulan PPh', () => {
       expect(usulanPPhUntuk('B').map((u) => u.code)).not.toContain('21-100-02');
     });
   });
+
+  /*
+   * FAKTUR PENJUALAN & KONTRAK PROYEK.
+   *
+   * Keduanya diturunkan dari daftar konstruksi yang sama. Menawarkan pasangan
+   * kode berbeda di dua layar membuat bukti potong tidak cocok dengan
+   * dokumennya — pengujian ini menjaga keduanya tetap identik dan tetap
+   * PPh 4(2).
+   */
+  describe('konstruksi — faktur penjualan & kontrak proyek', () => {
+    const KODE = ['28-409-25', '28-409-24', '28-409-23', '28-409-22'];
+
+    it('faktur dan kontrak menawarkan empat kode yang sama', () => {
+      expect(usulanPPhUntuk('SALES').map((u) => u.code)).toEqual(KODE);
+      expect(usulanPPhUntuk('CONTRACT').map((u) => u.code)).toEqual(KODE);
+    });
+
+    it('keempatnya PPh 4(2)', () => {
+      for (const k of KODE) {
+        expect(KATALOG.get(k)!.type).withContext(k).toBe('PPh 4(2)');
+      }
+    });
+  });
 });

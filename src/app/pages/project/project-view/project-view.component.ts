@@ -195,7 +195,10 @@ export class ProjectViewComponent implements OnInit {
 
   pilihPph(): void {
     this.dialog
-      .open(PphSelectorComponent, {})
+      // Usulan kode konstruksi PPh 4(2) yang biasa dipakai AKN — sama dengan
+      // layar faktur penjualan (lihat `USULAN_PPH.CONTRACT`). Daftar lengkap
+      // tetap dapat dicari; ini hanya menaikkan yang paling sering dipakai.
+      .open(PphSelectorComponent, { data: { purchaseType: 'CONTRACT' } })
       .afterClosed()
       .subscribe((data: any) => {
         /*
