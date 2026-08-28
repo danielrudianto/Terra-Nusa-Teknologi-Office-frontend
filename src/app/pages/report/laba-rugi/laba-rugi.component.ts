@@ -76,9 +76,18 @@ export class LabaRugiComponent {
     { v: 12, n: 'Desember' },
   ];
 
+  /**
+   * Tahun paling awal yang datanya benar-benar ada di sistem. Sebelum ini
+   * datanya belum lengkap, jadi tak perlu ditawarkan di pemilih tahun.
+   */
+  private static readonly TAHUN_MULAI = 2024;
+
   constructor() {
     const kini = new Date().getFullYear();
-    this.tahunList = Array.from({ length: 6 }, (_, i) => kini - i);
+    const mulai = LabaRugiComponent.TAHUN_MULAI;
+    // Dari tahun berjalan mundur sampai TAHUN_MULAI (mis. 2026 -> 2024).
+    const jumlah = Math.max(1, kini - mulai + 1);
+    this.tahunList = Array.from({ length: jumlah }, (_, i) => kini - i);
     void this.muat();
   }
 
