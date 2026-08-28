@@ -45,10 +45,14 @@
       <span>{{ "labaRugi.catatan" | translate }}</span>
     </div>
 
-    <div class="lr-catatan lr-catatan--beda">
-      <mat-icon>compare_arrows</mat-icon>
-      <span>{{ "labaRugi.catatanBeda" | translate }}</span>
-    </div>
+    <details class="lr-catatan lr-catatan--beda">
+      <summary class="lr-catatan-ringkas">
+        <mat-icon>compare_arrows</mat-icon>
+        <span>{{ "labaRugi.catatanBedaJudul" | translate }}</span>
+        <mat-icon class="lr-catatan-panah">expand_more</mat-icon>
+      </summary>
+      <p class="lr-catatan-isi">{{ "labaRugi.catatanBeda" | translate }}</p>
+    </details>
 
     <div class="lr-card">
       <div class="lr-tabel-bungkus">

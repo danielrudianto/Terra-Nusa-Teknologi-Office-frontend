@@ -46,12 +46,50 @@
   }
 }
 
-/* Banner "kenapa bisa beda dengan akuntan" — dibedakan warnanya (kuning kalem)
-   dari banner metode di atasnya agar terbaca sebagai catatan yang berbeda. */
+/* Banner "kenapa bisa beda dengan akuntan" — dibuat CIUT (collapsible): default
+   cuma judul satu baris, klik baru detailnya terbuka. Warnanya kuning kalem
+   agar terbaca beda dari banner metode biru di atasnya. */
 .lr-catatan--beda {
+  display: block; /* override flex dari .lr-catatan */
+  padding: 0; /* padding pindah ke ringkas/isi */
   background: var(--warn-soft, #fdf4e3);
   border-color: var(--warn-soft, #f6e2ba);
   color: var(--warn-strong, #8a5a12);
+}
+
+/* Buang segitiga bawaan <summary>. */
+.lr-catatan--beda > summary {
+  list-style: none;
+}
+.lr-catatan--beda > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lr-catatan-ringkas {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  span {
+    flex: 1 1 auto;
+  }
+}
+.lr-catatan-panah {
+  transition: transform 0.15s ease;
+}
+.lr-catatan--beda[open] .lr-catatan-panah {
+  transform: rotate(180deg);
+}
+.lr-catatan-isi {
+  margin: 0;
+  padding: 0 1rem 0.8rem 2.5rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
 }
 
 .lr-galat {
