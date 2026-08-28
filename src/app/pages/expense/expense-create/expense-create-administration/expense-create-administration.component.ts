@@ -70,16 +70,11 @@ export class ExpenseCreateAdministrationComponent {
     dpp: new FormControl(0, [Validators.required, Validators.min(1)]),
     pphPercentage: new FormControl(0, Validators.required),
     pphTaxObject: new FormControl(null),
+    // Cukup ID rekening asal; nama, nomor, dan bank-nya diambil dari objek
+    // akun yang dipilih saat menyusun data (lihat formatFormData). Dulu di
+    // sini ada tiga kolom BRI yang dipatok — itulah yang membuat setiap biaya
+    // admin tercatat atas nama BRI walau rekeningnya bukan.
     bankAccountID: new FormControl('', Validators.required),
-    bankAccountName: new FormControl(
-      'PT. Alpha Konstruksi Nusantara',
-      Validators.required,
-    ),
-    bankAccountNumber: new FormControl('00000000', Validators.required),
-    bankName: new FormControl(
-      'PT. Bank Rakyat Indonesia, Tbk.',
-      Validators.required,
-    ),
     purchaseType: new FormControl('5.1.9', Validators.required),
     paymentMethod: new FormControl('bank', Validators.required),
   });
@@ -141,9 +136,14 @@ export class ExpenseCreateAdministrationComponent {
         pphCode: null,
         pphPercentage: 0,
         pphTaxObject: null,
-        bankName: this.formGroup.value.bankName,
-        bankAccountName: this.formGroup.value.bankAccountName,
-        bankAccountNumber: this.formGroup.value.bankAccountNumber,
+        // Rekening asal diambil dari akun yang DIPILIH, bukan lagi
+        // dipatok BRI. Dulu ketiganya nilai tetap ("BRI / PT Alpha /
+        // 00000000") sehingga biaya admin dari rekening Mandiri pun tercatat
+        // atas nama BRI. Nomor & namanya sudah ada pada objek akun yang sama
+        // yang dipakai `last4Digits` di atas.
+        bankName: this.bankAccounts[bankIndex].bankName,
+        bankAccountName: this.bankAccounts[bankIndex].bankAccountName,
+        bankAccountNumber: this.bankAccounts[bankIndex].bankAccountNumber,
         paymentMethod: this.formGroup.value.paymentMethod,
       };
     } else {

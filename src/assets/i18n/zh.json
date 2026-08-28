@@ -1683,6 +1683,7 @@
     "feeBanner": "{{total}} 笔转账中有 {{interbank}} 笔转往其他银行 — 每笔 {{fee}}。{{bank}} 行内转账免费。",
     "feeBannerAllSame": "全部 {{total}} 笔转账均为 {{bank}} 行内转账 — 无手续费。",
     "feeBannerUnknown": "{{unknown}} 笔转账未记录目标银行，按收费处理。",
+    "feeBannerNudge": "别忘了在“费用”菜单中记录管理费。",
     "shortfall": "不足",
     "balanceOk": "余额充足"
   },
@@ -2342,6 +2343,9 @@
     "add": "添加"
   },
   "expenseAdmin": {
+    "pageTitle": "费用",
+    "pageDesc": "创建新费用",
+    "addButton": "添加管理费用",
     "title": "创建银行管理费用",
     "date": "日期",
     "amount": "金额",

@@ -1683,6 +1683,7 @@
     "feeBanner": "{{interbank}} of {{total}} transfers go to another bank — {{fee}} each. Transfers within {{bank}} are free.",
     "feeBannerAllSame": "All {{total}} transfers stay within {{bank}} — no transfer fee.",
     "feeBannerUnknown": "{{unknown}} transfer(s) have no destination bank recorded and are assumed chargeable.",
+    "feeBannerNudge": "Don't forget to record the administration expense in the Expense menu.",
     "shortfall": "Short by",
     "balanceOk": "Balance is sufficient"
   },
@@ -2342,6 +2343,9 @@
     "add": "Add"
   },
   "expenseAdmin": {
+    "pageTitle": "Expense",
+    "pageDesc": "Create a new expense",
+    "addButton": "Add administration expense",
     "title": "Create bank administration expense",
     "date": "Date",
     "amount": "Amount",

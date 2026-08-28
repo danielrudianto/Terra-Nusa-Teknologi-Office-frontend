@@ -1,8 +1,8 @@
 <div class="exc">
   <app-header-title
-    [title]="'Expense'"
-    [description]="'Create new expense'"
-    actionButtonLabel="Add administration expense"
+    [title]="'expenseAdmin.pageTitle' | translate"
+    [description]="'expenseAdmin.pageDesc' | translate"
+    [actionButtonLabel]="'expenseAdmin.addButton' | translate"
     (onActionButtonClicked)="createNewAdministrationExpense()"
   ></app-header-title>
 

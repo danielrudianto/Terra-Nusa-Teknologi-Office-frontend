@@ -535,6 +535,10 @@
   color: var(--warn-fg, #e0942e) !important;
   font-weight: 600;
 }
+.ds-banner__nudge {
+  color: var(--brand-ink, var(--brand, #154dec)) !important;
+  font-weight: 600;
+}
 
 /* ===== closing balance ===== */
 .ds-foot__row--closing {

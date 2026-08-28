@@ -1683,6 +1683,7 @@
     "feeBanner": "{{interbank}} dari {{total}} transfer ke bank lain — {{fee}} per transaksi. Transfer sesama {{bank}} gratis.",
     "feeBannerAllSame": "Semua {{total}} transfer sesama {{bank}} — tidak ada biaya transfer.",
     "feeBannerUnknown": "{{unknown}} transfer belum ada data bank tujuan, dianggap kena biaya.",
+    "feeBannerNudge": "Jangan lupa catat beban administrasinya di menu Beban.",
     "shortfall": "Kurang",
     "balanceOk": "Saldo mencukupi"
   },
@@ -2342,6 +2343,9 @@
     "add": "Tambah"
   },
   "expenseAdmin": {
+    "pageTitle": "Beban",
+    "pageDesc": "Buat beban baru",
+    "addButton": "Tambah beban administrasi",
     "title": "Buat beban administrasi bank",
     "date": "Tanggal",
     "amount": "Jumlah",

@@ -240,7 +240,10 @@ export class ExpenseListComponent {
     this.fetchData(0);
   }
 
-  fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
+  // Bawaan HALAMAN SAAT INI, bukan 1 — lihat catatan yang sama di daftar
+  // pinjaman: tombol muat-ulang memanggil `fetchData()` tanpa argumen, dan
+  // bawaan `1` membuat setiap refresh meloncat ke halaman berikutnya.
+  fetchData(targetPage: number = this.page, pageSize: number = this.pageSize) {
     if (this.formGroup.invalid) return;
 
     this.isLoading = true;

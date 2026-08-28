@@ -175,7 +175,15 @@ export class LoansListComponent {
     this.fetchData(0);
   }
 
-  fetchData(targetPage: number = 1, pageSize: number = this.pageSize) {
+  // `targetPage` bawaannya HALAMAN SAAT INI, bukan 1.
+  //
+  // Tombol muat-ulang memanggil `fetchData()` tanpa argumen; bawaan lama `1`
+  // membuat setiap kali refresh MELONCAT dari halaman yang sedang dibuka ke
+  // halaman berikutnya (dan pada daftar 0-indeks, `1` itu halaman kedua).
+  // Yang menekan refresh ingin melihat data terbaru pada halaman yang SAMA —
+  // bukan dipindahkan. Pemanggil yang memang hendak kembali ke halaman
+  // pertama tetap melewatkan `0` secara eksplisit.
+  fetchData(targetPage: number = this.page, pageSize: number = this.pageSize) {
     this.isLoading = true;
     let filter: any = {};
     const searchValue = this.searchControl.value;
