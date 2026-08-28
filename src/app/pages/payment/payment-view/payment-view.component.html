@@ -72,7 +72,26 @@
     ></app-audit-trail>
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end" class="pv-foot">
+  <mat-dialog-actions class="pv-foot">
+    <!--
+      Hapus HANYA untuk pemilik usaha (level 5). Penghapusannya lunak di
+      server; batasnya ditegakkan ulang di controller, bukan sekadar
+      disembunyikan di sini.
+    -->
+    @if (bolehHapus) {
+      <button
+        type="button"
+        mat-button
+        color="warn"
+        class="pv-delete"
+        [disabled]="menghapus"
+        (click)="hapus()"
+      >
+        <mat-icon>delete_outline</mat-icon>
+        {{ "paymentView.hapus" | translate }}
+      </button>
+    }
+    <span class="pv-spacer"></span>
     <button type="button" class="pv-close" mat-dialog-close>
       {{ "paymentView.close" | translate }}
     </button>

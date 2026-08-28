@@ -41,6 +41,68 @@
     />
   </div>
 
+  <!--
+    Pencarian & rentang tanggal.
+
+    Pencarian mengejar terutama NAMA LAWAN transaksi (opponent beban, pemasok,
+    pegawai); server yang menyaringnya, bukan layar ini — daftar ini
+    berhalaman, dan menyaring di layar hanya menyaring halaman yang tampak.
+  -->
+  <div class="pl-filters">
+    <mat-form-field appearance="outline" class="pl-search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ "payment.cariOpponent" | translate }}</mat-label>
+      <input
+        matInput
+        [formControl]="cariCtrl"
+        [placeholder]="'payment.cariOpponentPlaceholder' | translate"
+      />
+      @if (cariCtrl.value) {
+        <button
+          matSuffix
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'common.close' | translate"
+          (click)="cariCtrl.setValue('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pl-date">
+      <mat-label>{{ "payment.dariTanggal" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dpDari" [formControl]="dariCtrl" />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="dpDari"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #dpDari></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pl-date">
+      <mat-label>{{ "payment.sampaiTanggal" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dpSampai" [formControl]="sampaiCtrl" />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="dpSampai"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #dpSampai></mat-datepicker>
+    </mat-form-field>
+
+    @if (adaFilter) {
+      <button
+        mat-button
+        type="button"
+        class="pl-clear"
+        (click)="bersihkanFilter()"
+      >
+        <mat-icon>filter_alt_off</mat-icon>
+        {{ "payment.bersihkanFilter" | translate }}
+      </button>
+    }
+  </div>
+
   <div class="pl-card">
     <div class="table-responsive">
       <table mat-table [dataSource]="payments">
@@ -166,11 +228,36 @@
         </ng-container>
 
         <ng-container matColumnDef="documentName">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "table.document" | translate }}
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            (click)="changeSortBy('documentName')"
+          >
+            <div class="d-flex d-align-items-center">
+              <span>{{ "table.document" | translate }}</span>
+              <mat-icon
+                *ngIf="sortBy == 'documentName' && sortByDirection == 'asc'"
+                >arrow_drop_up</mat-icon
+              ><mat-icon
+                *ngIf="sortBy == 'documentName' && sortByDirection == 'desc'"
+                >arrow_drop_down</mat-icon
+              >
+              <mat-icon *ngIf="sortBy != 'documentName'" class="opacity-0"
+                >arrow_drop_down</mat-icon
+              >
+            </div>
           </th>
           <td mat-cell *matCellDef="let payment">
             {{ payment.documentName || "N/A" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="opponent">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "table.opponent" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let payment">
+            {{ payment.opponentName || "—" }}
           </td>
         </ng-container>
 

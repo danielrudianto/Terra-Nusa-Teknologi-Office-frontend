@@ -11,6 +11,14 @@
   box-sizing: border-box;
 }
 
+/* Kaki dialog: hapus menempel kiri, tutup menempel kanan. */
+.pv-spacer {
+  flex: 1 1 auto;
+}
+.pv-delete {
+  color: var(--bad-fg, #c62828) !important;
+}
+
 /* ---------- header ---------- */
 .pv-head {
   display: flex !important;

@@ -1,7 +1,14 @@
 import { Component, Inject, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { AccountService } from '../../../services/account.service';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { ApiService } from '../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
@@ -42,13 +49,63 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
 })
 export class PaymentViewComponent {
   private readonly serverMessage = inject(ServerMessageService);
+  private readonly account = inject(AccountService);
+  private readonly dialog = inject(MatDialog);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiService: ApiService,
     private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     private translate: TranslateService,
+    private dialogRef: MatDialogRef<PaymentViewComponent>,
   ) {}
+
+  /** Menghapus pembayaran HANYA untuk pemilik usaha (level 5). */
+  get bolehHapus(): boolean {
+    return Number(this.account.user?.['authenticationLevel']) >= 5;
+  }
+
+  menghapus = false;
+
+  /**
+   * Hapus pembayaran ini — lunak, di sisi server.
+   *
+   * Dikonfirmasi lebih dahulu; barisnya tidak benar-benar dibuang, hanya
+   * ditandai terhapus dan dikeluarkan dari penjumlahan status lunas. Dialog
+   * ditutup dengan `true` supaya daftarnya memuat ulang.
+   */
+  hapus(): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('paymentView.hapusJudul'),
+          prompt: this.translate.instant('paymentView.hapusKonfirmasi'),
+        },
+      })
+      .afterClosed()
+      .subscribe((ya) => {
+        if (ya !== true) return;
+        this.menghapus = true;
+        this.apiService.delete(`outgoing-payments/${this.data.id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('paymentView.hapusBerhasil'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.menghapus = false;
+            this.snackBar.open(
+              this.serverMessage.terjemahkan(error),
+              'Close',
+              { duration: 3000 },
+            );
+          },
+        });
+      });
+  }
 
   formGroup: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),

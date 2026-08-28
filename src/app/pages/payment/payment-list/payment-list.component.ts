@@ -4,15 +4,19 @@ import { TranslateService } from '@ngx-translate/core';
 import { AccountService } from '../../../services/account.service';
 import { CanDirective } from '../../../directives/can.directive';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subject, takeUntil, debounceTime } from 'rxjs';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatMenuModule } from '@angular/material/menu';
@@ -34,10 +38,13 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatChipsModule,
     MatIconModule,
     MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatMenuModule,
     MatButtonModule,
     HeaderTitleComponent,
-    MatMenuModule,
     RefreshButtonComponent,
   ],
   templateUrl: './payment-list.component.html',
@@ -89,6 +96,14 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   isApproved: boolean = false;
   isRejected: boolean = false;
 
+  /** Rentang tanggal & pencarian — nilainya juga tersimpan di alamat halaman. */
+  readonly dariCtrl = new FormControl<Date | null>(null);
+  readonly sampaiCtrl = new FormControl<Date | null>(null);
+  readonly cariCtrl = new FormControl<string>('');
+  dateFrom: string | null = null;
+  dateTo: string | null = null;
+  keyword: string = '';
+
   payments: any[] = [];
   count: number = 0;
   isLoading: boolean = true;
@@ -98,6 +113,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     'date',
     'bankAccount',
     'documentName',
+    'opponent',
     'amount',
     'approvalStatus',
     'documentStatus',
@@ -108,11 +124,71 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadStateFromQueryParams();
+
+    // Pencarian ditunda sejenak: mengetik "budi" tidak memicu empat kali
+    // pemuatan, hanya satu setelah ketikannya berhenti.
+    this.cariCtrl.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.keyword = (value || '').trim();
+        this.page = 1;
+        this.updateQueryParams();
+        this.fetchPayments(1);
+      });
+
+    this.dariCtrl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.dateFrom = this.toYmd(value);
+        this.page = 1;
+        this.updateQueryParams();
+        this.fetchPayments(1);
+      });
+
+    this.sampaiCtrl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.dateTo = this.toYmd(value);
+        this.page = 1;
+        this.updateQueryParams();
+        this.fetchPayments(1);
+      });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /** Tanggal → 'YYYY-MM-DD' dari bagian LOKAL; `toISOString` menggeser ke UTC. */
+  private toYmd(d: Date | null | undefined): string | null {
+    if (!d) return null;
+    const bulan = `${d.getMonth() + 1}`.padStart(2, '0');
+    const hari = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${bulan}-${hari}`;
+  }
+
+  private parseYmd(s: string | null | undefined): Date | null {
+    if (!s) return null;
+    const t = new Date(s);
+    return isNaN(t.getTime()) ? null : t;
+  }
+
+  /** Kosongkan rentang tanggal & pencarian sekaligus. */
+  bersihkanFilter(): void {
+    this.keyword = '';
+    this.dateFrom = null;
+    this.dateTo = null;
+    this.cariCtrl.setValue('', { emitEvent: false });
+    this.dariCtrl.setValue(null, { emitEvent: false });
+    this.sampaiCtrl.setValue(null, { emitEvent: false });
+    this.page = 1;
+    this.updateQueryParams();
+    this.fetchPayments(1);
+  }
+
+  get adaFilter(): boolean {
+    return !!(this.keyword || this.dateFrom || this.dateTo);
   }
 
   private loadStateFromQueryParams(): void {
@@ -136,6 +212,20 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         this.isApproved = params['isApproved'] === 'true';
         this.isRejected = params['isRejected'] === 'true';
 
+        // Rentang tanggal & pencarian. Kontrolnya ikut disetel tanpa memicu
+        // valueChanges, supaya memuat dari alamat tidak menjadwalkan pemuatan
+        // kedua di atas pemuatan ini.
+        this.dateFrom = params['dateFrom'] || null;
+        this.dateTo = params['dateTo'] || null;
+        this.keyword = params['keyword'] || '';
+        this.cariCtrl.setValue(this.keyword, { emitEvent: false });
+        this.dariCtrl.setValue(this.parseYmd(this.dateFrom), {
+          emitEvent: false,
+        });
+        this.sampaiCtrl.setValue(this.parseYmd(this.dateTo), {
+          emitEvent: false,
+        });
+
         // Fetch data with loaded state
         this.fetchPayments(this.page);
       });
@@ -150,6 +240,9 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       isPending: this.isPending ? 'true' : null,
       isApproved: this.isApproved ? 'true' : null,
       isRejected: this.isRejected ? 'true' : null,
+      dateFrom: this.dateFrom || null,
+      dateTo: this.dateTo || null,
+      keyword: this.keyword || null,
     };
 
     // Remove null values
@@ -182,16 +275,22 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   fetchPayments(targetPage: number): void {
     this.isLoading = true;
     this.page = targetPage;
+
+    const params: any = {
+      page: this.page,
+      pageSize: this.pageSize,
+      isApproved: this.isApproved,
+      isPending: this.isPending,
+      isRejected: this.isRejected,
+      sortBy: this.sortBy,
+      sortByDirection: this.sortByDirection,
+    };
+    if (this.dateFrom) params.dateFrom = this.dateFrom;
+    if (this.dateTo) params.dateTo = this.dateTo;
+    if (this.keyword) params.keyword = this.keyword;
+
     this.apiService
-      .get('outgoing-payments', {
-        page: this.page,
-        pageSize: this.pageSize,
-        isApproved: this.isApproved,
-        isPending: this.isPending,
-        isRejected: this.isRejected,
-        sortBy: this.sortBy,
-        sortByDirection: this.sortByDirection,
-      })
+      .get('outgoing-payments', params)
       .subscribe({
         next: (data: any) => {
           this.payments = data.data;
@@ -312,10 +411,18 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   }
 
   viewPayment(id: number) {
-    this.dialog.open(PaymentViewComponent, {
-      data: {
-        id: id,
-      },
-    });
+    this.dialog
+      .open(PaymentViewComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((berubah) => {
+        // Dialog menutup dengan `true` bila pembayarannya dihapus dari sana —
+        // daftarnya dimuat ulang supaya barisnya tidak tertinggal seolah masih
+        // aktif.
+        if (berubah) this.fetchPayments(this.page);
+      });
   }
 }
