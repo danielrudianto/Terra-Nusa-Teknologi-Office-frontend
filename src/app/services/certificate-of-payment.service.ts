@@ -262,6 +262,19 @@ export class CertificateOfPaymentService {
   }
 
   /**
+   * Lembar CoP SAJA, tanpa lampiran BAP.
+   *
+   * Endpoint yang sama dengan `unduhPdf`, dengan `bap=false`: server merender
+   * dokumen tanpa lampiran BAP-nya. Dipakai saat BAP sudah diunduh terpisah.
+   */
+  unduhCop(id: number) {
+    return this.http.get(
+      `${environment.url}${CertificateOfPaymentService.JALUR}/${id}/pdf?bap=false`,
+      { headers: this.headerUnduh(), responseType: 'blob' },
+    );
+  }
+
+  /**
    * SPK yang boleh dijadikan dasar CoP.
    *
    * Daftar ini SUDAH disaring server — purchase order pembelian barang tidak

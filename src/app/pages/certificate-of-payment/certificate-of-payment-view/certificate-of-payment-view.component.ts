@@ -8,6 +8,7 @@ import {
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -15,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
 import {
   CertificateOfPayment,
@@ -42,9 +44,11 @@ import { ServerMessageService } from 'src/app/services/server-message.service';
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressBarModule,
     TranslateModule,
     HeaderTitleComponent,
+    AuditTrailComponent,
     DialogGeserDirective,
   ],
   templateUrl: './certificate-of-payment-view.component.html',
@@ -286,16 +290,32 @@ export class CertificateOfPaymentViewComponent implements OnInit {
 
   readonly mengunduh = signal(false);
 
-  async unduh(hanyaBap = false): Promise<void> {
+  /**
+   * Unduh berkas CoP dalam salah satu dari tiga bentuk:
+   *   'bap'      — BAP saja;
+   *   'cop'      — lembar CoP saja (tanpa lampiran BAP);
+   *   'keduanya' — CoP beserta lampiran BAP (dokumen resminya).
+   *
+   * Ketiganya dijadikan satu tombol dengan menu, bukan tiga tombol berjajar:
+   * yang mengunduh memilih bentuknya sekali, dan kaki dialog tidak penuh oleh
+   * tombol yang jarang dipakai bersamaan.
+   */
+  async unduh(jenis: 'bap' | 'cop' | 'keduanya' = 'keduanya'): Promise<void> {
     const c = this.cop();
     if (!c) return;
     this.mengunduh.set(true);
     try {
-      const berkas = (await firstValueFrom(
-        hanyaBap ? this.service.unduhBap(c.id) : this.service.unduhPdf(c.id),
-      )) as Blob;
+      const sumber =
+        jenis === 'bap'
+          ? this.service.unduhBap(c.id)
+          : jenis === 'cop'
+            ? this.service.unduhCop(c.id)
+            : this.service.unduhPdf(c.id);
+      const berkas = (await firstValueFrom(sumber)) as Blob;
       const aman = (c.name || 'CoP').replace(/\//g, '-');
-      this.simpanBerkas(berkas, `${aman}${hanyaBap ? '-BAP' : ''}.pdf`);
+      const akhiran =
+        jenis === 'bap' ? '-BAP' : jenis === 'cop' ? '-CoP' : '';
+      this.simpanBerkas(berkas, `${aman}${akhiran}.pdf`);
     } catch (e) {
       this.pesan(e);
     } finally {

@@ -403,9 +403,11 @@
           PPN-nya di kalkulator, dan hasil hitung tangan itulah yang paling
           sering berselisih dengan fakturnya.
 
-          Barisnya hanya digambar bila memang ADA. Dokumen tanpa PPN yang
-          menampilkan "PPN 0%" membuat yang membacanya berhenti memastikan
-          apakah tarifnya lupa diisi.
+          Baris PPN SELALU digambar, termasuk saat tarifnya 0. Menyembunyikan-
+          nya saat nol membuat yang membaca ragu — apakah PPN-nya lupa diisi,
+          atau layarnya keliru menghilangkan satu baris? Menuliskan "0%" dan
+          "0" secara jelas menutup keraguan itu: dokumen ini memang tidak kena
+          PPN, bukan program yang gagal menghitungnya.
         -->
         <dl class="cv-pajak">
           <div>
@@ -413,15 +415,13 @@
             <dd>{{ c.netAmount | number: "1.0-2" }}</dd>
           </div>
 
-          @if (tarifPpn > 0) {
-            <div>
-              <dt>
-                {{ "cop.ppn" | translate }}
-                <em>{{ tarifPpn | number: "1.0-2" }}%</em>
-              </dt>
-              <dd class="cv-pajak--tambah">+{{ nilaiPpn | number: "1.0-2" }}</dd>
-            </div>
-          }
+          <div [class.cv-pajak--nol]="tarifPpn <= 0">
+            <dt>
+              {{ "cop.ppn" | translate }}
+              <em>{{ tarifPpn | number: "1.0-2" }}%</em>
+            </dt>
+            <dd class="cv-pajak--tambah">+{{ nilaiPpn | number: "1.0-2" }}</dd>
+          </div>
 
           <div class="cv-pajak__total">
             <dt>{{ "cop.totalDibayar" | translate }}</dt>
@@ -455,20 +455,38 @@
           }
         </dl>
 
-        <p class="cv-catatan-dpp">{{ "cop.catatanDpp" | translate }}</p>
-
         <!--
-          Diberitahukan HANYA bila PPh-nya memang ada.
+          Keterangan pajak sebagai BANNER, bukan dua baris abu-abu kecil yang
+          mudah terlewat tepat di bawah angka yang paling perlu dipahami.
 
-          Baris PPh di atas mengurangi total, sedangkan potongannya sendiri
-          tidak muncul di daftar potongan CoP — tanpa keterangan ini, yang
-          mencari potongan itu akan menyangka daftarnya kurang lengkap.
+          Baris pertama (dasar pengenaan pajak) selalu ada. Baris kedua — PPh
+          dipotong di pembelian, bukan di sini — hanya digambar bila dokumennya
+          memang dipotong PPh: potongannya tidak muncul di daftar potongan CoP,
+          dan tanpa keterangan ini yang mencarinya menyangka daftarnya kurang.
         -->
-        @if (nilaiPph > 0) {
-          <p class="cv-catatan-dpp">{{ "cop.catatanPajak" | translate }}</p>
-        }
+        <div class="cv-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <span>{{ "cop.catatanDpp" | translate }}</span>
+            @if (nilaiPph > 0) {
+              <span>{{ "cop.catatanPajak" | translate }}</span>
+            }
+          </div>
+        </div>
       </section>
     }
+
+    <!-- ===== Riwayat perubahan =====
+      Di luar blok nilai: siapa pun yang boleh membuka dokumennya boleh
+      melihat SIAPA yang membuat, memeriksa, dan menyetujuinya — riwayat itu
+      tidak memuat harga. Komponennya membawa judulnya sendiri.
+    -->
+    <section class="cv-section">
+      <app-audit-trail
+        [entity]="'certificate_of_payments'"
+        [entityId]="c.id"
+      />
+    </section>
   }
 </ng-template>
 
@@ -486,21 +504,53 @@
         BAP justru sebaliknya — itulah lembar yang dibawa ke lapangan untuk
         diperiksa lebih dahulu.
       -->
+      <!--
+        SATU tombol Unduh dengan tiga pilihan, bukan tombol berjajar.
+
+        BAP dapat diunduh kapan saja — itulah lembar yang dibawa ke lapangan.
+        Lembar CoP dan gabungannya baru terbuka setelah CoP DIBUAT (harga
+        ditelaah): sebelum itu keduanya dinonaktifkan, bukan disembunyikan,
+        supaya yang membuka tahu bentuk apa saja yang akan tersedia nanti.
+      -->
       @if (bolehLihatNilai()) {
-        @if (c.isCopCreated) {
-          <button mat-stroked-button [disabled]="mengunduh()" (click)="unduh()">
-            <mat-icon>picture_as_pdf</mat-icon>
-            {{ "cop.unduhPdf" | translate }}
+        <button
+          mat-stroked-button
+          [disabled]="mengunduh()"
+          [matMenuTriggerFor]="menuUnduh"
+        >
+          <mat-icon>download</mat-icon>
+          {{ "cop.unduh" | translate }}
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #menuUnduh="matMenu">
+          <button mat-menu-item (click)="unduh('bap')">
+            <mat-icon>description</mat-icon>
+            <span>{{ "cop.unduhBapItem" | translate }}</span>
           </button>
-        } @else {
+          <button
+            mat-menu-item
+            [disabled]="!c.isCopCreated"
+            (click)="unduh('cop')"
+          >
+            <mat-icon>request_quote</mat-icon>
+            <span>{{ "cop.unduhCopItem" | translate }}</span>
+          </button>
+          <button
+            mat-menu-item
+            [disabled]="!c.isCopCreated"
+            (click)="unduh('keduanya')"
+          >
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span>{{ "cop.unduhKeduanyaItem" | translate }}</span>
+          </button>
+        </mat-menu>
+
+        @if (!c.isCopCreated) {
           <span class="cv-belum-unduh">
             <mat-icon>lock</mat-icon>
             {{ "cop.unduhSetelahDibuat" | translate }}
           </span>
         }
-        <button mat-button [disabled]="mengunduh()" (click)="unduh(true)">
-          {{ "cop.unduhBap" | translate }}
-        </button>
         <span class="cv-pemisah"></span>
       }
 

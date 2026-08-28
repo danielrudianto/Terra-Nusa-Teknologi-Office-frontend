@@ -626,6 +626,19 @@
   }
 
   /*
+    PPN nol: ditulis tegas "0%" dan "+0", tetapi diredupkan supaya jelas ia
+    keterangan yang memang bernilai nol — bukan baris hijau yang menambah apa
+    pun, dan bukan pula tanda program gagal menghitung.
+  */
+  &--nol {
+    opacity: 0.6;
+
+    dd {
+      color: var(--muted, #6b7280);
+    }
+  }
+
+  /*
     PPh: keterangan, bukan hitungan.
 
     Diredupkan dan tidak diberi garis jumlah supaya tidak terbaca sebagai
