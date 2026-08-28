@@ -46,6 +46,14 @@
   }
 }
 
+/* Banner "kenapa bisa beda dengan akuntan" — dibedakan warnanya (kuning kalem)
+   dari banner metode di atasnya agar terbaca sebagai catatan yang berbeda. */
+.lr-catatan--beda {
+  background: var(--warn-soft, #fdf4e3);
+  border-color: var(--warn-soft, #f6e2ba);
+  color: var(--warn-strong, #8a5a12);
+}
+
 .lr-galat {
   display: flex;
   align-items: center;

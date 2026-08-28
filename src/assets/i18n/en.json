@@ -210,6 +210,7 @@
     "judul": "Profit & Loss Statement",
     "subjudul": "Internal version (accrual basis, company consolidation)",
     "catatan": "Figures are compiled by document date (accrual) and DPP value. VAT is excluded as it is creditable, and withholding tax (PPh) is excluded as it is a withholding item. This report is meant to be reconciled with the accountant's books.",
+    "catatanBeda": "Small differences from the accountant's report are normal — a gap under ~3% is reasonable. Common causes: (1) timing — costs are recognized on the document date, not necessarily matched to their billing (the accountant may hold them as work-in-progress); (2) depreciation — here it all sits in Operating Expenses, while the accountant moves machinery depreciation into COGS; (3) some categories are drawn differently, e.g. subcontractor vs project labor. Asset purchases are not expensed here but depreciated, the same as the accountant's books.",
     "bulan": "Month",
     "tahun": "Year",
     "bulanIni": "This Month",
