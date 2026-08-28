@@ -46,121 +46,157 @@
     </div>
 
     <div class="lr-card">
-      <div class="lr-tabel">
-        <!-- kepala kolom -->
-        <div class="lr-baris lr-baris--kepala">
-          <span class="lr-label"></span>
-          <span class="lr-nilai">{{ "labaRugi.bulanIni" | translate }}</span>
-          <span class="lr-nilai">{{ "labaRugi.ytd" | translate }}</span>
-        </div>
+      <div class="lr-tabel-bungkus">
+        <div class="lr-tabel">
+          <!-- kepala kolom -->
+          <div class="lr-baris lr-baris--kepala">
+            <span class="lr-label"></span>
+            <span class="lr-nilai">{{ "labaRugi.bulanIni" | translate }}</span>
+            <span class="lr-persen">%</span>
+            <span class="lr-nilai">{{ "labaRugi.ytd" | translate }}</span>
+            <span class="lr-persen">%</span>
+          </div>
 
-        <!-- Pendapatan Usaha -->
-        <div class="lr-baris lr-baris--pokok">
-          <span class="lr-label">{{ "labaRugi.pendapatan" | translate }}</span>
-          <span class="lr-nilai">{{ d.bulan.pendapatan | number: "1.0-0" }}</span>
-          <span class="lr-nilai">{{ d.ytd.pendapatan | number: "1.0-0" }}</span>
-        </div>
+          <!-- Pendapatan Usaha -->
+          <div class="lr-baris lr-baris--pokok">
+            <span class="lr-label">{{ "labaRugi.pendapatan" | translate }}</span>
+            <span class="lr-nilai">{{ d.bulan.pendapatan | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.bulan.pendapatan, "bulan") }}</span>
+            <span class="lr-nilai">{{ d.ytd.pendapatan | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.ytd.pendapatan, "ytd") }}</span>
+          </div>
 
-        <!-- Beban Pokok Proyek (HPP) -->
-        <div class="lr-baris lr-baris--grup" (click)="toggle('hpp')">
-          <span class="lr-label">
-            <mat-icon>{{
-              terbuka("hpp") ? "expand_more" : "chevron_right"
-            }}</mat-icon>
-            {{ "labaRugi.hpp" | translate }}
-          </span>
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.bulan.hpp.total | number: "1.0-0" }}</span
-          >
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.ytd.hpp.total | number: "1.0-0" }}</span
-          >
-        </div>
-        @if (terbuka("hpp")) {
-          @for (r of rinci("hpp"); track r.kategori) {
-            <div class="lr-baris lr-baris--rinci">
-              <span class="lr-label">{{ r.label }}</span>
-              <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
-              <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
-            </div>
+          <!-- Beban Pokok Proyek (HPP) -->
+          <div class="lr-baris lr-baris--grup" (click)="toggle('hpp')">
+            <span class="lr-label">
+              <mat-icon>{{
+                terbuka("hpp") ? "expand_more" : "chevron_right"
+              }}</mat-icon>
+              {{ "labaRugi.hpp" | translate }}
+            </span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.bulan.hpp.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{ persen(d.bulan.hpp.total, "bulan") }}</span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.ytd.hpp.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{ persen(d.ytd.hpp.total, "ytd") }}</span>
+          </div>
+          @if (terbuka("hpp")) {
+            @for (r of rinci("hpp"); track r.kategori) {
+              <div class="lr-baris lr-baris--rinci">
+                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
+                <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.ytd, "ytd") }}</span>
+              </div>
+            }
           }
-        }
 
-        <!-- Laba Kotor -->
-        <div class="lr-baris lr-baris--subtotal">
-          <span class="lr-label">{{ "labaRugi.labaKotor" | translate }}</span>
-          <span class="lr-nilai">{{ d.bulan.labaKotor | number: "1.0-0" }}</span>
-          <span class="lr-nilai">{{ d.ytd.labaKotor | number: "1.0-0" }}</span>
-        </div>
+          <!-- Laba Kotor -->
+          <div class="lr-baris lr-baris--subtotal">
+            <span class="lr-label">{{ "labaRugi.labaKotor" | translate }}</span>
+            <span class="lr-nilai">{{ d.bulan.labaKotor | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.bulan.labaKotor, "bulan") }}</span>
+            <span class="lr-nilai">{{ d.ytd.labaKotor | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.ytd.labaKotor, "ytd") }}</span>
+          </div>
 
-        <!-- Beban Usaha -->
-        <div class="lr-baris lr-baris--grup" (click)="toggle('bebanUsaha')">
-          <span class="lr-label">
-            <mat-icon>{{
-              terbuka("bebanUsaha") ? "expand_more" : "chevron_right"
-            }}</mat-icon>
-            {{ "labaRugi.bebanUsaha" | translate }}
-          </span>
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.bulan.bebanUsaha.total | number: "1.0-0" }}</span
-          >
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.ytd.bebanUsaha.total | number: "1.0-0" }}</span
-          >
-        </div>
-        @if (terbuka("bebanUsaha")) {
-          @for (r of rinci("bebanUsaha"); track r.kategori) {
-            <div class="lr-baris lr-baris--rinci">
-              <span class="lr-label">{{ r.label }}</span>
-              <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
-              <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
-            </div>
+          <!-- Beban Usaha -->
+          <div class="lr-baris lr-baris--grup" (click)="toggle('bebanUsaha')">
+            <span class="lr-label">
+              <mat-icon>{{
+                terbuka("bebanUsaha") ? "expand_more" : "chevron_right"
+              }}</mat-icon>
+              {{ "labaRugi.bebanUsaha" | translate }}
+            </span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.bulan.bebanUsaha.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{
+              persen(d.bulan.bebanUsaha.total, "bulan")
+            }}</span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.ytd.bebanUsaha.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{
+              persen(d.ytd.bebanUsaha.total, "ytd")
+            }}</span>
+          </div>
+          @if (terbuka("bebanUsaha")) {
+            @for (r of rinci("bebanUsaha"); track r.kategori) {
+              <div class="lr-baris lr-baris--rinci">
+                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
+                <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.ytd, "ytd") }}</span>
+              </div>
+            }
           }
-        }
 
-        <!-- Laba Usaha -->
-        <div class="lr-baris lr-baris--subtotal">
-          <span class="lr-label">{{ "labaRugi.labaUsaha" | translate }}</span>
-          <span class="lr-nilai">{{ d.bulan.labaUsaha | number: "1.0-0" }}</span>
-          <span class="lr-nilai">{{ d.ytd.labaUsaha | number: "1.0-0" }}</span>
-        </div>
+          <!-- Laba Usaha -->
+          <div class="lr-baris lr-baris--subtotal">
+            <span class="lr-label">{{ "labaRugi.labaUsaha" | translate }}</span>
+            <span class="lr-nilai">{{ d.bulan.labaUsaha | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.bulan.labaUsaha, "bulan") }}</span>
+            <span class="lr-nilai">{{ d.ytd.labaUsaha | number: "1.0-0" }}</span>
+            <span class="lr-persen">{{ persen(d.ytd.labaUsaha, "ytd") }}</span>
+          </div>
 
-        <!-- Beban / Pendapatan Lain -->
-        <div class="lr-baris lr-baris--grup" (click)="toggle('bebanLain')">
-          <span class="lr-label">
-            <mat-icon>{{
-              terbuka("bebanLain") ? "expand_more" : "chevron_right"
-            }}</mat-icon>
-            {{ "labaRugi.bebanLain" | translate }}
-          </span>
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.bulan.bebanLain.total | number: "1.0-0" }}</span
-          >
-          <span class="lr-nilai lr-nilai--kurang"
-            >−{{ d.ytd.bebanLain.total | number: "1.0-0" }}</span
-          >
-        </div>
-        @if (terbuka("bebanLain")) {
-          @for (r of rinci("bebanLain"); track r.kategori) {
-            <div class="lr-baris lr-baris--rinci">
-              <span class="lr-label">{{ r.label }}</span>
-              <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
-              <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
-            </div>
+          <!-- Beban / Pendapatan Lain -->
+          <div class="lr-baris lr-baris--grup" (click)="toggle('bebanLain')">
+            <span class="lr-label">
+              <mat-icon>{{
+                terbuka("bebanLain") ? "expand_more" : "chevron_right"
+              }}</mat-icon>
+              {{ "labaRugi.bebanLain" | translate }}
+            </span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.bulan.bebanLain.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{
+              persen(d.bulan.bebanLain.total, "bulan")
+            }}</span>
+            <span class="lr-nilai lr-nilai--kurang"
+              >−{{ d.ytd.bebanLain.total | number: "1.0-0" }}</span
+            >
+            <span class="lr-persen">{{
+              persen(d.ytd.bebanLain.total, "ytd")
+            }}</span>
+          </div>
+          @if (terbuka("bebanLain")) {
+            @for (r of rinci("bebanLain"); track r.kategori) {
+              <div class="lr-baris lr-baris--rinci">
+                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
+                <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
+                <span class="lr-persen">{{ persen(r.ytd, "ytd") }}</span>
+              </div>
+            }
           }
-        }
 
-        <!-- Laba Sebelum Pajak -->
-        <div class="lr-baris lr-baris--total">
-          <span class="lr-label">{{
-            "labaRugi.labaSebelumPajak" | translate
-          }}</span>
-          <span class="lr-nilai">{{
-            d.bulan.labaSebelumPajak | number: "1.0-0"
-          }}</span>
-          <span class="lr-nilai">{{
-            d.ytd.labaSebelumPajak | number: "1.0-0"
-          }}</span>
+          <!-- Laba Sebelum Pajak -->
+          <div class="lr-baris lr-baris--total">
+            <span class="lr-label">{{
+              "labaRugi.labaSebelumPajak" | translate
+            }}</span>
+            <span class="lr-nilai">{{
+              d.bulan.labaSebelumPajak | number: "1.0-0"
+            }}</span>
+            <span class="lr-persen">{{
+              persen(d.bulan.labaSebelumPajak, "bulan")
+            }}</span>
+            <span class="lr-nilai">{{
+              d.ytd.labaSebelumPajak | number: "1.0-0"
+            }}</span>
+            <span class="lr-persen">{{
+              persen(d.ytd.labaSebelumPajak, "ytd")
+            }}</span>
+          </div>
         </div>
       </div>
     </div>

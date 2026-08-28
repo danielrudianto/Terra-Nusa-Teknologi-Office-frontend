@@ -142,6 +142,27 @@ export class LabaRugiComponent {
     return Array.from(peta.values()).sort((a, c) => c.ytd - a.ytd);
   }
 
+  /**
+   * Persentase sebuah nilai terhadap PENDAPATAN periode itu (common-size).
+   *
+   * Pendapatan = 100%; setiap baris dibaca sebagai porsi dari pendapatan —
+   * cara membaca laporan laba rugi yang lazim ("berapa persen omzet yang
+   * habis untuk ini"). Bila pendapatan 0 (belum ada penjualan pada periode),
+   * persentasenya tak bermakna dan ditampilkan sebagai "—".
+   */
+  persen(nilai: number, periode: 'bulan' | 'ytd'): string {
+    const d = this.data();
+    const dasar = Number(d?.[periode]?.pendapatan) || 0;
+    if (!dasar) return '—';
+    const p = ((Number(nilai) || 0) / dasar) * 100;
+    return (
+      p.toLocaleString('id-ID', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }) + '%'
+    );
+  }
+
   async muat(): Promise<void> {
     this.memuat.set(true);
     this.galat.set('');

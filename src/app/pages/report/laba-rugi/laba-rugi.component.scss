@@ -6,7 +6,7 @@
 
 .lr {
   width: 100%;
-  max-width: 900px;
+  max-width: 1040px;
   margin: 0 auto;
   padding-bottom: 2rem;
 }
@@ -68,14 +68,21 @@
     0 4px 16px rgba(16, 24, 40, 0.05);
 }
 
+/* Pembungkus penggulir — pada layar sempit tabel 5 kolom menggulir mendatar
+   ketimbang meremukkan kolom angka. */
+.lr-tabel-bungkus {
+  overflow-x: auto;
+}
+
 .lr-tabel {
   display: flex;
   flex-direction: column;
+  min-width: 680px;
 }
 
 .lr-baris {
   display: grid;
-  grid-template-columns: 1fr 9.5rem 9.5rem;
+  grid-template-columns: 1fr 8.5rem 4rem 8.5rem 4rem;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.1rem;
@@ -110,11 +117,21 @@
   }
 }
 
+/* kolom persentase (% dari pendapatan) — angka pendamping, dibuat lebih kalem
+   dari nilai rupiahnya agar tidak bersaing dibaca. */
+.lr-persen {
+  text-align: right;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted, #6b7280);
+}
+
 /* kepala kolom */
 .lr-baris--kepala {
   background: var(--surface-2, #fafbfc);
 
-  .lr-nilai {
+  .lr-nilai,
+  .lr-persen {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -188,11 +205,22 @@
     font-size: 1rem;
     color: var(--brand-strong, #0f3fd0);
   }
+  .lr-persen {
+    font-weight: 700;
+    color: var(--brand-strong, #0f3fd0);
+  }
+}
+
+/* subtotal & pokok: persentasenya ikut sedikit ditebalkan agar sejajar dengan
+   nilainya. */
+.lr-baris--subtotal .lr-persen,
+.lr-baris--pokok .lr-persen {
+  font-weight: 600;
+  color: var(--ink, #16181d);
 }
 
 @media (max-width: 560px) {
   .lr-baris {
-    grid-template-columns: 1fr 6.5rem 6.5rem;
     padding: 0.55rem 0.75rem;
   }
   .lr-nilai {
