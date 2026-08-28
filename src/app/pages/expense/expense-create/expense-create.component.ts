@@ -11,7 +11,6 @@ import {
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
@@ -48,7 +47,6 @@ import { BankAccountSelectorComponent } from '../../../components/bank-account-s
     MatSelectModule,
     MatTableModule,
     MatIconModule,
-    MatStepperModule,
     MatAutocompleteModule,
     MatDividerModule,
     MatButtonModule,
@@ -73,7 +71,6 @@ export class ExpenseCreateComponent {
     private decimalPipe: DecimalPipe,
   ) {}
 
-  @ViewChild('stepper') stepper: MatStepper | undefined;
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
 
   isFinal: boolean = false;
@@ -361,7 +358,9 @@ export class ExpenseCreateComponent {
                   this.metaFormGroup.reset();
                   this.valueFormGroup.reset();
                   this.paymentFormGroup.reset();
-                  this.stepper?.reset();
+                  // Dulu me-reset stepper ke langkah pertama; kini cukup
+                  // menonaktifkan tombol simpan sampai total dihitung ulang.
+                  this.isFinal = false;
 
                   this.metaFormGroup.patchValue({
                     date: new Date(),
@@ -404,7 +403,7 @@ export class ExpenseCreateComponent {
             this.metaFormGroup.reset();
             this.valueFormGroup.reset();
             this.paymentFormGroup.reset();
-            this.stepper?.reset();
+            this.isFinal = false;
 
             this.metaFormGroup.patchValue({
               date: new Date(),
