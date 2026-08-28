@@ -52,9 +52,17 @@
 .lr-catatan--beda {
   display: block; /* override flex dari .lr-catatan */
   padding: 0; /* padding pindah ke ringkas/isi */
-  background: var(--warn-soft, #fdf4e3);
-  border-color: var(--warn-soft, #f6e2ba);
-  color: var(--warn-strong, #8a5a12);
+  /* Pakai warna PERMUKAAN & TEKS halaman (bukan token --warn-* yang di tema
+     gelap jadi oranye pekat + teks redup). Identitas "catatan beda" cukup dari
+     aksen oranye di garis kiri — kontras teks tetap terjaga di terang & gelap. */
+  background: var(--surface-2, #faf7f0);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-left: 3px solid #e08a2e;
+  color: var(--ink, #16181d);
+}
+/* Ikon diberi aksen oranye sebagai penanda; teks tetap warna utama. */
+.lr-catatan--beda mat-icon {
+  color: #e08a2e;
 }
 
 /* Buang segitiga bawaan <summary>. */
