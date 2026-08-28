@@ -57,7 +57,6 @@
             formControlName="taxInvoiceName"
             maxlength="17"
           />
-          <mat-hint>{{ "purchaseMeta.taxInvoiceHint" | translate }}</mat-hint>
         </mat-form-field>
 
         <!--
@@ -100,7 +99,6 @@
                 <mat-icon>close</mat-icon>
               </button>
             }
-            <mat-hint>{{ "purchaseMeta.masaPajakHint" | translate }}</mat-hint>
           </mat-form-field>
 
           @if (masaPajakJauh) {
@@ -110,6 +108,21 @@
             </p>
           }
         }
+
+        <!--
+          Keterangan faktur & masa pajak sebagai BANNER, bukan mat-hint kecil
+          yang tenggelam di bawah kotak isian. Baris masa pajak hanya digambar
+          bila pembeliannya kena PPN — tanpa PPN tidak ada yang dikreditkan.
+        -->
+        <div class="pum-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <span>{{ "purchaseMeta.taxInvoiceHint" | translate }}</span>
+            @if (kenaPpn) {
+              <span>{{ "purchaseMeta.masaPajakHint" | translate }}</span>
+            }
+          </div>
+        </div>
 
         <!--
           Kode & objek PPh — klasifikasi, bukan nominal. Selalu boleh
