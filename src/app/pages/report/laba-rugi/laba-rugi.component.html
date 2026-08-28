@@ -95,7 +95,7 @@
           @if (terbuka("hpp")) {
             @for (r of rinci("hpp"); track r.kategori) {
               <div class="lr-baris lr-baris--rinci">
-                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-label">{{ labelBaris(r) }}</span>
                 <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
                 <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
                 <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
@@ -137,7 +137,7 @@
           @if (terbuka("bebanUsaha")) {
             @for (r of rinci("bebanUsaha"); track r.kategori) {
               <div class="lr-baris lr-baris--rinci">
-                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-label">{{ labelBaris(r) }}</span>
                 <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
                 <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
                 <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>
@@ -179,7 +179,7 @@
           @if (terbuka("bebanLain")) {
             @for (r of rinci("bebanLain"); track r.kategori) {
               <div class="lr-baris lr-baris--rinci">
-                <span class="lr-label">{{ r.label }}</span>
+                <span class="lr-label">{{ labelBaris(r) }}</span>
                 <span class="lr-nilai">{{ r.bulan | number: "1.0-0" }}</span>
                 <span class="lr-persen">{{ persen(r.bulan, "bulan") }}</span>
                 <span class="lr-nilai">{{ r.ytd | number: "1.0-0" }}</span>

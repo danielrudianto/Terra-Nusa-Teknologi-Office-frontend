@@ -163,6 +163,19 @@ export class LabaRugiComponent {
     );
   }
 
+  /**
+   * Label baris rincian yang sudah diterjemahkan.
+   *
+   * Server mengirim `kategori` (slug stabil) + `label` (Indonesia, cadangan).
+   * Bila terjemahan `labaRugi.baris.<slug>` ada, pakai itu; jika tidak (mis.
+   * kategori tak terpetakan seperti "Lainnya (X)"), jatuh ke label server.
+   */
+  labelBaris(r: any): string {
+    const kunci = 'labaRugi.baris.' + (r?.kategori ?? '');
+    const teks = this.translate.instant(kunci);
+    return teks && teks !== kunci ? teks : r?.label || r?.kategori || '';
+  }
+
   async muat(): Promise<void> {
     this.memuat.set(true);
     this.galat.set('');

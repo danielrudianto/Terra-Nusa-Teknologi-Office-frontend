@@ -222,7 +222,46 @@
     "bebanUsaha": "Beban Usaha",
     "labaUsaha": "Laba Usaha",
     "bebanLain": "Beban Lain-lain",
-    "labaSebelumPajak": "Laba Sebelum Pajak"
+    "labaSebelumPajak": "Laba Sebelum Pajak",
+    "baris": {
+      "transportasiProyek": "Transportasi proyek",
+      "sewaAlatProyek": "Sewa alat proyek",
+      "bahanBakarProyek": "Bahan bakar proyek",
+      "tenagaKerjaProyek": "Tenaga kerja proyek",
+      "koordinasiKonsumsiAkomodasi": "Koordinasi, konsumsi & akomodasi",
+      "materialProyek": "Material proyek",
+      "perlengkapanPeralatanProyek": "Perlengkapan & peralatan proyek",
+      "pekerjaanSubkontrak": "Pekerjaan subkontrak",
+      "pembelianMaterialJasa": "Pembelian material & jasa",
+      "pembelianUtilitasKantor": "Pembelian barang utilitas kantor",
+      "perawatanAset": "Perawatan aset",
+      "sewaDibayarDiMuka": "Sewa dibayar di muka",
+      "bebanKaryawan": "Beban karyawan",
+      "logistik": "Logistik",
+      "penangananDokumenAtk": "Penanganan dokumen & ATK",
+      "utilitas": "Utilitas (listrik, air, dll)",
+      "biayaAdministrasi": "Biaya administrasi",
+      "pembulatan": "Pembulatan",
+      "perangkatLunak": "Perangkat lunak",
+      "sosialKemasyarakatan": "Sosial & kemasyarakatan",
+      "iklan": "Iklan",
+      "merchandisePromosi": "Merchandise promosi",
+      "mediaSosial": "Media sosial",
+      "legal": "Legal (akta, SBU)",
+      "asuransi": "Asuransi",
+      "rekrutmen": "Rekrutmen",
+      "pelatihan": "Pelatihan",
+      "kesehatan": "Kesehatan",
+      "bunga": "Bunga",
+      "denda": "Denda",
+      "pajakPph23": "Pajak — PPh 23 & 4(2)",
+      "pajakSptTahunan": "Pajak — SPT Tahunan",
+      "pajakJasaLaporSpt": "Pajak — Jasa lapor SPT",
+      "pajakDenda": "Pajak — Denda",
+      "pajakAtasBunga": "Pajak atas bunga",
+      "penyusutanAsetTetap": "Penyusutan aset tetap",
+      "bebanGaji": "Beban gaji"
+    }
   },
   "status": {
     "paid": "Lunas",
@@ -2899,7 +2938,8 @@
     "contract_update": "Kontrak diubah",
     "contract_delete": "Kontrak dihapus",
     "convert": "Dikonversi menjadi pembelian",
-    "set_checked": "Pemeriksaan diubah"
+    "set_checked": "Pemeriksaan diubah",
+    "access": "Diakses"
   },
   "activity": {
     "title": "Aktivitas",
@@ -2953,7 +2993,14 @@
     "employees": "Karyawan",
     "employee_profiles": "Profil karyawan",
     "employee_form_submissions": "Pembaruan data karyawan",
-    "employee_form_versions": "Formulir pembaruan data"
+    "employee_form_versions": "Formulir pembaruan data",
+    "laporan:laba_rugi": "Laporan Laba Rugi",
+    "laporan:ppn": "Laporan PPN",
+    "laporan:ppn_posisi": "Laporan Posisi PPN",
+    "laporan:pph": "Laporan PPh",
+    "laporan:pph_gaji": "Laporan PPh Gaji",
+    "laporan:rekap_bulanan": "Rekap Pajak Bulanan",
+    "laporan:pembelian": "Laporan Pembelian"
   },
   "poH": {
     "subcontractorType": "Jenis subkontraktor",

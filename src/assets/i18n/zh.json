@@ -222,7 +222,46 @@
     "bebanUsaha": "营业费用",
     "labaUsaha": "营业利润",
     "bebanLain": "其他费用",
-    "labaSebelumPajak": "税前利润"
+    "labaSebelumPajak": "税前利润",
+    "baris": {
+      "transportasiProyek": "项目运输",
+      "sewaAlatProyek": "项目设备租赁",
+      "bahanBakarProyek": "项目燃油",
+      "tenagaKerjaProyek": "项目人工",
+      "koordinasiKonsumsiAkomodasi": "协调、餐饮与住宿",
+      "materialProyek": "项目材料",
+      "perlengkapanPeralatanProyek": "项目用品与器材",
+      "pekerjaanSubkontrak": "分包工程",
+      "pembelianMaterialJasa": "材料与服务采购",
+      "pembelianUtilitasKantor": "办公杂用品",
+      "perawatanAset": "资产维护",
+      "sewaDibayarDiMuka": "预付租金",
+      "bebanKaryawan": "员工费用",
+      "logistik": "物流",
+      "penangananDokumenAtk": "文件处理与文具",
+      "utilitas": "水电等公用事业",
+      "biayaAdministrasi": "行政费用",
+      "pembulatan": "尾数调整",
+      "perangkatLunak": "软件",
+      "sosialKemasyarakatan": "社会与公益",
+      "iklan": "广告",
+      "merchandisePromosi": "促销物料",
+      "mediaSosial": "社交媒体",
+      "legal": "法律（契据、SBU）",
+      "asuransi": "保险",
+      "rekrutmen": "招聘",
+      "pelatihan": "培训",
+      "kesehatan": "健康",
+      "bunga": "利息",
+      "denda": "罚款",
+      "pajakPph23": "税——预扣税 23 及 4(2)",
+      "pajakSptTahunan": "税——年度申报",
+      "pajakJasaLaporSpt": "税——申报服务",
+      "pajakDenda": "税——罚款",
+      "pajakAtasBunga": "利息税",
+      "penyusutanAsetTetap": "固定资产折旧",
+      "bebanGaji": "工资费用"
+    }
   },
   "status": {
     "paid": "已付款",
@@ -2899,7 +2938,8 @@
     "contract_update": "修改合同",
     "contract_delete": "删除合同",
     "convert": "已转为采购",
-    "set_checked": "审核状态已更改"
+    "set_checked": "审核状态已更改",
+    "access": "已访问"
   },
   "activity": {
     "title": "活动记录",
@@ -2953,7 +2993,14 @@
     "employees": "员工",
     "employee_profiles": "员工档案",
     "employee_form_submissions": "员工资料更新",
-    "employee_form_versions": "资料更新表单"
+    "employee_form_versions": "资料更新表单",
+    "laporan:laba_rugi": "损益报表",
+    "laporan:ppn": "增值税报表",
+    "laporan:ppn_posisi": "增值税头寸报表",
+    "laporan:pph": "预扣税报表",
+    "laporan:pph_gaji": "工资预扣税报表",
+    "laporan:rekap_bulanan": "月度税务汇总",
+    "laporan:pembelian": "采购报表"
   },
   "poH": {
     "subcontractorType": "分包商类型",

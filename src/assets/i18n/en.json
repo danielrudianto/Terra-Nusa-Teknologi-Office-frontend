@@ -222,7 +222,46 @@
     "bebanUsaha": "Operating Expenses",
     "labaUsaha": "Operating Profit",
     "bebanLain": "Other Expenses",
-    "labaSebelumPajak": "Profit Before Tax"
+    "labaSebelumPajak": "Profit Before Tax",
+    "baris": {
+      "transportasiProyek": "Project transportation",
+      "sewaAlatProyek": "Project equipment rental",
+      "bahanBakarProyek": "Project fuel",
+      "tenagaKerjaProyek": "Project labor",
+      "koordinasiKonsumsiAkomodasi": "Coordination, meals & lodging",
+      "materialProyek": "Project material",
+      "perlengkapanPeralatanProyek": "Project supplies & equipment",
+      "pekerjaanSubkontrak": "Subcontracted work",
+      "pembelianMaterialJasa": "Materials & services purchases",
+      "pembelianUtilitasKantor": "Office utility goods",
+      "perawatanAset": "Asset maintenance",
+      "sewaDibayarDiMuka": "Prepaid rent",
+      "bebanKaryawan": "Employee expenses",
+      "logistik": "Logistics",
+      "penangananDokumenAtk": "Document handling & stationery",
+      "utilitas": "Utilities (electricity, water, etc.)",
+      "biayaAdministrasi": "Administrative expenses",
+      "pembulatan": "Rounding",
+      "perangkatLunak": "Software",
+      "sosialKemasyarakatan": "Social & community",
+      "iklan": "Advertising",
+      "merchandisePromosi": "Promotional merchandise",
+      "mediaSosial": "Social media",
+      "legal": "Legal (deeds, SBU)",
+      "asuransi": "Insurance",
+      "rekrutmen": "Recruitment",
+      "pelatihan": "Training",
+      "kesehatan": "Health",
+      "bunga": "Interest",
+      "denda": "Penalty",
+      "pajakPph23": "Tax — WHT 23 & 4(2)",
+      "pajakSptTahunan": "Tax — Annual return",
+      "pajakJasaLaporSpt": "Tax — Filing service",
+      "pajakDenda": "Tax — Penalty",
+      "pajakAtasBunga": "Tax on interest",
+      "penyusutanAsetTetap": "Fixed asset depreciation",
+      "bebanGaji": "Salary expense"
+    }
   },
   "status": {
     "paid": "Paid",
@@ -2899,7 +2938,8 @@
     "contract_update": "Contract updated",
     "contract_delete": "Contract deleted",
     "convert": "Converted to purchase",
-    "set_checked": "Check state changed"
+    "set_checked": "Check state changed",
+    "access": "Accessed"
   },
   "activity": {
     "title": "Activity",
@@ -2953,7 +2993,14 @@
     "employees": "Employees",
     "employee_profiles": "Employee profiles",
     "employee_form_submissions": "Employee data updates",
-    "employee_form_versions": "Data update forms"
+    "employee_form_versions": "Data update forms",
+    "laporan:laba_rugi": "Profit & Loss Report",
+    "laporan:ppn": "VAT Report",
+    "laporan:ppn_posisi": "VAT Position Report",
+    "laporan:pph": "Withholding Tax Report",
+    "laporan:pph_gaji": "Payroll Withholding Tax Report",
+    "laporan:rekap_bulanan": "Monthly Tax Recap",
+    "laporan:pembelian": "Purchase Report"
   },
   "poH": {
     "subcontractorType": "Subcontractor type",
