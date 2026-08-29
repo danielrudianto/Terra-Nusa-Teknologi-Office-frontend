@@ -184,10 +184,83 @@ export class ExpenseListComponent {
     return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
   }
 
-  ngOnInit(): void {
-    this.fetchData(0);
+  /**
+   * Kunci penyimpanan state daftar (filter, pencarian, halaman, urutan).
+   *
+   * Disimpan agar sesudah membuka/mengubah beban lalu kembali ke daftar,
+   * pengguna mendarat di halaman, keyword, rentang tanggal, dan urutan yang
+   * SAMA — bukan halaman 1 yang kosong. Pakai sessionStorage: cukup untuk satu
+   * sesi tab, tidak mengotori URL, dan tidak perlu merombak formulir jadi
+   * dialog.
+   */
+  private readonly STATE_KEY = 'expenseListState';
 
-    this.ignoreControl.disable();
+  private simpanState(): void {
+    try {
+      sessionStorage.setItem(
+        this.STATE_KEY,
+        JSON.stringify({
+          keyword: this.searchControl.value ?? '',
+          ignore: !!this.ignoreControl.value,
+          start: this.formGroup.controls['start'].value,
+          end: this.formGroup.controls['end'].value,
+          filter: this.filterFormGroup.value,
+          chip: this.chipSelections,
+          sortBy: this.sortBy,
+          sortByDirection: this.sortByDirection,
+          page: this.page,
+          pageSize: this.pageSize,
+        }),
+      );
+    } catch {
+      /* storage tidak tersedia — abaikan, daftar tetap jalan */
+    }
+  }
+
+  /** Kembalikan state daftar dari sesi sebelumnya. `true` bila ada yang dipulihkan. */
+  private pulihkanState(): boolean {
+    try {
+      const raw = sessionStorage.getItem(this.STATE_KEY);
+      if (!raw) return false;
+      const s = JSON.parse(raw);
+
+      this.searchControl.setValue(s.keyword ?? '', { emitEvent: false });
+      this.ignoreControl.setValue(!!s.ignore, { emitEvent: false });
+      if (s.start)
+        this.formGroup.controls['start'].setValue(new Date(s.start), {
+          emitEvent: false,
+        });
+      if (s.end)
+        this.formGroup.controls['end'].setValue(new Date(s.end), {
+          emitEvent: false,
+        });
+      if (s.filter)
+        this.filterFormGroup.setValue(s.filter, { emitEvent: false });
+      if (s.chip) this.chipSelections = s.chip;
+      if (s.sortBy) this.sortBy = s.sortBy;
+      if (s.sortByDirection) this.sortByDirection = s.sortByDirection;
+      this.page = s.page ?? 0;
+      this.pageSize = s.pageSize ?? 10;
+
+      // "Abaikan tanggal" hanya aktif saat ada keyword.
+      if ((s.keyword ?? '').trim() !== '') {
+        this.ignoreControl.enable({ emitEvent: false });
+      } else {
+        this.ignoreControl.disable({ emitEvent: false });
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  ngOnInit(): void {
+    // Pulihkan state SEBELUM fetch pertama; kalau tak ada, pakai default.
+    const dipulihkan = this.pulihkanState();
+    if (!dipulihkan) {
+      this.ignoreControl.disable();
+    }
+    this.fetchData(this.page);
 
     this.formGroup.valueChanges.pipe(debounceTime(100)).subscribe(() => {
       this.fetchData(0);
@@ -280,6 +353,9 @@ export class ExpenseListComponent {
     }
 
     this.page = targetPage;
+    this.pageSize = pageSize;
+    // Simpan state tiap fetch agar kembali ke daftar memulihkan kondisi ini.
+    this.simpanState();
     this.apiService
       .get('expenses', {
         page: this.page,
