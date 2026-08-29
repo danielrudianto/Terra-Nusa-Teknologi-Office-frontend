@@ -168,9 +168,21 @@ export class ExpenseListComponent {
     'supplier',
     'total',
     'expenseType',
+    'masaPajak',
     'paidStatus',
     'action',
   ];
+
+  /**
+   * Tanggal buku (masa yang ditanggung) sebagai "MM/YYYY".
+   * Kosong -> "N/A": beban biasa memang tidak menanggung suatu periode.
+   */
+  formatMasa(masa: string | null | undefined): string {
+    if (!masa) return 'N/A';
+    const d = new Date(masa);
+    if (isNaN(d.getTime())) return 'N/A';
+    return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  }
 
   ngOnInit(): void {
     this.fetchData(0);

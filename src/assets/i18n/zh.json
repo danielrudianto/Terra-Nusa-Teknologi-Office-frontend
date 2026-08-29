@@ -936,6 +936,7 @@
     "dateRange": "日期范围",
     "searchPlaceholder": "发票、收据、采购订单、交易对方或税务发票",
     "colType": "费用类型",
+    "colBookDate": "记账日期",
     "menuView": "查看费用",
     "menuCreatePayment": "创建付款",
     "adminFees": "管理费",

@@ -222,6 +222,16 @@
           </td>
         </ng-container>
 
+        <!-- Tanggal buku (masa yang ditanggung) — MM/YYYY, atau N/A bila kosong -->
+        <ng-container matColumnDef="masaPajak">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "expense.colBookDate" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let purchase">
+            <span class="ex-muted">{{ formatMasa(purchase.masaPajak) }}</span>
+          </td>
+        </ng-container>
+
         <!-- Paid status -->
         <ng-container matColumnDef="paidStatus">
           <th mat-header-cell *matHeaderCellDef>

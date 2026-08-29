@@ -936,6 +936,7 @@
     "dateRange": "Rentang tanggal",
     "searchPlaceholder": "Invoice, kwitansi, PO, lawan transaksi, atau faktur pajak",
     "colType": "Tipe beban",
+    "colBookDate": "Tanggal Buku",
     "menuView": "Lihat beban",
     "menuCreatePayment": "Buat pembayaran",
     "adminFees": "Biaya administrasi",

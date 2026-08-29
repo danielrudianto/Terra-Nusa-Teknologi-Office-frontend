@@ -284,9 +284,11 @@
             </mat-form-field>
           }
 
-          <div class="exc-span2 exc-masa-hint">
+          <div class="exc-span2 exc-banner">
             <mat-icon>info</mat-icon>
-            <span>{{ "expenseForm.masaHint" | translate }}</span>
+            <div>
+              <span>{{ "expenseForm.masaHint" | translate }}</span>
+            </div>
           </div>
         }
 
@@ -595,20 +597,22 @@
         </div>
       }
 
+      <!--
+        Total masih perlu DIHITUNG sebelum simpan — tombolnya di kartu Nilai
+        di atas. Banner ini menunjuk ke sana ketika isian sudah cukup tetapi
+        belum dihitung, supaya tombol simpan yang mati tidak terbaca sebagai
+        kesalahan.
+      -->
+      @if (!isFinal && isNumberValid) {
+        <div class="exc-banner">
+          <mat-icon>calculate</mat-icon>
+          <div>
+            <span>{{ "expense.hitungTotalDulu" | translate }}</span>
+          </div>
+        </div>
+      }
+
       <div class="exc-actions">
-        <!--
-          Total masih perlu DIHITUNG sebelum simpan — tombolnya di kartu Nilai
-          di atas. Tanpa itu, "Total dibayar" tetap nol dan slip pembayaran
-          otomatisnya salah. Petunjuk ini menunjuk ke sana ketika isian sudah
-          cukup tetapi belum dihitung, supaya tombol simpan yang mati tidak
-          terbaca sebagai kesalahan.
-        -->
-        @if (!isFinal && isNumberValid) {
-          <span class="exc-hint">
-            <mat-icon>calculate</mat-icon>
-            {{ "expense.hitungTotalDulu" | translate }}
-          </span>
-        }
         <span class="exc-spacer"></span>
         <button
           class="exc-btn exc-btn--primary"

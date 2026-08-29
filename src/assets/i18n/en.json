@@ -936,6 +936,7 @@
     "dateRange": "Date range",
     "searchPlaceholder": "Invoice, receipt, PO, opponent, or tax invoice",
     "colType": "Expense type",
+    "colBookDate": "Book Date",
     "menuView": "View expense",
     "menuCreatePayment": "Create payment",
     "adminFees": "Administration fees",
