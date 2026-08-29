@@ -342,7 +342,9 @@
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
     "belumAdaPembayaranDiterima": "尚未收到付款。",
-    "menuEditIncomeTax": "修改扣缴凭证"
+    "menuEditIncomeTax": "修改扣缴凭证",
+    "menuTaxInvoice": "录入税务发票",
+    "menuEditTaxInvoice": "修改税务发票"
   },
   "language": {
     "label": "语言",
@@ -3665,7 +3667,8 @@
     "saveFailed": "保存失败",
     "actionFailed": "操作未能完成",
     "rejectSuccess": "采购订单已拒绝",
-    "formInvalid": "部分字段填写有误，请检查标红处。"
+    "formInvalid": "部分字段填写有误，请检查标红处。",
+    "taxInvoiceSaved": "税务发票号已保存"
   },
   "panduan": {
     "title": "指南",
@@ -5137,5 +5140,20 @@
     "tindihPerbaiki": "更正日期",
     "tindihLanjut": "继续",
     "periodeWajibKet": "保存本付款证书前，期间的起始日和结束日均为必填。"
+  },
+  "taxInvoiceEdit": {
+    "title": "录入税务发票",
+    "editTitle": "修改税务发票",
+    "subtitle": "销项税务发票号及其所属期",
+    "invoiceNumber": "发票号",
+    "invoiceDate": "发票日期",
+    "ppnAmount": "已征增值税",
+    "number": "税务发票号",
+    "masaPajak": "税期",
+    "masaPajakIkutTanggal": "跟随发票日期",
+    "masaPajakIkutTanggalNilai": "{{tanggal}}（跟随发票日期）",
+    "masaPajakKosongkan": "清除税期",
+    "masaPajakSama": "所选所属期与发票日期为同一月份，因此将按跟随发票日期保存。",
+    "masaPajakJauh": "税期与发票日期相差较远。请再次核对年份——年份错误会把金额转入可能已申报的纳税申报表。"
   }
 }

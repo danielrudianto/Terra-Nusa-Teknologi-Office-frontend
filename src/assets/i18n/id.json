@@ -342,7 +342,9 @@
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
     "belumAdaPembayaranDiterima": "Belum ada pembayaran diterima.",
-    "menuEditIncomeTax": "Edit bukti potong"
+    "menuEditIncomeTax": "Edit bukti potong",
+    "menuTaxInvoice": "Input faktur pajak",
+    "menuEditTaxInvoice": "Ubah faktur pajak"
   },
   "language": {
     "label": "Bahasa",
@@ -3665,7 +3667,8 @@
     "saveFailed": "Gagal menyimpan data",
     "actionFailed": "Tindakan gagal dijalankan",
     "rejectSuccess": "Purchase order ditolak",
-    "formInvalid": "Ada isian yang belum benar. Periksa yang bertanda merah."
+    "formInvalid": "Ada isian yang belum benar. Periksa yang bertanda merah.",
+    "taxInvoiceSaved": "Nomor faktur pajak tersimpan"
   },
   "panduan": {
     "title": "Panduan",
@@ -5137,5 +5140,20 @@
     "tindihPerbaiki": "Betulkan tanggal",
     "tindihLanjut": "Lanjutkan",
     "periodeWajibKet": "Periode awal dan periode akhir wajib diisi sebelum CoP dapat disimpan."
+  },
+  "taxInvoiceEdit": {
+    "title": "Input faktur pajak",
+    "editTitle": "Ubah faktur pajak",
+    "subtitle": "Nomor faktur pajak keluaran dan masa pajaknya",
+    "invoiceNumber": "Nomor invoice",
+    "invoiceDate": "Tanggal invoice",
+    "ppnAmount": "PPN dipungut",
+    "number": "Nomor faktur pajak",
+    "masaPajak": "Masa pajak",
+    "masaPajakIkutTanggal": "Ikut tanggal invoice",
+    "masaPajakIkutTanggalNilai": "{{tanggal}} (ikut tanggal invoice)",
+    "masaPajakKosongkan": "Kosongkan masa pajak",
+    "masaPajakSama": "Masa yang dipilih sama dengan bulan tanggal invoice, jadi akan disimpan sebagai ikut tanggal invoice.",
+    "masaPajakJauh": "Masa pajak jauh dari tanggal invoice. Periksa lagi tahunnya \u2014 salah tahun memindahkan angka ke SPT yang mungkin sudah dilaporkan."
   }
 }

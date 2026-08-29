@@ -342,7 +342,9 @@
     "filter": "Filter",
     "bpjsPotongan": "BPJS (potongan)",
     "belumAdaPembayaranDiterima": "No payments received yet.",
-    "menuEditIncomeTax": "Edit withholding slip"
+    "menuEditIncomeTax": "Edit withholding slip",
+    "menuTaxInvoice": "Input tax invoice",
+    "menuEditTaxInvoice": "Edit tax invoice"
   },
   "language": {
     "label": "Language",
@@ -3665,7 +3667,8 @@
     "saveFailed": "Failed to save data",
     "actionFailed": "The action could not be completed",
     "rejectSuccess": "Purchase order rejected",
-    "formInvalid": "Some fields need attention. Check the ones marked in red."
+    "formInvalid": "Some fields need attention. Check the ones marked in red.",
+    "taxInvoiceSaved": "Tax invoice number saved"
   },
   "panduan": {
     "title": "Guide",
@@ -5137,5 +5140,20 @@
     "tindihPerbaiki": "Correct the dates",
     "tindihLanjut": "Continue",
     "periodeWajibKet": "Both the start and end of the period are required before this certificate can be saved."
+  },
+  "taxInvoiceEdit": {
+    "title": "Input tax invoice",
+    "editTitle": "Edit tax invoice",
+    "subtitle": "Output tax invoice number and its tax period",
+    "invoiceNumber": "Invoice number",
+    "invoiceDate": "Invoice date",
+    "ppnAmount": "VAT collected",
+    "number": "Tax invoice number",
+    "masaPajak": "Tax period",
+    "masaPajakIkutTanggal": "Follows invoice date",
+    "masaPajakIkutTanggalNilai": "{{tanggal}} (follows invoice date)",
+    "masaPajakKosongkan": "Clear tax period",
+    "masaPajakSama": "The selected period is the same month as the invoice date, so it will be stored as following the invoice date.",
+    "masaPajakJauh": "The tax period is far from the invoice date. Check the year \u2014 a wrong year moves the amount into a return that may already be filed."
   }
 }

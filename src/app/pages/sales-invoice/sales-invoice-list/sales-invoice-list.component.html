@@ -277,6 +277,14 @@
               </button>
               <button
                 mat-menu-item
+                (click)="openTaxInvoice(invoice)"
+                [disabled]="!bisaBukaFakturPajak(invoice)"
+              >
+                <mat-icon>receipt</mat-icon
+                ><span>{{ labelFakturPajak(invoice) | translate }}</span>
+              </button>
+              <button
+                mat-menu-item
                 (click)="openIncomeTax(invoice)"
                 [disabled]="!bisaBukaBuktiPotong(invoice)"
               >

@@ -22,6 +22,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { SalesInvoiceViewComponent } from '../sales-invoice-view/sales-invoice-view.component';
 import { IncomeTaxCreateComponent } from './income-tax-create/income-tax-create.component';
+import { TaxInvoiceEditComponent } from './tax-invoice-edit/tax-invoice-edit.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
@@ -283,6 +284,55 @@ export class SalesInvoiceListComponent {
           pphPercentage: invoice.pphPercentage,
           pphCode: invoice.pphCode,
           pphTaxObject: invoice.pphTaxObject,
+        },
+        width: '460px',
+        maxWidth: '92vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.fetchData();
+        }
+      });
+  }
+
+  /**
+   * Boleh membuka dialog faktur pajak keluaran untuk invoice ini?
+   *
+   * Hanya untuk invoice ber-PPN — tanpa PPN tidak ada faktur yang perlu
+   * dinomori maupun digeser masanya.
+   *
+   * Pengisian PERTAMA (nomornya masih kosong) bebas seperti biasa. KOREKSI
+   * nomor yang sudah terisi, dan setiap penggeseran masa, hanya level 5.
+   * Servernya yang menegakkan — ini hanya menyembunyikan aksi yang pasti
+   * ditolak.
+   */
+  bisaBukaFakturPajak(invoice: any): boolean {
+    if ((Number(invoice?.ppn) || 0) <= 0) return false;
+    const sudahAda = !!(invoice?.taxInvoiceName || '').toString().trim();
+    return sudahAda ? this.izin.level() >= 5 : true;
+  }
+
+  /** Label aksi: "Ubah" bila sudah terisi, selain itu "Input". */
+  labelFakturPajak(invoice: any): string {
+    const sudahAda = !!(invoice?.taxInvoiceName || '').toString().trim();
+    return sudahAda
+      ? 'salesInvoice.menuEditTaxInvoice'
+      : 'salesInvoice.menuTaxInvoice';
+  }
+
+  openTaxInvoice(invoice: any): void {
+    this.dialog
+      .open(TaxInvoiceEditComponent, {
+        data: {
+          id: invoice.id,
+          name: invoice.name,
+          taxInvoiceName: invoice.taxInvoiceName,
+          taxPeriod: invoice.taxPeriod,
+          date: invoice.date,
+          dpp: invoice.dpp,
+          ppn: invoice.ppn,
         },
         width: '460px',
         maxWidth: '92vw',

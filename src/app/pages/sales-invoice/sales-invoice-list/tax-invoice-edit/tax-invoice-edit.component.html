@@ -1,0 +1,139 @@
+<div class="tie">
+  <div class="tie-head" mat-dialog-title appDialogGeser>
+    <span class="tie-badge">
+      <mat-icon>receipt_long</mat-icon>
+    </span>
+    <div class="tie-head__text">
+      <h2 class="tie-title">
+        {{
+          (data.taxInvoiceName ? "taxInvoiceEdit.editTitle" : "taxInvoiceEdit.title")
+            | translate
+        }}
+      </h2>
+      <span class="tie-sub" *ngIf="data.name">{{ data.name }}</span>
+      <span class="tie-sub" *ngIf="!data.name">{{
+        "taxInvoiceEdit.subtitle" | translate
+      }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="tie-content">
+      <!-- ringkasan invoice & PPN -->
+      <div class="tie-info">
+        <div class="tie-info__row">
+          <span class="tie-info__label">{{
+            "taxInvoiceEdit.invoiceNumber" | translate
+          }}</span>
+          <span class="tie-info__value">{{ data.name || "—" }}</span>
+        </div>
+        <div class="tie-info__row">
+          <span class="tie-info__label">{{
+            "taxInvoiceEdit.invoiceDate" | translate
+          }}</span>
+          <span class="tie-info__value">{{ tanggalTampil }}</span>
+        </div>
+        <div class="tie-info__row">
+          <span class="tie-info__label">DPP</span>
+          <span class="tie-info__value"
+            >Rp {{ data.dpp || 0 | number: "1.0-0" }}</span
+          >
+        </div>
+        <div class="tie-info__row tie-info__row--total">
+          <span class="tie-info__label">{{
+            "taxInvoiceEdit.ppnAmount" | translate
+          }}</span>
+          <span class="tie-info__value tie-info__value--accent"
+            >Rp {{ ppnAmount | number: "1.0-0" }}</span
+          >
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{ "taxInvoiceEdit.number" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="taxInvoiceName"
+          [placeholder]="'salesInvoice.masukkanNomorFakturPajak' | translate"
+          autocomplete="off"
+          type="search"
+          maxlength="100"
+        />
+      </mat-form-field>
+
+      <!--
+        MASA PAJAK — dikosongkan berarti "ikut tanggal invoice".
+
+        Diisi hanya bila fakturnya dilaporkan pada masa yang berbeda, dan
+        itulah satu-satunya hal di layar ini yang memindahkan angka antar SPT.
+      -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>{{ "taxInvoiceEdit.masaPajak" | translate }}</mat-label>
+        <input
+          matInput
+          type="text"
+          readonly
+          [value]="masaPajakTampil"
+          [placeholder]="'taxInvoiceEdit.masaPajakIkutTanggal' | translate"
+          (click)="pilihMasaPajak()"
+        />
+        <button
+          matSuffix
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'taxInvoiceEdit.masaPajak' | translate"
+          (click)="pilihMasaPajak()"
+        >
+          <mat-icon>event</mat-icon>
+        </button>
+        @if (formGroup.get("taxPeriod")?.value) {
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'taxInvoiceEdit.masaPajakKosongkan' | translate"
+            (click)="kosongkanMasaPajak()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      @if (masaPajakSamaDenganTanggal) {
+        <p class="tie-note">
+          <mat-icon>info</mat-icon>
+          {{ "taxInvoiceEdit.masaPajakSama" | translate }}
+        </p>
+      } @else if (masaPajakJauh) {
+        <p class="tie-note tie-note--warn">
+          <mat-icon>warning</mat-icon>
+          {{ "taxInvoiceEdit.masaPajakJauh" | translate }}
+        </p>
+      }
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="tie-actions">
+      <button
+        type="button"
+        mat-stroked-button
+        (click)="onCancel()"
+        class="tie-btn tie-btn--ghost"
+      >
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="submit"
+        mat-flat-button
+        [disabled]="isSubmitting || formGroup.invalid"
+        class="tie-btn tie-btn--primary"
+      >
+        <mat-icon *ngIf="!isSubmitting">check</mat-icon>
+        {{
+          isSubmitting
+            ? ("hardcoded.menyimpan" | translate)
+            : ("hardcoded.simpan" | translate)
+        }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

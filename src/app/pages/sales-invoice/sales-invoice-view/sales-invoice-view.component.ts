@@ -81,6 +81,7 @@ export class SalesInvoiceViewComponent {
     pphPercentage: new FormControl(0),
     pphValue: new FormControl(0),
     taxInvoiceName: new FormControl(''),
+    taxPeriod: new FormControl<string | null>(null),
     incomeTaxInvoiceName: new FormControl(''),
     taxingStatus: new FormControl(''),
     total: new FormControl(0),
@@ -143,6 +144,30 @@ export class SalesInvoiceViewComponent {
     this.clipboard.copy(this.pphLabel);
     this.snackBar.open(
       this.translate.instant('notify.copied'), 'Close', { duration: 3000 });
+  }
+
+  /**
+   * Masa pajak faktur keluaran sebagai "Agustus 2026".
+   *
+   * Kosong berarti fakturnya dilaporkan pada masa tanggal invoicenya sendiri
+   * — keadaan yang normal, jadi yang ditampilkan tanggalnya, bukan "N/A"
+   * yang terbaca seolah ada keterangan yang belum diisi.
+   */
+  get masaPajakTampil(): string {
+    const masa = this.formGroup.get('taxPeriod')?.value;
+    if (masa) {
+      const d = new Date(masa);
+      if (isNaN(d.getTime())) return '-';
+      return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    }
+    // Kosong: kendali `date` sudah berisi teks tanggal yang sudah dirapikan,
+    // jadi dipakai apa adanya — menguraikannya kembali menjadi Date hanya
+    // menambah satu cara baru untuk gagal.
+    const tanggal = this.formGroup.get('date')?.value;
+    if (!tanggal) return '-';
+    return this.translate.instant('taxInvoiceEdit.masaPajakIkutTanggalNilai', {
+      tanggal,
+    });
   }
 
   formatDate(date: string): string {
@@ -222,6 +247,7 @@ export class SalesInvoiceViewComponent {
           pphPercentage: data.pphPercentage,
           pphValue: data.pphValue,
           taxInvoiceName: data.taxInvoiceName,
+          taxPeriod: data.taxPeriod,
           incomeTaxInvoiceName: data.incomeTaxInvoiceName,
           taxingStatus: data.taxingStatus,
           total: data.dpp + (data.ppn * data.dpp) / 100,

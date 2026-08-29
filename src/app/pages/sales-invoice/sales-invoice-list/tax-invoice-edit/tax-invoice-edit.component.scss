@@ -1,0 +1,179 @@
+/*
+ * Bentuknya sengaja sama persis dengan dialog bukti potong (income-tax-create)
+ * yang bersebelahan dengannya di menu yang sama: keduanya mengerjakan hal
+ * sejenis — membetulkan satu nomor dokumen pajak — dan dua layar sejenis yang
+ * tampil berbeda membuat orang ragu apakah ia sedang membuka yang benar.
+ *
+ * Gaya komponen di Angular bersifat SETEMPAT, jadi kelasnya tidak dapat
+ * dipinjam begitu saja dari sana; yang dipinjam ukurannya, bukan berkasnya.
+ */
+.tie {
+  font-family: "Montserrat", sans-serif;
+  color: var(--ink, #16181d);
+  width: 100%;
+  box-sizing: border-box;
+}
+.tie *,
+.tie *::before,
+.tie *::after {
+  box-sizing: border-box;
+}
+
+.tie-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.15rem 1.4rem !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    var(--brand-soft, #e7ecfb) 0%,
+    var(--surface-2, #f3f6ff) 100%
+  );
+  border-bottom: 1px solid var(--border, #e3e6eb);
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    margin-right: auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+.tie-badge {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(21, 77, 236, 0.1);
+  color: var(--brand, #154dec);
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.tie-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink, #16181d);
+}
+.tie-sub {
+  font-size: 0.8rem;
+  color: var(--muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tie-content {
+  padding: 1.35rem 1.4rem 0.5rem !important;
+  overflow-x: hidden;
+}
+.w-100 {
+  width: 100%;
+}
+
+/* ringkasan invoice & PPN */
+.tie-info {
+  background: var(--surface-2, #f7f9fc);
+  border: 0.5px solid var(--border, #e3e6eb);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.1rem;
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.32rem 0;
+
+    &--total {
+      margin-top: 0.35rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border, #e3e6eb);
+    }
+  }
+  &__label {
+    font-size: 0.78rem;
+    color: var(--muted, #6b7280);
+    flex: 0 0 auto;
+  }
+  &__value {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink, #16181d);
+    text-align: right;
+
+    &--accent {
+      color: var(--brand, #154dec);
+      font-size: 0.92rem;
+    }
+  }
+}
+
+/*
+ * Keterangan di bawah isian masa pajak.
+ *
+ * Warnanya bukan hiasan: yang biru sekadar memberitahu bahwa masanya sama
+ * dengan tanggal invoice sehingga disimpan kosong, sedangkan yang oranye
+ * menandai masa yang jauh — itu bisa benar, tetapi lebih sering salah ketik
+ * tahun, dan salah tahun memindahkan angka ke SPT yang sudah dilaporkan.
+ */
+.tie-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: -0.35rem 0 0.6rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+
+  mat-icon {
+    flex: 0 0 auto;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+  }
+
+  &--warn {
+    color: var(--warn-fg, #a2651a);
+  }
+}
+
+.tie-actions {
+  padding: 0.75rem 1.4rem 1.15rem !important;
+  gap: 10px;
+}
+.tie-btn {
+  letter-spacing: 0 !important;
+  border-radius: 11px !important;
+  font-weight: 600 !important;
+  height: 42px;
+  padding: 0 1.1rem !important;
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
+  &--ghost {
+    color: var(--muted, #6b7280) !important;
+    border: 1px solid var(--border, #e3e6eb) !important;
+  }
+  &--primary {
+    background: var(--brand, #154dec) !important;
+    color: #fff !important;
+    &:disabled {
+      opacity: 0.55;
+    }
+  }
+}
