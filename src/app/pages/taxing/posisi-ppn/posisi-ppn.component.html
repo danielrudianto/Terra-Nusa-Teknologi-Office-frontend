@@ -83,6 +83,11 @@
         <span class="pp-row__key">{{ "taxing.ppnMasukanKredit" | translate }}</span>
         <span class="pp-row__val pp-row__val--minus">− Rp {{ posisi.masukanKreditable.total | number: "1.0-0" }}</span>
       </div>
+      <!-- Pecahan masukan: dari beban (untuk dicocokkan) -->
+      <div class="pp-row pp-row--sub" *ngIf="posisi.masukanKreditable.total > 0">
+        <span class="pp-row__key">{{ "taxing.ppnMasukanBeban" | translate }}</span>
+        <span class="pp-row__val">Rp {{ posisi.masukanBeban | number: "1.0-0" }}</span>
+      </div>
       <div class="pp-row" *ngIf="posisi.kompensasiMasukLalu > 0">
         <span class="pp-row__key">{{ "taxing.ppnSubtotalBulan" | translate }}</span>
         <span class="pp-row__val">Rp {{ posisi.selisihBulanIni | number: "1.0-0" }}</span>

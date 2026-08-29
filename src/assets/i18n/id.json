@@ -886,6 +886,7 @@
     "ppnEstimasiNote": "Angka estimasi, bergantung kelengkapan faktur pajak.",
     "ppnKeluaran": "PPN keluaran",
     "ppnMasukanKredit": "PPN masukan (dapat dikreditkan)",
+    "ppnMasukanBeban": "— di antaranya dari beban",
     "ppnSelisih": "Selisih",
     "ppnTanpaFaktur": "Masukan belum ada faktur pajak",
     "ppnTanpaFakturNote": "Nilainya nyata, tetapi belum bisa mengurangi setoran sampai fakturnya terbit.",

@@ -336,3 +336,17 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* Sub-baris pecahan masukan (mis. "di antaranya dari beban") — menjorok &
+   lebih kalem, terbaca sebagai rincian dari baris di atasnya. */
+.pp-row--sub {
+  .pp-row__key {
+    padding-left: 1rem;
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+  .pp-row__val {
+    font-size: 0.82rem;
+    opacity: 0.85;
+  }
+}

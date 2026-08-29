@@ -886,6 +886,7 @@
     "ppnEstimasiNote": "预估数字，取决于税务发票的完整性。",
     "ppnKeluaran": "销项增值税",
     "ppnMasukanKredit": "进项增值税（可抵扣）",
+    "ppnMasukanBeban": "— 其中来自费用",
     "ppnSelisih": "差额",
     "ppnTanpaFaktur": "尚无税务发票的进项",
     "ppnTanpaFakturNote": "金额真实存在，但在开具税务发票之前不能减少应缴款。",
