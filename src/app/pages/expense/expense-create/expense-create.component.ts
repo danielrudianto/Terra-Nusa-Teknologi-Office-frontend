@@ -159,6 +159,40 @@ export class ExpenseCreateComponent {
     );
   }
 
+  /**
+   * Nilai `masaPajak` yang dikirim ke server (hari pertama periode, atau null).
+   *
+   * NULL bila:
+   *  - kategorinya bukan beban berkala (tak butuh masa), ATAU
+   *  - masanya BULANAN dan sama persis dengan bulan/tahun tanggal dokumen.
+   *
+   * Kasus kedua penting: NULL sudah berarti "ikut tanggal dokumen", jadi
+   * menyimpan nilai eksplisit yang kebetulan sama = data ganda. Untuk yang
+   * TAHUNAN (SPT Tahunan) nilainya selalu disimpan (1 Januari tahun pajak),
+   * karena maknanya "tahun pajak", bukan bulan pembayarannya.
+   */
+  private hitungMasaPajak(tanggalDokumen: Date | null): string | null {
+    if (!this.perluMasa) return null;
+    const tahun = Number(this.metaFormGroup.controls['masaTahun'].value);
+
+    if (this.masaTahunan) {
+      return `${tahun}-01-01`;
+    }
+
+    const bulan = Number(this.metaFormGroup.controls['masaBulan'].value);
+    const d = tanggalDokumen ? new Date(tanggalDokumen) : null;
+    if (
+      d &&
+      !isNaN(d.getTime()) &&
+      bulan === d.getMonth() + 1 &&
+      tahun === d.getFullYear()
+    ) {
+      // Sama dengan tanggal dokumen -> ikut tanggal (NULL).
+      return null;
+    }
+    return `${tahun}-${String(bulan).padStart(2, '0')}-01`;
+  }
+
   valueFormGroup: FormGroup = new FormGroup({
     dpp: new FormControl('', [Validators.required, Validators.min(0.01)]),
     /*
@@ -438,18 +472,12 @@ export class ExpenseCreateComponent {
       date: dateFormatted,
       dueDate: dueDateFormatted,
       purchaseType: this.metaFormGroup.controls['purchaseType'].value,
-      // Masa yang ditanggung — hanya untuk kategori berkala; selain itu null
-      // (server memperlakukan null sebagai "ikut tanggal dokumen").
-      masaPajak: this.perluMasa
-        ? `${this.metaFormGroup.controls['masaTahun'].value}-${
-            this.masaTahunan
-              ? '01'
-              : String(this.metaFormGroup.controls['masaBulan'].value).padStart(
-                  2,
-                  '0',
-                )
-          }-01`
-        : null,
+      // Masa yang ditanggung — hanya untuk kategori berkala; selain itu null.
+      // NULL berarti "ikut tanggal dokumen" (dihitung di `hitungMasaPajak`,
+      // yang juga meng-NULL-kan bila masanya sama dengan bulan tanggalnya).
+      masaPajak: this.hitungMasaPajak(
+        this.metaFormGroup.controls['date'].value,
+      ),
       description: this.metaFormGroup.controls['description'].value,
       dpp: this.valueFormGroup.controls['dpp'].value,
       /*
