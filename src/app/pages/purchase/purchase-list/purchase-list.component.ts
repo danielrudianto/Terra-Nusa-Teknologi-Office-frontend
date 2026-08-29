@@ -20,6 +20,7 @@ import { PurchaseUpdateMetaComponent } from '../purchase-update-meta/purchase-up
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -51,6 +52,7 @@ import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
     RouterModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     HeaderTitleComponent,
     MatSnackBarModule,
     TranslatePipe,
@@ -361,6 +363,27 @@ export class PurchaseListComponent {
     this.filterFormGroup.get(field)?.setValue(event.selected);
     this.updateQueryParams();
     this.fetchData(0);
+  }
+
+  /**
+   * Apakah MASA FAKTUR PAJAK (`taxPeriod`) berbeda dari tanggal dokumennya.
+   *
+   * `taxPeriod` NULL berarti ikut `date` — tidak berbeda. Dibandingkan pada
+   * granularitas BULAN (taxPeriod disimpan sebagai tanggal 1 bulannya).
+   */
+  masaFakturBerbeda(p: any): boolean {
+    if (!p?.taxPeriod) return false;
+    const t = new Date(p.taxPeriod);
+    const d = new Date(p.date);
+    if (isNaN(t.getTime()) || isNaN(d.getTime())) return false;
+    return t.getMonth() !== d.getMonth() || t.getFullYear() !== d.getFullYear();
+  }
+
+  /** Masa faktur pajak sebagai "MM/YYYY" untuk tooltip. */
+  masaFakturLabel(p: any): string {
+    const t = new Date(p?.taxPeriod);
+    if (isNaN(t.getTime())) return '';
+    return `${String(t.getMonth() + 1).padStart(2, '0')}/${t.getFullYear()}`;
   }
 
   changeSortBy(sortBy: string) {

@@ -159,6 +159,18 @@
             <span class="pl-date">{{
               purchase.date | date: "dd MMM yyyy"
             }}</span>
+            @if (masaFakturBerbeda(purchase)) {
+              <mat-icon
+                class="pl-masa-beda"
+                [matTooltip]="
+                  ('purchase.masaFakturBerbeda' | translate) +
+                  ' ' +
+                  masaFakturLabel(purchase)
+                "
+                matTooltipPosition="above"
+                >error</mat-icon
+              >
+            }
           </td>
         </ng-container>
 

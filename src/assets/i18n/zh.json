@@ -418,6 +418,7 @@
   },
   "purchase": {
     "title": "采购",
+    "masaFakturBerbeda": "税务发票所属期与凭证日期不同——所属期：",
     "description": "在此管理您的采购数据",
     "createNew": "创建新采购",
     "searchPlaceholder": "发票、收据、采购订单、供应商或税务发票",

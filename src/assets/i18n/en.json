@@ -418,6 +418,7 @@
   },
   "purchase": {
     "title": "Purchase",
+    "masaFakturBerbeda": "Tax invoice period differs from document date — period:",
     "description": "Manage your purchase data here",
     "createNew": "Create new purchase",
     "searchPlaceholder": "Invoice, receipt, PO, supplier, or tax invoice",
