@@ -2418,6 +2418,7 @@
   "expenseAdmin": {
     "pageTitle": "Expense",
     "editTitle": "Edit Expense",
+    "editDesc": "Edit expense details",
     "pageDesc": "Create a new expense",
     "addButton": "Add administration expense",
     "title": "Create bank administration expense",
@@ -2947,7 +2948,9 @@
     "contract_delete": "Contract deleted",
     "convert": "Converted to purchase",
     "set_checked": "Check state changed",
-    "access": "Accessed"
+    "access": "Accessed",
+    "approve_bap": "BAP approved",
+    "update_adjustments": "Adjustments updated"
   },
   "activity": {
     "title": "Activity",

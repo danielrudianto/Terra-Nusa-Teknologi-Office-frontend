@@ -14,9 +14,11 @@
     [title]="
       (editMode ? 'expenseAdmin.editTitle' : 'expenseAdmin.pageTitle') | translate
     "
-    [description]="'expenseAdmin.pageDesc' | translate"
+    [description]="
+      (editMode ? 'expenseAdmin.editDesc' : 'expenseAdmin.pageDesc') | translate
+    "
     [actionButtonLabel]="
-      editMode ? '' : ('expenseAdmin.addButton' | translate)
+      editMode ? null : ('expenseAdmin.addButton' | translate)
     "
     (onActionButtonClicked)="createNewAdministrationExpense()"
   ></app-header-title>
@@ -73,9 +75,10 @@
             mat-icon-button
             (click)="openOpponentSelector()"
             type="button"
+            [disabled]="editMode"
             [attr.aria-label]="'expense.pilihOpponent' | translate"
           >
-            <mat-icon>search</mat-icon>
+            <mat-icon>{{ editMode ? "lock" : "search" }}</mat-icon>
           </button>
         </mat-form-field>
 
@@ -550,25 +553,29 @@
           />
         </mat-form-field>
 
-        <app-bank-account-selector
-          formControlName="bankAccountID"
-          [label]="'expenseForm.bankAccountOrigin' | translate"
-        />
-
-        <mat-form-field appearance="outline" class="exc-span2 exc-total">
-          <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
-          <input
-            matInput
-            type="text"
-            formControlName="paymentTotal"
-            [placeholder]="'expense.paymentTotal' | translate"
-            readonly
-            prefix="Rp. "
-            thousandSeparator=" "
-            decimalScale="4"
-            mask="separator"
+        <!-- "Rekening bank asal" & "Total" hanya untuk MEMBUAT pembayaran —
+             bukan kolom beban. Di mode ubah keduanya disembunyikan. -->
+        @if (!editMode) {
+          <app-bank-account-selector
+            formControlName="bankAccountID"
+            [label]="'expenseForm.bankAccountOrigin' | translate"
           />
-        </mat-form-field>
+
+          <mat-form-field appearance="outline" class="exc-span2 exc-total">
+            <mat-label>{{ "expenseForm.total" | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="paymentTotal"
+              [placeholder]="'expense.paymentTotal' | translate"
+              readonly
+              prefix="Rp. "
+              thousandSeparator=" "
+              decimalScale="4"
+              mask="separator"
+            />
+          </mat-form-field>
+        }
       </div>
 
       @if (!editMode) {

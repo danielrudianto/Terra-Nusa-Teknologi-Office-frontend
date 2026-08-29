@@ -2418,6 +2418,7 @@
   "expenseAdmin": {
     "pageTitle": "费用",
     "editTitle": "编辑费用",
+    "editDesc": "编辑费用信息",
     "pageDesc": "创建新费用",
     "addButton": "添加管理费用",
     "title": "创建银行管理费用",
@@ -2947,7 +2948,9 @@
     "contract_delete": "删除合同",
     "convert": "已转为采购",
     "set_checked": "审核状态已更改",
-    "access": "已访问"
+    "access": "已访问",
+    "approve_bap": "BAP 已批准",
+    "update_adjustments": "调整已更新"
   },
   "activity": {
     "title": "活动记录",

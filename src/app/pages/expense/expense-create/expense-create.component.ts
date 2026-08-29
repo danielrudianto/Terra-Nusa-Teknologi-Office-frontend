@@ -232,8 +232,12 @@ export class ExpenseCreateComponent {
       invoiceName: e.invoiceName ?? '',
       receiptName: e.receiptName ?? '',
       taxInvoiceName: e.taxInvoiceName ?? '',
+      // get_by_id memberi nama lawan transaksi sebagai `expense_opponent_name`
+      // (hasil join), bukan `opponentName`.
       opponentID: e.opponentID ?? '',
-      opponentName: e.opponentName ?? '',
+      opponentName: e.expense_opponent_name ?? e.opponentName ?? '',
+      opponentDescription:
+        e.expense_opponent_description ?? e.opponentDescription ?? '',
       date: e.date ? new Date(e.date) : new Date(),
       dueDate: e.dueDate ? new Date(e.dueDate) : new Date(),
       purchaseType: e.purchaseType ?? '',
@@ -300,6 +304,8 @@ export class ExpenseCreateComponent {
   }
 
   openOpponentSelector() {
+    // Lawan transaksi tidak boleh diganti saat mengubah beban.
+    if (this.editMode) return;
     this.dialog
       .open(ExpenseOpponentSelectorComponent, {
         minWidth: '400px',

@@ -2418,6 +2418,7 @@
   "expenseAdmin": {
     "pageTitle": "Beban",
     "editTitle": "Ubah Beban",
+    "editDesc": "Ubah data beban",
     "pageDesc": "Buat beban baru",
     "addButton": "Tambah beban administrasi",
     "title": "Buat beban administrasi bank",
@@ -2947,7 +2948,9 @@
     "contract_delete": "Kontrak dihapus",
     "convert": "Dikonversi menjadi pembelian",
     "set_checked": "Pemeriksaan diubah",
-    "access": "Diakses"
+    "access": "Diakses",
+    "approve_bap": "BAP disetujui",
+    "update_adjustments": "Penyesuaian diubah"
   },
   "activity": {
     "title": "Aktivitas",
