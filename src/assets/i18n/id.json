@@ -418,7 +418,7 @@
   },
   "purchase": {
     "title": "Pembelian",
-    "masaFakturBerbeda": "Masa faktur pajak beda dari tanggal dokumen — masa:",
+    "colMasaPajak": "Masa Pajak",
     "description": "Kelola data pembelian di sini",
     "createNew": "Buat pembelian baru",
     "searchPlaceholder": "Faktur, kwitansi, PO, pemasok, atau faktur pajak",

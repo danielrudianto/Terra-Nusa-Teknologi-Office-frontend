@@ -159,26 +159,16 @@
             <span class="pl-date">{{
               purchase.date | date: "dd MMM yyyy"
             }}</span>
-            @if (masaFakturBerbeda(purchase)) {
-              <mat-icon
-                style="
-                  font-size: 16px;
-                  width: 16px;
-                  height: 16px;
-                  margin-left: 4px;
-                  vertical-align: text-bottom;
-                  color: #e08a2e;
-                  cursor: help;
-                "
-                [matTooltip]="
-                  ('purchase.masaFakturBerbeda' | translate) +
-                  ' ' +
-                  masaFakturLabel(purchase)
-                "
-                matTooltipPosition="above"
-                >error</mat-icon
-              >
-            }
+          </td>
+        </ng-container>
+
+        <!-- Masa pajak (tanggal buku) -->
+        <ng-container matColumnDef="masaPajak">
+          <th mat-header-cell *matHeaderCellDef>
+            <span class="pl-th">{{ "purchase.colMasaPajak" | translate }}</span>
+          </th>
+          <td mat-cell *matCellDef="let purchase">
+            <span class="pl-date">{{ formatMasaPajak(purchase) }}</span>
           </td>
         </ng-container>
 

@@ -20,7 +20,6 @@ import { PurchaseUpdateMetaComponent } from '../purchase-update-meta/purchase-up
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -52,7 +51,6 @@ import { ShortCurrencyPipe } from 'src/app/pipes/short-currency.pipe';
     RouterModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
     HeaderTitleComponent,
     MatSnackBarModule,
     TranslatePipe,
@@ -111,6 +109,7 @@ export class PurchaseListComponent {
   pageSize: number = this.settings.pageSize;
   displayedColumns: string[] = [
     'date',
+    'masaPajak',
     'invoiceName',
     'supplier',
     'projectName',
@@ -366,23 +365,15 @@ export class PurchaseListComponent {
   }
 
   /**
-   * Apakah MASA FAKTUR PAJAK (`taxPeriod`) berbeda dari tanggal dokumennya.
+   * MASA FAKTUR PAJAK (`taxPeriod`) sebagai "MM/YYYY".
    *
-   * `taxPeriod` NULL berarti ikut `date` — tidak berbeda. Dibandingkan pada
-   * granularitas BULAN (taxPeriod disimpan sebagai tanggal 1 bulannya).
+   * `taxPeriod` NULL berarti ikut tanggal dokumen — ditampilkan "—".
+   * Disimpan sebagai tanggal 1 bulannya, jadi cukup ambil bulan & tahun.
    */
-  masaFakturBerbeda(p: any): boolean {
-    if (!p?.taxPeriod) return false;
+  formatMasaPajak(p: any): string {
+    if (!p?.taxPeriod) return '—';
     const t = new Date(p.taxPeriod);
-    const d = new Date(p.date);
-    if (isNaN(t.getTime()) || isNaN(d.getTime())) return false;
-    return t.getMonth() !== d.getMonth() || t.getFullYear() !== d.getFullYear();
-  }
-
-  /** Masa faktur pajak sebagai "MM/YYYY" untuk tooltip. */
-  masaFakturLabel(p: any): string {
-    const t = new Date(p?.taxPeriod);
-    if (isNaN(t.getTime())) return '';
+    if (isNaN(t.getTime())) return '—';
     return `${String(t.getMonth() + 1).padStart(2, '0')}/${t.getFullYear()}`;
   }
 
