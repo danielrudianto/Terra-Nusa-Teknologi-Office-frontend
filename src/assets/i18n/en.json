@@ -2417,6 +2417,7 @@
   },
   "expenseAdmin": {
     "pageTitle": "Expense",
+    "editTitle": "Edit Expense",
     "pageDesc": "Create a new expense",
     "addButton": "Add administration expense",
     "title": "Create bank administration expense",

@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PphSelectorComponent } from 'src/app/components/pph-selector/pph-selector.component';
 import { ApiService } from 'src/app/services/api.service';
 import { banks, IBank } from 'src/app/utils/bank';
@@ -69,9 +70,15 @@ export class ExpenseCreateComponent {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private decimalPipe: DecimalPipe,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
+
+  /** Mode ubah: aktif bila rute membawa :id (mis. /Expense/Create/42). */
+  editMode = false;
+  editId: number | null = null;
 
   isFinal: boolean = false;
   filteredOptions: IBank[] = [];
@@ -188,6 +195,77 @@ export class ExpenseCreateComponent {
 
   ngOnInit(): void {
     this.fetchBankAccounts();
+
+    // Mode ubah bila rute membawa :id — ambil bebannya lalu isi formulir.
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.editMode = true;
+      this.editId = Number(id);
+      this.muatUntukUbah(this.editId);
+    }
+  }
+
+  /** Ambil satu beban untuk diubah, lalu isikan ke formulir. */
+  private muatUntukUbah(id: number): void {
+    this.apiService.get(`expenses/${id}`, {}).subscribe({
+      next: (res: any) => {
+        const e = res?.expense ?? res;
+        if (e) this.isiFormDariBeban(e);
+      },
+      error: (error) => {
+        this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
+  /**
+   * Isi ketiga grup formulir dari data beban yang diambil.
+   *
+   * Termasuk field bank/metode bayar — itu KOLOM beban (bukan sekadar untuk
+   * membuat pembayaran), jadi harus ikut diisi agar PUT tidak menimpanya jadi
+   * kosong. `masaPajak` (bila ada) dipecah kembali menjadi bulan & tahun.
+   */
+  private isiFormDariBeban(e: any): void {
+    this.metaFormGroup.patchValue({
+      invoiceName: e.invoiceName ?? '',
+      receiptName: e.receiptName ?? '',
+      taxInvoiceName: e.taxInvoiceName ?? '',
+      opponentID: e.opponentID ?? '',
+      opponentName: e.opponentName ?? '',
+      date: e.date ? new Date(e.date) : new Date(),
+      dueDate: e.dueDate ? new Date(e.dueDate) : new Date(),
+      purchaseType: e.purchaseType ?? '',
+      description: e.description ?? '',
+    });
+
+    if (e.masaPajak) {
+      const m = new Date(e.masaPajak);
+      this.metaFormGroup.patchValue({
+        masaBulan: m.getMonth() + 1,
+        masaTahun: m.getFullYear(),
+      });
+    }
+
+    this.valueFormGroup.patchValue({
+      dpp: e.dpp ?? '',
+      ppn: e.ppn ?? 0,
+      pbbkb: e.pbbkb ?? 0,
+      pphCode: e.pphCode ?? '',
+      pphTaxObject: e.pphTaxObject ?? '',
+      pphPercentage: e.pphPercentage ?? 0,
+    });
+
+    // Field bank ada di grup pembayaran; di mode ubah tidak membuat pembayaran
+    // baru — hanya menyimpan info bank yang memang milik bebannya.
+    this.paymentFormGroup.patchValue({
+      bankName: e.bankName ?? '',
+      bankAccountName: e.bankAccountName ?? '',
+      bankAccountNumber: e.bankAccountNumber ?? '',
+      paymentMethod: e.paymentMethod ?? '',
+      createPayment: false,
+    });
   }
 
   ngAfterViewInit() {
@@ -396,6 +474,31 @@ export class ExpenseCreateComponent {
         this.paymentFormGroup.controls['bankAccountNumber'].value,
       paymentMethod: this.paymentFormGroup.controls['paymentMethod'].value,
     };
+
+    // MODE UBAH: kirim PUT, tanpa membuat pembayaran, lalu kembali ke daftar.
+    if (this.editMode && this.editId != null) {
+      this.apiService
+        .put(`expenses/${this.editId}`, expenseData)
+        .subscribe({
+          next: (_) => {
+            this.snackBar.open(
+              this.translate.instant('notify.updateSuccess'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.router.navigate(['/Expense']);
+          },
+          error: (error) => {
+            this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+              duration: 3000,
+            });
+          },
+        })
+        .add(() => {
+          this.isSubmitting = false;
+        });
+      return;
+    }
 
     if (this.paymentFormGroup.controls['createPayment'].value === true) {
       this.apiService

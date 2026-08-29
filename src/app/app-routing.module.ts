@@ -611,6 +611,15 @@ export const routes: Routes = [
             data: { title: 'Expense' },
           },
           {
+            // Ubah beban — komponen yang sama dengan Create; :id memicu mode ubah.
+            path: 'Create/:id',
+            loadComponent: () =>
+              import('./pages/expense/expense-create/expense-create.component').then(
+                (m) => m.ExpenseCreateComponent,
+              ),
+            data: { title: 'Expense' },
+          },
+          {
             path: 'Opponent',
             loadComponent: () =>
               import('./pages/expense/expense-opponent/expense-opponent.component').then(

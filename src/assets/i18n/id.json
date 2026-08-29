@@ -2417,6 +2417,7 @@
   },
   "expenseAdmin": {
     "pageTitle": "Beban",
+    "editTitle": "Ubah Beban",
     "pageDesc": "Buat beban baru",
     "addButton": "Tambah beban administrasi",
     "title": "Buat beban administrasi bank",

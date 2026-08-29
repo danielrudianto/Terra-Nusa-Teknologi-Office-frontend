@@ -11,9 +11,13 @@
 -->
 <div class="exc">
   <app-header-title
-    [title]="'expenseAdmin.pageTitle' | translate"
+    [title]="
+      (editMode ? 'expenseAdmin.editTitle' : 'expenseAdmin.pageTitle') | translate
+    "
     [description]="'expenseAdmin.pageDesc' | translate"
-    [actionButtonLabel]="'expenseAdmin.addButton' | translate"
+    [actionButtonLabel]="
+      editMode ? '' : ('expenseAdmin.addButton' | translate)
+    "
     (onActionButtonClicked)="createNewAdministrationExpense()"
   ></app-header-title>
 
@@ -567,20 +571,22 @@
         </mat-form-field>
       </div>
 
-      <div class="exc-toggle">
-        <div class="exc-toggle__text">
-          <span class="exc-toggle__label">{{
-            "expense.createPaymentSlip" | translate
-          }}</span>
-          <span class="exc-toggle__hint">{{
-            "expense.bikinPaymentSlipOtomatisNggak" | translate
-          }}</span>
+      @if (!editMode) {
+        <div class="exc-toggle">
+          <div class="exc-toggle__text">
+            <span class="exc-toggle__label">{{
+              "expense.createPaymentSlip" | translate
+            }}</span>
+            <span class="exc-toggle__hint">{{
+              "expense.bikinPaymentSlipOtomatisNggak" | translate
+            }}</span>
+          </div>
+          <mat-slide-toggle
+            color="primary"
+            formControlName="createPayment"
+          ></mat-slide-toggle>
         </div>
-        <mat-slide-toggle
-          color="primary"
-          formControlName="createPayment"
-        ></mat-slide-toggle>
-      </div>
+      }
 
       <div class="exc-actions">
         <!--

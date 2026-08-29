@@ -26,6 +26,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-expense-view',
@@ -60,7 +61,14 @@ export class ExpenseViewComponent {
     private dialog: MatDialogRef<ExpenseViewComponent>,
     private snackBar: MatSnackBar,
     private clipboard: Clipboard,
+    private router: Router,
   ) {}
+
+  /** Tutup dialog lalu buka formulir dalam mode ubah untuk beban ini. */
+  ubah(): void {
+    this.dialog.close();
+    this.router.navigate(['/Expense/Create', this.data.id]);
+  }
 
   isLoading = true;
 

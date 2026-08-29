@@ -2417,6 +2417,7 @@
   },
   "expenseAdmin": {
     "pageTitle": "费用",
+    "editTitle": "编辑费用",
     "pageDesc": "创建新费用",
     "addButton": "添加管理费用",
     "title": "创建银行管理费用",
