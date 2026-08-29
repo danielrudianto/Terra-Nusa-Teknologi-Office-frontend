@@ -216,18 +216,39 @@ export class TaxInvoiceEditComponent implements OnInit {
   onSubmit(): void {
     if (this.formGroup.invalid) return;
     this.isSubmitting = true;
+    const dikirim = this.masaPajakIso();
     this.apiService
       .put(`sales-invoices/tax-invoice/${this.data.id}`, {
         taxInvoiceName: this.formGroup.value.taxInvoiceName.trim(),
-        taxPeriod: this.masaPajakIso(),
+        taxPeriod: dikirim,
       })
       .subscribe({
-        next: () => {
-          this.snackBar.open(
-            this.translate.instant('notify.taxInvoiceSaved'),
-            'Close',
-            { duration: 3000 },
-          );
+        next: (hasil: any) => {
+          // Apa yang BENAR-BENAR tersimpan, bukan apa yang kita kirim.
+          //
+          // Server yang belum diperbarui membuang bidang yang belum
+          // dikenalnya tanpa galat dan tetap menjawab "berhasil" — masa
+          // pajaknya diam-diam tidak tersimpan, dan barulah ketahuan
+          // berminggu-minggu kemudian lewat Posisi PPN yang angkanya
+          // meleset. Kegagalan senyap itu dijadikan terlihat di sini.
+          const tersimpan =
+            hasil && 'taxPeriod' in hasil ? hasil.taxPeriod ?? null : undefined;
+          const tidakTersimpan =
+            tersimpan === undefined || (dikirim ?? null) !== tersimpan;
+
+          if (tidakTersimpan) {
+            this.snackBar.open(
+              this.translate.instant('notify.taxPeriodNotStored'),
+              'Close',
+              { duration: 9000 },
+            );
+          } else {
+            this.snackBar.open(
+              this.translate.instant('notify.taxInvoiceSaved'),
+              'Close',
+              { duration: 3000 },
+            );
+          }
           this.dialogRef.close(true);
         },
         error: (error) => {

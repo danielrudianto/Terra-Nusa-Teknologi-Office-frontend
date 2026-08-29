@@ -3670,7 +3670,8 @@
     "actionFailed": "操作未能完成",
     "rejectSuccess": "采购订单已拒绝",
     "formInvalid": "部分字段填写有误，请检查标红处。",
-    "taxInvoiceSaved": "税务发票号已保存"
+    "taxInvoiceSaved": "税务发票号已保存",
+    "taxPeriodNotStored": "发票号已保存，但税期未保存。服务器可能尚未更新或未重启——在此问题解决前，增值税状况仍将按发票日期计算。"
   },
   "panduan": {
     "title": "指南",

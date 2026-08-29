@@ -3670,7 +3670,8 @@
     "actionFailed": "The action could not be completed",
     "rejectSuccess": "Purchase order rejected",
     "formInvalid": "Some fields need attention. Check the ones marked in red.",
-    "taxInvoiceSaved": "Tax invoice number saved"
+    "taxInvoiceSaved": "Tax invoice number saved",
+    "taxPeriodNotStored": "The invoice number was saved, but the tax period was NOT. The server is probably not updated or not restarted — the VAT position will keep using the invoice date until this is fixed."
   },
   "panduan": {
     "title": "Guide",

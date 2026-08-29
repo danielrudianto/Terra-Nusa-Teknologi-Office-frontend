@@ -21,6 +21,26 @@ export class TaxListComponent {
   // ---- period chosen once, reused by every report ----
   month: number = new Date().getMonth() + 1;
   year: number = new Date().getFullYear();
+
+  /**
+   * TAHUN PAJAK PALING AWAL yang boleh dibuka.
+   *
+   * Data sebelum 2025 berasal dari era e-Faktur lama, tidak lengkap, dan
+   * tidak dapat dikonfirmasi lagi — pencatatan sistem ini baru dimulai 2024,
+   * faktur-faktur sebelumnya tidak pernah masuk. Laporan yang separuh datanya
+   * hilang tetap menampilkan angka yang tampak wajar, dan itulah yang membuat
+   * ia berbahaya: ia akan dibaca sebagai posisi yang sebenarnya.
+   *
+   * Servernya juga menolak masa sebelum batas ini (`utils/pajak.py`).
+   * Penjagaan di sini hanya supaya tombolnya tidak menuntun orang ke laporan
+   * yang sudah pasti kosong.
+   */
+  readonly tahunAwal = 2025;
+
+  get bisaMundur(): boolean {
+    return this.year > this.tahunAwal;
+  }
+
   /** Label bulan singkat mengikuti bahasa aplikasi. */
   months: { n: number; key: string }[] = [
     { n: 1, key: 'common.janShort' },
@@ -55,6 +75,7 @@ export class TaxListComponent {
   }
 
   prevYear() {
+    if (!this.bisaMundur) return;
     this.year--;
   }
 

@@ -97,8 +97,22 @@ export class PosisiPpnComponent {
     this.posisi = null;
   }
 
+  /**
+   * MASA PAJAK PALING AWAL yang boleh dibuka — lihat `utils/pajak.py`.
+   *
+   * Servernya yang menegakkan; batas di sini hanya supaya tombolnya tidak
+   * menuntun orang ke masa yang sudah pasti kosong.
+   */
+  readonly tahunAwal = 2025;
+
+  get bisaMundur(): boolean {
+    return Number(this.formGroup.value.year) > this.tahunAwal;
+  }
+
   gantiTahun(delta: number) {
-    this.pilih({ year: +this.formGroup.value.year + delta });
+    const tujuan = +this.formGroup.value.year + delta;
+    if (tujuan < this.tahunAwal) return;
+    this.pilih({ year: tujuan });
   }
 
   pilihBulan(n: number) {

@@ -3670,7 +3670,8 @@
     "actionFailed": "Tindakan gagal dijalankan",
     "rejectSuccess": "Purchase order ditolak",
     "formInvalid": "Ada isian yang belum benar. Periksa yang bertanda merah.",
-    "taxInvoiceSaved": "Nomor faktur pajak tersimpan"
+    "taxInvoiceSaved": "Nomor faktur pajak tersimpan",
+    "taxPeriodNotStored": "Nomor faktur tersimpan, TETAPI masa pajaknya tidak. Server kemungkinan belum diperbarui atau belum di-restart — Posisi PPN akan tetap memakai tanggal invoice sampai ini beres."
   },
   "panduan": {
     "title": "Panduan",

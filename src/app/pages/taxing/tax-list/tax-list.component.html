@@ -28,6 +28,7 @@
         type="button"
         class="tx-year__btn"
         (click)="prevYear()"
+        [disabled]="!bisaMundur"
         [attr.aria-label]="'tax.tahunSebelumnya' | translate"
       >
         <svg

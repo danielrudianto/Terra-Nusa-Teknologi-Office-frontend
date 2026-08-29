@@ -19,6 +19,7 @@
         <span class="txr-label">{{ "common.period" | translate }}</span>
         <div class="txr-year">
           <button type="button" (click)="gantiTahun(-1)"
+            [disabled]="!bisaMundur"
             [attr.aria-label]="'tax.tahunSebelumnya' | translate">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
