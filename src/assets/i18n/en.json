@@ -1176,7 +1176,9 @@
     "masaPajakKet": "Month the input VAT is credited. Leave empty when the tax invoice is issued in the same month as the invoice.",
     "masaPajakKosongkan": "Go back to following the document date",
     "masaPajakJauh": "Tax period is far from the invoice date",
-    "masaPajakJauhKet": "More than three months after the document date, or before it. Still saveable — make sure that is what the tax invoice says.",
+    "masaPajakMundur": "Tax period precedes the document date",
+    "masaPajakMundurKet": "This is the replacement-invoice pattern: the document is issued in the month of the correction while the tax period still follows the original invoice. Normal — just make sure the period matches the original.",
+    "masaPajakJauhKet": "More than three months after the document date. Still saveable — make sure that is what the tax invoice says.",
     "methodCekGiro": "Cheque / Giro",
     "methodCekGiroHint": "Drawn on an account; a giro falls due on a set date."
   },
@@ -4928,7 +4930,8 @@
     "masaPajakIkutTanggal": "Follows document date",
     "masaPajakHint": "Month the input VAT is credited. Empty means it follows the document date.",
     "masaPajakKosongkan": "Go back to following the document date",
-    "masaPajakJauh": "Tax period is more than three months from the document date, or before it. Still saveable."
+    "masaPajakMundur": "The tax period precedes the document date — the replacement-invoice pattern: the document is issued in the month of the correction while the period still follows the original invoice.",
+    "masaPajakJauh": "Tax period is more than three months after the document date. Still saveable."
   },
   "poReissue": {
     "menu": "Reissue (force number)",
@@ -5154,6 +5157,7 @@
     "masaPajakIkutTanggalNilai": "{{tanggal}} (follows invoice date)",
     "masaPajakKosongkan": "Clear tax period",
     "masaPajakSama": "The selected period is the same month as the invoice date, so it will be stored as following the invoice date.",
+    "masaPajakMundur": "The tax period precedes the invoice date — the replacement-invoice pattern. The document is issued in the month of the correction while the period still follows the original invoice.",
     "masaPajakJauh": "The tax period is far from the invoice date. Check the year \u2014 a wrong year moves the amount into a return that may already be filed."
   }
 }

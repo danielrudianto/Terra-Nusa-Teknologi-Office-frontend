@@ -181,17 +181,38 @@ export class PurchaseUpdateMetaComponent {
     });
   }
 
-  /** Lebih dari tiga bulan dari tanggal dokumen — peringatan, bukan larangan. */
-  get masaPajakJauh(): boolean {
+  /** Selisih BULAN antara masa pajak dan tanggal dokumen. */
+  private get selisihMasa(): number | null {
     const masa = this.meta.get('taxPeriod')?.value as Date | null;
     const tanggal = this.meta.get('date')?.value;
-    if (!masa || !tanggal) return false;
+    if (!masa || !tanggal) return null;
     const a = new Date(tanggal);
     const b = new Date(masa);
-    if (isNaN(a.getTime())) return false;
-    const selisih =
-      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-    return selisih > 3 || selisih < 0;
+    if (isNaN(a.getTime())) return null;
+    return (
+      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth())
+    );
+  }
+
+  /**
+   * Masanya MENDAHULUI tanggal dokumen — faktur pengganti.
+   *
+   * Pemasok membetulkan fakturnya pada bulan ditemukannya kesalahan, tetapi
+   * masa pajaknya tetap mengikuti faktur ASLI: dokumennya bertanggal
+   * Februari, masanya tetap Januari.
+   *
+   * Wajar, bukan kekeliruan — dan sebelumnya keliru ikut ditandai sebagai
+   * "masa jauh", tepat pada arah yang paling sering dipakai.
+   */
+  get masaPajakMundur(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s < 0;
+  }
+
+  /** Lebih dari tiga bulan SESUDAH tanggal dokumen — peringatan, bukan larangan. */
+  get masaPajakJauh(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s > 3;
   }
 
   pilihMasaPajak(): void {

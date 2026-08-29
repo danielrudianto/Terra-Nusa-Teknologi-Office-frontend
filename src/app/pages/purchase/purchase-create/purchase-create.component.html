@@ -518,7 +518,15 @@
           dan ada keadaan sah yang melewatinya. Yang diperlukan hanya supaya
           masa yang jauh dari tanggal invoice tidak terisi tanpa disadari.
         -->
-        @if (masaPajakJauh) {
+        @if (masaPajakMundur) {
+          <div class="pc-ingat">
+            <mat-icon>history</mat-icon>
+            <div>
+              <strong>{{ "purchaseCreate.masaPajakMundur" | translate }}</strong>
+              <span>{{ "purchaseCreate.masaPajakMundurKet" | translate }}</span>
+            </div>
+          </div>
+        } @else if (masaPajakJauh) {
           <div class="pc-ingat">
             <mat-icon>info</mat-icon>
             <div>

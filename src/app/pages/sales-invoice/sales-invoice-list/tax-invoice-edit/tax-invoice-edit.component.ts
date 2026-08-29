@@ -135,16 +135,49 @@ export class TaxInvoiceEditComponent implements OnInit {
     return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
   }
 
-  /** Lebih dari tiga bulan dari tanggal invoice — peringatan, bukan larangan. */
-  get masaPajakJauh(): boolean {
+  /**
+   * Selisih BULAN antara masa pajak dan tanggal invoice.
+   *
+   * Positif: masanya SESUDAH tanggal invoice — fakturnya baru terbit
+   * belakangan. Negatif: masanya SEBELUM tanggal invoice — inilah
+   * pembetulan, dan bentuknya normal (lihat `masaPajakMundur`).
+   */
+  private get selisihMasa(): number | null {
     const masa = this.formGroup.get('taxPeriod')?.value as Date | null;
-    if (!masa || !this.data.date) return false;
+    if (!masa || !this.data.date) return null;
     const a = new Date(this.data.date);
-    if (isNaN(a.getTime())) return false;
+    if (isNaN(a.getTime())) return null;
     const b = new Date(masa);
-    const selisih =
-      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-    return selisih > 3 || selisih < 0;
+    return (
+      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth())
+    );
+  }
+
+  /**
+   * Masanya MENDAHULUI tanggal dokumen — dokumen pembetulan.
+   *
+   * Faktur pengganti terbit pada bulan ditemukannya kesalahan, tetapi masa
+   * pajaknya tetap mengikuti faktur ASLI. Invoice Januari yang dibetulkan
+   * Februari berdokumen Februari, bermasa Januari.
+   *
+   * Ini keadaan yang WAJAR, bukan kekeliruan. Dahulu ia ikut ditandai
+   * sebagai "masa jauh" — keliru, dan keliru pada arah yang justru paling
+   * sering dipakai.
+   */
+  get masaPajakMundur(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s < 0;
+  }
+
+  /**
+   * Masanya lebih dari tiga bulan SESUDAH tanggal invoice.
+   *
+   * Peringatan, bukan larangan — yang dicegah hanya masa yang terisi jauh
+   * tanpa disadari, biasanya karena salah ketik tahun.
+   */
+  get masaPajakJauh(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s > 3;
   }
 
   pilihMasaPajak(): void {

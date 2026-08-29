@@ -1176,7 +1176,9 @@
     "masaPajakKet": "Bulan pengkreditan PPN masukan. Kosongkan bila fakturnya terbit pada bulan yang sama dengan invoice.",
     "masaPajakKosongkan": "Kembalikan mengikuti tanggal dokumen",
     "masaPajakJauh": "Masa pajak jauh dari tanggal invoice",
-    "masaPajakJauhKet": "Lebih dari tiga bulan setelah tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan — pastikan memang begitu fakturnya.",
+    "masaPajakMundur": "Masa pajak mendahului tanggal dokumen",
+    "masaPajakMundurKet": "Bentuk faktur pengganti: dokumennya terbit pada bulan pembetulan, masa pajaknya tetap mengikuti faktur asli. Wajar — pastikan saja masanya memang masa faktur aslinya.",
+    "masaPajakJauhKet": "Lebih dari tiga bulan sesudah tanggal dokumen. Tetap dapat disimpan — pastikan memang begitu fakturnya.",
     "methodCekGiro": "Cek / Giro",
     "methodCekGiroHint": "Ditarik atas rekening; giro berjatuh tempo pada tanggal tertentu."
   },
@@ -4928,7 +4930,8 @@
     "masaPajakIkutTanggal": "Ikut tanggal dokumen",
     "masaPajakHint": "Bulan pengkreditan PPN masukan. Kosong berarti mengikuti tanggal dokumen.",
     "masaPajakKosongkan": "Kembalikan mengikuti tanggal dokumen",
-    "masaPajakJauh": "Masa pajak lebih dari tiga bulan dari tanggal dokumen, atau mendahuluinya. Tetap dapat disimpan."
+    "masaPajakMundur": "Masa pajak mendahului tanggal dokumen — bentuk faktur pengganti: dokumennya terbit pada bulan pembetulan, masanya tetap mengikuti faktur asli.",
+    "masaPajakJauh": "Masa pajak lebih dari tiga bulan sesudah tanggal dokumen. Tetap dapat disimpan."
   },
   "poReissue": {
     "menu": "Terbitkan ulang (paksa nomor)",
@@ -5154,6 +5157,7 @@
     "masaPajakIkutTanggalNilai": "{{tanggal}} (ikut tanggal invoice)",
     "masaPajakKosongkan": "Kosongkan masa pajak",
     "masaPajakSama": "Masa yang dipilih sama dengan bulan tanggal invoice, jadi akan disimpan sebagai ikut tanggal invoice.",
+    "masaPajakMundur": "Masa pajak mendahului tanggal invoice — bentuk faktur pengganti. Dokumennya terbit pada bulan pembetulan, masanya tetap mengikuti faktur asli.",
     "masaPajakJauh": "Masa pajak jauh dari tanggal invoice. Periksa lagi tahunnya \u2014 salah tahun memindahkan angka ke SPT yang mungkin sudah dilaporkan."
   }
 }

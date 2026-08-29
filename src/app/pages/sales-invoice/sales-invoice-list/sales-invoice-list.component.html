@@ -71,6 +71,18 @@
           </td>
         </ng-container>
 
+        <!-- Masa pajak faktur keluaran -->
+        <ng-container matColumnDef="masaPajak">
+          <th mat-header-cell *matHeaderCellDef>
+            <span class="sil-th">{{
+              "taxInvoiceEdit.masaPajak" | translate
+            }}</span>
+          </th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="sil-date">{{ formatMasaPajak(invoice) }}</span>
+          </td>
+        </ng-container>
+
         <!-- Invoice name -->
         <ng-container matColumnDef="invoiceName">
           <th mat-header-cell *matHeaderCellDef (click)="changeSortBy('name')">

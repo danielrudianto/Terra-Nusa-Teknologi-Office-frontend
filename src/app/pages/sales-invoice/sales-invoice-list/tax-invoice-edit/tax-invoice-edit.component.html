@@ -104,6 +104,11 @@
           <mat-icon>info</mat-icon>
           {{ "taxInvoiceEdit.masaPajakSama" | translate }}
         </p>
+      } @else if (masaPajakMundur) {
+        <p class="tie-note">
+          <mat-icon>history</mat-icon>
+          {{ "taxInvoiceEdit.masaPajakMundur" | translate }}
+        </p>
       } @else if (masaPajakJauh) {
         <p class="tie-note tie-note--warn">
           <mat-icon>warning</mat-icon>

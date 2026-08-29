@@ -1002,22 +1002,46 @@ export class PurchaseCreateComponent {
   }
 
   /**
-   * Masa pajaknya lebih dari tiga bulan setelah tanggal invoice.
+   * Masa pajaknya lebih dari tiga bulan SESUDAH tanggal invoice.
    *
    * Sekadar PERINGATAN. Batas pengkreditan adalah urusan pembukuan, bukan
    * urusan layar ini, dan ada keadaan sah yang melewatinya — pembetulan
    * SPT, misalnya. Yang perlu dicegah hanya masa yang jauh terisi tanpa
    * disadari.
+   *
+   * Masa yang MENDAHULUI tanggal dokumen tidak lagi ikut ditandai di sini;
+   * itu bentuk faktur pengganti, dan ada penjelasannya sendiri.
    */
   get masaPajakJauh(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s > 3;
+  }
+
+  /** Selisih BULAN antara masa pajak dan tanggal invoice. */
+  private get selisihMasa(): number | null {
     const masa = this.metaFormGroup.get('taxPeriod')?.value as Date | null;
     const tanggal = this.metaFormGroup.get('date')?.value as Date | null;
-    if (!masa || !tanggal) return false;
+    if (!masa || !tanggal) return null;
     const a = new Date(tanggal);
     const b = new Date(masa);
-    const selisih =
-      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-    return selisih > 3 || selisih < 0;
+    return (
+      (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth())
+    );
+  }
+
+  /**
+   * Masanya MENDAHULUI tanggal dokumen — faktur pengganti.
+   *
+   * Pemasok membetulkan fakturnya pada bulan ditemukannya kesalahan, tetapi
+   * masa pajaknya tetap mengikuti faktur ASLI: dokumennya bertanggal
+   * Februari, masanya tetap Januari.
+   *
+   * Wajar, bukan kekeliruan — dan sebelumnya keliru ikut ditandai sebagai
+   * "masa jauh", tepat pada arah yang paling sering dipakai.
+   */
+  get masaPajakMundur(): boolean {
+    const s = this.selisihMasa;
+    return s !== null && s < 0;
   }
 
   pilihMasaPajak(): void {

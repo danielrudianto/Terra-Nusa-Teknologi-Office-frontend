@@ -150,6 +150,7 @@ export class SalesInvoiceListComponent {
 
   displayedColumns: string[] = [
     'date',
+    'masaPajak',
     'invoiceName',
     'invoiceDescription',
     'projectName',
@@ -295,6 +296,21 @@ export class SalesInvoiceListComponent {
           this.fetchData();
         }
       });
+  }
+
+  /**
+   * MASA PAJAK faktur keluaran sebagai "MM/YYYY".
+   *
+   * `taxPeriod` kosong berarti fakturnya dilaporkan pada masa tanggal
+   * invoicenya sendiri — ditampilkan "—", bukan tanggalnya sendiri, supaya
+   * yang bergaris di kolom ini HANYA faktur yang memang digeser. Itulah yang
+   * dicari orang saat membuka daftar ini.
+   */
+  formatMasaPajak(invoice: any): string {
+    if (!invoice?.taxPeriod) return '—';
+    const t = new Date(invoice.taxPeriod);
+    if (isNaN(t.getTime())) return '—';
+    return `${String(t.getMonth() + 1).padStart(2, '0')}/${t.getFullYear()}`;
   }
 
   /**

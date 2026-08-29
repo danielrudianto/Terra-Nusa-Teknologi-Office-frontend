@@ -1176,7 +1176,9 @@
     "masaPajakKet": "进项税额抵扣的月份。若发票与单据同月开具，请留空。",
     "masaPajakKosongkan": "恢复为跟随单据日期",
     "masaPajakJauh": "所属期与发票日期相距较远",
-    "masaPajakJauhKet": "晚于单据日期三个月以上，或早于单据日期。仍可保存——请确认发票确实如此。",
+    "masaPajakMundur": "所属期早于单据日期",
+    "masaPajakMundurKet": "这是换开发票的情形：单据在更正当月开具，而所属期仍沿用原发票。属正常情况——只需确认所属期与原发票一致。",
+    "masaPajakJauhKet": "晚于单据日期三个月以上。仍可保存——请确认发票确实如此。",
     "methodCekGiro": "支票 / 划拨",
     "methodCekGiroHint": "从账户中支取；划拨于指定日期到期。"
   },
@@ -4928,7 +4930,8 @@
     "masaPajakIkutTanggal": "跟随单据日期",
     "masaPajakHint": "进项税额抵扣的月份。留空表示跟随单据日期。",
     "masaPajakKosongkan": "恢复为跟随单据日期",
-    "masaPajakJauh": "所属期晚于单据日期三个月以上，或早于单据日期。仍可保存。"
+    "masaPajakMundur": "所属期早于单据日期——属换开发票的情形：单据在更正当月开具，所属期仍沿用原发票。",
+    "masaPajakJauh": "所属期晚于单据日期三个月以上。仍可保存。"
   },
   "poReissue": {
     "menu": "重新签发（强制编号）",
@@ -5154,6 +5157,7 @@
     "masaPajakIkutTanggalNilai": "{{tanggal}}（跟随发票日期）",
     "masaPajakKosongkan": "清除税期",
     "masaPajakSama": "所选所属期与发票日期为同一月份，因此将按跟随发票日期保存。",
+    "masaPajakMundur": "税期早于发票日期——属换开发票的情形。单据在更正当月开具，税期仍沿用原发票。",
     "masaPajakJauh": "税期与发票日期相差较远。请再次核对年份——年份错误会把金额转入可能已申报的纳税申报表。"
   }
 }
