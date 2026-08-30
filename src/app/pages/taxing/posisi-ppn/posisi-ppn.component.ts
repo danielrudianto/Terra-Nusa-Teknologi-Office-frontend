@@ -7,7 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -15,6 +19,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { MasukanTanpaFakturComponent } from './masukan-tanpa-faktur/masukan-tanpa-faktur.component';
 
 /**
  * Posisi PPN satu periode: estimasi kurang atau lebih bayar.
@@ -45,6 +50,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
 export class PosisiPpnComponent {
   private readonly serverMessage = inject(ServerMessageService);
   private readonly translate = inject(TranslateService);
+  private readonly dialog = inject(MatDialog);
   private periodData: any = inject(MAT_DIALOG_DATA, { optional: true });
 
   isLoading = false;
@@ -145,6 +151,55 @@ export class PosisiPpnComponent {
   /** Nilai mutlak selisih, untuk ditampilkan tanpa tanda minus. */
   get selisihAbs(): number {
     return Math.abs(this.posisi?.selisih ?? 0);
+  }
+
+  /**
+   * Ada setoran PPN yang sudah tercatat sebagai beban untuk masa ini.
+   *
+   * Beban berkode PPN (5.1.8.1) yang MASA-nya jatuh pada periode terpilih —
+   * bukan tanggal setornya, sebab PPN masa Juni memang baru disetor Juli.
+   */
+  get adaSetoran(): boolean {
+    return (this.posisi?.setoran?.total ?? 0) > 0;
+  }
+
+  /**
+   * Kesimpulan setoran: "belum" | "lunas" | "kurang" | "lebih".
+   *
+   * DIBACA dari server, tidak dihitung ulang di sini. Apakah satu masa sudah
+   * selesai adalah pernyataan tentang uang; bila layarnya menyimpulkan
+   * sendiri, suatu saat ia akan menjawab berbeda dari laporan lain atas angka
+   * yang sama — termasuk soal berapa selisih pembulatan yang masih dianggap
+   * lunas.
+   */
+  get statusSetoran(): string {
+    return this.posisi?.setoran?.status ?? 'belum';
+  }
+
+  /** Sisa setelah setoran, tanpa tanda — arahnya dibawa `statusSetoran`. */
+  get sisaSetoranAbs(): number {
+    return Math.abs(this.posisi?.sisaSetelahSetoran ?? 0);
+  }
+
+  /**
+   * Buka daftar masukan yang fakturnya belum terbit.
+   *
+   * Barisnya DIOPER dari hasil yang sudah ada, bukan diambil ulang: keduanya
+   * berasal dari jawaban yang sama, dan memanggil server lagi hanya membuka
+   * peluang daftarnya berbeda dari angka yang sedang dilihat orangnya.
+   */
+  lihatTanpaFaktur() {
+    const rows = this.posisi?.masukanTanpaFaktur?.rows || [];
+    if (!rows.length) return;
+    this.dialog.open(MasukanTanpaFakturComponent, {
+      width: '760px',
+      maxWidth: '96vw',
+      data: {
+        rows,
+        total: this.posisi?.masukanTanpaFaktur?.total || 0,
+        periode: this.periodeLabel(),
+      },
+    });
   }
 
   private periodeLabel(): string {

@@ -1,0 +1,77 @@
+<div class="mtf">
+  <div class="mtf-head" mat-dialog-title appDialogGeser>
+    <span class="mtf-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <path d="M12 9v4M12 17h.01" />
+      </svg>
+    </span>
+    <div class="mtf-head__text">
+      <h2 class="mtf-title">{{ "taxing.ppnTanpaFaktur" | translate }}</h2>
+      <span class="mtf-sub">
+        {{ "taxing.ppnTanpaFakturJumlah" | translate: { jumlah: rows.length } }}
+        <ng-container *ngIf="periode"> · {{ periode }}</ng-container>
+      </span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="mtf-content">
+    <p class="mtf-note">{{ "taxing.ppnTanpaFakturNote" | translate }}</p>
+
+    <div class="mtf-kosong" *ngIf="!rows.length">
+      {{ "common.noData" | translate }}
+    </div>
+
+    <div class="mtf-tabel" *ngIf="rows.length">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ "table.date" | translate }}</th>
+            <th>{{ "table.supplier" | translate }}</th>
+            <th>{{ "table.invoice" | translate }}</th>
+            <th class="num">DPP</th>
+            <th class="num">PPN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of rows">
+            <td>
+              <span class="mtf-tgl">{{ r.date | date: "dd MMM yyyy" }}</span>
+              <span class="mtf-masa" *ngIf="masaDigeser(r)">
+                {{ "taxing.ppnMasaPajak" | translate }}:
+                {{ masaDigeser(r) | date: "MMM yyyy" }}
+              </span>
+            </td>
+            <td>
+              <span class="mtf-pihak">{{ namaPihak(r) }}</span>
+              <span class="mtf-ket" *ngIf="keterangan(r)">{{ keterangan(r) }}</span>
+            </td>
+            <td>
+              <span class="mtf-dok">{{ nomorDokumen(r) }}</span>
+              <span class="mtf-sumber" [class.is-beban]="r.sumber === 'expense'">
+                {{ sumberLabel(r) }}
+              </span>
+            </td>
+            <td class="num">{{ nilaiDpp(r) | number: "1.0-0" }}</td>
+            <td class="num">{{ nilaiPpn(r) | number: "1.0-0" }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">{{ "common.total" | translate }}</td>
+            <td class="num">{{ totalDpp | number: "1.0-0" }}</td>
+            <td class="num">{{ total | number: "1.0-0" }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="mtf-actions">
+    <button type="button" class="mtf-tutup" mat-dialog-close>
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

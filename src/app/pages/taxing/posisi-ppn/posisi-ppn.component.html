@@ -73,6 +73,16 @@
           {{ "taxing.ppnLebihBayarNote" | translate }}
         </span>
         <span class="pp-verdict__note">{{ "taxing.ppnEstimasiNote" | translate }}</span>
+        <!--
+          Angka besar di atas adalah yang TERUTANG, bukan yang masih harus
+          dibayar. Bila setorannya sudah tercatat, itu perlu terbaca di sini
+          juga — bukan hanya di blok bawah — sebab yang merah itulah yang
+          dilihat orang lebih dulu.
+        -->
+        <span class="pp-verdict__note pp-verdict__note--lunas"
+          *ngIf="statusSetoran === 'lunas'">
+          {{ "taxing.ppnSudahDisetorRingkas" | translate }}
+        </span>
       </div>
 
       <!-- breakdown -->
@@ -102,6 +112,56 @@
         <span class="pp-row__val">Rp {{ posisi.selisih | number: "1.0-0" }}</span>
       </div>
 
+      <!--
+        Setoran yang SUDAH tercatat untuk masa ini.
+
+        Rinciannya di atas menjawab "berapa yang terutang", bukan "apakah
+        sudah dibayar" — sehingga masa yang sudah disetor lunas tetap terbaca
+        merah kurang bayar. Blok ini yang menutupnya.
+
+        Barisnya ditampilkan langsung, tanpa dialog: setoran satu masa
+        biasanya satu dokumen, dan menyembunyikan satu baris di balik tombol
+        hanya menambah langkah.
+      -->
+      <div class="pp-setor" *ngIf="adaSetoran"
+        [class.pp-setor--lunas]="statusSetoran === 'lunas'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        <div class="pp-setor__text">
+          <strong>
+            {{ "taxing.ppnSudahDisetor" | translate }}:
+            Rp {{ posisi.setoran.total | number: "1.0-0" }}
+          </strong>
+
+          <!-- Dokumennya, agar dapat ditelusuri kembali. -->
+          <span class="pp-setor__baris" *ngFor="let s of posisi.setoran.rows">
+            {{ s.date | date: "dd MMM yyyy" }} ·
+            {{ s.invoiceName || s.receiptName || s.opponentName || "—" }} ·
+            Rp {{ s.dpp || 0 | number: "1.0-0" }}
+            <span class="pp-setor__belum" *ngIf="!s.isPaid">
+              {{ "taxing.ppnSetoranBelumDibayar" | translate }}
+            </span>
+          </span>
+
+          <span class="pp-setor__sisa" [ngSwitch]="statusSetoran">
+            <ng-container *ngSwitchCase="'lunas'">
+              {{ "taxing.ppnSetoranLunas" | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'kurang'">
+              {{ "taxing.ppnSisaKurangBayar" | translate }}:
+              Rp {{ sisaSetoranAbs | number: "1.0-0" }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'lebih'">
+              {{ "taxing.ppnSetoranLebih" | translate }}:
+              Rp {{ sisaSetoranAbs | number: "1.0-0" }}
+            </ng-container>
+          </span>
+        </div>
+      </div>
+
       <!-- catatan masukan tanpa faktur -->
       <div class="pp-warn" *ngIf="posisi.masukanTanpaFaktur.total > 0">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -117,6 +177,21 @@
             {{ "taxing.ppnBilaLengkap" | translate }}:
             Rp {{ posisi.selisihBilaLengkap | number: "1.0-0" }}
           </span>
+
+          <!--
+            Totalnya saja tidak menolong siapa pun yang harus MENGEJAR
+            fakturnya; yang dibutuhkan nama pemasok dan nomor dokumennya.
+          -->
+          <button type="button" class="pp-warn__btn"
+            (click)="lihatTanpaFaktur()"
+            *ngIf="posisi.masukanTanpaFaktur.rows?.length">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
+            {{ "taxing.ppnTanpaFakturLihat" | translate }}
+          </button>
         </div>
       </div>
 

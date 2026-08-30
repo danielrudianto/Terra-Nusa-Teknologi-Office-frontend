@@ -215,6 +215,17 @@
   font-size: 0.72rem;
   color: var(--muted, #6b7280);
 }
+/* Keterangan "sudah disetor" di dalam kartu verdict.
+
+   Sengaja diberi warna & bobot sendiri, dan menang atas warna kartu merah di
+   atasnya: kartu itu menyatakan yang TERUTANG, sedangkan baris ini menyatakan
+   masanya sudah selesai — dan bila ia ikut merah, ia terbaca sebagai bagian
+   dari kabar buruk. */
+.pp-verdict__note--lunas {
+  margin-top: 4px;
+  font-weight: 700;
+  color: #12a570 !important;
+}
 .pp-verdict--kurang {
   border-color: color-mix(in srgb, #d92d20 32%, transparent);
   background: color-mix(in srgb, #d92d20 8%, var(--surface, #fff));
@@ -274,37 +285,146 @@
   margin-top: 0.9rem;
 }
 
-/* catatan masukan tanpa faktur */
-.pp-warn {
+/* Setoran yang sudah tercatat.
+
+   Pola warnanya sama dengan catatan tanpa faktur — permukaan & teks halaman,
+   identitas dibawa garis aksen kiri dan warna ikon — supaya keduanya terbaca
+   sebagai sepasang catatan, bukan dua gaya yang kebetulan bertumpuk. Aksennya
+   hijau, dan hanya ketika masanya memang sudah selesai: kabar baik yang
+   diberi warna kabar baik sebelum uangnya cukup adalah kabar yang salah. */
+.pp-setor {
   margin-top: 1rem;
   display: flex;
   gap: 10px;
   padding: 0.85rem 1rem;
   border-radius: 12px;
-  background: color-mix(in srgb, #f79009 10%, var(--surface, #fff));
-  border: 1px solid color-mix(in srgb, #f79009 30%, transparent);
-  color: #93370d;
+  background: var(--surface-2, #f6f8ff);
+  border: 1px solid var(--border, #e3e6eb);
+  border-left: 3px solid var(--muted, #6b7280);
+  color: var(--ink, #16181d);
   svg {
     flex: 0 0 auto;
     margin-top: 1px;
+    color: var(--muted, #6b7280);
+  }
+  &--lunas {
+    border-left-color: #12a570;
+    svg {
+      color: #12a570;
+    }
   }
   &__text {
     display: flex;
     flex-direction: column;
     gap: 3px;
     font-size: 0.8rem;
+    min-width: 0;
     strong {
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink, #16181d);
+    }
+  }
+  /* Baris dokumen setorannya — keterangan, bukan angka utama. */
+  &__baris {
+    font-size: 0.74rem;
+    color: var(--muted, #6b7280);
+    font-variant-numeric: tabular-nums;
+  }
+  &__belum {
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border: 1px solid color-mix(in srgb, #e08a2e 45%, transparent);
+    color: #b4690e;
+  }
+  &__sisa {
+    margin-top: 2px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink, #16181d);
+  }
+  &--lunas &__sisa {
+    color: #12a570;
+  }
+}
+
+/* catatan masukan tanpa faktur.
+
+   Memakai warna PERMUKAAN & TEKS halaman, bukan palet oranye terang.
+   Sebelumnya latarnya kuning muda dengan teks cokelat (#93370d): terbaca di
+   tema terang, tetapi di tema gelap `--surface` menjadi pekat sehingga
+   campurannya berubah menjadi oranye kusam bertuliskan cokelat gelap —
+   nyaris tidak terbaca. Identitas "peringatan" di sini dibawa oleh ikon dan
+   garis aksen kiri; kontras teksnya diserahkan pada token tema, yang sudah
+   dijamin di kedua mode. Pola yang sama dipakai catatan di Laba Rugi. */
+.pp-warn {
+  margin-top: 1rem;
+  display: flex;
+  gap: 10px;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #faf7f0);
+  border: 1px solid var(--border, #e3e6eb);
+  border-left: 3px solid #e08a2e;
+  color: var(--ink, #16181d);
+  svg {
+    flex: 0 0 auto;
+    margin-top: 1px;
+    /* Ikonnya yang membawa warna peringatan, bukan seluruh kotaknya. */
+    color: #e08a2e;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    font-size: 0.8rem;
+    min-width: 0;
+    strong {
+      font-weight: 700;
+      color: var(--ink, #16181d);
     }
     span {
-      color: #93370d;
-      opacity: 0.9;
+      color: var(--muted, #6b7280);
     }
   }
   &__proj {
     margin-top: 2px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+    /* Angka proyeksi: teks utama, bukan keterangan — ia yang dicari mata. */
+    color: var(--ink, #16181d) !important;
+  }
+}
+
+/* Tombol pembuka daftar dokumen yang fakturnya belum ada. */
+.pp-warn__btn {
+  margin-top: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 9px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  border: 1px solid var(--border, #e3e6eb);
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
+  svg {
+    margin-top: 0;
+    color: #e08a2e;
+  }
+  &:hover {
+    background: var(--hover, #f6f8ff);
+    border-color: #e08a2e;
   }
 }
 

@@ -6,7 +6,13 @@
         <p class="db-subtitle mb-4">{{ "dashboard.tasksSub" | translate }}</p>
       </div>
 
-      <!-- Hero: PDF tools -->
+      <!--
+        Hero: alat dokumen (gabung & pisah PDF).
+
+        Alat kerja internal, tidak ditawarkan kepada pihak luar — lihat
+        `bolehPakaiAlatDokumen`.
+      -->
+      @if (bolehPakaiAlatDokumen) {
       <div class="col-8">
         <a class="hero hero--pdf" [routerLink]="'/PDF'">
           <div class="hero__content">
@@ -62,6 +68,7 @@
           </svg>
         </a>
       </div>
+      }
 
       <!-- Hero: Invoice generator -->
       <div class="col-4">
@@ -151,15 +158,23 @@
       <!--
         Ikhtisar margin proyek.
 
-        Izinnya `project:read`, ditentukan oleh ISI bloknya — nilai kontrak
-        dan biaya per proyek — bukan oleh letaknya di dashboard.
+        LEVEL 4 KE ATAS, dan sengaja BUKAN `project:read`. Izin itu terbuka
+        pada level 1 karena kode proyek dipakai hampir di setiap layar,
+        sehingga memakainya di sini praktis berarti "semua orang" —
+        pembelian, lapangan, dan pihak luar sekalipun. Yang dinyatakan kartu
+        ini adalah berapa yang DIPEROLEH perusahaan atas tiap pekerjaan.
+
+        Rutenya di server menegakkan batas yang sama; yang di sini hanya
+        menghindarkan kartu yang pasti gagal memuat.
 
         Selebar penuh karena kartunya bergulir mendatar; setengah lebar hanya
         memuat dua proyek sekaligus dan memaksa menggulir sejak awal.
       -->
-      <div class="col-12 mt-3" *appCan="'project:read'">
-        <app-project-margin></app-project-margin>
-      </div>
+      @if (bolehLihatMargin) {
+        <div class="col-12 mt-3">
+          <app-project-margin></app-project-margin>
+        </div>
+      }
     </div>
   </div>
 </div>

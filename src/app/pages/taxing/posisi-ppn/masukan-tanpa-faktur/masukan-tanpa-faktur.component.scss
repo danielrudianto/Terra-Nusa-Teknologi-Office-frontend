@@ -1,0 +1,203 @@
+/* token-based → dark-aware.
+
+   Warna diambil dari token permukaan & teks halaman, bukan dari palet oranye
+   terang: latar kuning muda dengan teks cokelat terbaca baik di tema terang
+   tetapi berubah menjadi oranye pekat bertuliskan teks redup di tema gelap.
+   Identitas "peringatan" di sini cukup dibawa oleh ikon dan aksen garis. */
+
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+}
+
+.mtf {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--ink, #16181d);
+}
+.mtf *,
+.mtf *::before,
+.mtf *::after {
+  box-sizing: border-box;
+}
+
+/* header band */
+.mtf-head {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: left;
+  background: var(--surface-2, #f6f8ff);
+  border-bottom: 1px solid var(--border, #e4e9fb);
+  border-left: 3px solid #e08a2e;
+  &::before {
+    display: none !important;
+    content: none !important;
+  }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    margin-right: auto;
+  }
+}
+.mtf-badge {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #ffffff);
+  color: #e08a2e;
+  box-shadow: 0 2px 6px color-mix(in srgb, #e08a2e 16%, transparent);
+}
+.mtf-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink, #16181d);
+  margin: 0;
+  line-height: 1.2;
+}
+.mtf-sub {
+  font-size: 0.76rem;
+  color: var(--muted, #6b7280);
+}
+
+/* isi */
+.mtf-content {
+  padding: 1.25rem 1.5rem !important;
+  max-height: 70vh;
+}
+.mtf-note {
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted, #6b7280);
+}
+.mtf-kosong {
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+/* tabel — bergulir mendatar pada layar sempit, tidak memaksa dialognya
+   melebar. */
+.mtf-tabel {
+  overflow-x: auto;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    min-width: 540px;
+  }
+
+  th,
+  td {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line, #eef0f3);
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--surface-2, #f6f8ff);
+    color: var(--muted, #6b7280);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td {
+    color: var(--ink, #16181d);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  tfoot td {
+    background: var(--surface-2, #f6f8ff);
+    border-top: 1px solid var(--border, #e3e6eb);
+    border-bottom: none;
+    font-weight: 700;
+    color: var(--ink, #16181d);
+  }
+}
+
+/* sel bersusun: baris utama tebal, keterangan di bawahnya kalem */
+.mtf-tgl,
+.mtf-pihak,
+.mtf-dok {
+  display: block;
+  font-weight: 600;
+}
+.mtf-masa,
+.mtf-ket {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.7rem;
+  color: var(--muted, #6b7280);
+}
+.mtf-masa {
+  font-variant-numeric: tabular-nums;
+}
+
+/* penanda asal baris */
+.mtf-sumber {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+
+  &.is-beban {
+    border-color: color-mix(in srgb, #e08a2e 40%, transparent);
+    color: #b4690e;
+  }
+}
+
+/* aksi */
+.mtf-actions {
+  padding: 0.9rem 1.5rem !important;
+  border-top: 1px solid var(--border, #e4e9fb);
+}
+.mtf-tutup {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  padding: 0.55rem 1.25rem;
+  cursor: pointer;
+  background: var(--surface, #fff);
+  color: var(--brand, #154dec);
+  border: 1px solid var(--brand, #154dec);
+  transition: background 0.15s ease;
+  &:hover {
+    background: var(--brand-soft, #eef2fe);
+  }
+}

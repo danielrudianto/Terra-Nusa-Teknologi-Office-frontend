@@ -45,6 +45,51 @@ export class DashboardBodyComponent {
     if (!this.permission.can('sales_invoice', 'create')) return false;
     return this.permission.level() >= 4 || this.permission.inDepartment('fat');
   }
+
+  /**
+   * Divisi yang berasal dari LUAR perusahaan.
+   *
+   * Ditulis sebagai daftar, bukan perbandingan tunggal: bila kelak ada
+   * pihak luar kedua — auditor, misalnya — ia cukup ditambahkan di sini dan
+   * seluruh yang bergantung padanya ikut berlaku. Satu perbandingan yang
+   * disebar di beberapa tempat akan tertinggal di salah satunya.
+   */
+  private static readonly DIVISI_LUAR = ['konsultan'];
+
+  /** Pengguna ini pihak luar perusahaan. */
+  get pihakLuar(): boolean {
+    return this.permission.inDepartment(
+      ...DashboardBodyComponent.DIVISI_LUAR,
+    );
+  }
+
+  /**
+   * Boleh memakai alat dokumen (gabung & pisah PDF).
+   *
+   * Alat kerja internal, bukan bagian dari pekerjaan pihak luar. Ia tidak
+   * membocorkan apa pun — tetapi menawarkan alat kantor kepada tamu membuat
+   * dashboard-nya terbaca sebagai ruang kerjanya sendiri, padahal ia datang
+   * untuk memeriksa beberapa angka lalu pergi.
+   */
+  get bolehPakaiAlatDokumen(): boolean {
+    return !this.pihakLuar;
+  }
+
+  /**
+   * Boleh melihat ikhtisar MARGIN proyek.
+   *
+   * Level 4 ke atas, dan sengaja BUKAN `project:read`: modul proyek terbuka
+   * pada level 1 karena kodenya dipakai hampir setiap layar, sehingga izin
+   * itu praktis berarti "semua orang". Yang dinyatakan kartu ini adalah
+   * berapa yang diperoleh perusahaan atas tiap pekerjaan — angka pemilik
+   * dan general manager, bukan angka yang dilewati sambil lalu.
+   *
+   * Rutenya di server menegakkan batas yang sama. Yang di sini hanya
+   * menghindarkan kartu yang pasti gagal memuat.
+   */
+  get bolehLihatMargin(): boolean {
+    return this.permission.level() >= 4;
+  }
   /*
    * Komponen ini TIDAK mengambil data apa pun.
    *
