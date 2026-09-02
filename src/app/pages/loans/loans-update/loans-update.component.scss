@@ -215,3 +215,14 @@ $surface: var(--surface, #ffffff);
     grid-template-columns: 1fr;
   }
 }
+
+/* Keterangan "melebihi nilai utang" di bawah kolom dana diterima.
+
+   Dipasang sebagai `mat-hint`, bukan `mat-error`, karena yang tidak sah adalah
+   HUBUNGAN dua kolom — bukan kolomnya sendiri; menandai `received` invalid
+   berarti mengarang kesalahan pada kolom yang isinya mungkin justru benar.
+   Warnanya yang membawa artinya. */
+.lu-salah {
+  color: var(--bad, #b42318) !important;
+  font-weight: 600;
+}

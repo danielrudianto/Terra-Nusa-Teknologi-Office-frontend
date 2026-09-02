@@ -1311,7 +1311,10 @@
     "companyAccount": "接收借款的公司账户",
     "menuEdit": "编辑资料",
     "paidSoFar": "已付：Rp",
-    "belowPaid": "借款金额不得低于已付金额（Rp {{paid}}）。若金额确有错误，请先冲销相应付款。"
+    "belowPaid": "借款金额不得低于已付金额（Rp {{paid}}）。若金额确有错误，请先冲销相应付款。",
+    "receivedAboveDebt": "收到的款项不得超过借款金额（Rp {{debt}}）。债务为本金加利息和费用，因此始终大于或等于收款。",
+    "receiptAmbiguous": "该借款有多笔收款记录，无法自动同步。请逐笔调整。",
+    "receiptSyncFailed": "借款金额已保存，但其收款未同步更新 —— 银行余额目前不一致。请先核对收款再使用该数字。"
   },
   "loansCreate": {
     "title": "创建贷款",
@@ -3528,9 +3531,10 @@
   },
   "loansUpdate": {
     "title": "编辑贷款资料",
-    "lockedNote": "贷款金额、已收金额和日期无法修改，因为它们已作为付款记录的依据。如有错误，请作废该记录并重新录入。",
+    "lockedNote": "借款日期不可更改，因为它是付款记录的依据。更改收到的款项会同时更新账户收款，银行余额随之调整。",
     "save": "保存",
-    "digitsOnly": "仅限数字。"
+    "digitsOnly": "仅限数字。",
+    "receivedAboveDebt": "超过借款金额。"
   },
   "poField": {
     "tanggalPo": "采购单日期",

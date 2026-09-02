@@ -1311,7 +1311,10 @@
     "companyAccount": "Rekening perusahaan tempat dana pinjaman diterima",
     "menuEdit": "Ubah data",
     "paidSoFar": "Sudah dibayar: Rp",
-    "belowPaid": "Nilai utang tidak boleh lebih kecil daripada yang sudah dibayarkan (Rp {{paid}}). Turunkan pembayarannya lebih dulu bila memang nilainya keliru."
+    "belowPaid": "Nilai utang tidak boleh lebih kecil daripada yang sudah dibayarkan (Rp {{paid}}). Turunkan pembayarannya lebih dulu bila memang nilainya keliru.",
+    "receivedAboveDebt": "Dana diterima tidak boleh melebihi nilai utang (Rp {{debt}}). Utang adalah pokok ditambah bunga dan biaya, jadi ia selalu lebih besar atau sama.",
+    "receiptAmbiguous": "Pinjaman ini punya lebih dari satu penerimaan dana, jadi tidak dapat diselaraskan otomatis. Sesuaikan penerimaannya satu per satu.",
+    "receiptSyncFailed": "Nilai pinjaman tersimpan, tetapi penerimaan dananya gagal ikut diubah — saldo bank sedang tidak sejalan. Periksa penerimaannya sebelum memakai angkanya."
   },
   "loansCreate": {
     "title": "Buat Pinjaman",
@@ -3528,9 +3531,10 @@
   },
   "loansUpdate": {
     "title": "Ubah Data Pinjaman",
-    "lockedNote": "Nilai pinjaman, jumlah diterima, dan tanggal tidak dapat diubah karena sudah menjadi dasar pencatatan pembayaran. Bila keliru, batalkan pencatatannya dan catat ulang.",
+    "lockedNote": "Tanggal pinjaman tidak dapat diubah karena sudah menjadi dasar pencatatan pembayaran. Mengubah dana diterima ikut memperbarui penerimaannya di rekening, sehingga saldo bank menyesuaikan.",
     "save": "Simpan",
-    "digitsOnly": "Hanya angka."
+    "digitsOnly": "Hanya angka.",
+    "receivedAboveDebt": "Melebihi nilai utang."
   },
   "poField": {
     "tanggalPo": "Tanggal PO",

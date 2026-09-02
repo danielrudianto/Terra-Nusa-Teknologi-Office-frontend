@@ -1311,7 +1311,10 @@
     "companyAccount": "Company account receiving the loan",
     "menuEdit": "Edit details",
     "paidSoFar": "Paid so far: Rp",
-    "belowPaid": "The loan value cannot be lower than the amount already paid (Rp {{paid}}). Reverse the payments first if the value is genuinely wrong."
+    "belowPaid": "The loan value cannot be lower than the amount already paid (Rp {{paid}}). Reverse the payments first if the value is genuinely wrong.",
+    "receivedAboveDebt": "Funds received cannot exceed the loan value (Rp {{debt}}). The debt is principal plus interest and fees, so it is always greater or equal.",
+    "receiptAmbiguous": "This loan has more than one incoming payment, so it cannot be synced automatically. Adjust the payments individually.",
+    "receiptSyncFailed": "The loan value was saved, but its incoming payment was not updated — the bank balance is out of step. Check the payment before relying on the figure."
   },
   "loansCreate": {
     "title": "Create Loan",
@@ -3528,9 +3531,10 @@
   },
   "loansUpdate": {
     "title": "Edit Loan Details",
-    "lockedNote": "Loan amount, amount received, and date cannot be changed because they are already the basis of payment records. If incorrect, void the record and re-enter it.",
+    "lockedNote": "The loan date cannot be changed because it underpins the payment records. Changing the funds received also updates the incoming payment, so the bank balance follows.",
     "save": "Save",
-    "digitsOnly": "Digits only."
+    "digitsOnly": "Digits only.",
+    "receivedAboveDebt": "Exceeds the loan value."
   },
   "poField": {
     "tanggalPo": "PO date",

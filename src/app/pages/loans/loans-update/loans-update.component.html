@@ -57,6 +57,17 @@
             mask="separator"
           />
           <span matTextPrefix>Rp&nbsp;</span>
+          <!--
+            Dana diterima tidak mungkin melebihi utangnya: yang masuk ke
+            rekening adalah pokoknya, sedangkan utang adalah pokok ditambah
+            bunga dan biaya. Server menolak yang melanggar; keterangan di sini
+            hanya agar ketahuan sebelum tombol simpan ditekan.
+          -->
+          @if (melebihiUtang) {
+            <mat-hint class="lu-salah">{{
+              "loansUpdate.receivedAboveDebt" | translate
+            }}</mat-hint>
+          }
         </mat-form-field>
       </div>
 
@@ -180,7 +191,7 @@
       <button
         type="submit"
         class="lc-submit"
-        [disabled]="isSubmitting || formGroup.invalid"
+        [disabled]="isSubmitting || formGroup.invalid || melebihiUtang"
       >
         {{
           isSubmitting

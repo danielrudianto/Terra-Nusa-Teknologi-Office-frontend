@@ -132,6 +132,29 @@ export class LoansUpdateComponent {
   }
 
   /**
+   * Dana diterima melebihi nilai utang.
+   *
+   * `debt` adalah pokok DITAMBAH bunga dan biaya, jadi ia selalu >=
+   * `received`; sama persis pun sah (pinjaman tanpa bunga). Kebalikannya
+   * mencatat penerimaan uang yang tidak berutang kepada siapa pun — dan
+   * angkanya masuk ke saldo bank lewat penerimaan yang menyertainya.
+   *
+   * Ditulis sebagai getter, bukan validator lintas-kolom: memanggil
+   * `setErrors` dari validator tingkat grup memicu perhitungan ulang ke atas
+   * dan mudah berputar. Server tetap penjaga yang sesungguhnya; ini hanya
+   * supaya salahnya ketahuan sebelum tombol simpan ditekan.
+   *
+   * Toleransi lima rupiah, sama dengan ambang di server: nilainya desimal di
+   * basis data dan pecahan di layar, jadi selisih beberapa rupiah adalah
+   * pembulatan.
+   */
+  get melebihiUtang(): boolean {
+    const utang = Number(this.formGroup.get('debt')?.value) || 0;
+    const diterima = Number(this.formGroup.get('received')?.value) || 0;
+    return diterima > utang + 5;
+  }
+
+  /**
    * Jumlah pembayaran yang sudah disetujui atas pinjaman ini.
    *
    * Diambil sendiri dari server, bukan dari data yang dikirim pemanggil:
@@ -193,6 +216,21 @@ export class LoansUpdateComponent {
             pesan = this.translate.instant('loans.belowPaid', {
               paid: dibayar.toLocaleString('id-ID'),
             });
+          } else if (kode === 'LOAN_RECEIVED_ABOVE_DEBT') {
+            pesan = this.translate.instant('loans.receivedAboveDebt', {
+              debt: (Number(detail?.debt) || 0).toLocaleString('id-ID'),
+            });
+          } else if (kode === 'LOAN_RECEIPT_AMBIGUOUS') {
+            // Pinjaman ini punya lebih dari satu penerimaan — mungkin
+            // pencairan bertahap. Server sengaja tidak menebak yang mana yang
+            // harus diubah, dan kalimatnya harus mengatakan itu, bukan
+            // "gagal menyimpan" yang membuat orang mencoba lagi.
+            pesan = this.translate.instant('loans.receiptAmbiguous');
+          } else if (kode === 'LOAN_RECEIPT_SYNC_FAILED') {
+            // Kasus paling perlu disebut apa adanya: nilainya tersimpan,
+            // tetapi penerimaannya tidak — jadi saldo bank sedang tidak
+            // sejalan, dan diam soal itu jauh lebih berbahaya.
+            pesan = this.translate.instant('loans.receiptSyncFailed');
           } else {
             pesan =
               detail?.message ??
