@@ -100,6 +100,16 @@
     </button>
   }
 
+  <!--
+    Agenda: KETERANGAN, bukan pekerjaan.
+
+    Ditaruh sesudah kartu keputusan dan sebelum "Lainnya" — dibaca sambil
+    lalu setelah pertanyaan "ada yang perlu saya putuskan?" terjawab, dan
+    tidak menggeser jawaban itu dari puncak layar.
+  -->
+  <div class="mbr-seksi">{{ "mobile.agenda.judul" | translate }}</div>
+  <app-agenda-ringkas />
+
   <div class="mbr-seksi">{{ "mobile.beranda.lainnya" | translate }}</div>
 
   <button type="button" class="mbr-petak" (click)="ke('/Proyek')">

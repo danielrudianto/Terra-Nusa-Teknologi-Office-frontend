@@ -4783,6 +4783,13 @@
     "lainHint": "State the kind in the note so it can be reviewed later."
   },
   "mobile": {
+    "agenda": {
+      "judul": "Agenda",
+      "memuat": "Loading agenda…",
+      "kosong": "Nothing on the agenda in the next 7 days.",
+      "gagal": "Could not load the agenda. Tap to try again.",
+      "sisa": "+{{jumlah}} more — see all in the desktop app"
+    },
     "tanda": "Mobile",
     "level": "Level",
     "batal": "Cancel",

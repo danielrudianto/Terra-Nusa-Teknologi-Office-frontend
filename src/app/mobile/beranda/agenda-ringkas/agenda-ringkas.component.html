@@ -1,0 +1,31 @@
+<div class="mag">
+  @if (sedangMemuat) {
+    <div class="mag-kalem">{{ "mobile.agenda.memuat" | translate }}</div>
+  } @else if (gagal) {
+    <!--
+      Gagal dibedakan dari kosong, dan diberi jalan keluar di tempat: memuat
+      ulang seluruh beranda hanya untuk satu blok terlalu mahal di jaringan
+      lapangan.
+    -->
+    <button type="button" class="mag-galat" (click)="muat()">
+      <mat-icon>refresh</mat-icon>
+      <span>{{ "mobile.agenda.gagal" | translate }}</span>
+    </button>
+  } @else if (!baris.length) {
+    <div class="mag-kalem">{{ "mobile.agenda.kosong" | translate }}</div>
+  } @else {
+    @for (b of baris; track $index) {
+      <div class="mag-baris" [class.mag-baris--kini]="hariIni(b)">
+        <mat-icon class="mag-baris__ikon">{{ ikon(b) }}</mat-icon>
+        <span class="mag-baris__judul">{{ b.judul }}</span>
+        <span class="mag-baris__jarak">{{ b.jarak }}</span>
+      </div>
+    }
+
+    @if (sisa > 0) {
+      <div class="mag-kalem mag-kalem--sisa">
+        {{ "mobile.agenda.sisa" | translate: { jumlah: sisa } }}
+      </div>
+    }
+  }
+</div>

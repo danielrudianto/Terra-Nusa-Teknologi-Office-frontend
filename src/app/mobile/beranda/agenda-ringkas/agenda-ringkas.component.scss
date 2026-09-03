@@ -1,0 +1,109 @@
+/* Agenda ringkas: SATU kartu berisi beberapa baris, bukan satu kartu per
+   baris.
+
+   Kartu-kartu di atasnya (`.mbr-petak`) masing-masing sebuah TUJUAN — ditekan
+   lalu membuka layar. Agenda tidak menuju ke mana pun; ia keterangan. Memberi
+   tiap barisnya bentuk kartu yang sama membuat jari mencoba menekannya dan
+   tidak terjadi apa-apa. */
+
+.mag {
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  padding: 0.35rem 0.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.mag-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.62rem 0.95rem;
+  line-height: 1.3;
+
+  & + & {
+    border-top: 1px solid var(--line, rgba(16, 24, 40, 0.07));
+  }
+}
+
+.mag-baris__ikon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  font-size: 20px;
+  color: var(--faint);
+}
+
+.mag-baris__judul {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  /* Judul pengingat bisa panjang; dipotong satu baris supaya tinggi kartunya
+     tetap tertebak dan daftarnya tetap terbaca sekali lirik. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mag-baris__jarak {
+  flex: none;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Hari ini ditandai — satu-satunya baris yang menuntut sesuatu sekarang.
+   Warnanya di JARAKNYA, bukan seluruh barisnya: yang berubah keterangan
+   waktunya, bukan pentingnya orang atau pengingatnya. */
+.mag-baris--kini {
+  .mag-baris__ikon,
+  .mag-baris__jarak {
+    color: var(--brand);
+  }
+
+  .mag-baris__jarak {
+    font-weight: 700;
+  }
+}
+
+.mag-kalem {
+  padding: 0.7rem 0.95rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.mag-kalem--sisa {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line, rgba(16, 24, 40, 0.07));
+}
+
+/* Gagal muat: dapat ditekan untuk mencoba lagi, jadi ia memang tombol. */
+.mag-galat {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0.7rem 0.95rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--bad-fg, #b42318);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  mat-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    font-size: 19px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 12px;
+  }
+}

@@ -4783,6 +4783,13 @@
     "lainHint": "Sebutkan jenisnya pada keterangan agar dapat ditinjau kemudian."
   },
   "mobile": {
+    "agenda": {
+      "judul": "Agenda",
+      "memuat": "Memuat agenda…",
+      "kosong": "Tidak ada agenda dalam 7 hari ke depan.",
+      "gagal": "Agenda gagal dimuat. Ketuk untuk mencoba lagi.",
+      "sisa": "+{{jumlah}} lainnya — selengkapnya di aplikasi desktop"
+    },
     "tanda": "Mobile",
     "level": "Level",
     "batal": "Batal",

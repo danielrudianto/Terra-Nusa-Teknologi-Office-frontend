@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TarikSegarkanDirective } from '../tarik-segarkan.directive';
+import { AgendaRingkasComponent } from './agenda-ringkas/agenda-ringkas.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -30,6 +31,7 @@ import { PermissionService } from '../../services/permission.service';
     MatProgressSpinnerModule,
     TranslatePipe,
     TarikSegarkanDirective,
+    AgendaRingkasComponent,
   ],
   templateUrl: './beranda.component.html',
   styleUrls: ['./beranda.component.scss'],

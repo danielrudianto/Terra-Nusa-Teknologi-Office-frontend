@@ -17,6 +17,7 @@ import {
 } from '../../../services/agenda.service';
 import { ReminderCreateComponent } from '../reminder-create/reminder-create.component';
 import { RouterLink } from '@angular/router';
+import { labelJarak, urutkanAgenda } from '../../../helpers/agenda.helper';
 
 /** Satu baris agenda, entah ulang tahun atau pengingat. */
 interface BarisAgenda {
@@ -109,12 +110,7 @@ export class AgendaComponent {
 
           // Diurutkan bersama: yang paling dekat lebih dulu, dan pada hari
           // yang sama ulang tahun didahulukan karena tidak bisa ditunda.
-          this.baris = [...ultah, ...pengingat].sort(
-            (a, b) =>
-              a.daysUntil - b.daysUntil ||
-              (a.jenis === 'birthday' ? -1 : 1) -
-                (b.jenis === 'birthday' ? -1 : 1),
-          );
+          this.baris = [...ultah, ...pengingat].sort(urutkanAgenda);
         },
         error: (e) => {
           /*
@@ -166,11 +162,15 @@ export class AgendaComponent {
     return `${nama.slice(0, 2).join(', ')} +${nama.length - 2}`;
   }
 
-  /** "Hari ini", "Besok", atau "n hari lagi". */
+  /**
+   * "Hari ini", "Besok", atau "n hari lagi".
+   *
+   * Kata-katanya dari `agenda.helper`, sama dengan yang dipakai kartu agenda
+   * di mobile — kalau ditulis dua kali, satu layar akan menyebut "Besok"
+   * sementara layar sebelahnya "1 hari lagi" untuk baris yang sama.
+   */
   jarak(n: number): string {
-    if (n <= 0) return 'Hari ini';
-    if (n === 1) return 'Besok';
-    return `${n} hari lagi`;
+    return labelJarak(n);
   }
 
   /** Hanya pembuatnya yang boleh mengubah dan menghapus. */
