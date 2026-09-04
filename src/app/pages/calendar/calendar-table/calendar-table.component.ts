@@ -926,12 +926,40 @@ export class CalendarTableComponent {
               const tgl = `${year}-${dd(month)}-${dd(hari)}`;
               const hariIni = mutasi.filter((t: any) => t.date === tgl);
               for (const t of hariIni) saldo += t.nilai;
+
+              /*
+               * Rencana kas rekening INI, menyusul di bawah realisasinya.
+               *
+               * Disaring menurut rekeningnya: kisi ini menyatakan keadaan
+               * SATU rekening, dan rencana yang belum ditentukan rekeningnya
+               * tidak dapat dibebankan ke salah satunya — ia tetap tampil di
+               * Ringkasan Harian, yang memang lintas rekening.
+               *
+               * Saldo akhirnya berjalan melewati rencana, sama seperti pada
+               * ringkasan harian: yang dicari kisi ini "nanti jadi berapa".
+               */
+              const rencanaHariIni = (rencanaPerTanggal[tgl] ?? []).filter(
+                (r: any) => Number(r.bankAccountID) === Number(a.id),
+              );
+              const barisRencana = rencanaHariIni.map((r: any) => {
+                const nilai = Number(r.amount || 0);
+                return {
+                  lawan: r.description || '-',
+                  nilai: r.planType === 'masuk' ? nilai : -nilai,
+                  rencana: true,
+                };
+              });
+              for (const t of barisRencana) saldo += t.nilai;
+
               sel.push({
                 hari,
-                transaksi: hariIni.map((t: any) => ({
-                  lawan: t.lawan,
-                  nilai: t.nilai,
-                })),
+                transaksi: [
+                  ...hariIni.map((t: any) => ({
+                    lawan: t.lawan,
+                    nilai: t.nilai,
+                  })),
+                  ...barisRencana,
+                ],
                 saldoAkhir: saldo,
               });
             }

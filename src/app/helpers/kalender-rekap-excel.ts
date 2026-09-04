@@ -520,7 +520,14 @@ export function lembarRencana(
 
 export interface SelKalender {
   hari: number;
-  transaksi: Array<{ lawan: string; nilai: number }>;
+  /**
+   * Isi satu hari. `rencana` menandai baris yang BELUM terjadi.
+   *
+   * Ditandai per baris, bukan per hari: satu tanggal kerap memuat keduanya —
+   * pembayaran yang sudah jalan dan rencana yang menyusul — dan yang
+   * membacanya perlu tahu baris mana yang mana.
+   */
+  transaksi: Array<{ lawan: string; nilai: number; rencana?: boolean }>;
   saldoAkhir: number;
 }
 
@@ -678,12 +685,22 @@ export function lembarKalender(
       for (let n = 0; n < maksTrx; n++) {
         const t = isi?.transaksi[n];
         const akhir = n === maksTrx - 1;
+        // Baris RENCANA disorot; yang sudah terjadi dibiarkan polos. Yang
+        // diberi warna adalah yang belum pasti — itu yang perlu diperiksa.
+        const sorot: ExcelJS.Fill | undefined = t?.rencana
+          ? {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: JINGGA_MUDA },
+            }
+          : undefined;
 
         const cNama = sheet.getCell(baris + 1 + n, kiri);
         cNama.value = t?.lawan ?? null;
         cNama.font = { name: 'Arial', size: 8 };
         cNama.alignment = { vertical: 'middle', indent: 1, wrapText: true };
         cNama.border = tepiBlok({ kiri: true, bawah: akhir });
+        if (sorot) cNama.fill = sorot;
 
         const cNilai = sheet.getCell(baris + 1 + n, kiri + 1);
         cNilai.value = t ? t.nilai : null;
@@ -691,6 +708,7 @@ export function lembarKalender(
         cNilai.font = { name: 'Arial', size: 8 };
         cNilai.alignment = { horizontal: 'right', vertical: 'middle' };
         cNilai.border = tepiBlok({ kanan: true, bawah: akhir });
+        if (sorot) cNilai.fill = sorot;
       }
     });
 
