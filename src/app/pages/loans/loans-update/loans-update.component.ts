@@ -180,11 +180,71 @@ export class LoansUpdateComponent {
         this._dibayar = daftar
           .filter((p: any) => p.isApprove && !p.isDelete)
           .reduce((t: number, p: any) => t + (Number(p.amount) || 0), 0);
+
+        this.isiRekeningDariPenerimaan(r);
       },
       // Gagal memuat hanya menghilangkan keterangannya; penjaga yang
       // sesungguhnya tetap ada di server.
       error: () => (this._dibayar = 0),
     });
+  }
+
+  /**
+   * Isi rekening penerima dari penerimaannya, bila pinjamannya belum punya.
+   *
+   * `loans.bankAccountID` ditambahkan setelah sebagian pinjaman tercatat,
+   * jadi baris lama bernilai NULL. Kolomnya wajib diisi, dan kolom wajib yang
+   * kosong membuat SELURUH formulir tidak sah — tombol simpan mati, dan yang
+   * membukanya tidak bisa mengubah apa pun, bahkan keterangan. Satu kolom
+   * yang hilang mengunci seluruh layar, tanpa mengatakan kolom yang mana.
+   *
+   * Penerimaannya selalu punya rekening — tanpa itu uangnya tidak akan pernah
+   * masuk ke mutasi bank — jadi angka itu bukan tebakan melainkan rekening
+   * tempat dana ini benar-benar diterima.
+   *
+   * Yang sudah terisi TIDAK ditimpa: bila seseorang pernah membetulkannya,
+   * koreksi itu yang berlaku, bukan baris penerimaan yang mungkin lebih tua.
+   */
+  private isiRekeningDariPenerimaan(r: any): void {
+    const kendali = this.formGroup.get('bankAccountID');
+    if (!kendali || kendali.value) return;
+
+    const penerimaan: any[] = Array.isArray(r?.penerimaan) ? r.penerimaan : [];
+    // Lebih dari satu penerimaan berarti pencairan bertahap — server sendiri
+    // menolak menebak yang mana saat menyelaraskan (`LOAN_RECEIPT_AMBIGUOUS`),
+    // dan layar ini tidak boleh lebih berani daripada server.
+    if (penerimaan.length !== 1) return;
+
+    const rekening = penerimaan[0]?.bankAccountID;
+    if (rekening === null || rekening === undefined || rekening === '') return;
+
+    kendali.setValue(rekening);
+    kendali.markAsPristine();
+  }
+
+  /**
+   * Kolom wajib yang masih kosong, dalam kata-kata.
+   *
+   * Tombol simpan yang mati tanpa keterangan adalah kebuntuan: yang
+   * membukanya tahu tidak bisa menyimpan, tetapi tidak tahu sebabnya, dan
+   * tidak ada yang bisa dilakukannya selain menutup dialog. Daftar ini
+   * ditampilkan di sebelah tombolnya, menyebut kolomnya.
+   */
+  get kolomKurang(): string[] {
+    const label: Record<string, string> = {
+      creditorName: 'loansCreate.creditorName',
+      creditorAddress: 'loansCreate.creditorAddress',
+      description: 'loansCreate.description',
+      bankAccountName: 'loansCreate.bankAccountName',
+      bankAccountNumber: 'loansCreate.bankAccountNumber',
+      bankName: 'loansCreate.bankName',
+      debt: 'loansCreate.debt',
+      received: 'loansCreate.received',
+      bankAccountID: 'loansCreate.receiverAccount',
+    };
+    return Object.keys(label)
+      .filter((k) => this.formGroup.get(k)?.invalid)
+      .map((k) => this.translate.instant(label[k]));
   }
 
   onSubmit() {

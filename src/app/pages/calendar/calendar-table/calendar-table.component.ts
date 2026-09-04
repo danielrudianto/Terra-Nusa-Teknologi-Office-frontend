@@ -29,17 +29,18 @@ import { TerlewatDialogComponent } from '../terlewat-dialog/terlewat-dialog.comp
 import ExcelJS from 'exceljs';
 import {
   AkunRekap,
-  MutasiRekap,
   RencanaRekap,
-  lembarNaskah,
   lembarRencana,
-  lembarRincian,
-  lembarSaldo,
   lembarHarian,
   lembarKalender,
   HarianRekap,
   SelKalender,
 } from 'src/app/helpers/kalender-rekap-excel';
+import {
+  LampiranRekening,
+  berkasKalenderPdf,
+} from 'src/app/helpers/kalender-rekap-pdf';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-calendar-table',
@@ -51,6 +52,7 @@ import {
     MatIconModule,
     ShortCurrencyPipe,
     MatButtonModule,
+    MatMenuModule,
   ],
   templateUrl: './calendar-table.component.html',
   styleUrl: './calendar-table.component.scss',
@@ -628,7 +630,23 @@ export class CalendarTableComponent {
     return index >= 0;
   }
 
-  onCalendarDownload() {
+  /**
+   * Unduh kalender kas — Excel atau PDF, dari data yang SAMA.
+   *
+   * Formatnya hanya menentukan bentuk akhirnya; seluruh perhitungan di
+   * bawah — saldo berjalan, rencana yang ikut, transfer antar rekening yang
+   * dikecualikan — berlaku untuk keduanya. Menyalinnya menjadi dua jalur
+   * berarti dua tempat yang harus dijaga tetap sepakat, dan pada saat
+   * salah satunya diperbaiki, yang lain diam-diam melaporkan angka lain.
+   *
+   * Isinya kini terbatas pada dua hal yang benar-benar dibaca: RINGKASAN
+   * HARIAN, dan kisi kalender tiap rekening sebagai lampiran. Lembar Naskah
+   * rekap, Saldo per rekening, dan Rincian transaksi dihapus — ketiganya
+   * menyusun ulang angka yang sudah ada di kedua lembar itu, dan berkas yang
+   * memuat hal sama tiga kali membuat penerimanya harus memilih mana yang
+   * dipercaya.
+   */
+  onCalendarDownload(format: 'xlsx' | 'pdf' = 'xlsx') {
     if (this.isDownloading) return;
     this.isDownloading = true;
 
@@ -725,10 +743,7 @@ export class CalendarTableComponent {
             );
           };
 
-          const wb = new ExcelJS.Workbook();
-
           const akun: AkunRekap[] = [];
-          const rincian: MutasiRekap[] = [];
           const perTanggal: Record<
             string,
             { masuk: number; keluar: number; ketMasuk: string[]; ketKeluar: string[] }
@@ -748,16 +763,6 @@ export class CalendarTableComponent {
 
               for (const t of hariIni) {
                 saldo += t.nilai;
-                rincian.push({
-                  date: tgl,
-                  rekening: a.bankAccountNumber,
-                  bank: a.bankName ?? '',
-                  keterangan: t.keterangan,
-                  lawan: t.lawan,
-                  proyek: t.proyek,
-                  nilai: t.nilai,
-                  saldo,
-                });
 
                 // Transfer antar rekening TIDAK masuk ringkasan gabungan:
                 // uangnya tidak keluar dari perusahaan, hanya berpindah.
@@ -876,20 +881,6 @@ export class CalendarTableComponent {
             }
           }
 
-          const kini = new Date();
-          const berjalan =
-            kini.getFullYear() === year && kini.getMonth() + 1 === month;
-          const hariRekap = berjalan ? kini.getDate() : totalHari;
-          const tanggalRekap = new Date(
-            year,
-            month - 1,
-            hariRekap,
-          ).toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          });
-
           const rencanaRekap: RencanaRekap[] = (this.rencana ?? []).map(
             (r: any) => ({
               date: String(r.date).slice(0, 10),
@@ -904,17 +895,14 @@ export class CalendarTableComponent {
           );
 
           /*
-           * Urutan lembar mengikuti seberapa sering dibuka.
+           * Kisi tiap rekening disusun SEKALI, sebelum formatnya dipilih.
            *
-           * Excel membuka lembar PERTAMA; menaruh kisi kalender di depan
-           * berarti yang membukanya harus menggulir tab lebih dulu setiap
-           * kali, dan jumlah tabnya sebanyak rekeningnya.
+           * Excel dan PDF menampilkan kisi yang sama; menyusunnya di dalam
+           * masing-masing cabang berarti saldo berjalan dan penyaringan
+           * rencananya ditulis dua kali, dan perbaikan pada satu format
+           * diam-diam tidak sampai ke yang lain.
            */
-          lembarNaskah(wb, akun, hariRekap, tanggalRekap, namaBulan, year);
-          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year);
-          lembarSaldo(wb, akun, totalHari, namaBulan, year);
-          lembarRincian(wb, rincian, namaBulan, year);
-          lembarRencana(wb, rencanaRekap, namaBulan, year);
+          const lampiran: LampiranRekening[] = [];
 
           for (const a of data.bank_accounts ?? []) {
             const isi = akun.find((x) => x.id === a.id);
@@ -963,12 +951,55 @@ export class CalendarTableComponent {
                 saldoAkhir: saldo,
               });
             }
+            lampiran.push({
+              nomor: a.bankAccountNumber,
+              atasNama: a.bankAccountName ?? '',
+              sel,
+              saldoAwal: isi.saldoAwal,
+            });
+          }
+
+          const nama = `Kalender_Kas_${namaBulan}_${year}`;
+
+          if (format === 'pdf') {
+            berkasKalenderPdf(
+              harian,
+              saldoAwalGabungan,
+              lampiran,
+              namaBulan,
+              year,
+              hariPertama,
+              totalHari,
+            )
+              .then((blob) => saveAs(blob, `${nama}.pdf`))
+              .catch(() =>
+                this.snackBar.open(
+                  this.translate.instant('notify.downloadFailed'),
+                  'Close',
+                  { duration: 4000 },
+                ),
+              )
+              .finally(() => (this.isDownloading = false));
+            return;
+          }
+
+          const wb = new ExcelJS.Workbook();
+          /*
+           * Urutan lembar mengikuti seberapa sering dibuka.
+           *
+           * Excel membuka lembar PERTAMA; menaruh kisi kalender di depan
+           * berarti yang membukanya harus menggulir tab lebih dulu setiap
+           * kali, dan jumlah tabnya sebanyak rekeningnya.
+           */
+          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year);
+          lembarRencana(wb, rencanaRekap, namaBulan, year);
+          for (const l of lampiran) {
             lembarKalender(
               wb,
-              a.bankAccountNumber,
-              a.bankAccountName ?? '',
-              isi.saldoAwal,
-              sel,
+              l.nomor,
+              l.atasNama,
+              l.saldoAwal,
+              l.sel,
               namaBulan,
               year,
               hariPertama,
@@ -982,14 +1013,7 @@ export class CalendarTableComponent {
               const blob = new Blob([buf], {
                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
               });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `Kalender_Kas_${namaBulan}_${year}.xlsx`;
-              a.click();
-              // Alamat objek dilepas; tanpa ini berkasnya tetap di memori
-              // peramban sampai halamannya ditutup.
-              URL.revokeObjectURL(url);
+              saveAs(blob, `${nama}.xlsx`);
             })
             .finally(() => (this.isDownloading = false));
         },

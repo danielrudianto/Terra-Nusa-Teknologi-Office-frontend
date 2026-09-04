@@ -3544,7 +3544,8 @@
     "lockedNote": "借款日期不可更改，因为它是付款记录的依据。更改收到的款项会同时更新账户收款，银行余额随之调整。",
     "save": "保存",
     "digitsOnly": "仅限数字。",
-    "receivedAboveDebt": "超过借款金额。"
+    "receivedAboveDebt": "超过借款金额。",
+    "stillEmpty": "尚未填写："
   },
   "poField": {
     "tanggalPo": "采购单日期",
@@ -3669,6 +3670,7 @@
     "deleteSuccess": "删除成功",
     "approveSuccess": "审批成功",
     "loadFailed": "数据加载失败",
+    "downloadFailed": "无法生成下载文件",
     "createFailed": "创建失败",
     "updateFailed": "更新失败",
     "deleteFailed": "删除失败",
@@ -4290,6 +4292,8 @@
     "marketing": "市场推广",
     "memproses": "处理中…",
     "menyiapkan": "准备中…",
+    "unduhPdf": "下载 PDF（摘要 + 附件）",
+    "unduhExcel": "下载 Excel（可编辑）",
     "menyimpan": "保存中…",
     "pending": "待处理",
     "peserta": "学员",

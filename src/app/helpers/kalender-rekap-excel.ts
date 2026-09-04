@@ -1,9 +1,15 @@
 /**
  * Lembar ringkasan pada unduhan kalender.
  *
- * Dipisahkan dari komponennya karena empat lembar ini tidak menyangkut
+ * Dipisahkan dari komponennya karena lembar-lembar ini tidak menyangkut
  * tampilan kalender sama sekali — dan menaruhnya di dalam komponen membuat
  * berkas yang sudah panjang bertambah seribu baris lagi.
+ *
+ * Isinya kini tiga: RINGKASAN HARIAN, RENCANA KAS, dan kisi kalender per
+ * rekening. Lembar Naskah rekap, Saldo per rekening, dan Rincian transaksi
+ * dihapus — ketiganya menyusun ulang angka yang sudah ada pada dua lembar
+ * pertama, dan berkas yang menyebut hal sama tiga kali membuat penerimanya
+ * harus memilih mana yang dipercaya.
  *
  * Memakai ExcelJS, bukan `xlsx`. Yang kedua tidak dapat memformat sel:
  * tidak ada kop, tidak ada kepala berwarna, tidak ada format rupiah — dan
@@ -27,17 +33,6 @@ import {
   tepi,
   tepiBlok,
 } from './excel-gaya.helper';
-
-export interface MutasiRekap {
-  date: string;
-  rekening: string;
-  bank: string;
-  keterangan: string;
-  lawan: string;
-  proyek: string;
-  nilai: number;
-  saldo: number;
-}
 
 export interface AkunRekap {
   id: number;
@@ -67,59 +62,6 @@ const SUB = (bulan: string, tahun: number) =>
     month: 'long',
     year: 'numeric',
   });
-
-// ----------------------------------------------------------------------
-
-export function lembarRincian(
-  wb: ExcelJS.Workbook,
-  data: MutasiRekap[],
-  bulan: string,
-  tahun: number,
-): void {
-  if (!data.length) return;
-
-  const kolom: KolomExcel[] = [
-    { nama: 'Tanggal', lebar: 12, rata: 'center' },
-    { nama: 'Rekening', lebar: 20, rata: 'left' },
-    { nama: 'Bank', lebar: 22, rata: 'left' },
-    { nama: 'Keterangan', lebar: 38, rata: 'left' },
-    { nama: 'Lawan transaksi', lebar: 28, rata: 'left' },
-    { nama: 'Proyek', lebar: 12, rata: 'center' },
-    { nama: 'Masuk (Rp)', lebar: 16, rata: 'right', format: RP },
-    { nama: 'Keluar (Rp)', lebar: 16, rata: 'right', format: RP },
-    { nama: 'Saldo rekening (Rp)', lebar: 19, rata: 'right', format: RP2 },
-  ];
-
-  const sheet = wb.addWorksheet('Rincian transaksi', {
-    views: [{ state: 'frozen', ySplit: 4 }],
-    pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
-  });
-
-  kop(sheet, kolom.length, 'RINCIAN TRANSAKSI', SUB(bulan, tahun));
-  const AWAL = 4;
-  kepala(sheet, AWAL, kolom);
-
-  data.forEach((m, i) => {
-    barisData(sheet, AWAL + 1 + i, kolom, [
-      m.date,
-      m.rekening,
-      m.bank,
-      m.keterangan,
-      m.lawan,
-      m.proyek,
-      m.nilai > 0 ? m.nilai : null,
-      m.nilai < 0 ? Math.abs(m.nilai) : null,
-      m.saldo,
-    ]);
-  });
-
-  // Penyaring otomatis — itu yang membuat lembar ini berguna dibanding kisi
-  // kalendernya: mencari satu pemasok cukup satu klik.
-  sheet.autoFilter = {
-    from: { row: AWAL, column: 1 },
-    to: { row: AWAL + data.length, column: kolom.length },
-  };
-}
 
 // ----------------------------------------------------------------------
 
@@ -243,210 +185,9 @@ export function lembarHarian(
   );
 }
 
-export function lembarSaldo(
-  wb: ExcelJS.Workbook,
-  akun: AkunRekap[],
-  totalHari: number,
-  bulan: string,
-  tahun: number,
-): void {
-  if (!akun.length) return;
-
-  const kolom: KolomExcel[] = [
-    { nama: 'Rekening', lebar: 22, rata: 'left' },
-    { nama: 'Atas nama', lebar: 24, rata: 'left' },
-    { nama: 'Saldo awal (Rp)', lebar: 17, rata: 'right', format: RP2 },
-    ...Array.from({ length: totalHari }, (_, i) => ({
-      nama: String(i + 1),
-      lebar: 15,
-      rata: 'right' as const,
-      format: RP2,
-    })),
-  ];
-
-  const sheet = wb.addWorksheet('Saldo per rekening', {
-    // Dibekukan pada kolom rekening DAN baris kepala: dengan 31 kolom
-    // tanggal, yang menggulir ke kanan kehilangan barisnya.
-    views: [{ state: 'frozen', xSplit: 2, ySplit: 4 }],
-    pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
-  });
-
-  kop(sheet, kolom.length, 'SALDO PER REKENING', SUB(bulan, tahun));
-  const AWAL = 4;
-  kepala(sheet, AWAL, kolom);
-
-  const perBank: Record<string, AkunRekap[]> = Object.create(null);
-  for (const a of akun) (perBank[a.bank] ??= []).push(a);
-
-  let baris = AWAL + 1;
-  const totalHarian = new Array(totalHari).fill(0);
-  let totalAwal = 0;
-
-  for (const [bank, daftar] of Object.entries(perBank)) {
-    const subHarian = new Array(totalHari).fill(0);
-    let subAwal = 0;
-
-    for (const a of daftar) {
-      subAwal += a.saldoAwal;
-      totalAwal += a.saldoAwal;
-      a.harian.forEach((v, i) => {
-        subHarian[i] += v;
-        totalHarian[i] += v;
-      });
-      barisData(sheet, baris++, kolom, [
-        a.nomor,
-        a.atasNama,
-        a.saldoAwal,
-        ...a.harian,
-      ]);
-    }
-
-    // Subtotal per bank: itu yang disebut pertama pada rekap harian.
-    barisData(
-      sheet,
-      baris++,
-      kolom,
-      [`Total ${bank}`, '', subAwal, ...subHarian],
-      { tebal: true, latar: BIRU_MUDA },
-    );
-    baris += 1;
-  }
-
-  barisData(
-    sheet,
-    baris,
-    kolom,
-    ['TOTAL SELURUH REKENING', '', totalAwal, ...totalHarian],
-    { tebal: true, latar: BIRU_MUDA },
-  );
-}
 
 // ----------------------------------------------------------------------
 
-export function lembarNaskah(
-  wb: ExcelJS.Workbook,
-  akun: AkunRekap[],
-  hariRekap: number,
-  tanggalRekap: string,
-  bulan: string,
-  tahun: number,
-): void {
-  if (!akun.length) return;
-
-  const sheet = wb.addWorksheet('Naskah rekap', {
-    pageSetup: { orientation: 'portrait', fitToPage: true, fitToWidth: 1 },
-  });
-
-  kop(sheet, 2, 'REKAP SALDO', SUB(bulan, tahun));
-
-  const rp = (n: number) =>
-    'Rp ' +
-    new Intl.NumberFormat('id-ID', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(n);
-
-  sheet.getColumn(1).width = 54;
-  sheet.getColumn(2).width = 24;
-
-  let baris = 4;
-
-  /*
-   * Setiap baris berisi diberi GARIS.
-   *
-   * Tanpa garis, dua kolom angka yang berjauhan sulit dipasangkan dengan
-   * keterangannya — mata melompat baris, dan rekap yang dibaca cepat justru
-   * paling mudah salah baca.
-   *
-   * Baris kosong TIDAK digaris: ia pemisah antar bank, dan menggarisnya
-   * membuat pemisahnya hilang.
-   */
-  const tulis = (kiri: string, kanan = '', tebal = false) => {
-    const a = sheet.getCell(baris, 1);
-    a.value = kiri;
-    a.font = { name: 'Arial', size: 10, bold: tebal };
-    a.alignment = { vertical: 'middle', indent: 1 };
-
-    const b = sheet.getCell(baris, 2);
-    b.value = kanan;
-    b.font = { name: 'Arial', size: 10, bold: tebal };
-    b.alignment = { horizontal: 'right', vertical: 'middle', indent: 1 };
-
-    if (kiri || kanan) {
-      a.border = tepi();
-      b.border = tepi();
-      if (tebal) {
-        const latar: ExcelJS.Fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: BIRU_MUDA },
-        };
-        a.fill = latar;
-        b.fill = latar;
-      }
-    }
-    sheet.getRow(baris).height = 18;
-    baris += 1;
-  };
-
-  tulis(`Saldo per tanggal ${tanggalRekap}:`, '', true);
-  baris += 1;
-
-  const perBank: Record<string, AkunRekap[]> = Object.create(null);
-  for (const a of akun) (perBank[a.bank] ??= []).push(a);
-
-  let huruf = 'a';
-  const subtotal: Array<{ bank: string; nilai: number }> = [];
-
-  for (const [bank, daftar] of Object.entries(perBank)) {
-    let sub = 0;
-    // Satu rekening tidak dirinci bernomor; dua atau lebih dirinci, persis
-    // seperti rekap yang selama ini ditulis tangan.
-    if (daftar.length > 1) {
-      tulis(`${huruf}. Rekening di ${bank}:`);
-      daftar.forEach((a, i) => {
-        const nilai = a.harian[hariRekap - 1] ?? 0;
-        sub += nilai;
-        tulis(`      ${i + 1}. ${a.nomor}`, rp(nilai));
-      });
-      tulis(`      Total saldo di ${bank}`, rp(sub), true);
-    } else {
-      const a = daftar[0];
-      sub = a.harian[hariRekap - 1] ?? 0;
-      tulis(`${huruf}. Rekening di ${bank}`, rp(sub));
-    }
-
-    subtotal.push({ bank, nilai: sub });
-    huruf = String.fromCharCode(huruf.charCodeAt(0) + 1);
-    baris += 1;
-  }
-
-  /*
-   * Total KUMULATIF, bukan satu total di akhir.
-   *
-   * Rekap yang selama ini ditulis menyebut "total BRI dan Mandiri", lalu
-   * "total BRI, Mandiri, dan Stephanie" — sebagian rekening bukan milik
-   * perusahaan dan kerap perlu disebut terpisah.
-   */
-  let kumulatif = 0;
-  const terkumpul: string[] = [];
-  subtotal.forEach((x, i) => {
-    kumulatif += x.nilai;
-    terkumpul.push(x.bank);
-    if (i === 0) return;
-    const sebutan =
-      terkumpul.length > 2
-        ? terkumpul.slice(0, -1).join(', ') +
-          ', dan ' +
-          terkumpul[terkumpul.length - 1]
-        : terkumpul.join(' dan ');
-    tulis(`Total rekening ${sebutan}`, rp(kumulatif), true);
-  });
-
-  if (subtotal.length === 1) {
-    tulis('Total seluruh rekening', rp(kumulatif), true);
-  }
-}
 
 // ----------------------------------------------------------------------
 

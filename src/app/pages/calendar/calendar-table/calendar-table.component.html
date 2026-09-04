@@ -249,14 +249,32 @@
   }
 
   <div class="cal-foot">
+    <!--
+      Formatnya DIPILIH, bukan ditentukan tombolnya.
+
+      Keduanya menjawab hal berbeda: Excel untuk yang menyaring dan menjumlah
+      sendiri, PDF untuk yang mengirimkan atau mencetaknya. Menebak salah satu
+      berarti separuh pemakainya mengubah formatnya sendiri setiap kali.
+    -->
     <button
       type="button"
       class="cal-download"
       [disabled]="isDownloading"
-      (click)="onCalendarDownload()"
+      [matMenuTriggerFor]="menuUnduh"
     >
       <mat-icon>download</mat-icon>
       {{ isDownloading ? ('hardcoded.menyiapkan' | translate) : ('hardcoded.download' | translate) }}
+      <mat-icon class="cal-download__kanan">expand_more</mat-icon>
     </button>
+    <mat-menu #menuUnduh="matMenu">
+      <button mat-menu-item type="button" (click)="onCalendarDownload('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>{{ "hardcoded.unduhPdf" | translate }}</span>
+      </button>
+      <button mat-menu-item type="button" (click)="onCalendarDownload('xlsx')">
+        <mat-icon>table_chart</mat-icon>
+        <span>{{ "hardcoded.unduhExcel" | translate }}</span>
+      </button>
+    </mat-menu>
   </div>
 </div>

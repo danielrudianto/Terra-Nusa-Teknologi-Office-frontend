@@ -3544,7 +3544,8 @@
     "lockedNote": "Tanggal pinjaman tidak dapat diubah karena sudah menjadi dasar pencatatan pembayaran. Mengubah dana diterima ikut memperbarui penerimaannya di rekening, sehingga saldo bank menyesuaikan.",
     "save": "Simpan",
     "digitsOnly": "Hanya angka.",
-    "receivedAboveDebt": "Melebihi nilai utang."
+    "receivedAboveDebt": "Melebihi nilai utang.",
+    "stillEmpty": "Masih kosong:"
   },
   "poField": {
     "tanggalPo": "Tanggal PO",
@@ -3669,6 +3670,7 @@
     "deleteSuccess": "Data berhasil dihapus",
     "approveSuccess": "Data berhasil disetujui",
     "loadFailed": "Gagal memuat data",
+    "downloadFailed": "Gagal menyiapkan berkas unduhan",
     "createFailed": "Gagal membuat data",
     "updateFailed": "Gagal memperbarui data",
     "deleteFailed": "Gagal menghapus data",
@@ -4290,6 +4292,8 @@
     "marketing": "Marketing",
     "memproses": "Memproses...",
     "menyiapkan": "Menyiapkan...",
+    "unduhPdf": "Unduh PDF (ringkasan + lampiran)",
+    "unduhExcel": "Unduh Excel (dapat disunting)",
     "menyimpan": "Menyimpan...",
     "pending": "Pending",
     "peserta": "PESERTA",

@@ -3544,7 +3544,8 @@
     "lockedNote": "The loan date cannot be changed because it underpins the payment records. Changing the funds received also updates the incoming payment, so the bank balance follows.",
     "save": "Save",
     "digitsOnly": "Digits only.",
-    "receivedAboveDebt": "Exceeds the loan value."
+    "receivedAboveDebt": "Exceeds the loan value.",
+    "stillEmpty": "Still empty:"
   },
   "poField": {
     "tanggalPo": "PO date",
@@ -3669,6 +3670,7 @@
     "deleteSuccess": "Deleted successfully",
     "approveSuccess": "Approved successfully",
     "loadFailed": "Failed to load data",
+    "downloadFailed": "Could not prepare the download",
     "createFailed": "Failed to create data",
     "updateFailed": "Failed to update data",
     "deleteFailed": "Failed to delete data",
@@ -4290,6 +4292,8 @@
     "marketing": "Marketing",
     "memproses": "Processing...",
     "menyiapkan": "Preparing...",
+    "unduhPdf": "Download PDF (summary + annex)",
+    "unduhExcel": "Download Excel (editable)",
     "menyimpan": "Saving...",
     "pending": "Pending",
     "peserta": "PARTICIPANT",

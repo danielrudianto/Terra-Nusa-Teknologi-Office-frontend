@@ -491,3 +491,14 @@ $brandSoft: var(--brand-soft, #e7ecfb);
   font-style: italic;
   color: var(--muted, #6b7280);
 }
+
+/* Karet pada tombol unduh: penanda bahwa ia membuka pilihan, bukan langsung
+   mengunduh. Tanpa itu menunya muncul seolah salah tekan. */
+.cal-download__kanan {
+  margin-left: 0.15rem;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+  opacity: 0.75;
+}

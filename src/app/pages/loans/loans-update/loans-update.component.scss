@@ -226,3 +226,26 @@ $surface: var(--surface, #ffffff);
   color: var(--bad, #b42318) !important;
   font-weight: 600;
 }
+
+/* Sebab tombol simpan mati, di atas tombolnya.
+
+   Dipasang di luar `mat-dialog-content` supaya tetap terlihat tanpa perlu
+   menggulir ke bawah — keterangan yang menjelaskan tombol harus berada di
+   dekat tombolnya, bukan di ujung isi yang panjang. */
+.lu-kurang {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.5rem 1.5rem 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--bad, #b42318);
+}
+.lu-kurang mat-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+}

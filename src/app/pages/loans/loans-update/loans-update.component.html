@@ -39,7 +39,6 @@
             decimalScale="2"
             mask="separator"
           />
-          <span matTextPrefix>Rp&nbsp;</span>
           @if (sudahDibayar() > 0) {
             <mat-hint>
               {{ "loans.paidSoFar" | translate }}
@@ -56,7 +55,6 @@
             decimalScale="2"
             mask="separator"
           />
-          <span matTextPrefix>Rp&nbsp;</span>
           <!--
             Dana diterima tidak mungkin melebihi utangnya: yang masuk ke
             rekening adalah pokoknya, sedangkan utang adalah pokok ditambah
@@ -183,6 +181,25 @@
         </mat-form-field>
       </div>
     </mat-dialog-content>
+
+    <!--
+      Sebab tombol simpan mati, disebutkan.
+
+      Sebelumnya tombolnya hanya kelabu. Satu kolom wajib yang kosong — pada
+      pinjaman lama, rekening penerima yang memang belum ada kolomnya waktu
+      itu — membuat seluruh formulir tidak sah, sehingga keterangan pun tidak
+      bisa diubah. Yang membukanya hanya melihat tombol mati tanpa tahu
+      kolomnya yang mana.
+    -->
+    @if (kolomKurang.length > 0) {
+      <p class="lu-kurang">
+        <mat-icon>error_outline</mat-icon>
+        <span
+          >{{ "loansUpdate.stillEmpty" | translate }}
+          {{ kolomKurang.join(", ") }}</span
+        >
+      </p>
+    }
 
     <mat-dialog-actions class="lc-actions">
       <button type="button" class="lc-cancel" (click)="onCancel()">
