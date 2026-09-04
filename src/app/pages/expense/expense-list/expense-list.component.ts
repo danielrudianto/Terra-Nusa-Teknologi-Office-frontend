@@ -323,7 +323,9 @@ export class ExpenseListComponent {
     if (this.sedangSelaras !== null) return;
     this.sedangSelaras = id;
     this.apiService
-      .post(`payment-outgoing/selaraskan/expense/${id}`, {})
+      // `outgoing-payments` — nama yang dipakai `routes.py` saat memasang
+      // routernya, bukan nama berkas maupun nama modul izinnya.
+      .post(`outgoing-payments/selaraskan/expense/${id}`, {})
       .subscribe({
         next: () => {
           this.snackBar.open(
