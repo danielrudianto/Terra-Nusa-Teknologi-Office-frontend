@@ -14,6 +14,16 @@ import ExcelJS from 'exceljs';
 
 export const BIRU = 'FF1F3864';
 export const BIRU_MUDA = 'FFD9E2F3';
+
+/**
+ * Latar baris RENCANA — yang belum terjadi.
+ *
+ * Jingga muda, sengaja berbeda keluarga warna dari biru yang dipakai baris
+ * jumlah: yang dibedakan bukan tingkat kepentingannya melainkan SIFATNYA.
+ * Cukup pucat untuk tetap terbaca hitam di atasnya, dan tetap terlihat pada
+ * cetakan hitam-putih sebagai abu yang lebih gelap daripada baris biasa.
+ */
+export const JINGGA_MUDA = 'FFFCE4D6';
 export const ABU = 'FF7F7F7F';
 export const GARIS = 'FF9E9E9E';
 

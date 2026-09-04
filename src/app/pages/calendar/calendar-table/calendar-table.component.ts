@@ -811,6 +811,27 @@ export class CalendarTableComponent {
           // Ringkasan harian gabungan: saldonya berjalan lintas rekening.
           let saldoGabungan = saldoAwalGabungan;
           const harian: HarianRekap[] = [];
+          /*
+           * RENCANA KAS ikut ke ringkasan harian, sebagai barisnya SENDIRI
+           * di bawah realisasi tanggal yang sama.
+           *
+           * Yang dicari lembar ini bukan sekadar "sudah keluar berapa",
+           * melainkan "saldonya nanti jadi berapa" — dan itu tidak terjawab
+           * tanpa yang belum terjadi. Saldo gabungannya karena itu berjalan
+           * MELEWATI baris rencana juga.
+           *
+           * Hanya yang berstatus `rencana` yang ikut. Yang sudah ditandai
+           * TERPAKAI uangnya sudah bergerak dan sudah tampil sebagai
+           * transaksi sungguhan di baris atasnya — menghitungnya lagi berarti
+           * satu pembayaran mengurangi saldo dua kali. Yang batal sudah
+           * disaring server.
+           */
+          const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
+          for (const r of this.rencanaMenunggu) {
+            const t = String(r.date).slice(0, 10);
+            (rencanaPerTanggal[t] ??= []).push(r);
+          }
+
           for (let hari = 1; hari <= totalHari; hari++) {
             const tgl = `${year}-${dd(month)}-${dd(hari)}`;
             const g = perTanggal[tgl];
@@ -826,6 +847,33 @@ export class CalendarTableComponent {
               selisih: masuk - keluar,
               saldoGabungan,
             });
+
+            /*
+             * Satu baris per rencana, tidak digabung menjadi satu.
+             *
+             * Keterangannya yang membuat barisnya berguna: "Tunas Ruang" dan
+             * "sewa crane ke-2" pada hari yang sama adalah dua keputusan
+             * berbeda, dan digabung menjadi satu angka keduanya berhenti
+             * dapat ditindaklanjuti.
+             */
+            for (const r of rencanaPerTanggal[tgl] ?? []) {
+              const nilai = Number(r.amount || 0);
+              const keMasuk = r.planType === 'masuk';
+              const masukR = keMasuk ? nilai : 0;
+              const keluarR = keMasuk ? 0 : nilai;
+              saldoGabungan += masukR - keluarR;
+              harian.push({
+                tanggal: tgl,
+                ketMasuk: keMasuk ? r.description || '' : '',
+                masuk: masukR,
+                ketKeluar: keMasuk ? '' : r.description || '',
+                keluar: keluarR,
+                selisih: masukR - keluarR,
+                saldoGabungan,
+                // Menandai barisnya agar lembarnya menyorotnya beda warna.
+                rencana: true,
+              });
+            }
           }
 
           const kini = new Date();

@@ -17,6 +17,7 @@ import {
   ABU,
   BIRU,
   BIRU_MUDA,
+  JINGGA_MUDA,
   KolomExcel,
   RP,
   RP2,
@@ -130,6 +131,16 @@ export interface HarianRekap {
   keluar: number;
   selisih: number;
   saldoGabungan: number;
+  /**
+   * Baris ini RENCANA, bukan transaksi yang sudah terjadi.
+   *
+   * Disorot beda warna dan dikeluarkan dari baris TOTAL: yang di bawah
+   * adalah jumlah uang yang benar-benar bergerak bulan itu, dan mencampurkan
+   * rencana ke dalamnya membuat angka yang dilaporkan lebih besar daripada
+   * yang sungguh terjadi. Saldo gabungannya tetap berjalan melewatinya —
+   * itu memang gunanya.
+   */
+  rencana?: boolean;
 }
 
 /**
@@ -187,17 +198,26 @@ export function lembarHarian(
   let totalKeluar = 0;
 
   for (const h of harian) {
-    totalMasuk += h.masuk;
-    totalKeluar += h.keluar;
-    barisData(sheet, baris++, kolom, [
-      h.tanggal,
-      h.ketMasuk,
-      h.masuk || null,
-      h.ketKeluar,
-      h.keluar || null,
-      h.selisih,
-      h.saldoGabungan,
-    ]);
+    // Rencana TIDAK ikut baris TOTAL — lihat keterangan pada `HarianRekap`.
+    if (!h.rencana) {
+      totalMasuk += h.masuk;
+      totalKeluar += h.keluar;
+    }
+    barisData(
+      sheet,
+      baris++,
+      kolom,
+      [
+        h.tanggal,
+        h.ketMasuk,
+        h.masuk || null,
+        h.ketKeluar,
+        h.keluar || null,
+        h.selisih,
+        h.saldoGabungan,
+      ],
+      h.rencana ? { latar: JINGGA_MUDA } : {},
+    );
   }
 
   barisData(
@@ -205,12 +225,18 @@ export function lembarHarian(
     baris,
     kolom,
     [
-      'TOTAL',
+      // Disebut TERLAKSANA, bukan sekadar TOTAL: barisnya tidak mencakup
+      // rencana, dan nama yang tidak menyebutkannya akan dibaca sebagai
+      // jumlah seluruh baris di atasnya.
+      'TOTAL TERLAKSANA',
       '',
       totalMasuk,
       '',
       totalKeluar,
       totalMasuk - totalKeluar,
+      // Saldo akhirnya justru IKUT rencana — ia menjawab "nanti jadi
+      // berapa", dan itu pertanyaan yang berbeda dari "bulan ini bergerak
+      // berapa".
       harian[harian.length - 1]?.saldoGabungan ?? saldoAwal,
     ],
     { tebal: true, latar: BIRU_MUDA },
