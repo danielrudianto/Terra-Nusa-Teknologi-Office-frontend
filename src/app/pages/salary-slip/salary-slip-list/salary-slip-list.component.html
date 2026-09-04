@@ -315,6 +315,22 @@
                 <mat-icon>send</mat-icon
                 ><span>{{ "salarySlip.menuSend" | translate }}</span>
               </button>
+              <!--
+                Hapus: slip yang keliru harus bisa dicabut. Penghapusannya
+                LUNAK — barisnya tetap ada dengan penanda "dihapus", sebab
+                slip gaji menyangkut uang orang dan jejaknya tidak boleh
+                lenyap. Server menolak bila pembayarannya sudah dibuat.
+              -->
+              <button
+                mat-menu-item
+                class="ssl-menu--awas"
+                *appCan="'salary_slip:delete'"
+                (click)="hapusSalarySlip(element)"
+                [disabled]="element.isDelete"
+              >
+                <mat-icon>delete</mat-icon
+                ><span>{{ "salarySlip.menuHapus" | translate }}</span>
+              </button>
             </mat-menu>
           </td>
         </ng-container>

@@ -739,6 +739,10 @@
     "menuLaporan": "View report"
   },
   "salarySlip": {
+    "menuHapus": "Delete slip",
+    "hapusJudul": "Delete this salary slip?",
+    "hapusTanya": "{{nama}}'s salary slip will be marked deleted. The record is kept, but the slip no longer applies. Continue?",
+    "hapusAdaPembayaran": "This slip already has a payment, so it cannot be deleted yet. Cancel the payment first.",
     "title": "Salary slip",
     "description": "Manage your salary slip data here",
     "searchPlaceholder": "Search employee",
@@ -2700,6 +2704,7 @@
     "createPaymentSlip": "Create payment slip"
   },
   "salarySlipForm": {
+    "dasarPph": "Amount subject to income tax",
     "title": "Create salary slip",
     "month": "Month",
     "year": "Year",

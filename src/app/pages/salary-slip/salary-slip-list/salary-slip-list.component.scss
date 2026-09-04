@@ -333,3 +333,13 @@
     margin-left: 0;
   }
 }
+
+/* Hapus dibedakan warnanya di dalam menu: ia berdampingan dengan tindakan
+   yang tidak merusak apa pun, dan satu-satunya yang mencabut dokumen. */
+.ssl-menu--awas {
+  color: var(--bad-fg, #b42318);
+
+  .mat-icon {
+    color: var(--bad-fg, #b42318);
+  }
+}

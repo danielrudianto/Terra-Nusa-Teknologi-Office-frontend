@@ -276,3 +276,34 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Dasar pengenaan PPh: KETERANGAN, bukan kolom isian.
+
+   Sengaja bukan `mat-form-field` seperti tetangganya — ia tidak dapat diisi
+   dan tidak disimpan, ia hanya menunjukkan bagaimana angka PPh di sebelahnya
+   terbentuk. Bentuk kotak isian yang tidak bisa diketik membuat orang mencoba
+   mengetiknya lalu mengira layarnya rusak. */
+.ssc-dpp {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+  border: 1px solid var(--border, #e3e6eb);
+  border-left: 3px solid var(--brand, #154dec);
+}
+
+.ssc-dpp__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+}
+
+.ssc-dpp__nilai {
+  font-size: 1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #16181d);
+}

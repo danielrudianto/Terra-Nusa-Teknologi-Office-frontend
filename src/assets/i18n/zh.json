@@ -739,6 +739,10 @@
     "menuLaporan": "查看报表"
   },
   "salarySlip": {
+    "menuHapus": "删除工资单",
+    "hapusJudul": "删除该工资单？",
+    "hapusTanya": "{{nama}} 的工资单将被标记为已删除。记录仍会保留，但该工资单不再有效。是否继续？",
+    "hapusAdaPembayaran": "该工资单已有付款记录，暂时无法删除。请先取消付款。",
     "title": "工资单",
     "description": "在此管理您的工资单数据",
     "searchPlaceholder": "搜索员工",
@@ -2700,6 +2704,7 @@
     "createPaymentSlip": "创建付款单"
   },
   "salarySlipForm": {
+    "dasarPph": "计入所得税的金额",
     "title": "创建工资单",
     "month": "月份",
     "year": "年份",

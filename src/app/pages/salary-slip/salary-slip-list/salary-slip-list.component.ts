@@ -219,6 +219,57 @@ export class SalarySlipListComponent {
     this.fetchSalarySlips(1);
   }
 
+  /**
+   * Hapus slip gaji, setelah dipastikan.
+   *
+   * Penghapusannya LUNAK di server — barisnya tetap ada dengan penanda
+   * "dihapus". Slip gaji menyangkut uang orang; yang keliru perlu dicabut,
+   * tetapi jejaknya tidak boleh lenyap.
+   *
+   * Server MENOLAK bila pembayarannya sudah dibuat, dan penolakan itu
+   * disampaikan apa adanya: "gagal menghapus" saja membuat orang mencoba
+   * lagi, sedangkan yang perlu ia lakukan adalah membatalkan pembayarannya
+   * lebih dulu.
+   */
+  hapusSalarySlip(element: any): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('salarySlip.hapusJudul'),
+          prompt: this.translate.instant('salarySlip.hapusTanya', {
+            nama: element?.name ?? '',
+          }),
+          destructive: true,
+        },
+        width: '460px',
+        maxWidth: '94vw',
+      })
+      .afterClosed()
+      .subscribe((lanjut) => {
+        if (!lanjut) return;
+        this.apiService.delete(`salary-slips/${element.id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('notify.deleteSuccess'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.fetchSalarySlips();
+          },
+          error: (error: any) => {
+            const detail = error?.error?.detail;
+            const kode =
+              typeof detail === 'string' ? detail : detail?.code;
+            const pesan =
+              kode === 'SALARY_SLIP_HAS_PAYMENT'
+                ? this.translate.instant('salarySlip.hapusAdaPembayaran')
+                : this.serverMessage.terjemahkan(error, 'notify.deleteFailed');
+            this.snackBar.open(pesan, 'Close', { duration: 6000 });
+          },
+        });
+      });
+  }
+
   fetchSalarySlips(targetPage: number = this.page) {
     this.page = targetPage;
     this.apiService

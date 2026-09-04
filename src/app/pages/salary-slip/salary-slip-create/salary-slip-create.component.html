@@ -461,6 +461,24 @@
             mask="separator"
           />
         </mat-form-field>
+        <!--
+          Dasar pengenaan PPh 21 — gaji pokok + tunjangan yang diperhitungkan
+          − pengurangan yang diperhitungkan. Bukan gaji kotor: kotor memuat
+          seluruh tunjangan, termasuk yang bukan objek pajak.
+
+          Ditaruh SEBELUM gaji bersih supaya urutannya mengikuti cara
+          angkanya terbentuk, dan di sebelah kolom PPh 21 yang dihitung
+          darinya.
+        -->
+        <div class="ssc-span2 ssc-dpp">
+          <span class="ssc-dpp__label">{{
+            "salarySlipForm.dasarPph" | translate
+          }}</span>
+          <span class="ssc-dpp__nilai"
+            >Rp {{ dasarPph | number: "1.0-0" }}</span
+          >
+        </div>
+
         <mat-form-field appearance="outline" class="ssc-span2 ssc-total">
           <mat-label>{{ "salarySlipForm.netSalary" | translate }}</mat-label>
           <input

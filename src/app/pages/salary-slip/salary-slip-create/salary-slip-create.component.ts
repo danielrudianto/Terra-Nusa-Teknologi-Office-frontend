@@ -327,6 +327,7 @@ export class SalarySlipCreateComponent {
           position: data.position,
           department: data.department,
         });
+        this.ambilRekening(userID);
       },
       error: (error) => {
         this.snackBar.open(
@@ -334,6 +335,86 @@ export class SalarySlipCreateComponent {
           duration: 3000,
         });
       },
+    });
+  }
+
+  /**
+   * Nilai yang DIPERHITUNGKAN untuk PPh 21.
+   *
+   *   gaji pokok + transport + makan + lembur
+   *   + tunjangan lain yang ditandai diperhitungkan
+   *   − pengurangan yang ditandai diperhitungkan
+   *
+   * Berbeda dari gaji kotor: kotor menjumlahkan SELURUH tunjangan dan
+   * pengurangan, sedangkan yang ini hanya yang ditandai `isIncluded` —
+   * sebagian tunjangan tidak menjadi objek pajak, dan sebagian pengurangan
+   * (iuran pensiun, misalnya) mengurangi dasar pengenaannya.
+   *
+   * RUMUSNYA HARUS SAMA PERSIS dengan `included_salary` di
+   * `services/pdf_service.py`, yang mencetaknya di slip. Bila keduanya
+   * berselisih, angka di layar dan angka di lembar yang diterima karyawan
+   * berbeda — dan yang ketahuan belakangan biasanya lembarnya.
+   *
+   * Dihitung langsung, bukan disimpan ke form: ia turunan dari kolom lain,
+   * dan nilai turunan yang disimpan akan basi begitu salah satu kolomnya
+   * disunting tanpa menekan hitung ulang.
+   */
+  get dasarPph(): number {
+    const n = (kunci: string) => Number(this.formGroup.get(kunci)?.value) || 0;
+
+    const pokok =
+      n('basicSalary') +
+      n('transportationAllowanceQuantity') * n('transportationAllowanceRate') +
+      n('mealAllowanceQuantity') * n('mealAllowanceRate') +
+      n('overtimeQuantity') * n('overtimeRate');
+
+    const jumlahkanYangDihitung = (baris: any[]) =>
+      baris.reduce(
+        (total, c) =>
+          c.get('isIncluded')?.value
+            ? total + (Number(c.get('amount')?.value) || 0)
+            : total,
+        0,
+      );
+
+    return (
+      pokok +
+      jumlahkanYangDihitung(this.allowancesFormArray().controls) -
+      jumlahkanYangDihitung(this.deductionsFormArray().controls)
+    );
+  }
+
+  /**
+   * Isi kolom bank dari profil karyawan.
+   *
+   * Lewat rute slip gaji, bukan rute profil: yang membuka layar ini sedang
+   * membuat slip gaji, dan menuntut izin modul profil membuat sebagian orang
+   * yang berhak membuat slip tidak dapat mengisi kolom di layarnya sendiri.
+   * Rutenya hanya mengembalikan tiga kolom rekening.
+   *
+   * Yang sudah TERISI tidak ditimpa — pada perbaikan slip, orang bisa saja
+   * sengaja memakai rekening lain, dan menimpanya membatalkan yang baru saja
+   * ia ketik.
+   *
+   * Gagal mengambilnya tidak diberitakan: kolomnya tetap dapat diisi tangan,
+   * dan pesan galat untuk pengisian otomatis yang tidak diminta hanya
+   * membuat orang mengira ada yang rusak.
+   */
+  private ambilRekening(userID: number): void {
+    this.apiService.get('salary-slips/bank/' + userID, {}).subscribe({
+      next: (bank: any) => {
+        if (!bank) return;
+        const isiBila = (kunci: string, nilai: any) => {
+          const kontrol = this.formGroup.get(kunci);
+          if (!kontrol) return;
+          const sekarang = String(kontrol.value ?? '').trim();
+          if (!sekarang && nilai) kontrol.setValue(nilai);
+        };
+        isiBila('bankName', bank.bankName);
+        isiBila('bankAccountName', bank.bankAccountName);
+        isiBila('bankAccountNumber', bank.bankAccountNumber);
+      },
+      error: () => {},
     });
   }
 

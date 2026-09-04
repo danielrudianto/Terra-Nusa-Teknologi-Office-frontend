@@ -739,6 +739,10 @@
     "menuLaporan": "Lihat laporan"
   },
   "salarySlip": {
+    "menuHapus": "Hapus slip",
+    "hapusJudul": "Hapus slip gaji?",
+    "hapusTanya": "Slip gaji {{nama}} akan ditandai dihapus. Jejaknya tetap tersimpan, tetapi slipnya tidak lagi berlaku. Lanjutkan?",
+    "hapusAdaPembayaran": "Slip ini sudah dibuatkan pembayaran, jadi belum dapat dihapus. Batalkan pembayarannya lebih dulu.",
     "title": "Slip Gaji",
     "description": "Kelola data slip gaji di sini",
     "searchPlaceholder": "Cari karyawan",
@@ -2700,6 +2704,7 @@
     "createPaymentSlip": "Buat slip pembayaran"
   },
   "salarySlipForm": {
+    "dasarPph": "Nilai yang diperhitungkan PPh",
     "title": "Buat Salary Slip",
     "month": "Bulan",
     "year": "Tahun",
