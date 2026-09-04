@@ -281,6 +281,22 @@
                 <mat-icon>payments</mat-icon
                 ><span>{{ "expense.menuCreatePayment" | translate }}</span>
               </button>
+              <!--
+                Hitung ulang status lunas dari pembayaran yang tersimpan.
+
+                Dijaga izin PEMBAYARAN, bukan izin beban: yang dinilai adalah
+                kesimpulan atas pembayaran, dan itu wewenang yang sama dengan
+                yang menyetujuinya — sama seperti penjaga di server.
+              -->
+              <button
+                mat-menu-item
+                *appCan="'payment_outgoing:update'"
+                [disabled]="sedangSelaras === purchase.id"
+                (click)="selaraskanLunas(purchase.id)"
+              >
+                <mat-icon>sync</mat-icon
+                ><span>{{ "expense.menuSelaraskan" | translate }}</span>
+              </button>
             </mat-menu>
           </td>
         </ng-container>

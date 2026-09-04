@@ -956,6 +956,8 @@
     "colBookDate": "Book Date",
     "menuView": "View expense",
     "menuCreatePayment": "Create payment",
+    "menuSelaraskan": "Re-check paid status",
+    "selaraskanBeres": "Paid status re-checked",
     "adminFees": "Administration fees",
     "advertising": "Advertising Expense",
     "assetMaintenance": "Asset maintenance",

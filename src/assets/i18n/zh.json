@@ -956,6 +956,8 @@
     "colBookDate": "记账日期",
     "menuView": "查看费用",
     "menuCreatePayment": "创建付款",
+    "menuSelaraskan": "重新核对付清状态",
+    "selaraskanBeres": "付清状态已重新核对",
     "adminFees": "管理费",
     "advertising": "广告费",
     "assetMaintenance": "资产维护",

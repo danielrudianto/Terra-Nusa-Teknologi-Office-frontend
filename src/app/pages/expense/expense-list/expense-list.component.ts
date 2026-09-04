@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,6 +31,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
+import { CanDirective } from '../../../directives/can.directive';
 
 @Component({
   selector: 'app-expense-list',
@@ -53,6 +54,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatSlideToggleModule,
     TranslatePipe,
     RefreshButtonComponent,
+    CanDirective,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './expense-list.component.html',
@@ -63,6 +65,7 @@ export class ExpenseListComponent {
   trackById = (_: number, row: any): any => row?.id ?? _;
 
   private readonly serverMessage = inject(ServerMessageService);
+  private readonly translate = inject(TranslateService);
   /** map kode expense type -> i18n key. */
   private static readonly EXPENSE_TYPE_MAP: { [k: string]: string } = {
     '5.1.1': '5_1_1',
@@ -297,6 +300,46 @@ export class ExpenseListComponent {
         reimbursementID: null,
       },
     });
+  }
+
+  /** Beban yang sedang diselaraskan; menonaktifkan menunya selama berjalan. */
+  sedangSelaras: number | null = null;
+
+  /**
+   * Hitung ulang status lunas satu beban dari pembayarannya.
+   *
+   * Diperlukan karena penyelarasan otomatis dapat tertinggal — penulisan
+   * statusnya gagal setelah pembayarannya tersimpan, dan tidak ada yang
+   * mengulanginya sendiri. Juga jalan keluar bagi beban yang terlanjur
+   * bertanda lunas sebelum penyelarasannya diperbaiki.
+   *
+   * Aman diulang: hasilnya DITURUNKAN dari pembayaran yang tersimpan, bukan
+   * ditambahkan padanya. Menjalankannya dua kali memberi hasil yang sama.
+   *
+   * Daftarnya dimuat ulang sesudahnya — tanpa itu barisnya masih menampilkan
+   * tanda lama, dan yang menekannya menyimpulkan tombolnya tidak bekerja.
+   */
+  selaraskanLunas(id: number) {
+    if (this.sedangSelaras !== null) return;
+    this.sedangSelaras = id;
+    this.apiService
+      .post(`payment-outgoing/selaraskan/expense/${id}`, {})
+      .subscribe({
+        next: () => {
+          this.snackBar.open(
+            this.translate.instant('expense.selaraskanBeres'),
+            'Close',
+            { duration: 3000 },
+          );
+          this.fetchData(this.page, this.pageSize);
+        },
+        error: (err) => {
+          this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {
+            duration: 4000,
+          });
+        },
+      })
+      .add(() => (this.sedangSelaras = null));
   }
 
   changePage(event: any) {

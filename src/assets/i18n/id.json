@@ -956,6 +956,8 @@
     "colBookDate": "Tanggal Buku",
     "menuView": "Lihat beban",
     "menuCreatePayment": "Buat pembayaran",
+    "menuSelaraskan": "Selaraskan status lunas",
+    "selaraskanBeres": "Status lunas diselaraskan",
     "adminFees": "Biaya administrasi",
     "advertising": "Biaya iklan",
     "assetMaintenance": "Perawatan aset",
