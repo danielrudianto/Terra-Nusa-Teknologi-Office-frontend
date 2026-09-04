@@ -1638,6 +1638,11 @@
     "detailByType": "Rincian per tipe pembelian"
   },
   "salarySlipView": {
+    "pphKolom": "PPh",
+    "pphMasuk": "Kena PPh",
+    "pphLuar": "Di luar PPh",
+    "dasarPph": "Diperhitungkan PPh",
+    "diLuarPph": "Di luar perhitungan PPh",
     "deleted": "Dihapus",
     "employee": "Karyawan",
     "department": "Departemen",

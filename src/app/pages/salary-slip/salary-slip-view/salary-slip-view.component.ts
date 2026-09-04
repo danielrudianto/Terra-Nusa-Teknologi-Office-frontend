@@ -135,9 +135,70 @@ export class SalarySlipViewComponent {
     return this.deductionsFormArray.controls;
   }
 
-  displayedAllowancesColumns: string[] = ['name', 'amount', 'description'];
+  displayedAllowancesColumns: string[] = [
+    'name',
+    'amount',
+    'pph',
+    'description',
+  ];
 
-  displayedDeductionsColumns: string[] = ['name', 'amount', 'description'];
+  displayedDeductionsColumns: string[] = [
+    'name',
+    'amount',
+    'pph',
+    'description',
+  ];
+
+  /**
+   * Nilai yang DIPERHITUNGKAN untuk PPh 21.
+   *
+   *   gaji pokok + transport + makan + lembur
+   *   + tunjangan yang ditandai diperhitungkan
+   *   − pengurangan yang ditandai diperhitungkan
+   *
+   * RUMUSNYA SAMA PERSIS dengan `included_salary` di
+   * `services/pdf_service.py`, yang mencetaknya pada slip, dan dengan yang
+   * ditampilkan layar pembuatan. Ketiganya harus sepakat: bila berselisih,
+   * angka di layar berbeda dari lembar yang diterima karyawan.
+   */
+  get dasarPph(): number {
+    const n = (kunci: string) => Number(this.formGroup.get(kunci)?.value) || 0;
+
+    const pokok =
+      n('basicSalary') +
+      n('transportationAllowanceQuantity') * n('transportationAllowanceRate') +
+      n('mealAllowanceQuantity') * n('mealAllowanceRate') +
+      n('overtimeQuantity') * n('overtimeRate');
+
+    const dihitung = (baris: any[]) =>
+      baris.reduce(
+        (total, c) =>
+          c.get('isIncluded')?.value
+            ? total + (Number(c.get('amount')?.value) || 0)
+            : total,
+        0,
+      );
+
+    return (
+      pokok +
+      dihitung(this.allowancesControls) -
+      dihitung(this.deductionsControls)
+    );
+  }
+
+  /**
+   * Bagian gaji yang berada DI LUAR dasar pengenaan PPh.
+   *
+   * Diturunkan sebagai selisih terhadap gaji kotor, bukan dijumlahkan
+   * sendiri dari baris yang tidak ditandai: dengan begitu keduanya SELALU
+   * berjumlah gaji kotor, dan siapa pun yang membacanya dapat memeriksanya
+   * sendiri di layar yang sama. Dua penjumlahan terpisah dapat berselisih
+   * diam-diam ketika kelak ada komponen baru yang lupa dimasukkan ke salah
+   * satunya.
+   */
+  get diLuarPph(): number {
+    return (Number(this.formGroup.get('grossSalary')?.value) || 0) - this.dasarPph;
+  }
 
   ngOnInit(): void {
     this.apiService.get(`salary-slips/${this.data.id}`, {}).subscribe({
@@ -152,6 +213,12 @@ export class SalarySlipViewComponent {
               description: new FormControl(x.description, {
                 nonNullable: true,
               }),
+              // Menentukan apakah baris ini masuk dasar pengenaan PPh.
+              // Sebelumnya dibuang di sini, sehingga layar tidak dapat
+              // menyebutkannya sama sekali.
+              isIncluded: new FormControl(!!x.isIncluded, {
+                nonNullable: true,
+              }),
             }),
           );
         });
@@ -163,6 +230,12 @@ export class SalarySlipViewComponent {
               name: new FormControl(x.name, { nonNullable: true }),
               amount: new FormControl(x.amount, { nonNullable: true }),
               description: new FormControl(x.description, {
+                nonNullable: true,
+              }),
+              // Menentukan apakah baris ini masuk dasar pengenaan PPh.
+              // Sebelumnya dibuang di sini, sehingga layar tidak dapat
+              // menyebutkannya sama sekali.
+              isIncluded: new FormControl(!!x.isIncluded, {
                 nonNullable: true,
               }),
             }),

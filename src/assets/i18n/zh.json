@@ -1638,6 +1638,11 @@
     "detailByType": "按采购类型明细"
   },
   "salarySlipView": {
+    "pphKolom": "所得税",
+    "pphMasuk": "计入",
+    "pphLuar": "不计入",
+    "dasarPph": "计入所得税的金额",
+    "diLuarPph": "不计入所得税的金额",
     "deleted": "已删除",
     "employee": "员工",
     "department": "部门",

@@ -1638,6 +1638,11 @@
     "detailByType": "Detail by purchase type"
   },
   "salarySlipView": {
+    "pphKolom": "Tax",
+    "pphMasuk": "Taxable",
+    "pphLuar": "Not taxable",
+    "dasarPph": "Subject to income tax",
+    "diLuarPph": "Outside the tax base",
     "deleted": "Deleted",
     "employee": "Employee",
     "department": "Department",

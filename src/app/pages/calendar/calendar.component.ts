@@ -10,6 +10,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CalendarTableComponent } from './calendar-table/calendar-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RefreshButtonComponent } from '../../components/refresh-button/refresh-button.component';
 
 @Component({
   selector: 'app-calendar',
@@ -23,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
     CalendarTableComponent,
     MatButtonModule,
     MatIconModule,
+    RefreshButtonComponent,
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
@@ -38,6 +40,20 @@ export class CalendarComponent {
 
   // mode tampilan calendar: 'expense' | 'income' | 'balance'
   viewMode: FormControl = new FormControl('expense');
+
+  /**
+   * Dinaikkan untuk memuat ulang isi kalender.
+   *
+   * Kalender menarik beberapa hal sekaligus — pembayaran, rencana kas, yang
+   * tertunda, ringkasan — dan semuanya berubah karena tindakan orang lain.
+   * Tanpa cara menyegarkan, satu-satunya jalan adalah memuat ulang halaman,
+   * yang mengembalikan bulan dan saringan rekening ke keadaan awal.
+   */
+  penyegar = 0;
+
+  muatUlang(): void {
+    this.penyegar++;
+  }
 
   onCalendarBoxClicked(event: number | null) {
     if (event == null) return;
@@ -66,14 +82,13 @@ export class CalendarComponent {
          * sehingga menyetujui satu pembayaran di dialog tidak membuatnya
          * hilang — dan yang membacanya mengira tindakannya tidak berhasil.
          *
-         * Angka bulannya disentuh supaya `ngOnChanges` menyala; itu jalur
-         * yang sudah dipakai saat bulannya berganti, dan menambah jalur
-         * kedua berarti dua tempat yang harus tetap sepakat.
+         * Lewat `muatUlang()` — jalur yang sama dengan tombol segarkan di
+         * kepala halaman. Sebelumnya angka bulannya disentuh menjadi -1 lalu
+         * dikembalikan; itu bekerja, tetapi menaruh cara memuat ulang di
+         * tempat yang tidak menyebut dirinya begitu.
          */
         if (!berubah) return;
-        const m = this.month;
-        this.month = -1;
-        setTimeout(() => (this.month = m));
+        this.muatUlang();
       });
   }
 

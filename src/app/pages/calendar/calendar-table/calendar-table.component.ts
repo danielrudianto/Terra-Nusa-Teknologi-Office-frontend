@@ -71,6 +71,17 @@ export class CalendarTableComponent {
   @Input('values') values: ICalendarValue[] = [];
   @Input('selectedDay') selectedDay: number | null = null;
   @Input('viewMode') viewMode: 'expense' | 'income' | 'balance' = 'expense';
+
+  /**
+   * Penanda muat-ulang.
+   *
+   * Nilainya sendiri tidak berarti apa-apa — yang berarti adalah ia BERUBAH.
+   * `ngOnChanges` menyala atas perubahan input apa pun selain `selectedDay`,
+   * jadi menaikkannya memuat ulang seluruh isi kalender lewat jalur yang
+   * sama persis dengan pergantian bulan. Tidak ada jalur kedua yang harus
+   * dijaga tetap sepakat dengan yang pertama.
+   */
+  @Input('penyegar') penyegar = 0;
   @Output('onCalendarBoxClicked') onCalendarBoxClicked: EventEmitter<
     number | null
   > = new EventEmitter<number | null>();
@@ -212,12 +223,31 @@ export class CalendarTableComponent {
     });
   }
 
-  /** Jumlah rencana pada satu tanggal; nol bila tidak ada. */
+  /**
+   * Rencana yang MASIH menunggu — belum terpakai, belum dibatalkan.
+   *
+   * `status` bernilai `rencana` | `terpakai` | `batal`. Yang sudah ditandai
+   * terpakai uangnya sudah bergerak dan pembayarannya sudah tampil sebagai
+   * transaksi sungguhan pada hari itu; membiarkannya tetap terhitung sebagai
+   * rencana membuat hari itu seolah menuntut uang dua kali.
+   */
+  private get rencanaMenunggu(): any[] {
+    return this.rencana.filter((r) => r.status === 'rencana');
+  }
+
+  /**
+   * Jumlah rencana pada satu tanggal; nol bila tidak ada.
+   *
+   * Yang sudah terpakai atau dibatalkan TIDAK ikut — sebelumnya ikut, dan
+   * angka kuningnya tidak pernah hilang setelah rencananya ditandai selesai.
+   * Yang TERLEWAT tetap ikut: uangnya memang belum bergerak, dan tanggal itu
+   * masih menyimpan kewajiban yang belum dibereskan.
+   */
   rencanaHari(day: number | null): number {
     if (day == null) return 0;
     const dd = (n: number) => String(n).padStart(2, '0');
     const tgl = `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
-    return this.rencana
+    return this.rencanaMenunggu
       .filter((r) => String(r.date).slice(0, 10) === tgl)
       .reduce((a, r) => a + Number(r.amount || 0), 0);
   }
@@ -234,7 +264,7 @@ export class CalendarTableComponent {
    * angkanya menunjukkan uang yang tidak akan bergerak ke mana pun.
    */
   private get rencanaDihitung(): any[] {
-    return this.rencana.filter((r) => r.status === 'rencana' && !r.lewat);
+    return this.rencanaMenunggu.filter((r) => !r.lewat);
   }
 
   get totalRencanaKeluar(): number {

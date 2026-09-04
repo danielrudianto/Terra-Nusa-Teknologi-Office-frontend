@@ -31,6 +31,18 @@
           "calendar.balance" | translate
         }}</mat-button-toggle>
       </mat-button-toggle-group>
+
+      <!--
+        Segarkan: isi kalender berubah karena tindakan ORANG LAIN — pembayaran
+        disetujui, rencana ditandai terpakai. Tanpa tombol ini satu-satunya
+        cara adalah memuat ulang halaman, dan itu mengembalikan bulan serta
+        saringan rekening ke keadaan awal.
+
+        Memakai tombol BERSAMA yang sudah dipakai dua puluh lima daftar lain,
+        bukan tombol sendiri: bentuk, kata, dan putaran ikonnya jadi sama di
+        seluruh aplikasi, dan perbaikan pada tombolnya sampai ke sini juga.
+      -->
+      <app-refresh-button (muatUlang)="muatUlang()" />
     </div>
   </div>
 
@@ -40,5 +52,6 @@
     [bankAccounts]="bankAccounts"
     (onCalendarBoxClicked)="onCalendarBoxClicked($event)"
     [viewMode]="viewMode.value"
+    [penyegar]="penyegar"
   ></app-calendar-table>
 </div>

@@ -140,6 +140,28 @@
                 Rp {{ allowance.get("amount").value | number: "1.0-0" }}
               </td>
             </ng-container>
+            <ng-container matColumnDef="pph">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.pphKolom" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let allowance">
+                <!--
+                  Ditulis dengan KATA, bukan centang. Centang menuntut
+                  pembacanya menebak apa yang dicentang, dan slip gaji dibaca
+                  juga oleh yang tidak mengurus pajak setiap hari.
+                -->
+                <span
+                  class="sv-pph"
+                  [class.sv-pph--luar]="!allowance.get('isIncluded').value"
+                  >{{
+                    (allowance.get("isIncluded").value
+                      ? "salarySlipView.pphMasuk"
+                      : "salarySlipView.pphLuar"
+                    ) | translate
+                  }}</span
+                >
+              </td>
+            </ng-container>
             <ng-container matColumnDef="description">
               <th mat-header-cell *matHeaderCellDef>
                 {{ "salarySlipView.description" | translate }}
@@ -191,6 +213,28 @@
                 − Rp {{ deduction.get("amount").value | number: "1.0-0" }}
               </td>
             </ng-container>
+            <ng-container matColumnDef="pph">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "salarySlipView.pphKolom" | translate }}
+              </th>
+              <td mat-cell *matCellDef="let deduction">
+                <!--
+                  Ditulis dengan KATA, bukan centang. Centang menuntut
+                  pembacanya menebak apa yang dicentang, dan slip gaji dibaca
+                  juga oleh yang tidak mengurus pajak setiap hari.
+                -->
+                <span
+                  class="sv-pph"
+                  [class.sv-pph--luar]="!deduction.get('isIncluded').value"
+                  >{{
+                    (deduction.get("isIncluded").value
+                      ? "salarySlipView.pphMasuk"
+                      : "salarySlipView.pphLuar"
+                    ) | translate
+                  }}</span
+                >
+              </td>
+            </ng-container>
             <ng-container matColumnDef="description">
               <th mat-header-cell *matHeaderCellDef>
                 {{ "salarySlipView.description" | translate }}
@@ -238,6 +282,19 @@
               >Rp
               {{ formGroup.get("grossSalary")?.value | number: "1.0-0" }}</span
             >
+          </div>
+          <!--
+            Pemilahan terhadap PPh. Keduanya SELALU berjumlah gaji kotor di
+            atasnya, sehingga yang membacanya dapat memeriksanya sendiri
+            tanpa membuka apa pun.
+          -->
+          <div class="sv-totals__row sv-totals__row--pph">
+            <span>{{ "salarySlipView.dasarPph" | translate }}</span>
+            <span>Rp {{ dasarPph | number: "1.0-0" }}</span>
+          </div>
+          <div class="sv-totals__row sv-totals__row--pph">
+            <span>{{ "salarySlipView.diLuarPph" | translate }}</span>
+            <span>Rp {{ diLuarPph | number: "1.0-0" }}</span>
           </div>
           <div class="sv-totals__net">
             <span>{{ "salarySlipView.netSalary" | translate }}</span>

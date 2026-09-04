@@ -329,3 +329,34 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Penanda "kena PPh" pada baris tunjangan & pengurangan.
+
+   Yang MASUK dasar pengenaan dibiarkan kalem — itu keadaan yang biasa. Yang
+   DI LUAR yang diberi warna, sebab itulah yang perlu diperiksa: baris yang
+   salah ditandai memindahkan uang antara yang kena pajak dan yang tidak. */
+.sv-pph {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid var(--border, #e3e6eb);
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+}
+
+.sv-pph--luar {
+  border-color: color-mix(in srgb, #e08a2e 45%, transparent);
+  color: #b4690e;
+}
+
+/* Pemilahan terhadap PPh: keterangan di antara kotor dan bersih, bukan angka
+   sederajat keduanya. Dibuat lebih kecil dan menjorok agar terbaca sebagai
+   rincian dari gaji kotor di atasnya. */
+.sv-totals__row--pph {
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+  padding-left: 0.9rem;
+}
