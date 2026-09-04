@@ -783,6 +783,22 @@ export class PurchaseOrderListComponent {
           const scope = custom.workScope || 'borongan';
           const ringkas = scope !== 'borongan';
           return printPurchaseOrderH({
+            /*
+             * MUATAN BERSAMA DISEBAR LEBIH DAHULU, lalu ditimpa yang khas SPK.
+             *
+             * Sebelumnya seluruh bidang di sini ditulis tangan, dan
+             * `approvedByName` serta `approvedByPosition` tertinggal —
+             * sehingga blok tanda tangan SPK yang SUDAH disetujui tetap
+             * tercetak "Sign Here" dengan nama kosong, sementara purchase
+             * order biasa mencetaknya lengkap. Tidak ada galat: `signerLines`
+             * memang menggambar penunjuk itu saat namanya kosong, dan kosong
+             * adalah keadaan yang BENAR bagi dokumen yang belum disetujui.
+             *
+             * Disebar, bukan disalin satu per satu: bidang yang ditambahkan
+             * ke muatan bersama kelak akan sampai ke sini dengan sendirinya.
+             * Enam titik cetak lain sudah melakukannya; SPK yang tertinggal.
+             */
+            ...printData,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,
@@ -1411,9 +1427,10 @@ export class PurchaseOrderListComponent {
            */
           // SPK tenaga kerja: satu baris item = satu komponen upah
           return printPurchaseOrderD({
-              isApproved,
-              status,
-              isAdendum,
+            // Muatan bersama disebar lebih dahulu — lihat keterangan pada
+            // SPK pekerjaan di atas. Yang khas tenaga kerja menimpanya,
+            // termasuk `clauseContext` yang memang disusun ulang di bawah.
+            ...printData,
             purchaseOrderName: data.name,
             date: data.date,
             projectName: data.projectName,

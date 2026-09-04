@@ -507,6 +507,20 @@ export class InvoiceComponent {
   private toPrintData(po: any) {
     const custom = po?.customData ?? {};
     return {
+      /*
+       * Keadaan persetujuan dan penandatangannya IKUT.
+       *
+       * Lampiran ini SPK yang sama dengan yang dicetak lewat daftar purchase
+       * order; keduanya harus menghasilkan lembar yang sama. Tanpa kedua
+       * bidang ini blok tanda tangannya tercetak "Sign Here" dengan nama
+       * kosong — pada dokumen yang justru dilampirkan ke penagihan, yaitu
+       * saat lembarnya paling perlu menunjukkan siapa yang menyetujui.
+       */
+      approvedByName: po?.approvedByName ?? null,
+      approvedByPosition: po?.approvedByPosition ?? null,
+      // Menentukan kalimat pembuka dan judul kolom volume: pada adendum yang
+      // dicantumkan SELISIH, bukan volume yang berlaku.
+      isAdendum: !!po?.parentPurchaseOrderID,
       purchaseOrderName: po?.name ?? '',
       date: po?.date,
       projectName: po?.projectName ?? '',
