@@ -1246,8 +1246,8 @@ const B_CLAUSES: ClauseTemplate[] = [
      * Dua seksi berjudul, HANYA pada sewa alat berat.
      *
      * Kategori lain mengembalikan `null` dan tetap tercetak sebagai satu
-     * daftar menyambung seperti sebelumnya — memberi judul "Sanksi" pada
-     * dokumen yang tidak punya ketentuan sanksi akan menghasilkan judul
+     * daftar menyambung seperti sebelumnya — memberi judul "Kepatuhan"
+     * pada dokumen yang tidak punya ketentuan itu akan menghasilkan judul
      * dengan isi kosong.
      */
     buildSections: (ctx) => {
@@ -1255,9 +1255,23 @@ const B_CLAUSES: ClauseTemplate[] = [
       return [
         {
           title: 'Umum',
-          items: bangunKlausulB(ctx, { versi11: true, tanpaSanksi: true }),
+          items: bangunKlausulB(ctx, { versi11: true, tanpaKepatuhan: true }),
         },
-        { title: 'Sanksi', items: klausulSewaAlatBeratSanksi() },
+        /*
+         * "Kepatuhan", bukan "Sanksi".
+         *
+         * Isinya bukan daftar hukuman: alinea pertama adalah PERNYATAAN
+         * pihak kedua bahwa ia sudah membaca dan menyetujui, tiga sisanya
+         * akibat bila tidak dijalankan. "Sanksi" menyebut sepertiga isinya
+         * saja, dan menyebutnya dengan nada yang tidak dipakai dokumen ini
+         * di bagian mana pun.
+         *
+         * Tetap TIDAK dinamai "Catatan": empat alinea ini memuat hak
+         * memotong tagihan dan hak mengakhiri SPK sepihak. Judul yang
+         * membuatnya terbaca sebagai catatan melemahkan justru bagian yang
+         * paling dibutuhkan ketika ada sengketa.
+         */
+        { title: 'Kepatuhan', items: klausulSewaAlatBeratKepatuhan() },
       ];
     },
   },
@@ -1322,14 +1336,14 @@ function klausulSewaAlatBeratUmum(ctx: ClauseContext): (string | string[])[] {
 }
 
 /**
- * Kepatuhan terhadap SPK dan sanksi — isi seksi kedua.
+ * Kepatuhan terhadap SPK — isi seksi kedua.
  *
  * Dipisahkan dari ketentuan umum karena keduanya menjawab hal yang berbeda:
  * yang di atas mengatur BAGAIMANA pekerjaan berjalan, yang di sini mengatur
  * APA AKIBATNYA bila tidak. Yang membaca sengketa membuka bagian kedua, dan
  * mencarinya di tengah dua puluh poin campur aduk memakan waktu lama.
  */
-function klausulSewaAlatBeratSanksi(): (string | string[])[] {
+function klausulSewaAlatBeratKepatuhan(): (string | string[])[] {
   return [
     'Dengan ditandatanganinya SPK ini, PIHAK KEDUA menyatakan telah membaca, memahami, menyetujui, dan wajib melaksanakan seluruh ketentuan, nilai, harga, spesifikasi, jangka waktu, serta kewajiban sebagaimana tercantum dalam SPK beserta lampirannya.',
 
@@ -1351,7 +1365,7 @@ function klausulSewaAlatBeratSanksi(): (string | string[])[] {
  */
 function bangunKlausulB(
   ctx: ClauseContext,
-  opsi: { versi11: boolean; tanpaSanksi?: boolean },
+  opsi: { versi11: boolean; tanpaKepatuhan?: boolean },
 ): (string | string[])[] {
       /*
        * Istilah mengikuti apa yang benar-benar disewa.
@@ -1675,14 +1689,16 @@ function bangunKlausulB(
       // Ketentuan sewa alat berat 1.1 ditambahkan PALING AKHIR, menyambung
       // penomoran yang sudah ada.
       /*
-       * Sanksi ikut di sini HANYA pada bentuk daftar rata.
+       * Kepatuhan ikut di sini HANYA pada bentuk daftar rata.
        *
        * Pada bentuk berseksi ia menjadi seksi keduanya sendiri, dan
        * memasukkannya di sini juga akan mencetaknya dua kali.
        */
       if (alatBerat11) {
         lines.push(...klausulSewaAlatBeratUmum(ctx));
-        if (!opsi.tanpaSanksi) lines.push(...klausulSewaAlatBeratSanksi());
+        if (!opsi.tanpaKepatuhan) {
+          lines.push(...klausulSewaAlatBeratKepatuhan());
+        }
       }
 
       return lines;
@@ -3979,7 +3995,7 @@ export function buildClauseLines(
  * `null` berarti jenis ini tidak berseksi; pemanggil kembali ke
  * `buildClauseLines`. Poin tambahan dari pengguna disisipkan pada seksi
  * PERTAMA, bukan terakhir: yang diketik pengguna adalah ketentuan umum,
- * dan menaruhnya di bawah judul "Sanksi" mengubah artinya.
+ * dan menaruhnya di bawah judul "Kepatuhan" mengubah artinya.
  */
 export function buildClauseSections(
   poType: string,
