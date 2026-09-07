@@ -136,18 +136,36 @@ export function lembarHarian(
     { tebal: true, latar: BIRU_MUDA },
   );
 
+  const BARIS_SALDO_AWAL = baris - 1;
   let totalMasuk = 0;
   let totalKeluar = 0;
+  /** Baris yang IKUT total terlaksana — dipakai menyusun rumus SUM-nya. */
+  const barisTerlaksana: number[] = [];
 
   for (const h of harian) {
     // Rencana TIDAK ikut baris TOTAL — lihat keterangan pada `HarianRekap`.
     if (!h.rencana) {
       totalMasuk += h.masuk;
       totalKeluar += h.keluar;
+      barisTerlaksana.push(baris);
     }
+    /*
+     * Selisih dan saldo ditulis sebagai RUMUS, bukan angka jadi.
+     *
+     * Yang menerima berkas ini kerap menyesuaikan satu-dua angka —
+     * pembayaran yang bergeser, nilai yang dibetulkan — lalu ingin tahu
+     * saldonya jadi berapa. Dengan angka mati, seluruh kolom di bawahnya
+     * harus dihitung ulang dengan tangan, dan itu tidak pernah benar-benar
+     * dilakukan: yang terjadi adalah angka yang diubah tidak cocok lagi
+     * dengan saldo di sebelahnya, tanpa ada yang menyadarinya.
+     *
+     * `result` tetap diisi supaya berkasnya menampilkan angka yang benar
+     * bahkan sebelum Excel menghitung ulang — sebagian penampil (pratinjau
+     * surel, ponsel) tidak pernah menghitung rumus sama sekali.
+     */
     barisData(
       sheet,
-      baris++,
+      baris,
       kolom,
       [
         h.tanggal,
@@ -155,16 +173,50 @@ export function lembarHarian(
         h.masuk || null,
         h.ketKeluar,
         h.keluar || null,
-        h.selisih,
-        h.saldoGabungan,
+        // Selisih = pemasukan - pengeluaran pada baris ini.
+        { formula: `C${baris}-E${baris}`, result: h.selisih },
+        // Saldo berjalan = saldo baris sebelumnya + selisih baris ini.
+        {
+          formula: `G${baris - 1}+F${baris}`,
+          result: h.saldoGabungan,
+        },
       ],
       h.rencana ? { latar: JINGGA_MUDA } : {},
     );
+    baris++;
   }
+
+  /**
+   * Rentang bersambung dari baris yang ikut dijumlah.
+   *
+   * Baris rencana berselang-seling di antara yang terlaksana, sehingga satu
+   * `SUM(C6:C40)` akan ikut menjumlahkan yang belum terjadi. Yang ditulis
+   * karena itu `SUM(C6:C12,C14:C20,...)` — melewati baris rencana secara
+   * eksplisit, dan tetap dapat ditelusuri oleh yang membaca rumusnya.
+   */
+  const rentang = (huruf: string): string => {
+    if (!barisTerlaksana.length) return '0';
+    const bagian: string[] = [];
+    let mulai = barisTerlaksana[0];
+    let akhir = mulai;
+    for (const r of barisTerlaksana.slice(1)) {
+      if (r === akhir + 1) {
+        akhir = r;
+        continue;
+      }
+      bagian.push(mulai === akhir ? `${huruf}${mulai}` : `${huruf}${mulai}:${huruf}${akhir}`);
+      mulai = akhir = r;
+    }
+    bagian.push(mulai === akhir ? `${huruf}${mulai}` : `${huruf}${mulai}:${huruf}${akhir}`);
+    return `SUM(${bagian.join(',')})`;
+  };
+
+  const barisTotal = baris;
+  const barisTerakhir = baris - 1;
 
   barisData(
     sheet,
-    baris,
+    barisTotal,
     kolom,
     [
       // Disebut TERLAKSANA, bukan sekadar TOTAL: barisnya tidak mencakup
@@ -172,14 +224,21 @@ export function lembarHarian(
       // jumlah seluruh baris di atasnya.
       'TOTAL TERLAKSANA',
       '',
-      totalMasuk,
+      { formula: rentang('C'), result: totalMasuk },
       '',
-      totalKeluar,
-      totalMasuk - totalKeluar,
+      { formula: rentang('E'), result: totalKeluar },
+      {
+        formula: `C${barisTotal}-E${barisTotal}`,
+        result: totalMasuk - totalKeluar,
+      },
       // Saldo akhirnya justru IKUT rencana — ia menjawab "nanti jadi
       // berapa", dan itu pertanyaan yang berbeda dari "bulan ini bergerak
-      // berapa".
-      harian[harian.length - 1]?.saldoGabungan ?? saldoAwal,
+      // berapa". Karena itu ia menunjuk saldo baris TERAKHIR, bukan
+      // menjumlah ulang kolomnya.
+      {
+        formula: `G${harian.length ? barisTerakhir : BARIS_SALDO_AWAL}`,
+        result: harian[harian.length - 1]?.saldoGabungan ?? saldoAwal,
+      },
     ],
     { tebal: true, latar: BIRU_MUDA },
   );
@@ -219,6 +278,8 @@ export function lembarRencana(
   const AWAL = 4;
   kepala(sheet, AWAL, kolom);
 
+  const BARIS_PERTAMA = AWAL + 1;
+
   rencana.forEach((r, i) => {
     barisData(
       sheet,
@@ -254,6 +315,77 @@ export function lembarRencana(
     from: { row: AWAL, column: 1 },
     to: { row: AWAL + rencana.length, column: kolom.length },
   };
+  /*
+   * Jumlah di kaki daftar, sebagai RUMUS.
+   *
+   * Lembar ini sebelumnya hanya deretan baris tanpa satu pun angka jumlah —
+   * yang membacanya harus menyorot kolom nilai sendiri untuk tahu berapa
+   * seluruhnya, dan itu ikut menjumlahkan yang TERLEWAT.
+   *
+   * `SUMIFS` memisahkan arahnya dan mengecualikan yang terlewat, sehingga
+   * angkanya cocok dengan yang tampil di layar kalender. Ditulis sebagai
+   * rumus supaya tetap benar ketika barisnya disunting atau disaring.
+   */
+  const barisAkhir = AWAL + rencana.length;
+  const R = `$G$${BARIS_PERTAMA}:$G$${barisAkhir}`;
+  const ARAH = `$B$${BARIS_PERTAMA}:$B$${barisAkhir}`;
+  const STATUS = `$H$${BARIS_PERTAMA}:$H$${barisAkhir}`;
+
+  const jumlah = (arah: 'masuk' | 'keluar') =>
+    rencana
+      .filter((r) => r.arah === arah && r.status !== 'Terlewat')
+      .reduce((t, r) => t + Number(r.nilai || 0), 0);
+
+  const totalMasuk = jumlah('masuk');
+  const totalKeluar = jumlah('keluar');
+  const totalTerlewat = rencana
+    .filter((r) => r.status === 'Terlewat')
+    .reduce((t, r) => t + Number(r.nilai || 0), 0);
+
+  let b = barisAkhir + 2;
+  const barisJumlah = (
+    label: string,
+    rumus: string,
+    hasil: number,
+    tebal = false,
+  ) => {
+    const cLabel = sheet.getCell(b, 6);
+    cLabel.value = label;
+    cLabel.font = { name: 'Arial', size: 9, bold: tebal };
+    cLabel.alignment = { horizontal: 'right', vertical: 'middle' };
+    const cNilai = sheet.getCell(b, 7);
+    cNilai.value = { formula: rumus, result: hasil } as any;
+    cNilai.numFmt = RP2;
+    cNilai.font = { name: 'Arial', size: 9, bold: tebal };
+    cNilai.alignment = { horizontal: 'right', vertical: 'middle' };
+    cNilai.border = tepi();
+    b++;
+  };
+
+  barisJumlah(
+    'Rencana masuk',
+    `SUMIFS(${R},${ARAH},"Masuk",${STATUS},"<>Terlewat")`,
+    totalMasuk,
+  );
+  barisJumlah(
+    'Rencana keluar',
+    `SUMIFS(${R},${ARAH},"Keluar",${STATUS},"<>Terlewat")`,
+    totalKeluar,
+  );
+  barisJumlah(
+    'Bersih',
+    `G${b - 2}-G${b - 1}`,
+    totalMasuk - totalKeluar,
+    true,
+  );
+  // Yang terlewat disebut TERPISAH, tidak dijumlahkan ke dalam bersih: ia
+  // sudah lewat tanggalnya dan belum tentu jadi.
+  barisJumlah(
+    'Terlewat (tidak dihitung)',
+    `SUMIF(${STATUS},"Terlewat",${R})`,
+    totalTerlewat,
+  );
+
 }
 
 
@@ -282,6 +414,18 @@ export interface SelKalender {
  * Bentuknya tujuh kolom hari, tiga kolom per hari: tanggal beserta saldo
  * akhirnya di atas, lalu daftar lawan transaksi dan nominalnya di bawah.
  */
+/** Huruf kolom Excel dari nomornya (1 → A, 27 → AA). */
+function hurufKolom(n: number): string {
+  let sisa = n;
+  let hasil = '';
+  while (sisa > 0) {
+    const m = (sisa - 1) % 26;
+    hasil = String.fromCharCode(65 + m) + hasil;
+    sisa = Math.floor((sisa - m) / 26);
+  }
+  return hasil;
+}
+
 export function lembarKalender(
   wb: ExcelJS.Workbook,
   nomor: string,
@@ -348,6 +492,25 @@ export function lembarKalender(
   });
   sheet.getRow(4).height = 20;
 
+  /*
+   * Saldo awal ditulis pada selnya SENDIRI.
+   *
+   * Dua alasan. Pertama, kisi ini sebelumnya tidak pernah menyebut saldo
+   * pembukanya sama sekali — angka pada tanggal pertama muncul entah dari
+   * mana. Kedua, ia menjadi pangkal rantai rumus saldo di bawah: mengubah
+   * satu sel ini membuat seluruh bulan ikut menyesuaikan.
+   */
+  const BARIS_AWAL = 5;
+  sheet.getCell(BARIS_AWAL, 1).value = 'Saldo awal';
+  sheet.getCell(BARIS_AWAL, 1).font = { name: 'Arial', size: 9, bold: true };
+  const selSaldoAwal = sheet.getCell(BARIS_AWAL, 2);
+  selSaldoAwal.value = saldoAwal;
+  selSaldoAwal.numFmt = RP2;
+  selSaldoAwal.font = { name: 'Arial', size: 9, bold: true };
+  selSaldoAwal.alignment = { horizontal: 'right', vertical: 'middle' };
+  /** Alamat mutlak; dirujuk rumus saldo hari pertama. */
+  const ALAMAT_SALDO_AWAL = `$B$${BARIS_AWAL}`;
+
   const perHari: Record<number, SelKalender> = Object.create(null);
   for (const s of sel) perHari[s.hari] = s;
 
@@ -357,9 +520,17 @@ export function lembarKalender(
    * Tinggi tetap membuat hari dengan dua puluh transaksi terpotong, dan hari
    * kosong menyisakan ruang putih sepertiga halaman.
    */
-  let baris = 5;
+  let baris = BARIS_AWAL + 2;
   let hari = 1;
   let kolomAwal = hariPertama;
+  /*
+   * Alamat sel saldo hari SEBELUMNYA, mengikuti urutan tanggal.
+   *
+   * Kisinya dibaca kiri-ke-kanan lalu turun, tetapi rantai saldonya
+   * mengikuti tanggal — dan keduanya memang searah. Yang disimpan alamatnya,
+   * bukan nilainya: itulah yang membuat rumusnya hidup.
+   */
+  let alamatSaldoSebelumnya = ALAMAT_SALDO_AWAL;
 
   while (hari <= totalHari) {
     /*
@@ -411,8 +582,24 @@ export function lembarKalender(
         fgColor: { argb: 'FFF2F5FC' },
       };
 
+      /*
+       * Saldo akhir hari ini sebagai RUMUS: saldo kemarin + isi hari ini.
+       *
+       * Sebelumnya angka mati. Menyesuaikan satu nominal di kisi ini lalu
+       * membaca saldo di sebelahnya menghasilkan angka yang tidak lagi
+       * benar — dan tidak ada apa pun di layar yang menunjukkannya.
+       *
+       * Kolom nominal hari ini bersambung ke bawah dari `baris + 1` sampai
+       * `baris + maksTrx`; sel kosong diabaikan SUM.
+       */
+      const kolomNilai = hurufKolom(kiri + 1);
+      const rumusSaldo =
+        `${alamatSaldoSebelumnya}+SUM(` +
+        `${kolomNilai}${baris + 1}:${kolomNilai}${baris + maksTrx})`;
+
       const cSaldo = sheet.getCell(baris, kiri + 1);
-      cSaldo.value = isi?.saldoAkhir ?? null;
+      cSaldo.value = { formula: rumusSaldo, result: isi?.saldoAkhir ?? 0 } as any;
+      alamatSaldoSebelumnya = `${kolomNilai}${baris}`;
       cSaldo.numFmt = RP2;
       cSaldo.font = { name: 'Arial', size: 8, bold: true, color: { argb: ABU } };
       cSaldo.alignment = { horizontal: 'right', vertical: 'middle' };
