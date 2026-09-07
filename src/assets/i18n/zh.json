@@ -3253,6 +3253,7 @@
     "outOfTownAllowance": "外地津贴"
   },
   "poB": {
+    "masaSewaHint": "用于重型设备条款：租期与提前终止的界限。",
     "rentalList": "设备租赁清单",
     "rentalVendor": "租赁供应商",
     "projectCode": "项目代码",
@@ -3554,6 +3555,7 @@
     "stillEmpty": "尚未填写："
   },
   "poField": {
+    "masaSewaBulan": "租期（月）",
     "tanggalPo": "采购单日期",
     "pilihSupplier": "选择供应商",
     "catatanOpsional": "备注（选填）",

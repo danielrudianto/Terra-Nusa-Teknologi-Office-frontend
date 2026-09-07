@@ -3253,6 +3253,7 @@
     "outOfTownAllowance": "Tunjangan luar kota"
   },
   "poB": {
+    "masaSewaHint": "Dipakai ketentuan sewa alat berat: jangka waktu dan batas penghentian lebih awal.",
     "rentalList": "Daftar Sewa Equipment",
     "rentalVendor": "Vendor Rental",
     "projectCode": "Kode Project",
@@ -3554,6 +3555,7 @@
     "stillEmpty": "Masih kosong:"
   },
   "poField": {
+    "masaSewaBulan": "Masa sewa (bulan)",
     "tanggalPo": "Tanggal PO",
     "pilihSupplier": "Pilih supplier",
     "catatanOpsional": "Catatan (opsional)",

@@ -619,6 +619,28 @@
           <mat-hint>{{ "poB.siloHint" | translate }}</mat-hint>
         </mat-form-field>
 
+        <!--
+          Masa sewa hanya ditanyakan pada ALAT BERAT.
+
+          Ketentuan versi 1.1 menyebut masa ini dua kali — jangka waktu sewa
+          dan batas penghentian lebih awal — sehingga ia harus berupa satu
+          angka, bukan diketik pada poin tambahan. Sewa kendaraan dan
+          perlengkapan tidak memakai ketentuan itu, jadi kolomnya pun tidak
+          perlu muncul di sana.
+        -->
+        @if (pakaiMasaSewa) {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ "poField.masaSewaBulan" | translate }}</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              formControlName="rentalMonths"
+            />
+            <mat-hint>{{ "poB.masaSewaHint" | translate }}</mat-hint>
+          </mat-form-field>
+        }
+
         <mat-form-field appearance="outline" class="pob-span2">
           <mat-label>{{
             "poField.penanggungKeamananDanKeselamatanAlat" | translate

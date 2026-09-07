@@ -160,6 +160,23 @@ export interface ClauseContext {
    */
   rentalByHour?: boolean;
   /**
+   * Masa sewa alat berat, dalam bulan kalender (SPK tipe B versi 1.1).
+   *
+   * Disimpan sebagai ANGKA, bukan kalimat: klausulnya menyebut masa itu dua
+   * kali — sekali sebagai jangka waktu, sekali sebagai batas penghentian
+   * lebih awal — dan keduanya harus menyebut angka yang sama.
+   */
+  rentalMonths?: number | string;
+  /**
+   * Jumlah nilai mobilisasi + demobilisasi seluruh alat pada SPK ini.
+   *
+   * DIJUMLAHKAN dari kolom mobilisasi/demobilisasi tiap alat, bukan diketik
+   * ulang: angka yang sama sudah tercetak sebagai barisnya sendiri pada
+   * tabel dokumen, dan nilai yang diketik dua kali cepat atau lambat
+   * berselisih dengan tabelnya.
+   */
+  mobDemobTotal?: number;
+  /**
    * Panjang satu periode kuota, dalam hari kalender.
    *
    * Sewa per jam selalu diikat pada periode: kuota 200 jam per 30 hari,
@@ -1193,7 +1210,114 @@ const MARKETING_GOODS_CLAUSES: ClauseTemplate[] = [
 const B_CLAUSES: ClauseTemplate[] = [
   {
     version: '1.0',
-    build: (ctx) => {
+    build: (ctx) => bangunKlausulB(ctx, { versi11: false }),
+  },
+  {
+    /*
+     * 1.1 — ketentuan sewa ALAT BERAT (excavator / crane / bor).
+     *
+     * Versi baru, bukan suntingan 1.0: dokumen yang sudah ditandatangani
+     * menyimpan nomor versinya, dan cetak ulangnya harus berbunyi persis
+     * seperti yang ditandatangani. Mengubah 1.0 akan mengubah SPK yang
+     * sudah berjalan tanpa sepengetahuan siapa pun.
+     *
+     * Yang berubah hanya pada `rentalCategory === 'alat-berat'`. Sewa
+     * kendaraan, scaffolding, dan perlengkapan umum tetap memakai rangkaian
+     * yang sama seperti 1.0 — kecuali satu kalimat bongkar-muat yang
+     * digeneralisir, lihat di dalam.
+     */
+    version: '1.1',
+    build: (ctx) => bangunKlausulB(ctx, { versi11: true }),
+  },
+];
+
+/**
+ * Sepuluh ketentuan sewa alat berat, versi 1.1.
+ *
+ * Dua angka di dalamnya DIAMBIL DARI DATA, tidak dipatok:
+ *
+ * - Masa sewa dari `rentalMonths` (kolom pada formulir).
+ * - Nilai mobilisasi + demobilisasi dari `mobDemobTotal`, yang dijumlahkan
+ *   dari kolom mobilisasi/demobilisasi tiap alat — angka yang SUDAH tercetak
+ *   sebagai barisnya sendiri pada tabel di atas.
+ *
+ * Angka yang dipatok akan salah pada SPK berikutnya yang masanya dua bulan
+ * atau mobilisasinya berharga lain — dan salahnya tidak terlihat, karena
+ * dokumennya tetap tercetak rapi.
+ */
+function klausulSewaAlatBerat(ctx: ClauseContext): (string | string[])[] {
+  const bulan = Number(ctx.rentalMonths) || 0;
+  /*
+   * Tanpa masa sewa yang terisi, kalimatnya menunjuk tabel — BUKAN
+   * menyebut angka bawaan.
+   *
+   * Menuliskan "3 bulan" pada dokumen yang masa sewanya tidak pernah diisi
+   * berarti mengarang ketentuan yang mengikat kedua pihak.
+   */
+  const masa = bulan > 0
+    ? `${bulan} (${terbilang(bulan)}) bulan kalender`
+    : 'jangka waktu sebagaimana tercantum dalam tabel di atas';
+
+  const mobDemob = Number(ctx.mobDemobTotal) || 0;
+  const nilaiMobDemob = mobDemob > 0
+    ? `sebesar ${rupiah(mobDemob)}`
+    : 'sebagaimana tercantum dalam tabel di atas';
+
+  return [
+    `Jangka waktu sewa alat adalah ${masa} sejak alat dinyatakan siap operasi di lokasi proyek. Harga sewa berlaku tetap selama masa SPK.`,
+
+    'Standby akibat kerusakan alat, ketidaksiapan alat/operator, maintenance, keterlambatan vendor, atau sebab lain yang menjadi tanggung jawab PIHAK KEDUA tidak dapat ditagihkan.',
+
+    'PIHAK KEDUA wajib menyediakan alat sesuai spesifikasi yang disetujui. Penggantian unit hanya diperbolehkan dengan alat yang spesifikasinya setara atau lebih tinggi dan atas persetujuan PIHAK PERTAMA. Segala biaya yang timbul menjadi tanggung jawab PIHAK KEDUA.',
+
+    'Apabila alat tidak dapat beroperasi karena kerusakan, jam downtime tidak dihitung sebagai jam kerja yang dapat ditagihkan dan akan diperhitungkan berdasarkan catatan waktu mulai dan selesai kerusakan.',
+
+    'Apabila SPK diputus karena kegagalan alat/operator PIHAK KEDUA, PIHAK PERTAMA tidak berkewajiban membayar biaya mobilisasi/demobilisasi yang belum menjadi hak PIHAK KEDUA dan berhak memperhitungkan kerugian/downtime sesuai ketentuan SPK dan hukum yang berlaku.',
+
+    `Harga mobilisasi dan demobilisasi ${nilaiMobDemob} bersifat all-in, termasuk koordinasi bongkar/muat, pengawalan, transportasi, perizinan/koordinasi yang diperlukan, serta biaya terkait lainnya sampai alat tiba/keluar dari lokasi proyek.`,
+
+    `Apabila kebutuhan alat telah selesai sebelum ${
+      bulan > 0 ? `masa ${bulan} (${terbilang(bulan)}) bulan` : 'berakhirnya masa sewa'
+    }, PIHAK PERTAMA berhak menghentikan penggunaan alat dengan pemberitahuan tertulis. Pembayaran sewa alat akan dilakukan secara pro-rata.`,
+
+    'Apabila PIHAK KEDUA tidak menjalankan salah satu atau lebih kewajiban yang telah ditetapkan dalam SPK ini, termasuk namun tidak terbatas pada kewajiban menyediakan alat sesuai spesifikasi, menjaga kelayakan alat, menyediakan operator/rigger yang dipersyaratkan, melakukan perbaikan, atau menyediakan alat pengganti sesuai ketentuan SPK, maka seluruh biaya yang timbul akibat penggantian alat menjadi tanggung jawab PIHAK KEDUA.',
+
+    'Apabila untuk menjaga kelangsungan pekerjaan PIHAK PERTAMA harus mendatangkan alat pengganti dari pihak lain, maka PIHAK KEDUA wajib menanggung seluruh biaya yang wajar dan terdokumentasi yang timbul akibat pengadaan dan/atau mobilisasi alat pengganti tersebut.',
+
+    'Apabila PIHAK PERTAMA telah mengeluarkan biaya mobilisasi dan/atau demobilisasi untuk alat pengganti, PIHAK KEDUA wajib mengganti atau mengembalikan seluruh biaya mobilisasi dan demobilisasi tersebut kepada PIHAK PERTAMA, tanpa mengurangi hak PIHAK PERTAMA untuk melakukan pemotongan dari tagihan PIHAK KEDUA dan/atau menuntut kerugian lain yang secara sah dapat ditagihkan.',
+
+    /*
+     * Kepatuhan terhadap SPK dan sanksi — empat ketentuan, BERNOMOR.
+     *
+     * Aslinya ditulis sebagai alinea di bawah satu judul. Di sini keduanya
+     * menjadi poin bernomor karena SPK tipe B mencetak satu daftar bernomor
+     * yang menyambung; menyisipkan judul di tengahnya memutus penomoran dan
+     * membuat rujukan silang ("sesuai poin 14") tidak lagi dapat dipakai.
+     *
+     * Isinya utuh, tidak diringkas.
+     */
+    'Dengan ditandatanganinya SPK ini, PIHAK KEDUA menyatakan telah membaca, memahami, menyetujui, dan wajib melaksanakan seluruh ketentuan, nilai, harga, spesifikasi, jangka waktu, serta kewajiban sebagaimana tercantum dalam SPK beserta lampirannya.',
+
+    'Apabila PIHAK KEDUA tidak memenuhi atau melanggar ketentuan dalam SPK, maka PIHAK KEDUA wajib bertanggung jawab atas seluruh akibat yang timbul dari pelanggaran tersebut, termasuk namun tidak terbatas pada penggantian biaya dan kerugian yang wajar dan dapat dibuktikan, denda keterlambatan apabila berlaku, serta biaya yang dikeluarkan PIHAK PERTAMA untuk mendatangkan alat, operator, atau pengganti lainnya.',
+
+    'PIHAK PERTAMA berhak melakukan pemotongan pembayaran/tagihan PIHAK KEDUA sebesar nilai kewajiban, denda, atau biaya yang menjadi tanggung jawab PIHAK KEDUA berdasarkan SPK, dengan tetap memperhatikan ketentuan peraturan perundang-undangan yang berlaku.',
+
+    'Apabila pelanggaran tersebut bersifat material atau PIHAK KEDUA tidak melakukan perbaikan setelah diberikan pemberitahuan tertulis, PIHAK PERTAMA berhak mengakhiri SPK secara sepihak, tanpa menghilangkan hak PIHAK PERTAMA untuk menuntut penggantian biaya atau kerugian yang timbul akibat pelanggaran tersebut.',
+  ];
+}
+
+/**
+ * Rangkaian klausul SPK penyewaan, dipakai oleh SELURUH versi template B.
+ *
+ * Satu badan untuk dua versi, dengan perbedaannya ditandai `opsi.versi11` —
+ * bukan dua salinan. Dua salinan berarti perbaikan pada satu versi diam-diam
+ * tidak sampai ke yang lain, dan selisihnya baru ketahuan saat dua dokumen
+ * dibandingkan berdampingan.
+ */
+function bangunKlausulB(
+  ctx: ClauseContext,
+  opsi: { versi11: boolean },
+): (string | string[])[] {
       /*
        * Istilah mengikuti apa yang benar-benar disewa.
        *
@@ -1211,6 +1335,15 @@ const B_CLAUSES: ClauseTemplate[] = [
         : kendaraan
           ? 'kendaraan'
           : 'barang sewaan';
+
+      /*
+       * Ketentuan sewa ALAT BERAT versi 1.1 sedang berlaku.
+       *
+       * Dibatasi pada alat berat: poin-poinnya menyebut operator/rigger,
+       * downtime, dan masa sewa berbulan-bulan — tidak satu pun berlaku
+       * pada sewa scaffolding dua hari atau sewa kendaraan.
+       */
+      const alatBerat11 = opsi.versi11 && alatBerat;
 
       // Sub-daftar bersarang dipakai pada cakupan harga pengangkutan.
       const lines: (string | string[])[] = [
@@ -1331,11 +1464,25 @@ const B_CLAUSES: ClauseTemplate[] = [
          * menunggu perbaikan berarti kehilangan seluruh masa sewanya —
          * sehingga yang diminta adalah unit pengganti, bukan perbaikan.
          */
-        ctx.shortTermRental
-          ? `Apabila ${barang} tidak dapat beroperasi, PIHAK KEDUA wajib mengirimkan unit pengganti yang laik pada hari yang sama. Seluruh biaya mobilisasi unit pengganti ditanggung PIHAK KEDUA, dan masa sewa selama unit tidak dapat beroperasi tidak diperhitungkan.`
-          : ctx.sewaKendaraan
-            ? `Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak ${barang} tidak dapat digunakan. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib menyediakan ${barang} pengganti yang laik jalan dengan spesifikasi setara. Seluruh biaya penggantian dan pengantarannya ditanggung PIHAK KEDUA.`
-            : 'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
+        /*
+         * Pada sewa alat berat versi 1.1 poin ini DIHAPUS, bukan dibiarkan.
+         *
+         * Isinya sudah tercakup poin 3 (penggantian unit setara), 8, 9, dan
+         * 10 (seluruh biaya penggantian dan mobilisasi alat pengganti
+         * ditanggung PIHAK KEDUA) — dan yang lama menyebut tenggat 2 x 24
+         * jam yang tidak disebut poin barunya. Dua ketentuan berbeda untuk
+         * kejadian yang sama dalam satu kontrak melemahkan keduanya: pihak
+         * yang digugat tinggal menunjuk yang lebih longgar.
+         */
+        ...(alatBerat11
+          ? []
+          : [
+              ctx.shortTermRental
+                ? `Apabila ${barang} tidak dapat beroperasi, PIHAK KEDUA wajib mengirimkan unit pengganti yang laik pada hari yang sama. Seluruh biaya mobilisasi unit pengganti ditanggung PIHAK KEDUA, dan masa sewa selama unit tidak dapat beroperasi tidak diperhitungkan.`
+                : ctx.sewaKendaraan
+                  ? `Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak ${barang} tidak dapat digunakan. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib menyediakan ${barang} pengganti yang laik jalan dengan spesifikasi setara. Seluruh biaya penggantian dan pengantarannya ditanggung PIHAK KEDUA.`
+                  : 'Jangka waktu perbaikan maksimum adalah 2 x 24 jam sejak alat kerja tidak dapat beroperasi. Apabila kerusakan tidak dapat ditangani dalam kurun waktu tersebut, PIHAK KEDUA wajib mengganti unit kerja dengan unit cadangan yang beroperasi dengan baik dan laik. Seluruh biaya mobilisasi ditanggung PIHAK KEDUA.',
+            ]),
         // Perlengkapan perbaikan hanya relevan bila perbaikan memang
         // dilakukan di lokasi — pada kendaraan, perbaikan terjadi di
         // bengkel pemiliknya.
@@ -1404,7 +1551,21 @@ const B_CLAUSES: ClauseTemplate[] = [
         ...(ctx.shortTermRental || ctx.sewaKendaraan
           ? []
           : [
-              'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
+              /*
+               * "di area gudang PIHAK KEDUA" dilepas pada versi 1.1.
+               *
+               * Bongkar-muat tidak selalu terjadi di gudang vendor — alat
+               * kerap berpindah langsung dari proyek ke proyek. Menyebut
+               * satu tempat membuat cakupan harganya dapat dibantah pada
+               * bongkar-muat di tempat lain, padahal maksudnya memang
+               * seluruh koordinasi bongkar dan muat.
+               *
+               * TIDAK diubah pada 1.0: dokumen yang sudah ditandatangani
+               * harus tetap tercetak dengan bunyi yang ditandatangani.
+               */
+              opsi.versi11
+                ? 'Harga tersebut termasuk biaya koordinasi bongkar dan muat.'
+                : 'Harga tersebut termasuk biaya koordinasi bongkar dan muat di area gudang PIHAK KEDUA.',
             ]),
         'Harga dan ketentuan yang tertera di dalam perjanjian ini bersifat mengikat dan tidak dapat berubah hingga volume/waktu perjanjian berakhir.',
         'Barang yang disewakan adalah milik PIHAK KEDUA. PIHAK PERTAMA tidak diizinkan untuk memperjualbelikan, menjadikan jaminan, memindahtangankan, dan/atau memindahkan barang ke lokasi lain tanpa persetujuan dari PIHAK KEDUA.',
@@ -1458,7 +1619,14 @@ const B_CLAUSES: ClauseTemplate[] = [
                 )} per jam.`
               : ''
           }`,
-          'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah jam kerja secara proporsional.',
+          // Tercakup poin 4 pada versi 1.1 alat berat, yang menyebut dasar
+          // perhitungannya (catatan waktu mulai dan selesai kerusakan) —
+          // sesuatu yang tidak disebut kalimat lama ini.
+          ...(alatBerat11
+            ? []
+            : [
+                'Apabila terjadi kerusakan alat kerja, PIHAK PERTAMA berhak untuk mengurangi jumlah jam kerja secara proporsional.',
+              ]),
         );
       }
 
@@ -1468,10 +1636,16 @@ const B_CLAUSES: ClauseTemplate[] = [
         );
       }
 
+
+      // Ketentuan sewa alat berat 1.1 ditambahkan PALING AKHIR, menyambung
+      // penomoran yang sudah ada.
+      if (alatBerat11) {
+        lines.push(...klausulSewaAlatBerat(ctx));
+      }
+
       return lines;
-    },
-  },
-];
+}
+
 
 // ---- PO-F: pembelian material (beton / material lain) ------------------
 

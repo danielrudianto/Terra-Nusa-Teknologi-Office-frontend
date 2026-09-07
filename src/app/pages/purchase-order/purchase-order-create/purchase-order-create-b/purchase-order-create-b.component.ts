@@ -247,6 +247,14 @@ export class PurchaseOrderCreateBComponent implements OnInit {
      */
     rentalCategory: new FormControl('alat-berat'),
     /*
+     * Masa sewa alat berat, dalam bulan kalender.
+     *
+     * Dipakai klausul versi 1.1 pada DUA tempat — jangka waktu sewa, dan
+     * batas penghentian lebih awal. Disimpan sebagai angka supaya keduanya
+     * tidak mungkin menyebut masa yang berbeda.
+     */
+    rentalMonths: new FormControl(3, [Validators.min(1)]),
+    /*
      * Cakupan harga pengangkutan (upah operator, BBM, retribusi, dan akibat
      * kelalaian pengemudi).
      *
@@ -585,6 +593,28 @@ export class PurchaseOrderCreateBComponent implements OnInit {
     return (Number(g.mobilisasi) || 0) + (Number(g.demobilisasi) || 0);
   }
 
+  /**
+   * Jumlah mobilisasi + demobilisasi SELURUH alat pada dokumen ini.
+   *
+   * Dibaca klausul versi 1.1, yang menyebut nilainya sebagai biaya all-in.
+   * Dihitung dari baris alatnya, bukan diketik terpisah: angka yang sama
+   * sudah tercetak sebagai baris Mobilisasi/Demobilisasi pada tabel, dan
+   * dua tempat untuk satu angka cepat atau lambat berselisih.
+   */
+  get totalMobilisasi(): number {
+    return this.t.controls.reduce((jumlah: number, kendali) => {
+      const g: any = kendali.getRawValue();
+      return (
+        jumlah + (Number(g.mobilisasi) || 0) + (Number(g.demobilisasi) || 0)
+      );
+    }, 0);
+  }
+
+  /** Masa sewa hanya ditanyakan pada sewa alat berat. */
+  get pakaiMasaSewa(): boolean {
+    return this.formGroup.get('rentalCategory')?.value === 'alat-berat';
+  }
+
   templateVersion = latestClauseVersion('B');
 
   /*
@@ -837,6 +867,10 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       prepaidTerm: v.prepaidTerm,
       operatorByVendor: !!v.operatorByVendor,
       rentalCategory: v.rentalCategory,
+      // Hanya diisi pada sewa alat berat; klausul versinya sendiri yang
+      // memutuskan memakainya atau tidak.
+      rentalMonths: this.pakaiMasaSewa ? Number(v.rentalMonths) || 0 : 0,
+      mobDemobTotal: this.totalMobilisasi,
       includeTransportCoverage: !!v.includeTransportCoverage,
       equipmentRiskBearer: v.equipmentRiskBearer,
       rentalByHour: this.rentalByHour,
@@ -1075,6 +1109,15 @@ export class PurchaseOrderCreateBComponent implements OnInit {
          */
         formOrigin: 'B',
         rentalCategory: this.formGroup.get('rentalCategory')?.value,
+        /*
+         * Masa sewa DISIMPAN; nilai mobilisasi tidak.
+         *
+         * Yang kedua sudah tersimpan pada barisnya masing-masing
+         * (`remarks_4`/`remarks_5`) dan dijumlahkan ulang saat dokumen
+         * dibuka — menyimpannya lagi di sini akan menjadi salinan kedua yang
+         * tidak ikut berubah ketika barisnya disunting.
+         */
+        rentalMonths: Number(this.formGroup.get('rentalMonths')?.value) || 0,
         includeTransportCoverage:
           this.formGroup.get('includeTransportCoverage')?.value ?? false,
         // Hanya data sumber. Poin perjanjian dirakit ulang dari

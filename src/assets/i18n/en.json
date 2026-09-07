@@ -3253,6 +3253,7 @@
     "outOfTownAllowance": "Out-of-town allowance"
   },
   "poB": {
+    "masaSewaHint": "Used by the heavy-equipment clauses: rental term and early-termination limit.",
     "rentalList": "Equipment rental list",
     "rentalVendor": "Rental vendor",
     "projectCode": "Project code",
@@ -3554,6 +3555,7 @@
     "stillEmpty": "Still empty:"
   },
   "poField": {
+    "masaSewaBulan": "Rental term (months)",
     "tanggalPo": "PO date",
     "pilihSupplier": "Select supplier",
     "catatanOpsional": "Notes (optional)",
