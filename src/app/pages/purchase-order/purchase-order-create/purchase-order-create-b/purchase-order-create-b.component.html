@@ -805,20 +805,32 @@
 
       <p class="pob-hint">{{ "poForm.clauseAutoHint" | translate }}</p>
 
+      <!--
+        Berseksi, sama seperti layar SPK tipe A.
+
+        Judulnya hanya digambar bila memang ada: sewa yang ketentuannya satu
+        rangkaian tetap tampil sebagai satu daftar tanpa judul, persis
+        seperti sebelumnya.
+      -->
       <div class="pob-preview">
-        <ol class="pob-preview__list">
-          @for (p of clausePreview; track $index) {
-            @if (isSubList(p)) {
-              <ol class="pob-preview__sub">
-                @for (d of asList(p); track d) {
-                  <li><app-clause-line [value]="d" /></li>
-                }
-              </ol>
-            } @else {
-              <li><app-clause-line [value]="p" /></li>
-            }
+        @for (sec of previewSections; track $index) {
+          @if (sec.title) {
+            <div class="pob-preview__title">{{ sec.title }}</div>
           }
-        </ol>
+          <ol class="pob-preview__list">
+            @for (p of sec.items; track $index) {
+              @if (isSubList(p)) {
+                <ol class="pob-preview__sub">
+                  @for (d of asList(p); track d) {
+                    <li><app-clause-line [value]="d" /></li>
+                  }
+                </ol>
+              } @else {
+                <li><app-clause-line [value]="p" /></li>
+              }
+            }
+          </ol>
+        }
       </div>
 
       <!--

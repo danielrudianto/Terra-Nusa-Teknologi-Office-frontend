@@ -38,6 +38,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   buildClauseHtml,
   buildClauseLines,
+  buildClauseSections,
   buildEquipmentRentalBillingTerms,
   buildTransportRentalBillingTerms,
   latestClauseVersion,
@@ -923,6 +924,29 @@ export class PurchaseOrderCreateBComponent implements OnInit {
       this.templateVersion,
       this.additionalClauseValues,
     );
+  }
+
+  /**
+   * Pratinjau klausul, dalam bentuk SEKSI BERJUDUL.
+   *
+   * Bentuk yang sama dengan yang tercetak. Sebelumnya layar ini memanggil
+   * `buildClauseLines` — satu daftar rata — sementara PDF-nya sudah terbagi
+   * "Umum" dan "Sanksi". Yang memeriksa di layar karena itu menyetujui
+   * susunan yang bukan susunan yang terbit, dan selisihnya baru ketahuan
+   * setelah dokumennya dicetak.
+   *
+   * Jenis sewa yang tidak berseksi tetap tampil sebagai satu daftar tanpa
+   * judul — dibungkus satu seksi tanpa `title`, sehingga templatnya cukup
+   * punya satu jalur, bukan dua yang harus dijaga sepakat.
+   */
+  get previewSections(): { title?: string; items: (string | string[])[] }[] {
+    const seksi = buildClauseSections(
+      'B',
+      this.clauseContext(),
+      this.templateVersion,
+      this.additionalClauseValues,
+    );
+    return seksi ?? [{ items: this.clausePreview }];
   }
 
   isSubList(x: string | string[]): boolean {
