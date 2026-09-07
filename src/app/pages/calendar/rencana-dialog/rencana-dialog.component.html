@@ -146,6 +146,26 @@
         <span>{{ "rencana.rekeningOpsional" | translate }}</span>
       </div>
     </form>
+
+      <!--
+        Jejak perubahan, hanya saat MENYUNTING.
+        
+        Rencana kas kerap digeser dan disesuaikan berkali-kali oleh orang
+        yang berbeda — tanggalnya mundur, nominalnya berubah — dan tanpa
+        jejaknya yang meninjau tidak punya cara tahu siapa mengubah apa,
+        atau apakah suntingannya benar-benar tersimpan.
+
+        Pada rencana BARU tidak ada yang bisa ditampilkan; panelnya hanya
+        akan berupa judul dengan isi kosong.
+      -->
+      @if (isUbah) {
+        <div class="rd-jejak">
+          <app-audit-trail
+            entity="payment_plans"
+            [entityId]="input.rencana.id"
+          />
+        </div>
+      }
   </mat-dialog-content>
 
   <mat-dialog-actions class="rd-actions">

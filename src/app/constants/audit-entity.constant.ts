@@ -41,4 +41,10 @@ export const AuditTrailEntities: string[] = [
   'employee_profiles',
   'employee_form_submissions',
   'employee_form_versions',
+  /*
+   * Rencana kas. Server sudah mencatat buat/ubah/hapus-nya sejak awal
+   * (`PaymentPlanRepository`), tetapi entitasnya tidak pernah terdaftar di
+   * sini — sehingga jejaknya tersimpan namun tidak dapat dicari.
+   */
+  'payment_plans',
 ];

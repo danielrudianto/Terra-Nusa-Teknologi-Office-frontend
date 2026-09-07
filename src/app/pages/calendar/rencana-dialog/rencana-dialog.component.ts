@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { ProjectSelectorComponent } from 'src/app/components/project-selector/project-selector.component';
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { ApiService } from 'src/app/services/api.service';
@@ -38,6 +39,7 @@ import { kategoriUntuk } from 'src/app/services/payment-plan.service';
     TranslateModule,
     DialogGeserDirective,
     ProjectSelectorComponent,
+    AuditTrailComponent,
   ],
   templateUrl: './rencana-dialog.component.html',
   styleUrl: './rencana-dialog.component.scss',

@@ -121,3 +121,11 @@
   background: var(--ok-bg, #e6f6ec);
   color: var(--ok-fg, #1a7f45);
 }
+
+/* Jejak perubahan, dipisahkan garis dari formulirnya: yang di atas dapat
+   disunting, yang di bawah hanya dibaca. */
+.rd-jejak {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line, #e5e7eb);
+}
