@@ -18,6 +18,36 @@
   <div class="ssl-toolbar">
 
 
+    <!--
+      Keadaan slip: berlaku, dihapus, atau keduanya.
+
+      Pilihan TUNGGAL, bukan ganda seperti penyaring pada daftar pembayaran:
+      ketiganya bukan sifat yang dapat menumpuk melainkan satu pertanyaan —
+      "yang mana yang sedang saya lihat". "Semua" sudah merupakan gabungan
+      dua yang lain, sehingga menyalakan dua sekaligus tidak punya arti.
+
+      Bawaannya BERLAKU. Slip yang dihapus adalah catatan, bukan pekerjaan
+      yang sedang berjalan; sebelumnya ia ikut terdaftar dan satu-satunya
+      pembedanya hanya coretan pada barisnya.
+    -->
+    <mat-chip-listbox
+      class="ssl-chips"
+      hideSingleSelectionIndicator
+      [attr.aria-label]="'salarySlip.filterKeadaan' | translate"
+      [ngModel]="keadaan"
+      (ngModelChange)="gantiKeadaan($event)"
+    >
+      <mat-chip-option class="ssl-fchip" value="aktif">{{
+        "salarySlip.keadaanAktif" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="ssl-fchip ssl-fchip--hapus" value="dihapus">{{
+        "salarySlip.keadaanDihapus" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="ssl-fchip" value="semua">{{
+        "salarySlip.keadaanSemua" | translate
+      }}</mat-chip-option>
+    </mat-chip-listbox>
+
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="ssl-month">
       <mat-label>{{ "table.monthAndYear" | translate }}</mat-label>
       <input matInput [matDatepicker]="dp" [formControl]="date" />

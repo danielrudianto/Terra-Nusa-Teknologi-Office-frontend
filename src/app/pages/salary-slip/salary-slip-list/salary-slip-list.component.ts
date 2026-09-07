@@ -29,6 +29,7 @@ import {
 } from '@angular/material/datepicker';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SalarySlipHelper } from 'src/app/helpers/salary-slip.helper';
 import { SettingsService } from '../../../services/setting.service';
@@ -69,6 +70,7 @@ export const MY_FORMATS = {
     MatMenuModule,
     TranslatePipe,
     RefreshButtonComponent,
+    MatChipsModule,
   ],
   templateUrl: './salary-slip-list.component.html',
   styleUrl: './salary-slip-list.component.scss',
@@ -270,6 +272,31 @@ export class SalarySlipListComponent {
       });
   }
 
+  /**
+   * Keadaan slip yang sedang ditampilkan.
+   *
+   * "aktif" sejak awal: slip yang dihapus adalah catatan, bukan pekerjaan
+   * yang sedang berjalan — dan sebelumnya server tidak menyaringnya sama
+   * sekali, sehingga keduanya bercampur dalam satu daftar.
+   */
+  keadaan: 'aktif' | 'dihapus' | 'semua' = 'aktif';
+
+  /**
+   * Berganti keadaan berarti KEMBALI KE HALAMAN PERTAMA.
+   *
+   * Jumlah barisnya berubah seluruhnya; tetap di halaman lima setelah
+   * penyaringnya berganti kerap mendarat di halaman kosong, dan yang
+   * membacanya menyimpulkan tidak ada datanya.
+   */
+  gantiKeadaan(nilai: 'aktif' | 'dihapus' | 'semua') {
+    // `mat-chip-listbox` mengirim `undefined` saat pilihan yang sedang aktif
+    // ditekan lagi. Tanpa penjagaan ini, penyaringnya jadi kosong dan server
+    // mengembalikan bawaan yang tidak lagi cocok dengan pil yang tampak.
+    if (!nilai || nilai === this.keadaan) return;
+    this.keadaan = nilai;
+    this.fetchSalarySlips(1);
+  }
+
   fetchSalarySlips(targetPage: number = this.page) {
     this.page = targetPage;
     this.apiService
@@ -281,6 +308,7 @@ export class SalarySlipListComponent {
         keyword: this.formControl.value,
         month: this.month,
         year: this.year,
+        keadaan: this.keadaan,
       })
       .subscribe((response: any) => {
         this.dataSource = response.data;
@@ -300,12 +328,16 @@ export class SalarySlipListComponent {
       })
       .afterClosed()
       .subscribe((data) => {
-        if (data === 'deleted') {
-          const index = this.dataSource.findIndex((x) => x.id == id);
-          if (index != -1) {
-            this.dataSource[index].isDelete = true;
-          }
-        }
+        if (data !== 'deleted') return;
+        /*
+         * Dimuat ulang dari server, bukan ditandai di tempat.
+         *
+         * Sebelumnya barisnya hanya diberi `isDelete = true` dan tetap
+         * duduk di daftar. Sejak daftarnya punya penyaring keadaan, itu
+         * keliru: pada tampilan BERLAKU baris itu seharusnya hilang, dan
+         * jumlah pada penomoran halaman juga sudah tidak benar lagi.
+         */
+        this.fetchSalarySlips();
       });
   }
 
