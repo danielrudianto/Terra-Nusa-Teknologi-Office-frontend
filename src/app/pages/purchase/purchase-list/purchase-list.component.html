@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'purchase.title' | translate"
     [description]="'purchase.description' | translate"
+    actionButtonPermission="purchase:create"
     [actionButtonLabel]="'purchase.createNew' | translate"
     (onActionButtonClicked)="createNewPurchase()"
   />

@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'user.title' | translate"
     [description]="'user.description' | translate"
+    actionButtonPermission="user:create"
     [actionButtonLabel]="'user.createNew' | translate"
     (onActionButtonClicked)="createNewUser()"
   />

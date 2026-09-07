@@ -161,3 +161,13 @@ h1 {
     line-height: 1.3;
   }
 }
+
+/* Tombol tindakan yang dimatikan karena izin.
+
+   Dibedakan dari tombol mati biasa (mis. sedang menyimpan): yang ini bukan
+   keadaan sementara, dan gemboknya menyatakan itu tanpa perlu disentuh. */
+.header-button--terkunci {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}

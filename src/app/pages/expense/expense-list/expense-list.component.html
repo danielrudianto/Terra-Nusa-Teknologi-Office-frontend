@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'expense.title' | translate"
     [description]="'expense.description' | translate"
+    actionButtonPermission="expenses:create"
     [actionButtonLabel]="'expense.createNew' | translate"
     (onActionButtonClicked)="createNewExpense()"
   />

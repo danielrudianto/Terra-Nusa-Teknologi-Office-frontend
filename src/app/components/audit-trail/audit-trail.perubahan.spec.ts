@@ -13,9 +13,15 @@
 import { AuditTrailComponent } from './audit-trail.component';
 
 function komponen(): AuditTrailComponent {
-  // ApiService tidak dipanggil oleh `changeList`; pengujian ini murni
-  // memeriksa pengolahan nilai, bukan pemuatannya.
-  return new AuditTrailComponent({} as any);
+  // ApiService maupun ChangeDetectorRef tidak dipanggil oleh `changeList`;
+  // pengujian ini murni memeriksa pengolahan nilai, bukan pemuatannya.
+  //
+  // `cdr` ditambahkan ke konstruktor komponen belakangan tanpa menyesuaikan
+  // pemanggilan di sini, dan berkas ini berhenti dapat dikompilasi. Karena
+  // Angular memeriksa tipe SELURUH proyek sebelum menjalankan uji, satu
+  // berkas ini menggagalkan seluruh rangkaian uji frontend — bukan hanya
+  // dirinya sendiri.
+  return new AuditTrailComponent({} as any, {} as any);
 }
 
 function entri(changes: any): any {

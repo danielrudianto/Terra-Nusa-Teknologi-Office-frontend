@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'purchaseOrder.title' | translate"
     [description]="'purchaseOrder.description' | translate"
+    actionButtonPermission="purchase_order:create"
     [actionButtonLabel]="'purchaseOrder.createNew' | translate"
     (onActionButtonClicked)="createNewPurchaseOrder()"
   ></app-header-title>

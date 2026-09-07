@@ -11,6 +11,7 @@
 <app-header-title
     [title]="'expenseOpponent.title' | translate"
     [description]="'expenseOpponent.description' | translate"
+    actionButtonPermission="expense_opponent:create"
     [actionButtonLabel]="'expenseOpponent.addOpponent' | translate"
     (onActionButtonClicked)="createOpponent()"
   ></app-header-title>

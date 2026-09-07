@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'asset.title' | translate"
     [description]="'asset.description' | translate"
+    actionButtonPermission="asset:create"
     [actionButtonLabel]="'asset.createNew' | translate"
     (onActionButtonClicked)="onAddAsset()"
   ></app-header-title>

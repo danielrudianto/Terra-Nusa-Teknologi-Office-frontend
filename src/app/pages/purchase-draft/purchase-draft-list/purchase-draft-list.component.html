@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'purchaseDraft.title' | translate"
     [description]="'purchaseDraft.description' | translate"
+    actionButtonPermission="purchase_draft:create"
     [actionButtonLabel]="'purchaseDraft.createNew' | translate"
     (onActionButtonClicked)="createNewPurchaseDraft()"
   />

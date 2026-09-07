@@ -11,6 +11,7 @@
 <app-header-title
     [title]="'bank.title' | translate"
     [description]="'bank.description' | translate"
+    actionButtonPermission="bank:create"
     [actionButtonLabel]="'bank.createAccount' | translate"
     (onActionButtonClicked)="createNewBank()"
   ></app-header-title>

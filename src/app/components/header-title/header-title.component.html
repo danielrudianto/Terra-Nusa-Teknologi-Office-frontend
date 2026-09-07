@@ -31,8 +31,17 @@
     </button>
   }
   @if (actionButtonLabel != null) {
-    <button class="header-button" (click)="actionButtonClicked()">
-      <mat-icon>add</mat-icon>
+    <button
+      class="header-button"
+      [class.header-button--terkunci]="tindakanTerkunci"
+      [disabled]="tindakanTerkunci"
+      [matTooltip]="
+        tindakanTerkunci ? ('serverError.FORBIDDEN' | translate) : ''
+      "
+      [matTooltipDisabled]="!tindakanTerkunci"
+      (click)="actionButtonClicked()"
+    >
+      <mat-icon>{{ tindakanTerkunci ? "lock" : "add" }}</mat-icon>
       <span>{{ actionButtonLabel }}</span>
     </button>
   }

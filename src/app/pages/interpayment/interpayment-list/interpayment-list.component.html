@@ -11,6 +11,7 @@
 <app-header-title
     [title]="'interpayment.title' | translate"
     [description]="'interpayment.description' | translate"
+    actionButtonPermission="interpayment:create"
     [actionButtonLabel]="'interpayment.createNew' | translate"
     (onActionButtonClicked)="createNewInterpayment()"
   />

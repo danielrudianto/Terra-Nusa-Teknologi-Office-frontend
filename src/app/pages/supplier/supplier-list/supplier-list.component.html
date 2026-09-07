@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'supplier.title' | translate"
     [description]="'supplier.description' | translate"
+    actionButtonPermission="supplier:create"
     [actionButtonLabel]="'supplier.createNew' | translate"
     (onActionButtonClicked)="createNewSupplier()"
   />

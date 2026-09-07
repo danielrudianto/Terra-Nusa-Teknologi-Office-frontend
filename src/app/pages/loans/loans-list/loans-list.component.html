@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'loans.title' | translate"
     [description]="'loans.description' | translate"
+    actionButtonPermission="loan:create"
     [actionButtonLabel]="'loans.createNew' | translate"
     (onActionButtonClicked)="createNewLoan()"
   ></app-header-title>

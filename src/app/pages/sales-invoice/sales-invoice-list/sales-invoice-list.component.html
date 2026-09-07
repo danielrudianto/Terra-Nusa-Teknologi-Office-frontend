@@ -2,6 +2,7 @@
   <app-header-title
     [title]="'salesInvoice.title' | translate"
     [description]="'salesInvoice.description' | translate"
+    actionButtonPermission="sales_invoice:create"
     [actionButtonLabel]="'salesInvoice.createNew' | translate"
     (onActionButtonClicked)="createNewSalesInvoice()"
   />
