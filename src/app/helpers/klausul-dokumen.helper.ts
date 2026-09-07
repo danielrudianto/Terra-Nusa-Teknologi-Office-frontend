@@ -20,6 +20,7 @@ import {
   ClauseSection,
   buildBuangLumpurClauses,
   buildClauseLines,
+  buildClauseSections,
   buildGroutingClauses,
   buildInsuranceClauses,
   buildLegalServiceBillingTerms,
@@ -167,14 +168,31 @@ export function susunKlausulDokumen(data: any): ClauseSection[] {
       // Cadangan kolom utama bila `customData` belum memuatnya — dokumen lama
       // tidak selalu menyimpan keduanya. Sama persis dengan getter `clauses`
       // pada layar desktop, supaya keduanya tidak berbeda satu baris pun.
+      const konteks = {
+        ...custom,
+        paymentTerm: termBayar,
+        paymentTermText: termBayar,
+        projectName: custom.projectName ?? data.projectName,
+      };
+      /*
+       * Seksi berjudul dipakai bila templatenya menyediakan.
+       *
+       * Pratinjau harus menunjukkan susunan yang SAMA dengan dokumen
+       * cetaknya. Bila di sini tetap satu daftar rata sementara PDF-nya
+       * terbagi "Umum" dan "Sanksi", yang memeriksanya di layar menyetujui
+       * susunan yang bukan susunan yang terbit.
+       */
+      const seksi = buildClauseSections(
+        jenisEfektifDokumen(data),
+        konteks,
+        data.templateVersion,
+        tambahan,
+      );
+      if (seksi) return tutup(seksi);
+
       const lines = buildClauseLines(
         jenisEfektifDokumen(data),
-        {
-          ...custom,
-          paymentTerm: termBayar,
-          paymentTermText: termBayar,
-          projectName: custom.projectName ?? data.projectName,
-        },
+        konteks,
         data.templateVersion,
         tambahan,
       );

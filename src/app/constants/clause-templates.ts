@@ -340,6 +340,20 @@ export interface ClauseTemplate {
    * dibaca terpisah, seperti ketentuan uji kuat tekan beton.
    */
   build: (ctx: ClauseContext) => (string | string[])[];
+  /**
+   * Bentuk BERSEKSI dari klausul yang sama, bila jenis ini memakainya.
+   *
+   * Dikembalikan `null` bila tidak — dan pemanggil kembali memakai `build`.
+   * Dua jalur ini bukan pilihan gaya: sebagian dokumen memang satu daftar
+   * menyambung, dan memaksanya menjadi seksi berjudul membuat rujukan
+   * silang antar poin ("sesuai poin 14") menunjuk nomor yang salah, karena
+   * penomoran dimulai ulang pada tiap seksi.
+   *
+   * `build` TETAP WAJIB ada walaupun seksi tersedia: pratinjau lama,
+   * penyalinan ke catatan, dan jenis PO yang belum memakai seksi semuanya
+   * masih membacanya.
+   */
+  buildSections?: (ctx: ClauseContext) => ClauseSection[] | null;
 }
 
 // ---- shared helpers ------------------------------------------------------
@@ -1228,6 +1242,24 @@ const B_CLAUSES: ClauseTemplate[] = [
      */
     version: '1.1',
     build: (ctx) => bangunKlausulB(ctx, { versi11: true }),
+    /*
+     * Dua seksi berjudul, HANYA pada sewa alat berat.
+     *
+     * Kategori lain mengembalikan `null` dan tetap tercetak sebagai satu
+     * daftar menyambung seperti sebelumnya — memberi judul "Sanksi" pada
+     * dokumen yang tidak punya ketentuan sanksi akan menghasilkan judul
+     * dengan isi kosong.
+     */
+    buildSections: (ctx) => {
+      if ((ctx.rentalCategory || 'alat-berat') !== 'alat-berat') return null;
+      return [
+        {
+          title: 'Umum',
+          items: bangunKlausulB(ctx, { versi11: true, tanpaSanksi: true }),
+        },
+        { title: 'Sanksi', items: klausulSewaAlatBeratSanksi() },
+      ];
+    },
   },
 ];
 
@@ -1245,7 +1277,7 @@ const B_CLAUSES: ClauseTemplate[] = [
  * atau mobilisasinya berharga lain — dan salahnya tidak terlihat, karena
  * dokumennya tetap tercetak rapi.
  */
-function klausulSewaAlatBerat(ctx: ClauseContext): (string | string[])[] {
+function klausulSewaAlatBeratUmum(ctx: ClauseContext): (string | string[])[] {
   const bulan = Number(ctx.rentalMonths) || 0;
   /*
    * Tanpa masa sewa yang terisi, kalimatnya menunjuk tabel — BUKAN
@@ -1256,7 +1288,7 @@ function klausulSewaAlatBerat(ctx: ClauseContext): (string | string[])[] {
    */
   const masa = bulan > 0
     ? `${bulan} (${terbilang(bulan)}) bulan kalender`
-    : 'jangka waktu sebagaimana tercantum dalam tabel di atas';
+    : 'sebagaimana tercantum dalam tabel di atas';
 
   const mobDemob = Number(ctx.mobDemobTotal) || 0;
   const nilaiMobDemob = mobDemob > 0
@@ -1286,16 +1318,19 @@ function klausulSewaAlatBerat(ctx: ClauseContext): (string | string[])[] {
 
     'Apabila PIHAK PERTAMA telah mengeluarkan biaya mobilisasi dan/atau demobilisasi untuk alat pengganti, PIHAK KEDUA wajib mengganti atau mengembalikan seluruh biaya mobilisasi dan demobilisasi tersebut kepada PIHAK PERTAMA, tanpa mengurangi hak PIHAK PERTAMA untuk melakukan pemotongan dari tagihan PIHAK KEDUA dan/atau menuntut kerugian lain yang secara sah dapat ditagihkan.',
 
-    /*
-     * Kepatuhan terhadap SPK dan sanksi — empat ketentuan, BERNOMOR.
-     *
-     * Aslinya ditulis sebagai alinea di bawah satu judul. Di sini keduanya
-     * menjadi poin bernomor karena SPK tipe B mencetak satu daftar bernomor
-     * yang menyambung; menyisipkan judul di tengahnya memutus penomoran dan
-     * membuat rujukan silang ("sesuai poin 14") tidak lagi dapat dipakai.
-     *
-     * Isinya utuh, tidak diringkas.
-     */
+  ];
+}
+
+/**
+ * Kepatuhan terhadap SPK dan sanksi — isi seksi kedua.
+ *
+ * Dipisahkan dari ketentuan umum karena keduanya menjawab hal yang berbeda:
+ * yang di atas mengatur BAGAIMANA pekerjaan berjalan, yang di sini mengatur
+ * APA AKIBATNYA bila tidak. Yang membaca sengketa membuka bagian kedua, dan
+ * mencarinya di tengah dua puluh poin campur aduk memakan waktu lama.
+ */
+function klausulSewaAlatBeratSanksi(): (string | string[])[] {
+  return [
     'Dengan ditandatanganinya SPK ini, PIHAK KEDUA menyatakan telah membaca, memahami, menyetujui, dan wajib melaksanakan seluruh ketentuan, nilai, harga, spesifikasi, jangka waktu, serta kewajiban sebagaimana tercantum dalam SPK beserta lampirannya.',
 
     'Apabila PIHAK KEDUA tidak memenuhi atau melanggar ketentuan dalam SPK, maka PIHAK KEDUA wajib bertanggung jawab atas seluruh akibat yang timbul dari pelanggaran tersebut, termasuk namun tidak terbatas pada penggantian biaya dan kerugian yang wajar dan dapat dibuktikan, denda keterlambatan apabila berlaku, serta biaya yang dikeluarkan PIHAK PERTAMA untuk mendatangkan alat, operator, atau pengganti lainnya.',
@@ -1316,7 +1351,7 @@ function klausulSewaAlatBerat(ctx: ClauseContext): (string | string[])[] {
  */
 function bangunKlausulB(
   ctx: ClauseContext,
-  opsi: { versi11: boolean },
+  opsi: { versi11: boolean; tanpaSanksi?: boolean },
 ): (string | string[])[] {
       /*
        * Istilah mengikuti apa yang benar-benar disewa.
@@ -1639,8 +1674,15 @@ function bangunKlausulB(
 
       // Ketentuan sewa alat berat 1.1 ditambahkan PALING AKHIR, menyambung
       // penomoran yang sudah ada.
+      /*
+       * Sanksi ikut di sini HANYA pada bentuk daftar rata.
+       *
+       * Pada bentuk berseksi ia menjadi seksi keduanya sendiri, dan
+       * memasukkannya di sini juga akan mencetaknya dua kali.
+       */
       if (alatBerat11) {
-        lines.push(...klausulSewaAlatBerat(ctx));
+        lines.push(...klausulSewaAlatBeratUmum(ctx));
+        if (!opsi.tanpaSanksi) lines.push(...klausulSewaAlatBeratSanksi());
       }
 
       return lines;
@@ -3929,6 +3971,35 @@ export function buildClauseLines(
     .map((x) => (x || '').trim())
     .filter((x) => x.length > 0);
   return [...base, ...extra];
+}
+
+/**
+ * Klausul dalam bentuk SEKSI BERJUDUL, bila jenis & versinya memakainya.
+ *
+ * `null` berarti jenis ini tidak berseksi; pemanggil kembali ke
+ * `buildClauseLines`. Poin tambahan dari pengguna disisipkan pada seksi
+ * PERTAMA, bukan terakhir: yang diketik pengguna adalah ketentuan umum,
+ * dan menaruhnya di bawah judul "Sanksi" mengubah artinya.
+ */
+export function buildClauseSections(
+  poType: string,
+  ctx: ClauseContext,
+  version?: string,
+  additional?: string[],
+): ClauseSection[] | null {
+  const template = resolveTemplate(poType, version);
+  if (!template || !template.buildSections) return null;
+  const seksi = template.buildSections(ctx);
+  if (!seksi || !seksi.length) return null;
+
+  const extra = (additional || [])
+    .map((x) => (x || '').trim())
+    .filter((x) => x.length > 0);
+  if (!extra.length) return seksi;
+
+  return seksi.map((s, i) =>
+    i === 0 ? { ...s, items: [...s.items, ...extra] } : s,
+  );
 }
 
 /** Same as above, rendered as an ordered-list HTML string for notes/preview. */

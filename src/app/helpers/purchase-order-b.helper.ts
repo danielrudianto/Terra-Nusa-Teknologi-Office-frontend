@@ -2,7 +2,11 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import { nilaiBaris } from './nilai-baris.helper';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Alignment, Margins } from 'pdfmake/interfaces';
-import { ClauseContext, buildClauseLines } from '../constants/clause-templates';
+import {
+  ClauseContext,
+  buildClauseLines,
+  buildClauseSections,
+} from '../constants/clause-templates';
 import { documentFonts } from '../constants/document-font.constant';
 import {
   DOCUMENT_DEFAULT_STYLE,
@@ -578,7 +582,23 @@ export function printPurchaseOrderB(
    * daftar rata — dan seksinya dikirim langsung oleh pemanggil karena tidak
    * terdaftar di CLAUSE_TEMPLATES. Bila ada, seksi itulah yang dicetak.
    */
-  const sections = data.sections;
+  /*
+   * Seksi dari PEMANGGIL lebih dulu, lalu dari templatenya sendiri.
+   *
+   * Yang dari pemanggil dipakai jenis PO yang tidak terdaftar di
+   * CLAUSE_TEMPLATES. Yang dari template dipakai SPK sewa alat berat 1.1,
+   * yang membagi ketentuannya menjadi "Umum" dan "Sanksi" — dan karena ia
+   * dirakit di sini, cetak ulang dokumen lama ikut mendapatkannya tanpa
+   * layar mana pun perlu tahu.
+   */
+  const sections =
+    data.sections ??
+    buildClauseSections(
+      data.poType || 'B',
+      data.clauseContext,
+      data.templateVersion,
+      data.additionalClauses,
+    );
 
   const dd = {
     ...DOCUMENT_PAGE,
