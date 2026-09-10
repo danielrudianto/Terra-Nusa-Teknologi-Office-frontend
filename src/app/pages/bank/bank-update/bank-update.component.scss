@@ -129,3 +129,18 @@ $line: var(--line, #eef0f3);
     cursor: default;
   }
 }
+
+
+/* Pengecualian dari kalender kas — keadaan khusus, dipisahkan dari isian
+   pokok dengan garis supaya tidak terbaca sebagai bagian data rekening. */
+.bc-exclude {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line, #e5e7eb);
+}
+.bc-exclude__hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--muted, #6b7280);
+}

@@ -34,12 +34,37 @@ export class CalendarAccountSelectorComponent {
   fetchBankAccounts(): void {
     this.apiService.get('banks/all', {}).subscribe({
       next: (data: any) => {
+        /*
+         * Rekening yang DIKECUALIKAN tidak tercentang di awal.
+         *
+         * Sebagian rekening bukan kas operasional — deposito, escrow,
+         * rekening penampung uang muka. Uangnya ada, tetapi tidak dapat
+         * dipakai membayar apa pun bulan ini, sehingga memasukkannya ke
+         * saldo gabungan membuat perencanaan kas terbaca lebih longgar
+         * daripada keadaan sebenarnya.
+         *
+         * Yang disetel di sini hanya nilai AWALNYA. Rekeningnya tetap
+         * tampil di pemilih dan tetap dapat dicentang sendiri — kadang
+         * memang ingin dilihat.
+         */
         this.bankAccounts = data.map((account: any) => {
           return {
             ...account,
-            selected: true,
+            selected: !account.excludeFromCalendar,
           };
         });
+
+        /*
+         * Pilihan awal DIPANCARKAN, tidak menunggu dialog dibuka.
+         *
+         * Sebelumnya pemancarnya hanya berjalan saat dialog ditutup,
+         * sehingga kalender memulai dengan daftar kosong dan server
+         * memperlakukannya sebagai "seluruh rekening". Selama semua
+         * rekening memang ikut, itu kebetulan benar; begitu ada yang
+         * dikecualikan, kalender akan tetap menghitungnya sampai seseorang
+         * membuka pemilihnya.
+         */
+        this.bankAccountChanges.emit(this.bankAccounts);
       },
       error: (error) => {
         this.snackBar.open(

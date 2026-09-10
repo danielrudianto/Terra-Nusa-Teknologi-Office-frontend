@@ -1593,6 +1593,8 @@
     "menuUbah": "修改"
   },
   "bank": {
+    "excludeFromCalendarHint": "该账户不计入合计余额，日历中默认不勾选。适用于定期存款、共管账户或预付款账户——钱在，但不是可动用的现金。",
+    "excludeFromCalendar": "从现金日历中排除",
     "title": "银行账户",
     "description": "在此管理银行账户",
     "searchPlaceholder": "银行、号码或账户名称",
@@ -1729,6 +1731,7 @@
     "totalTerlewat": "逾期合计"
   },
   "calendarAccount": {
+    "dikecualikan": "已排除",
     "accountsSelected": "个银行账户已选",
     "selectTitle": "选择银行账户"
   },

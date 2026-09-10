@@ -15,7 +15,21 @@
         [selected]="account.selected"
         (selectedChange)="onSelectionChanged(account.id, $event)"
       >
-        <span class="casd-item__name">{{ account.bankAccountName }}</span>
+        <span class="casd-item__name">
+          {{ account.bankAccountName }}
+          <!--
+            Rekening yang dikecualikan diberi tanda.
+
+            Ia tidak tercentang di awal, dan tanpa keterangan itu terbaca
+            seperti kelalaian — yang membukanya akan mencentangnya kembali
+            justru karena mengira ada yang terlewat.
+          -->
+          @if (account.excludeFromCalendar) {
+            <span class="casd-item__tag">{{
+              "calendarAccount.dikecualikan" | translate
+            }}</span>
+          }
+        </span>
         <span class="casd-item__number">{{ account.bankAccountNumber }}</span>
       </mat-list-option>
     </mat-selection-list>

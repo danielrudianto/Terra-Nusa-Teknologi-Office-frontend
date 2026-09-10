@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from 'src/app/services/api.service';
@@ -23,6 +24,7 @@ import { DialogGeserDirective } from '../../../directives/dialog-geser.directive
 @Component({
   selector: 'app-bank-create',
   imports: [
+    MatSlideToggleModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -60,6 +62,19 @@ export class BankCreateComponent {
       Validators.pattern(/^[0-9]*$/),
     ]),
     bankName: new FormControl('', Validators.required),
+    /*
+     * Rekening ini TIDAK ikut perhitungan kalender kas.
+     *
+     * Untuk rekening yang uangnya ada tetapi bukan kas yang dapat
+     * dibelanjakan bulan ini — deposito, escrow, penampung uang muka.
+     * Memasukkannya ke saldo gabungan membuat perencanaan kas terbaca
+     * lebih longgar daripada keadaan sebenarnya.
+     *
+     * Disimpan sebagai pengecualian (bawaan `false`), bukan sebagai
+     * "ikut sertakan": mayoritas rekening memang ikut, dan baris lama
+     * yang belum punya kolom ini tetap terbaca sebagai ikut.
+     */
+    excludeFromCalendar: new FormControl(false),
   });
 
   filter(): void {

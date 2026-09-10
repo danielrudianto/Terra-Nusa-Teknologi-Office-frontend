@@ -70,6 +70,21 @@
           >{{ "common.onlyNumbers" | translate }}</mat-error
         >
       </mat-form-field>
+
+      <!--
+        Pengecualian dari kalender kas.
+
+        Diletakkan paling bawah: ini keadaan khusus, bukan isian yang perlu
+        disentuh pada rekening biasa.
+      -->
+      <div class="bc-exclude">
+        <mat-slide-toggle formControlName="excludeFromCalendar">
+          {{ "bank.excludeFromCalendar" | translate }}
+        </mat-slide-toggle>
+        <p class="bc-exclude__hint">
+          {{ "bank.excludeFromCalendarHint" | translate }}
+        </p>
+      </div>
     </mat-dialog-content>
 
     <mat-dialog-actions class="bc-actions">

@@ -1593,6 +1593,8 @@
     "menuUbah": "Ubah"
   },
   "bank": {
+    "excludeFromCalendarHint": "Rekening ini tidak ikut saldo gabungan dan tidak tercentang di kalender. Untuk deposito, escrow, atau penampung uang muka — uangnya ada, tetapi bukan kas yang dapat dibelanjakan.",
+    "excludeFromCalendar": "Kecualikan dari kalender kas",
     "title": "Rekening Bank",
     "description": "Kelola rekening bank di sini",
     "searchPlaceholder": "Bank, nomor, atau nama rekening",
@@ -1729,6 +1731,7 @@
     "totalTerlewat": "Total yang tertunda"
   },
   "calendarAccount": {
+    "dikecualikan": "Dikecualikan",
     "accountsSelected": "Rekening Dipilih",
     "selectTitle": "Pilih rekening bank"
   },
