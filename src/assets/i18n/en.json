@@ -945,6 +945,9 @@
     "noMatch": "No matching client"
   },
   "expense": {
+    "deleteTitle": "Delete expense",
+    "deletePrompt": "This expense and all of its payments will be deleted. Continue?",
+    "deleteHasPayments": "This expense already has payments. Cancel the payments first, or ask someone with higher access.",
     "viewValueBreakdown": "Value breakdown",
     "viewPaymentHistory": "Payment history",
     "viewDestinationAccount": "Destination account",
@@ -1593,6 +1596,12 @@
     "menuUbah": "Edit"
   },
   "bank": {
+    "filterKeadaan": "State filter",
+    "keadaanAktif": "Active",
+    "keadaanDihapus": "Deleted",
+    "keadaanSemua": "All",
+    "deleteHasBalance": "This account still holds a balance. Move the balance to another account first, then it can be deleted.",
+    "deleteBalanceUnknown": "This account's balance could not be read, so deletion is held back. Try again shortly.",
     "excludeFromCalendarHint": "This account is left out of the combined balance and unticked in the calendar. For deposits, escrow, or advance-holding accounts — the money exists, but it is not spendable cash.",
     "calendarColumn": "Cash calendar",
     "includedInCalendar": "Included",

@@ -20,6 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { TranslateService } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
@@ -41,6 +42,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     MatMenuModule,
     RefreshButtonComponent,
     MatTooltipModule,
+    MatChipsModule,
   ],
   templateUrl: './bank-list.component.html',
   styleUrl: './bank-list.component.scss',
@@ -71,6 +73,32 @@ export class BankListComponent {
     'balance',
     'action',
   ];
+
+  /**
+   * Keadaan rekening yang sedang ditampilkan.
+   *
+   * "aktif" sejak awal: rekening yang dihapus adalah catatan, bukan rekening
+   * yang sedang dipakai — dan penghitung halaman memang sudah tidak
+   * menghitungnya, sehingga menampilkannya membuat jumlah di bawah tabel
+   * tidak pernah cocok dengan isinya.
+   */
+  keadaan: 'aktif' | 'dihapus' | 'semua' = 'aktif';
+
+  /**
+   * Berganti keadaan berarti KEMBALI KE HALAMAN PERTAMA.
+   *
+   * Jumlah barisnya berubah seluruhnya; tetap di halaman lima setelah
+   * penyaringnya berganti kerap mendarat di halaman kosong, dan yang
+   * membacanya menyimpulkan tidak ada datanya.
+   */
+  gantiKeadaan(nilai: 'aktif' | 'dihapus' | 'semua') {
+    // `mat-chip-listbox` mengirim `undefined` saat pilihan yang sedang aktif
+    // ditekan lagi. Tanpa penjagaan ini penyaringnya jadi kosong dan server
+    // mengembalikan bawaan yang tidak lagi cocok dengan pil yang tampak.
+    if (!nilai || nilai === this.keadaan) return;
+    this.keadaan = nilai;
+    this.fetchBankAccounts(1);
+  }
 
   ngOnInit(): void {
     this.fetchBankAccounts();
@@ -106,6 +134,7 @@ export class BankListComponent {
         sortByDirection: this.sortByDirection,
         page: this.page,
         keyword: this.formControl.value,
+        keadaan: this.keadaan,
       })
       .subscribe({
         next: (res: any) => {
@@ -198,9 +227,14 @@ export class BankListComponent {
           if (data === true) {
             this.apiService.delete('banks/' + id).subscribe({
               next: (a) => {
-                // remove the deleted bank account from the list
-                this.banks = this.banks.filter((bank) => bank.id !== id);
-                this.count--;
+                // Dimuat ulang dari server, bukan dicoret dari daftar lokal.
+                //
+                // Penyaring keadaan menentukan apakah rekening yang baru
+                // dihapus seharusnya tetap tampak (pada "dihapus" dan
+                // "semua") atau hilang (pada "aktif"). Menghapusnya dari
+                // array secara lokal selalu keliru pada dua dari tiga
+                // keadaan itu, dan membuat hitungan halamannya meleset.
+                this.fetchBankAccounts(this.page);
                 this.snackBar.open(
       this.translate.instant('notify.deleteSuccess'),
                   'Close',
@@ -211,13 +245,22 @@ export class BankListComponent {
               },
               error: (b) => {
                 console.error('Error deleting bank account:', b);
-                this.snackBar.open(
-      this.translate.instant('notify.deleteFailed'),
-                  'Close',
-                  {
-                    duration: 3000,
-                  },
-                );
+                /*
+                 * Kode tetap dari server dipetakan ke kalimat, bukan
+                 * ditampilkan apa adanya. "BANK_HAS_BALANCE" tidak memberi
+                 * tahu apa yang harus dilakukan berikutnya; kalimatnya
+                 * menyebutkan bahwa saldonya harus dipindahkan dulu.
+                 */
+                const kode = b?.error?.detail;
+                const pesan =
+                  kode === 'BANK_HAS_BALANCE'
+                    ? this.translate.instant('bank.deleteHasBalance')
+                    : kode === 'BANK_BALANCE_UNKNOWN'
+                      ? this.translate.instant('bank.deleteBalanceUnknown')
+                      : this.translate.instant('notify.deleteFailed');
+                this.snackBar.open(pesan, 'Close', {
+                  duration: 6000,
+                });
               },
             });
           }

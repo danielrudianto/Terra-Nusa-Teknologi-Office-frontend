@@ -29,6 +29,36 @@
       />
     </mat-form-field>
 
+    <!--
+      Keadaan rekening yang sedang ditampilkan.
+
+      Satu pilihan, bukan beberapa: ketiganya bukan sifat yang menumpuk
+      melainkan satu pertanyaan — "yang mana yang sedang saya lihat".
+      "Semua" sudah merupakan gabungan dua yang lain.
+
+      Bawaannya BERLAKU. Rekening yang dihapus adalah catatan, bukan rekening
+      yang sedang dipakai; sebelumnya ia tetap ikut terdaftar sementara
+      paginator sudah tidak menghitungnya — sehingga jumlah di bawah tidak
+      pernah cocok dengan yang terlihat.
+    -->
+    <mat-chip-listbox
+      class="bl-chips"
+      hideSingleSelectionIndicator
+      [attr.aria-label]="'bank.filterKeadaan' | translate"
+      [ngModel]="keadaan"
+      (ngModelChange)="gantiKeadaan($event)"
+    >
+      <mat-chip-option class="bl-fchip" value="aktif">{{
+        "bank.keadaanAktif" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="bl-fchip bl-fchip--hapus" value="dihapus">{{
+        "bank.keadaanDihapus" | translate
+      }}</mat-chip-option>
+      <mat-chip-option class="bl-fchip" value="semua">{{
+        "bank.keadaanSemua" | translate
+      }}</mat-chip-option>
+    </mat-chip-listbox>
+
     <span class="bl-spacer"></span>
 
     <!--

@@ -324,3 +324,18 @@
     cursor: help;
   }
 }
+
+/* ---------- penyaring keadaan ---------- */
+.bl-chips {
+  flex: none;
+}
+.bl-fchip {
+  font-size: 0.8rem;
+}
+/* Yang "dihapus" diberi warna peringatan saat terpilih — daftar berisi
+   rekening terhapus tidak boleh terbaca sebagai daftar biasa. */
+:host ::ng-deep .bl-fchip--hapus.mat-mdc-chip-selected {
+  --mdc-chip-elevated-selected-container-color: var(--bad-bg, #fdecea);
+  --mdc-chip-label-text-color: var(--bad, #b42318);
+  --mdc-chip-selected-label-text-color: var(--bad, #b42318);
+}

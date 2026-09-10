@@ -68,19 +68,19 @@
       <div class="ev-money">
         <div class="ev-money__row">
           <span>DPP</span
-          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="ev-money__row" *ngIf="vPpn">
           <span>{{ "expenseForm.ppnPercent" | translate }}</span
-          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="ev-money__row" *ngIf="vPbbkb">
           <span>{{ "expense.pbbkb" | translate }}</span
-          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="ev-money__row ev-money__row--muted" *ngIf="vPph">
           <span>PPh</span
-          ><span>{{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>{{ vPph | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
 
         <!-- PPh object -->
@@ -102,7 +102,7 @@
 
         <div class="ev-money__total">
           <span>{{ "expense.viewTotal" | translate }}</span>
-          <span>{{ vTotal | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          <span>{{ vTotal | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
       </div>
     </section>
@@ -129,7 +129,7 @@
         </div>
         <div class="ev-pay__right">
           <span class="ev-pay__amount">{{
-            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.2-2"
           }}</span>
           <span
             class="ev-badge"
@@ -179,6 +179,19 @@
     <span class="ev-spacer"></span>
     <button mat-button (click)="ubah()">
       <mat-icon>edit</mat-icon>&nbsp;{{ "common.edit" | translate }}
+    </button>
+    <!--
+      Menghapus beban ikut menghapus pembayarannya — karena itu tombolnya
+      dipagari izin, dan penegasannya dilakukan di daftar, bukan di sini.
+      Dialog ini hanya mengembalikan niatnya.
+    -->
+    <button
+      mat-button
+      class="ev-delete"
+      *appCan="'expenses:delete'"
+      (click)="hapus()"
+    >
+      <mat-icon>delete_outline</mat-icon>&nbsp;{{ "common.delete" | translate }}
     </button>
     <button mat-button (click)="close()">
       {{ "expense.viewClose" | translate }}

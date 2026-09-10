@@ -27,6 +27,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ExpenseViewComponent } from '../expense-view/expense-view.component';
+import { DeleteConfirmationComponent } from 'src/app/components/delete-confirmation/delete-confirmation.component';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -437,10 +438,60 @@ export class ExpenseListComponent {
   }
 
   viewExpense(id: number) {
-    this.dialog.open(ExpenseViewComponent, {
-      data: {
-        id: id,
-      },
-    });
+    this.dialog
+      .open(ExpenseViewComponent, {
+        data: {
+          id: id,
+        },
+      })
+      .afterClosed()
+      .subscribe((value) => {
+        if (value === 'delete') this.hapusBeban(id);
+      });
+  }
+
+  /**
+   * Hapus beban, setelah ditegaskan.
+   *
+   * Penegasannya menyebut pembayarannya secara terpisah: yang menekan Hapus
+   * dari layar beban belum tentu tahu bahwa pembayarannya ikut terhapus, dan
+   * itulah bagian yang tidak dapat dibatalkan sendiri olehnya.
+   */
+  private hapusBeban(id: number) {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('expense.deleteTitle'),
+          prompt: this.translate.instant('expense.deletePrompt'),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (setuju !== true) return;
+
+        this.apiService.delete(`expenses/${id}`).subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant('notify.deleteSuccess'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.fetchData(this.page, this.pageSize);
+          },
+          error: (err) => {
+            /*
+             * Kode tetap dari server dipetakan ke kalimat, bukan ditampilkan
+             * apa adanya. Tanpa ini yang terbaca pengguna adalah
+             * "EXPENSE_HAS_PAYMENTS" — yang tidak memberi tahu apa yang
+             * harus dilakukan berikutnya.
+             */
+            const pesan =
+              err?.error?.detail === 'EXPENSE_HAS_PAYMENTS'
+                ? this.translate.instant('expense.deleteHasPayments')
+                : this.serverMessage.terjemahkan(err);
+            this.snackBar.open(pesan, 'Close', { duration: 6000 });
+          },
+        });
+      });
   }
 }

@@ -945,6 +945,9 @@
     "noMatch": "Tidak ada klien yang cocok"
   },
   "expense": {
+    "deleteTitle": "Hapus beban",
+    "deletePrompt": "Beban ini akan dihapus beserta seluruh pembayarannya. Lanjutkan?",
+    "deleteHasPayments": "Beban ini sudah punya pembayaran. Batalkan dulu pembayarannya, atau minta bantuan pengguna dengan akses lebih tinggi.",
     "viewValueBreakdown": "Rincian Nilai",
     "viewPaymentHistory": "Riwayat Pembayaran",
     "viewDestinationAccount": "Rekening Tujuan",
@@ -1593,6 +1596,12 @@
     "menuUbah": "Ubah"
   },
   "bank": {
+    "filterKeadaan": "Penyaring keadaan",
+    "keadaanAktif": "Berlaku",
+    "keadaanDihapus": "Dihapus",
+    "keadaanSemua": "Semua",
+    "deleteHasBalance": "Rekening ini masih ada saldonya. Pindahkan dulu saldonya ke rekening lain, baru rekening ini dapat dihapus.",
+    "deleteBalanceUnknown": "Saldo rekening ini tidak dapat dibaca, jadi penghapusannya ditahan. Coba lagi sebentar lagi.",
     "excludeFromCalendarHint": "Rekening ini tidak ikut saldo gabungan dan tidak tercentang di kalender. Untuk deposito, escrow, atau penampung uang muka — uangnya ada, tetapi bukan kas yang dapat dibelanjakan.",
     "calendarColumn": "Kalender kas",
     "includedInCalendar": "Termasuk",

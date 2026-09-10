@@ -26,6 +26,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AuditTrailComponent } from '../../../components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
+import { CanDirective } from '../../../directives/can.directive';
 import { Router } from '@angular/router';
 
 @Component({
@@ -45,6 +46,7 @@ import { Router } from '@angular/router';
     CommonModule,
     TranslatePipe,
     DialogGeserDirective,
+    CanDirective,
   ],
   templateUrl: './expense-view.component.html',
   styleUrl: './expense-view.component.scss',
@@ -68,6 +70,17 @@ export class ExpenseViewComponent {
   ubah(): void {
     this.dialog.close();
     this.router.navigate(['/Expense/Create', this.data.id]);
+  }
+
+  /**
+   * Kembalikan niat menghapus; penegasan dan panggilannya di daftar.
+   *
+   * Dialog ini tidak memanggil server sendiri karena setelah beban terhapus
+   * daftarnya harus dimuat ulang — dan yang memegang halaman serta
+   * penyaringnya adalah daftar, bukan dialog ini.
+   */
+  hapus(): void {
+    this.dialog.close('delete');
   }
 
   isLoading = true;

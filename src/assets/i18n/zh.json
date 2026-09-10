@@ -945,6 +945,9 @@
     "noMatch": "无匹配客户"
   },
   "expense": {
+    "deleteTitle": "删除费用",
+    "deletePrompt": "此费用及其所有付款都将被删除。是否继续？",
+    "deleteHasPayments": "此费用已有付款。请先取消付款，或请权限更高的用户处理。",
     "viewValueBreakdown": "金额明细",
     "viewPaymentHistory": "付款记录",
     "viewDestinationAccount": "目标账户",
@@ -1593,6 +1596,12 @@
     "menuUbah": "修改"
   },
   "bank": {
+    "filterKeadaan": "状态筛选",
+    "keadaanAktif": "有效",
+    "keadaanDihapus": "已删除",
+    "keadaanSemua": "全部",
+    "deleteHasBalance": "该账户仍有余额。请先将余额转至其他账户，然后才能删除。",
+    "deleteBalanceUnknown": "无法读取该账户余额，因此暂不允许删除。请稍后再试。",
     "excludeFromCalendarHint": "该账户不计入合计余额，日历中默认不勾选。适用于定期存款、共管账户或预付款账户——钱在，但不是可动用的现金。",
     "calendarColumn": "现金日历",
     "includedInCalendar": "计入",
