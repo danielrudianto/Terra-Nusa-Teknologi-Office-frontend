@@ -19,6 +19,7 @@ import { HeaderTitleComponent } from '../../../components/header-title/header-ti
 import { TranslatePipe } from '@ngx-translate/core';
 import { BankCreateComponent } from '../bank-create/bank-create.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateService } from '@ngx-translate/core';
 import { RefreshButtonComponent } from '../../../components/refresh-button/refresh-button.component';
 
@@ -39,6 +40,7 @@ import { RefreshButtonComponent } from '../../../components/refresh-button/refre
     HeaderTitleComponent,
     MatMenuModule,
     RefreshButtonComponent,
+    MatTooltipModule,
   ],
   templateUrl: './bank-list.component.html',
   styleUrl: './bank-list.component.scss',
@@ -65,6 +67,7 @@ export class BankListComponent {
     'bankName',
     'bankAccountNumber',
     'bankAccountName',
+    'excludeFromCalendar',
     'balance',
     'action',
   ];

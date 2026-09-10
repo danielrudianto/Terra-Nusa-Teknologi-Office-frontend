@@ -1594,6 +1594,9 @@
   },
   "bank": {
     "excludeFromCalendarHint": "Rekening ini tidak ikut saldo gabungan dan tidak tercentang di kalender. Untuk deposito, escrow, atau penampung uang muka — uangnya ada, tetapi bukan kas yang dapat dibelanjakan.",
+    "calendarColumn": "Kalender kas",
+    "includedInCalendar": "Termasuk",
+    "excludedFromCalendar": "Dikecualikan",
     "excludeFromCalendar": "Kecualikan dari kalender kas",
     "title": "Rekening Bank",
     "description": "Kelola rekening bank di sini",

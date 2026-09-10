@@ -1594,6 +1594,9 @@
   },
   "bank": {
     "excludeFromCalendarHint": "This account is left out of the combined balance and unticked in the calendar. For deposits, escrow, or advance-holding accounts — the money exists, but it is not spendable cash.",
+    "calendarColumn": "Cash calendar",
+    "includedInCalendar": "Included",
+    "excludedFromCalendar": "Excluded",
     "excludeFromCalendar": "Exclude from cash calendar",
     "title": "Bank Accounts",
     "description": "Manage your bank accounts here",

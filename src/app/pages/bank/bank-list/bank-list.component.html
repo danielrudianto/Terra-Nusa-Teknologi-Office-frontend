@@ -139,6 +139,36 @@
           </td>
         </ng-container>
 
+        <!--
+          Status kalender kas.
+
+          DUA keadaan ditampilkan, bukan hanya yang dikecualikan. Kolom yang
+          kosong pada kebanyakan baris terbaca seperti data yang belum termuat,
+          bukan seperti jawaban — dan yang dicari orang di kolom ini justru
+          rekening mana yang TIDAK ikut hitungan.
+        -->
+        <ng-container matColumnDef="excludeFromCalendar">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "bank.calendarColumn" | translate }}
+          </th>
+          <td mat-cell *matCellDef="let bank">
+            @if (bank.excludeFromCalendar) {
+              <span
+                class="bl-tag bl-tag--off"
+                [matTooltip]="'bank.excludeFromCalendarHint' | translate"
+              >
+                <mat-icon>block</mat-icon
+                >{{ "bank.excludedFromCalendar" | translate }}
+              </span>
+            } @else {
+              <span class="bl-tag bl-tag--on">
+                <mat-icon>check</mat-icon
+                >{{ "bank.includedInCalendar" | translate }}
+              </span>
+            }
+          </td>
+        </ng-container>
+
         <!-- Balance -->
         <ng-container matColumnDef="balance">
           <th mat-header-cell *matHeaderCellDef class="bl-num">{{ "bank.balance" | translate }}</th>
