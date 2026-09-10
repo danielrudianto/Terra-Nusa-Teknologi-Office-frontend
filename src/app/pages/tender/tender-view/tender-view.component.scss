@@ -102,14 +102,22 @@
     color: var(--brand, #154dec);
   }
 
+  /*
+   * Warna keadaan memakai TOKEN, bukan heksa tetap.
+   *
+   * Heksa terang tidak ikut berbalik pada mode gelap: latarnya tetap hijau
+   * muda sementara tulisan di atasnya menjadi terang, dan lencananya berubah
+   * jadi kotak putih menyilaukan yang isinya tidak terbaca. Token `--ok-*`
+   * dan `--bad-*` sudah punya pasangan gelapnya di `styles.scss`.
+   */
   &[data-status="selesai"] {
-    background: #e6f5ec;
-    color: #1a7f4b;
+    background: var(--ok-bg, #e6f6ec);
+    color: var(--ok-fg, #1a7f45);
   }
 
   &[data-status="batal"] {
-    background: #fdecea;
-    color: #c62828;
+    background: var(--bad-bg, #fdecec);
+    color: var(--bad-fg, #b3322f);
   }
 }
 
@@ -123,8 +131,15 @@
   margin-bottom: 1rem;
   padding: 0.9rem 1.1rem;
   border-radius: 14px;
-  background: #e8f5e9;
-  border: 1px solid #66bb6a;
+  /*
+   * Latarnya token, bukan hijau muda tetap.
+   *
+   * Ini yang paling parah di mode gelap: latarnya tetap terang sementara
+   * tombol Material di dalamnya memakai warna teks mode gelap — tulisan putih
+   * di atas hijau muda, praktis tidak terbaca sama sekali.
+   */
+  background: var(--ok-bg, #e8f5e9);
+  border: 1px solid var(--ok-fg, #66bb6a);
 }
 
 .tv-sebar__teks {
@@ -134,7 +149,7 @@
   font-size: 0.85rem;
 
   strong {
-    color: #1b5e20;
+    color: var(--ok-fg, #1b5e20);
   }
 
   span {
@@ -341,10 +356,10 @@
  * terlewat.
  */
 .tv-td-harga.murah {
-  background: #e6f5ec;
+  background: var(--ok-bg, #e6f6ec);
 
   .tv-harga {
-    color: #1a7f4b;
+    color: var(--ok-fg, #1a7f45);
     font-weight: 700;
   }
 }
