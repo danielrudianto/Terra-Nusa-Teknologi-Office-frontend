@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   MAT_DIALOG_DATA,
@@ -53,7 +52,6 @@ export interface DataDialogProgress {
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
@@ -69,7 +67,9 @@ export class ProjectProgressDialogComponent {
   menyimpan = false;
 
   readonly form = new FormGroup({
-    date: new FormControl<Date | null>(null, Validators.required),
+    // Tipenya `any`: adapter Moment mengisi bidang ini dengan objek
+    // Moment, bukan `Date`.
+    date: new FormControl<any>(null, Validators.required),
     percentage: new FormControl<number | null>(null, [
       Validators.required,
       Validators.min(0),
@@ -97,16 +97,30 @@ export class ProjectProgressDialogComponent {
   }
 
   /**
-   * Tanggal dikirim sebagai `YYYY-MM-DD` lokal, bukan ISO UTC.
+   * Tanggal dikirim sebagai `YYYY-MM-DD` SETEMPAT, bukan ISO UTC.
    *
-   * `toISOString()` menggeser tanggal ke UTC; di WIB, opname sore hari
-   * tercatat pada tanggal yang sama, tetapi opname dini hari mundur satu
-   * hari — dan kurvanya bergeser tanpa ada yang tahu sebabnya.
+   * Dua hal yang harus benar sekaligus:
+   *
+   * 1. Nilainya BUKAN `Date`. Aplikasi ini memasang adapter Moment
+   *    (`provideMomentDateAdapter` di `app.module`), sehingga datepicker
+   *    mengembalikan objek Moment. Memanggil `.getMonth()` langsung pada
+   *    nilai formulir melempar "getMonth is not a function" tepat saat
+   *    tombol Simpan ditekan — dan tidak ada satu pun tanda sebelum itu.
+   *    `new Date(v)` menerima keduanya: Moment lewat `valueOf()`, dan teks
+   *    lewat parsernya sendiri.
+   *
+   * 2. Disusun dari bagian waktu SETEMPAT. `toISOString()` mengubahnya ke
+   *    UTC lebih dulu, dan bagi WIB itu memundurkan tanggalnya sehari untuk
+   *    opname dini hari — kurvanya bergeser tanpa ada yang tahu sebabnya.
+   *
+   * Bentuknya sengaja sama dengan `tanggalIso` pada dialog rencana kas.
    */
-  private tanggalLokal(d: Date): string {
-    const bulan = `${d.getMonth() + 1}`.padStart(2, '0');
-    const hari = `${d.getDate()}`.padStart(2, '0');
-    return `${d.getFullYear()}-${bulan}-${hari}`;
+  private tanggalLokal(v: any): string | null {
+    if (!v) return null;
+    const t = v instanceof Date ? v : new Date(v);
+    if (isNaN(t.getTime())) return null;
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${t.getFullYear()}-${dd(t.getMonth() + 1)}-${dd(t.getDate())}`;
   }
 
   simpan(): void {
@@ -116,8 +130,17 @@ export class ProjectProgressDialogComponent {
     }
 
     const nilai = this.form.getRawValue();
+    const tanggal = this.tanggalLokal(nilai.date);
+    if (!tanggal) {
+      // Tidak seharusnya terjadi — bidangnya wajib — tetapi mengirim `null`
+      // ke server menghasilkan 400 yang tidak menyebutkan bidang mana.
+      this.form.controls.date.setErrors({ required: true });
+      this.form.markAllAsTouched();
+      return;
+    }
+
     const muatan = {
-      date: this.tanggalLokal(nilai.date as Date),
+      date: tanggal,
       percentage: Number(nilai.percentage),
       description: (nilai.description || '').trim() || null,
     };
