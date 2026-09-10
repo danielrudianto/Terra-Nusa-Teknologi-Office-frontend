@@ -206,8 +206,23 @@
   border: 1px solid var(--line, #e4e9fb);
   border-radius: 12px;
 
+  /*
+   * Lebar kolom ditentukan aturan, BUKAN isinya.
+   *
+   * Dengan tata letak otomatis, kolom pemasok yang keterangannya panjang
+   * melebar sendiri dan yang lain menyempit — padahal seluruh guna tabel ini
+   * membandingkan berdampingan. Kolom yang lebarnya berbeda-beda membuat
+   * angka pada baris yang sama tidak sejajar, dan mata membaca kolom lebar
+   * sebagai penawaran yang "lebih besar" sebelum angkanya sempat dibaca.
+   *
+   * Tabelnya tetap dapat melebihi lebar layar: pada tata letak tetap, lebar
+   * tabel adalah yang TERBESAR antara 100% dan jumlah lebar kolomnya —
+   * sehingga dengan banyak pemasok ia melebar dan induknya menggulir, bukan
+   * memampatkan kolom sampai tidak terbaca.
+   */
   table {
     border-collapse: collapse;
+    table-layout: fixed;
     width: 100%;
     min-width: 620px;
   }
@@ -218,6 +233,9 @@
     border-bottom: 1px solid var(--line, #e4e9fb);
     text-align: left;
     vertical-align: top;
+    // Tata letak tetap tidak melebarkan kolom demi satu kata panjang;
+    // tanpa ini nomor rekening atau nama berkas meluber ke kolom sebelah.
+    overflow-wrap: anywhere;
   }
 }
 
@@ -232,7 +250,8 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  min-width: 220px;
+  width: 240px;
+  min-width: 240px;
   background: var(--surface, #fff);
   border-right: 1px solid var(--line, #e4e9fb);
 }
@@ -247,8 +266,13 @@
   color: var(--muted, #6b7280);
 }
 
+/*
+ * Semua kolom pemasok selebar ini, tanpa kecuali — itulah yang membuat
+ * barisnya dapat dibandingkan sekilas.
+ */
 .tv-th-quote {
-  min-width: 160px;
+  width: 210px;
+  min-width: 210px;
 }
 
 .tv-qhead {

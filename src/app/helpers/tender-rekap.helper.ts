@@ -26,6 +26,8 @@ import {
   rupiah,
 } from './purchase-order-shared.helper';
 
+import { documentFonts } from '../constants/document-font.constant';
+
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 
 export interface BarisRekap {
@@ -148,7 +150,7 @@ function kirimTeks(q: PenawaranRekap): string {
  */
 export const MAKS_PEMASOK_CETAK = 9;
 
-export function cetakRekapTender(d: DataRekap, output: 'open' | 'download' = 'open') {
+export function berkasRekapTender(d: DataRekap) {
   /*
    * Lebar kolom DITENTUKAN, bukan `auto`.
    *
@@ -359,7 +361,31 @@ export function cetakRekapTender(d: DataRekap, output: 'open' | 'download' = 'op
     pageOrientation: 'landscape',
   };
 
-  const pdf = pdfMake.createPdf(doc);
+  // Calibri HARUS ikut dikirim ke createPdf.
+  //
+  // `DOCUMENT_DEFAULT_STYLE` meminta font 'Calibri', tetapi pdfmake hanya
+  // membawa Roboto pada vfs bawaannya. Tanpa `fonts`/`vfs` di sini, pdfmake
+  // melempar "Font 'Calibri' in style 'bold' is not defined" — dan karena
+  // galatnya terjadi saat menyusun tata letak, TIDAK ADA berkas yang keluar
+  // sama sekali. Tombolnya seperti tidak berfungsi.
+  const baseVfs = (pdfFonts as any).vfs ?? (pdfFonts as any);
+  const { fonts, vfs } = documentFonts(baseVfs);
+
+  return pdfMake.createPdf(doc, undefined, fonts as any, vfs as any);
+}
+
+/**
+ * Susun berkas PDF-nya, tanpa membuka atau mengunduh.
+ *
+ * Dipisahkan supaya wiring font-nya dapat diuji: `getBuffer()` di atas hasil
+ * fungsi ini menjalankan penyusunan tata letak yang sama persis dengan yang
+ * dijalankan tombol Cetak — termasuk pemuatan fontnya.
+ */
+export function cetakRekapTender(
+  d: DataRekap,
+  output: 'open' | 'download' = 'open',
+) {
+  const pdf = berkasRekapTender(d);
   const berkas = `Rekap_Tender_${d.nomor ?? ''}_${d.proyek}.pdf`;
   if (output === 'download') pdf.download(berkas);
   else pdf.open();
