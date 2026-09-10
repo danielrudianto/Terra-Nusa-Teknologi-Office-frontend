@@ -1596,6 +1596,9 @@
     "menuUbah": "Edit"
   },
   "projectProgress": {
+    "unbilledHint": "Work earned − already billed",
+    "dialogSub": "One point on the progress curve",
+    "dialogKet": "Enter the date the site was in this state, not the date you record it. The percentage is cumulative (how much is done overall), 0–100 — and may go down when work is redone.",
     "earned": "Work earned",
     "earnedHint": "Progress × contract value (DPP)",
     "billedHint": "DPP of this project's sales invoices",

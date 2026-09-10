@@ -1050,7 +1050,7 @@
 
 .prp-prog__wipket {
   color: var(--muted, #6b7280);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   line-height: 1.45;
 }
 
@@ -1072,11 +1072,38 @@
   border-top: 2px solid var(--line, #e5e7eb);
 }
 
-.prp-prog__wipcatatan {
-  margin: 0.6rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--muted, #6b7280);
+/*
+ * Banner — bentuknya disamakan dengan banner dialog lain (rencana kas,
+ * tender): ikon di kiri, teks yang benar-benar terbaca.
+ *
+ * Dipakai untuk keterangan yang PANJANG. Cetakan kecil di ujung baris hanya
+ * terbaca oleh yang sudah tahu isinya, dan justru kalimat-kalimat inilah
+ * yang dicari orang di bagian ini.
+ */
+.prp-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.86rem;
+  line-height: 1.55;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+/* Tagihan mendahului pekerjaan: keadaan yang perlu diperhatikan. */
+.prp-banner--warn {
+  background: var(--warn-bg, #fdf0e3);
+  color: var(--warn-fg, #a2651a);
 }
 
 @media (max-width: 720px) {

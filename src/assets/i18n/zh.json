@@ -1596,6 +1596,9 @@
     "menuUbah": "修改"
   },
   "projectProgress": {
+    "unbilledHint": "已完成产值 − 已开票",
+    "dialogSub": "进度曲线上的一个点",
+    "dialogKet": "请填写现场处于该状态的日期，而非录入日期。百分比为累计值（整体完成多少），0–100——返工时可以下降。",
     "earned": "已完成产值",
     "earnedHint": "进度 × 合同金额（DPP）",
     "billedHint": "该项目销售发票的 DPP",

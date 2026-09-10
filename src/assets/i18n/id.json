@@ -1596,6 +1596,9 @@
     "menuUbah": "Ubah"
   },
   "projectProgress": {
+    "unbilledHint": "Nilai dikerjakan − sudah tertagih",
+    "dialogSub": "Satu titik pada kurva kemajuan",
+    "dialogKet": "Isi tanggal KEADAAN di lapangan, bukan tanggal mencatatnya. Persennya kumulatif (sudah berapa persen selesai), 0–100 — dan boleh turun bila ada pekerjaan ulang.",
     "earned": "Nilai dikerjakan",
     "earnedHint": "Kemajuan × nilai kontrak (DPP)",
     "billedHint": "DPP faktur penjualan proyek ini",

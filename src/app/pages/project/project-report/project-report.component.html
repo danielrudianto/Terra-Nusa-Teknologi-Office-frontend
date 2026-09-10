@@ -687,13 +687,28 @@
               }}{{ selisihTagihan() | number: "1.0-0" }}
             </span>
             <span class="prp-prog__wipket">
-              {{
-                ((selisihTagihan() ?? 0) < 0
-                  ? "projectProgress.unbilledOver"
-                  : "projectProgress.unbilledUnder"
-                ) | translate
-              }}
+              {{ "projectProgress.unbilledHint" | translate }}
             </span>
+          </div>
+
+          <!--
+            Artinya ditaruh di BANNER, bukan cetakan kecil di ujung baris.
+            Inilah kalimat yang paling sering dicari orang di bagian ini, dan
+            teks 0,8rem di kolom sempit praktis tidak terbaca.
+          -->
+          <div
+            class="prp-banner"
+            [class.prp-banner--warn]="(selisihTagihan() ?? 0) < 0"
+          >
+            <mat-icon>{{
+              (selisihTagihan() ?? 0) < 0 ? "warning" : "info"
+            }}</mat-icon>
+            <span>{{
+              ((selisihTagihan() ?? 0) < 0
+                ? "projectProgress.unbilledOver"
+                : "projectProgress.unbilledUnder"
+              ) | translate
+            }}</span>
           </div>
 
           <ng-container *ngIf="proyeksiBiaya() !== null">
@@ -726,9 +741,10 @@
             </div>
           </ng-container>
 
-          <p class="prp-prog__wipcatatan" *ngIf="proyeksiBelumLayak()">
-            {{ "projectProgress.forecastTooEarly" | translate }}
-          </p>
+          <div class="prp-banner" *ngIf="proyeksiBelumLayak()">
+            <mat-icon>hourglass_top</mat-icon>
+            <span>{{ "projectProgress.forecastTooEarly" | translate }}</span>
+          </div>
         </div>
 
         <div class="prp-prog__grafik" *ngIf="adaKurvaS()">

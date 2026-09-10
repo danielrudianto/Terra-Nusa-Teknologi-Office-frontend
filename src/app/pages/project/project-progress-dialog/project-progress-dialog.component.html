@@ -1,67 +1,85 @@
-<h2 mat-dialog-title class="ppd-judul">
-  {{
-    (menyunting ? "projectProgress.editTitle" : "projectProgress.addTitle")
-      | translate
-  }}
-</h2>
-
-<mat-dialog-content class="ppd-isi" [formGroup]="form">
+<div class="ppd">
   <!--
-    Tanggal KEADAAN, bukan tanggal pencatatan.
-
-    Progress kerap dicatat beberapa hari setelah opnamenya; memakai tanggal
-    input menggeser seluruh kurva ke kanan dan membuatnya tidak sejajar
-    dengan kurva biaya, yang memakai tanggal dokumen.
+    Kepala dialog memakai bentuk BERSAMA (`dlg__head` di styles.scss), sama
+    seperti enam belas dialog lain. Bentuk sendiri membuat dialog ini terbaca
+    seperti bagian aplikasi yang berbeda.
   -->
-  <mat-form-field appearance="outline" class="ppd-medan">
-    <mat-label>{{ "projectProgress.date" | translate }}</mat-label>
-    <input matInput [matDatepicker]="dp" formControlName="date" />
-    <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-    <mat-datepicker #dp></mat-datepicker>
-    <mat-hint>{{ "projectProgress.dateHint" | translate }}</mat-hint>
-  </mat-form-field>
+  <div class="ppd-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>trending_up</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">
+        {{
+          (menyunting ? "projectProgress.editTitle" : "projectProgress.addTitle")
+            | translate
+        }}
+      </h2>
+      <span class="dlg__sub">{{ "projectProgress.dialogSub" | translate }}</span>
+    </div>
+  </div>
 
-  <mat-form-field appearance="outline" class="ppd-medan">
-    <mat-label>{{ "projectProgress.percentage" | translate }}</mat-label>
-    <input
-      matInput
-      type="number"
-      inputmode="decimal"
-      min="0"
-      max="100"
-      step="0.01"
-      formControlName="percentage"
-    />
-    <span matTextSuffix>%</span>
-    @if (form.controls.percentage.hasError('min') || form.controls.percentage.hasError('max')) {
-      <mat-error>{{ "projectProgress.errPercentage" | translate }}</mat-error>
-    }
-    <mat-hint>{{ "projectProgress.percentageHint" | translate }}</mat-hint>
-  </mat-form-field>
+  <mat-dialog-content class="ppd-isi" [formGroup]="form">
+    <!--
+      Keterangan ditaruh di BANNER, bukan `mat-hint`.
 
-  <mat-form-field appearance="outline" class="ppd-medan">
-    <mat-label>{{ "projectProgress.description" | translate }}</mat-label>
-    <textarea
-      matInput
-      rows="3"
-      maxlength="500"
-      formControlName="description"
-    ></textarea>
-    <mat-hint>{{ "projectProgress.descriptionHint" | translate }}</mat-hint>
-  </mat-form-field>
-</mat-dialog-content>
+      Hint tercetak sangat kecil dan menempel di bawah medan; keterangan
+      sepanjang ini praktis tidak terbaca di sana, dan justru inilah dua hal
+      yang paling sering salah diisi.
+    -->
+    <div class="ppd-banner">
+      <mat-icon>info</mat-icon>
+      <span>{{ "projectProgress.dialogKet" | translate }}</span>
+    </div>
 
-<mat-dialog-actions class="ppd-aksi">
-  <button mat-button type="button" (click)="batal()">
-    {{ "common.cancel" | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    [disabled]="menyimpan"
-    (click)="simpan()"
-  >
-    <mat-icon>save</mat-icon>&nbsp;{{ "common.save" | translate }}
-  </button>
-</mat-dialog-actions>
+    <mat-form-field appearance="outline" class="ppd-medan">
+      <mat-label>{{ "projectProgress.date" | translate }}</mat-label>
+      <input matInput [matDatepicker]="dp" formControlName="date" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+      <mat-datepicker #dp></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ppd-medan">
+      <mat-label>{{ "projectProgress.percentage" | translate }}</mat-label>
+      <input
+        matInput
+        type="number"
+        inputmode="decimal"
+        min="0"
+        max="100"
+        step="0.01"
+        formControlName="percentage"
+      />
+      <span matTextSuffix>%</span>
+      @if (
+        form.controls.percentage.hasError("min") ||
+        form.controls.percentage.hasError("max")
+      ) {
+        <mat-error>{{ "projectProgress.errPercentage" | translate }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ppd-medan">
+      <mat-label>{{ "projectProgress.description" | translate }}</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        maxlength="500"
+        formControlName="description"
+      ></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="ppd-aksi">
+    <button mat-button type="button" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="menyimpan"
+      (click)="simpan()"
+    >
+      <mat-icon>save</mat-icon>&nbsp;{{ "common.save" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

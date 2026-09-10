@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ApiService } from 'src/app/services/api.service';
+import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 
 export interface DataDialogProgress {
   /** Proyek yang dicatat kemajuannya. */
@@ -55,6 +56,7 @@ export interface DataDialogProgress {
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
+    DialogGeserDirective,
   ],
   templateUrl: './project-progress-dialog.component.html',
   styleUrl: './project-progress-dialog.component.scss',

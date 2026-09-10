@@ -1,16 +1,40 @@
-.ppd-judul {
-  font-family: "Montserrat", sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
+/*
+ * Kepala dialognya memakai bentuk bersama `dlg__head` di `styles.scss`;
+ * yang di sini hanya penyesuaian isi.
+ */
 .ppd-isi {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding-top: 0.5rem;
-  min-width: min(420px, 80vw);
+  padding-top: 1rem !important;
+  min-width: min(440px, 82vw);
+}
+
+/*
+ * Keterangan sebagai BANNER, bukan `mat-hint`.
+ *
+ * Bentuknya disamakan dengan banner dialog lain (rencana kas, tender):
+ * ikon di kiri, teks 0.82rem yang benar-benar terbaca — bukan cetakan kecil
+ * yang menempel di bawah medan.
+ */
+.ppd-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
 }
 
 .ppd-medan {
@@ -20,5 +44,5 @@
 .ppd-aksi {
   justify-content: flex-end;
   gap: 0.25rem;
-  padding: 0.5rem 1rem 1rem;
+  padding: 1rem 1.5rem !important;
 }
