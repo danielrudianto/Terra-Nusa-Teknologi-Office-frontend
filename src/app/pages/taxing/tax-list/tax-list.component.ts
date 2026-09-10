@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PpnRecapComponent } from '../ppn-recap/ppn-recap.component';
 import { PosisiPpnComponent } from '../posisi-ppn/posisi-ppn.component';
+import { PosisiPphComponent } from '../posisi-pph/posisi-pph.component';
 import { PphRecapComponent } from '../pph-recap/pph-recap.component';
 import { PphSalaryRecapComponent } from '../pph-salary-recap/pph-salary-recap.component';
 import { MonthlyRecapComponent } from 'src/app/pages/taxing/monthly-recap/monthly-recap.component';
@@ -93,6 +94,10 @@ export class TaxListComponent {
 
   openPosisiPPN() {
     this.dialog.open(PosisiPpnComponent, { data: this.period() });
+  }
+
+  openPosisiPPH() {
+    this.dialog.open(PosisiPphComponent, { data: this.period() });
   }
 
   openPPHReport() {

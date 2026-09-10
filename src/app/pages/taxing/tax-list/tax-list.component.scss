@@ -270,3 +270,67 @@
     flex: 1 1 calc(25% - 6px);
   }
 }
+
+/*
+ * Kartu yang memuat BEBERAPA tindakan.
+ *
+ * Kartu biasa adalah satu tombol besar: menekan di mana pun membuka
+ * laporannya. Begitu satu kartu memuat dua atau tiga tindakan, bentuk itu
+ * tidak dapat dipertahankan — orang tidak dapat menebak tindakan mana yang
+ * kena. Karena itu kartunya menjadi wadah, dan tombolnya yang ditekan.
+ */
+.tx-card--aksi {
+  cursor: default;
+
+  &:hover {
+    /* Tidak ada umpan balik tekan pada kartunya sendiri: ia bukan tombol. */
+    transform: none;
+  }
+}
+
+.tx-card__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.tx-btn {
+  appearance: none;
+  border: 1px solid var(--line, #e4e9fb);
+  background: var(--surface, #fff);
+  color: var(--ink, #16181d);
+  border-radius: 999px;
+  padding: 0.38rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    border-color: var(--brand, #154dec);
+    color: var(--brand, #154dec);
+  }
+}
+
+/*
+ * Tindakan utama diberi warna: dari tiga tombol, "Hitung posisi" yang paling
+ * sering dicari — dua lainnya mengunduh rincian yang hanya perlu saat
+ * mencocokkan.
+ */
+.tx-btn--utama {
+  background: var(--brand, #154dec);
+  border-color: var(--brand, #154dec);
+  color: #fff;
+
+  &:hover {
+    background: var(--brand-ink, #0f3fd0);
+    border-color: var(--brand-ink, #0f3fd0);
+    color: #fff;
+  }
+}

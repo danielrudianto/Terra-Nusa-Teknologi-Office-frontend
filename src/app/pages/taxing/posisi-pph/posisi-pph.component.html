@@ -1,0 +1,134 @@
+<div class="txr">
+  <div class="txr-head" mat-dialog-title appDialogGeser>
+    <span class="txr-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6M9 13h6M9 17h4" />
+      </svg>
+    </span>
+    <div class="txr-head__text">
+      <h2 class="txr-title">{{ "taxing.pphPositionTitle" | translate }}</h2>
+      <span class="txr-sub">{{ "taxing.pphPositionSub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="txr-content">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <div class="txr-yearrow">
+        <span class="txr-label">{{ "common.period" | translate }}</span>
+        <div class="txr-year">
+          <button type="button" (click)="gantiTahun(-1)"
+            [disabled]="!bisaMundur"
+            [attr.aria-label]="'tax.tahunSebelumnya' | translate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <span>{{ formGroup.value.year }}</span>
+          <button type="button" (click)="gantiTahun(1)"
+            [attr.aria-label]="'tax.tahunBerikutnya' | translate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      </div>
+      <div class="txr-months">
+        <button type="button" class="txr-month" *ngFor="let m of months"
+          [class.is-active]="+formGroup.value.month === m.n"
+          (click)="pilihBulan(m.n)">
+          {{ m.key | translate }}
+        </button>
+      </div>
+
+      <button type="submit" class="pp-hitung"
+        [disabled]="formGroup.invalid || isLoading">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2" />
+          <path d="M8 6h8M8 10h8M8 14h3M8 18h3M15 14l4 4M19 14l-4 4" />
+        </svg>
+        {{ isLoading ? ('hardcoded.menyiapkan' | translate) : ('taxing.pphPositionCalc' | translate) }}
+      </button>
+    </form>
+
+    <!-- ===== hasil ===== -->
+    <div class="pp-result" *ngIf="posisi && !isLoading">
+      <!--
+        Keterangan penting ditaruh di BANNER, bukan cetakan kecil: keduanya
+        menentukan cara membaca seluruh angka di bawahnya.
+      -->
+      <div class="pp-banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+        </svg>
+        <span>{{ "taxing.pphPositionNote" | translate }}</span>
+      </div>
+
+      <!--
+        Dua bagian, dan SENGAJA tidak dijumlahkan.
+
+        PPh 21 dan PPh 23/4(2) disetor dengan kode billing dan formulir SPT
+        yang berbeda, dan yang melapor mengisinya sendiri-sendiri. Satu total
+        gabungan membuat satu masa tampak lunas padahal yang disetor baru
+        salah satunya.
+      -->
+      <div class="pp-bagian" *ngFor="let b of bagian">
+        <div class="pp-bagian__judul">{{ b.judul | translate }}</div>
+
+        <div class="pp-verdict"
+          [class.pp-verdict--kurang]="b.sisa > 5"
+          [class.pp-verdict--lebih]="b.sisa < -5"
+          [class.pp-verdict--nihil]="b.sisa >= -5 && b.sisa <= 5">
+          <span class="pp-verdict__label">
+            <ng-container *ngIf="b.sisa > 5">{{ "taxing.pphKurangSetor" | translate }}</ng-container>
+            <ng-container *ngIf="b.sisa < -5">{{ "taxing.pphLebihSetor" | translate }}</ng-container>
+            <ng-container *ngIf="b.sisa >= -5 && b.sisa <= 5">{{ "taxing.pphLunas" | translate }}</ng-container>
+          </span>
+          <span class="pp-verdict__value">Rp {{ sisaAbs(b) | number: "1.0-0" }}</span>
+        </div>
+
+        <div class="pp-row">
+          <span class="pp-row__key">{{ "taxing.pphTerutang" | translate }}</span>
+          <span class="pp-row__val">Rp {{ b.terutang | number: "1.0-0" }}</span>
+        </div>
+        <div class="pp-row">
+          <span class="pp-row__key">{{ "taxing.pphSetoran" | translate }}</span>
+          <span class="pp-row__val pp-row__val--minus">− Rp {{ b.setoran | number: "1.0-0" }}</span>
+        </div>
+        <!--
+          Yang TERCATAT belum tentu sudah keluar uangnya. Beban setoran yang
+          belum dibayar tetap dihitung mengurangi kekurangan di atas — itu
+          benar sebagai kewajiban — tetapi orang yang membacanya perlu tahu
+          uangnya belum berpindah.
+        -->
+        <div class="pp-row pp-row--sub" *ngIf="b.setoran > b.setoranDibayar">
+          <span class="pp-row__key">{{ "taxing.pphSetoranBelumDibayar" | translate }}</span>
+          <span class="pp-row__val">Rp {{ b.setoran - b.setoranDibayar | number: "1.0-0" }}</span>
+        </div>
+        <div class="pp-row pp-row--sum">
+          <span class="pp-row__key">{{ "taxing.pphSisa" | translate }}</span>
+          <span class="pp-row__val">Rp {{ b.sisa | number: "1.0-0" }}</span>
+        </div>
+
+        <p class="pp-bagian__kosong" *ngIf="!b.rows?.length">
+          {{ "taxing.pphKosong" | translate }}
+        </p>
+      </div>
+
+      <button type="button" class="pp-unduh" (click)="unduhExcel()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+        </svg>
+        {{ "taxing.pphUnduhRincian" | translate }}
+      </button>
+    </div>
+  </mat-dialog-content>
+</div>

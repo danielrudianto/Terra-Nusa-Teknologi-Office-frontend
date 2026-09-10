@@ -82,174 +82,72 @@
 
   <!-- ===== report cards ===== -->
   <div class="tx-grid">
-    <button type="button" class="tx-card" (click)="openPPNReport()">
+    <!--
+      ================= PPN =================
+
+      Satu kartu, dua tombol. Sebelumnya "Rekap" dan "Posisi" berdiri sebagai
+      dua kartu terpisah, padahal keduanya membicarakan pajak yang sama pada
+      masa yang sama — dan yang membukanya hampir selalu memerlukan keduanya
+      berurutan.
+
+      Kartunya BUKAN tombol lagi: kartu yang seluruhnya dapat ditekan tidak
+      dapat memuat dua tindakan tanpa membuat orang menebak mana yang kena.
+    -->
+    <div class="tx-card tx-card--aksi">
       <span class="tx-card__icon tx-card__icon--blue">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M19 5 5 19M6.5 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17.5 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
-          />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M19 5 5 19M6.5 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17.5 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
         </svg>
       </span>
       <span class="tx-card__body">
         <span class="tx-card__title">{{ "taxing.ppnTitle" | translate }}</span>
-        <span
-          class="tx-card__desc"
-          [innerHTML]="'taxing.ppnDesc' | translate"
-        ></span>
+        <span class="tx-card__desc" [innerHTML]="'taxing.ppnDesc' | translate"></span>
       </span>
-      <span class="tx-card__cta"
-        >{{ "taxing.openReport" | translate }}
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
+      <span class="tx-card__aksi">
+        <button type="button" class="tx-btn tx-btn--utama" (click)="openPosisiPPN()">
+          {{ "taxing.actionPosition" | translate }}
+        </button>
+        <button type="button" class="tx-btn" (click)="openPPNReport()">
+          {{ "taxing.actionDownload" | translate }}
+        </button>
       </span>
-    </button>
+    </div>
 
-    <button type="button" class="tx-card" (click)="openPosisiPPN()">
-      <span class="tx-card__icon tx-card__icon--blue">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      </span>
-      <span class="tx-card__body">
-        <span class="tx-card__title">{{
-          "taxing.ppnPositionTitle" | translate
-        }}</span>
-        <span
-          class="tx-card__desc"
-          [innerHTML]="'taxing.ppnPositionDesc' | translate"
-        ></span>
-      </span>
-      <span class="tx-card__cta"
-        >{{ "taxing.openReport" | translate }}
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      </span>
-    </button>
+    <!--
+      ================= PPh =================
 
-    <button type="button" class="tx-card" (click)="openPPHReport()">
+      SATU kartu untuk PPh, tiga tombol. Sebelumnya PPh pembelian dan PPh gaji
+      berdiri sebagai dua kartu, dan posisinya belum ada sama sekali —
+      sehingga "berapa PPh yang harus disetor bulan ini" hanya dapat dijawab
+      dengan mengunduh dua berkas lalu menjumlahkan sendiri.
+    -->
+    <div class="tx-card tx-card--aksi">
       <span class="tx-card__icon tx-card__icon--violet">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-          />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
           <path d="M14 2v6h6M9 13h6M9 17h4" />
         </svg>
       </span>
       <span class="tx-card__body">
-        <span class="tx-card__title">{{
-          "taxing.pphPurchaseTitle" | translate
-        }}</span>
-        <span
-          class="tx-card__desc"
-          [innerHTML]="'taxing.pphPurchaseDesc' | translate"
-        ></span>
+        <span class="tx-card__title">{{ "taxing.pphTitle" | translate }}</span>
+        <span class="tx-card__desc" [innerHTML]="'taxing.pphDesc' | translate"></span>
       </span>
-      <span class="tx-card__cta"
-        >{{ "taxing.openReport" | translate }}
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
+      <span class="tx-card__aksi">
+        <button type="button" class="tx-btn tx-btn--utama" (click)="openPosisiPPH()">
+          {{ "taxing.actionPosition" | translate }}
+        </button>
+        <button type="button" class="tx-btn" (click)="openPPHReport()">
+          {{ "taxing.actionPurchase" | translate }}
+        </button>
+        <button type="button" class="tx-btn" (click)="openPPHSalaryReport()">
+          {{ "taxing.actionSalary" | translate }}
+        </button>
       </span>
-    </button>
-
-    <button type="button" class="tx-card" (click)="openPPHSalaryReport()">
-      <span class="tx-card__icon tx-card__icon--green">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 11h-6M19 8v6"
-          />
-        </svg>
-      </span>
-      <span class="tx-card__body">
-        <span class="tx-card__title">{{
-          "taxing.pphSalaryTitle" | translate
-        }}</span>
-        <span
-          class="tx-card__desc"
-          [innerHTML]="'taxing.pphSalaryDesc' | translate"
-        ></span>
-      </span>
-      <span class="tx-card__cta"
-        >{{ "taxing.openReport" | translate }}
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      </span>
-    </button>
+    </div>
 
     <button type="button" class="tx-card" (click)="openMonthlyReport()">
       <span class="tx-card__icon tx-card__icon--amber">
