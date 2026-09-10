@@ -1,0 +1,67 @@
+<h2 mat-dialog-title class="ppd-judul">
+  {{
+    (menyunting ? "projectProgress.editTitle" : "projectProgress.addTitle")
+      | translate
+  }}
+</h2>
+
+<mat-dialog-content class="ppd-isi" [formGroup]="form">
+  <!--
+    Tanggal KEADAAN, bukan tanggal pencatatan.
+
+    Progress kerap dicatat beberapa hari setelah opnamenya; memakai tanggal
+    input menggeser seluruh kurva ke kanan dan membuatnya tidak sejajar
+    dengan kurva biaya, yang memakai tanggal dokumen.
+  -->
+  <mat-form-field appearance="outline" class="ppd-medan">
+    <mat-label>{{ "projectProgress.date" | translate }}</mat-label>
+    <input matInput [matDatepicker]="dp" formControlName="date" />
+    <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
+    <mat-hint>{{ "projectProgress.dateHint" | translate }}</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="ppd-medan">
+    <mat-label>{{ "projectProgress.percentage" | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      inputmode="decimal"
+      min="0"
+      max="100"
+      step="0.01"
+      formControlName="percentage"
+    />
+    <span matTextSuffix>%</span>
+    @if (form.controls.percentage.hasError('min') || form.controls.percentage.hasError('max')) {
+      <mat-error>{{ "projectProgress.errPercentage" | translate }}</mat-error>
+    }
+    <mat-hint>{{ "projectProgress.percentageHint" | translate }}</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="ppd-medan">
+    <mat-label>{{ "projectProgress.description" | translate }}</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      maxlength="500"
+      formControlName="description"
+    ></textarea>
+    <mat-hint>{{ "projectProgress.descriptionHint" | translate }}</mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions class="ppd-aksi">
+  <button mat-button type="button" (click)="batal()">
+    {{ "common.cancel" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="menyimpan"
+    (click)="simpan()"
+  >
+    <mat-icon>save</mat-icon>&nbsp;{{ "common.save" | translate }}
+  </button>
+</mat-dialog-actions>

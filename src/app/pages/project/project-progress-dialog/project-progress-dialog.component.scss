@@ -1,0 +1,24 @@
+.ppd-judul {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.ppd-isi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  min-width: min(420px, 80vw);
+}
+
+.ppd-medan {
+  width: 100%;
+}
+
+.ppd-aksi {
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem 1rem;
+}

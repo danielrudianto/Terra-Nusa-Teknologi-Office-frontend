@@ -920,3 +920,96 @@
   font-size: 0.72rem;
   font-weight: 600;
 }
+
+/* ---------- kemajuan pekerjaan ---------- */
+.prp-prog__kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.prp-prog__ket {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+  max-width: 62ch;
+  line-height: 1.5;
+}
+
+.prp-prog__kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/*
+ * Grafik diberi TINGGI TETAP.
+ *
+ * Chart.js dengan `maintainAspectRatio: false` mengambil tinggi induknya;
+ * induk yang tingginya ditentukan isi akan menghasilkan tinggi nol, dan
+ * kanvasnya tidak pernah terlihat sama sekali.
+ */
+.prp-prog__grafik {
+  position: relative;
+  height: 320px;
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .prp-prog__grafik {
+    height: 240px;
+  }
+}
+
+.prp-prog__daftar {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line, #eef0f3);
+}
+
+.prp-prog__baris {
+  display: grid;
+  grid-template-columns: 7rem 5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line, #f3f4f6);
+  font-size: 0.86rem;
+}
+
+.prp-prog__tgl {
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+}
+
+.prp-prog__pct {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.prp-prog__ketr {
+  color: var(--muted, #6b7280);
+  overflow-wrap: anywhere;
+}
+
+.prp-prog__aksi {
+  display: flex;
+  gap: 0.1rem;
+}
+
+/* Selisih negatif — biaya mendahului pekerjaan — diberi warna peringatan. */
+.prp-sel--buruk .prp-nilai {
+  color: var(--bad, #b42318);
+}
+
+@media (max-width: 640px) {
+  .prp-prog__baris {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.15rem;
+  }
+  .prp-prog__ketr {
+    grid-column: 1 / -1;
+  }
+}

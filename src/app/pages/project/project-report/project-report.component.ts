@@ -6,6 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BaseChartDirective } from 'ng2-charts';
+import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { catchError, forkJoin, of } from 'rxjs';
@@ -14,6 +18,12 @@ import { ApiService } from '../../../services/api.service';
 import { HeaderTitleComponent } from '../../../components/header-title/header-title.component';
 import { ProjectSelectorComponent } from '../../../components/project-selector/project-selector.component';
 import { ProjectLookupService } from '../../../services/project-lookup.service';
+import { CanDirective } from '../../../directives/can.directive';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
+import {
+  ProjectProgressDialogComponent,
+  type DataDialogProgress,
+} from '../project-progress-dialog/project-progress-dialog.component';
 import { purchaseTypeLabel } from '../../../constants/purchase-type-label.constant';
 import {
   SELURUH,
@@ -35,6 +45,20 @@ import {
   unduhLaporanProyekPdf,
   type DataLaporanProyek,
 } from '../../../helpers/project-report-download';
+
+// Chart.js perlu didaftarkan sekali per bundel; sama seperti pada laporan
+// pembelian per proyek yang sudah memakainya.
+Chart.register(...registerables);
+
+/** Satu titik pada kurva S: pekan, kemajuan, dan biaya terpakai. */
+interface TitikKurva {
+  mulai: string;
+  label: string;
+  /** Persen nilai kontrak yang sudah terpakai biaya. `null` bila kontrak kosong. */
+  biaya: number | null;
+  /** Persen kemajuan pekerjaan. `null` sebelum catatan pertama. */
+  progres: number | null;
+}
 
 interface BarisPemasok {
   nama: string;
@@ -233,6 +257,10 @@ interface Kategori {
     TranslatePipe,
     HeaderTitleComponent,
     ProjectSelectorComponent,
+    MatDialogModule,
+    MatTooltipModule,
+    BaseChartDirective,
+    CanDirective,
   ],
   templateUrl: './project-report.component.html',
   styleUrl: './project-report.component.scss',
@@ -244,6 +272,7 @@ export class ProjectReportComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   readonly lookup = inject(ProjectLookupService);
+  private readonly dialog = inject(MatDialog);
 
   /**
    * Pemilih memakai daftar penuh, termasuk proyek selesai dan batal.
@@ -408,7 +437,272 @@ export class ProjectReportComponent implements OnInit {
         },
       })
       .add(() => this.memuat.set(false));
+
+    this.muatProgress();
   }
+
+  // ------------------------------------------------------------------
+  // Kemajuan pekerjaan
+  // ------------------------------------------------------------------
+
+  /**
+   * Riwayat kemajuan proyek INI saja, bukan seluruh keluarganya.
+   *
+   * Kontraknya dipegang satu kode; anak-anaknya hanya menampung biaya per
+   * paket dan tidak punya kemajuan sendiri. Menjumlahkan persen dari beberapa
+   * kode akan menghasilkan angka di atas seratus yang tidak berarti apa pun.
+   */
+  readonly progress = signal<any[]>([]);
+
+  /**
+   * Sebagian divisi tidak punya modul `project_progress` sama sekali
+   * (konsultan pajak, misalnya). Bagi mereka bagian ini disembunyikan, bukan
+   * ditampilkan kosong dengan pesan galat — laporan biayanya tetap utuh.
+   */
+  readonly progressTerkunci = signal(false);
+
+  private muatProgress(): void {
+    this.progress.set([]);
+
+    /*
+     * Menunggu daftar proyek selesai dimuat lebih dulu.
+     *
+     * Kemajuan dicari lewat ID proyek, sedangkan halaman ini hanya memegang
+     * KODE-nya; penerjemahnya adalah `lookup`. Dibuka lewat tautan langsung
+     * (`/Project/Report/R501`), `muat()` berjalan pada tarikan napas yang
+     * sama dengan `lookup.muat()` — sehingga tanpa penantian ini `proyek()`
+     * masih kosong dan bagian kemajuan diam-diam tidak pernah terisi.
+     *
+     * `muat()` mengembalikan janji yang sama bila sudah berjalan, jadi
+     * memanggilnya lagi di sini tidak menambah permintaan.
+     */
+    void this.lookup.muat().then(() => {
+      const p = this.proyek();
+      if (!p || p.id <= 0) return;
+      this.ambilProgress(p.id);
+    });
+  }
+
+  private ambilProgress(projectID: number): void {
+    this.api.get(`projects/${projectID}/progress`, {}).subscribe({
+      next: (baris: any) => {
+        this.progressTerkunci.set(false);
+        this.progress.set(Array.isArray(baris) ? baris : []);
+      },
+      error: (err: any) => {
+        // 403 berarti modulnya bukan wilayah divisi ini; itu bukan kegagalan
+        // yang perlu dilaporkan kepada yang membuka laporan biaya.
+        this.progressTerkunci.set(err?.status === 403);
+        this.progress.set([]);
+      },
+    });
+  }
+
+  catatProgress(): void {
+    const p = this.proyek();
+    if (!p || p.id <= 0) return;
+
+    this.dialog
+      .open(ProjectProgressDialogComponent, {
+        data: { projectID: p.id } as DataDialogProgress,
+      })
+      .afterClosed()
+      .subscribe((tersimpan) => {
+        if (tersimpan) this.muatProgress();
+      });
+  }
+
+  ubahProgress(baris: any): void {
+    const p = this.proyek();
+    if (!p || p.id <= 0) return;
+
+    this.dialog
+      .open(ProjectProgressDialogComponent, {
+        data: { projectID: p.id, progress: baris } as DataDialogProgress,
+      })
+      .afterClosed()
+      .subscribe((tersimpan) => {
+        if (tersimpan) this.muatProgress();
+      });
+  }
+
+  hapusProgress(baris: any): void {
+    this.dialog
+      .open(DeleteConfirmationComponent, {
+        data: {
+          title: this.translate.instant('projectProgress.deleteTitle'),
+          prompt: this.translate.instant('projectProgress.deletePrompt'),
+        },
+      })
+      .afterClosed()
+      .subscribe((setuju) => {
+        if (setuju !== true) return;
+        this.api.delete(`projects/progress/${baris.id}`).subscribe({
+          next: () => this.muatProgress(),
+          error: (err: any) => {
+            const pesan =
+              err?.error?.detail ??
+              this.translate.instant('notify.deleteFailed');
+            this.snackBar.open(pesan, 'Close', { duration: 5000 });
+          },
+        });
+      });
+  }
+
+  /** Catatan kemajuan terakhir; angka yang pertama dicari orang. */
+  readonly progresTerakhir = computed<any | null>(() => {
+    const r = this.progress();
+    return r.length ? r[r.length - 1] : null;
+  });
+
+  /**
+   * Kurva S: kemajuan pekerjaan dan biaya terpakai, keduanya dalam persen.
+   *
+   * Dua garis pada sumbu yang sama, dan JARAK ANTAR GARIS itulah jawabannya.
+   * Garis biaya di atas garis kemajuan berarti uang habis lebih cepat
+   * daripada pekerjaan bertambah — pertanyaan yang selama ini tidak dapat
+   * dijawab laporan ini, karena biaya hanya bisa dibandingkan dengan tagihan,
+   * dan tagihan mengikuti termin, bukan keadaan di lapangan.
+   *
+   * Sumbu waktunya PEKANAN dan mengikuti saringan tahun yang sama dengan
+   * sisa halaman. Kemajuan dibaca sebagai fungsi tangga: catatan terakhir
+   * pada atau sebelum akhir pekan itu — pekan tanpa catatan meneruskan angka
+   * sebelumnya, bukan turun ke nol.
+   */
+  readonly kurvaS = computed<TitikKurva[]>(() => {
+    const pekanBiaya = this.mingguan();
+    const riwayat = [...this.progress()].sort((a, b) =>
+      String(a.date).localeCompare(String(b.date)),
+    );
+    if (!pekanBiaya.length && !riwayat.length) return [];
+
+    const dua = (n: number) => String(n).padStart(2, '0');
+    const kunciDari = (d: Date) =>
+      `${d.getFullYear()}-${dua(d.getMonth() + 1)}-${dua(d.getDate())}`;
+
+    // Rentangnya mencakup KEDUANYA. Kemajuan yang dicatat sebelum biaya
+    // pertama, atau setelah biaya terakhir, tetap harus terlihat — justru
+    // masa tanpa pengeluaran itu yang paling perlu dibaca.
+    const pekanProgres = riwayat
+      .map((r) => awalMinggu(r.date))
+      .filter((x): x is string => !!x);
+    const semua = [...pekanBiaya.map((w) => w.mulai), ...pekanProgres].sort();
+    if (!semua.length) return [];
+
+    const kontrak = this.nilaiKontrak();
+    const petaBiaya = new Map(pekanBiaya.map((w) => [w.mulai, w.biayaKumulatif]));
+
+    const hasil: TitikKurva[] = [];
+    const kursor = new Date(semua[0]);
+    const akhir = new Date(semua[semua.length - 1]);
+    let kumulatif = this.biayaDibawa();
+    let progres: number | null = null;
+    let i = 0;
+
+    while (kursor <= akhir) {
+      const kunci = kunciDari(kursor);
+
+      // Biaya kumulatif pekan ini; pekan di luar rentang biaya meneruskan
+      // angka terakhir, bukan kembali ke nol.
+      if (petaBiaya.has(kunci)) kumulatif = petaBiaya.get(kunci)!;
+
+      // Catatan kemajuan terakhir pada atau sebelum akhir pekan ini.
+      const akhirPekan = new Date(kursor);
+      akhirPekan.setDate(akhirPekan.getDate() + 6);
+      const batas = kunciDari(akhirPekan);
+      while (i < riwayat.length && String(riwayat[i].date).slice(0, 10) <= batas) {
+        progres = Number(riwayat[i].percentage);
+        i++;
+      }
+
+      hasil.push({
+        mulai: kunci,
+        label: `${dua(kursor.getDate())}/${dua(kursor.getMonth() + 1)}`,
+        biaya: kontrak > 0 ? (kumulatif / kontrak) * 100 : null,
+        progres,
+      });
+      kursor.setDate(kursor.getDate() + 7);
+    }
+    return hasil;
+  });
+
+  readonly adaKurvaS = computed(
+    () => this.progress().length > 0 && this.kurvaS().length > 0,
+  );
+
+  /**
+   * Selisih kemajuan dan biaya pada titik terakhir, dalam poin persen.
+   *
+   * Negatif berarti biaya mendahului pekerjaan. Disebutkan sebagai angka,
+   * bukan hanya digambar: yang membaca grafik dari layar kecil tidak dapat
+   * mengukur jarak dua garis dengan mata.
+   */
+  readonly selisihKurva = computed<number | null>(() => {
+    const t = this.kurvaS();
+    for (let i = t.length - 1; i >= 0; i--) {
+      const x = t[i];
+      if (x.progres !== null && x.biaya !== null) return x.progres - x.biaya;
+    }
+    return null;
+  });
+
+  readonly dataKurvaS = computed<ChartData<'line'>>(() => {
+    const t = this.kurvaS();
+    return {
+      labels: t.map((x) => x.label),
+      datasets: [
+        {
+          label: this.translate.instant('projectProgress.seriesProgress'),
+          data: t.map((x) => x.progres),
+          borderColor: '#0f9d58',
+          backgroundColor: 'rgba(15, 157, 88, 0.12)',
+          fill: true,
+          tension: 0.25,
+          pointRadius: 2,
+          spanGaps: true,
+        },
+        {
+          label: this.translate.instant('projectProgress.seriesCost'),
+          data: t.map((x) => x.biaya),
+          borderColor: '#d93025',
+          backgroundColor: 'rgba(217, 48, 37, 0.10)',
+          fill: true,
+          tension: 0.25,
+          pointRadius: 2,
+          spanGaps: true,
+        },
+      ],
+    };
+  });
+
+  readonly opsiKurvaS: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          label: (ctx) =>
+            `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}%`,
+        },
+      },
+    },
+    scales: {
+      y: {
+        // Sengaja dikunci 0-100 dan TIDAK menyesuaikan isinya.
+        //
+        // Sumbu yang menyesuaikan diri membuat proyek yang baru 8% terlihat
+        // sama penuhnya dengan proyek yang sudah 80%. Yang dibaca di sini
+        // adalah posisi terhadap keseluruhan pekerjaan, bukan bentuk garisnya.
+        min: 0,
+        max: 100,
+        ticks: { callback: (v) => `${v}%` },
+      },
+    },
+  };
+
+  lacakProgress = (_: number, p: any) => p.id;
 
   readonly proyek = computed(() => this.lookup.cari(this.kode()));
 

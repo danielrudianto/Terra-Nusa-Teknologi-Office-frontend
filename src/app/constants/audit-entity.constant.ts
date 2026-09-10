@@ -36,6 +36,8 @@ export const AuditTrailEntities: string[] = [
    */
   'projects',
   'project_contracts',
+  // Kemajuan pekerjaan proyek — satu titik kurva per baris.
+  'project_progress',
   'purchase_draft',
   'employees',
   'employee_profiles',

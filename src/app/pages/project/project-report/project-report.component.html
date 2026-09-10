@@ -549,5 +549,137 @@
         </div>
       </ng-container>
     </div>
+
+    <!--
+      ================= KEMAJUAN PEKERJAAN =================
+
+      Biaya 60% belum tentu buruk bila pekerjaannya juga 60% — dan sangat
+      buruk bila pekerjaannya baru 30%. Sampai bagian ini ada, keduanya
+      terbaca persis sama di seluruh halaman.
+
+      Disembunyikan bagi divisi yang memang tidak punya modulnya (konsultan
+      pajak), bukan ditampilkan kosong dengan pesan galat: laporan biayanya
+      tetap utuh dan tidak ada yang perlu mereka lakukan soal ini.
+    -->
+    <div class="prp-kartu prp-prog" *ngIf="!progressTerkunci()">
+      <div class="prp-prog__kepala">
+        <div>
+          <div class="prp-label">
+            {{ "projectProgress.section" | translate }}
+          </div>
+          <p class="prp-prog__ket">
+            {{ "projectProgress.sectionHint" | translate }}
+          </p>
+        </div>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          *appCan="'project_progress:create'"
+          (click)="catatProgress()"
+        >
+          <mat-icon>add</mat-icon>&nbsp;{{
+            "projectProgress.addTitle" | translate
+          }}
+        </button>
+      </div>
+
+      <p class="prp-kosong" *ngIf="!progress().length">
+        {{ "projectProgress.empty" | translate }}
+      </p>
+
+      <ng-container *ngIf="progress().length">
+        <!--
+          Angka ringkasnya disebutkan, bukan hanya digambar: yang membuka
+          laporan dari layar kecil tidak dapat mengukur jarak dua garis
+          dengan mata.
+        -->
+        <div class="prp-prog__kpi">
+          <div class="prp-sel">
+            <div class="prp-label">
+              {{ "projectProgress.latest" | translate }}
+            </div>
+            <div class="prp-nilai">
+              {{ progresTerakhir()?.percentage | number: "1.0-2" }}%
+            </div>
+            <div class="prp-ket">{{ progresTerakhir()?.date }}</div>
+          </div>
+
+          <div class="prp-sel">
+            <div class="prp-label">
+              {{ "projectProgress.costUsed" | translate }}
+            </div>
+            <div class="prp-nilai">
+              {{ porsiTerpakai() === null ? "—" : (porsiTerpakai() | number: "1.0-1") }}%
+            </div>
+            <div class="prp-ket">
+              {{ "projectProgress.costUsedHint" | translate }}
+            </div>
+          </div>
+
+          <div
+            class="prp-sel prp-sel--utama"
+            *ngIf="selisihKurva() !== null"
+            [class.prp-sel--buruk]="(selisihKurva() ?? 0) < 0"
+          >
+            <div class="prp-label">
+              {{ "projectProgress.gap" | translate }}
+            </div>
+            <div class="prp-nilai">
+              {{ (selisihKurva() ?? 0) > 0 ? "+" : ""
+              }}{{ selisihKurva() | number: "1.0-1" }}
+            </div>
+            <div class="prp-ket">
+              {{
+                ((selisihKurva() ?? 0) < 0
+                  ? "projectProgress.gapBehind"
+                  : "projectProgress.gapAhead"
+                ) | translate
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div class="prp-prog__grafik" *ngIf="adaKurvaS()">
+          <canvas
+            baseChart
+            type="line"
+            [data]="dataKurvaS()"
+            [options]="opsiKurvaS"
+          ></canvas>
+        </div>
+
+        <div class="prp-prog__daftar">
+          <div
+            class="prp-prog__baris"
+            *ngFor="let r of progress(); trackBy: lacakProgress"
+          >
+            <span class="prp-prog__tgl">{{ r.date }}</span>
+            <span class="prp-prog__pct">{{ r.percentage | number: "1.0-2" }}%</span>
+            <span class="prp-prog__ketr">{{ r.description || "—" }}</span>
+            <span class="prp-prog__aksi">
+              <button
+                mat-icon-button
+                type="button"
+                *appCan="'project_progress:update'"
+                [matTooltip]="'common.edit' | translate"
+                (click)="ubahProgress(r)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                *appCan="'project_progress:delete'"
+                [matTooltip]="'common.delete' | translate"
+                (click)="hapusProgress(r)"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
   </ng-container>
 </div>
