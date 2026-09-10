@@ -1596,6 +1596,17 @@
     "menuUbah": "Edit"
   },
   "projectProgress": {
+    "earned": "Work earned",
+    "earnedHint": "Progress × contract value (DPP)",
+    "billedHint": "DPP of this project's sales invoices",
+    "unbilled": "Unbilled",
+    "unbilledUnder": "Done but not yet invoiced — company money sitting on site",
+    "unbilledOver": "Billing is ahead of work — the remaining work still has to be funded",
+    "forecastCost": "Forecast cost at completion",
+    "forecastCostHint": "Cost so far ÷ progress, if the pace holds",
+    "forecastMargin": "Forecast margin",
+    "forecastMarginHint": "Contract − forecast cost. An estimate, not a bookkeeping figure.",
+    "forecastTooEarly": "Forecast held back: below 10% progress, dividing cost by progress explodes — early mobilisation cost would read as a blown budget.",
     "section": "Work progress",
     "sectionHint": "60% of the budget spent is not bad if the work is also 60% done — and very bad if it is only 30%. Compare the two lines.",
     "addTitle": "Record progress",

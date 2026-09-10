@@ -1596,6 +1596,17 @@
     "menuUbah": "修改"
   },
   "projectProgress": {
+    "earned": "已完成产值",
+    "earnedHint": "进度 × 合同金额（DPP）",
+    "billedHint": "该项目销售发票的 DPP",
+    "unbilled": "未开票",
+    "unbilledOver": "开票快于施工——剩余工程仍需垫资",
+    "unbilledUnder": "已施工但尚未开票——公司资金压在现场",
+    "forecastCost": "预计竣工成本",
+    "forecastCostHint": "至今成本 ÷ 进度，按当前节奏推算",
+    "forecastMargin": "预计毛利",
+    "forecastMarginHint": "合同 − 预计竣工成本。为估算值，非账面数字。",
+    "forecastTooEarly": "进度低于 10% 时暂不显示预测：用成本除以进度会使数值失真，前期动员费会被读成严重超支。",
     "section": "工程进度",
     "sectionHint": "花掉 60% 的预算未必是坏事——如果工程也完成了 60%；但若只完成 30%，问题就很严重。请对比两条曲线。",
     "addTitle": "记录进度",

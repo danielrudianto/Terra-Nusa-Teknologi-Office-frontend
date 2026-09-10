@@ -152,6 +152,61 @@ describe('ProjectReport — kurva S', () => {
     expect(f.componentInstance.selisihKurva()).toBeNull();
   }));
 
+  // ------------------------------------------------------------------
+  // Perhitungan terhadap kemajuan
+  // ------------------------------------------------------------------
+
+  it('nilai dikerjakan = kemajuan x kontrak, dan selisihnya terhadap tagihan', fakeAsync(() => {
+    const f = buat([{ id: 1, date: '2026-02-02', percentage: 40 }]);
+    f.componentInstance.muat('R501');
+    tick();
+
+    // 40% x 1000 = 400 dikerjakan; belum ada faktur, jadi 400 belum ditagih.
+    expect(f.componentInstance.nilaiDikerjakan()).toBeCloseTo(400, 5);
+    expect(f.componentInstance.selisihTagihan()).toBeCloseTo(400, 5);
+  }));
+
+  it('proyeksi biaya dan margin dihitung dari laju sekarang', fakeAsync(() => {
+    const f = buat([{ id: 1, date: '2026-02-02', percentage: 50 }]);
+    f.componentInstance.muat('R501');
+    tick();
+
+    // Biaya 500 pada kemajuan 50% -> proyeksi biaya akhir 1000, margin 0.
+    expect(f.componentInstance.proyeksiBiaya()).toBeCloseTo(1000, 5);
+    expect(f.componentInstance.proyeksiMargin()).toBeCloseTo(0, 5);
+    expect(f.componentInstance.proyeksiMarginPersen()).toBeCloseTo(0, 5);
+  }));
+
+  it('proyeksi ditahan di bawah 10% kemajuan', fakeAsync(() => {
+    /*
+     * Membagi biaya dengan kemajuan kecil menghasilkan angka yang meledak:
+     * biaya mobilisasi 500 pada kemajuan 5% memproyeksikan biaya akhir
+     * 10.000 — sepuluh kali kontraknya. Itu bukan peringatan, hanya artefak
+     * pembagian, dan sekali terlihat seluruh proyeksi berhenti dipercaya.
+     */
+    const f = buat([{ id: 1, date: '2026-02-02', percentage: 5 }]);
+    f.componentInstance.muat('R501');
+    tick();
+
+    expect(f.componentInstance.proyeksiBiaya()).toBeNull();
+    expect(f.componentInstance.proyeksiMargin()).toBeNull();
+    expect(f.componentInstance.proyeksiBelumLayak()).toBeTrue();
+
+    // Yang sudah TERJADI tetap ditampilkan; hanya perkiraannya yang ditahan.
+    expect(f.componentInstance.nilaiDikerjakan()).toBeCloseTo(50, 5);
+  }));
+
+  it('tanpa kemajuan, tidak ada satu pun angka turunannya', fakeAsync(() => {
+    const f = buat([]);
+    f.componentInstance.muat('R501');
+    tick();
+
+    expect(f.componentInstance.nilaiDikerjakan()).toBeNull();
+    expect(f.componentInstance.selisihTagihan()).toBeNull();
+    expect(f.componentInstance.proyeksiBiaya()).toBeNull();
+    expect(f.componentInstance.proyeksiBelumLayak()).toBeFalse();
+  }));
+
   it('403 menyembunyikan bagiannya, bukan menampilkan galat', fakeAsync(() => {
     // Sebagian divisi memang tidak punya modul `project_progress`. Laporan
     // biayanya tetap utuh, dan tidak ada yang perlu mereka lakukan soal ini.

@@ -1596,6 +1596,17 @@
     "menuUbah": "Ubah"
   },
   "projectProgress": {
+    "earned": "Nilai dikerjakan",
+    "earnedHint": "Kemajuan × nilai kontrak (DPP)",
+    "billedHint": "DPP faktur penjualan proyek ini",
+    "unbilled": "Belum ditagih",
+    "unbilledUnder": "Sudah dikerjakan tetapi belum ditagih — uang perusahaan menganggur di lapangan",
+    "unbilledOver": "Tagihan mendahului pekerjaan — pekerjaan sisanya masih harus dibiayai",
+    "forecastCost": "Proyeksi biaya akhir",
+    "forecastCostHint": "Biaya sampai kini ÷ kemajuan, bila lajunya tetap",
+    "forecastMargin": "Proyeksi margin",
+    "forecastMarginHint": "Kontrak − proyeksi biaya akhir. Perkiraan, bukan angka pembukuan.",
+    "forecastTooEarly": "Proyeksi belum ditampilkan: di bawah 10% kemajuan, membagi biaya dengan kemajuan menghasilkan angka yang meledak — biaya mobilisasi di awal akan terbaca sebagai proyeksi jebol.",
     "section": "Kemajuan pekerjaan",
     "sectionHint": "Biaya 60% belum tentu buruk bila pekerjaannya juga 60% — dan sangat buruk bila pekerjaannya baru 30%. Bandingkan kedua garisnya.",
     "addTitle": "Catat kemajuan",

@@ -640,6 +640,97 @@
           </div>
         </div>
 
+        <!--
+          ===== Perhitungan terhadap kemajuan =====
+
+          Margin di kartu atas adalah kontrak dikurangi biaya SAMPAI KINI —
+          angka yang benar hanya bila proyeknya sudah selesai. Di tengah
+          jalan ia selalu tampak sehat, karena biaya yang belum keluar belum
+          ada di sana. Baris ini memakai kemajuan sebagai penyebut, sehingga
+          menjawab pertanyaan yang berbeda: bukan "sudah rugi belum",
+          melainkan "kalau begini terus, akan jadi berapa".
+        -->
+        <div class="prp-prog__wip" *ngIf="nilaiDikerjakan() !== null">
+          <div class="prp-prog__wipbaris">
+            <span class="prp-prog__wiplabel">
+              {{ "projectProgress.earned" | translate }}
+            </span>
+            <span class="prp-prog__wipnilai">
+              {{ nilaiDikerjakan() | number: "1.0-0" }}
+            </span>
+            <span class="prp-prog__wipket">
+              {{ "projectProgress.earnedHint" | translate }}
+            </span>
+          </div>
+
+          <div class="prp-prog__wipbaris">
+            <span class="prp-prog__wiplabel">
+              {{ "projectReport.billed" | translate }}
+            </span>
+            <span class="prp-prog__wipnilai">
+              {{ tertagihDpp() | number: "1.0-0" }}
+            </span>
+            <span class="prp-prog__wipket">
+              {{ "projectProgress.billedHint" | translate }}
+            </span>
+          </div>
+
+          <div
+            class="prp-prog__wipbaris prp-prog__wipbaris--tegas"
+            [class.prp-prog__wipbaris--buruk]="(selisihTagihan() ?? 0) < 0"
+          >
+            <span class="prp-prog__wiplabel">
+              {{ "projectProgress.unbilled" | translate }}
+            </span>
+            <span class="prp-prog__wipnilai">
+              {{ (selisihTagihan() ?? 0) > 0 ? "+" : ""
+              }}{{ selisihTagihan() | number: "1.0-0" }}
+            </span>
+            <span class="prp-prog__wipket">
+              {{
+                ((selisihTagihan() ?? 0) < 0
+                  ? "projectProgress.unbilledOver"
+                  : "projectProgress.unbilledUnder"
+                ) | translate
+              }}
+            </span>
+          </div>
+
+          <ng-container *ngIf="proyeksiBiaya() !== null">
+            <div class="prp-prog__wipbaris prp-prog__wippisah">
+              <span class="prp-prog__wiplabel">
+                {{ "projectProgress.forecastCost" | translate }}
+              </span>
+              <span class="prp-prog__wipnilai">
+                {{ proyeksiBiaya() | number: "1.0-0" }}
+              </span>
+              <span class="prp-prog__wipket">
+                {{ "projectProgress.forecastCostHint" | translate }}
+              </span>
+            </div>
+
+            <div
+              class="prp-prog__wipbaris prp-prog__wipbaris--tegas"
+              [class.prp-prog__wipbaris--buruk]="(proyeksiMargin() ?? 0) < 0"
+            >
+              <span class="prp-prog__wiplabel">
+                {{ "projectProgress.forecastMargin" | translate }}
+              </span>
+              <span class="prp-prog__wipnilai">
+                {{ proyeksiMargin() | number: "1.0-0" }}
+                <small>({{ proyeksiMarginPersen() | number: "1.0-1" }}%)</small>
+              </span>
+              <span class="prp-prog__wipket">
+                {{ "projectProgress.forecastMarginHint" | translate }}
+              </span>
+            </div>
+          </ng-container>
+
+          <p class="prp-prog__wipcatatan" *ngIf="proyeksiBelumLayak()">
+            {{ "projectProgress.forecastTooEarly" | translate }}
+          </p>
+        </div>
+
         <div class="prp-prog__grafik" *ngIf="adaKurvaS()">
           <canvas
             baseChart

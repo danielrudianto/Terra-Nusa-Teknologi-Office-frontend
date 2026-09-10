@@ -1013,3 +1013,80 @@
     grid-column: 1 / -1;
   }
 }
+
+/* ---------- perhitungan terhadap kemajuan ---------- */
+.prp-prog__wip {
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line, #eef0f3);
+  border-radius: 12px;
+  background: var(--surface-2, #f8fafc);
+}
+
+.prp-prog__wipbaris {
+  display: grid;
+  grid-template-columns: 12rem minmax(7rem, auto) 1fr;
+  align-items: baseline;
+  gap: 0.5rem 0.9rem;
+  padding: 0.3rem 0;
+  font-size: 0.88rem;
+}
+
+.prp-prog__wiplabel {
+  color: var(--muted, #6b7280);
+}
+
+.prp-prog__wipnilai {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+
+  small {
+    font-weight: 600;
+    color: var(--muted, #6b7280);
+  }
+}
+
+.prp-prog__wipket {
+  color: var(--muted, #6b7280);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.prp-prog__wipbaris--tegas {
+  border-top: 1px solid var(--line, #e5e7eb);
+  margin-top: 0.15rem;
+  padding-top: 0.45rem;
+}
+
+/* Selisih negatif diberi warna peringatan, bukan sekadar tanda minus. */
+.prp-prog__wipbaris--buruk .prp-prog__wipnilai {
+  color: var(--bad, #b42318);
+}
+
+/* Pemisah antara "yang sudah terjadi" dan "yang diperkirakan". */
+.prp-prog__wippisah {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 2px solid var(--line, #e5e7eb);
+}
+
+.prp-prog__wipcatatan {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+
+@media (max-width: 720px) {
+  .prp-prog__wipbaris {
+    grid-template-columns: 1fr auto;
+  }
+  .prp-prog__wipket {
+    grid-column: 1 / -1;
+  }
+  .prp-prog__wipnilai {
+    text-align: right;
+  }
+}

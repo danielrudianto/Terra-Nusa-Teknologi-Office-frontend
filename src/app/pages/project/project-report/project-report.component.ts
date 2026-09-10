@@ -704,6 +704,108 @@ export class ProjectReportComponent implements OnInit {
 
   lacakProgress = (_: number, p: any) => p.id;
 
+  // ------------------------------------------------------------------
+  // Perhitungan terhadap kemajuan, bukan terhadap tagihan
+  // ------------------------------------------------------------------
+  //
+  // Ini yang sebenarnya dicari waktu bertanya "biaya vs kontrak, tapi yang
+  // aktual". Margin di kartu atas adalah kontrak dikurangi biaya SAMPAI KINI
+  // — angka yang benar hanya bila proyeknya sudah selesai. Di tengah jalan ia
+  // selalu tampak sehat, karena biaya yang belum keluar belum ada di sana.
+  //
+  // Seluruh angka di bawah memakai KEMAJUAN sebagai penyebut, sehingga
+  // menjawab pertanyaan yang berbeda: bukan "sudah rugi belum", melainkan
+  // "kalau begini terus, akan jadi berapa".
+
+  /** Persen kemajuan terakhir sebagai angka, atau null bila belum ada. */
+  readonly persenProgres = computed<number | null>(() => {
+    const t = this.progresTerakhir();
+    if (!t) return null;
+    const n = Number(t.percentage);
+    return isFinite(n) ? n : null;
+  });
+
+  /**
+   * Nilai pekerjaan yang SUDAH dikerjakan: kemajuan × nilai kontrak.
+   *
+   * Bukan pengakuan pendapatan akuntansi — pembukuan resmi tetap berbasis
+   * faktur, dan angka ini tidak masuk ke laba rugi. Gunanya membandingkan
+   * pekerjaan dengan tagihan: faktur mengikuti termin, dan termin tidak
+   * pernah persis mengikuti keadaan di lapangan.
+   */
+  readonly nilaiDikerjakan = computed<number | null>(() => {
+    const p = this.persenProgres();
+    const k = this.nilaiKontrak();
+    if (p === null || k <= 0) return null;
+    return (p / 100) * k;
+  });
+
+  /**
+   * Selisih pekerjaan dan tagihan.
+   *
+   * Positif  = sudah dikerjakan tetapi belum ditagih — uang perusahaan yang
+   *            sedang menganggur di lapangan, dan biasanya inilah sebab kas
+   *            terasa seret padahal proyeknya untung.
+   * Negatif  = sudah ditagih melebihi yang dikerjakan (uang muka besar) —
+   *            terasa lapang sekarang, tetapi pekerjaannya masih harus
+   *            dibiayai nanti.
+   */
+  readonly selisihTagihan = computed<number | null>(() => {
+    const dikerjakan = this.nilaiDikerjakan();
+    if (dikerjakan === null) return null;
+    return dikerjakan - this.tertagihDpp();
+  });
+
+  /**
+   * Batas bawah kemajuan sebelum proyeksi boleh ditampilkan.
+   *
+   * Proyeksi membagi biaya dengan kemajuan. Pada kemajuan kecil, pembaginya
+   * kecil dan hasilnya meledak: biaya mobilisasi yang keluar di awal saat
+   * kemajuan 2% memproyeksikan biaya akhir lima puluh kali lipat. Angka itu
+   * bukan peringatan, hanya artefak pembagian — dan sekali terlihat, seluruh
+   * proyeksi berhenti dipercaya.
+   */
+  private readonly BATAS_PROYEKSI = 10;
+
+  /**
+   * Perkiraan biaya sampai proyek selesai, bila lajunya tetap seperti
+   * sekarang: biaya sampai kini dibagi porsi pekerjaan yang sudah jadi.
+   */
+  readonly proyeksiBiaya = computed<number | null>(() => {
+    const p = this.persenProgres();
+    if (p === null || p < this.BATAS_PROYEKSI) return null;
+    const biaya = this.biayaSeumurProyek();
+    if (biaya <= 0) return null;
+    return biaya / (p / 100);
+  });
+
+  /** Perkiraan margin akhir: kontrak dikurangi proyeksi biaya. */
+  readonly proyeksiMargin = computed<number | null>(() => {
+    const b = this.proyeksiBiaya();
+    const k = this.nilaiKontrak();
+    if (b === null || k <= 0) return null;
+    return k - b;
+  });
+
+  readonly proyeksiMarginPersen = computed<number | null>(() => {
+    const m = this.proyeksiMargin();
+    const k = this.nilaiKontrak();
+    if (m === null || k <= 0) return null;
+    return (m / k) * 100;
+  });
+
+  /**
+   * Proyeksi ditahan, dan sebabnya disebutkan.
+   *
+   * Bagian yang hilang tanpa keterangan terbaca sebagai kerusakan; yang
+   * membacanya akan mengira datanya gagal dimuat, bukan bahwa angkanya
+   * memang belum layak dihitung.
+   */
+  readonly proyeksiBelumLayak = computed(() => {
+    const p = this.persenProgres();
+    return p !== null && p < this.BATAS_PROYEKSI;
+  });
+
   readonly proyek = computed(() => this.lookup.cari(this.kode()));
 
   /**
