@@ -86,6 +86,7 @@ export interface PoRingkas {
 
       <mat-autocomplete
         #auto="matAutocomplete"
+        [displayWith]="tampilkan"
         (optionSelected)="pilih($event.option.value)"
       >
         @for (po of saran; track po.id) {
@@ -213,6 +214,30 @@ export class PurchaseOrderAutocompleteComponent {
     const hasil = namaPemasokBaris(po);
     return hasil === '-' ? '' : hasil;
   }
+
+  /**
+   * Apa yang ditulis di kotaknya setelah satu pilihan diambil.
+   *
+   * WAJIB ada. Nilai tiap `mat-option` di sini DOKUMENNYA, bukan nomornya —
+   * pemanggil perlu proyek dan pemasoknya ikut, bukan cuma teks. Tanpa
+   * `displayWith`, MatAutocomplete menuliskan nilai itu apa adanya ke dalam
+   * kotak, dan yang muncul adalah `[object Object]`.
+   *
+   * Menyetel `this.teks` di `pilih()` saja tidak cukup: MatAutocomplete
+   * menulis LANGSUNG ke elemen input-nya sendiri, sesudah itu, dan tulisannya
+   * yang menang.
+   *
+   * Ditulis sebagai properti berisi panah, bukan metode: templatnya
+   * meneruskan fungsinya ke MatAutocomplete, yang memanggilnya tanpa
+   * pemiliknya — sebuah metode biasa akan kehilangan `this` di sana.
+   *
+   * Nilainya bisa juga berupa TEKS, yaitu nomor awal yang belum disentuh
+   * siapa pun; keduanya karena itu ditangani.
+   */
+  readonly tampilkan = (v: PoRingkas | string | null): string => {
+    if (!v) return '';
+    return typeof v === 'string' ? v : (v.name ?? '');
+  };
 
   onKetik(v: string): void {
     this.teks = v ?? '';
