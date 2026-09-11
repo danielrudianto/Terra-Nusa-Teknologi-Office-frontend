@@ -49,4 +49,20 @@ export const AuditTrailEntities: string[] = [
    * sini — sehingga jejaknya tersimpan namun tidak dapat dicari.
    */
   'payment_plans',
+
+  /*
+   * Tender dan penawarannya.
+   *
+   * `TenderRepository` mencatat keduanya sejak awal — tender dibuat, diubah,
+   * disebarkan, dibatalkan, pemenang ditetapkan; penawaran dicatat, diubah,
+   * dihapus — tetapi tidak satu pun terdaftar di sini, sehingga jejaknya
+   * tersimpan tanpa dapat dicari.
+   *
+   * Keduanya terpisah dengan sengaja: harga penawaran yang direvisi setelah
+   * perbandingan dibaca adalah persoalan yang berbeda dari tendernya
+   * dibatalkan, dan menyatukannya menenggelamkan yang satu di antara yang
+   * lain.
+   */
+  'tenders',
+  'tender_quotes',
 ];

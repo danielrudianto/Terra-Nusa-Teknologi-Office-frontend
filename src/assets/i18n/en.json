@@ -3121,6 +3121,10 @@
     "employee_profiles": "Employee profiles",
     "employee_form_submissions": "Employee data updates",
     "employee_form_versions": "Data update forms",
+    "project_progress": "Project progress",
+    "payment_plans": "Cash plan",
+    "tenders": "Tender",
+    "tender_quotes": "Tender quote",
     "laporan:laba_rugi": "Profit & Loss Report",
     "laporan:ppn": "VAT Report",
     "laporan:ppn_posisi": "VAT Position Report",
@@ -4815,6 +4819,10 @@
     "ongkosBelumDitaksir": "freight not yet estimated",
     "cetakPdf": "Print PDF",
     "unduhExcel": "Download Excel",
+    "lihatPenawaranDari": "View quote from {{nama}}",
+    "penawaranSebagianKet": "This quote covers only {{n}} of {{total}} lines. Its total is not comparable with a complete quote.",
+    "jumlah": "Amount",
+    "tanpaVolume": "volume not set",
     "terlaluBanyakCetak": "More than {{n}} suppliers is hard to read on one page; figures may be cut off."
   },
   "rencana": {

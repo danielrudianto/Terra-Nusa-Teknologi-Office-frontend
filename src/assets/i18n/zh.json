@@ -3121,6 +3121,10 @@
     "employee_profiles": "员工档案",
     "employee_form_submissions": "员工资料更新",
     "employee_form_versions": "资料更新表单",
+    "project_progress": "项目进度",
+    "payment_plans": "资金计划",
+    "tenders": "招标",
+    "tender_quotes": "招标报价",
     "laporan:laba_rugi": "损益报表",
     "laporan:ppn": "增值税报表",
     "laporan:ppn_posisi": "增值税头寸报表",
@@ -4815,6 +4819,10 @@
     "ongkosBelumDitaksir": "运费尚未估算",
     "cetakPdf": "打印 PDF",
     "unduhExcel": "下载 Excel",
+    "lihatPenawaranDari": "查看 {{nama}} 的报价",
+    "penawaranSebagianKet": "此报价仅涵盖 {{total}} 项中的 {{n}} 项，其总额无法与完整报价相比。",
+    "jumlah": "金额",
+    "tanpaVolume": "未填写数量",
     "terlaluBanyakCetak": "一页内超过 {{n}} 家供应商难以阅读，数字可能被截断。"
   },
   "rencana": {

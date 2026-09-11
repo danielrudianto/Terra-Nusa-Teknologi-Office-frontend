@@ -18,10 +18,19 @@ import {
 } from 'src/app/helpers/tender-gambar.helper';
 import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.service';
 import { TenderQuoteDialogComponent } from '../tender-quote-dialog/tender-quote-dialog.component';
+import { TenderQuoteViewComponent } from '../tender-quote-view/tender-quote-view.component';
+import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import {
   DataRekap,
   MAKS_PEMASOK_CETAK,
+  biayaSebenarnya as biayaSebenarnyaRekap,
   cetakRekapTender,
+  dibayarkan as dibayarkanRekap,
+  hargaBaris,
+  jumlahDitawar as jumlahDitawarRekap,
+  nilaiPpn as nilaiPpnRekap,
+  subtotal as subtotalRekap,
+  tidakLengkap as tidakLengkapRekap,
   unduhRekapTenderExcel,
 } from 'src/app/helpers/tender-rekap.helper';
 
@@ -35,6 +44,7 @@ import {
     MatMenuModule,
     TranslateModule,
     CanDirective,
+    AuditTrailComponent,
   ],
   templateUrl: './tender-view.component.html',
   styleUrl: './tender-view.component.scss',
@@ -97,10 +107,29 @@ export class TenderViewComponent implements OnInit {
     return Math.max(this.MINIMAL - this.quotes.length, 0);
   }
 
-  /** Harga satu baris pada satu penawaran; null bila tidak ditawar. */
+  /**
+   * Bentuk ringkas untuk penyebut bersama.
+   *
+   * Hanya membungkus `items` dan `quotes` yang sudah ada — TIDAK memetakan
+   * ulang seperti `dataRekap()`, karena pemanggilnya adalah templat: tiap
+   * sel memanggilnya sekali, dan penyusunan ulang daftar di dalamnya akan
+   * dijalankan ratusan kali pada setiap deteksi perubahan.
+   */
+  private rekap(): DataRekap {
+    return { items: this.items, quotes: this.quotes } as DataRekap;
+  }
+
+  /**
+   * Harga satu baris pada satu penawaran; null bila tidak ditawar.
+   *
+   * Diteruskan ke `tender-rekap.helper` — penyebut yang sama dengan yang
+   * dipakai PDF, Excel, dan dialog lihat penawaran. Salinannya di sini dulu
+   * mengembalikan `Number(b.price)` untuk baris yang TERSIMPAN dengan harga
+   * kosong, dan `Number(null)` adalah 0 — sehingga baris yang tidak dijawab
+   * tampil sebagai Rp 0 dan ditandai sebagai penawaran termurah.
+   */
   harga(quote: any, itemId: number): number | null {
-    const b = (quote?.items ?? []).find((x: any) => x.tenderItemID === itemId);
-    return b ? Number(b.price) : null;
+    return hargaBaris(quote, itemId);
   }
 
   catatanBaris(quote: any, itemId: number): string {
@@ -140,22 +169,17 @@ export class TenderViewComponent implements OnInit {
    * dijumlahkan dan hanya dibandingkan per satuan.
    */
   total(quote: any): number {
-    return this.items.reduce((a, it) => {
-      const h = this.harga(quote, it.id);
-      const v = Number(it.quantity) || 0;
-      return a + (h ?? 0) * v;
-    }, 0);
+    return subtotalRekap(this.rekap(), quote);
   }
 
   /** Nilai PPN atas satu penawaran; nol bila pemasoknya bukan PKP. */
   nilaiPpn(quote: any): number {
-    if (!quote?.includePpn) return 0;
-    return (this.total(quote) * (Number(quote.ppnPercentage) || 0)) / 100;
+    return nilaiPpnRekap(this.rekap(), quote);
   }
 
   /** Yang benar-benar dibayarkan ke pemasok. */
   dibayarkan(quote: any): number {
-    return this.total(quote) + this.nilaiPpn(quote);
+    return dibayarkanRekap(this.rekap(), quote);
   }
 
   /**
@@ -172,7 +196,7 @@ export class TenderViewComponent implements OnInit {
   biayaSebenarnya(quote: any): number {
     // PPN dikreditkan sehingga tidak ikut; biaya lain TIDAK dapat
     // dikreditkan dan seluruhnya menjadi beban.
-    return this.total(quote) + (Number(quote?.otherCost) || 0);
+    return biayaSebenarnyaRekap(this.rekap(), quote);
   }
 
   biayaLain(quote: any): number {
@@ -217,7 +241,7 @@ export class TenderViewComponent implements OnInit {
 
   /** Berapa baris yang ditawar penawaran ini. */
   jumlahDitawar(quote: any): number {
-    return this.items.filter((it) => this.harga(quote, it.id) !== null).length;
+    return jumlahDitawarRekap(this.rekap(), quote);
   }
 
   /**
@@ -228,7 +252,7 @@ export class TenderViewComponent implements OnInit {
    * membandingkan keduanya tanpa menyadari itu menghasilkan keputusan keliru.
    */
   tidakLengkap(quote: any): boolean {
-    return this.jumlahDitawar(quote) < this.items.length;
+    return tidakLengkapRekap(this.rekap(), quote);
   }
 
   // ------------------------------------------------------------------
@@ -309,6 +333,27 @@ export class TenderViewComponent implements OnInit {
             }),
         });
       });
+  }
+
+  /**
+   * Buka satu penawaran utuh.
+   *
+   * Layar perbandingan memampatkan tiap penawaran menjadi satu kolom sempit:
+   * harga dibulatkan, catatan per baris tersembunyi, keterangan pemasok
+   * dipadatkan. Yang hendak memeriksa SATU penawaran sebelum memutuskan
+   * tidak punya tempat untuk melakukannya — dan keputusan pengadaan diambil
+   * atas dasar penawaran, bukan atas dasar kolom.
+   *
+   * Terbuka bagi siapa pun yang boleh melihat tendernya; menyunting tetap
+   * terpisah dan tetap dibatasi statusnya.
+   */
+  lihatPenawaran(quote: any): void {
+    this.dialog.open(TenderQuoteViewComponent, {
+      data: { rekap: this.dataRekap(), quote },
+      width: '860px',
+      maxWidth: '96vw',
+      autoFocus: false,
+    });
   }
 
   hapusPenawaran(quote: any): void {

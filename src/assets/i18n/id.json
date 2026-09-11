@@ -3121,6 +3121,10 @@
     "employee_profiles": "Profil karyawan",
     "employee_form_submissions": "Pembaruan data karyawan",
     "employee_form_versions": "Formulir pembaruan data",
+    "project_progress": "Kemajuan proyek",
+    "payment_plans": "Rencana kas",
+    "tenders": "Tender",
+    "tender_quotes": "Penawaran tender",
     "laporan:laba_rugi": "Laporan Laba Rugi",
     "laporan:ppn": "Laporan PPN",
     "laporan:ppn_posisi": "Laporan Posisi PPN",
@@ -4815,6 +4819,10 @@
     "ongkosBelumDitaksir": "ongkos angkut belum ditaksir",
     "cetakPdf": "Cetak PDF",
     "unduhExcel": "Unduh Excel",
+    "lihatPenawaranDari": "Lihat penawaran dari {{nama}}",
+    "penawaranSebagianKet": "Penawaran ini hanya menjawab {{n}} dari {{total}} baris. Totalnya tidak sebanding dengan penawaran yang lengkap.",
+    "jumlah": "Jumlah",
+    "tanpaVolume": "volume belum ditentukan",
     "terlaluBanyakCetak": "Lebih dari {{n}} pemasok sulit terbaca dalam satu halaman; angkanya mungkin terpotong."
   },
   "rencana": {

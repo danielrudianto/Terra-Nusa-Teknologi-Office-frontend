@@ -1,0 +1,237 @@
+<div class="tqv">
+  <div class="tqv-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>request_quote</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">{{ namaPemasok }}</h2>
+      <span class="dlg__sub">
+        {{ rekap.nomor ? "No. " + rekap.nomor + " · " : "" }}{{ rekap.nama }}
+      </span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="tqv-content">
+    <!--
+      Keterangan penawaran, mendahului angkanya.
+
+      Termin dan cara pengiriman ikut menentukan biayanya, bukan sekadar
+      catatan administratif — dan di layar perbandingan keduanya berada
+      belasan baris di bawah harga, sehingga terbaca terpisah dari angkanya.
+    -->
+    <div class="tqv-ringkas">
+      <div class="tqv-ringkas__sel">
+        <span class="tqv-label">{{ "tender.tanggalPenawaran" | translate }}</span>
+        <span class="tqv-nilai">
+          {{ quote.quotedAt ? (quote.quotedAt | date: "d MMM yyyy") : "—" }}
+        </span>
+      </div>
+
+      <div class="tqv-ringkas__sel">
+        <span class="tqv-label">{{ "tender.terminDitawarkan" | translate }}</span>
+        <span class="tqv-nilai">
+          {{ quote.paymentTerm || "—" }}
+          @if (quote.creditTerm) {
+            <span class="tqv-nilai__ket">
+              {{ quote.creditTerm }} {{ "tender.hari" | translate }}
+            </span>
+          }
+        </span>
+      </div>
+
+      <div class="tqv-ringkas__sel">
+        <span class="tqv-label">{{ "tender.caraPengiriman" | translate }}</span>
+        <span class="tqv-nilai">
+          @if (quote.deliveryMethod === "loco") {
+            {{ "tender.loco" | translate }}
+          } @else if (quote.deliveryMethod === "franco") {
+            {{ "tender.franco" | translate }}
+          } @else {
+            —
+          }
+        </span>
+      </div>
+
+      <div class="tqv-ringkas__sel">
+        <span class="tqv-label">{{ "tender.ppn" | translate }}</span>
+        <span class="tqv-nilai">
+          @if (quote.includePpn) {
+            {{ quote.ppnPercentage | number: "1.0-2" }}%
+          } @else {
+            {{ "tender.nonPkp" | translate }}
+          }
+        </span>
+      </div>
+    </div>
+
+    <!--
+      Penawaran yang tidak lengkap DITANDAI, di atas angkanya.
+
+      Totalnya tidak sebanding dengan penawaran lain: penawaran atas tiga
+      baris selalu tampak lebih murah daripada penawaran atas sepuluh baris.
+      Di layar perbandingan penandanya kecil di kepala kolom; di sini, yang
+      membuka satu penawaran saja tidak punya pembanding sama sekali.
+    -->
+    @if (tidakLengkap) {
+      <div class="tqv-banner tqv-banner--warn">
+        <mat-icon>rule</mat-icon>
+        <span>{{
+          "tender.penawaranSebagianKet"
+            | translate: { n: jumlahDitawar, total: items.length }
+        }}</span>
+      </div>
+    }
+
+    @if (locoTanpaOngkos) {
+      <div class="tqv-banner tqv-banner--warn">
+        <mat-icon>local_shipping</mat-icon>
+        <span>{{ "tender.locoKet" | translate }}</span>
+      </div>
+    }
+
+    <!-- ===== harga per baris ===== -->
+    <div class="tqv-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th class="tqv-th-item">
+              {{ (isJasa ? "tender.uraianJasa" : "tender.namaBarang") | translate }}
+            </th>
+            <th class="tqv-th-angka">{{ "tender.hargaSatuan" | translate }}</th>
+            <th class="tqv-th-angka">{{ "tender.jumlah" | translate }}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (it of items; track it.id) {
+            <tr [class.tqv-tr--kosong]="harga(it.id) === null">
+              <td class="tqv-td-item">
+                <span class="tqv-item__nama">{{ it.name }}</span>
+                @if (it.specification) {
+                  <span class="tqv-item__spec">{{ it.specification }}</span>
+                }
+                @if (it.quantity) {
+                  <span class="tqv-item__vol">
+                    {{ it.quantity | number: "1.0-2" }} {{ it.unit }}
+                  </span>
+                }
+                @if (catatanBaris(it.id)) {
+                  <!--
+                    Catatan per baris ditampilkan UTUH.
+
+                    Merek pengganti dan spesifikasi yang disesuaikan dicatat di
+                    sini, dan di layar perbandingan ia terpotong oleh lebar
+                    kolom — padahal justru itu yang membedakan dua penawaran
+                    dengan harga hampir sama.
+                  -->
+                  <span class="tqv-item__catatan">{{ catatanBaris(it.id) }}</span>
+                }
+              </td>
+
+              @if (harga(it.id) === null) {
+                <td class="tqv-td-angka tqv-tidak" colspan="2">
+                  {{ "tender.tidakMenawar" | translate }}
+                </td>
+              } @else {
+                <td class="tqv-td-angka">{{ harga(it.id) | number: "1.0-2" }}</td>
+                <td class="tqv-td-angka">
+                  @if (jumlahBaris(it) !== null) {
+                    {{ jumlahBaris(it) | number: "1.0-2" }}
+                  } @else {
+                    <!--
+                      Baris tanpa volume tidak dapat dijumlahkan — dan
+                      menuliskannya nol membuatnya terbaca seperti gratis.
+                    -->
+                    <span class="tqv-tidak">{{
+                      "tender.tanpaVolume" | translate
+                    }}</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td class="tqv-td-item">{{ "tender.subtotal" | translate }}</td>
+            <td class="tqv-td-angka" colspan="2">
+              {{ subtotal | number: "1.0-2" }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="tqv-td-item">{{ "tender.ppn" | translate }}</td>
+            <td class="tqv-td-angka" colspan="2">
+              @if (quote.includePpn) {
+                {{ nilaiPpn | number: "1.0-2" }}
+              } @else {
+                <span class="tqv-tidak">{{ "tender.nonPkp" | translate }}</span>
+              }
+            </td>
+          </tr>
+
+          <tr>
+            <td class="tqv-td-item">{{ "tender.dibayarkan" | translate }}</td>
+            <td class="tqv-td-angka" colspan="2">
+              {{ dibayarkan | number: "1.0-2" }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="tqv-td-item">{{ "tender.biayaLain" | translate }}</td>
+            <td class="tqv-td-angka" colspan="2">
+              @if (biayaLain) {
+                {{ biayaLain | number: "1.0-2" }}
+                @if (quote.otherCostNote) {
+                  <span class="tqv-td-angka__ket">{{ quote.otherCostNote }}</span>
+                }
+              } @else {
+                —
+              }
+            </td>
+          </tr>
+
+          <tr class="tqv-tr--biaya">
+            <td class="tqv-td-item">
+              <strong>{{ "tender.biayaSebenarnya" | translate }}</strong>
+            </td>
+            <td class="tqv-td-angka" colspan="2">
+              <strong>{{ biayaSebenarnya | number: "1.0-2" }}</strong>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="tqv-banner">
+      <mat-icon>account_balance</mat-icon>
+      <span>{{ "tender.biayaSebenarnyaKet" | translate }}</span>
+    </div>
+
+    @if (quote.notes) {
+      <div class="tqv-blok">
+        <span class="tqv-label">{{ "tender.keteranganPemasok" | translate }}</span>
+        <p class="tqv-teks">{{ quote.notes }}</p>
+      </div>
+    }
+
+    <!--
+      Riwayat penawaran ini sendiri, bukan riwayat tendernya.
+
+      Harga yang direvisi setelah dibandingkan adalah persoalan yang nyata:
+      tanpa jejaknya, penawaran yang diubah sehari sebelum keputusan tidak
+      dapat dibedakan dari penawaran yang masuk apa adanya.
+    -->
+    <div class="audit-divider"></div>
+    <app-audit-trail
+      entity="tender_quotes"
+      [entityId]="quote.id"
+    ></app-audit-trail>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="tqv-actions">
+    <span class="tqv-spacer"></span>
+    <button mat-stroked-button type="button" (click)="tutup()">
+      {{ "common.close" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

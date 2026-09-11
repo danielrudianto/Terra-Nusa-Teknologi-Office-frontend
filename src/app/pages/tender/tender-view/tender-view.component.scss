@@ -303,6 +303,49 @@
   color: var(--ink, #16181d);
 }
 
+/*
+ * Nama pemasok sebagai tombol.
+ *
+ * Gayanya sengaja TIDAK seperti tautan biru: kepala tabel ini sudah penuh
+ * penanda — jumlah baris yang ditawar, tombol sunting dan hapus — dan warna
+ * tambahan di sana hanya menambah keriuhan pada bagian yang harus terbaca
+ * sekilas. Ikon kecil di sebelah namanya cukup menyebut bahwa ia dapat
+ * dibuka, dan sisanya muncul saat disentuh penunjuk atau papan ketik.
+ */
+.tv-qhead__buka {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0.1rem 0.25rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    color: var(--muted, #6b7280);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand, #154dec);
+
+    .mat-icon {
+      color: var(--brand, #154dec);
+    }
+  }
+}
+
 .tv-qhead__sebagian {
   font-size: 0.7rem;
   font-weight: 600;

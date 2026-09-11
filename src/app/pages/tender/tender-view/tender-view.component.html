@@ -196,9 +196,32 @@
                 @for (q of quotes; track q.id) {
                   <th class="tv-th-quote">
                     <div class="tv-qhead">
-                      <span class="tv-qhead__nama">
-                        {{ q.supplierPrefix }} {{ q.supplierName }}
-                      </span>
+                      <!--
+                        Nama pemasok MEMBUKA penawarannya.
+
+                        Kolom ini memampatkan seluruh penawaran menjadi satu
+                        deret angka yang dibulatkan; catatan per baris dan
+                        keterangan pemasok tidak muat sama sekali. Nama di
+                        kepala kolom adalah satu-satunya tempat yang jelas
+                        menunjuk SATU pemasok, sehingga di situlah jalan
+                        masuknya.
+
+                        Tombol, bukan span yang diberi (click): yang menelusuri
+                        dengan papan ketik dan pembaca layar harus dapat
+                        mencapainya juga.
+                      -->
+                      <button
+                        type="button"
+                        class="tv-qhead__nama tv-qhead__buka"
+                        (click)="lihatPenawaran(q)"
+                        [attr.aria-label]="
+                          'tender.lihatPenawaranDari'
+                            | translate: { nama: q.supplierName }
+                        "
+                      >
+                        <span>{{ q.supplierPrefix }} {{ q.supplierName }}</span>
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
                       @if (tidakLengkap(q)) {
                         <!--
                           Penawaran tidak lengkap DITANDAI.
@@ -449,6 +472,19 @@
           <span>{{ "tender.termurahKet" | translate }}</span>
         </div>
       }
+    </div>
+
+    <!--
+      Riwayat tendernya sendiri.
+
+      Server sudah mencatatnya sejak awal — dibuat, diubah, disebarkan,
+      dibatalkan, pemenang ditetapkan — tetapi jejaknya tidak pernah muncul di
+      mana pun. Keputusan pengadaan adalah yang paling sering ditinjau ulang
+      setahun kemudian, dan justru itulah yang selama ini tidak dapat
+      ditelusuri tanpa membuka basis datanya.
+    -->
+    <div class="tv-card">
+      <app-audit-trail entity="tenders" [entityId]="tenderId"></app-audit-trail>
     </div>
   }
 </div>

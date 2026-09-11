@@ -50,6 +50,13 @@ export interface PenawaranRekap {
   otherCost?: number | null;
   otherCostNote?: string | null;
   notes?: string | null;
+  // Kapan balasannya masuk; dicatat manual karena datangnya lewat WhatsApp.
+  //
+  // Tidak dipakai kedua pencetak, tetapi ikut disebut di sini karena bentuk
+  // ini yang menggambarkan satu penawaran — dan dialog lihat penawaran
+  // menampilkannya. Mendefinisikannya terpisah di sana berarti dua bentuk
+  // untuk satu baris tabel yang sama.
+  quotedAt?: string | null;
   items: Array<{ tenderItemID: number; price?: number | null; notes?: string | null }>;
 }
 
