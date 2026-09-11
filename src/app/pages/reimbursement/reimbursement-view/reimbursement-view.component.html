@@ -54,7 +54,7 @@
               <td class="rv-num">
                 {{
                   item.get("amount")?.value
-                    | currency: "Rp " : "symbol" : "1.0-0"
+                    | currency: "Rp " : "symbol" : "1.2-2"
                 }}
               </td>
             </tr>
@@ -71,7 +71,7 @@
                 {{ "reimbursement.viewTotal" | translate }}
               </td>
               <td class="rv-num rv-total-value">
-                {{ f["total"].value | currency: "Rp " : "symbol" : "1.0-0" }}
+                {{ f["total"].value | currency: "Rp " : "symbol" : "1.2-2" }}
               </td>
             </tr>
           </tfoot>
@@ -101,7 +101,7 @@
         </div>
         <div class="rv-pay__right">
           <span class="rv-pay__amount">{{
-            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+            pay.get("amount")?.value | currency: "Rp " : "symbol" : "1.2-2"
           }}</span>
           <span
             class="rv-badge"

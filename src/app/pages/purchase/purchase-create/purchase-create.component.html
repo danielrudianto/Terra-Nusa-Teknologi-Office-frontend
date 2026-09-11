@@ -252,7 +252,7 @@
                 | translate: { n: tagihanPo.length }
             }}</strong>
             <span class="pc-tagihan__nilai">
-              {{ totalTagihanPo | number: "1.0-0" }}
+              {{ totalTagihanPo | number: "1.2-2" }}
             </span>
           </div>
 
@@ -264,7 +264,7 @@
                   t.date | date: "d MMM yyyy"
                 }}</span>
                 <span class="pc-tagihan__jml">
-                  {{ t.dpp | number: "1.0-0" }}
+                  {{ t.dpp | number: "1.2-2" }}
                 </span>
               </li>
             }
@@ -273,11 +273,11 @@
           @if (nilaiPo) {
             <div class="pc-tagihan__sisa">
               <span>{{ "purchaseCreate.nilaiPo" | translate }}</span>
-              <span>{{ nilaiPo | number: "1.0-0" }}</span>
+              <span>{{ nilaiPo | number: "1.2-2" }}</span>
             </div>
             <div class="pc-tagihan__sisa pc-tagihan__sisa--utama">
               <span>{{ "purchaseCreate.sisaPo" | translate }}</span>
-              <strong>{{ sisaPo | number: "1.0-0" }}</strong>
+              <strong>{{ sisaPo | number: "1.2-2" }}</strong>
             </div>
           }
 
@@ -438,7 +438,7 @@
               "purchaseCreate.ppnRp" | translate
             }}</span>
             <span class="nilai-teks__angka">
-              Rp {{ valueFormGroup.get("ppnValue")?.value | number: "1.0-2" }}
+              Rp {{ valueFormGroup.get("ppnValue")?.value | number: "1.2-2" }}
             </span>
           </div>
         </div>

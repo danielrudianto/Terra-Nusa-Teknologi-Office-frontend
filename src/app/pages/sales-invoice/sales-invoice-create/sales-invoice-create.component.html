@@ -195,7 +195,7 @@
                       | translate: { n: tagihanLalu.length }
                   }}</strong>
                   <span class="sic-tagihan__total">
-                    Rp {{ totalTagihanLalu | number: "1.0-0" }}
+                    Rp {{ totalTagihanLalu | number: "1.2-2" }}
                   </span>
                 </div>
                 <ul class="sic-tagihan__daftar">
@@ -206,7 +206,7 @@
                         t.date | date: "d MMM yyyy"
                       }}</span>
                       <span class="sic-tagihan__nilai">
-                        Rp {{ t.dpp | number: "1.0-0" }}
+                        Rp {{ t.dpp | number: "1.2-2" }}
                       </span>
                     </li>
                   }

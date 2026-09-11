@@ -94,7 +94,7 @@
               {{ opponent.amount < 0 ? "−" : "+" }} Rp
               {{
                 (opponent.amount < 0 ? -opponent.amount : opponent.amount)
-                  | number: "1.0-0"
+                  | number: "1.2-2"
               }}
             </span>
           </mat-cell>
@@ -106,7 +106,7 @@
           }}</mat-header-cell>
           <mat-cell *matCellDef="let opponent" class="bm-r"
             ><span class="bm-balance"
-              >Rp {{ opponent.balance | number: "1.0-0" }}</span
+              >Rp {{ opponent.balance | number: "1.2-2" }}</span
             ></mat-cell
           >
         </ng-container>

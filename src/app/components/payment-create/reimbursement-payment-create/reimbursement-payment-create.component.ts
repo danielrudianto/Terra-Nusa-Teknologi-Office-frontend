@@ -27,6 +27,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { BankAccountSelectorComponent } from '../../../components/bank-account-selector/bank-account-selector.component';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MatIconModule } from '@angular/material/icon';
+import { sudahLunas as lunasBersama } from 'src/app/utils/lunas';
 
 @Component({
   selector: 'app-reimbursement-payment-create',
@@ -94,16 +95,17 @@ export class ReimbursementPaymentCreateComponent {
   /**
    * Tidak ada lagi sisa yang dapat dibayarkan.
    *
-   * Toleransi lima rupiah, sama seperti pada perhitungan `isPaid` di server:
-   * pembulatan pajak menyisakan selisih beberapa rupiah yang bukan kekurangan
-   * bayar, dan tanpa toleransi itu dokumen yang sebenarnya lunas tetap
-   * menerima pembayaran satu rupiah.
+   * Aturannya di `utils/lunas.ts`, bukan di sini. Empat dialog pembayaran
+   * dulu menyimpan salinannya masing-masing, dan keempatnya memakai ambang
+   * lima rupiah — disalin dari toleransi pembulatan pajak di server, tempat
+   * ia memang benar. Di sini ia keliru: dokumen bernilai Rp 0,11 dianggap
+   * lunas sejak lahir dan tombol bayarnya mati selamanya.
    *
-   * Server tetap menolaknya secara terpisah — ini hanya agar tombolnya tidak
+   * Server tetap memeriksanya sendiri — ini hanya agar tombolnya tidak
    * mengundang penekanan yang pasti gagal.
    */
   get sudahLunas(): boolean {
-    return (Number(this.totalAmount) || 0) <= 5;
+    return lunasBersama(this.totalAmount);
   }
 
   ngOnInit(): void {

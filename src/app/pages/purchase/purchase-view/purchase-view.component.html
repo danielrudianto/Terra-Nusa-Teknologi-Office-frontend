@@ -106,32 +106,32 @@
       <div class="pv-money">
         <div class="pv-money__row">
           <span>DPP</span
-          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>{{ vDpp | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="pv-money__row">
           <span>PPN</span
-          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>+ {{ vPpn | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="pv-money__row" *ngIf="vPbbkb">
           <span>{{ "expense.pbbkb" | translate }}</span
-          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>+ {{ vPbbkb | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="pv-money__row">
           <span
             >{{ "purchase.otherValue" | translate }}<em *ngIf="f['otherValueNote'].value"
               >· {{ f["otherValueNote"].value }}</em
             ></span
-          ><span>+ {{ vOther | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>+ {{ vOther | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="pv-money__row pv-money__row--sub">
           <span>{{ "purchase.viewTotalInvoice" | translate }}</span
           ><span>{{
-            vTotalInvoice | currency: "Rp " : "symbol" : "1.0-0"
+            vTotalInvoice | currency: "Rp " : "symbol" : "1.2-2"
           }}</span>
         </div>
         <div class="pv-money__row pv-money__row--neg">
           <span>{{ "purchase.viewPphDeducted" | translate }}</span
-          ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          ><span>− {{ vPph | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
         <div class="pv-pph" *ngIf="pphLabel">
           <div class="pv-pph__text">
@@ -151,7 +151,7 @@
 
         <div class="pv-money__total">
           <span>{{ "purchase.viewTotalDue" | translate }}</span>
-          <span>{{ vTotalPay | currency: "Rp " : "symbol" : "1.0-0" }}</span>
+          <span>{{ vTotalPay | currency: "Rp " : "symbol" : "1.2-2" }}</span>
         </div>
       </div>
     </div>
@@ -174,7 +174,7 @@
         </div>
         <div class="pv-pay__right">
           <span class="pv-pay__amount">{{
-            p.get("amount")?.value | currency: "Rp " : "symbol" : "1.0-0"
+            p.get("amount")?.value | currency: "Rp " : "symbol" : "1.2-2"
           }}</span>
           <span
             class="pv-badge"

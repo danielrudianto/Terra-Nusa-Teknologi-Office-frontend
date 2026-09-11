@@ -74,13 +74,13 @@
         <div class="ppc-money__row">
           <span>DPP</span
           ><span
-            >Rp {{ valueFormGroup.get("dpp")?.value | number: "1.0-0" }}</span
+            >Rp {{ valueFormGroup.get("dpp")?.value | number: "1.2-2" }}</span
           >
         </div>
         <div class="ppc-money__row">
           <span>PPN</span
           ><span class="ppc-pos"
-            >+ Rp {{ valueFormGroup.get("ppn")?.value | number: "1.0-0" }}</span
+            >+ Rp {{ valueFormGroup.get("ppn")?.value | number: "1.2-2" }}</span
           >
         </div>
         <div
@@ -90,7 +90,7 @@
           <span>{{ "expense.pbbkb" | translate }}</span
           ><span class="ppc-pos"
             >+ Rp
-            {{ valueFormGroup.get("pbbkb")?.value | number: "1.0-0" }}</span
+            {{ valueFormGroup.get("pbbkb")?.value | number: "1.2-2" }}</span
           >
         </div>
         <div
@@ -108,14 +108,14 @@
           <span class="ppc-pos"
             >+ Rp
             {{
-              valueFormGroup.get("otherValue")?.value | number: "1.0-0"
+              valueFormGroup.get("otherValue")?.value | number: "1.2-2"
             }}</span
           >
         </div>
         <div class="ppc-money__row">
           <span>PPh</span
           ><span class="ppc-neg"
-            >− Rp {{ valueFormGroup.get("pph")?.value | number: "1.0-0" }}</span
+            >− Rp {{ valueFormGroup.get("pph")?.value | number: "1.2-2" }}</span
           >
         </div>
 
@@ -157,7 +157,7 @@
         <div class="ppc-money__row ppc-money__row--total">
           <span>{{ "common.totalBill" | translate }}</span
           ><span
-            >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
+            >Rp {{ valueFormGroup.get("total")?.value | number: "1.2-2" }}</span
           >
         </div>
       </div>
@@ -169,13 +169,13 @@
             >Rp
             {{
               +valueFormGroup.get("total")?.value - totalAmount
-                | number: "1.0-0"
+                | number: "1.2-2"
             }}</strong
           ></span
         >
         <span
           >{{ "expense.sisa" | translate }}<strong class="ppc-remain"
-            >Rp {{ totalAmount | number: "1.0-0" }}</strong
+            >Rp {{ totalAmount | number: "1.2-2" }}</strong
           ></span
         >
       </div>
@@ -213,7 +213,7 @@
               p.isApprove ? ('hardcoded.approved' | translate) : ('hardcoded.pending' | translate)
             }}</span>
             <span class="ppc-hist__amt"
-              >Rp {{ p.amount | number: "1.0-0" }}</span
+              >Rp {{ p.amount | number: "1.2-2" }}</span
             >
           </div>
         </div>
@@ -255,7 +255,7 @@
             thousandSeparator=" "
             mask="separator.2"
           />
-          <mat-hint>Maksimal Rp {{ totalAmount | number: "1.0-0" }}</mat-hint>
+          <mat-hint>Maksimal Rp {{ totalAmount | number: "1.2-2" }}</mat-hint>
         </mat-form-field>
       </div>
       <button type="button" class="ppc-full" (click)="fullAmount()">
@@ -271,7 +271,7 @@
         >
           <path d="M20 6 9 17l-5-5" />
         </svg>
-        Bayar penuh (Rp {{ totalAmount | number: "1.0-0" }})
+        Bayar penuh (Rp {{ totalAmount | number: "1.2-2" }})
       </button>
     </mat-dialog-content>
 

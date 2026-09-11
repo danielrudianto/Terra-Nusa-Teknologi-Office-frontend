@@ -39,28 +39,28 @@
       <div class="spc-money">
         <div class="spc-money__row">
           <span>{{ "salaryPayment.grossSalary" | translate }}</span
-          ><span>Rp {{ formGroup.value.grossSalary | number: "1.0-0" }}</span>
+          ><span>Rp {{ formGroup.value.grossSalary | number: "1.2-2" }}</span>
         </div>
         <div class="spc-money__row">
           <span>{{ "salaryPayment.pph21" | translate }}</span
           ><span class="spc-neg"
-            >− Rp {{ formGroup.value.taxAmount | number: "1.0-0" }}</span
+            >− Rp {{ formGroup.value.taxAmount | number: "1.2-2" }}</span
           >
         </div>
         <div class="spc-money__row spc-money__row--net">
           <span>{{ "salaryPayment.netSalary" | translate }}</span
-          ><span>Rp {{ formGroup.value.netSalary | number: "1.0-0" }}</span>
+          ><span>Rp {{ formGroup.value.netSalary | number: "1.2-2" }}</span>
         </div>
       </div>
 
       <!-- paid progress -->
       <div class="spc-paidrow">
         <span
-          >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ payment | number: "1.0-0" }}</strong></span
+          >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ payment | number: "1.2-2" }}</strong></span
         >
         <span
           >{{ "expense.sisa" | translate }}<strong class="spc-remain"
-            >Rp {{ maximumPayment | number: "1.0-0" }}</strong
+            >Rp {{ maximumPayment | number: "1.2-2" }}</strong
           ></span
         >
       </div>
@@ -107,7 +107,7 @@
             mask="separator"
           />
           <mat-hint
-            >Maksimal Rp {{ maximumPayment | number: "1.0-0" }}</mat-hint
+            >Maksimal Rp {{ maximumPayment | number: "1.2-2" }}</mat-hint
           >
         </mat-form-field>
       </div>
@@ -126,7 +126,7 @@
           <circle cx="12" cy="12" r="10" />
           <path d="M12 8v4M12 16h.01" />
         </svg>
-        Nominal harus antara Rp 0 dan Rp {{ maximumPayment | number: "1.0-0" }}.
+        Nominal harus antara Rp 0 dan Rp {{ maximumPayment | number: "1.2-2" }}.
       </div>
     </mat-dialog-content>
 

@@ -74,14 +74,14 @@
             <span class="rpc-item__date">{{ item.value.date }}</span>
           </div>
           <span class="rpc-item__amt"
-            >Rp {{ item.value.amount | number: "1.0-0" }}</span
+            >Rp {{ item.value.amount | number: "1.2-2" }}</span
           >
         </div>
 
         <div class="rpc-total">
           <span>{{ "common.total" | translate }}</span>
           <span class="rpc-total__val"
-            >Rp {{ valueFormGroup.get("total")?.value | number: "1.0-0" }}</span
+            >Rp {{ valueFormGroup.get("total")?.value | number: "1.2-2" }}</span
           >
         </div>
       </div>

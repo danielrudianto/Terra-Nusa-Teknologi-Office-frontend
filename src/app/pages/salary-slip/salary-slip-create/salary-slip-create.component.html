@@ -275,7 +275,7 @@
               {{ "salarySlipForm.amount" | translate }}
             </th>
             <td mat-cell *matCellDef="let allowance" class="ssc-num ssc-pos">
-              Rp {{ allowance.get("amount").value | number: "1.0-0" }}
+              Rp {{ allowance.get("amount").value | number: "1.2-2" }}
             </td>
           </ng-container>
           <ng-container matColumnDef="description">
@@ -359,7 +359,7 @@
               {{ "salarySlipForm.amount" | translate }}
             </th>
             <td mat-cell *matCellDef="let deduction" class="ssc-num ssc-neg">
-              − Rp {{ deduction.get("amount").value | number: "1.0-0" }}
+              − Rp {{ deduction.get("amount").value | number: "1.2-2" }}
             </td>
           </ng-container>
           <ng-container matColumnDef="description">
@@ -475,7 +475,7 @@
             "salarySlipForm.dasarPph" | translate
           }}</span>
           <span class="ssc-dpp__nilai"
-            >Rp {{ dasarPph | number: "1.0-0" }}</span
+            >Rp {{ dasarPph | number: "1.2-2" }}</span
           >
         </div>
 

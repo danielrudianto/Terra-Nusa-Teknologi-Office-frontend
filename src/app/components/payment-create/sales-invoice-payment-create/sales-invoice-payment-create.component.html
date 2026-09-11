@@ -33,34 +33,34 @@
     <div class="sip-money">
       <div class="sip-money__row">
         <span>DPP</span
-        ><span>Rp {{ formGroup.get("dpp")?.value | number: "1.0-0" }}</span>
+        ><span>Rp {{ formGroup.get("dpp")?.value | number: "1.2-2" }}</span>
       </div>
       <div class="sip-money__row">
         <span>PPN</span
         ><span class="sip-pos"
-          >+ Rp {{ formGroup.get("ppn")?.value | number: "1.0-0" }}</span
+          >+ Rp {{ formGroup.get("ppn")?.value | number: "1.2-2" }}</span
         >
       </div>
       <div class="sip-money__row">
         <span>PPh</span
         ><span class="sip-neg"
-          >− Rp {{ formGroup.get("pph")?.value | number: "1.0-0" }}</span
+          >− Rp {{ formGroup.get("pph")?.value | number: "1.2-2" }}</span
         >
       </div>
       <div class="sip-money__row sip-money__row--total">
         <span>{{ "common.totalBill" | translate }}</span
-        ><span>Rp {{ formGroup.get("total")?.value | number: "1.0-0" }}</span>
+        ><span>Rp {{ formGroup.get("total")?.value | number: "1.2-2" }}</span>
       </div>
     </div>
 
     <!-- paid progress -->
     <div class="sip-paidrow">
       <span
-        >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ totalPaid | number: "1.0-0" }}</strong></span
+        >{{ "expense.sudahDibayar" | translate }}<strong>Rp {{ totalPaid | number: "1.2-2" }}</strong></span
       >
       <span
         >{{ "expense.sisa" | translate }}<strong class="sip-remain"
-          >Rp {{ remaining | number: "1.0-0" }}</strong
+          >Rp {{ remaining | number: "1.2-2" }}</strong
         ></span
       >
     </div>
@@ -90,7 +90,7 @@
             p.get("date")?.value | date: "dd MMM yyyy"
           }}</span>
           <span class="sip-hist__amt"
-            >Rp {{ p.get("amount")?.value | number: "1.0-0" }}</span
+            >Rp {{ p.get("amount")?.value | number: "1.2-2" }}</span
           >
         </div>
       </div>
@@ -136,7 +136,7 @@
             mask="separator.2"
             [placeholder]="'expense.nominal' | translate"
           />
-          <mat-hint>Sisa tagihan Rp {{ remaining | number: "1.0-0" }}</mat-hint>
+          <mat-hint>Sisa tagihan Rp {{ remaining | number: "1.2-2" }}</mat-hint>
         </mat-form-field>
       </div>
     </form>
