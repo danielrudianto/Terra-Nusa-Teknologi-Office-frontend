@@ -305,3 +305,16 @@
     line-height: 1.45;
   }
 }
+
+/*
+ * Varian PERINGATAN — yang menuntut keputusan, bukan sekadar keterangan.
+ *
+ * Warnanya dari token yang sama dengan sisa aplikasi, bukan hex sendiri:
+ * dialog ini dibuka dalam mode gelap juga, dan warna yang dipatok mati
+ * menjadi kotak terang menyilaukan di atas latar gelap.
+ */
+.pum-banner--awas {
+  background: var(--warn-bg, #fff4e0);
+  border-color: var(--warn-bg, #f3ddb4);
+  color: var(--warn-fg, #8a5a00);
+}

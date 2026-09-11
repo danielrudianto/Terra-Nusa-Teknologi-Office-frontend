@@ -17,16 +17,45 @@
           <mat-icon>storefront</mat-icon>
           <span>{{ pemasok || "—" }}</span>
         </div>
-        @if (nomorPO) {
+        @if (proyek) {
           <div class="pum-info__baris">
-            <mat-icon>tag</mat-icon>
-            <span>{{ nomorPO }}</span>
+            <mat-icon>apartment</mat-icon>
+            <span>{{ proyek }}</span>
           </div>
         }
       </div>
 
       <ng-container [formGroup]="meta">
         <div class="pum-seksi">{{ "purchaseMeta.metaSection" | translate }}</div>
+
+        <!--
+          Nomor PO dicari, bukan diketik.
+          Nomornya disimpan sebagai teks; salah ketik tersimpan tanpa ditolak
+          siapa pun dan baru ketahuan saat dokumennya dicari.
+        -->
+        <app-purchase-order-autocomplete
+          [nomorAwal]="nomorPO"
+          (dipilih)="onPoDipilih($event)"
+        />
+
+        @if (poBelumSah) {
+          <div class="pum-banner pum-banner--awas">
+            <mat-icon>error_outline</mat-icon>
+            <div>
+              <span>{{ "purchaseMeta.poHarusDipilih" | translate }}</span>
+            </div>
+          </div>
+        } @else if (proyekBerubah) {
+          <div class="pum-banner pum-banner--awas">
+            <mat-icon>swap_horiz</mat-icon>
+            <div>
+              <span>{{
+                "purchaseMeta.proyekIkutPo"
+                  | translate: { lama: proyekLama || "—", baru: proyekBaru || "—" }
+              }}</span>
+            </div>
+          </div>
+        }
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>{{ "purchaseMeta.date" | translate }}</mat-label>

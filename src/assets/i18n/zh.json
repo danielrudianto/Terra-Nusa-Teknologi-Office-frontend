@@ -5049,6 +5049,11 @@
     "pphKosong": "尚未设置 — 请选择预扣税对象",
     "pphUbah": "修改预扣税",
     "tarifTerkunci": "已存在付款，因此预扣税率已锁定。代码和对象已更新，但税率保持不变。",
+    "nomorPo": "采购订单编号",
+    "cariPo": "输入采购订单号、供应商或项目",
+    "poTidakKetemu": "没有匹配的采购订单",
+    "poHarusDipilih": "采购订单号必须从列表中选择，不能自由输入。不存在的编号仍会被保存，只有在查找该单据时才会发现。",
+    "proyekIkutPo": "此采购的项目也会随之变更：{{ lama }} → {{ baru }}。采购单自行保存项目名称，因此两者必须与其采购订单一致。",
     "masaPajak": "增值税所属期",
     "masaPajakIkutTanggal": "跟随单据日期",
     "masaPajakHint": "进项税额抵扣的月份。留空表示跟随单据日期。",
@@ -5282,5 +5287,16 @@
     "masaPajakSama": "所选所属期与发票日期为同一月份，因此将按跟随发票日期保存。",
     "masaPajakMundur": "税期早于发票日期——属换开发票的情形。单据在更正当月开具，税期仍沿用原发票。",
     "masaPajakJauh": "税期与发票日期相差较远。请再次核对年份——年份错误会把金额转入可能已申报的纳税申报表。"
+  },
+  "lunas": {
+    "selisihJudul": "差额很小",
+    "selisihSub": "标记为已结清，还是先记录尾差付款？",
+    "nilaiDokumen": "单据金额",
+    "sudahDibayar": "已付金额",
+    "selisihnya": "差额",
+    "selisihKeterangan": "如此小的差额通常是我方账务与对方账务之间的尾差。如需入账，请关闭此对话框并按差额金额创建一笔付款——单据随后会自动结清，且金额完全一致。",
+    "belumDulu": "暂不",
+    "tandaiLunas": "标记为已结清",
+    "ditunda": "未标记为已结清——差额保持原样。"
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
+import { SelaraskanLunasService } from 'src/app/services/selaraskan-lunas.service';
 import {
   FormControl,
   FormGroup,
@@ -66,6 +67,7 @@ export class ExpenseListComponent {
   trackById = (_: number, row: any): any => row?.id ?? _;
 
   private readonly serverMessage = inject(ServerMessageService);
+  private readonly selaraskan = inject(SelaraskanLunasService);
   private readonly translate = inject(TranslateService);
   /** map kode expense type -> i18n key. */
   private static readonly EXPENSE_TYPE_MAP: { [k: string]: string } = {
@@ -323,18 +325,31 @@ export class ExpenseListComponent {
   selaraskanLunas(id: number) {
     if (this.sedangSelaras !== null) return;
     this.sedangSelaras = id;
-    this.apiService
-      // `outgoing-payments` — nama yang dipakai `routes.py` saat memasang
-      // routernya, bukan nama berkas maupun nama modul izinnya.
-      .post(`outgoing-payments/selaraskan/expense/${id}`, {})
+
+    /*
+     * Lewat `SelaraskanLunasService`, bukan memanggil rutenya langsung.
+     *
+     * Alurnya dua langkah: bila selisihnya di antara satu sen dan lima
+     * rupiah, servernya bertanya lebih dulu alih-alih menandai lunas. Layanan
+     * itu yang menampilkan pertanyaannya dan mengirim ulang konfirmasinya —
+     * disalin ke tiap daftar, langkah keduanya cepat atau lambat tertinggal
+     * di salah satunya, dan yang tertinggal tidak tampak sebagai galat:
+     * tombolnya menjawab berhasil dan dokumennya tidak berubah.
+     */
+    this.selaraskan
+      .jalankan('expense', id)
       .subscribe({
-        next: () => {
+        next: (hasil) => {
           this.snackBar.open(
-            this.translate.instant('expense.selaraskanBeres'),
+            hasil.keadaan === 'selesai'
+              ? this.translate.instant('expense.selaraskanBeres')
+              : this.translate.instant('lunas.ditunda'),
             'Close',
             { duration: 3000 },
           );
-          this.fetchData(this.page, this.pageSize);
+          if (hasil.keadaan === 'selesai') {
+            this.fetchData(this.page, this.pageSize);
+          }
         },
         error: (err) => {
           this.snackBar.open(this.serverMessage.terjemahkan(err), 'Close', {

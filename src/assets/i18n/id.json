@@ -5049,6 +5049,11 @@
     "pphKosong": "Belum ada — pilih objek PPh",
     "pphUbah": "Ubah PPh",
     "tarifTerkunci": "Sudah ada pembayaran, jadi tarif PPh terkunci. Kode & objeknya tetap diperbarui, tapi tarifnya tidak diubah.",
+    "nomorPo": "Nomor purchase order",
+    "cariPo": "Ketik nomor PO, pemasok, atau proyeknya",
+    "poTidakKetemu": "Tidak ada purchase order yang cocok",
+    "poHarusDipilih": "Nomor PO harus DIPILIH dari daftar, bukan diketik bebas. Nomor yang tidak ada tetap tersimpan dan baru ketahuan saat dokumennya dicari.",
+    "proyekIkutPo": "Proyek pembelian ini ikut berpindah: {{ lama }} → {{ baru }}. Pembelian menyimpan nama proyeknya sendiri, jadi keduanya harus sama dengan PO-nya.",
     "masaPajak": "Masa pajak PPN",
     "masaPajakIkutTanggal": "Ikut tanggal dokumen",
     "masaPajakHint": "Bulan pengkreditan PPN masukan. Kosong berarti mengikuti tanggal dokumen.",
@@ -5282,5 +5287,16 @@
     "masaPajakSama": "Masa yang dipilih sama dengan bulan tanggal invoice, jadi akan disimpan sebagai ikut tanggal invoice.",
     "masaPajakMundur": "Masa pajak mendahului tanggal invoice — bentuk faktur pengganti. Dokumennya terbit pada bulan pembetulan, masanya tetap mengikuti faktur asli.",
     "masaPajakJauh": "Masa pajak jauh dari tanggal invoice. Periksa lagi tahunnya \u2014 salah tahun memindahkan angka ke SPT yang mungkin sudah dilaporkan."
+  },
+  "lunas": {
+    "selisihJudul": "Selisihnya kecil",
+    "selisihSub": "Tandai lunas, atau catat dulu pembayaran pembulatannya?",
+    "nilaiDokumen": "Nilai dokumen",
+    "sudahDibayar": "Sudah dibayar",
+    "selisihnya": "Selisih",
+    "selisihKeterangan": "Selisih sekecil ini biasanya biaya pembulatan antara pembukuan kita dan pembukuan pihak lain. Kalau memang mau dicatat, tutup dialog ini dan buat pembayaran sebesar selisihnya — dokumennya akan lunas sendiri dengan angka yang cocok persis.",
+    "belumDulu": "Belum, nanti dulu",
+    "tandaiLunas": "Tandai lunas",
+    "ditunda": "Belum ditandai lunas — selisihnya dibiarkan apa adanya."
   }
 }

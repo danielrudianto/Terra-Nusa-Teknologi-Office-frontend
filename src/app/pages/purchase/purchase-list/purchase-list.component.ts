@@ -4,6 +4,7 @@ import { CanDirective } from '../../../directives/can.directive';
 import { PurchaseOrderViewComponent } from '../../purchase-order/purchase-order-view/purchase-order-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from 'src/app/services/api.service';
+import { SelaraskanLunasService } from 'src/app/services/selaraskan-lunas.service';
 import { PurchaseReportSelectComponent } from './purchase-report-select/purchase-report-select.component';
 import { PurchasePaymentCreateComponent } from '../../../components/payment-create/purchase-payment-create/purchase-payment-create.component';
 import {
@@ -66,6 +67,7 @@ export class PurchaseListComponent {
   trackById = (_: number, row: any): any => row?.id ?? _;
 
   private readonly translate = inject(TranslateService);
+  private readonly selaraskan = inject(SelaraskanLunasService);
   constructor(
     private permissionService: PermissionService,
     public settings: SettingsService,
@@ -283,25 +285,33 @@ export class PurchaseListComponent {
    * berubah; tanpa itu yang menekan tidak tahu apakah ada yang terjadi.
    */
   selaraskanLunas(purchaseID: number): void {
-    this.apiService
-      .post(`outgoing-payments/selaraskan/purchase/${purchaseID}`, {})
-      .subscribe({
-        next: () => {
-          this.snackBar.open(
-            this.translate.instant('purchase.lunasDiselaraskan'),
-            this.translate.instant('common.close'),
-            { duration: 2500 },
-          );
-          this.fetchData();
-        },
-        error: (err: any) => {
-          this.snackBar.open(
-            this.translate.instant('purchase.lunasGagal'),
-            this.translate.instant('common.close'),
-            { duration: 4000 },
-          );
-        },
-      });
+    /*
+     * Lewat `SelaraskanLunasService`, bukan memanggil rutenya langsung.
+     *
+     * Alurnya dua langkah: bila selisihnya di antara satu sen dan lima
+     * rupiah, servernya bertanya lebih dulu alih-alih menandai lunas.
+     * Layanan itu yang menampilkan pertanyaannya dan mengirim ulang
+     * konfirmasinya — satu tempat untuk kelima jenis dokumen.
+     */
+    this.selaraskan.jalankan('purchase', purchaseID).subscribe({
+      next: (hasil) => {
+        this.snackBar.open(
+          hasil.keadaan === 'selesai'
+            ? this.translate.instant('purchase.lunasDiselaraskan')
+            : this.translate.instant('lunas.ditunda'),
+          this.translate.instant('common.close'),
+          { duration: 3000 },
+        );
+        if (hasil.keadaan === 'selesai') this.fetchData();
+      },
+      error: () => {
+        this.snackBar.open(
+          this.translate.instant('purchase.lunasGagal'),
+          this.translate.instant('common.close'),
+          { duration: 4000 },
+        );
+      },
+    });
   }
 
   openPaymentDetail(id: number) {

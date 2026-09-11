@@ -30,6 +30,10 @@ import { ApiService } from 'src/app/services/api.service';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 import { MonthSelectorComponent } from 'src/app/components/month-selector/month-selector.component';
+import {
+  PoRingkas,
+  PurchaseOrderAutocompleteComponent,
+} from 'src/app/components/purchase-order-autocomplete/purchase-order-autocomplete.component';
 
 /**
  * Sunting META pembelian LUAR — hanya level 5.
@@ -68,6 +72,7 @@ import { MonthSelectorComponent } from 'src/app/components/month-selector/month-
     MatProgressSpinnerModule,
     NgxMaskDirective,
     DialogGeserDirective,
+    PurchaseOrderAutocompleteComponent,
   ],
   providers: [provideNgxMask()],
 })
@@ -90,7 +95,53 @@ export class PurchaseUpdateMetaComponent {
 
   /** Hanya untuk ditampilkan; tidak ikut dikirim. */
   pemasok = '';
+  proyek = '';
+
+  /** Nomor PO yang tersimpan — titik awal kotak pencariannya. */
   nomorPO = '';
+
+  /**
+   * Purchase order yang dipilih dari daftar, bila memang diganti.
+   *
+   * `null` selama kotaknya berisi ketikan yang belum cocok dengan dokumen
+   * mana pun. Itu keadaan BELUM SAH, bukan "tidak berubah": menyimpannya
+   * berarti menuliskan nomor yang tidak menunjuk dokumen apa pun.
+   */
+  private poBaru: PoRingkas | null = null;
+  private proyekAwal = '';
+
+  /** Ketikan di kotak PO belum cocok dengan dokumen mana pun. */
+  poBelumSah = false;
+
+  /**
+   * Mengganti nomor PO MEMINDAHKAN proyeknya juga.
+   *
+   * Pembelian menyimpan nama proyeknya sendiri. Bila ia tidak ikut berpindah,
+   * rekap per proyek menghitung pembelian ini di proyek yang berbeda dari
+   * PO-nya, dan tidak ada yang tahu mana yang benar — jadi keduanya bergerak
+   * bersama, dan perpindahannya disebutkan sebelum disimpan.
+   */
+  get proyekBerubah(): boolean {
+    return (
+      this.poBaru?.asal === 'daftar' &&
+      (this.poBaru.projectName || '') !== this.proyekAwal
+    );
+  }
+
+  get proyekLama(): string {
+    return this.proyekAwal;
+  }
+
+  get proyekBaru(): string {
+    return this.poBaru?.projectName || '';
+  }
+
+  onPoDipilih(po: PoRingkas | null): void {
+    this.poBaru = po;
+    this.poBelumSah = po === null;
+    this.proyek =
+      po?.asal === 'daftar' ? po.projectName || '' : this.proyekAwal;
+  }
 
   meta: FormGroup = new FormGroup({
     date: new FormControl('', Validators.required),
@@ -133,6 +184,8 @@ export class PurchaseUpdateMetaComponent {
           .filter((x: any) => x != null && x !== '')
           .join(', ');
         this.nomorPO = d?.purchaseOrderName ?? '';
+        this.proyekAwal = d?.projectName ?? '';
+        this.proyek = this.proyekAwal;
 
         this.meta.patchValue({
           date: d?.date,
@@ -323,6 +376,23 @@ export class PurchaseUpdateMetaComponent {
       return;
     }
 
+    /*
+     * Ketikan PO yang belum cocok menghentikan penyimpanan.
+     *
+     * Bukan dikirim apa adanya dan bukan pula diam-diam dikembalikan ke nomor
+     * lama: keduanya membuat yang mengetiknya mengira nomornya sudah terganti.
+     * Servernya menolak juga — penjagaan di sini hanya agar tidak percuma
+     * menunggu jawabannya.
+     */
+    if (this.poBelumSah) {
+      this.snackBar.open(
+        this.translate.instant('purchaseMeta.poHarusDipilih'),
+        'Close',
+        { duration: 5000 },
+      );
+      return;
+    }
+
     const muatan: any = {
       date: this.tglFormat(this.meta.get('date')?.value),
       invoiceName: this.meta.get('invoiceName')?.value,
@@ -338,6 +408,22 @@ export class PurchaseUpdateMetaComponent {
       pphCode: this.meta.get('pphCode')?.value || null,
       pphTaxObject: this.meta.get('pphTaxObject')?.value || null,
     };
+
+    /*
+     * Nomor PO hanya ikut bila memang DIPILIH dari daftar.
+     *
+     * Mengirimnya setiap kali membuat server memeriksa ulang nomor yang tidak
+     * disentuh siapa pun — dan pada dokumen lama yang PO-nya sudah dihapus,
+     * pemeriksaan itu menolak penyuntingan yang sebenarnya tidak ada
+     * hubungannya dengan nomor PO.
+     *
+     * Proyeknya TIDAK dikirim. Server mengambilnya dari dokumen PO-nya
+     * sendiri; mengirimkannya dari sini berarti dua sumber untuk satu nilai,
+     * dan yang satu pasti tertinggal.
+     */
+    if (this.poBaru?.asal === 'daftar' && this.poBaru.name !== this.nomorPO) {
+      muatan.purchaseOrderName = this.poBaru.name;
+    }
 
     // Nilai HANYA dikirim bila memang boleh diubah dan memang berubah —
     // supaya kiriman yang tak menyentuh nominal tidak pernah memicu
