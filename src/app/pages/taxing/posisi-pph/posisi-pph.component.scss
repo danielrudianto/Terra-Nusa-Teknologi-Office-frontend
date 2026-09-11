@@ -396,3 +396,24 @@
     margin-top: 1px;
   }
 }
+
+/*
+ * Keterangan periode slip di bawah judul bagian gaji.
+ *
+ * Sengaja tidak sekecil cetakan kaki: kalimat inilah yang menjelaskan kenapa
+ * "Masa September" berisi slip Agustus, dan yang melewatkannya akan mengira
+ * angkanya salah.
+ */
+.pp-bagian__asal {
+  margin: -0.2rem 0 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  background: var(--surface-2, #f6f8ff);
+  border: 0.5px solid var(--line, #e4e9fb);
+  color: var(--muted, #6b7280);
+
+  span {
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+}

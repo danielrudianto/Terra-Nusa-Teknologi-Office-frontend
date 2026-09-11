@@ -23,6 +23,7 @@ describe('PosisiPph — dua bagian terpisah', () => {
     gaji: {
       nama: 'gaji',
       terutang: 3_000_000,
+      periodeSlip: { month: 8, year: 2026 },
       rows: [{ name: 'Budi', nik: '123', taxAmount: 3_000_000, pphValue: 3_000_000 }],
     },
     pembelian: {
@@ -147,5 +148,32 @@ describe('PosisiPph — dua bagian terpisah', () => {
 
     f.componentInstance.gantiTahun(-1);
     expect(f.componentInstance.formGroup.value.year).toBe(2025);
+  });
+
+  it('menyebut periode slip yang menjadi sumber bagian gaji', fakeAsync(() => {
+    /*
+     * Gaji Agustus dibayarkan September, dan PPh 21 terutang saat
+     * penghasilannya dibayarkan — jadi masa September memang berisi slip
+     * Agustus. Yang membaca "Masa September" lalu melihat Agustus di
+     * rinciannya akan mengira ada yang keliru kalau tidak disebutkan.
+     */
+    const f = buat();
+    f.componentInstance.onSubmit();
+    tick();
+    f.detectChanges();
+
+    expect(f.componentInstance.periodeSlip({ periodeSlip: { month: 8, year: 2026 } }))
+      .toBe('Agustus 2026');
+  }));
+
+  it('tidak menyebut periode slip pada bagian yang tidak digeser', () => {
+    /*
+     * PPh 23/4(2) atas pembelian memang bicara tentang masanya sendiri —
+     * disaring dari tanggal pembayaran. Menempelkan keterangan periode di
+     * sana menyiratkan pergeseran yang tidak ada.
+     */
+    const f = buat();
+    expect(f.componentInstance.periodeSlip({})).toBe('');
+    expect(f.componentInstance.periodeSlip({ periodeSlip: {} })).toBe('');
   });
 });

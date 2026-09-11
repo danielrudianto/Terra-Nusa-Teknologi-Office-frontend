@@ -82,6 +82,18 @@
         <div class="pp-bagian__judul">{{ b.judul | translate }}</div>
 
         <!--
+          Periode slip yang menjadi sumber bagian gaji DISEBUT, bukan
+          dibiarkan ditebak. Yang membaca "Masa September" lalu melihat slip
+          Agustus di rinciannya akan mengira ada yang keliru — padahal
+          justru itu yang benar.
+        -->
+        <div class="pp-bagian__asal" *ngIf="periodeSlip(b)">
+          <span>{{
+            "taxing.pphPeriodeSlip" | translate: { periode: periodeSlip(b) }
+          }}</span>
+        </div>
+
+        <!--
           Hanya yang TERUTANG.
 
           Sempat ada baris setoran beserta kesimpulan "kurang setor / lunas",

@@ -165,6 +165,20 @@ export class PosisiPphComponent {
     ];
   }
 
+  /**
+   * Periode slip yang menjadi sumber satu bagian — "Agustus 2026".
+   *
+   * Kosong bila bagiannya memang bicara tentang masanya sendiri, seperti
+   * PPh 23/4(2) atas pembelian. Yang menentukan SERVER: pergeserannya satu
+   * aturan pajak, dan aturan yang disalin ke layar akan berselisih dengan
+   * angkanya sendiri pada perubahan berikutnya.
+   */
+  periodeSlip(b: any): string {
+    const p = b?.periodeSlip;
+    if (!p?.month || !p?.year) return '';
+    return `${this.monthLabel[Number(p.month) - 1] ?? p.month} ${p.year}`;
+  }
+
   private periodeLabel(): string {
     const month = Number(this.formGroup.get('month')?.value);
     const year = Number(this.formGroup.get('year')?.value);
