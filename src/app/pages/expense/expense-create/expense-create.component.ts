@@ -448,6 +448,39 @@ export class ExpenseCreateComponent {
     this.isFinal = true;
   }
 
+  /**
+   * Kosongkan formulir setelah bebannya benar-benar tersimpan.
+   *
+   * Ditulis sekali, dipakai seluruh jalur simpan. Sebelumnya blok yang sama
+   * disalin di tiap cabang — dan yang paling penting justru yang tertinggal:
+   * cabang ketika slip pembayarannya gagal. Di sana formulirnya dibiarkan
+   * terisi penuh di atas beban yang SUDAH tersimpan, sehingga menekan simpan
+   * sekali lagi memasukkan beban yang sama untuk kedua kalinya.
+   */
+  private bersihkanFormulir(): void {
+    this.metaFormGroup.reset();
+    this.valueFormGroup.reset();
+    this.paymentFormGroup.reset();
+
+    // Dulu me-reset stepper ke langkah pertama; kini cukup menonaktifkan
+    // tombol simpan sampai totalnya dihitung ulang.
+    this.isFinal = false;
+
+    this.metaFormGroup.patchValue({
+      date: new Date(),
+      dueDate: new Date(),
+      invoiceName: '',
+      receiptName: '',
+    });
+
+    this.valueFormGroup.patchValue({
+      dpp: '',
+      pbbkb: 0,
+      pphPercentage: 0,
+      pphCode: '',
+    });
+  }
+
   onSubmit() {
     const date = new Date(this.metaFormGroup.controls['date'].value);
     const dueDate = new Date(this.metaFormGroup.controls['dueDate'].value);
@@ -556,40 +589,53 @@ export class ExpenseCreateComponent {
               .subscribe({
                 next: (_) => {
                   this.snackBar.open(
-      this.translate.instant('notify.createSuccess'), 'Close', {
-                    duration: 3000,
-                  });
-                  this.metaFormGroup.reset();
-                  this.valueFormGroup.reset();
-                  this.paymentFormGroup.reset();
-                  // Dulu me-reset stepper ke langkah pertama; kini cukup
-                  // menonaktifkan tombol simpan sampai total dihitung ulang.
-                  this.isFinal = false;
-
-                  this.metaFormGroup.patchValue({
-                    date: new Date(),
-                    dueDate: new Date(),
-                    invoiceName: '',
-                    receiptName: '',
-                  });
-
-                  this.valueFormGroup.patchValue({
-                    dpp: '',
-                    pbbkb: 0,
-                    pphPercentage: 0,
-                    pphCode: '',
-                  });
+                    this.translate.instant('notify.createSuccess'),
+                    'Close',
+                    { duration: 3000 },
+                  );
+                  this.bersihkanFormulir();
                 },
+                /*
+                 * Bebannya SUDAH tersimpan; yang gagal hanya slipnya.
+                 *
+                 * Dulu yang muncul hanya pesan galat mentahnya, dan
+                 * formulirnya dibiarkan terisi penuh. Yang membacanya wajar
+                 * menyimpulkan bebannya gagal — lalu menekan simpan sekali
+                 * lagi, dan beban yang sama masuk dua kali.
+                 *
+                 * Karena itu pesannya menyebut dengan jelas apa yang berhasil
+                 * dan apa yang tidak, ditampilkan lebih lama karena perlu
+                 * dibaca sampai habis, dan formulirnya dibersihkan supaya
+                 * menekan simpan lagi bukan lagi langkah yang wajar.
+                 */
                 error: (error) => {
                   this.snackBar.open(
-          this.serverMessage.terjemahkan(error), 'Close', {
-                    duration: 3000,
-                  });
+                    this.translate.instant(
+                      'expense.bebanTersimpanSlipGagal',
+                      { pesan: this.serverMessage.terjemahkan(error) },
+                    ),
+                    'Close',
+                    { duration: 10000 },
+                  );
+                  this.bersihkanFormulir();
                 },
               })
               .add(() => {
                 this.isSubmitting = false;
               });
+          },
+          /*
+           * Cabang ini dulu TIDAK punya penangan galat sama sekali.
+           *
+           * Bila pembuatan bebannya sendiri yang gagal, tidak ada apa pun
+           * yang muncul di layar: tombolnya kembali hidup, formulirnya tetap
+           * terisi, dan tidak ada yang memberi tahu bahwa tidak terjadi
+           * apa-apa. Yang menekannya menunggu, lalu menekan lagi.
+           */
+          error: (error) => {
+            this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+              duration: 5000,
+            });
           },
         })
         .add(() => {
@@ -601,32 +647,15 @@ export class ExpenseCreateComponent {
         .subscribe({
           next: (_) => {
             this.snackBar.open(
-      this.translate.instant('notify.createSuccess'), 'Close', {
-              duration: 3000,
-            });
-            this.metaFormGroup.reset();
-            this.valueFormGroup.reset();
-            this.paymentFormGroup.reset();
-            this.isFinal = false;
-
-            this.metaFormGroup.patchValue({
-              date: new Date(),
-              dueDate: new Date(),
-              invoiceName: '',
-              receiptName: '',
-            });
-
-            this.valueFormGroup.patchValue({
-              dpp: '',
-              pbbkb: 0,
-              pphPercentage: 0,
-              pphCode: '',
-            });
+              this.translate.instant('notify.createSuccess'),
+              'Close',
+              { duration: 3000 },
+            );
+            this.bersihkanFormulir();
           },
           error: (error) => {
-            this.snackBar.open(
-          this.serverMessage.terjemahkan(error), 'Close', {
-              duration: 3000,
+            this.snackBar.open(this.serverMessage.terjemahkan(error), 'Close', {
+              duration: 5000,
             });
           },
         })

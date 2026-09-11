@@ -1047,6 +1047,7 @@
     "hitungTotalDulu": "Calculate the total first in the Amount & tax card",
     "kembali": "Back",
     "bikinPaymentSlipOtomatisNggak": "Creates the payment slip automatically — no need to fill it in by hand.",
+    "bebanTersimpanSlipGagal": "The expense WAS saved. Only the payment slip failed: {{ pesan }} Do not create it again — add the slip from the expense page.",
     "date": "Date",
     "dueDate": "Due date",
     "pilihOpponent": "Select counterparty",

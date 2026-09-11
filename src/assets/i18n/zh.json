@@ -1047,6 +1047,7 @@
     "hitungTotalDulu": "请先在「金额与税项」卡片中计算总额",
     "kembali": "返回",
     "bikinPaymentSlipOtomatisNggak": "自动生成付款单，无需手动填写。",
+    "bebanTersimpanSlipGagal": "费用已成功保存，仅付款单创建失败：{{ pesan }} 请勿重复创建费用，请在费用页面补建付款单。",
     "date": "Date",
     "dueDate": "Due date",
     "pilihOpponent": "选择往来方",

@@ -1047,6 +1047,7 @@
     "hitungTotalDulu": "Hitung total dulu di kartu Nilai & Pajak",
     "kembali": "Kembali",
     "bikinPaymentSlipOtomatisNggak": "Bikin payment slip otomatis, nggak perlu isi manual.",
+    "bebanTersimpanSlipGagal": "Beban SUDAH tersimpan. Yang gagal hanya slip pembayarannya: {{ pesan }} Jangan dibuat ulang — buat slipnya dari halaman beban.",
     "date": "Date",
     "dueDate": "Due date",
     "pilihOpponent": "Pilih opponent",
