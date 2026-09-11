@@ -395,36 +395,170 @@ export function cetakRekapTender(
 // Excel
 // ----------------------------------------------------------------------
 
-export async function unduhRekapTenderExcel(d: DataRekap): Promise<void> {
+/*
+ * Lembar ini sebelumnya hanya diisi, tidak dibentuk.
+ *
+ * Isinya sudah benar sejak awal — yang tidak ada adalah kisi. Tanpa garis,
+ * mata tidak punya pegangan untuk melompat dari nama pemasok di kepala kolom
+ * ke angkanya belasan baris di bawah, dan pada enam pemasok kesalahan baca
+ * satu kolom bukan kemungkinan melainkan kepastian. Untuk lembar yang
+ * seluruh gunanya adalah MEMBANDINGKAN antar kolom, itu menghapus gunanya.
+ *
+ * Tiga hal lain yang membuatnya tidak dapat dipakai sebagai lembar kerja:
+ *
+ *   * Tanggal ditulis sebagai TEKS, sehingga tidak dapat diurutkan atau
+ *     dihitung selisihnya.
+ *   * PPN ditulis "11%" sebagai TEKS, sehingga tidak dapat dikalikan.
+ *   * Lebar kolom 18 memotong angka ratusan juta menjadi `#######`.
+ *
+ * Bentuk di bawah mengikuti berkas yang Daniel rapikan sendiri di Excel.
+ */
+
+/** Abu-abu garis kisi; cukup gelap untuk terbaca, cukup pucat untuk tidak berisik. */
+const GARIS_KISI = 'FF9E9E9E';
+
+/** Bingkai luar dan pemisah kepala; lebih tegas supaya bloknya terbaca dari jauh. */
+const GARIS_BINGKAI = 'FF4A4A4A';
+
+/**
+ * Garis satu sel, dengan sisi tebal yang dipilih.
+ *
+ * Tiap sisi mendapat objeknya SENDIRI — bukan satu acuan yang dipakai
+ * bersama. Objek bersama membuat ExcelJS menuliskan `<color auto="1"/>`
+ * alih-alih warnanya, dan `auto` nyaris tak terlihat di sebagian penampil:
+ * garisnya terpasang, tetapi yang membuka berkasnya melihat lembar tanpa
+ * kotak sama sekali. Sudah pernah terjadi pada kisi kalender.
+ */
+function tepiSel(tebal: {
+  kiri?: boolean;
+  kanan?: boolean;
+  atas?: boolean;
+  bawah?: boolean;
+}): any {
+  const sisi = (t?: boolean) => ({
+    style: t ? 'medium' : 'thin',
+    color: { argb: t ? GARIS_BINGKAI : GARIS_KISI },
+  });
+  return {
+    top: sisi(tebal.atas),
+    left: sisi(tebal.kiri),
+    bottom: sisi(tebal.bawah),
+    right: sisi(tebal.kanan),
+  };
+}
+
+/**
+ * Tanggal sebagai TANGGAL, bukan teks yang kebetulan berbentuk tanggal.
+ *
+ * Yang membuka rekap ini mengurutkan, menyaring, dan menghitung selisih hari
+ * terhadapnya. Teks "2026-09-08" tidak dapat diapa-apakan — dan kegagalannya
+ * tidak bersuara: rumusnya menjawab `#VALUE!` atau, lebih buruk, mengurutkan
+ * secara alfabet tanpa memberi tahu.
+ *
+ * Bila isinya memang tidak dapat dibaca sebagai tanggal, teks aslinya
+ * dikembalikan apa adanya — lebih baik menampilkan yang tertulis daripada
+ * menebak.
+ */
+function nilaiTanggal(teks: string): Date | string {
+  const t = String(teks || '').trim();
+  if (!t) return '';
+  const d = new Date(t);
+  return isNaN(d.getTime()) ? t : d;
+}
+
+/**
+ * Susun buku kerjanya, tanpa mengunduh.
+ *
+ * Dipisahkan dari `unduhRekapTenderExcel` supaya bentuknya dapat DIPERIKSA:
+ * yang mengunduh memanggil `URL.createObjectURL` dan menekan tautan, dan
+ * pengujian tidak dapat membaca apa pun dari sana. Pemisahan yang sama sudah
+ * dipakai pada PDF — `berkasRekapTender` menyusun, `cetakRekapTender`
+ * mencetak.
+ *
+ * Ini bukan pemisahan demi kerapian. Yang membuat unduhan ini bertahun-tahun
+ * tampil tanpa kisi adalah tidak adanya satu pun uji yang benar-benar membuka
+ * hasilnya.
+ */
+export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
   const wb = new Workbook();
+
+  const kolomTerakhir = d.quotes.length + 1;
+
   const sheet = wb.addWorksheet('Perbandingan', {
-    views: [{ state: 'frozen', xSplit: 1, ySplit: 6 }],
+    // Kolom nama pekerjaan dan seluruh blok kepala ikut dibekukan, sehingga
+    // menggulir ke pemasok keenam tidak menghilangkan nama barisnya.
+    views: [{ state: 'frozen', xSplit: 1, ySplit: 5 }],
     pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
   });
 
   sheet.getColumn(1).width = 38;
-  d.quotes.forEach((_, i) => (sheet.getColumn(i + 2).width = 18));
+  // 24, bukan 18. Angka ratusan juta berformat ribuan butuh sekitar 15
+  // karakter; 18 menyisakan terlalu sedikit dan Excel menggantinya dengan
+  // `#######` — yang terbaca sebagai berkas rusak, bukan sebagai kolom sempit.
+  d.quotes.forEach((_, i) => (sheet.getColumn(i + 2).width = 24));
 
-  const judul = sheet.addRow(['REKAP PERBANDINGAN PENAWARAN']);
+  const kolom = (n: number) => ({ kiri: n === 1, kanan: n === kolomTerakhir });
+
+  // ---------------------------------------------------------------- kepala
+
+  sheet.mergeCells(1, 1, 1, kolomTerakhir);
+  const judul = sheet.getCell(1, 1);
+  judul.value = 'REKAP PERBANDINGAN PENAWARAN';
   judul.font = { bold: true, size: 13 };
-  sheet.addRow([d.nomor ? `Tender No. ${d.nomor}` : '', d.nama]);
-  sheet.addRow(['Proyek', d.proyek]);
-  sheet.addRow(['Tanggal', d.tanggal]);
-  sheet.addRow([]);
+  judul.alignment = { horizontal: 'center', vertical: 'middle' };
+  /*
+   * Garis rentang gabungan disetel SEKALI pada sel induknya.
+   *
+   * Menyetelnya per kolom seperti pada baris biasa justru merusaknya:
+   * seluruh sel dalam satu rentang gabungan berbagi gaya induknya, sehingga
+   * tulisan terakhir menang dan bingkai KIRI blok judul berpindah menjadi
+   * bingkai kanan. Yang tampak: kotak judul terbuka di sisi kiri.
+   */
+  judul.border = tepiSel({ atas: true, kiri: true, kanan: true });
+  sheet.getRow(1).height = 18;
 
-  const kepala = sheet.addRow([
-    d.jenis === 'jasa' ? 'Pekerjaan' : 'Barang',
-    ...d.quotes.map((q) => namaPemasok(q)),
-  ]);
-  kepala.font = { bold: true };
-  kepala.eachCell((c) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF1F8' } };
-    c.alignment = { vertical: 'middle', wrapText: true };
+  const keterangan: Array<[string, any, string | undefined]> = [
+    [d.nomor ? `Tender No. ${d.nomor}` : 'Tender', d.nama, undefined],
+    ['Proyek', d.proyek, undefined],
+    ['Tanggal', nilaiTanggal(d.tanggal), 'd-mmm-yy'],
+  ];
+
+  keterangan.forEach(([label, nilai, fmt], i) => {
+    const r = i + 2;
+    const label_ = sheet.getCell(r, 1);
+    label_.value = label;
+    label_.border = tepiSel({ kiri: true });
+
+    sheet.mergeCells(r, 2, r, kolomTerakhir);
+    const c = sheet.getCell(r, 2);
+    c.value = nilai;
+    c.alignment = { horizontal: 'left', vertical: 'middle' };
+    c.border = tepiSel({ kanan: true });
+    if (fmt) c.numFmt = fmt;
   });
 
-  const barisAwal = sheet.rowCount + 1;
+  // ----------------------------------------------------------- baris kepala
+
+  const BARIS_KEPALA = 5;
+  const kepala = sheet.getRow(BARIS_KEPALA);
+  [d.jenis === 'jasa' ? 'Pekerjaan' : 'Barang', ...d.quotes.map(namaPemasok)].forEach(
+    (v, i) => {
+      const c = kepala.getCell(i + 1);
+      c.value = v;
+      c.font = { bold: true };
+      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF1F8' } };
+      c.alignment = { vertical: 'middle', wrapText: true };
+      c.border = tepiSel({ ...kolom(i + 1), atas: true, bawah: true });
+    },
+  );
+  kepala.height = 32;
+
+  // ------------------------------------------------------------ baris barang
+
+  let baris = BARIS_KEPALA;
 
   for (const it of d.items) {
+    baris += 1;
     const nama = [
       it.name,
       it.specification,
@@ -433,75 +567,141 @@ export async function unduhRekapTenderExcel(d: DataRekap): Promise<void> {
       .filter(Boolean)
       .join(' · ');
 
-    const baris = sheet.addRow([
-      nama,
-      ...d.quotes.map((q) => hargaBaris(q, it.id) ?? null),
-    ]);
-    baris.eachCell((c, n) => {
-      if (n > 1) c.numFmt = '#,##0';
+    const r = sheet.getRow(baris);
+    r.getCell(1).value = nama;
+    r.getCell(1).alignment = { vertical: 'middle', wrapText: true };
+    d.quotes.forEach((q, i) => {
+      const c = r.getCell(i + 2);
+      c.value = hargaBaris(q, it.id) ?? null;
+      c.numFmt = '#,##0';
+      c.alignment = { horizontal: 'right', vertical: 'middle' };
     });
+    for (let c = 1; c <= kolomTerakhir; c++) r.getCell(c).border = tepiSel(kolom(c));
+    r.height = 30;
   }
 
-  const barisAkhir = sheet.rowCount;
-  sheet.addRow([]);
+  // Baris kosong pemisah, tetap ikut berkisi.
+  //
+  // Kisi yang putus di sini membelah tabelnya menjadi dua yang tampak tidak
+  // berhubungan — padahal justru baris ringkasan di bawahnyalah yang menjadi
+  // kesimpulan dari yang di atas.
+  baris += 1;
+  const pemisah = sheet.getRow(baris);
+  for (let c = 1; c <= kolomTerakhir; c++) pemisah.getCell(c).border = tepiSel(kolom(c));
+  pemisah.height = 8;
 
-  const tambah = (label: string, nilai: any[], tebal = false, fmt = '#,##0') => {
-    const r = sheet.addRow([label, ...nilai]);
-    if (tebal) r.font = { bold: true };
-    r.eachCell((c, n) => {
-      if (n > 1 && typeof c.value === 'number') c.numFmt = fmt;
+  // -------------------------------------------------------- baris ringkasan
+
+  const tambah = (
+    label: string,
+    nilai: any[],
+    opsi: {
+      tebal?: boolean;
+      latar?: string;
+      fmt?: string;
+      rata?: 'left' | 'center' | 'right';
+      bungkus?: boolean;
+      tinggi?: number;
+    } = {},
+  ) => {
+    baris += 1;
+    const r = sheet.getRow(baris);
+    r.getCell(1).value = label;
+
+    nilai.forEach((v, i) => {
+      const c = r.getCell(i + 2);
+      c.value = v;
+      if (opsi.fmt) c.numFmt = opsi.fmt;
+      c.alignment = {
+        horizontal: opsi.rata ?? (typeof v === 'number' ? 'right' : 'left'),
+        vertical: opsi.bungkus ? 'top' : 'middle',
+        wrapText: !!opsi.bungkus,
+      };
     });
+
+    for (let c = 1; c <= kolomTerakhir; c++) {
+      const sel = r.getCell(c);
+      sel.border = tepiSel(kolom(c));
+      if (opsi.tebal) sel.font = { bold: true };
+      if (opsi.latar) {
+        sel.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: opsi.latar } };
+      }
+    }
+    if (opsi.tinggi) r.height = opsi.tinggi;
     return r;
   };
 
+  tambah('Subtotal', d.quotes.map((q) => subtotal(d, q)), { fmt: '#,##0' });
+  tambah('Pengiriman', d.quotes.map(kirimTeks), { rata: 'center' });
+
   /*
-   * Subtotal memakai RUMUS, bukan angka jadi.
+   * PPN sebagai PECAHAN, bukan teks "11%".
    *
-   * Yang membuka berkasnya kerap menyesuaikan volumenya untuk melihat
-   * pengaruhnya — dan angka mati tidak ikut berubah, sehingga hasilnya
-   * diam-diam keliru.
+   * Teks tidak dapat dikalikan. Yang membuka rekap ini kerap mengubah
+   * persentasenya untuk melihat pengaruhnya pada nilai yang dibayarkan — dan
+   * dengan teks, rumusnya menjawab `#VALUE!`.
    *
-   * Volume tidak ada di lembar ini karena menyatu pada nama barangnya, maka
-   * subtotalnya dihitung di sini dan ditulis sebagai nilai; rumusnya
-   * disediakan pada baris-baris di bawahnya yang memang menjumlah kolom.
+   * Pemasok non-PKP tetap ditulis "Non-PKP": nol persen dan tidak memungut
+   * PPN adalah dua keadaan berbeda, dan menuliskan keduanya sebagai 0%
+   * menghilangkan bedanya.
    */
-  tambah('Subtotal', d.quotes.map((q) => subtotal(d, q)));
-  tambah('Pengiriman', d.quotes.map(kirimTeks));
   tambah(
     'PPN',
-    d.quotes.map((q) => (q.includePpn ? `${q.ppnPercentage ?? 0}%` : 'Non-PKP')),
-  );
-  tambah('Nilai PPN', d.quotes.map((q) => nilaiPpn(d, q)));
-  tambah('Dibayarkan', d.quotes.map((q) => dibayarkan(d, q)));
-  tambah('Biaya lain', d.quotes.map((q) => Number(q.otherCost) || 0));
-  tambah(
-    'Keterangan biaya lain',
-    d.quotes.map((q) => q.otherCostNote || '—'),
+    d.quotes.map((q) => (q.includePpn ? (Number(q.ppnPercentage) || 0) / 100 : 'Non-PKP')),
+    { fmt: '0%', rata: 'right' },
   );
 
-  const barisBiaya = tambah(
-    'BIAYA SEBENARNYA',
-    d.quotes.map((q) => biayaSebenarnya(d, q)),
-    true,
-  );
-  barisBiaya.eachCell((c) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE7ECFB' } };
+  tambah('Nilai PPN', d.quotes.map((q) => nilaiPpn(d, q)), { fmt: '#,##0' });
+  tambah('Dibayarkan', d.quotes.map((q) => dibayarkan(d, q)), { fmt: '#,##0' });
+  tambah('Biaya lain', d.quotes.map((q) => Number(q.otherCost) || 0), { fmt: '#,##0' });
+  tambah('Keterangan biaya lain', d.quotes.map((q) => q.otherCostNote || '—'), {
+    bungkus: true,
+    tinggi: 30,
   });
 
-  tambah('Termin', d.quotes.map(terminTeks));
-  tambah(
-    'Baris ditawar',
-    d.quotes.map((q) => `${jumlahDitawar(d, q)} / ${d.items.length}`),
-  );
-  tambah('Keterangan', d.quotes.map((q) => q.notes || '—'));
+  tambah('BIAYA SEBENARNYA', d.quotes.map((q) => biayaSebenarnya(d, q)), {
+    tebal: true,
+    latar: 'FFE7ECFB',
+    fmt: '#,##0',
+  });
 
-  sheet.addRow([]);
-  const catatan = sheet.addRow([
+  tambah('Termin', d.quotes.map(terminTeks), { rata: 'center' });
+
+  /*
+   * Baris keterangan diberi tinggi TETAP dan dibungkus.
+   *
+   * Tinggi otomatis tidak berlaku pada sel yang dibungkus melalui berkas —
+   * Excel baru menghitungnya ketika selnya disunting tangan. Tanpa tinggi
+   * yang disetel, keterangan sepanjang tiga kalimat tampil sebagai satu baris
+   * terpotong, dan justru keterangan itulah yang paling menentukan pada
+   * perbandingan penawaran: uang muka 70%, BBM ditanggung siapa, mob-demob
+   * yang menyesuaikan harga BBM.
+   */
+  tambah('Keterangan', d.quotes.map((q) => q.notes || '—'), {
+    bungkus: true,
+    tinggi: 120,
+  });
+
+  // ---------------------------------------------------------------- catatan
+
+  baris += 1;
+  sheet.mergeCells(baris, 1, baris, kolomTerakhir);
+  const catatan = sheet.getCell(baris, 1);
+  catatan.value =
     'PPN yang dipungut PKP dapat dikreditkan sehingga tidak menjadi beban; ' +
-      'biaya lain seluruhnya menjadi beban. Bandingkan baris BIAYA SEBENARNYA, ' +
-      'bukan harga yang tertulis pada penawaran.',
-  ]);
+    'biaya lain seluruhnya menjadi beban. Bandingkan baris BIAYA SEBENARNYA, ' +
+    'bukan harga yang tertulis pada penawaran.';
   catatan.font = { italic: true, size: 9, color: { argb: 'FF666666' } };
+  catatan.alignment = { horizontal: 'left', vertical: 'middle' };
+  // Sekali pada induknya — lihat catatan pada baris judul.
+  catatan.border = tepiSel({ kiri: true, kanan: true, bawah: true });
+  sheet.getRow(baris).height = 16;
+
+  return wb;
+}
+
+export async function unduhRekapTenderExcel(d: DataRekap): Promise<void> {
+  const wb = await berkasRekapTenderExcel(d);
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], {
@@ -515,8 +715,4 @@ export async function unduhRekapTenderExcel(d: DataRekap): Promise<void> {
   // Alamat objek dilepas; tanpa ini berkasnya tetap di memori peramban
   // sampai halamannya ditutup.
   URL.revokeObjectURL(url);
-
-  // Dipakai supaya rentang barisnya tidak diam-diam berubah tanpa disadari.
-  void barisAwal;
-  void barisAkhir;
 }
