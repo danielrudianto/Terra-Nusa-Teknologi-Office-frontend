@@ -18,7 +18,14 @@ import { downloadRecapExcel } from '../../../helpers/tax-recap-excel';
 import { DialogGeserDirective } from '../../../directives/dialog-geser.directive';
 
 /**
- * Posisi PPh satu masa, DIPISAH dua: atas gaji dan atas pembelian.
+ * Posisi PPh satu masa: berapa yang TERUTANG, dipisah gaji dan pembelian.
+ *
+ * Setorannya tidak dilaporkan di sini, dan itu disengaja. Sempat ada, dicari
+ * di antara beban dengan kode tertentu, lalu dikurangkan dari terutang untuk
+ * menyimpulkan "kurang setor" atau "lunas" — dan pemetaan kodenya tidak
+ * bertahan. Yang berbahaya bukan angkanya melainkan kesimpulannya: masa yang
+ * sebenarnya sudah disetor tampil merah, dan yang membacanya menyetor dua
+ * kali. Yang disetor dibaca dari bukti setornya sendiri.
  *
  * Sengaja tidak dijumlahkan menjadi satu angka. PPh 21 (gaji) dan PPh 23/4(2)
  * (potongan ke vendor) disetor dengan kode billing dan formulir SPT yang
@@ -158,23 +165,6 @@ export class PosisiPphComponent {
     ];
   }
 
-  /** Nilai mutlak sisa, untuk ditampilkan tanpa tanda minus. */
-  sisaAbs(b: any): number {
-    return Math.abs(Number(b?.sisa) || 0);
-  }
-
-  /**
-   * Kesimpulan setoran: "belum" | "lunas" | "kurang" | "lebih".
-   *
-   * DIBACA dari server, tidak dihitung ulang di sini. Apakah satu masa sudah
-   * selesai adalah pernyataan tentang uang; bila layarnya menyimpulkan
-   * sendiri, suatu saat ia menjawab berbeda dari laporan lain atas angka yang
-   * sama — termasuk soal berapa selisih pembulatan yang masih dianggap lunas.
-   */
-  keadaan(b: any): string {
-    return b?.keadaan ?? 'belum';
-  }
-
   private periodeLabel(): string {
     const month = Number(this.formGroup.get('month')?.value);
     const year = Number(this.formGroup.get('year')?.value);
@@ -218,29 +208,6 @@ export class PosisiPphComponent {
       pph: Number(x.pphValue) || 0,
     }));
 
-    const barisSetoran = (rows: any[]) =>
-      (rows || []).map((x: any) => ({
-        date: this.tgl(x.date),
-        masa: this.tgl(x.masaPajak),
-        pihak: x.opponentName,
-        dokumen: x.invoiceName || x.receiptName,
-        keterangan: x.description,
-        nilai: Number(x.dpp) || 0,
-        keadaan: x.isPaid
-          ? this.translate.instant('taxing.pphSetoranDibayar')
-          : this.translate.instant('taxing.pphSetoranTercatat'),
-      }));
-
-    const kolomSetoran: any[] = [
-      { header: 'Tanggal', key: 'date', width: 18 },
-      { header: 'Masa', key: 'masa', width: 18 },
-      { header: 'Pihak', key: 'pihak', width: 28 },
-      { header: 'Dokumen', key: 'dokumen', width: 24 },
-      { header: 'Keterangan', key: 'keterangan', width: 34 },
-      { header: 'Nilai', key: 'nilai', width: 16, align: 'right', numFmt: '#,##0', total: true },
-      { header: 'Keadaan', key: 'keadaan', width: 16 },
-    ];
-
     downloadRecapExcel([
       {
         fileName: nama,
@@ -256,14 +223,6 @@ export class PosisiPphComponent {
           { header: 'Kategori Pajak', key: 'kategori', width: 16 },
           { header: 'PPh 21', key: 'pph', width: 16, align: 'right', numFmt: '#,##0', total: true },
         ],
-      },
-      {
-        fileName: nama,
-        sheetName: 'Setoran PPh 21',
-        title: 'SETORAN PPh 21 YANG TERCATAT',
-        subtitle: `Periode ${periode}`,
-        rows: barisSetoran(this.posisi.gaji?.setoranRows),
-        columns: kolomSetoran,
       },
       {
         fileName: nama,
@@ -283,14 +242,6 @@ export class PosisiPphComponent {
           { header: '%', key: 'pphPercentage', width: 8, align: 'right' },
           { header: 'PPh', key: 'pph', width: 16, align: 'right', numFmt: '#,##0', total: true },
         ],
-      },
-      {
-        fileName: nama,
-        sheetName: 'Setoran PPh 23-42',
-        title: 'SETORAN PPh 23 & 4(2) YANG TERCATAT',
-        subtitle: `Periode ${periode}`,
-        rows: barisSetoran(this.posisi.pembelian?.setoranRows),
-        columns: kolomSetoran,
       },
     ]);
   }

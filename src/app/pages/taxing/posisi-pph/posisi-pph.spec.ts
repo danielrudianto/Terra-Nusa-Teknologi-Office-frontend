@@ -23,24 +23,14 @@ describe('PosisiPph — dua bagian terpisah', () => {
     gaji: {
       nama: 'gaji',
       terutang: 3_000_000,
-      setoran: 3_000_000,
-      setoranDibayar: 3_000_000,
-      sisa: 0,
-      keadaan: 'lunas',
       rows: [{ name: 'Budi', nik: '123', taxAmount: 3_000_000, pphValue: 3_000_000 }],
-      setoranRows: [{ date: '2026-10-05', dpp: 3_000_000, isPaid: true }],
     },
     pembelian: {
       nama: 'pembelian',
       terutang: 5_000_000,
-      setoran: 1_000_000,
-      setoranDibayar: 0,
-      sisa: 4_000_000,
-      keadaan: 'kurang',
       rows: [
         { id: 1, sumber: 'purchase', dpp: 250_000_000, pphPercentage: 2, pphValue: 5_000_000 },
       ],
-      setoranRows: [{ date: '2026-10-05', dpp: 1_000_000, isPaid: false }],
     },
   };
 
@@ -98,28 +88,45 @@ describe('PosisiPph — dua bagian terpisah', () => {
     const teks: string = f.nativeElement.textContent ?? '';
     // 3.000.000 + 5.000.000 = 8.000.000 tidak boleh muncul di mana pun.
     expect(teks).not.toMatch(/8[.,]000[.,]000/);
-    // Sisanya pun tidak: 0 + 4.000.000 tetap dua angka terpisah.
-    expect(f.componentInstance.bagian.map((x: any) => x.sisa)).toEqual([0, 4_000_000]);
+    expect(f.componentInstance.bagian.map((x: any) => x.terutang)).toEqual([
+      3_000_000, 5_000_000,
+    ]);
   }));
 
-  it('sisa ditampilkan tanpa tanda minus; arahnya dibawa labelnya', () => {
-    const f = buat();
-    expect(f.componentInstance.sisaAbs({ sisa: -4_000_000 })).toBe(4_000_000);
-    expect(f.componentInstance.sisaAbs({ sisa: 4_000_000 })).toBe(4_000_000);
-    expect(f.componentInstance.sisaAbs({})).toBe(0);
-  });
-
-  it('kesimpulan keadaan dibaca dari server, tidak dihitung ulang', () => {
+  it('tidak menyatakan apa pun tentang setoran', fakeAsync(() => {
     /*
-     * Apakah satu masa sudah selesai adalah pernyataan tentang uang. Bila
-     * layarnya menyimpulkan sendiri, suatu saat ia menjawab berbeda dari
-     * laporan lain atas angka yang sama — termasuk soal berapa selisih
-     * pembulatan yang masih dianggap lunas.
+     * Setorannya sempat dicari di antara beban dengan kode tertentu, lalu
+     * dikurangkan dari terutang untuk menyimpulkan "kurang setor" atau
+     * "lunas". Pemetaan kodenya tidak bertahan, dan yang berbahaya bukan
+     * angkanya melainkan kesimpulannya: masa yang sebenarnya sudah disetor
+     * tampil merah, dan yang membacanya menyetor dua kali.
+     *
+     * Lebih baik tidak menyatakan apa pun tentang setoran daripada
+     * menyatakannya salah.
      */
     const f = buat();
-    expect(f.componentInstance.keadaan({ keadaan: 'lunas' })).toBe('lunas');
-    expect(f.componentInstance.keadaan({})).toBe('belum');
-  });
+    f.componentInstance.onSubmit();
+    tick();
+    f.detectChanges();
+
+    const teks: string = f.nativeElement.textContent ?? '';
+    for (const kata of ['Setoran', 'setoran', 'Kurang setor', 'Lebih setor']) {
+      expect(teks)
+        .withContext(`layar masih menyebut "${kata}"`)
+        .not.toContain(kata);
+    }
+  }));
+
+  it('hanya menampilkan yang terutang', fakeAsync(() => {
+    const f = buat();
+    f.componentInstance.onSubmit();
+    tick();
+    f.detectChanges();
+
+    const teks: string = f.nativeElement.textContent ?? '';
+    expect(teks).toMatch(/3[.,]000[.,]000/);
+    expect(teks).toMatch(/5[.,]000[.,]000/);
+  }));
 
   it('mengganti periode membuang hasil lama', fakeAsync(() => {
     // Hasil masa lalu yang masih tertinggal di layar sementara periodenya

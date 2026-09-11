@@ -81,39 +81,20 @@
       <div class="pp-bagian" *ngFor="let b of bagian">
         <div class="pp-bagian__judul">{{ b.judul | translate }}</div>
 
-        <div class="pp-verdict"
-          [class.pp-verdict--kurang]="b.sisa > 5"
-          [class.pp-verdict--lebih]="b.sisa < -5"
-          [class.pp-verdict--nihil]="b.sisa >= -5 && b.sisa <= 5">
-          <span class="pp-verdict__label">
-            <ng-container *ngIf="b.sisa > 5">{{ "taxing.pphKurangSetor" | translate }}</ng-container>
-            <ng-container *ngIf="b.sisa < -5">{{ "taxing.pphLebihSetor" | translate }}</ng-container>
-            <ng-container *ngIf="b.sisa >= -5 && b.sisa <= 5">{{ "taxing.pphLunas" | translate }}</ng-container>
-          </span>
-          <span class="pp-verdict__value">Rp {{ sisaAbs(b) | number: "1.0-0" }}</span>
-        </div>
-
-        <div class="pp-row">
-          <span class="pp-row__key">{{ "taxing.pphTerutang" | translate }}</span>
-          <span class="pp-row__val">Rp {{ b.terutang | number: "1.0-0" }}</span>
-        </div>
-        <div class="pp-row">
-          <span class="pp-row__key">{{ "taxing.pphSetoran" | translate }}</span>
-          <span class="pp-row__val pp-row__val--minus">− Rp {{ b.setoran | number: "1.0-0" }}</span>
-        </div>
         <!--
-          Yang TERCATAT belum tentu sudah keluar uangnya. Beban setoran yang
-          belum dibayar tetap dihitung mengurangi kekurangan di atas — itu
-          benar sebagai kewajiban — tetapi orang yang membacanya perlu tahu
-          uangnya belum berpindah.
+          Hanya yang TERUTANG.
+
+          Sempat ada baris setoran beserta kesimpulan "kurang setor / lunas",
+          dan itu keliru: setorannya dicari di antara beban dengan kode
+          tertentu, dan pemetaan itu tidak bertahan. Yang berbahaya bukan
+          angkanya melainkan kesimpulannya — masa yang sebenarnya sudah
+          disetor tampil merah, dan yang membacanya menyetor dua kali.
+
+          Yang sudah disetor dibaca dari bukti setornya sendiri.
         -->
-        <div class="pp-row pp-row--sub" *ngIf="b.setoran > b.setoranDibayar">
-          <span class="pp-row__key">{{ "taxing.pphSetoranBelumDibayar" | translate }}</span>
-          <span class="pp-row__val">Rp {{ b.setoran - b.setoranDibayar | number: "1.0-0" }}</span>
-        </div>
         <div class="pp-row pp-row--sum">
-          <span class="pp-row__key">{{ "taxing.pphSisa" | translate }}</span>
-          <span class="pp-row__val">Rp {{ b.sisa | number: "1.0-0" }}</span>
+          <span class="pp-row__key">{{ "taxing.pphTerutang" | translate }}</span>
+          <span class="pp-row__val">Rp {{ b.terutang | number: "1.2-2" }}</span>
         </div>
 
         <p class="pp-bagian__kosong" *ngIf="!b.rows?.length">
