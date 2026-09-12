@@ -4945,6 +4945,7 @@
       "ditolak": "{{nomor}} 已拒绝",
       "buatanSendiri": "此单据由您创建，不能由您批准，请交由他人。",
       "diperiksaSendiri": "此单据由您审核。审核人与批准人须为两人。",
+      "sudahDisetujui": "此采购订单已获批准。",
       "pemasok": "供应商",
       "sudahDiperiksa": "已审核",
       "poinPerjanjian": "协议条款",

@@ -46,6 +46,24 @@ DIKECUALIKAN = {"src/app/helpers/nilai-baris.helper.ts"}
 #: dokumennya.
 PENANDA_FORMULIR = "pembulatanSah("
 
+#: Larik baris yang MEMANG tidak mengenal jumlah tertulis.
+#:
+#: Formulir F memuat dua daftar: material — yang menerima jumlah tertulis —
+#: dan BENDA UJI, yang isiannya tidak punya bidang itu sama sekali. Perkalian
+#: pada daftar kedua karena itu benar, dan menandainya tiga kali setiap kali
+#: pemeriksa ini dijalankan justru merusak gunanya: daftar yang selalu
+#: memuat temuan yang sama dan selalu boleh diabaikan mengajari pembacanya
+#: mengabaikan seluruh daftarnya — termasuk temuan yang keempat.
+#:
+#: Dikecualikan menurut NAMA VARIABELNYA, bukan nomor barisnya: nomor baris
+#: bergeser pada suntingan berikutnya dan pengecualiannya diam-diam pindah ke
+#: baris lain.
+BARIS_TANPA_JUMLAH_TERTULIS = (
+    "ujiGroup(",
+    "this.uji.getRawValue()",
+    "this.uji.value",
+)
+
 
 def _berkas_diperiksa():
     """Helper cetak, DAN formulir yang menerima jumlah tertulis.
@@ -72,20 +90,31 @@ def main() -> int:
     temuan: list[str] = []
     diperiksa = 0
     formulir = 0
+    dilewati = 0
 
     for rel, isi in _berkas_diperiksa():
         diperiksa += 1
         if "/helpers/" not in rel:
             formulir += 1
-        for baris_no, baris in enumerate(isi.split("\n"), 1):
+        larik = isi.split("\n")
+        for baris_no, baris in enumerate(larik, 1):
             if baris.lstrip().startswith(("*", "//")):
                 continue
-            if POLA.search(baris):
-                temuan.append(f"{rel}:{baris_no}: {baris.strip()[:80]}")
+            if not POLA.search(baris):
+                continue
+            # Larik yang tidak mengenal jumlah tertulis dilewati. Penandanya
+            # dicari pada beberapa baris SEBELUMNYA, karena perkaliannya
+            # kerap berada di dalam `reduce` yang dibuka di baris atasnya.
+            sekitar = "\n".join(larik[max(0, baris_no - 6) : baris_no])
+            if any(t in sekitar for t in BARIS_TANPA_JUMLAH_TERTULIS):
+                dilewati += 1
+                continue
+            temuan.append(f"{rel}:{baris_no}: {baris.strip()[:80]}")
 
     print(
         f"nilaibariscek: {diperiksa} berkas diperiksa "
-        f"({formulir} formulir berjumlah tertulis)"
+        f"({formulir} formulir berjumlah tertulis, "
+        f"{dilewati} baris tanpa jumlah tertulis dilewati)"
     )
     if diperiksa < 5:
         print("\nGAGAL MEMBACA: terlalu sedikit berkas; perbaiki pemeriksanya.")

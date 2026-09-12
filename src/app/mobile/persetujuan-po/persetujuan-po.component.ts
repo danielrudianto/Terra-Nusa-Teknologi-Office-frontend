@@ -1,3 +1,7 @@
+import {
+  nilaiPurchaseOrder,
+  poSudahSah,
+} from 'src/app/helpers/purchase-order-shared.helper';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -79,9 +83,21 @@ export class PersetujuanPoComponent implements OnInit {
     this.sedangMemuat = true;
     this.api
       .get('purchase-orders', {
-        // Hanya yang MENUNGGU persetujuan. Daftar lengkap di ponsel hanya
-        // memperbesar peluang membuka dokumen yang tidak sedang ditunggu.
-        status: 'pending',
+        /*
+         * `status: 'draft'` + `checked`, BUKAN `'pending'`.
+         *
+         * Rutenya hanya mengenal `draft` dan `approved`; nilai lain tidak
+         * ditolak melainkan DIABAIKAN — tidak ada syarat yang ditambahkan
+         * sama sekali. Yang kembali karena itu 50 purchase order TERBARU apa
+         * pun keadaannya, lalu disaring di sini menurut `isChecked` saja.
+         *
+         * Dua akibatnya: dokumen yang sudah disetujui tetap nongkrong di
+         * antrian, dan apa pun yang lebih lama daripada 50 dokumen terbaru
+         * tidak pernah muncul — sementara lencana di beranda, yang menghitung
+         * di server dengan kosakata yang benar, menyebut angka lain.
+         */
+        status: 'draft',
+        checked: true,
         page: 1,
         page_size: 50,
         sortBy: 'date',
@@ -246,6 +262,23 @@ export class PersetujuanPoComponent implements OnInit {
    */
   sebabTerhalang(po: any): string | null {
     if (!po) return null;
+    /*
+     * Dokumen yang SUDAH disetujui tidak boleh disetujui lagi.
+     *
+     * Tidak ada penjaga untuk ini — tidak di sini, dan tidak di server:
+     * `update_status` menulis ulang `approvedBy` dan `approvedAt` tanpa
+     * memeriksa keadaannya lebih dulu. Menekan Setujui pada dokumen yang
+     * sudah sah karena itu MENGGANTI nama penyetujunya dengan nama penekan
+     * terakhir, diam-diam, dan yang sebenarnya menandatangani hilang dari
+     * dokumennya.
+     *
+     * Layar desktop sudah menjaganya (`sudahSelesai`); antrian ponsel belum,
+     * dan justru di ponsel dokumen yang sudah disetujui masih tampil karena
+     * saringannya keliru.
+     */
+    if (poSudahSah(po?.isApproved, po?.status)) {
+      return 'mobile.po.sudahDisetujui';
+    }
     if (this.diperiksaSendiri(po) && !this.pemilikUsaha) {
       return 'mobile.po.diperiksaSendiri';
     }
@@ -260,10 +293,7 @@ export class PersetujuanPoComponent implements OnInit {
   }
 
   nilai(po: any): number {
-    const dpp = Number(po?.dpp) || 0;
-    const ppn = (Number(po?.ppn) || 0) * dpp / 100;
-    const lain = Number(po?.otherValue) || 0;
-    return dpp + ppn + lain;
+    return nilaiPurchaseOrder(po ?? {});
   }
 
   /** Nama jenis dokumen, mis. "Pengadaan barang". */

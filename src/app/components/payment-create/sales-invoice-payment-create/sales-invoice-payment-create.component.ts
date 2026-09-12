@@ -1,6 +1,13 @@
 import { Component, Inject, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  bpjsFaktur,
+  dppFaktur,
+  nilaiDibayarkan,
+  pphFaktur,
+  ppnFaktur,
+} from 'src/app/helpers/nilai-faktur.helper';
 import { ApiService } from '../../../services/api.service';
 import {
   MAT_DIALOG_DATA,
@@ -72,6 +79,11 @@ export class SalesInvoicePaymentCreateComponent {
     dpp: new FormControl(0, Validators.required),
     ppn: new FormControl(0, Validators.required),
     pph: new FormControl('', Validators.required),
+    // BPJS: potongan yang juga TIDAK pernah masuk ke rekening.
+    //
+    // Sebelumnya tidak ada di sini sama sekali, sehingga nilainya tidak
+    // dapat ditampilkan dan selisihnya tidak dapat diterangkan.
+    bpjs: new FormControl(0),
     total: new FormControl('', Validators.required),
     payments: new FormArray([]),
   });
@@ -130,13 +142,25 @@ export class SalesInvoicePaymentCreateComponent {
           this.formGroup.patchValue({
             name: data.name,
             clientName: `${data.client_name}, ${data.client_prefix}`,
-            dpp: data.dpp,
-            ppn: (data.dpp * data.ppn) / 100,
-            pph: (data.dpp * data.pphPercentage) / 100,
-            total:
-              data.dpp +
-              (data.dpp * data.ppn) / 100 -
-              (data.dpp * data.pphPercentage) / 100,
+            dpp: dppFaktur(data),
+            ppn: ppnFaktur(data),
+            pph: pphFaktur(data),
+            bpjs: bpjsFaktur(data),
+            /*
+             * BPJS ikut dipotong — sebelumnya TIDAK.
+             *
+             * Server menyimpulkan lunas dengan `DPP + PPN − PPh − BPJS`.
+             * Dialog ini memakai rumus tanpa BPJS, sehingga pada faktur yang
+             * ada potongan BPJS-nya: klien mentransfer jumlah yang benar,
+             * daftar faktur menandainya LUNAS, dan dialog ini masih
+             * menampilkan "Sisa" sebesar BPJS — tanpa satu pun baris yang
+             * menerangkan dari mana angka itu, karena barisnya memang tidak
+             * ada di layar ini.
+             *
+             * Yang mencatat pembayaran lalu menagih lagi uang yang tidak akan
+             * pernah datang.
+             */
+            total: nilaiDibayarkan(data),
           });
 
           data.payments.forEach((x: any) => {

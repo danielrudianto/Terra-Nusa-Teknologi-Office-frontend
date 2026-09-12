@@ -179,6 +179,21 @@ export class PosisiPphComponent {
     return `${this.monthLabel[Number(p.month) - 1] ?? p.month} ${p.year}`;
   }
 
+  /**
+   * Subjudul lembar PPh 21 gaji: masa, beserta periode slip yang mengisinya.
+   *
+   * `periodeSlip` datang dari server bersama bagian gajinya — dipakai layar,
+   * dan sejak sekarang dipakai unduhannya juga, supaya keduanya tidak pernah
+   * menyebut periode yang berbeda.
+   */
+  private subjudulGaji(masa: string): string {
+    // Lewat getter `bagian` yang sama dengan yang dipakai layar — bukan
+    // membaca `posisi` sendiri, supaya keduanya tidak dapat berselisih.
+    const bagian = this.bagian.find((b: any) => b?.periodeSlip);
+    const slip = bagian ? this.periodeSlip(bagian) : '';
+    return slip ? `Masa ${masa} · atas gaji ${slip}` : `Periode ${masa}`;
+  }
+
   private periodeLabel(): string {
     const month = Number(this.formGroup.get('month')?.value);
     const year = Number(this.formGroup.get('year')?.value);
@@ -227,7 +242,21 @@ export class PosisiPphComponent {
         fileName: nama,
         sheetName: 'PPh 21 Gaji',
         title: 'PPh 21 — GAJI',
-        subtitle: `Periode ${periode}`,
+        /*
+         * Menyebut MASA-nya DAN periode slip yang mengisinya.
+         *
+         * Masa PPh 21 sengaja bergeser satu bulan dari periode slipnya: gaji
+         * Agustus dibayarkan September, dan PPh terutang saat penghasilannya
+         * dibayarkan. Layarnya sudah menyebutkan pergeseran itu; unduhannya
+         * tidak — ia menstempel periode dari isian bulan pada formulir,
+         * sehingga lembar berjudul "Periode September" berisi gaji pokok,
+         * uang makan, dan lembur bulan Agustus.
+         *
+         * Yang mencocokkannya dengan transfer gaji September menemukan
+         * selisih pada SETIAP baris, dan tidak ada apa pun di lembar itu yang
+         * menerangkan sebabnya.
+         */
+        subtitle: this.subjudulGaji(periode),
         rows: barisGaji,
         columns: [
           { header: 'Nama', key: 'nama', width: 30 },

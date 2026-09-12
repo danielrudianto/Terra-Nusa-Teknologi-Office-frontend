@@ -651,11 +651,26 @@ export class PurchaseOrderCreateCComponent {
   }
 
   formatData() {
-    const dpp = this.t.value.reduce(
-      (acc: any, x: any) =>
-        acc + (Number(x.price) || 0) * (Number(x.quantity) || 0),
-      0,
-    );
+    /*
+     * DPP yang DISIMPAN harus sama dengan yang TERCETAK.
+     *
+     * Sebelumnya di sini `Σ harga × volume`, sementara ringkasan, sel barisnya,
+     * dan lembar PDF-nya memakai `rawTotal` — yang lewat `nilaiBaris`
+     * menghormati JUMLAH TERTULIS bila diisi. Jumlah tertulis ada justru
+     * karena harga satuan tidak selalu membagi habis: 7.000 liter seharga
+     * Rp 300.000 tersimpan Rp 42,8571/liter, dan dikalikan kembali menjadi
+     * Rp 299.999,70.
+     *
+     * Akibatnya dokumen yang DITANDATANGANI menyebut Rp 300.000 sementara
+     * basis datanya menyimpan Rp 299.999,70 — selamanya, dan selisih itu
+     * merembet ke pagu "sisa PO" pada layar pembelian serta ke kolom selisih
+     * pada rekap PO, yang lalu menandai dokumennya tidak konsisten dengan
+     * dirinya sendiri.
+     *
+     * Lima formulir PO lain sudah memakai `rawTotal` di titik ini; dua ini
+     * yang tertinggal.
+     */
+    const dpp = this.rawTotal;
     const ppn = this.formGroup.get('includePPN')?.value ? 11 : 0;
     const projectCode = this.formGroup.get('projectName')?.value;
     return {

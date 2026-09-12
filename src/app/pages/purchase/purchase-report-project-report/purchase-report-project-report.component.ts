@@ -1,3 +1,4 @@
+import { nilaiDibayarkan } from 'src/app/helpers/nilai-faktur.helper';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PurchaseReportProjectComponent } from '../purchase-list/purchase-report-project/purchase-report-project.component';
@@ -188,14 +189,19 @@ export class PurchaseReportProjectReportComponent implements OnInit {
     addExpense(this.data.reimbursements, 'r');
     addExpense(this.data.purchase_drafts, 'd');
 
-    // Sales invoice: nilai invoice = dpp + ppn - pph + bpjs
+    /*
+     * BPJS DIKURANGKAN, bukan ditambahkan.
+     *
+     * Tandanya terbalik di sini — dan keterangannya pun ikut menuliskan
+     * "+ bpjs", sehingga salahnya terbaca seperti disengaja. BPJS adalah
+     * POTONGAN yang dilakukan klien sebelum mentransfer; menambahkannya
+     * membuat nilai fakturnya terlalu besar sejumlah DUA KALI BPJS, dan
+     * `projected` di bawah melaporkan piutang semu sebesar itu pada setiap
+     * faktur — termasuk faktur yang sudah lunas.
+     */
     (this.data.sales_invoices || []).forEach((inv: any) => {
       if (!inv.date) return;
-      const invoiceValue =
-        inv.dpp +
-        (inv.ppn * inv.dpp) / 100 -
-        (inv.pphPercentage * inv.dpp) / 100 +
-        (inv.bpjs || 0);
+      const invoiceValue = nilaiDibayarkan(inv);
       const paid = inv.total_paid || 0;
       const projected = Math.max(invoiceValue - paid, 0);
       const bucket = get(this.weekKey(new Date(inv.date)));

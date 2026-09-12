@@ -882,11 +882,18 @@ export class PurchaseOrderCreateFComponent {
     return this.subTotal + this.ppnAmount;
   }
 
+  /**
+   * Nilai baris yang DITAMPILKAN — sama dengan yang dijumlahkan di bawahnya.
+   *
+   * Sebelumnya `harga × volume` telanjang, sementara `rawTotal` beberapa
+   * baris di atas memakai `nilaiBaris`. Pada baris berjumlah tertulis —
+   * 7.000 liter seharga Rp 300.000, yang tersimpan Rp 42,8571/liter —
+   * barisnya menampilkan Rp 299.999,70 dan subtotal tepat di bawahnya
+   * Rp 300.000. Satu layar, dua angka, tanpa apa pun yang menerangkan
+   * bedanya.
+   */
   get lineTotal(): (i: number) => number {
-    return (i: number) => {
-      const g = this.getFormGroupAt(i).value;
-      return (Number(g.price) || 0) * (Number(g.quantity) || 0);
-    };
+    return (i: number) => nilaiBaris(this.getFormGroupAt(i).getRawValue());
   }
 
   openSupplierSelector() {

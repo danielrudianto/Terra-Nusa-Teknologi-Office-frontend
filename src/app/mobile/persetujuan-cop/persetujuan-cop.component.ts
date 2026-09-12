@@ -179,8 +179,24 @@ export class PersetujuanCopComponent implements OnInit {
     this.sudahBaca = dicentang;
   }
 
+  /**
+   * Nilai BERSIH, bukan jumlah seluruh item.
+   *
+   * Jumlah item adalah nilai KOTOR; yang ditagihkan adalah kotor dikurangi
+   * potongan (pengembalian uang muka, retensi) ditambah penambahan. Pada CoP
+   * dengan uang muka 20% dan retensi 5%, angka kotornya sekitar seperempat
+   * lebih besar daripada yang benar-benar akan dibayarkan.
+   *
+   * Yang menyetujui dari ponsel karena itu menyetujui angka yang lebih besar
+   * daripada yang tertera di layar desktop dan di lembar CoP-nya. `netAmount`
+   * sudah ada pada muatan yang layar ini ambil.
+   */
   total(c: any): number | null {
-    if (!this.bolehLihatNilai || !c?.items) return null;
+    if (!this.bolehLihatNilai || !c) return null;
+    if (c.netAmount !== null && c.netAmount !== undefined) {
+      return Number(c.netAmount) || 0;
+    }
+    if (!c.items) return null;
     return c.items.reduce((t: number, i: any) => t + Number(i.amount || 0), 0);
   }
 

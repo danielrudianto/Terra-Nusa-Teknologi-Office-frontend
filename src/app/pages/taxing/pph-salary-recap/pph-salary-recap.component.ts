@@ -118,12 +118,33 @@ export class PphSalaryRecapComponent {
     this.isLoading = true;
     const month = Number(this.formGroup.get('month')?.value);
     const year = Number(this.formGroup.get('year')?.value);
-    const periode = `${this.monthLabel[month - 1] ?? month} ${year}`;
+    const masa = `${this.monthLabel[month - 1] ?? month} ${year}`;
 
     this.apiService
       .get('taxes/pph-salary', this.formGroup.value)
       .subscribe({
         next: (res: any) => {
+          /*
+           * Yang distempel pada berkas adalah PERIODE SLIP-nya, bukan masanya.
+           *
+           * Masa PPh 21 bergeser satu bulan dari periode slip: gaji Agustus
+           * dibayarkan September, dan PPh terutang saat penghasilannya
+           * dibayarkan. Server sudah mengirimkan pergeseran itu kembali
+           * (`periodeSlip`), dan sampai sekarang tidak ada yang membacanya.
+           *
+           * Akibatnya berkas bernama "Rekap PPh Gaji September 2026" memuat
+           * gaji pokok, uang makan, dan lembur bulan AGUSTUS, dengan tulisan
+           * "Periode September 2026" pada subjudul ringkasannya DAN pada
+           * setiap lembar rincian per karyawan. Yang mencocokkannya dengan
+           * transfer gaji September menemukan selisih pada tiap baris.
+           */
+          const ps = res?.periodeSlip;
+          const periode =
+            ps?.month && ps?.year
+              ? `${this.monthLabel[Number(ps.month) - 1] ?? ps.month} ${ps.year}`
+              : masa;
+          const judulPeriode =
+            periode === masa ? periode : `Masa ${masa} · atas gaji ${periode}`;
           // Endpoint mengembalikan { data: [...] }, bukan array langsung —
           // membacanya sebagai array membuat rekap selalu kosong.
           const list: any[] = Array.isArray(res) ? res : res?.data || [];
@@ -279,7 +300,7 @@ export class PphSalaryRecapComponent {
               // nama lembar Excel maksimal 31 karakter
               sheetName: String(x.nik || x.name || 'Slip').slice(0, 31),
               title: x.name,
-              subtitle: `NIK ${x.nik ?? '-'}  •  Periode ${periode}`,
+              subtitle: `NIK ${x.nik ?? '-'}  •  ${judulPeriode}`,
               rows: detailRows,
             };
           });
@@ -287,10 +308,11 @@ export class PphSalaryRecapComponent {
           downloadRecapExcel(
             [
               {
+                // Nama berkas memakai PERIODE SLIP-nya: itulah isi lembarnya.
                 fileName: `Rekap PPh Gaji ${periode}`,
                 sheetName: 'Ringkasan',
                 title: 'REKAP PPh PASAL 21 — GAJI KARYAWAN',
-                subtitle: `Periode ${periode}`,
+                subtitle: judulPeriode,
                 rows,
                 columns: [
                   { header: 'Nama', key: 'name', width: 28 },

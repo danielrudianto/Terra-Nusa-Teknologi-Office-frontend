@@ -4945,6 +4945,7 @@
       "ditolak": "{{nomor}} rejected",
       "buatanSendiri": "You created this document, so you cannot approve it. Ask someone else.",
       "diperiksaSendiri": "You checked this document. Checker and approver are deliberately two different people.",
+      "sudahDisetujui": "This purchase order has already been approved.",
       "pemasok": "Supplier",
       "sudahDiperiksa": "Checked",
       "poinPerjanjian": "Agreement terms",

@@ -47,6 +47,21 @@
           >− Rp {{ formGroup.get("pph")?.value | number: "1.2-2" }}</span
         >
       </div>
+      <!--
+        BPJS hanya tampil bila ada.
+
+        Kebanyakan faktur tidak berpotongan BPJS, dan baris bernilai nol pada
+        blok yang seluruhnya angka membuat yang membacanya berhenti untuk
+        memastikan ia memang nol.
+      -->
+      @if (formGroup.get("bpjs")?.value) {
+        <div class="sip-money__row">
+          <span>BPJS</span
+          ><span class="sip-neg"
+            >− Rp {{ formGroup.get("bpjs")?.value | number: "1.2-2" }}</span
+          >
+        </div>
+      }
       <div class="sip-money__row sip-money__row--total">
         <span>{{ "common.totalBill" | translate }}</span
         ><span>Rp {{ formGroup.get("total")?.value | number: "1.2-2" }}</span>

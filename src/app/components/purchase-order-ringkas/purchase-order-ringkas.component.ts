@@ -1,3 +1,7 @@
+import {
+  nilaiPurchaseOrder,
+  poSudahSah,
+} from 'src/app/helpers/purchase-order-shared.helper';
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -84,19 +88,23 @@ export class PurchaseOrderRingkasComponent implements OnInit {
   }
 
   /**
-   * Nilai dokumen: DPP ditambah PPN.
+   * Nilai dokumen — lewat penyebut bersama.
    *
-   * PPh sengaja TIDAK dikurangkan di sini. Yang tertera pada purchase order
-   * adalah nilai pekerjaannya; potongan PPh baru terjadi saat pembayaran, dan
-   * mencampur keduanya membuat angka di layar ini tidak dapat dibandingkan
-   * dengan angka yang tercetak pada dokumennya.
+   * Sebelumnya `DPP + PPN` saja, tanpa `otherValue`. Pada purchase order
+   * penutupan asuransi hampir seluruh nilainya justru di situ, sehingga
+   * dialog ini menyebut Rp 35.000 untuk dokumen bernilai Rp 5.002.109 —
+   * sementara pagu "sisa PO" tepat di sebelahnya, pada layar yang sama,
+   * menyebut angka yang benar.
    */
   get nilaiDokumen(): number {
-    return this.angka(this.po?.dpp) + this.nilaiPpn;
+    return nilaiPurchaseOrder(this.po ?? {});
   }
 
   get keadaan(): 'disetujui' | 'diperiksa' | 'draf' {
-    if (this.po?.isApproved) return 'disetujui';
+    // `poSudahSah` memeriksa `status` juga: sebagian dokumen lama sah tanpa
+    // `isApproved`, dan memeriksanya sendiri di sini membuat dialog ini
+    // menyebut "draf" atas dokumen yang daftar di sebelahnya sebut disetujui.
+    if (poSudahSah(this.po?.isApproved, this.po?.status)) return 'disetujui';
     if (this.po?.isChecked) return 'diperiksa';
     return 'draf';
   }

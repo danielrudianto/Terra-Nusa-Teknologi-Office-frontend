@@ -117,9 +117,21 @@ export class PemeriksaanPoComponent implements OnInit {
     this.sedangMemuat = true;
     this.api
       .get('purchase-orders', {
-        // Hanya yang MENUNGGU keputusan; dari situ disaring yang belum
-        // diperiksa.
-        status: 'pending',
+        /*
+         * `status: 'draft'` + `checked`, BUKAN `'pending'`.
+         *
+         * Rutenya hanya mengenal `draft` dan `approved`; nilai lain tidak
+         * ditolak melainkan DIABAIKAN — tidak ada syarat yang ditambahkan
+         * sama sekali. Yang kembali karena itu 50 purchase order TERBARU apa
+         * pun keadaannya, lalu disaring di sini menurut `isChecked` saja.
+         *
+         * Dua akibatnya: dokumen yang sudah disetujui tetap nongkrong di
+         * antrian, dan apa pun yang lebih lama daripada 50 dokumen terbaru
+         * tidak pernah muncul — sementara lencana di beranda, yang menghitung
+         * di server dengan kosakata yang benar, menyebut angka lain.
+         */
+        status: 'draft',
+        checked: false,
         page: 1,
         page_size: 50,
         sortBy: 'date',

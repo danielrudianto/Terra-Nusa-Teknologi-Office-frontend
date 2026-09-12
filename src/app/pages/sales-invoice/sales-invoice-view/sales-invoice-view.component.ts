@@ -22,6 +22,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { provideNgxMask } from 'ngx-mask';
+import {
+  nilaiDibayarkan,
+  nilaiTagihan,
+} from 'src/app/helpers/nilai-faktur.helper';
 import { ApiService } from 'src/app/services/api.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
@@ -250,12 +254,8 @@ export class SalesInvoiceViewComponent {
           taxPeriod: data.taxPeriod,
           incomeTaxInvoiceName: data.incomeTaxInvoiceName,
           taxingStatus: data.taxingStatus,
-          total: data.dpp + (data.ppn * data.dpp) / 100,
-          totalPayment:
-            data.dpp +
-            (data.ppn * data.dpp) / 100 -
-            (data.pphPercentage * data.dpp) / 100 -
-            (data.bpjs || 0),
+          total: nilaiTagihan(data),
+          totalPayment: nilaiDibayarkan(data),
           projectName: data.projectName,
         });
 

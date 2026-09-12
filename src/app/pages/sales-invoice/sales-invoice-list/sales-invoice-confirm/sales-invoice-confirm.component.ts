@@ -1,6 +1,12 @@
 import { Component, Inject, inject } from '@angular/core';
 import { ServerMessageService } from 'src/app/services/server-message.service';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  dppFaktur,
+  nilaiDibayarkan,
+  pphFaktur,
+  ppnFaktur,
+} from 'src/app/helpers/nilai-faktur.helper';
 import { ApiService } from '../../../../services/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -96,16 +102,16 @@ export class SalesInvoiceConfirmComponent {
             clientName: `${data.client_name}, ${data.client_prefix}`,
             clientAddress: `${data.client_address}, ${data.client_city}, ${data.client_province}`,
             clientNPWP: data.client_npwp,
-            dpp: data.dpp,
-            ppn: (data.dpp * data.ppn) / 100,
+            dpp: dppFaktur(data),
+            ppn: ppnFaktur(data),
             pphCode: data.pphCode,
             pphPercentage: data.pphPercentage,
             pphTaxObject: data.pphTaxObject,
-            pphValue: (data.dpp * data.pphPercentage) / 100,
-            total:
-              data.dpp +
-              (data.dpp * data.ppn) / 100 -
-              (data.dpp * data.pphPercentage) / 100,
+            pphValue: pphFaktur(data),
+            // BPJS ikut dipotong; lihat keterangan pada
+            // `nilai-faktur.helper.ts`. Tanpa itu, angka pada dialog ini
+            // berbeda dari yang tertera di layar detail fakturnya sendiri.
+            total: nilaiDibayarkan(data),
             description: data.description,
           });
         },

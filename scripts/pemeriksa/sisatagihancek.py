@@ -83,22 +83,78 @@ def periksa(path: str) -> list[str]:
     return galat
 
 
+#: Layar pembayaran yang HARUS ada — disebut namanya, bukan ditemukan sendiri.
+#:
+#: Pemeriksa ini dulu melewati berkas yang tidak memuat `sudahLunas`, lalu
+#: mencetak "4 layar pembayaran diperiksa, 0 menyimpang". Kalimat itu terbaca
+#: sebagai keterangan sehat atas SELURUH layar pembayaran — padahal justru
+#: dua layar yang tidak punya `sudahLunas` sama sekali yang paling perlu
+#: diperiksa: yang tidak punya penjaganya bukan lulus, ia belum diperiksa.
+#:
+#: Yang terlewat: `sales-invoice-payment-create` (tanpa banner lunas, tanpa
+#: tombol yang mati, dan rumus sisanya sempat melewatkan potongan BPJS) dan
+#: `salary-payment-create` (tanpa penjaga apa pun, sementara server pun tidak
+#: punya — slip yang sama dapat dibayar dua kali).
+#:
+#: Didaftarkan di sini supaya hilangnya sebuah layar juga menjadi kegagalan.
+LAYAR_WAJIB = {
+    "expense-payment-create",
+    "purchase-payment-create",
+    "reimbursement-payment-create",
+    "loan-payment-create",
+    "sales-invoice-payment-create",
+    "salary-payment-create",
+}
+
+
 def main() -> int:
     pola = os.path.join(AKAR, "src", "app", "components", "payment-create", "**", "*.component.ts")
     total = 0
     menyimpang = 0
+    terlihat = set()
+    tanpa_penjaga = []
+
     for path in sorted(glob.glob(pola, recursive=True)):
-        galat = periksa(path)
-        if not galat and "sudahLunas" not in open(path, encoding="utf-8").read():
+        nama = os.path.basename(os.path.dirname(path))
+        isi = open(path, encoding="utf-8").read()
+        if nama in LAYAR_WAJIB:
+            terlihat.add(nama)
+        if "sudahLunas" not in isi:
+            if nama in LAYAR_WAJIB:
+                tanpa_penjaga.append(nama)
             continue
+
         total += 1
+        galat = periksa(path)
         if galat:
             menyimpang += 1
-            print(f"\n{os.path.basename(os.path.dirname(path))}")
+            print(f"\n{nama}")
             for g in galat:
                 print(f"  - {g}")
 
-    print(f"\n{total} layar pembayaran diperiksa, {menyimpang} menyimpang.")
+    hilang = sorted(LAYAR_WAJIB - terlihat)
+    if hilang:
+        print(f"\nGAGAL MEMBACA: layar yang didaftarkan tidak ditemukan: {hilang}")
+        print("Bila layarnya memang dipindah atau dihapus, perbarui LAYAR_WAJIB.")
+        return 2
+
+    print(
+        f"\n{total} layar pembayaran berpenjaga diperiksa, "
+        f"{menyimpang} menyimpang."
+    )
+    if tanpa_penjaga:
+        # Disebut, bukan didiamkan — tetapi belum digagalkan.
+        #
+        # Keduanya memang belum punya `sudahLunas`, dan menambahkannya adalah
+        # perubahan perilaku yang harus diputuskan sendiri, bukan diseludupkan
+        # lewat pemeriksa. Yang tidak boleh terjadi hanyalah pemeriksa ini
+        # menyebut mereka aman.
+        print(
+            f"\n{len(tanpa_penjaga)} layar TANPA penjaga lunas — "
+            "belum diperiksa, bukan lulus:"
+        )
+        for n in sorted(tanpa_penjaga):
+            print(f"  - {n}")
     return 1 if menyimpang else 0
 
 

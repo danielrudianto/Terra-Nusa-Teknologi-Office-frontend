@@ -538,16 +538,7 @@ export const DOCUMENT_DEFAULT_STYLE = {
 export function draftWatermark(isApproved?: boolean, status?: string):
   | { text: string; color: string; opacity: number; bold: boolean; angle: number }
   | undefined {
-  /*
-   * Memeriksa DUA sumber, bukan satu.
-   *
-   * Sebagian dokumen tersimpan dengan `status: "approved"` sementara
-   * `isApproved` masih `false`. Memeriksa `isApproved` saja membubuhkan cap
-   * DRAFT pada dokumen yang sudah sah — dan itu justru membuat lembar yang
-   * benar tampak tidak berlaku.
-   */
-  const sah = !!isApproved || String(status || '').toLowerCase() === 'approved';
-  if (sah) return undefined;
+  if (poSudahSah(isApproved, status)) return undefined;
 
   return {
     text: 'DRAFT',
@@ -781,4 +772,42 @@ export function namaBarangCetak(item: any, deskripsi?: string | null): any {
   return ekor
     ? [{ text: `[${sku}]`, bold: true }, ekor]
     : { text: `[${sku}]`, bold: true };
+}
+
+/**
+ * Purchase order ini SUDAH SAH.
+ *
+ * Memeriksa DUA sumber, bukan satu. Sebagian dokumen lama tersimpan dengan
+ * `status: "approved"` sementara `isApproved` masih `false` — memeriksa
+ * `isApproved` saja menyebut dokumen yang sudah ditandatangani sebagai draf,
+ * dan pada lembar cetaknya membubuhkan cap DRAFT di atas dokumen yang
+ * berlaku.
+ *
+ * Aturannya sudah ditulis ulang di enam layar. Yang tertinggal
+ * `purchase-order-ringkas` — dialog yang dibuka dari formulir pembelian —
+ * sehingga di situ saja purchase order lama terbaca "draf" sementara daftar
+ * di sebelahnya menyebutnya disetujui.
+ */
+export function poSudahSah(isApproved?: boolean, status?: string): boolean {
+  return !!isApproved || String(status || '').toLowerCase() === 'approved';
+}
+
+/**
+ * Nilai satu purchase order: DPP + PPN + biaya lain.
+ *
+ * `otherValue` bukan pelengkap. Pada purchase order penutupan asuransi
+ * (jenis 6.4.2) hampir seluruh nilainya justru ada di situ — dokumen bernilai
+ * Rp 5.002.109 terbaca Rp 35.000 tanpanya.
+ *
+ * PPh sengaja TIDAK dikurangkan: yang tertera pada purchase order adalah
+ * nilai pekerjaannya, dan potongan PPh baru terjadi saat pembayaran.
+ */
+export function nilaiPurchaseOrder(po: {
+  dpp?: unknown;
+  ppn?: unknown;
+  otherValue?: unknown;
+}): number {
+  const angka = (v: unknown) => Number(v) || 0;
+  const dpp = angka(po?.dpp);
+  return dpp + (dpp * angka(po?.ppn)) / 100 + angka(po?.otherValue);
 }
