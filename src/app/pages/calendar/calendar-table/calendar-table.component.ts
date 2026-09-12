@@ -40,6 +40,7 @@ import {
   LampiranRekening,
   berkasKalenderPdf,
 } from 'src/app/helpers/kalender-rekap-pdf';
+import { mutasiInterpayment } from 'src/app/helpers/kalender-mutasi.helper';
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
@@ -679,6 +680,18 @@ export class CalendarTableComponent {
            * `accountName`, sehingga lembar yang sama menampilkan nama yang
            * berbeda untuk transaksi yang sama.
            */
+          /*
+           * Rekening yang IKUT DIHITUNG pada rekap ini.
+           *
+           * Bukan seluruh rekening yang ada, melainkan yang tercentang di
+           * pemilih rekening — rekening yang ditandai dikecualikan tidak ikut.
+           * Inilah yang menentukan apakah sebuah transfer sekadar berpindah
+           * saku atau uangnya benar-benar meninggalkan rekap.
+           */
+          const dalamKalender = new Set<number>(
+            (data.bank_accounts ?? []).map((a: any) => Number(a.id)),
+          );
+
           const mutasiRekening = (bankID: number) => {
             const bayar = (data.payments || [])
               .filter(
@@ -705,37 +718,13 @@ export class CalendarTableComponent {
               }));
 
             /*
-             * Transfer antar rekening dicatat DUA KALI — keluar di asal,
-             * masuk di tujuan — dan itu memang benar per rekening.
+             * Transfer antar rekening — meniadakan HANYA bila kedua sisinya
+             * ikut dihitung; kalau tidak, uangnya benar-benar keluar.
              *
-             * Tetapi pada ringkasan gabungan keduanya saling meniadakan dan
-             * tidak boleh dihitung sebagai pemasukan atau pengeluaran; karena
-             * itu ditandai `antar`.
+             * Aturannya di `kalender-mutasi.helper`, beserta alasannya.
              */
             const antar = (data.interpayments || [])
-              .map((t: any) => {
-                if (t.bankAccountIDOrigin === bankID) {
-                  return {
-                    date: String(t.date).slice(0, 10),
-                    lawan: t.destinationBankAccountName || 'Transfer keluar',
-                    keterangan: `Transfer ke ${t.destinationBankAccountName ?? ''}`,
-                    proyek: '',
-                    nilai: -Math.abs(Number(t.amount || 0)),
-                    antar: true,
-                  };
-                }
-                if (t.bankAccountIDDestination === bankID) {
-                  return {
-                    date: String(t.date).slice(0, 10),
-                    lawan: t.originBankAccountName || 'Transfer masuk',
-                    keterangan: `Transfer dari ${t.originBankAccountName ?? ''}`,
-                    proyek: '',
-                    nilai: Math.abs(Number(t.amount || 0)),
-                    antar: true,
-                  };
-                }
-                return null;
-              })
+              .map((t: any) => mutasiInterpayment(t, bankID, dalamKalender))
               .filter(Boolean) as any[];
 
             return [...bayar, ...masuk, ...antar].sort((a, b) =>
