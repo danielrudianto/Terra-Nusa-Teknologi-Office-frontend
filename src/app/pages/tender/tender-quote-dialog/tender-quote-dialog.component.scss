@@ -242,3 +242,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== keterangan pemasok, berkategori ===== */
+
+.tq-ket {
+  margin: 1rem 0 0.5rem;
+  padding: 0.9rem 1rem 0.35rem;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+}
+
+.tq-ket__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.tq-ket__judul {
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+/*
+ * Kategori sempit, isinya melebar.
+ *
+ * Kebalikannya akan membuat isian yang menampung tiga kalimat sesempit
+ * pilihan yang isinya satu kata — dan justru isi keterangan itulah yang
+ * paling sering ditulis panjang.
+ */
+.tq-ket__baris {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.tq-ket__hapus {
+  /* Sejajar dengan baris pertama isian, bukan dengan tengah kotaknya. */
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 700px) {
+  .tq-ket__baris {
+    grid-template-columns: 1fr auto;
+  }
+
+  .tq-ket__kategori {
+    grid-column: 1 / -1;
+  }
+}

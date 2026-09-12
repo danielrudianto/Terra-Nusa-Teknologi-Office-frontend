@@ -9,6 +9,11 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
+import {
+  kategoriTerpakai,
+  keteranganPada,
+  labelKategori,
+} from 'src/app/constants/tender-keterangan.constant';
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import {
@@ -108,6 +113,17 @@ export class TenderQuoteViewComponent {
     const v = Number(it.quantity) || 0;
     if (h === null || !v) return null;
     return h * v;
+  }
+
+  /** Kategori keterangan yang diisi penawaran ini. */
+  get kategoriTerisi(): string[] {
+    return kategoriTerpakai([this.quote as any]);
+  }
+
+  readonly labelKategori = labelKategori;
+
+  keteranganPada(kategori: string): string[] {
+    return keteranganPada(this.quote as any, kategori);
   }
 
   catatanBaris(itemId: number): string {

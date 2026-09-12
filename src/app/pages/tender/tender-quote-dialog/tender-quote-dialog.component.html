@@ -40,7 +40,22 @@
         }
       </mat-form-field>
 
+      <!--
+        Nomor pada surat penawaran PEMASOK; bukan nomor buatan sistem ini.
+
+        Boleh kosong: sebagian penawaran datang lewat WhatsApp tanpa nomor
+        sama sekali, dan mewajibkannya membuat yang mencatat mengarang nomor.
+      -->
       <div class="tq-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "tender.nomorPenawaran" | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="quotationNumber"
+            [placeholder]="'tender.nomorPenawaranPlaceholder' | translate"
+          />
+        </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>{{ "tender.tanggalPenawaran" | translate }}</mat-label>
           <input matInput [matDatepicker]="pQ" formControlName="quotedAt" />
@@ -120,15 +135,73 @@
         <span>{{ "tender.ppnKet" | translate }}</span>
       </div>
 
-      <mat-form-field appearance="outline" class="tq-full">
-        <mat-label>{{ "tender.keteranganPemasok" | translate }}</mat-label>
-        <textarea
-          matInput
-          rows="2"
-          formControlName="notes"
-          [placeholder]="'tender.keteranganPemasokPlaceholder' | translate"
-        ></textarea>
-      </mat-form-field>
+      <!--
+        Keterangan pemasok, BERKATEGORI.
+
+        Sebelumnya satu kotak teks bebas, dan seluruh keterangan menumpuk di
+        dalamnya. Pada tabel perbandingan ia menjadi satu sel sepanjang
+        paragraf per pemasok — padahal di situlah perbandingan yang paling
+        menentukan seharusnya terjadi: "uang muka 70%" milik satu pemasok
+        harus dapat dibaca berdampingan dengan "pelunasan setelah 200 jam"
+        milik pemasok lain.
+      -->
+      <div class="tq-ket">
+        <div class="tq-ket__head">
+          <span class="tq-ket__judul">{{
+            "tender.keteranganPemasok" | translate
+          }}</span>
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="tambahKeterangan()"
+          >
+            <mat-icon>add</mat-icon>
+            {{ "tender.tambahKeterangan" | translate }}
+          </button>
+        </div>
+
+        <div class="tq-banner">
+          <mat-icon>view_column</mat-icon>
+          <span>{{ "tender.keteranganKategoriKet" | translate }}</span>
+        </div>
+
+        <div formArrayName="noteList">
+          @for (k of k.controls; track $index; let i = $index) {
+            <div class="tq-ket__baris" [formGroupName]="i">
+              <mat-form-field appearance="outline" class="tq-ket__kategori">
+                <mat-label>{{ "tender.kategori" | translate }}</mat-label>
+                <mat-select formControlName="category">
+                  @for (c of pilihanKategori; track c.value) {
+                    <mat-option [value]="c.value">{{
+                      c.label | translate
+                    }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="tq-ket__isi">
+                <mat-label>{{ "tender.isiKeterangan" | translate }}</mat-label>
+                <textarea
+                  matInput
+                  rows="2"
+                  formControlName="content"
+                  [placeholder]="contohKategori(i) | translate"
+                ></textarea>
+              </mat-form-field>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="tq-ket__hapus"
+                (click)="hapusKeterangan(i)"
+                [attr.aria-label]="'common.delete' | translate"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
 
       <!--
         Biaya lain yang DITANGGUNG AKN, di luar harga barangnya.

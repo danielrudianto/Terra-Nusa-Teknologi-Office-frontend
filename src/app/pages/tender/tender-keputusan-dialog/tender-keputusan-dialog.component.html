@@ -1,0 +1,119 @@
+<div class="tk">
+  <div class="tk-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon">
+      <mat-icon>{{ isPemenang ? "emoji_events" : "do_not_disturb_on" }}</mat-icon>
+    </span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">
+        {{
+          (isPemenang ? "tender.tetapkanPemenang" : "tender.tutupTanpaPemenang")
+            | translate
+        }}
+      </h2>
+      <span class="dlg__sub">
+        {{ data.rekap.nomor ? "No. " + data.rekap.nomor + " · " : ""
+        }}{{ data.rekap.nama }}
+      </span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="tk-content">
+    <form [formGroup]="formGroup">
+      @if (isPemenang) {
+        <!--
+          Yang termurah DITANDAI, tidak dipilihkan.
+
+          Waktu kirim, garansi, dan riwayat pemasok ikut menentukan; memilih
+          otomatis membuat keputusannya tampak sudah diambil sistem, padahal
+          yang bertanggung jawab atasnya adalah yang menekan tombol ini.
+        -->
+        <mat-radio-group formControlName="winnerQuoteID" class="tk-daftar">
+          @for (q of quotes; track q.id) {
+            <mat-radio-button [value]="q.id" class="tk-pilihan">
+              <span class="tk-pilihan__isi">
+                <span class="tk-pilihan__nama">
+                  {{ nama(q) }}
+                  @if (q.quotationNumber) {
+                    <span class="tk-pilihan__nomor">{{ q.quotationNumber }}</span>
+                  }
+                </span>
+                <span class="tk-pilihan__nilai">
+                  {{ biaya(q) | number: "1.0-2" }}
+                  @if (isTerendah(q)) {
+                    <span class="tk-pilihan__murah">{{
+                      "tender.terendah" | translate
+                    }}</span>
+                  }
+                  @if (sebagian(q)) {
+                    <span class="tk-pilihan__sebagian">{{
+                      "tender.totalSebagian" | translate
+                    }}</span>
+                  }
+                </span>
+              </span>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+
+        <div class="tk-banner">
+          <mat-icon>account_balance</mat-icon>
+          <span>{{ "tender.biayaSebenarnyaKet" | translate }}</span>
+        </div>
+      } @else {
+        <div class="tk-banner tk-banner--warn">
+          <mat-icon>info</mat-icon>
+          <span>{{ "tender.tutupKet" | translate }}</span>
+        </div>
+      }
+
+      <!--
+        Alasan WAJIB, dengan panjang minimum.
+
+        Bukan formalitas: tanpa alasan tertulis, keputusan pengadaan tidak
+        dapat ditinjau siapa pun setelah orangnya berganti — dan "sudah sesuai"
+        sepanjang dua kata tidak menerangkan apa pun.
+      -->
+      <mat-form-field appearance="outline" class="tk-full">
+        <mat-label>{{ "tender.alasanKeputusan" | translate }}</mat-label>
+        <textarea
+          matInput
+          rows="4"
+          formControlName="reason"
+          [placeholder]="
+            (isPemenang ? 'tender.alasanContoh' : 'tender.alasanTutupContoh')
+              | translate
+          "
+        ></textarea>
+      </mat-form-field>
+
+      @if (
+        formGroup.get("reason")?.touched && formGroup.get("reason")?.invalid
+      ) {
+        <div class="tk-banner tk-banner--warn">
+          <mat-icon>edit_note</mat-icon>
+          <span>{{
+            "tender.alasanTerlaluPendek" | translate: { n: MINIMAL_ALASAN }
+          }}</span>
+        </div>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="tk-actions">
+    <button mat-stroked-button type="button" (click)="batal()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <span class="tk-spacer"></span>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="simpan()"
+    >
+      {{
+        (isPemenang ? "tender.tetapkanPemenang" : "tender.tutupTender")
+          | translate
+      }}
+    </button>
+  </mat-dialog-actions>
+</div>

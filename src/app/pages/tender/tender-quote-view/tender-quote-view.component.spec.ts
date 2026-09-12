@@ -50,7 +50,20 @@ const PENAWARAN = {
   deliveryMethod: 'loco',
   paymentTerm: 'Tempo',
   creditTerm: 30,
-  notes: 'Garansi mutu 1 tahun',
+  quotationNumber: '045/QT/IX/2026',
+  /*
+   * Keterangan BERKATEGORI, bukan lagi satu teks bebas.
+   *
+   * Jalan mundur untuk penawaran lama ada di SERVER (`_keterangan` di
+   * `tender_repository`), bukan di layar — sehingga apa pun yang sampai ke
+   * dialog ini sudah berbentuk `noteList`. Menaruh jalan mundur kedua di
+   * frontend berarti dua tempat yang harus tetap sepakat tentang hal yang
+   * sama.
+   */
+  noteList: [
+    { category: 'teknis', content: 'Garansi mutu 1 tahun' },
+    { category: 'pembayaran', content: 'Uang muka 30%' },
+  ],
   quotedAt: '2026-09-03',
   items: [
     { tenderItemID: 1, price: 100000, notes: null },
@@ -147,6 +160,24 @@ describe('dialog lihat penawaran tender', () => {
   it('menampilkan catatan per baris yang tidak muat di layar perbandingan', () => {
     const teks: string = susun().nativeElement.textContent;
     expect(teks).toContain('merek pengganti: KS');
+  });
+
+  it('menampilkan nomor penawaran pemasok', () => {
+    // Dipakai menunjuk dokumen aslinya ketika keputusannya ditinjau kembali.
+    expect(susun().nativeElement.textContent).toContain('045/QT/IX/2026');
+  });
+
+  it('mengelompokkan keterangan menurut kategorinya', () => {
+    const k = susun().componentInstance;
+
+    // Urutannya tetap: pembayaran lebih dulu, walaupun `teknis` yang
+    // diisikan lebih awal pada data.
+    expect(k.kategoriTerisi).toEqual(['pembayaran', 'teknis']);
+    expect(k.keteranganPada('teknis')).toEqual(['Garansi mutu 1 tahun']);
+    expect(k.keteranganPada('nonteknis')).toEqual([]);
+
+    const teks: string = susun().nativeElement.textContent;
     expect(teks).toContain('Garansi mutu 1 tahun');
+    expect(teks).toContain('Uang muka 30%');
   });
 });

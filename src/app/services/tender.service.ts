@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 
+import { KeteranganPenawaran } from '../constants/tender-keterangan.constant';
 import { ApiService } from './api.service';
 
 /** Jenis tender; menentukan bentuk barisnya. */
@@ -35,9 +36,27 @@ export interface Penawaran {
   supplierID: number;
   supplierName?: string;
   supplierPrefix?: string;
+  /** Nomor pada surat penawaran PEMASOK; bukan nomor buatan sistem ini. */
+  quotationNumber?: string | null;
   paymentTerm?: string | null;
   creditTerm?: number | null;
+  /*
+   * Bidang yang DULU tidak disebut di sini sama sekali.
+   *
+   * `includePpn`, `ppnPercentage`, `deliveryMethod`, `otherCost`, dan
+   * `otherCostNote` dikirim server dan dipakai setiap layar tender, tetapi
+   * antarmuka ini tidak menyebutnya — sehingga tidak ada yang menahan
+   * pemakaian yang keliru, dan bentuk ini sudah berselisih dengan
+   * `PenawaranRekap` di helper rekap.
+   */
+  includePpn?: boolean;
+  ppnPercentage?: number | null;
+  deliveryMethod?: string | null;
+  otherCost?: number | null;
+  otherCostNote?: string | null;
+  /** Keterangan LAMA, satu teks bebas; digantikan `noteList`. */
   notes?: string | null;
+  noteList?: KeteranganPenawaran[];
   quotedAt?: string | null;
   items: BarisPenawaran[];
 }
@@ -55,8 +74,11 @@ export interface Tender {
   requirements?: string | null;
   dueDate?: string | null;
   status?: StatusTender;
+  /** Kosong pada tender yang ditutup tanpa memilih siapa pun. */
   winnerQuoteID?: number | null;
   winnerReason?: string | null;
+  decidedAt?: string | null;
+  decidedBy?: number | null;
   items: BarisTender[];
   quotes?: Penawaran[];
   quoteCount?: number;
@@ -119,5 +141,17 @@ export class TenderService {
       winnerQuoteID: quoteId,
       winnerReason: alasan,
     });
+  }
+
+  /**
+   * Tutup tender TANPA memilih pemasok.
+   *
+   * Berbeda dari `batalkan`: yang dibatalkan dihentikan sebelum selesai, yang
+   * ditutup ini prosesnya berjalan sampai habis dan tidak ada yang dipilih —
+   * penawarannya terlalu mahal seluruhnya, pekerjaannya jadi dikerjakan
+   * sendiri, atau kebutuhannya berubah setelah penawaran masuk.
+   */
+  tutup(tenderId: number, alasan: string) {
+    return this.api.post(`tenders/${tenderId}/tutup`, { reason: alasan });
   }
 }

@@ -57,6 +57,22 @@ export interface PenawaranRekap {
   // menampilkannya. Mendefinisikannya terpisah di sana berarti dua bentuk
   // untuk satu baris tabel yang sama.
   quotedAt?: string | null;
+  /** Nomor pada surat penawaran PEMASOK; bukan nomor buatan sistem ini. */
+  quotationNumber?: string | null;
+  /**
+   * Keterangan pemasok, berkategori.
+   *
+   * Menggantikan `notes` yang satu teks bebas. Pada rekap cetak ia menjadi
+   * SATU BARIS PER KATEGORI, sehingga syarat pembayaran tiap pemasok sejajar
+   * dan dapat dibaca berdampingan — sebelumnya seluruh keterangan menumpuk
+   * di satu baris dan yang membandingkannya harus membaca dua paragraf utuh
+   * untuk menemukan kalimat yang sebanding.
+   */
+  noteList?: Array<{
+    category: string;
+    content: string;
+    sortOrder?: number;
+  }> | null;
   items: Array<{ tenderItemID: number; price?: number | null; notes?: string | null }>;
 }
 
@@ -138,6 +154,49 @@ function terminTeks(q: PenawaranRekap): string {
   return q.creditTerm ? `${q.paymentTerm} · ${q.creditTerm} hari` : q.paymentTerm;
 }
 
+/**
+ * Kategori keterangan, beserta namanya pada berkas cetak.
+ *
+ * Sengaja TIDAK memakai `@ngx-translate` di sini: kedua pencetak menghasilkan
+ * dokumen berbahasa Indonesia apa pun bahasa antarmukanya — sama seperti PO
+ * dan slip gaji — dan menariknya dari terjemahan akan membuat lembar yang
+ * sama tercetak dalam dua bahasa tergantung siapa yang menekan tombolnya.
+ *
+ * Urutannya sama dengan di layar; daftar yang berbeda urutan membuat yang
+ * membandingkan layar dengan berkasnya harus mencari barisnya dua kali.
+ */
+const KATEGORI_CETAK: ReadonlyArray<{ nilai: string; judul: string }> = [
+  { nilai: 'pembayaran', judul: 'Ket. pembayaran' },
+  { nilai: 'teknis', judul: 'Ket. teknis' },
+  { nilai: 'nonteknis', judul: 'Ket. non-teknis' },
+  { nilai: 'lainnya', judul: 'Ket. lain-lain' },
+];
+
+/** Kategori yang BENAR-BENAR diisi pada tender ini. */
+function kategoriTerpakaiCetak(d: DataRekap): typeof KATEGORI_CETAK {
+  const ada = new Set<string>();
+  for (const q of d.quotes ?? []) {
+    for (const k of q.noteList ?? []) {
+      if (String(k?.content ?? '').trim()) ada.add(k.category);
+    }
+  }
+  return KATEGORI_CETAK.filter((k) => ada.has(k.nilai));
+}
+
+/** Seluruh keterangan satu pemasok pada satu kategori, digabung. */
+function keteranganCetak(q: PenawaranRekap, kategori: string): string {
+  const isi = (q.noteList ?? [])
+    .filter((k) => k?.category === kategori)
+    .map((k) => String(k.content ?? '').trim())
+    .filter(Boolean);
+  return isi.length ? isi.join('\n') : '—';
+}
+
+/** Nomor pada surat penawaran pemasok; kosong bila tidak dicatat. */
+function nomorPenawaran(q: PenawaranRekap): string {
+  return String(q.quotationNumber ?? '').trim();
+}
+
 function kirimTeks(q: PenawaranRekap): string {
   if (q.deliveryMethod === 'loco') return 'Loco';
   if (q.deliveryMethod === 'franco') return 'Franco';
@@ -184,6 +243,15 @@ export function berkasRekapTender(d: DataRekap) {
         // lebarnya, dan nama yang melimpah menumpuk ke baris berikutnya
         // sampai kepala tabelnya setinggi setengah halaman.
         { text: potong(namaPemasok(q), 28) },
+        // Nomor surat penawarannya, supaya lembar ini dapat dipakai menunjuk
+        // dokumen aslinya saat keputusannya ditinjau kembali.
+        nomorPenawaran(q)
+          ? {
+              text: `\n${potong(nomorPenawaran(q), 24)}`,
+              fontSize: 7,
+              bold: false,
+            }
+          : '',
         tidakLengkap(d, q)
           ? {
               text: `\n${jumlahDitawar(d, q)}/${d.items.length} baris`,
@@ -293,7 +361,16 @@ export function berkasRekapTender(d: DataRekap) {
               true,
             ),
             barisRingkas('Termin', terminTeks),
-            barisRingkas('Keterangan', (q) => q.notes || '—'),
+            // SATU BARIS PER KATEGORI, dan hanya yang benar-benar diisi.
+            //
+            // Sebelumnya seluruh keterangan menumpuk di satu baris, sehingga
+            // membandingkan syarat pembayaran dua pemasok menuntut membaca
+            // dua paragraf utuh lebih dulu untuk menemukan kalimat yang
+            // sebanding. Di lembar cetak itu lebih parah daripada di layar:
+            // tidak ada yang dapat digulir atau diperbesar.
+            ...kategoriTerpakaiCetak(d).map((kat) =>
+              barisRingkas(kat.judul, (q) => keteranganCetak(q, kat.nilai)),
+            ),
           ],
         },
         layout: {
@@ -548,7 +625,15 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
 
   const BARIS_KEPALA = 5;
   const kepala = sheet.getRow(BARIS_KEPALA);
-  [d.jenis === 'jasa' ? 'Pekerjaan' : 'Barang', ...d.quotes.map(namaPemasok)].forEach(
+  [
+    d.jenis === 'jasa' ? 'Pekerjaan' : 'Barang',
+    // Nomor penawaran ikut di kepala kolom, di bawah nama pemasoknya.
+    ...d.quotes.map((q) =>
+      nomorPenawaran(q)
+        ? `${namaPemasok(q)}\n${nomorPenawaran(q)}`
+        : namaPemasok(q),
+    ),
+  ].forEach(
     (v, i) => {
       const c = kepala.getCell(i + 1);
       c.value = v;
@@ -558,7 +643,14 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
       c.border = tepiSel({ ...kolom(i + 1), atas: true, bawah: true });
     },
   );
-  kepala.height = 32;
+  /*
+   * Lebih tinggi bila ada nomor penawaran.
+   *
+   * Kepala kolomnya jadi dua baris, dan tinggi tetap 32 memotong baris
+   * keduanya — nomornya tersimpan di sel tetapi tidak terlihat, yang lebih
+   * membingungkan daripada tidak ada sama sekali.
+   */
+  kepala.height = d.quotes.some((q) => nomorPenawaran(q)) ? 42 : 32;
 
   // ------------------------------------------------------------ baris barang
 
@@ -684,10 +776,24 @@ export async function berkasRekapTenderExcel(d: DataRekap): Promise<Workbook> {
    * perbandingan penawaran: uang muka 70%, BBM ditanggung siapa, mob-demob
    * yang menyesuaikan harga BBM.
    */
-  tambah('Keterangan', d.quotes.map((q) => q.notes || '—'), {
-    bungkus: true,
-    tinggi: 120,
-  });
+  /*
+   * Keterangan: SATU BARIS PER KATEGORI, hanya yang diisi.
+   *
+   * Tingginya tetap dan dibungkus — tinggi otomatis tidak berlaku pada sel
+   * yang dibungkus lewat berkas; Excel baru menghitungnya ketika selnya
+   * disunting tangan. Tanpa tinggi yang disetel, keterangan sepanjang tiga
+   * kalimat tampil sebagai satu baris terpotong.
+   *
+   * 72, bukan 120: dengan kategori, tiap barisnya memuat satu pokok saja dan
+   * jauh lebih pendek daripada ketika seluruhnya menumpuk di satu sel.
+   */
+  for (const kat of kategoriTerpakaiCetak(d)) {
+    tambah(
+      kat.judul,
+      d.quotes.map((q) => keteranganCetak(q, kat.nilai)),
+      { bungkus: true, tinggi: 72 },
+    );
+  }
 
   // ---------------------------------------------------------------- catatan
 

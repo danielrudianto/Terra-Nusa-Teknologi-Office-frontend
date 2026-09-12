@@ -197,31 +197,77 @@
                   <th class="tv-th-quote">
                     <div class="tv-qhead">
                       <!--
-                        Nama pemasok MEMBUKA penawarannya.
+                        SATU tombol menu, bukan tiga tombol berjajar.
 
-                        Kolom ini memampatkan seluruh penawaran menjadi satu
-                        deret angka yang dibulatkan; catatan per baris dan
-                        keterangan pemasok tidak muat sama sekali. Nama di
-                        kepala kolom adalah satu-satunya tempat yang jelas
-                        menunjuk SATU pemasok, sehingga di situlah jalan
-                        masuknya.
+                        Kepala kolom ini sempit dan sudah penuh: nama pemasok,
+                        nomor penawarannya, penanda penawaran sebagian, lalu
+                        dulu dua tombol ikon lagi. Pada enam pemasok, deretan
+                        ikon itu memakan ruang yang seharusnya dipakai membaca
+                        nama — dan yang dibaca sekilas justru namanya.
 
-                        Tombol, bukan span yang diberi (click): yang menelusuri
-                        dengan papan ketik dan pembaca layar harus dapat
-                        mencapainya juga.
+                        Lihat penawaran ikut masuk ke menu yang sama, sehingga
+                        semua tindakan atas satu pemasok berada di satu tempat
+                        dan tidak perlu dicari di dua tempat berbeda.
                       -->
-                      <button
-                        type="button"
-                        class="tv-qhead__nama tv-qhead__buka"
-                        (click)="lihatPenawaran(q)"
-                        [attr.aria-label]="
-                          'tender.lihatPenawaranDari'
-                            | translate: { nama: q.supplierName }
-                        "
-                      >
-                        <span>{{ q.supplierPrefix }} {{ q.supplierName }}</span>
-                        <mat-icon>open_in_new</mat-icon>
-                      </button>
+                      <div class="tv-qhead__baris">
+                        <span class="tv-qhead__nama">
+                          {{ q.supplierPrefix }} {{ q.supplierName }}
+                        </span>
+                        <button
+                          mat-icon-button
+                          type="button"
+                          class="tv-qbtn"
+                          [matMenuTriggerFor]="menuQ"
+                          [attr.aria-label]="
+                            'tender.tindakanPenawaran'
+                              | translate: { nama: q.supplierName }
+                          "
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menuQ="matMenu">
+                          <button
+                            mat-menu-item
+                            type="button"
+                            (click)="lihatPenawaran(q)"
+                          >
+                            <mat-icon>visibility</mat-icon>
+                            <span>{{ "tender.lihatPenawaran" | translate }}</span>
+                          </button>
+                          @if (dapatDisunting) {
+                            <button
+                              mat-menu-item
+                              type="button"
+                              (click)="catatPenawaran(q)"
+                            >
+                              <mat-icon>edit</mat-icon>
+                              <span>{{ "common.edit" | translate }}</span>
+                            </button>
+                            <button
+                              mat-menu-item
+                              type="button"
+                              (click)="hapusPenawaran(q)"
+                            >
+                              <mat-icon>delete_outline</mat-icon>
+                              <span>{{ "common.delete" | translate }}</span>
+                            </button>
+                          }
+                        </mat-menu>
+                      </div>
+
+                      <!--
+                        Nomor pada surat penawaran PEMASOK.
+
+                        Dipakai menunjuk dokumen aslinya ketika keputusannya
+                        ditinjau kembali — "penawaran nomor 045/QT/IX/2026"
+                        jauh lebih mudah dicari daripada "penawaran yang bulan
+                        September itu".
+                      -->
+                      @if (q.quotationNumber) {
+                        <span class="tv-qhead__nomor">{{
+                          q.quotationNumber
+                        }}</span>
+                      }
                       @if (tidakLengkap(q)) {
                         <!--
                           Penawaran tidak lengkap DITANDAI.
@@ -235,28 +281,6 @@
                             "tender.sebagian"
                               | translate: { n: jumlahDitawar(q), total: items.length }
                           }}
-                        </span>
-                      }
-                      @if (dapatDisunting) {
-                        <span class="tv-qhead__aksi">
-                          <button
-                            mat-icon-button
-                            type="button"
-                            class="tv-qbtn"
-                            (click)="catatPenawaran(q)"
-                            [attr.aria-label]="'common.edit' | translate"
-                          >
-                            <mat-icon>edit</mat-icon>
-                          </button>
-                          <button
-                            mat-icon-button
-                            type="button"
-                            class="tv-qbtn"
-                            (click)="hapusPenawaran(q)"
-                            [attr.aria-label]="'common.delete' | translate"
-                          >
-                            <mat-icon>delete_outline</mat-icon>
-                          </button>
                         </span>
                       }
                     </div>
@@ -445,12 +469,36 @@
                   </td>
                 }
               </tr>
-              <tr>
-                <td class="tv-td-item">{{ "tender.keteranganPemasok" | translate }}</td>
-                @for (q of quotes; track q.id) {
-                  <td class="tv-td-syarat">{{ q.notes || "—" }}</td>
-                }
-              </tr>
+              <!--
+                Keterangan pemasok, SATU BARIS PER KATEGORI.
+
+                Sebelumnya satu baris berisi seluruh keterangan sebagai teks
+                bebas, sehingga membandingkan syarat pembayaran dua pemasok
+                menuntut membaca dua paragraf utuh lebih dulu untuk menemukan
+                kalimat yang sebanding. Dengan kategori, keduanya sejajar.
+
+                Hanya kategori yang BENAR-BENAR diisi yang muncul; menampilkan
+                keempatnya selalu menambah baris kosong pada tender yang
+                keterangannya cuma soal pembayaran, dan tabel yang penuh sel
+                "—" membuat yang membacanya berhenti memperhatikan sel yang
+                memang berisi.
+              -->
+              @for (kat of kategoriKeterangan; track kat) {
+                <tr>
+                  <td class="tv-td-item">{{ labelKategori(kat) | translate }}</td>
+                  @for (q of quotes; track q.id) {
+                    <td class="tv-td-syarat">
+                      @if (keteranganPada(q, kat).length) {
+                        @for (isi of keteranganPada(q, kat); track $index) {
+                          <p class="tv-ket__isi">{{ isi }}</p>
+                        }
+                      } @else {
+                        —
+                      }
+                    </td>
+                  }
+                </tr>
+              }
             </tfoot>
           </table>
         </div>
@@ -471,6 +519,91 @@
           <mat-icon>info</mat-icon>
           <span>{{ "tender.termurahKet" | translate }}</span>
         </div>
+      }
+    </div>
+
+    <!-- ===== hasil tender ===== -->
+    <!--
+      Keputusannya, beserta alasannya.
+
+      Sampai sekarang layar ini tidak punya cara menyatakan bahwa tendernya
+      sudah selesai — kolomnya ada di basis data dan rutenya ada di server,
+      tetapi tidak ada tombolnya. Tender yang keputusannya sudah diambil
+      berbulan-bulan lalu tetap tampil "berjalan", dan yang membuka daftar
+      tidak dapat membedakannya dari yang memang masih menunggu.
+
+      Dua keadaan yang BERBEDA ditampilkan berbeda: ada pemenangnya, atau
+      ditutup tanpa memilih siapa pun. Keduanya berstatus `selesai`; yang
+      membedakan hanya `winnerQuoteID`.
+    -->
+    <div class="tv-card">
+      <div class="tv-card__head">
+        <div>
+          <div class="tv-section">{{ "tender.hasil" | translate }}</div>
+          <p class="tv-section__ket">{{ "tender.hasilKet" | translate }}</p>
+        </div>
+        @if (dapatDiputuskan) {
+          <div class="tv-hasil__aksi" *appCan="'tender:approve'">
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              (click)="tetapkanPemenang()"
+            >
+              <mat-icon>emoji_events</mat-icon>
+              {{ "tender.tetapkanPemenang" | translate }}
+            </button>
+            <button mat-stroked-button type="button" (click)="tutupTender()">
+              <mat-icon>do_not_disturb_on</mat-icon>
+              {{ "tender.tutupTanpaPemenang" | translate }}
+            </button>
+          </div>
+        }
+      </div>
+
+      @if (sudahDiputuskan) {
+        @if (pemenang) {
+          <div class="tv-menang">
+            <span class="tv-menang__ikon"><mat-icon>emoji_events</mat-icon></span>
+            <div class="tv-menang__teks">
+              <strong>{{ pemenang.supplierPrefix }} {{ pemenang.supplierName }}</strong>
+              @if (pemenang.quotationNumber) {
+                <span class="tv-menang__nomor">{{ pemenang.quotationNumber }}</span>
+              }
+              <span class="tv-menang__nilai">
+                {{ "tender.biayaSebenarnya" | translate }}
+                {{ biayaSebenarnya(pemenang) | number: "1.0-2" }}
+              </span>
+            </div>
+          </div>
+        } @else {
+          <div class="tv-banner tv-banner--warn">
+            <mat-icon>do_not_disturb_on</mat-icon>
+            <span>{{ "tender.ditutupTanpaPemenang" | translate }}</span>
+          </div>
+        }
+
+        <div class="tv-blok">
+          <span class="tv-label">{{ "tender.alasanKeputusan" | translate }}</span>
+          <p class="tv-teks">{{ data.winnerReason || "—" }}</p>
+        </div>
+
+        @if (data.decidedAt) {
+          <p class="tv-section__ket">
+            {{ "tender.diputuskanPada" | translate }}
+            {{ data.decidedAt | date: "d MMM yyyy HH:mm" }}
+          </p>
+        }
+      } @else if (data.status === "batal") {
+        <p class="tv-kosong">
+          <mat-icon>block</mat-icon>
+          {{ "tender.statusBatal" | translate }}
+        </p>
+      } @else {
+        <p class="tv-kosong">
+          <mat-icon>gavel</mat-icon>
+          {{ "tender.belumDiputuskan" | translate }}
+        </p>
       }
     </div>
 

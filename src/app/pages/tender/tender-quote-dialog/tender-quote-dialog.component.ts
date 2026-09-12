@@ -22,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
+import { KATEGORI_KETERANGAN } from 'src/app/constants/tender-keterangan.constant';
 import { SupplierSelectorComponent } from 'src/app/components/supplier-selector/supplier-selector.component';
 import { DialogGeserDirective } from 'src/app/directives/dialog-geser.directive';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -81,11 +82,22 @@ export class TenderQuoteDialogComponent implements OnInit {
     // Biaya lain yang DITANGGUNG AKN di luar harga barangnya.
     otherCost: [null],
     otherCostNote: [''],
-    // Garansi, waktu kirim, ketentuan lain.
-    notes: [''],
+    // Nomor pada surat penawaran PEMASOK; bukan nomor buatan sistem ini.
+    quotationNumber: [''],
+    /*
+     * Keterangan pemasok, BERKATEGORI.
+     *
+     * Menggantikan satu kotak teks bebas. Dengan kategori, syarat pembayaran
+     * seorang pemasok berada pada baris yang sama dengan syarat pembayaran
+     * pemasok lain di tabel perbandingan — sebelumnya keduanya terkubur di
+     * dalam paragraf masing-masing.
+     */
+    noteList: this.formBuilder.array([]),
     quotedAt: [new Date()],
     items: this.formBuilder.array([]),
   });
+
+  readonly pilihanKategori = KATEGORI_KETERANGAN;
 
   readonly pilihanTermin = [
     { value: 'CASH', label: 'poForm.cash' },
@@ -107,6 +119,36 @@ export class TenderQuoteDialogComponent implements OnInit {
 
   barisAt(i: number): FormGroup {
     return this.t.at(i) as FormGroup;
+  }
+
+  get k(): FormArray {
+    return this.formGroup.get('noteList') as FormArray;
+  }
+
+  keteranganAt(i: number): FormGroup {
+    return this.k.at(i) as FormGroup;
+  }
+
+  /** Contoh isi untuk kategori yang sedang dipilih pada satu baris. */
+  contohKategori(i: number): string {
+    const nilai = this.keteranganAt(i).get('category')?.value;
+    return (
+      this.pilihanKategori.find((x) => x.value === nilai)?.contoh ??
+      'tender.katLainnyaContoh'
+    );
+  }
+
+  tambahKeterangan(category: string = 'pembayaran', content = ''): void {
+    this.k.push(
+      this.formBuilder.group({
+        category: [category],
+        content: [content],
+      }),
+    );
+  }
+
+  hapusKeterangan(i: number): void {
+    this.k.removeAt(i);
   }
 
   get isUbah(): boolean {
@@ -151,7 +193,7 @@ export class TenderQuoteDialogComponent implements OnInit {
           : '',
         paymentTerm: lama.paymentTerm ?? '',
         creditTerm: lama.creditTerm ?? null,
-        notes: lama.notes ?? '',
+        quotationNumber: lama.quotationNumber ?? '',
         includePpn: !!lama.includePpn,
         ppnPercentage: lama.ppnPercentage ?? 11,
         deliveryMethod: lama.deliveryMethod ?? 'franco',
@@ -159,7 +201,24 @@ export class TenderQuoteDialogComponent implements OnInit {
         otherCostNote: lama.otherCostNote ?? '',
         quotedAt: lama.quotedAt ? new Date(lama.quotedAt) : new Date(),
       });
+
+      /*
+       * Keterangan lama ikut terisi, termasuk yang belum berkategori.
+       *
+       * Server mengirimkan teks bebas dari penawaran lama sebagai satu
+       * keterangan berkategori `lainnya`. Menyimpan kembali penawaran ini
+       * akan memindahkannya ke tabel keterangan dan mengosongkan kolom
+       * lamanya — jadi yang menyunting sekali saja sudah memilahnya, tanpa
+       * perlu skrip pemindahan apa pun.
+       */
+      for (const k of lama.noteList ?? []) {
+        this.tambahKeterangan(k.category, k.content ?? '');
+      }
     }
+
+    // Satu baris kosong supaya isiannya langsung terlihat dan tidak perlu
+    // menemukan tombol tambah lebih dulu.
+    if (!this.k.length) this.tambahKeterangan();
   }
 
   pilihPemasok(): void {
@@ -260,7 +319,21 @@ export class TenderQuoteDialogComponent implements OnInit {
       // Tarif hanya dikirim bila memungut; menyimpannya pada pemasok non-PKP
       // membuat laporan kelak menghitung pajak yang tidak pernah ada.
       ppnPercentage: v.includePpn ? Number(v.ppnPercentage) || 11 : null,
-      notes: v.notes || null,
+      quotationNumber: (v.quotationNumber || '').trim() || null,
+      /*
+       * Keterangan kosong TIDAK dikirim.
+       *
+       * Barisnya ada di layar hanya karena ditambahkan lalu ditinggalkan;
+       * mengirimnya membuat tabel perbandingan menumbuhkan baris kategori
+       * yang seluruh selnya "—".
+       */
+      noteList: (v.noteList || [])
+        .filter((x: any) => String(x?.content ?? '').trim())
+        .map((x: any, i: number) => ({
+          category: x.category,
+          content: String(x.content).trim(),
+          sortOrder: i,
+        })),
       quotedAt: this.tanggalIso(v.quotedAt),
       items: (v.items || [])
         // Baris yang tidak ditawar TIDAK dikirim.

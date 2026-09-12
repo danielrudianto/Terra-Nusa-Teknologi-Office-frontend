@@ -5,6 +5,9 @@
       <h2 class="dlg__title">{{ namaPemasok }}</h2>
       <span class="dlg__sub">
         {{ rekap.nomor ? "No. " + rekap.nomor + " · " : "" }}{{ rekap.nama }}
+        @if (quote.quotationNumber) {
+          · {{ "tender.nomorPenawaran" | translate }} {{ quote.quotationNumber }}
+        }
       </span>
     </div>
   </div>
@@ -207,10 +210,27 @@
       <span>{{ "tender.biayaSebenarnyaKet" | translate }}</span>
     </div>
 
-    @if (quote.notes) {
+    <!--
+      Keterangan pemasok, dikelompokkan menurut kategorinya.
+
+      Di tabel perbandingan tiap kategori menjadi satu baris agar sejajar
+      antar pemasok; di sini urutannya dibalik — satu pemasok, seluruh
+      kategorinya — karena yang membuka dialog ini sedang membaca SATU
+      penawaran secara utuh.
+    -->
+    @if (kategoriTerisi.length) {
       <div class="tqv-blok">
         <span class="tqv-label">{{ "tender.keteranganPemasok" | translate }}</span>
-        <p class="tqv-teks">{{ quote.notes }}</p>
+        @for (kat of kategoriTerisi; track kat) {
+          <div class="tqv-ket">
+            <span class="tqv-ket__kategori">{{
+              labelKategori(kat) | translate
+            }}</span>
+            @for (isi of keteranganPada(kat); track $index) {
+              <p class="tqv-teks">{{ isi }}</p>
+            }
+          </div>
+        }
       </div>
     }
 

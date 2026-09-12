@@ -1,0 +1,128 @@
+/*
+ * Keputusan akhir tender — memilih pemenang, atau menutup tanpa memilih.
+ *
+ * Bentuknya mengikuti dialog lain di aplikasi ini: kepala `dlg__head`, isi
+ * bergulir, tindakan di kaki.
+ */
+
+.tk {
+  display: flex;
+  flex-direction: column;
+}
+
+.tk-content {
+  padding: 1.25rem 1.5rem !important;
+}
+
+.tk-full {
+  width: 100%;
+}
+
+/* ===== daftar pemasok ===== */
+
+.tk-daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.tk-pilihan {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line, #e4e9fb);
+  border-radius: 12px;
+  background: var(--surface-2, #f6f8ff);
+
+  /*
+   * Label radio Material membungkus isinya dalam flex yang tidak melebar.
+   * Tanpa ini, nama pemasok dan nilainya menumpuk di kiri alih-alih
+   * berjajar — dan yang membandingkan harus mencari angkanya satu per satu.
+   */
+  ::ng-deep .mdc-form-field {
+    width: 100%;
+
+    > label {
+      width: 100%;
+    }
+  }
+}
+
+.tk-pilihan__isi {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.tk-pilihan__nama {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tk-pilihan__nomor {
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--muted, #6b7280);
+}
+
+.tk-pilihan__nilai {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.tk-pilihan__murah {
+  margin-left: 0.45rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--ok-bg, #e7f6ec);
+  color: var(--ok-fg, #1b7a3d);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.tk-pilihan__sebagian {
+  margin-left: 0.45rem;
+  font-size: 0.72rem;
+  color: var(--warn, #b26a00);
+}
+
+/* ===== banner ===== */
+
+.tk-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #1a3a8f);
+  font-size: 0.8rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+}
+
+.tk-banner--warn {
+  background: var(--warn-bg, #fff4e5);
+  color: var(--warn, #b26a00);
+}
+
+/* ===== tindakan ===== */
+
+.tk-actions {
+  padding: 0.85rem 1.5rem !important;
+  border-top: 1px solid var(--line, #e4e9fb);
+}
+
+.tk-spacer {
+  flex: 1 1 auto;
+}

@@ -213,3 +213,17 @@
 .tqv-spacer {
   flex: 1 1 auto;
 }
+
+/* ===== keterangan berkategori ===== */
+
+.tqv-ket + .tqv-ket {
+  margin-top: 0.7rem;
+}
+
+.tqv-ket__kategori {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--brand, #154dec);
+}

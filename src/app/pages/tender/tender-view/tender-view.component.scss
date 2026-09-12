@@ -303,49 +303,6 @@
   color: var(--ink, #16181d);
 }
 
-/*
- * Nama pemasok sebagai tombol.
- *
- * Gayanya sengaja TIDAK seperti tautan biru: kepala tabel ini sudah penuh
- * penanda — jumlah baris yang ditawar, tombol sunting dan hapus — dan warna
- * tambahan di sana hanya menambah keriuhan pada bagian yang harus terbaca
- * sekilas. Ikon kecil di sebelah namanya cukup menyebut bahwa ia dapat
- * dibuka, dan sisanya muncul saat disentuh penunjuk atau papan ketik.
- */
-.tv-qhead__buka {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin: 0;
-  padding: 0.1rem 0.25rem;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  font: inherit;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s ease;
-
-  .mat-icon {
-    flex: 0 0 auto;
-    width: 14px;
-    height: 14px;
-    font-size: 14px;
-    color: var(--muted, #6b7280);
-  }
-
-  &:hover,
-  &:focus-visible {
-    background: var(--brand-soft, #e7ecfb);
-    color: var(--brand, #154dec);
-
-    .mat-icon {
-      color: var(--brand, #154dec);
-    }
-  }
-}
-
 .tv-qhead__sebagian {
   font-size: 0.7rem;
   font-weight: 600;
@@ -596,4 +553,91 @@ tfoot .tv-td-item {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 0.85rem;
+}
+
+/* ===== kepala kolom: nama, nomor, satu tombol menu ===== */
+
+.tv-qhead__baris {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+/*
+ * Nomor penawaran pemasok.
+ *
+ * Kecil dan pudar dengan sengaja: ia dipakai MENCARI dokumen aslinya, bukan
+ * membandingkan. Sebesar namanya, ia akan bersaing dengan hal yang justru
+ * harus terbaca sekilas.
+ */
+.tv-qhead__nomor {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--muted, #6b7280);
+}
+
+/* Tiap keterangan satu paragraf sendiri; digabung, dua ketentuan yang
+ * berbeda terbaca sebagai satu kalimat panjang. */
+.tv-ket__isi {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-line;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ===== hasil tender ===== */
+
+.tv-hasil__aksi {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tv-menang {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--ok-bg, #e7f6ec);
+  color: var(--ok-fg, #1b7a3d);
+}
+
+.tv-menang__ikon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.tv-menang__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+
+  strong {
+    font-size: 1rem;
+  }
+}
+
+.tv-menang__nomor,
+.tv-menang__nilai {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.tv-menang__nilai {
+  font-variant-numeric: tabular-nums;
 }

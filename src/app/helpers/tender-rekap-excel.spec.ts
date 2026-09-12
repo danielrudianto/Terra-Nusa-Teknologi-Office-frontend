@@ -42,7 +42,20 @@ function contoh(jumlahPemasok = 3): DataRekap {
       deliveryMethod: 'franco',
       otherCost: 40_000_000,
       otherCostNote: 'Mobilisasi dan Demobilisasi',
-      notes: 'Pelunasan setelah 200 jam',
+      quotationNumber: `04${i + 1}/QT/IX/2026`,
+      /*
+       * Keterangan BERKATEGORI.
+       *
+       * Menggantikan `notes` yang satu teks bebas. Pada lembar ini ia
+       * menjadi SATU BARIS PER KATEGORI, sehingga syarat pembayaran tiap
+       * pemasok sejajar dan dapat dibaca berdampingan — sebelumnya seluruh
+       * keterangan menumpuk di satu baris, dan yang membandingkannya harus
+       * membaca dua paragraf utuh untuk menemukan kalimat yang sebanding.
+       */
+      noteList: [
+        { category: 'pembayaran', content: 'Pelunasan setelah 200 jam' },
+        { category: 'nonteknis', content: 'Mob-demob menyesuaikan harga BBM' },
+      ],
       items: [{ tenderItemID: 1, price: 119_000_000 }],
     })),
   };
@@ -209,14 +222,55 @@ describe('unduhan Excel rekap tender', () => {
       const wb = await berkasRekapTenderExcel(contoh());
       const ws = wb.getWorksheet('Perbandingan')!;
 
-      let barisKeterangan = -1;
+      // Keterangannya kini SATU BARIS PER KATEGORI; yang dicari baris mana
+      // pun yang berlabel "Ket. ...".
+      const barisKeterangan: number[] = [];
       for (let r = 1; r <= ws.rowCount; r++) {
-        if (ws.getCell(r, 1).value === 'Keterangan') barisKeterangan = r;
+        const label = String(ws.getCell(r, 1).value ?? '');
+        if (label.startsWith('Ket. ')) barisKeterangan.push(r);
       }
 
-      expect(barisKeterangan).toBeGreaterThan(0);
-      expect(ws.getRow(barisKeterangan).height ?? 0).toBeGreaterThanOrEqual(60);
-      expect(ws.getCell(barisKeterangan, 2).alignment?.wrapText).toBe(true);
+      expect(barisKeterangan.length)
+        .withContext('tidak satu pun baris keterangan berkategori tercetak')
+        .toBeGreaterThan(0);
+
+      for (const r of barisKeterangan) {
+        expect(ws.getRow(r).height ?? 0)
+          .withContext(`baris ${r} tanpa tinggi tetap; isinya akan terpotong`)
+          .toBeGreaterThanOrEqual(60);
+        expect(ws.getCell(r, 2).alignment?.wrapText).toBe(true);
+      }
+    });
+
+    it('menulis satu baris untuk tiap kategori yang diisi, dan tidak lebih', async () => {
+      /*
+       * Kategori yang tidak diisi TIDAK boleh menumbuhkan baris.
+       *
+       * Lembar yang memuat dua baris berisi seluruhnya "—" membuat yang
+       * membacanya berhenti memperhatikan baris yang memang berisi — dan
+       * pada lembar cetak itu lebih parah daripada di layar, karena tidak
+       * ada yang dapat digulir atau disaring.
+       */
+      const wb = await berkasRekapTenderExcel(contoh());
+      const ws = wb.getWorksheet('Perbandingan')!;
+
+      const label: string[] = [];
+      for (let r = 1; r <= ws.rowCount; r++) {
+        const v = String(ws.getCell(r, 1).value ?? '');
+        if (v.startsWith('Ket. ')) label.push(v);
+      }
+
+      expect(label).toEqual(['Ket. pembayaran', 'Ket. non-teknis']);
+    });
+
+    it('menyebut nomor penawaran pemasok di kepala kolomnya', async () => {
+      const wb = await berkasRekapTenderExcel(contoh());
+      const ws = wb.getWorksheet('Perbandingan')!;
+
+      // Baris 5 adalah kepala tabelnya.
+      expect(String(ws.getCell(5, 2).value ?? '')).toContain('041/QT/IX/2026');
+      // Dan tingginya dinaikkan supaya baris keduanya tidak terpotong.
+      expect(ws.getRow(5).height ?? 0).toBeGreaterThanOrEqual(42);
     });
 
     it('membekukan kolom nama dan seluruh blok kepala', async () => {
@@ -249,7 +303,11 @@ describe('unduhan Excel rekap tender', () => {
       const ws = wb.getWorksheet('Perbandingan')!;
 
       for (let i = 0; i < 6; i++) {
-        expect(ws.getCell(5, i + 2).value).toBe(`PT. Pemasok ${i + 1}`);
+        // Kepala kolomnya kini dua baris: nama pemasok, lalu nomor
+        // penawarannya. Yang dijaga di sini namanya tetap ada dan berada di
+        // kolom yang benar.
+        const kepala = String(ws.getCell(5, i + 2).value ?? '');
+        expect(kepala.split('\n')[0]).toBe(`PT. Pemasok ${i + 1}`);
       }
       expect(String(ws.getCell(6, 1).value)).toContain('crawler crane');
     });

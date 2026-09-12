@@ -19,6 +19,15 @@ import {
 import { MINIMAL_PENAWARAN, TenderService } from 'src/app/services/tender.service';
 import { TenderQuoteDialogComponent } from '../tender-quote-dialog/tender-quote-dialog.component';
 import { TenderQuoteViewComponent } from '../tender-quote-view/tender-quote-view.component';
+import {
+  HasilKeputusan,
+  TenderKeputusanDialogComponent,
+} from '../tender-keputusan-dialog/tender-keputusan-dialog.component';
+import {
+  kategoriTerpakai,
+  keteranganPada,
+  labelKategori,
+} from 'src/app/constants/tender-keterangan.constant';
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
 import {
   DataRekap,
@@ -105,6 +114,55 @@ export class TenderViewComponent implements OnInit {
 
   get kurangPenawaran(): number {
     return Math.max(this.MINIMAL - this.quotes.length, 0);
+  }
+
+  // ------------------------------------------------------------------
+  // Hasil tender
+  // ------------------------------------------------------------------
+
+  /**
+   * Keputusannya sudah diambil.
+   *
+   * Dua keadaan yang berbeda berbagi status `selesai`: ada pemenangnya, atau
+   * ditutup tanpa memilih siapa pun. Yang membedakan hanya `winnerQuoteID` —
+   * dan itu memang cukup, sehingga tidak perlu nilai status kelima yang harus
+   * dikenali setiap penyaring, chip, dan laporan yang sudah ada.
+   */
+  get sudahDiputuskan(): boolean {
+    return this.data?.status === 'selesai';
+  }
+
+  /** Penawaran yang menang; `null` bila ditutup tanpa pemenang. */
+  get pemenang(): any | null {
+    const id = this.data?.winnerQuoteID;
+    if (!id) return null;
+    return this.quotes.find((q) => Number(q.id) === Number(id)) ?? null;
+  }
+
+  /** Keputusan masih terbuka: belum selesai dan belum dibatalkan. */
+  get dapatDiputuskan(): boolean {
+    return ['draft', 'berjalan'].includes(this.data?.status);
+  }
+
+  // ------------------------------------------------------------------
+  // Keterangan pemasok, berkategori
+  // ------------------------------------------------------------------
+
+  /**
+   * Kategori yang BENAR-BENAR diisi pada tender ini.
+   *
+   * Menampilkan keempatnya selalu menambah baris kosong pada tender yang
+   * keterangannya cuma soal pembayaran — dan tabel yang penuh sel "—" membuat
+   * yang membacanya berhenti memperhatikan sel yang memang berisi.
+   */
+  get kategoriKeterangan(): string[] {
+    return kategoriTerpakai(this.quotes);
+  }
+
+  readonly labelKategori = labelKategori;
+
+  keteranganPada(quote: any, kategori: string): string[] {
+    return keteranganPada(quote, kategori);
   }
 
   /**
@@ -354,6 +412,64 @@ export class TenderViewComponent implements OnInit {
       maxWidth: '96vw',
       autoFocus: false,
     });
+  }
+
+  /**
+   * Tetapkan pemenang, atau tutup tanpa memilih siapa pun.
+   *
+   * Satu jalur untuk dua keadaan: bentuk dialognya sama, dan aturan panjang
+   * alasannya sama. Dua jalur terpisah berarti aturan itu ditulis dua kali,
+   * dan yang satu akan tertinggal ketika yang lain disesuaikan.
+   */
+  private putuskan(mode: 'pemenang' | 'tutup'): void {
+    this.dialog
+      .open(TenderKeputusanDialogComponent, {
+        data: { mode, rekap: this.dataRekap() },
+        width: '720px',
+        maxWidth: '96vw',
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((hasil: HasilKeputusan | undefined) => {
+        if (!hasil) return;
+        const permintaan =
+          hasil.mode === 'pemenang'
+            ? this.service.tetapkanPemenang(
+                this.tenderId,
+                Number(hasil.winnerQuoteID),
+                hasil.reason,
+              )
+            : this.service.tutup(this.tenderId, hasil.reason);
+
+        permintaan.subscribe({
+          next: () => {
+            this.snackBar.open(
+              this.translate.instant(
+                hasil.mode === 'pemenang'
+                  ? 'tender.pemenangDitetapkan'
+                  : 'tender.tenderDitutup',
+              ),
+              'Close',
+              { duration: 3000 },
+            );
+            this.muat();
+          },
+          error: (e: any) =>
+            this.snackBar.open(
+              this.serverMessage.terjemahkan(e, 'notify.actionFailed'),
+              'Close',
+              { duration: 5000 },
+            ),
+        });
+      });
+  }
+
+  tetapkanPemenang(): void {
+    this.putuskan('pemenang');
+  }
+
+  tutupTender(): void {
+    this.putuskan('tutup');
   }
 
   hapusPenawaran(quote: any): void {
