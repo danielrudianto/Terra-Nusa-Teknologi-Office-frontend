@@ -3,6 +3,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    /*
+     * Berkas terjemahan dapat diimpor LANGSUNG oleh pengujian.
+     *
+     * Hanya di sini, bukan di `tsconfig.json`: yang membutuhkannya cuma uji
+     * yang memeriksa kelengkapan kunci, dan menyalakannya untuk bangunan
+     * aplikasi membuka jalan bagi JSON ikut terbundel tanpa disengaja.
+     *
+     * Tanpa ini, kelengkapan terjemahan tidak dapat diperiksa dari sisi
+     * frontend sama sekali — `readFileSync` tidak ada di peramban, dan
+     * kunci yang hilang baru ketahuan ketika layarnya menampilkan nama
+     * kuncinya sendiri kepada pemakai.
+     */
+    "resolveJsonModule": true,
     "types": [
       "jasmine"
     ]
