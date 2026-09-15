@@ -22,7 +22,11 @@
           </span>
         </div>
         <p class="tv-sub">
-          {{ data.number ? "No. " + data.number + " · " : "" }}{{ data.projectName }}
+          {{
+            data.documentNumber || data.number
+              ? "No. " + (data.documentNumber || data.number) + " · "
+              : ""
+          }}{{ data.projectName }}
           ·
           {{ (isJasa ? "tender.jasa" : "tender.barang") | translate }}
           @if (data.dueDate) {

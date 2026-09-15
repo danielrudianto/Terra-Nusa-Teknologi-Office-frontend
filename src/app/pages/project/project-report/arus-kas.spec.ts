@@ -451,6 +451,59 @@ describe('ProjectReport — arus kas', () => {
     }));
   });
 
+  it('garis digambar LURUS, tanpa lengkung', fakeAsync(() => {
+    /*
+     * Lengkung (`tension > 0`) membuat chart.js menarik kurva MELEWATI titik
+     * datanya: pada deret yang turun ke nol lalu naik lagi — bulan tanpa
+     * penerimaan, yang di sini biasa — garis "kas masuk" tercelup di bawah
+     * nol dan menggambar penerimaan negatif yang tidak pernah ada.
+     *
+     * Garis lurus membuat seluruh persoalan itu tidak ada: segmen lurus tidak
+     * dapat melampaui kedua ujungnya.
+     */
+    const f = buat(ARUS);
+    f.componentInstance.muat('R501');
+    tick();
+
+    for (const d of f.componentInstance.dataArusKas().datasets as any[]) {
+      expect(d.tension).toBe(0);
+      expect(d.cubicInterpolationMode).toBeUndefined();
+    }
+  }));
+
+  it('tanggal mentah tidak pernah sampai ke layar', () => {
+    // `2026-09-12` bentuk penyimpanan, bukan bentuk baca.
+    const c = buat(ARUS).componentInstance;
+    expect(c.tanggalBaca('2026-09-12')).toBe('12 Sep 2026');
+    expect(c.tanggalBaca('2026-07-31T00:00:00')).toBe('31 Jul 2026');
+    // Nol di depan tanggalnya dibuang.
+    expect(c.tanggalBaca('2026-01-05')).toBe('5 Jan 2026');
+    // Yang tidak terbaca dikembalikan apa adanya, bukan jadi "NaN NaN".
+    expect(c.tanggalBaca(null)).toBe('');
+    expect(c.tanggalBaca('bukan tanggal')).toBe('bukan tanggal');
+  });
+
+  it('jendela otomatis ~10 titik pada layar lebar', () => {
+    const c = buat(ARUS).componentInstance;
+    const j = (c as any).lebarWadah;
+
+    j.set(1590); // 1920x1200: layar dikurangi menu samping dan padding
+    expect(c.jendelaOtomatis()).toBe(10);
+
+    j.set(900);
+    expect(c.jendelaOtomatis()).toBe(6);
+
+    // Dijepit di kedua ujung.
+    j.set(200);
+    expect(c.jendelaOtomatis()).toBe(5);
+    j.set(9999);
+    expect(c.jendelaOtomatis()).toBe(20);
+
+    // Belum terukur: 10, bukan 0 — jendela nol berarti grafik kosong.
+    j.set(0);
+    expect(c.jendelaOtomatis()).toBe(10);
+  });
+
   it('tanpa pembayaran bukan galat', fakeAsync(() => {
     // Proyek yang baru berjalan punya kas keluar tanpa kas masuk; yang
     // berjalan dengan uang muka punya kebalikannya. Keduanya normal.

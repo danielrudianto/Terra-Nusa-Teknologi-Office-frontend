@@ -77,7 +77,16 @@
             </span>
           </th>
           <td mat-cell *matCellDef="let t">
-            <span class="tl-date">{{ t.number || "—" }}</span>
+            <!--
+              `documentNumber` dulu, `number` sebagai jaring pengaman.
+
+              Tender lama diisi nomor dokumennya lewat SQL pemasangan, jadi
+              sesudah itu tidak ada yang kosong. Tetapi bila SQL-nya belum
+              dijalankan, jatuh ke nomor lama jauh lebih baik daripada
+              menampilkan "—" pada seluruh daftar — yang terbaca seperti
+              datanya hilang.
+            -->
+            <span class="tl-date">{{ t.documentNumber || t.number || "—" }}</span>
           </td>
         </ng-container>
 

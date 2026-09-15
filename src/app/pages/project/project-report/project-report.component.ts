@@ -823,6 +823,46 @@ export class ProjectReportComponent implements OnInit {
 
   lacakProgress = (_: number, p: any) => p.id;
 
+  /**
+   * `2026-09-12` -> `12 Sep 2026`.
+   *
+   * `YYYY-MM-DD` adalah bentuk PENYIMPANAN, bukan bentuk baca. Dibiarkan
+   * mentah di layar, halamannya terbaca seperti keluaran basis data yang
+   * belum selesai dirapikan — dan bagi yang membacanya cepat, urutan
+   * tahun-bulan-hari menuntut satu langkah penerjemahan yang tidak perlu ada.
+   *
+   * DIURAI SEBAGAI TEKS, bukan lewat `new Date(...)`.
+   *
+   * `new Date('2026-09-12')` adalah tengah malam UTC; di zona di sebelah
+   * barat UTC ia mundur menjadi 11 September. Tanggal yang bergeser satu hari
+   * tergantung jam komputer yang membukanya adalah kekeliruan yang sama yang
+   * sudah dua kali muncul di sistem ini — pada kurva kalender dan pada
+   * pengemberan bulan arus kas. Di sini akibatnya lebih halus dan lebih
+   * buruk: tanggal opname yang salah sehari tidak akan pernah dicurigai.
+   */
+  tanggalBaca(nilai: any): string {
+    const s = String(nilai ?? '');
+    // Dicocokkan pada teks UTUH, bukan pada 10 huruf pertamanya.
+    //
+    // Memotong dulu lalu mencocokkan membuat nilai yang bukan tanggal
+    // dikembalikan TERPENGGAL — "bukan tanggal" menjadi "bukan tang".
+    // Cacat yang cuma muncul pada data yang sudah aneh, jadi ia menambah
+    // keanehan kedua di atas yang pertama.
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+    if (!m) return s;
+
+    const bulan = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+    ];
+    const b = bulan[Number(m[2]) - 1];
+    if (!b) return s;
+
+    // Nol di depan tanggalnya dibuang: "05 Sep" lebih berat dibaca daripada
+    // "5 Sep", dan di sini tidak ada kolom yang perlu disejajarkan.
+    return `${Number(m[3])} ${b} ${m[1]}`;
+  }
+
   // ==================================================================
   // ARUS KAS PROYEK
   // ==================================================================
@@ -966,7 +1006,7 @@ export class ProjectReportComponent implements OnInit {
   /** `'auto'` = menyesuaikan lebar layar. */
   readonly pilihanJendela = signal<number | 'auto'>('auto');
 
-  readonly PILIHAN_JENDELA: (number | 'auto')[] = ['auto', 6, 12, 24];
+  readonly PILIHAN_JENDELA: (number | 'auto')[] = ['auto', 6, 10, 18];
 
   /**
    * Titik ke sekian dari UJUNG KANAN; 0 berarti menampilkan yang terbaru.
@@ -1005,20 +1045,36 @@ export class ProjectReportComponent implements OnInit {
   /**
    * Berapa titik yang muat, dihitung dari lebar wadahnya.
    *
-   * ~64px per titik: di bawah itu label bulan ("Sep 26") mulai bertumpuk dan
-   * chart.js memiringkannya, yang justru membuat sumbunya makin sulit dibaca
-   * daripada sekadar menampilkan lebih sedikit bulan.
+   * ~160px per titik. Angkanya DITETAPKAN DARI LAYAR NYATA, bukan dari
+   * ambang keterbacaan label: pada 1920×1200 wadah grafiknya sekitar 1590px
+   * (1920 dikurangi menu samping dan padding halaman), dan 1590/160 ≈ 10 —
+   * jumlah yang diminta.
    *
-   * Dibatasi 4..24. Batas bawah supaya jendelanya tetap berbentuk garis dan
-   * bukan dua titik; batas atas karena di atas 24 (dua tahun) tidak ada lagi
-   * yang dapat dibaca per bulan, dan yang butuh gambaran sepanjang itu
-   * sedang menanyakan hal yang berbeda.
+   * Sebelumnya 64px, dengan alasan "di bawah itu label bulan bertumpuk". Itu
+   * benar sebagai BATAS BAWAH, tetapi salah dipakai sebagai ukuran yang
+   * nyaman: ia menjejalkan sebanyak mungkin bulan sampai tepat sebelum
+   * labelnya rusak, dan hasilnya padat tanpa ada yang memintanya.
+   *
+   * Dibatasi 5..20. Di bawah 5 jendelanya berhenti berbentuk garis; di atas
+   * 20 tidak ada lagi yang dapat dibaca per bulan, dan yang butuh gambaran
+   * sepanjang itu sedang menanyakan hal yang berbeda.
    */
   readonly jendelaOtomatis = computed(() => {
     const w = this.lebarWadah();
-    if (!w) return 12;
-    return Math.max(4, Math.min(24, Math.round(w / 64)));
+    // Belum terukur (ResizeObserver belum menyala): 10, bukan 0 — jendela
+    // nol berarti grafik kosong pada kedipan pertama.
+    if (!w) return 10;
+    return Math.max(5, Math.min(20, Math.round(w / 160)));
   });
+
+  /**
+   * Lebar wadah yang TERUKUR, untuk keterangan pada chip "Otomatis".
+   *
+   * Disebutkan supaya kalau jumlah titiknya terasa aneh, sebabnya langsung
+   * terlihat — lebar yang salah terbaca, atau ambangnya yang perlu disetel.
+   * Tanpa ini, satu-satunya cara memeriksanya adalah menebak.
+   */
+  readonly lebarWadahTerukur = computed(() => this.lebarWadah());
 
   readonly lebarJendela = computed(() => {
     const p = this.pilihanJendela();
@@ -1203,7 +1259,7 @@ export class ProjectReportComponent implements OnInit {
           data: t.map((x) => x.masuk),
           borderColor: WARNA_KAS.masuk.garis,
           backgroundColor: WARNA_KAS.masuk.isi,
-          cubicInterpolationMode: 'monotone' as const,
+          tension: 0,
           pointRadius: 2,
         },
         {
@@ -1212,7 +1268,7 @@ export class ProjectReportComponent implements OnInit {
           data: t.map((x) => x.keluar),
           borderColor: WARNA_KAS.keluar.garis,
           backgroundColor: WARNA_KAS.keluar.isi,
-          cubicInterpolationMode: 'monotone' as const,
+          tension: 0,
           pointRadius: 2,
         },
         {
@@ -1230,7 +1286,7 @@ export class ProjectReportComponent implements OnInit {
           backgroundColor: WARNA_KAS.saldo.isi,
           borderWidth: 2.5,
           fill: true,
-          cubicInterpolationMode: 'monotone' as const,
+          tension: 0,
           pointRadius: 2,
         },
     ];

@@ -1,163 +1,69 @@
-# Tiga hal: transisi halaman, dialog hapus, saringan reimbursement
+# Arus kas, tab progress, dan nomor tender — FRONTEND
 
-**Frontend saja, tanpa perubahan skema.** Ekstrak, commit, deploy.
-
----
-
-## 1. Transisi halaman — dan kenapa terasa kaku
-
-Ternyata bukan karena tidak ada. **Sudah ada** — tetapi hanya di sub-layout
-**Data Master**, ditulis di dalam komponennya. Kerangka utama, yang dipakai
-SETIAP perpindahan dari menu samping, tidak punya apa-apa.
-
-Jadi berpindah di dalam Data Master ada gerakannya, sementara Tender → Kalender
-berganti begitu saja. **Ketidakkonsistenan itu yang membuatnya terasa kaku** —
-lebih kaku daripada kalau memang tidak ada di mana-mana, karena mata sudah
-tahu aplikasi ini bisa bergerak.
-
-Definisinya dipindah ke `src/app/animations/transisi-rute.ts`, dipakai
-keduanya. Dua definisi yang "mirip" akan berbeda dalam sebulan, dan bedanya
-terasa tanpa dapat ditunjuk.
-
-### Bentuknya: dua ketukan
-
-| | |
-|---|---|
-| **Ketukan 1** | isi halaman naik 14px sambil muncul, skala 0.985 → 1 |
-| **Ketukan 2** | judul halaman menyusul **70ms** kemudian |
-
-300ms, `cubic-bezier(0.22, 1, 0.36, 1)` — melambat panjang di ujung, berhenti
-lembut alih-alih mendadak.
-
-Ketukan kedua itu yang membuatnya terbaca sebagai sesuatu yang **dirancang**,
-bukan sekadar fade. Satu gerakan serentak selalu terasa seperti tirai; gerakan
-bertahap terasa seperti halaman yang menyusun dirinya.
-
-> **Filmstrip terlampir** — 5 bingkai pada 0/60/120/200/300ms, dibekukan dari
-> animasi sungguhan di Chromium, bukan ilustrasi.
->
-> **Satu hal yang saya lihat di situ dan mungkin Anda tidak suka:** pada 60ms,
-> angka-angka KPI sudah terbaca sementara JUDULnya belum muncul sama sekali.
-> Jadi mata sempat mendarat di angka sebelum tahu ini halaman apa. Bisa
-> dibalik (judul dulu, isi menyusul) atau jedanya dipangkas jadi ~40ms —
-> keduanya satu baris. Saya tidak memilih sendiri karena ini bagian yang
-> memang soal selera.
-
-### Yang sengaja TIDAK dilakukan
-
-Tidak ada `:leave`, tidak ada `position: absolute`. Halaman lama tidak ditahan
-untuk beranimasi keluar — menahannya berarti dua halaman di DOM sekaligus, dan
-pada halaman berisi grafik dan tabel panjang itu dua kali kerja render tepat
-pada saat paling sibuk. `position: absolute` untuk menumpuknya juga merusak
-tinggi halaman dan posisi gulir.
-
-Hanya `opacity` dan `transform` yang digerakkan — keduanya ditangani
-compositor, jadi tidak memicu layout ulang.
-
-### `prefers-reduced-motion` dihormati
-
-Angular tidak membacanya sendiri. Bagi yang menyalakannya di sistem
-operasinya, gerakan halaman bukan soal selera — gerakan besar dapat memicu
-pusing dan mual. Durasinya jadi 0.
-
-### Dua animasi yang dulu akan bertabrakan
-
-Membuka Data Master menjalankan animasi kerangka utama **dan** animasi outlet
-di dalam Master. Keduanya memudar dari nol, jadi opasitasnya **berkalian** dan
-isinya sampai lebih lambat daripada yang dimaksudkan keduanya. Tidak rusak —
-hanya terasa berat, dan "terasa berat" tidak pernah muncul di keluaran uji
-mana pun.
-
-Versi bersarang karena itu tidak menganimasikan kemunculan pertamanya.
-Berpindah DI DALAM Master tetap beranimasi.
-
-### Penjaga
-
-`scripts/pemeriksa/transisicek.py`. Animasi Angular yang salah pasang **tidak
-melempar galat** — ia hanya diam, dan "diam" persis sama tampaknya dengan
-"memang belum dibuat". Empat cara kehilangannya, semuanya tanpa pesan:
-
-```
-trigger dipindah ke <router-outlet> → "halaman disisipkan sebagai SAUDARA
-                                       outlet, bukan anaknya"
-kunci dari routeConfig.path         → "beberapa rute ber-path: '' — kuncinya
-                                       tidak berubah dan animasinya tidak menyala"
-`optional: true` dicabut            → "satu halaman tanpa elemen itu akan
-                                       MELEMPAR dan menjatuhkan animasinya"
-`void => *` bersarang dihidupkan    → "DUA animasi sekaligus, opasitasnya
-                                       berkalian, halamannya terasa berat"
-```
-
-> **Penjaganya sendiri sempat bocor.** Regex `query\(([^)]*)\)` berhenti di `)`
-> pertama, padahal `query()` berisi `style({ ... })` — jadi `optional: true`
-> di ekornya tidak pernah terlihat dan cek itu hijau apa pun isinya. Ketahuan
-> waktu saya merusaknya sengaja, bukan waktu membacanya ulang. Sudah diganti
-> pemindai kurung berimbang.
+**Pasang zip backend tender dulu** (termasuk SQL-nya), lalu yang ini.
 
 ---
 
-## 2. Dialog hapus — ruang kosong di kanan
+## 1. Arus kas: garis LURUS
 
-Komponennya memaksakan lebarnya sendiri:
+`tension: 0`. Sempat melengkung, dan lengkungannya menimbulkan masalahnya
+sendiri — chart.js menarik kurva **melewati** titik datanya, sehingga pada
+bulan tanpa penerimaan garis "kas masuk" tercelup di bawah nol dan menggambar
+penerimaan negatif yang tidak pernah ada. Saya sempat menambalnya dengan
+`cubicInterpolationMode: 'monotone'`.
 
-```scss
-.dc { width: min(380px, 92vw); }   /* angka mati */
-```
+**Garis lurus membuat seluruh persoalan itu tidak ada**: segmen lurus tidak
+dapat melampaui kedua ujungnya. Dan memang lebih jujur untuk data bulanan —
+tidak ada yang tahu apa yang terjadi di antara dua bulan, dan kurva yang halus
+menyiratkan perjalanan yang tidak pernah diukur. Usul Anda lebih baik daripada
+tambalan saya.
 
-Pemanggilnya membuka dialog dengan `width: '440px'` atau `'460px'`. Jadi
-kartunya 380px di dalam panel 460px — 80px sisa. Dan karena ini blok tanpa
-margin otomatis, **seluruh sisanya jatuh ke satu sisi**: ruang kosong di
-kanan, persis yang Anda lihat.
+## 2. Jendela otomatis: ~10 titik di layar Anda
 
-Tidak ada galat, dan pada pemanggil yang kebetulan tidak menyetel lebar
-tampilannya benar — sehingga cacatnya cuma muncul di sebagian dialog.
+Dulu **~64px per titik**, dengan alasan "di bawah itu label bulan bertumpuk".
+Itu benar sebagai **batas bawah**, tetapi salah dipakai sebagai ukuran yang
+nyaman: ia menjejalkan sebanyak mungkin bulan sampai tepat sebelum labelnya
+rusak, dan hasilnya padat tanpa ada yang memintanya.
 
-Sekarang `width: 100%` + `max-width` + `margin-inline: auto`: mengisi panel
-berapa pun lebarnya, tetap menjaga lebar baca, dan kalau panelnya memang lebih
-lebar, sisanya terbagi rata alih-alih menumpuk di satu sisi.
+Sekarang **~160px per titik**, ditetapkan dari layar nyata: pada 1920×1200
+wadah grafiknya sekitar 1590px (layar dikurangi menu samping dan padding), dan
+1590/160 ≈ **10**. Dibatasi 5..20. Presetnya jadi `Otomatis · 6 · 10 · 18`.
 
-Berlaku untuk **semua** dialog konfirmasi, bukan cuma slip gaji.
+> Kalau jumlahnya masih terasa aneh, sebutkan angkanya — `lebarWadahTerukur`
+> menyimpan lebar yang benar-benar terbaca, jadi kita bisa langsung tahu
+> apakah yang meleset pengukurannya atau ambangnya.
 
----
+## 3. Tab progress: dua hal yang Anda tunjuk
 
-## 3. Reimbursement — bawaan tanpa yang ditolak
+**`%` yang hilang pada SELISIH.** Dua sel di sebelahnya berbunyi "6,35%" dan
+"8,9%"; sel ini selisih keduanya, jadi satuannya sama. Tanpa `%`, "-2,6" di
+antara dua persen terbaca sebagai entah apa — dan pembacanya mengira
+selisihnya kecil sekali.
 
-Bawaannya sekarang **Disetujui + Menunggu**. Chip "Ditolak" tetap ada dan
-tinggal ditekan; bedanya cuma pada apa yang muncul tanpa diminta.
+**Tanggal mentah.** `2026-09-12` → `12 Sep 2026`, di KPI dan di daftar
+riwayatnya. `YYYY-MM-DD` bentuk penyimpanan, bukan bentuk baca.
 
-Yang ditolak tidak menuntut tindakan apa pun — ia sudah selesai, dan selesainya
-dengan tidak terjadi. Menampilkannya secara bawaan membuat daftar yang dibuka
-untuk *mengerjakan* sesuatu berisi baris yang justru tidak dapat dikerjakan,
-dan pada bulan yang ramai baris itulah yang paling banyak.
+Diurai **sebagai teks**, bukan lewat `new Date(...)`: `new Date('2026-09-12')`
+adalah tengah malam UTC dan di zona barat UTC mundur jadi 11 September.
+Tanggal opname yang meleset sehari tidak akan pernah dicurigai — dan kekeliruan
+yang sama sudah dua kali muncul di sistem ini (kurva kalender, pengemberan
+bulan arus kas).
 
-**Bawaan tidak menimpa pilihan Anda.** Begitu satu chip disentuh, URL memuat
-seluruh kunci — jadi hadirnya satu kunci sudah berarti pilihannya disengaja,
-termasuk pilihan mengosongkan semuanya. Tanpa aturan ini, chip yang baru
-dimatikan akan menyala lagi, dan halamannya terbaca sebagai menolak diatur.
+## 4. Nomor tender tampil
 
-`isPaid`/`isUnpaid` sengaja dibiarkan mati — itu saringan **pembayaran**, dan
-server memperlakukannya sebagai kelompok OR tersendiri. Menyalakannya ikut akan
-mempersempit daftarnya dua kali.
-
-### Bonus: satu spec rusak diperbaiki
-
-`reimbursement-list.component.spec.ts` masih scaffold `ng generate`:
-`declarations: [KomponenStandalone]` — yang **melempar**. Spec itu sudah merah
-sejak lama tanpa pernah menguji apa pun. Diganti jadi `imports` + tiruan
-seperlunya, dan diisi 4 uji untuk saringan bawaannya. Dibuktikan menggigit:
-
-```
-bawaan dikembalikan semua false        → "tanpa parameter URL" GAGAL
-bawaan dipaksa walau URL sudah menyebut → "mengosongkan semua chip" + "URL
-                                          MENANG atas bawaan" GAGAL
-```
-
-> Ini satu dari tumpukan spec scaffold yang rusak dengan galat yang sama. Yang
-> lain belum saya sentuh — bilang kalau mau disapu sekalian.
+Daftar dan layar tender memakai `documentNumber`, dengan `number` sebagai
+jaring pengaman — kalau SQL-nya belum dijalankan, jatuh ke nomor lama jauh
+lebih baik daripada "—" di seluruh daftar, yang terbaca seperti data hilang.
 
 ---
 
 ## Uji
 
-Build bersih. `transisicek`, `terjemahcek`, `aruskascek`, `snavlencanacek`,
-`kalendersaldocek` — semuanya 0. Spec reimbursement 4 lolos.
+**55 spec lolos** pada halaman proyek (dari 52). Empat uji baru: garis lurus
+(`tension: 0` dan tidak ada `cubicInterpolationMode`), tanggal terbaca,
+jendela otomatis pada beberapa lebar, dan penjepitannya di kedua ujung.
+
+> Satu uji saya sempat merah dan itu menemukan cacat sungguhan:
+> `tanggalBaca('bukan tanggal')` mengembalikan `'bukan tang'` — saya memotong
+> 10 huruf SEBELUM mencocokkan pola. Nilai yang bukan tanggal jadi
+> dikembalikan terpenggal, menambah keanehan kedua di atas yang pertama.
