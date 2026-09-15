@@ -12,10 +12,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData } from 'chart.js';
+import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentPlanService } from 'src/app/services/payment-plan.service';
+
+/*
+ * Controller chart.js WAJIB didaftarkan, dan kegagalannya TIDAK TERLIHAT.
+ *
+ * chart.js versi 4 tidak mendaftarkan apa pun sendiri. Tanpa baris ini,
+ * `type: 'line'` tidak punya controller — kanvasnya tetap ada, tingginya
+ * tetap 300px, dan yang tampil adalah kotak kosong. Tidak ada spanduk galat,
+ * tidak ada pesan di layar; kartunya terlihat seperti grafik yang belum
+ * selesai dibuat.
+ *
+ * Dua komponen grafik lain di aplikasi ini memanggilnya di tingkat modul juga.
+ * Selama kebetulan salah satunya sudah termuat, grafik di halaman lain ikut
+ * jalan — dan itu yang membuat kekeliruan ini menipu: ia hanya muncul pada
+ * halaman yang dibuka TANPA halaman grafik lain pernah disentuh lebih dulu.
+ * Persis yang terjadi di kalender.
+ */
+Chart.register(...registerables);
 
 /** Satu pekan pada garis proyeksi. */
 export interface TitikProyeksi {
