@@ -204,6 +204,99 @@ function awalMinggu(tanggal: any): string | null {
   return `${t.getFullYear()}-${dua(t.getMonth() + 1)}-${dua(t.getDate())}`;
 }
 
+/** Satu bulan pada grafik arus kas. */
+export interface TitikKas {
+  /** `YYYY-MM`. */
+  bulan: string;
+  label: string;
+  masuk: number;
+  keluar: number;
+  /** Saldo kas proyek pada AKHIR bulan ini, kumulatif. */
+  saldo: number;
+}
+
+const NAMA_BULAN = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+];
+
+/**
+ * Pembayaran mentah -> titik per BULAN, dengan saldo kas berjalan.
+ *
+ * KENAPA BULANAN, BUKAN MINGGUAN SEPERTI TAB DI ATAS
+ *
+ * Tab "arus per minggu" membaca gerak belanja; mingguan tepat untuk itu.
+ * Arus kas dibaca sepanjang umur proyek — dua tahun mingguan adalah seratus
+ * titik lebih, dan garis sepadat itu berhenti menunjukkan bentuk apa pun.
+ *
+ * KENAPA BULAN KOSONG TETAP DIGAMBAR
+ *
+ * Kalau bulan tanpa pembayaran dilewati, Januari dan Juni menjadi dua titik
+ * bersebelahan, dan kemiringan garis di antaranya berbohong: lima bulan tanpa
+ * penerimaan justru terbaca sebagai penurunan yang landai. Bulan kosong
+ * diisi nol supaya jarak pada sumbu waktu sepadan dengan waktu sebenarnya.
+ *
+ * KENAPA TANGGALNYA DIPOTONG SEBAGAI TEKS
+ *
+ * `String(tanggal).slice(0, 7)` — bukan `new Date(...)`. Mengurai
+ * `"2026-09-15"` menghasilkan tengah malam UTC, dan di WIB pembayaran tanggal
+ * 1 pukul 00:00 mundur ke bulan sebelumnya. Kekeliruan yang sama sudah pernah
+ * menggeser seluruh kurva kalender; di sini ia akan memindahkan penerimaan ke
+ * bulan yang salah tanpa satu pun galat.
+ */
+export function titikKas(
+  masuk: any[],
+  keluar: any[],
+  saldoAwal = 0,
+): TitikKas[] {
+  const bulanDari = (v: any): string | null => {
+    const s = String(v ?? '').slice(0, 7);
+    return /^\d{4}-\d{2}$/.test(s) ? s : null;
+  };
+
+  const ember = new Map<string, { masuk: number; keluar: number }>();
+  const tambah = (baris: any[], arah: 'masuk' | 'keluar') => {
+    for (const b of baris ?? []) {
+      const kunci = bulanDari(b?.date);
+      if (!kunci) continue;
+      const n = Number(b?.amount) || 0;
+      const e = ember.get(kunci) ?? { masuk: 0, keluar: 0 };
+      e[arah] += Math.abs(n);
+      ember.set(kunci, e);
+    }
+  };
+  tambah(masuk, 'masuk');
+  tambah(keluar, 'keluar');
+
+  const kunci = [...ember.keys()].sort();
+  if (!kunci.length) return [];
+
+  const hasil: TitikKas[] = [];
+  let saldo = saldoAwal;
+
+  let [th, bl] = kunci[0].split('-').map(Number);
+  const [thAkhir, blAkhir] = kunci[kunci.length - 1].split('-').map(Number);
+
+  while (th < thAkhir || (th === thAkhir && bl <= blAkhir)) {
+    const k = `${th}-${String(bl).padStart(2, '0')}`;
+    const e = ember.get(k) ?? { masuk: 0, keluar: 0 };
+    saldo += e.masuk - e.keluar;
+    hasil.push({
+      bulan: k,
+      label: `${NAMA_BULAN[bl - 1]} ${String(th).slice(2)}`,
+      masuk: e.masuk,
+      keluar: e.keluar,
+      saldo,
+    });
+    bl += 1;
+    if (bl > 12) {
+      bl = 1;
+      th += 1;
+    }
+  }
+  return hasil;
+}
+
 function namaPenerima(r: any): string {
   return (
     r?.bankAccountName?.trim() ||
@@ -439,6 +532,7 @@ export class ProjectReportComponent implements OnInit {
       .add(() => this.memuat.set(false));
 
     this.muatProgress();
+    this.muatArusKas();
   }
 
   // ------------------------------------------------------------------
@@ -703,6 +797,243 @@ export class ProjectReportComponent implements OnInit {
   };
 
   lacakProgress = (_: number, p: any) => p.id;
+
+  // ==================================================================
+  // ARUS KAS PROYEK
+  // ==================================================================
+  //
+  // Bukan pengulangan tab "arus per minggu" di atas. Yang itu membaca TANGGAL
+  // DOKUMEN dan menjawab "sudah berkomitmen berapa". Yang ini membaca TANGGAL
+  // PEMBAYARAN dan menjawab "kapan uangnya bergerak".
+  //
+  // Dua proyek dengan biaya dan tagihan yang sama persis dapat sangat berbeda
+  // kasnya: yang satu menagih di muka, yang lain menalangi enam bulan.
+  // Perbedaan itu tidak terlihat sama sekali pada tanggal dokumen.
+
+  readonly arusKasMasuk = signal<any[]>([]);
+  readonly arusKasKeluar = signal<any[]>([]);
+
+  /**
+   * 403 = divisinya tidak memegang `payment_outgoing`.
+   *
+   * Rutenya sengaja dijaga modul itu (level 3), bukan `purchase` (level 1),
+   * supaya data pembayaran tidak bocor lewat pintu yang lebih rendah. Bagi
+   * yang tidak berhak, tabnya DISEMBUNYIKAN — bukan ditampilkan kosong dengan
+   * pesan galat. Pola yang sama dipakai bagian kemajuan bagi konsultan pajak.
+   */
+  readonly arusKasTerkunci = signal(false);
+
+  /**
+   * Tab di DALAM kartu ini, terpisah dari bilah tab laporan di atas.
+   *
+   * Dua tingkat tab pada satu halaman perlu alasan. Alasannya: bilah atas
+   * memilah RINCIAN BIAYA (ikhtisar vs arus per minggu), sedangkan yang ini
+   * memilah dua cara menilai KESEHATAN proyek. Menggabungkannya menjadi satu
+   * bilah berisi empat membuat saringan tahun dan KPI di atasnya tampak
+   * berlaku untuk keempatnya, padahal tidak.
+   */
+  readonly tabKartu = signal<'arus-kas' | 'progres'>('arus-kas');
+
+  pilihTabKartu(t: 'arus-kas' | 'progres'): void {
+    this.tabKartu.set(t);
+  }
+
+  /** Bilah tab hanya berarti kalau keduanya memang dapat dibuka. */
+  readonly duaTabTersedia = computed(
+    () => !this.arusKasTerkunci() && !this.progressTerkunci(),
+  );
+
+  /**
+   * Tab yang BENAR-BENAR ditampilkan.
+   *
+   * Kalau hanya satu yang tersedia, pilihan pengguna diabaikan — tanpa ini,
+   * pengguna yang pernah memilih "arus kas" lalu membuka proyek dengan modul
+   * terkunci akan melihat kartu kosong tanpa penjelasan.
+   */
+  readonly tabAktif = computed<'arus-kas' | 'progres'>(() => {
+    if (this.arusKasTerkunci()) return 'progres';
+    if (this.progressTerkunci()) return 'arus-kas';
+    return this.tabKartu();
+  });
+
+  private muatArusKas(): void {
+    this.arusKasMasuk.set([]);
+    this.arusKasKeluar.set([]);
+
+    const k = this.kode();
+    if (!k) return;
+
+    // Dicari lewat KODE proyek, bukan id — sumbernya (`purchases`,
+    // `reimbursements`, `sales_invoices`) semuanya bertaut lewat
+    // `projectName`. Jadi tidak perlu menunggu `lookup` seperti progress.
+    this.api.get(`projects/${encodeURIComponent(k)}/cashflow`, {}).subscribe({
+      next: (r: any) => {
+        this.arusKasTerkunci.set(false);
+        this.arusKasMasuk.set(Array.isArray(r?.incoming) ? r.incoming : []);
+        this.arusKasKeluar.set(Array.isArray(r?.outgoing) ? r.outgoing : []);
+      },
+      error: (err: any) => {
+        this.arusKasTerkunci.set(err?.status === 403);
+        this.arusKasMasuk.set([]);
+        this.arusKasKeluar.set([]);
+      },
+    });
+  }
+
+  /**
+   * Saldo kas yang DIBAWA dari sebelum tahun yang dipilih.
+   *
+   * Sama alasannya dengan `biayaDibawa` pada arus mingguan: kumulatif yang
+   * direset tiap tahun membuat proyek yang sudah menalangi setahun terlihat
+   * mulai dari nol — persis keadaan yang paling perlu terlihat.
+   */
+  readonly kasDibawa = computed(() => {
+    const t = this.tahun();
+    if (t === SELURUH) return 0;
+
+    const jumlah = (baris: any[]) =>
+      (baris ?? [])
+        .filter((x: any) => sebelumTahun(x?.date, t))
+        .reduce((a, x) => a + Math.abs(Number(x?.amount) || 0), 0);
+
+    return jumlah(this.arusKasMasuk()) - jumlah(this.arusKasKeluar());
+  });
+
+  readonly titikArusKas = computed<TitikKas[]>(() => {
+    const t = this.tahun();
+    const saring = (baris: any[]) =>
+      t === SELURUH
+        ? baris
+        : (baris ?? []).filter((x: any) => dalamTahun(x?.date, t));
+
+    return titikKas(
+      saring(this.arusKasMasuk()),
+      saring(this.arusKasKeluar()),
+      this.kasDibawa(),
+    );
+  });
+
+  readonly adaArusKas = computed(() => this.titikArusKas().length > 0);
+
+  /** Saldo kas pada titik terakhir; `null` bila belum ada pembayaran. */
+  readonly saldoKasAkhir = computed<number | null>(() => {
+    const t = this.titikArusKas();
+    return t.length ? t[t.length - 1].saldo : null;
+  });
+
+  readonly totalKasMasuk = computed(() =>
+    this.titikArusKas().reduce((a, x) => a + x.masuk, 0),
+  );
+  readonly totalKasKeluar = computed(() =>
+    this.titikArusKas().reduce((a, x) => a + x.keluar, 0),
+  );
+
+  /**
+   * Bulan PERTAMA saldo kasnya menembus nol; `null` bila tidak pernah.
+   *
+   * Ini angka yang sebenarnya dicari orang di grafik ini — sejak kapan proyek
+   * ini menalangi uang perusahaan. Disebutkan sebagai teks, bukan hanya
+   * digambar: yang membuka laporan dari layar kecil tidak dapat membaca
+   * perpotongan garis dengan sumbu nol dengan mata.
+   */
+  readonly bulanMulaiMinus = computed<string | null>(() => {
+    const t = this.titikArusKas().find((x) => x.saldo < 0);
+    return t ? t.label : null;
+  });
+
+  readonly dataArusKas = computed<ChartData<'line'>>(() => {
+    const t = this.titikArusKas();
+    return {
+      labels: t.map((x) => x.label),
+      datasets: [
+        /*
+         * `cubicInterpolationMode: 'monotone'`, BUKAN `tension`.
+         *
+         * Ditemukan saat merender grafiknya sungguhan: dengan `tension: 0.25`,
+         * chart.js melengkungkan garis MELEWATI titik datanya. Pada deret yang
+         * turun ke nol lalu naik lagi — bulan tanpa penerimaan, yang di sini
+         * biasa — lengkungannya tercelup di BAWAH nol, dan garis "kas masuk"
+         * menggambar penerimaan negatif yang tidak pernah ada.
+         *
+         * `monotone` tetap melengkung tetapi tidak pernah melampaui datanya.
+         * Sudah diukur: titik kendali kurvanya tidak lagi menembus garis nol.
+         */
+        {
+          label: this.translate.instant('projectCashflow.seriesIn'),
+          data: t.map((x) => x.masuk),
+          borderColor: '#0f9d58',
+          backgroundColor: 'rgba(15, 157, 88, 0.10)',
+          cubicInterpolationMode: 'monotone',
+          pointRadius: 2,
+        },
+        {
+          label: this.translate.instant('projectCashflow.seriesOut'),
+          data: t.map((x) => x.keluar),
+          borderColor: '#d93025',
+          backgroundColor: 'rgba(217, 48, 37, 0.10)',
+          cubicInterpolationMode: 'monotone',
+          pointRadius: 2,
+        },
+        {
+          /*
+           * Saldo digambar TEBAL dan terisi; dua garis lainnya tipis.
+           *
+           * Ketiganya setara secara visual membuat mata berpindah-pindah
+           * tanpa tahu mana yang harus dibaca. Saldo adalah jawabannya; masuk
+           * dan keluar adalah sebabnya.
+           */
+          label: this.translate.instant('projectCashflow.seriesBalance'),
+          data: t.map((x) => x.saldo),
+          borderColor: '#154dec',
+          backgroundColor: 'rgba(21, 77, 236, 0.10)',
+          borderWidth: 2.5,
+          fill: true,
+          cubicInterpolationMode: 'monotone',
+          pointRadius: 2,
+        },
+      ],
+    };
+  });
+
+  readonly opsiArusKas: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          label: (ctx) =>
+            `${ctx.dataset.label}: Rp ${Number(ctx.parsed.y).toLocaleString('id-ID')}`,
+        },
+      },
+    },
+    scales: {
+      y: {
+        /*
+         * TIDAK dikunci mulai nol — kebalikan dari kurva S, dan disengaja.
+         *
+         * Saldo kas proyek memang bisa minus, dan justru itu yang dicari.
+         * Memaksa `min: 0` akan memotong seluruh bagian yang menjawab
+         * pertanyaannya.
+         */
+        ticks: {
+          callback: (v) => {
+            const n = Number(v);
+            const jt = n / 1_000_000;
+            return `${Math.abs(jt) >= 1000 ? (jt / 1000).toFixed(1) + ' M' : jt.toFixed(0) + ' jt'}`;
+          },
+        },
+        grid: {
+          // Garis nol dipertegas: perpotongan dengannya adalah inti grafiknya.
+          color: (ctx: any) =>
+            ctx.tick?.value === 0
+              ? 'rgba(0,0,0,0.35)'
+              : 'rgba(0,0,0,0.06)',
+        },
+      },
+    },
+  };
 
   // ------------------------------------------------------------------
   // Perhitungan terhadap kemajuan, bukan terhadap tagihan

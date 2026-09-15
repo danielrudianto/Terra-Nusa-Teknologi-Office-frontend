@@ -226,6 +226,60 @@
   font-weight: 600;
 }
 
+/*
+ * Bilah tab DI DALAM kartu.
+ *
+ * Bentuknya sengaja DIBEDAKAN dari bilah tab halaman: dua bilah yang tampak
+ * persis sama pada satu layar membuat orang mengira keduanya setingkat, lalu
+ * menganggap saringan tahun di atas berlaku untuk keduanya.
+ *
+ * Bilah halaman: pil penuh berlatar brand. Bilah ini: garis bawah saja —
+ * lebih ringan, dan jelas milik kartunya sendiri.
+ */
+.prp-tab--dalam {
+  display: flex;
+  border: 0;
+  border-bottom: 1px solid var(--line, #eef0f3);
+  border-radius: 0;
+  margin: 0.9rem 0 0.25rem;
+  gap: 0.25rem;
+}
+.prp-tab--dalam button {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.4rem 0.4rem 0 0;
+  /* Ruang untuk garis bawah aktif, disediakan TETAP supaya labelnya tidak
+     bergeser 2px saat tab berpindah. */
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.prp-tab--dalam button:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.prp-tab--dalam button.on {
+  background: transparent;
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+  font-weight: 600;
+}
+
+/*
+ * Spanduk keterangan — sama bentuknya dengan spanduk peringatan, beda warna.
+ *
+ * Batasan cakupan arus kas bukan peringatan: tidak ada yang salah dan tidak
+ * ada yang perlu dibereskan. Memakai warna peringatan untuk keterangan biasa
+ * membuat peringatan yang sungguhan berhenti dibaca.
+ */
+.prp-peringatan--ket {
+  background: var(--info-bg, #eef3ff);
+  color: var(--info-fg, #274690);
+  border-left-color: var(--info-fg, #274690);
+  margin-top: 0.9rem;
+}
+.prp-peringatan--ket strong {
+  font-weight: 600;
+}
+
 /* ---- kartu ---- */
 .prp-kartu {
   background: var(--surface);

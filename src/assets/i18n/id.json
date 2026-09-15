@@ -1621,6 +1621,7 @@
     "menuUbah": "Ubah"
   },
   "projectProgress": {
+    "tab": "Progress vs pengeluaran",
     "unbilledHint": "Nilai dikerjakan − sudah tertagih",
     "dialogSub": "Satu titik pada kurva kemajuan",
     "dialogKet": "Isi tanggal KEADAAN di lapangan, bukan tanggal mencatatnya. Persennya kumulatif (sudah berapa persen selesai), 0–100 — dan boleh turun bila ada pekerjaan ulang.",
@@ -1660,6 +1661,21 @@
     "errPercentage": "Kemajuan harus antara 0 dan 100 persen.",
     "errDateRequired": "Tanggal keadaan wajib diisi.",
     "errNothingChanged": "Tidak ada yang berubah."
+  },
+  "projectCashflow": {
+    "section": "Arus kas proyek",
+    "sectionHint": "Kapan uangnya benar-benar bergerak — bukan kapan dokumennya terbit.",
+    "tab": "Arus kas",
+    "empty": "Belum ada pembayaran yang tercatat untuk proyek ini.",
+    "seriesIn": "Kas masuk",
+    "seriesOut": "Kas keluar",
+    "seriesBalance": "Saldo kas",
+    "totalIn": "Total kas masuk",
+    "totalOut": "Total kas keluar",
+    "balance": "Saldo kas proyek",
+    "negativeSince": "Mulai minus sejak {{bulan}}",
+    "scopeTitle": "Kas keluar dihitung dari pembelian dan reimbursement saja. ",
+    "scopeHint": "Beban operasional dan gaji tidak punya kolom proyek di sistem, jadi tidak dapat dirunut ke sini. Angka kas keluarnya batas bawah, bukan angka utuh."
   },
   "bank": {
     "filterKeadaan": "Penyaring keadaan",

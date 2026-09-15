@@ -1,127 +1,133 @@
-# Kalender: rencana masuk perhitungan saldo
+# Arus kas proyek — FRONTEND
 
-**Tidak ada perubahan skema.** Frontend saja.
+**Pasang paket BACKEND dulu** (`terrabot-arus-kas-backend.zip`) — layar ini
+memanggil rutenya, dan tanpa itu tabnya akan selalu kosong.
 
-> **Berkas i18n ikut** (`id/en/zh.json`) karena ada 6 kunci baru. Kalau Anda
-> punya perubahan i18n lain yang belum di-commit, gabungkan — jangan timpa
-> begitu saja.
+> **Sudah termasuk perbaikan jarak antar kartu** yang Anda minta. Kalau
+> `terrabot-jarak-kartu.zip` sudah dipasang, timpa saja.
 
----
-
-## Dulu: Anda benar, ini belum pernah saya kerjakan
-
-Bukan gagal deploy. Kita membahasnya, Anda mengusulkan bentuk yang lebih baik,
-lalu kita belok ke panduan dan saya tidak pernah kembali. `viewMode` masih
-`'expense' | 'income' | 'balance'`, dan `dataForDay()` untuk saldo hanya
-memakai pembayaran + pemasukan yang SUDAH terjadi.
-
-Peringatan rencana terlewat memang sudah ada — ingatan Anda benar.
-
-## Yang lebih buruk, dan baru ketahuan sambil mengerjakannya
-
-**Berkas unduhannya sudah menghitung rencana sejak dulu.** Jadi kalender di
-layar dan Excel-nya melaporkan **saldo berbeda untuk bulan yang sama**,
-keduanya menyebut diri "saldo", dan tidak ada yang menyebutkan bedanya.
-
-Itu harus dibereskan bersamaan — memperbaiki layarnya saja hanya memindahkan
-ketidakcocokannya ke arah lain.
+> **Berkas i18n ikut** (`id/en/zh.json`) karena ada 14 kunci baru. Kalau ada
+> perubahan i18n lain yang belum di-commit, gabungkan — jangan timpa mentah.
 
 ---
 
-## Mode sekarang: Pengeluaran · Saldo (rencana) · Saldo (aktual)
+## Bentuknya: kartu bertab, bukan tab keempat di atas
 
-Persis usul Anda. `Pemasukan` dilepas — pemasukan per hari sudah terbaca dari
-selisih saldo, dan mode yang jarang dibuka membuat dua mode yang penting jadi
-lebih jauh dijangkau. Bilang kalau ternyata dipakai; mengembalikannya mudah.
-
-| mode | dasar | untuk apa |
-|---|---|---|
-| **Pengeluaran** | seperti dulu | "hari ini bayar apa saja" |
-| **Saldo (rencana)** | realisasi **+ rencana kas yang masih menunggu** | **memutuskan**: bulan ini kasnya sampai atau tidak |
-| **Saldo (aktual)** | realisasi saja | mencocokkan ke rekening |
-
-Merahnya justru intinya: hari pertama saldo menembus nol adalah satu-satunya
-angka yang benar-benar dicari orang di layar ini.
-
----
-
-## Tiga keputusan yang saya ambil — silakan tolak yang mana pun
-
-**1. Rencana TERLEWAT ikut dihitung.**
-Sesuai kata Anda: *"gapapa lanjut aja bang perhitungannya, minus minus deh ga
-masalah."* Rencana yang terlewat bukan rencana yang batal — ia kewajiban yang
-belum dikerjakan. Spanduk peringatannya tetap ada, jadi ia dihitung **tanpa**
-menjadi tidak terlihat.
-
-**Ini juga mengubah ringkasan bulanan.** Sebelumnya yang terlewat disaring
-keluar dari total rencana. Kalau dibiarkan, ringkasan bulan dan saldo di kisi
-kalender akan melaporkan dua angka berbeda dari data yang sama.
-
-**2. Saldo kini AKHIR hari, bukan awal hari.**
-Yang lama mengecualikan transaksi hari itu sendiri. Untuk mode yang ada justru
-supaya orang tahu *"tanggal 30 kasnya cukup atau tidak"*, angka yang belum
-memperhitungkan pembayaran tanggal 30 tidak dapat menjawabnya — dipnya baru
-terlihat di sel berikutnya, dan pada hari terakhir bulan tidak terlihat sama
-sekali.
-
-> Angka "Saldo" karena itu **akan bergeser** dari yang biasa Anda lihat.
-> Disengaja. Kalau Anda lebih suka yang lama, bilang — satu baris.
-
-**3. Perbandingan tanggalnya diperbaiki (ini bug, bukan pilihan).**
-Yang lama:
-
-```ts
-new Date(x.date).getTime() < new Date(tahun, bulan, hari).getTime()
-```
-
-Ruas kiri mengurai `"2026-09-15"` sebagai tengah malam **UTC**; ruas kanan
-membangun tengah malam **waktu setempat**. Di Jakarta (UTC+7) transaksi hari
-itu jatuh pukul 07:00 setempat sehingga **tidak ikut**; di zona barat UTC ia
-**ikut**. Saldo yang sama memberi angka berbeda tergantung jam komputer yang
-membukanya, tanpa satu pun galat. Sekarang dibandingkan sebagai teks
-`'YYYY-MM-DD'`, yang tidak punya zona waktu untuk salah.
-
----
-
-## Unduhan: ikut mode yang sedang dipilih (pilihan Anda)
-
-Konsekuensinya yang harus diakui: **dua orang dapat mengunduh "kalender
-September" dan mendapat angka berbeda.** Itu dapat diterima selama berkasnya
-mengatakannya — yang tidak dapat diterima adalah dua angka berbeda yang
-keduanya menyebut diri "saldo". Jadi modenya disebut di tiga tempat:
-
-- **nama berkas** — `Kalender_Kas_September_2026_rencana.xlsx` vs `..._aktual.xlsx`
-  (dua berkas berbeda tidak lagi saling menimpa di folder yang sama)
-- **kop tiap lembar Excel**, di baris bawah judul
-- **kop tiap halaman PDF** — jadi ikut terbawa pada lembar yang dicetak
-  terpisah dari halaman pertamanya
-
-Lembar "Rencana Kas" tetap ada di kedua mode: ia mendaftar rencana sebagai
-rencana, tidak mengubah saldo mana pun.
-
----
-
-## Penjaga
-
-`scripts/pemeriksa/kalendersaldocek.py`. Dibuktikan menggigit:
+Halaman laporan proyek **sudah** punya bilah tab (Ikhtisar / Arus per minggu).
+Yang baru ini **tidak** digabung ke sana. Kartu "Kemajuan pekerjaan" yang jadi
+kartu bertab:
 
 ```
-gate `ikutRencana` dibekukan → "unduhan tidak lagi menurunkan `ikutRencana`
-                                dari `viewMode` — berkas dan layar akan
-                                melaporkan saldo berbeda"
-kembali memakai `Date`       → "perbandingan tanggalnya jadi bergantung zona
-                                waktu" (2 temuan)
-`modeLabel` dicabut dari
-  SATU lembar saja           → "`lembarHarian` tidak menerima `modeLabel`"
-mode dilepas dari nama berkas→ "dua unduhan dengan angka berbeda akan bernama
-                                sama persis"
+┌─ Arus kas proyek ───────────────────────────────┐
+│  [ Arus kas ] [ Progress vs pengeluaran ]       │
+│  KPI · keterangan cakupan · grafik garis        │
+└─────────────────────────────────────────────────┘
 ```
 
-Build frontend bersih; `terjemahcek` 0 kunci belum diterjemahkan.
+**Kenapa bukan satu bilah berisi empat:** bilah atas memilah *rincian biaya*
+dan tunduk pada saringan tahun serta KPI di atasnya. Bilah ini memilah *dua
+cara menilai kesehatan proyek*. Digabung, saringan tahun di atasnya tampak
+berlaku untuk keempatnya — padahal tidak.
+
+Bentuk bilahnya **sengaja dibedakan**: bilah halaman berupa pil penuh berlatar
+brand, bilah kartu hanya garis bawah. Dua bilah yang tampak persis sama pada
+satu layar membuat orang mengira keduanya setingkat.
+
+Bilah tab hanya digambar bila **keduanya** dapat dibuka. Bagi divisi yang cuma
+punya salah satunya, bilah dengan satu tombol hanya menyiratkan ada sesuatu
+yang disembunyikan.
 
 ---
 
-## Yang belum
+## Grafiknya: tiga garis
 
-Panduan kalender belum menyebut mode barunya — itu bagian dari antrean panduan
-yang sedang saya kerjakan (Tender → slip gaji → CoP → proyek & kalender).
+| garis | apa |
+|---|---|
+| Kas masuk | penerimaan bulan itu |
+| Kas keluar | pembayaran bulan itu |
+| **Saldo kas** | posisi kas proyek, kumulatif — **tebal & terisi** |
+
+Ketiganya setara secara visual membuat mata berpindah-pindah tanpa tahu mana
+yang harus dibaca. **Saldo adalah jawabannya; masuk dan keluar adalah
+sebabnya.**
+
+**Sumbu Y tidak dikunci mulai nol** — kebalikan dari kurva S, dan disengaja.
+Saldo kas proyek memang bisa minus, dan justru itu yang dicari. Garis nolnya
+dipertegas; perpotongan dengannya adalah inti grafiknya. Bulan pertama saldo
+menembus nol juga **disebut sebagai teks** ("Mulai minus sejak Feb 26") —
+yang membuka laporan dari layar kecil tidak dapat membaca perpotongan garis
+dengan mata.
+
+### Bulanan, bukan mingguan
+
+Tab "arus per minggu" membaca gerak belanja; mingguan tepat di sana. Arus kas
+dibaca sepanjang umur proyek — dua tahun mingguan adalah seratus titik lebih,
+dan garis sepadat itu berhenti menunjukkan bentuk apa pun.
+
+**Bulan kosong tetap digambar.** Kalau dilewati, Januari dan Juni jadi dua
+titik bersebelahan dan kemiringan garis di antaranya berbohong: lima bulan
+tanpa penerimaan terbaca sebagai penurunan yang landai.
+
+---
+
+## Satu hal yang hanya ketahuan dengan MERENDER grafiknya
+
+Saya render grafiknya di Chromium sungguhan, dan `tension: 0.25` — nilai yang
+dipakai kurva S — membuat chart.js melengkungkan garis **melewati titik
+datanya**. Pada deret yang turun ke nol lalu naik lagi (bulan tanpa
+penerimaan, yang di sini biasa), lengkungannya **tercelup di bawah nol**: garis
+"kas masuk" menggambar penerimaan negatif yang tidak pernah ada.
+
+Diganti `cubicInterpolationMode: 'monotone'` — tetap melengkung, tidak pernah
+melampaui datanya. Diukur ulang: titik kendali kurvanya tidak lagi menembus
+garis nol.
+
+> **Kurva S punya cacat yang sama** (`tension: 0.25`, dan persen juga tidak
+> pernah negatif). **Tidak saya ubah** — itu grafik yang sudah Anda pakai, dan
+> saya tidak mau mengubah bentuknya tanpa Anda tahu. Satu baris kalau mau.
+
+---
+
+## Kalau modulnya tidak dipegang divisinya
+
+Rutenya dijaga `payment_outgoing` (level 3). Yang tidak berhak mendapat 403,
+dan **tabnya disembunyikan** — bukan kartu kosong, bukan spanduk merah.
+Laporan biayanya tetap utuh.
+
+Pilihan tab bertahan antar proyek, jadi ada penjagaan tambahan: tab yang
+terkunci tidak pernah menjadi tab aktif. Tanpa itu, yang pernah memilih "arus
+kas" lalu membuka proyek dengan modulnya terkunci akan melihat kartu kosong
+tanpa satu pun penjelasan.
+
+---
+
+## Uji & penjaga
+
+**42 spec lolos** pada halaman proyek (dari 28); `arus-kas.spec.ts` menyumbang
+14. Build bersih, `terjemahcek` 0.
+
+Dibuktikan menggigit:
+
+```
+bulan kosong dilewati        → "Expected $.length = 2 to equal 3"
+tanggal diurai lewat Date    → "Expected 673 to be 1"   (Date(null) = 1970)
+nominal negatif dibiarkan    → "Expected -40 to be 40"
+```
+
+### Satu spec yang saya sebut jujur di dalamnya
+
+Uji "tanggal batas bulan" **tidak dapat gagal** di sini: Karma berjalan pada
+zona UTC, jadi `new Date('2026-09-01')` memberi jawaban yang sama dengan
+pemotongan teks. Yang benar-benar menjaga zona waktu adalah **bentuk kodenya**,
+dan itulah yang dijaga `scripts/pemeriksa/aruskascek.py`. Saya tulis
+peringatannya di dalam spec-nya supaya tidak ada yang mengira zona waktu sudah
+terjaga oleh uji.
+
+`aruskascek.py` juga menjaga penjaga izinnya — menurunkannya ke `purchase`
+membuat **seluruh uji tetap hijau**. Dibuktikan menggigit:
+
+```
+penjaga diturunkan ke purchase → "rute arus kas TIDAK dijaga payment_outgoing"
+titikKas kembali memakai Date  → "pengemberan bulannya bergantung zona waktu"
+arusKasTerkunci dari galat apa pun → "galat lain ikut menyembunyikan tabnya"
+```

@@ -561,22 +561,42 @@
       pajak), bukan ditampilkan kosong dengan pesan galat: laporan biayanya
       tetap utuh dan tidak ada yang perlu mereka lakukan soal ini.
     -->
-    <div class="prp-kartu prp-prog" *ngIf="!progressTerkunci()">
+    <div
+      class="prp-kartu prp-prog"
+      *ngIf="!progressTerkunci() || !arusKasTerkunci()"
+    >
       <div class="prp-prog__kepala">
         <div>
           <div class="prp-label">
-            {{ "projectProgress.section" | translate }}
+            {{
+              (tabAktif() === "arus-kas"
+                ? "projectCashflow.section"
+                : "projectProgress.section"
+              ) | translate
+            }}
           </div>
           <p class="prp-prog__ket">
-            {{ "projectProgress.sectionHint" | translate }}
+            {{
+              (tabAktif() === "arus-kas"
+                ? "projectCashflow.sectionHint"
+                : "projectProgress.sectionHint"
+              ) | translate
+            }}
           </p>
         </div>
+        <!--
+          Tombol catat kemajuan hanya muncul di tabnya sendiri.
+
+          Dibiarkan tampil di tab arus kas, ia terbaca sebagai "tambah arus
+          kas" — dan yang menekannya mendapat dialog yang sama sekali lain.
+        -->
         <button
           mat-flat-button
           color="primary"
           type="button"
           *appCan="'project_progress:create'"
           (click)="catatProgress()"
+          [hidden]="tabAktif() !== 'progres'"
         >
           <mat-icon>add</mat-icon>&nbsp;{{
             "projectProgress.addTitle" | translate
@@ -584,6 +604,113 @@
         </button>
       </div>
 
+      <!--
+        Bilah tab DI DALAM kartu — terpisah dari bilah tab laporan di atas.
+
+        Dua tingkat tab pada satu halaman perlu alasan. Alasannya: bilah atas
+        memilah RINCIAN BIAYA (ikhtisar vs arus per minggu) dan tunduk pada
+        saringan tahun serta KPI di atasnya. Bilah ini memilah dua cara menilai
+        KESEHATAN proyek. Digabung jadi satu bilah berisi empat, saringan tahun
+        di atasnya tampak berlaku untuk keempatnya — padahal tidak.
+
+        Hanya digambar bila KEDUANYA memang dapat dibuka: bagi divisi yang
+        hanya punya salah satunya, bilah dengan satu tombol cuma menyiratkan
+        ada sesuatu yang disembunyikan.
+      -->
+      <div class="prp-tab prp-tab--dalam" *ngIf="duaTabTersedia()">
+        <button
+          type="button"
+          [class.on]="tabAktif() === 'arus-kas'"
+          (click)="pilihTabKartu('arus-kas')"
+        >
+          {{ "projectCashflow.tab" | translate }}
+        </button>
+        <button
+          type="button"
+          [class.on]="tabAktif() === 'progres'"
+          (click)="pilihTabKartu('progres')"
+        >
+          {{ "projectProgress.tab" | translate }}
+        </button>
+      </div>
+
+      <!-- ===================== TAB: ARUS KAS ===================== -->
+      <ng-container *ngIf="tabAktif() === 'arus-kas'">
+        <p class="prp-kosong" *ngIf="!adaArusKas()">
+          {{ "projectCashflow.empty" | translate }}
+        </p>
+
+        <ng-container *ngIf="adaArusKas()">
+          <div class="prp-prog__kpi">
+            <div class="prp-sel">
+              <div class="prp-label">
+                {{ "projectCashflow.totalIn" | translate }}
+              </div>
+              <div class="prp-nilai">
+                {{ totalKasMasuk() | number: "1.0-0" }}
+              </div>
+            </div>
+            <div class="prp-sel">
+              <div class="prp-label">
+                {{ "projectCashflow.totalOut" | translate }}
+              </div>
+              <div class="prp-nilai">
+                {{ totalKasKeluar() | number: "1.0-0" }}
+              </div>
+            </div>
+            <!--
+              Saldo kas: angka yang sebenarnya dicari. Merah bila minus —
+              di situ proyeknya sedang menalangi uang perusahaan.
+            -->
+            <div
+              class="prp-sel prp-sel--utama"
+              [class.prp-sel--rugi]="(saldoKasAkhir() ?? 0) < 0"
+            >
+              <div class="prp-label">
+                {{ "projectCashflow.balance" | translate }}
+              </div>
+              <div class="prp-nilai">
+                {{ saldoKasAkhir() | number: "1.0-0" }}
+              </div>
+              <div class="prp-ket" *ngIf="bulanMulaiMinus()">
+                {{
+                  "projectCashflow.negativeSince"
+                    | translate: { bulan: bulanMulaiMinus() }
+                }}
+              </div>
+            </div>
+          </div>
+
+          <!--
+            Batasannya disebutkan DI SEBELAH angkanya, bukan di panduan.
+
+            `expenses` dan `salary_slips` tidak punya kolom proyek, jadi kas
+            keluar di sini adalah batas bawah. Pembaca yang mengira ini kas
+            penuh akan menyimpulkan proyeknya lebih sehat daripada keadaannya —
+            dan keterangan yang hanya ada di panduan tidak pernah sampai ke
+            orang yang sedang menatap angkanya.
+          -->
+          <div class="prp-peringatan prp-peringatan--ket">
+            <mat-icon>info_outline</mat-icon>
+            <div>
+              <strong>{{ "projectCashflow.scopeTitle" | translate }}</strong>
+              <span>{{ "projectCashflow.scopeHint" | translate }}</span>
+            </div>
+          </div>
+
+          <div class="prp-prog__grafik">
+            <canvas
+              baseChart
+              type="line"
+              [data]="dataArusKas()"
+              [options]="opsiArusKas"
+            ></canvas>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- ===================== TAB: KEMAJUAN ===================== -->
+      <ng-container *ngIf="tabAktif() === 'progres'">
       <p class="prp-kosong" *ngIf="!progress().length">
         {{ "projectProgress.empty" | translate }}
       </p>
@@ -786,6 +913,7 @@
             </span>
           </div>
         </div>
+      </ng-container>
       </ng-container>
     </div>
   </ng-container>

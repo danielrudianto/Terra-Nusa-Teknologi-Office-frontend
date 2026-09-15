@@ -1621,6 +1621,7 @@
     "menuUbah": "Edit"
   },
   "projectProgress": {
+    "tab": "Progress vs spend",
     "unbilledHint": "Work earned − already billed",
     "dialogSub": "One point on the progress curve",
     "dialogKet": "Enter the date the site was in this state, not the date you record it. The percentage is cumulative (how much is done overall), 0–100 — and may go down when work is redone.",
@@ -1660,6 +1661,21 @@
     "errPercentage": "Progress must be between 0 and 100 percent.",
     "errDateRequired": "The as-of date is required.",
     "errNothingChanged": "Nothing changed."
+  },
+  "projectCashflow": {
+    "section": "Project cash flow",
+    "sectionHint": "When the money actually moved — not when the paperwork was issued.",
+    "tab": "Cash flow",
+    "empty": "No payments recorded for this project yet.",
+    "seriesIn": "Cash in",
+    "seriesOut": "Cash out",
+    "seriesBalance": "Cash balance",
+    "totalIn": "Total cash in",
+    "totalOut": "Total cash out",
+    "balance": "Project cash balance",
+    "negativeSince": "Negative since {{bulan}}",
+    "scopeTitle": "Cash out covers purchases and reimbursements only. ",
+    "scopeHint": "Operating expenses and payroll have no project column in the system, so they cannot be traced here. This cash-out figure is a lower bound, not the full picture."
   },
   "bank": {
     "filterKeadaan": "State filter",

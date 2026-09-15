@@ -1621,6 +1621,7 @@
     "menuUbah": "修改"
   },
   "projectProgress": {
+    "tab": "进度 vs 支出",
     "unbilledHint": "已完成产值 − 已开票",
     "dialogSub": "进度曲线上的一个点",
     "dialogKet": "请填写现场处于该状态的日期，而非录入日期。百分比为累计值（整体完成多少），0–100——返工时可以下降。",
@@ -1660,6 +1661,21 @@
     "errPercentage": "进度必须在 0 到 100 之间。",
     "errDateRequired": "状态日期为必填项。",
     "errNothingChanged": "没有任何更改。"
+  },
+  "projectCashflow": {
+    "section": "项目现金流",
+    "sectionHint": "资金实际发生的时点，而非单据开具的时点。",
+    "tab": "现金流",
+    "empty": "该项目尚无付款记录。",
+    "seriesIn": "现金流入",
+    "seriesOut": "现金流出",
+    "seriesBalance": "现金余额",
+    "totalIn": "流入合计",
+    "totalOut": "流出合计",
+    "balance": "项目现金余额",
+    "negativeSince": "自 {{bulan}} 起为负",
+    "scopeTitle": "现金流出仅涵盖采购与报销。",
+    "scopeHint": "系统中的运营费用与薪资没有项目字段，无法归集到此处。该流出金额为下限，并非全貌。"
   },
   "bank": {
     "filterKeadaan": "状态筛选",
