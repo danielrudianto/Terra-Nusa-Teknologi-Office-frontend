@@ -5122,6 +5122,9 @@
     "dari": "From",
     "ke": "To"
   },
+  "sidenav": {
+    "menungguAnda": "Waiting for you"
+  },
   "cop": {
     "judul": "Certificate of Payment",
     "subjudul": "Work progress certificate against a work order",

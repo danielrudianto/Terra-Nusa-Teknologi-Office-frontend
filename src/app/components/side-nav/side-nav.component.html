@@ -75,6 +75,7 @@
             [label]="i.name"
             [routerLink]="i.route"
             [icon]="i.icon"
+            [badge]="lencana.untukRute(i.route)"
             [pinned]="true"
             [hasChildRoutes]="punyaRuteAnak(i.route)"
             (pinToggle)="togglePin(i)"
@@ -119,6 +120,7 @@
                 [label]="i.name"
                 [routerLink]="i.route"
                 [icon]="i.icon"
+            [badge]="lencana.untukRute(i.route)"
                 [pinned]="isPinned(i.route)"
                 [hasChildRoutes]="punyaRuteAnak(i.route)"
                 (pinToggle)="togglePin(i)"
@@ -137,6 +139,7 @@
         [routerLink]="i.route"
         [action]="i.click"
         [icon]="i.icon"
+            [badge]="lencana.untukRute(i.route)"
         [showPin]="false"
       />
 

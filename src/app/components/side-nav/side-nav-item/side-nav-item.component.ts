@@ -26,6 +26,21 @@ export class SideNavItemComponent {
    * dua butir menu tampak aktif bersamaan dan pengguna tidak tahu ia sedang
    * berada di mana.
    */
+  /**
+   * Jumlah yang MENUNGGU pengguna ini pada menu tersebut.
+   *
+   * `null` berarti tidak digambar — baik karena memang kosong maupun karena
+   * tidak diketahui. Keduanya sengaja terlihat sama: lencana "0" hanya
+   * menambah keramaian pada menu yang justru sedang bersih.
+   */
+  @Input('badge') badge: number | null = null;
+
+  /** Lebih dari 99 ditulis "99+"; tiga angka merusak lebar menunya. */
+  get badgeText(): string {
+    const n = Number(this.badge) || 0;
+    return n > 99 ? '99+' : String(n);
+  }
+
   @Input('hasChildRoutes') hasChildRoutes: boolean = false;
   @Output('pinToggle') pinToggle = new EventEmitter<void>();
 

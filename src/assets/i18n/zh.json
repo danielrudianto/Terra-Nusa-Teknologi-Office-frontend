@@ -5122,6 +5122,9 @@
     "dari": "从",
     "ke": "至"
   },
+  "sidenav": {
+    "menungguAnda": "等待您处理"
+  },
   "cop": {
     "judul": "付款证书",
     "subjudul": "基于工作指令的工程进度证明",

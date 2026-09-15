@@ -3,6 +3,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
+import { LencanaService } from '../../services/lencana.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LogoComponent } from '../logo/logo.component';
 import { VersiService } from 'src/app/services/versi.service';
@@ -24,6 +25,16 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
 })
 export class SideNavComponent implements OnInit {
+  /*
+   * Dipakai LANGSUNG dari template lewat `lencana.untukRute(i.route)`.
+   *
+   * Pemetaan rute -> hitungan tinggal di layanannya, satu tempat. Menyalinnya
+   * ke komponen ini berarti dua daftar yang harus tetap sepakat, dan yang
+   * tertinggal saat rutenya berubah tidak menimbulkan galat — lencananya
+   * hanya diam-diam berhenti muncul di satu menu.
+   */
+  readonly lencana = inject(LencanaService);
+
   readonly versi = inject(VersiService);
 
   @Input('items') items: any[] = [];

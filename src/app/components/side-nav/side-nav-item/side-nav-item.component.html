@@ -16,6 +16,22 @@
       [ngStyle]="{ '--snav-ico': 'url(' + iconSource + ')' }"
     ></span>
     <span>{{ label | translate }}</span>
+
+    <!--
+      Lencana diletakkan DI DALAM tombolnya, sesudah labelnya.
+
+      Di luar tombol ia tidak ikut berpindah saat menunya menyempit, dan pada
+      menu terlipat ia menggantung di ruang kosong. Di dalam, ia mengikuti
+      labelnya ke mana pun.
+    -->
+    <span
+      *ngIf="badge !== null && badge > 0"
+      class="snav-badge"
+      [attr.aria-label]="
+        ('sidenav.menungguAnda' | translate) + ': ' + badgeText
+      "
+      >{{ badgeText }}</span
+    >
   </button>
 
   <button

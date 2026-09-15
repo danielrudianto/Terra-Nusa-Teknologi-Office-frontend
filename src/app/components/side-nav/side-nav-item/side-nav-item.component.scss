@@ -151,3 +151,28 @@
     color: var(--brand-strong, #9db8ff);
   }
 }
+
+/*
+ * Lencana "menunggu Anda".
+ *
+ * `margin-left: auto` mendorongnya ke tepi kanan tombol tanpa tata letak
+ * tambahan, dan `flex-shrink: 0` menahannya agar nama menu yang panjang
+ * memotong dirinya sendiri, bukan memotong angkanya — angka setengah
+ * terpotong lebih buruk daripada nama yang terpotong, sebab nama masih
+ * dapat ditebak.
+ */
+.snav-badge {
+  margin-left: auto;
+  flex: 0 0 auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
