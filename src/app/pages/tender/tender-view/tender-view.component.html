@@ -118,6 +118,24 @@
       </div>
     }
 
+    <!--
+      Spanduk draf — ikon + blok teks, bukan hint kecil.
+
+      Menjelaskan MENGAPA tombol catat penawaran tidak ada, di tempat yang
+      sama dengan tombol yang hilang itu. Tanpa ini, yang membuka tender
+      melihat bagian perbandingan tanpa satu pun cara mengisinya, dan tidak
+      ada apa pun di layar yang menyebut sebabnya.
+    -->
+    @if (masihDraf) {
+      <div class="tv-draf">
+        <mat-icon>lock_clock</mat-icon>
+        <div>
+          <strong>{{ "tender.drafJudul" | translate }}</strong>
+          <span>{{ "tender.drafKet" | translate }}</span>
+        </div>
+      </div>
+    }
+
     <!-- ===== perbandingan penawaran ===== -->
     <div class="tv-card">
       <div class="tv-card__head">
@@ -127,7 +145,14 @@
             {{ "tender.perbandinganKet" | translate }}
           </p>
         </div>
-        @if (dapatDisunting) {
+        <!--
+          Tombolnya memakai `dapatMenerimaPenawaran`, BUKAN `dapatDisunting`.
+
+          Selama tendernya draf, servernya menolak dengan 409 — tombol yang
+          tetap ada hanya menawarkan sesuatu yang pasti gagal, dan yang
+          menekannya mendapat pesan galat alih-alih penjelasan.
+        -->
+        @if (dapatMenerimaPenawaran) {
           <button
             mat-flat-button
             color="primary"

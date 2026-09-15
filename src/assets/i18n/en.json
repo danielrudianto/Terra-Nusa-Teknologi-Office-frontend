@@ -4758,6 +4758,9 @@
     "terkirimKet": "Thank you for your time. We'll get back to you using the contact details you provided."
   },
   "tender": {
+    "statusAktif": "Active",
+    "drafJudul": "This tender is still a draft. ",
+    "drafKet": "Quotes cannot be recorded yet. The request lines can still change, and a price against an unfinished list answers a question that no longer applies. Approve and publish it first — requires level 3 access.",
     "judul": "Tenders",
     "subjudul": "Requests for quotation to suppliers, before a purchase order is issued.",
     "buatBaru": "New tender",

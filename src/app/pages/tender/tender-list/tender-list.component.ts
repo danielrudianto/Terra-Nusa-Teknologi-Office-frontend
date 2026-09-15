@@ -85,7 +85,18 @@ export class TenderListComponent implements OnInit {
    * tetap dapat ditinjau — sehingga daftarnya terus memanjang. Yang dibuka
    * sehari-hari adalah yang masih menunggu balasan.
    */
-  saring: '' | 'draft' | 'berjalan' | 'selesai' | 'batal' = 'berjalan';
+  /**
+   * Saringan status. Bawaannya AKTIF — draf DAN berjalan.
+   *
+   * Dulu `'berjalan'` saja, dan itu menyembunyikan justru yang paling mudah
+   * terlupakan. Sejak draf menahan penawaran, draf yang tidak disetujui
+   * berarti pemasok tidak pernah diminta harga — dan tidak ada satu pun galat
+   * yang memberi tahu, karena secara sistem tidak ada yang gagal.
+   *
+   * Nilainya dikirim apa adanya ke server, yang memecahnya pada koma. Tautan
+   * lama berisi `?status=berjalan` tetap berarti sama.
+   */
+  saring: string = 'draft,berjalan';
 
   readonly kolom = [
     'number',

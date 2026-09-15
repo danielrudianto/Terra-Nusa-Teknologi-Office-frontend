@@ -32,6 +32,7 @@ import { ApiService } from './api.service';
 
 export interface HitunganLencana {
   purchase_order: number | null;
+  tender: number | null;
   reimbursement: number | null;
   certificate_of_payment: number | null;
   payment_plan: number | null;
@@ -45,6 +46,7 @@ export interface HitunganLencana {
  * lencananya hanya diam-diam berhenti muncul di satu menu.
  */
 export const RUTE_LENCANA: Readonly<Record<string, keyof HitunganLencana>> = {
+  '/Tender': 'tender',
   '/Purchase-order': 'purchase_order',
   '/Reimbursement': 'reimbursement',
   '/Certificate-of-payment': 'certificate_of_payment',

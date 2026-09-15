@@ -112,6 +112,28 @@ export class TenderViewComponent implements OnInit {
     return ['draft', 'berjalan'].includes(this.data?.status);
   }
 
+  /**
+   * Penawaran hanya boleh dicatat sesudah tendernya disetujui & disebarkan.
+   *
+   * DIPISAHKAN dari `dapatDisunting`, walau dulu keduanya satu.
+   *
+   * "Boleh disunting" dan "boleh menerima penawaran" adalah dua pertanyaan
+   * berbeda yang kebetulan sama jawabannya. Disatukan, perubahan pada yang
+   * satu diam-diam mengubah yang lain — dan persis itu yang membuat `draft`
+   * dulu tidak membedakan apa pun: tombol "sebarkan" ada, tetapi tidak ada
+   * satu pun aturan yang berubah karenanya.
+   *
+   * Servernya menolak dengan 409; ini cuma supaya tombolnya tidak menawarkan
+   * sesuatu yang akan ditolak. Menyembunyikan tombol bukan pengamanan.
+   */
+  get dapatMenerimaPenawaran(): boolean {
+    return this.data?.status === 'berjalan';
+  }
+
+  get masihDraf(): boolean {
+    return this.data?.status === 'draft';
+  }
+
   get kurangPenawaran(): number {
     return Math.max(this.MINIMAL - this.quotes.length, 0);
   }

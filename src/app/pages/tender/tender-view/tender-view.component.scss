@@ -641,3 +641,37 @@ tfoot .tv-td-item {
 .tv-menang__nilai {
   font-variant-numeric: tabular-nums;
 }
+
+/*
+ * Spanduk "masih draf".
+ *
+ * Bentuknya mengikuti spanduk keterangan lain di aplikasi ini — ikon di kiri,
+ * blok teks di kanan, garis tebal di tepi — bukan hint kecil di bawah kolom.
+ * Kalimatnya menjelaskan sebab dan tindakan lanjutannya, dan teks sekecil
+ * hint tidak terbaca untuk kalimat sepanjang itu.
+ *
+ * Warna KETERANGAN, bukan peringatan: tidak ada yang salah dan tidak ada yang
+ * rusak — tendernya memang belum sampai tahap itu. Memakai warna peringatan
+ * untuk keadaan normal membuat peringatan yang sungguhan berhenti dibaca.
+ */
+.tv-draf {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  margin: 1rem 0 0;
+  background: var(--info-bg, #eef3ff);
+  color: var(--info-fg, #274690);
+  border-left: 3px solid var(--info-fg, #274690);
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.tv-draf > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.tv-draf strong {
+  font-weight: 600;
+}

@@ -15,6 +15,20 @@
       [value]="saring"
       (change)="pilihSaring($event.value)"
     >
+      <!--
+        "Aktif" = draf + berjalan, dan ini yang terbuka saat halaman dibuka.
+
+        Keduanya sama-sama menuntut tindakan: yang draf menunggu disetujui,
+        yang berjalan menunggu penawaran. Dengan satu keadaan saja, salah
+        satunya selalu tidak terlihat pada halaman yang justru dibuka untuk
+        mengerjakannya — dan draf yang terlupakan berarti pemasok tidak pernah
+        diminta harga, tanpa satu pun galat yang memberi tahu.
+      -->
+      <mat-chip-option
+        class="tl-fchip tl-fchip--aktif"
+        value="draft,berjalan"
+        >{{ "tender.statusAktif" | translate }}</mat-chip-option
+      >
       <mat-chip-option class="tl-fchip tl-fchip--semua" value="">{{
         "tender.semua" | translate
       }}</mat-chip-option>

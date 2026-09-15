@@ -4758,6 +4758,9 @@
     "terkirimKet": "Terima kasih sudah meluangkan waktu. Hasilnya akan kami kabari lewat kontak yang Anda isikan."
   },
   "tender": {
+    "statusAktif": "Aktif",
+    "drafJudul": "Tender ini masih draf. ",
+    "drafKet": "Penawaran belum dapat dicatat. Daftar permintaannya masih dapat berubah, dan harga atas daftar yang belum selesai menjawab pertanyaan yang sudah tidak berlaku. Setujui & sebarkan dulu — perlu akses level 3.",
     "judul": "Tender",
     "subjudul": "Permintaan penawaran ke pemasok, sebelum purchase order dibuat.",
     "buatBaru": "Tender baru",
