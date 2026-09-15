@@ -2820,6 +2820,8 @@
     "netSalary": "实发工资",
     "isLastDay": "是否最后一天？",
     "lastDate": "最后日期",
+    "konfirmNonaktifJudul": "停用此员工？",
+    "konfirmNonaktif": "{{nama}} 将被标记为于 {{tanggal}} 离职。此后不再出现在在职员工列表和负责人选择器中。其工资单仍会保留。",
     "lastDateHint": "如果这是最后一天，必须填写最后日期。",
     "amount": "金额",
     "description": "说明",

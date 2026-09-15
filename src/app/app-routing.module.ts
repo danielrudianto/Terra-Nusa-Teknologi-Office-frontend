@@ -284,6 +284,10 @@ export const routes: Routes = [
         data: {
           title: 'Certificate of Payment',
           permission: 'certificate_of_payment:read',
+          // Berkas panduannya SUDAH ada (`certificate-of-payment.*.md`) —
+          // hanya tidak pernah dirujuk rute mana pun, sehingga tidak dapat
+          // ditemukan dari halamannya sendiri.
+          panduan: 'certificate-of-payment',
         },
         children: [
           {

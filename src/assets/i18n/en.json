@@ -2820,6 +2820,8 @@
     "netSalary": "Net salary",
     "isLastDay": "Is last day?",
     "lastDate": "Last date",
+    "konfirmNonaktifJudul": "Deactivate this employee?",
+    "konfirmNonaktif": "{{nama}} will be marked as leaving on {{tanggal}}. They will no longer appear in the active employee list or the PIC picker. Their salary slips are kept.",
     "lastDateHint": "Last date is required when this is the final day.",
     "amount": "Amount",
     "description": "Description",

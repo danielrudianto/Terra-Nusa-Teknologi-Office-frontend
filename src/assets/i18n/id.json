@@ -2820,6 +2820,8 @@
     "netSalary": "Gaji bersih",
     "isLastDay": "Hari terakhir?",
     "lastDate": "Tanggal terakhir",
+    "konfirmNonaktifJudul": "Nonaktifkan karyawan ini?",
+    "konfirmNonaktif": "{{nama}} akan ditandai berhenti per {{tanggal}}. Ia tidak lagi muncul di daftar karyawan aktif maupun di pemilih PIC. Slip gajinya tetap tersimpan.",
     "lastDateHint": "Tanggal terakhir wajib diisi kalau ini hari terakhir.",
     "amount": "Jumlah",
     "description": "Keterangan",

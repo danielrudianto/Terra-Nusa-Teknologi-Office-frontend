@@ -13,6 +13,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataTransferService } from 'src/app/services/data-transfer.service';
@@ -522,17 +524,70 @@ export class SalarySlipCreateComponent {
     return data;
   }
 
-  onSubmit() {
+  /**
+   * Menonaktifkan karyawan adalah akibat BESAR dari layar yang orang kira
+   * cuma membuat slip gaji.
+   *
+   * Sejak tanggal terakhir benar-benar dipakai, mencentang "hari terakhir"
+   * tidak lagi sekadar keterangan pada selembar slip — ia mengeluarkan
+   * orangnya dari daftar karyawan aktif, dari pemilih PIC, dan dari layar
+   * mana pun yang menyaring yang masih bekerja.
+   *
+   * Karena itu ditahan dulu, dan kalimatnya menyebut AKIBATNYA. Yang tidak
+   * bermaksud menonaktifkan akan berhenti di sini; yang memang bermaksud
+   * kehilangan satu ketukan.
+   */
+  private async konfirmasiNonaktif(): Promise<boolean> {
+    const hariTerakhir = this.formGroup.get('isLastDay')?.value;
+    const tanggal = this.formGroup.get('lastDate')?.value;
+    if (!hariTerakhir || !tanggal) return true;
+
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(DeleteConfirmationComponent, {
+          data: {
+            title: this.translate.instant('salarySlipForm.konfirmNonaktifJudul'),
+            prompt: this.translate.instant('salarySlipForm.konfirmNonaktif', {
+              nama: this.formGroup.get('name')?.value || '',
+              tanggal: this.datePipe.transform(tanggal, 'dd/MM/yyyy') || '',
+            }),
+            // Bukan merah: karyawannya tidak dihapus, dan datanya tidak
+            // hilang. Menyamakan "berhenti bekerja" dengan "data lenyap"
+            // membuat yang membaca berhenti membedakan keduanya.
+            destructive: false,
+          },
+        })
+        .afterClosed(),
+    );
+    return !!setuju;
+  }
+
+  async onSubmit() {
+    if (!(await this.konfirmasiNonaktif())) return;
+
     this.isSubmitting = true;
     this.apiService
       .post('salary-slips', this.formatFormData())
       .subscribe({
-        next: (_) => {
+        next: (hasil: any) => {
           this.generateSalarySlip(this.formGroup.value);
-          this.snackBar.open(
-      this.translate.instant('notify.createSuccess'), 'Close', {
-            duration: 3000,
-          });
+          /*
+           * Slipnya tersimpan, tetapi penonaktifannya bisa saja GAGAL.
+           *
+           * Server tidak menggagalkan slipnya karena itu akan meninggalkan
+           * keadaan separuh jadi — tetapi juga tidak menelannya diam-diam.
+           * Yang mengira karyawannya sudah nonaktif akan berhenti
+           * memeriksanya, dan orang yang sudah berhenti tetap muncul di
+           * pemilih PIC berbulan-bulan.
+           */
+          if (hasil?.peringatan) {
+            this.snackBar.open(hasil.peringatan, 'Tutup', { duration: 9000 });
+          } else {
+            this.snackBar.open(
+              this.translate.instant('notify.createSuccess'), 'Close', {
+                duration: 3000,
+              });
+          }
           this.router.navigate(['/Salary-slip']);
         },
         error: (error) => {

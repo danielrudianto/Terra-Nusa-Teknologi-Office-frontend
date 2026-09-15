@@ -155,24 +155,57 @@
 /*
  * Lencana "menunggu Anda".
  *
- * `margin-left: auto` mendorongnya ke tepi kanan tombol tanpa tata letak
- * tambahan, dan `flex-shrink: 0` menahannya agar nama menu yang panjang
- * memotong dirinya sendiri, bukan memotong angkanya — angka setengah
- * terpotong lebih buruk daripada nama yang terpotong, sebab nama masih
- * dapat ditebak.
+ * TIGA HAL YANG SALAH PADA VERSI PERTAMA, dan ketiganya soal RUANG:
+ *
+ * 1. `gap: 12px` pada tombolnya berlaku juga sebelum lencana, dan pill
+ *    berukuran penuh menambah ~28px lagi. Gabungannya mencuri ~40px dari
+ *    label — "Purchase Order" terpotong jadi "Purcha...", jauh lebih parah
+ *    daripada tetangganya yang tanpa lencana. Sekarang lencananya ~24px dan
+ *    jaraknya ditarik kembali, sehingga pemotongannya kembali sepadan dengan
+ *    butir menu lain.
+ *
+ * 2. Merah pekat berpadanan putih adalah bahasa yang ASING di aplikasi ini.
+ *    Seluruh penanda lain memakai keping lembut — "Draft" kuning pucat
+ *    bertulisan cokelat, "Disetujui" biru pucat bertulisan biru. Lencana yang
+ *    berteriak lebih keras daripada status dokumennya sendiri membuat mata
+ *    berhenti di tempat yang salah.
+ *
+ * 3. Aturan `span { text-overflow: ellipsis }` di atas berlaku ke SETIAP span
+ *    di dalam tombol — termasuk lencananya. Angkanya ikut dapat perlakuan
+ *    pemotongan teks, yang tidak ada gunanya dan menambah satu hal lagi yang
+ *    dapat menyusut.
  */
-.snav-badge {
+.side-navigation-button__wrapper .snav-badge {
   margin-left: auto;
+  /* Menarik kembali sebagian `gap: 12px` milik tombolnya. */
+  margin-right: -2px;
   flex: 0 0 auto;
-  min-width: 18px;
-  height: 18px;
+  /* Tidak ikut dipotong seperti label. */
+  overflow: visible;
+  text-overflow: clip;
+
+  min-width: 16px;
+  height: 16px;
   padding: 0 5px;
-  border-radius: 9px;
+  border-radius: 8px;
+
+  background: color-mix(in srgb, #e5484d 14%, transparent);
+  color: #e5484d;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  /* Angka selebar sama, supaya 3 dan 8 tidak menggeser lebarnya. */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/*
+ * Pada butir yang SEDANG AKTIF, keping lembut merah duduk di atas pill biru
+ * dan warnanya jadi keruh. Di sana lencananya dibalik: merah pekat, tulisan
+ * putih — cukup kecil untuk tidak berteriak, cukup pekat untuk terbaca.
+ */
+.side-navigation-button__wrapper.active .snav-badge {
   background: #e5484d;
   color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
 }

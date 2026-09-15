@@ -196,6 +196,7 @@ export class PanduanService {
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => {
         this.bacaTopikRute();
+        this.lepasIsiHalamanLama();
         void this.muatIndeks();
       });
 
@@ -362,6 +363,33 @@ export class PanduanService {
 
     this._topikRute.set(topik);
     this._bagianRute.set(bagian);
+  }
+
+  /**
+   * Lepaskan panduan milik halaman SEBELUMNYA saat berpindah halaman.
+   *
+   * Sebelumnya `bersihkanIsi()` hanya dipanggil ketika topiknya tidak
+   * ditemukan atau pengguna menekan "kembali ke daftar" — perpindahan halaman
+   * TIDAK pernah mengosongkannya.
+   *
+   * Akibatnya: buka panduan di Purchase Order, lalu pindah ke Certificate of
+   * Payment, lalu buka panduannya — yang tampil masih panduan purchase order.
+   * Tidak ada galat, tidak ada tanda apa pun, dan isinya terbaca seolah-olah
+   * memang milik halaman itu. Yang membacanya mengikuti petunjuk untuk layar
+   * yang berbeda.
+   *
+   * Mengenai setiap halaman yang tidak punya kunci `panduan` di berkas rute,
+   * bukan cuma dua yang kebetulan ketahuan.
+   *
+   * Yang dipertahankan: topik yang MEMANG milik halaman ini. Pengguna yang
+   * membuka panduan lalu menggeser layar tidak kehilangan bacaannya hanya
+   * karena rutenya memuat ulang.
+   */
+  private lepasIsiHalamanLama(): void {
+    const aktif = this._topikAktif();
+    if (!aktif) return;
+    if (aktif.id === this._topikRute()) return;
+    this.bersihkanIsi();
   }
 
   private bersihkanIsi(): void {
