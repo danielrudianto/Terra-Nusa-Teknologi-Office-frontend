@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, Optional, computed, inject, signal, ChangeDetectionStrategy} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
+  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
@@ -14,6 +15,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
+import {
+  AksiCop,
+  AksiCopBerkonfirmasi,
+  nomorCop,
+  pesanBerhasilCop,
+  teksKonfirmasiCop,
+} from '../cop-konfirmasi';
 import { firstValueFrom } from 'rxjs';
 
 import { AuditTrailComponent } from 'src/app/components/audit-trail/audit-trail.component';
@@ -91,6 +100,9 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  // Dialog konfirmasi dibuka DI ATAS dialog ini; `MatDialogRef` yang
+  // sudah ada menunjuk dialog INI, bukan pembuka dialog baru.
+  private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
   private readonly pesanServer = inject(ServerMessageService);
   readonly izin = inject(PermissionService);
@@ -223,6 +235,7 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     try {
       await firstValueFrom(this.service.periksa(c.id, checked));
       this.adaPerubahan = true;
+      this.kabarkan(checked ? 'periksa' : 'cabutPeriksa');
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -231,14 +244,47 @@ export class CertificateOfPaymentViewComponent implements OnInit {
     }
   }
 
+  /**
+   * Minta konfirmasi lebih dulu; `false` berarti dibatalkan.
+   *
+   * Teksnya datang dari `cop-konfirmasi`, dipakai bersama layar daftar —
+   * supaya peringatan yang muncul tidak bergantung pada dari layar mana
+   * tombolnya ditekan.
+   */
+  private async konfirmasi(aksi: AksiCopBerkonfirmasi): Promise<boolean> {
+    const c = this.cop();
+    if (!c) return false;
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(DeleteConfirmationComponent, {
+          data: teksKonfirmasiCop(this.translate, aksi, nomorCop(c)),
+        })
+        .afterClosed(),
+    );
+    return !!setuju;
+  }
+
+  /** Pesan berhasil; tanpa ini tidak ada yang menyatakan tindakannya jadi. */
+  private kabarkan(aksi: AksiCop): void {
+    const c = this.cop();
+    if (!c) return;
+    this.snackBar.open(
+      pesanBerhasilCop(this.translate, aksi, nomorCop(c)),
+      this.translate.instant('common.close'),
+      { duration: 5000 },
+    );
+  }
+
   /** Gerbang 1 — setujui BAP (level 4+). Membuka pengisian harga. */
   async setujuiBap(): Promise<void> {
     const c = this.cop();
     if (!c) return;
+    if (!(await this.konfirmasi('setujuiBap'))) return;
     this.bekerja.set(true);
     try {
       await firstValueFrom(this.service.setujuiBap(c.id, true));
       this.adaPerubahan = true;
+      this.kabarkan('setujuiBap');
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -251,10 +297,12 @@ export class CertificateOfPaymentViewComponent implements OnInit {
   async setujui(): Promise<void> {
     const c = this.cop();
     if (!c) return;
+    if (!(await this.konfirmasi('setujui'))) return;
     this.bekerja.set(true);
     try {
       await firstValueFrom(this.service.setujui(c.id));
       this.adaPerubahan = true;
+      this.kabarkan('setujui');
       await this.muat();
     } catch (e) {
       this.pesan(e);

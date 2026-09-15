@@ -7,6 +7,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmationComponent } from '../../../components/delete-confirmation/delete-confirmation.component';
+import {
+  AksiCop,
+  AksiCopBerkonfirmasi,
+  nomorCop,
+  pesanBerhasilCop,
+  teksKonfirmasiCop,
+} from '../cop-konfirmasi';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -335,18 +343,57 @@ export class CertificateOfPaymentListComponent implements OnInit {
     this.router.navigate(['/Certificate-of-payment/Periksa', c.id]);
   }
 
+  /**
+   * Minta konfirmasi lebih dulu; `false` berarti dibatalkan.
+   *
+   * Teksnya datang dari `cop-konfirmasi`, dipakai bersama dialog lihat —
+   * supaya peringatan yang muncul tidak bergantung pada dari layar mana
+   * tombolnya ditekan.
+   */
+  private async konfirmasi(
+    c: CertificateOfPayment,
+    aksi: AksiCopBerkonfirmasi,
+  ): Promise<boolean> {
+    const setuju = await firstValueFrom(
+      this.dialog
+        .open(DeleteConfirmationComponent, {
+          data: teksKonfirmasiCop(this.translate, aksi, nomorCop(c)),
+        })
+        .afterClosed(),
+    );
+    return !!setuju;
+  }
+
+  /** Pesan berhasil. Tanpa ini, yang menekan hanya melihat daftar berkedip. */
+  private kabarkan(c: CertificateOfPayment, aksi: AksiCop): void {
+    this.snackBar.open(
+      pesanBerhasilCop(this.translate, aksi, nomorCop(c)),
+      this.translate.instant('common.close'),
+      { duration: 5000 },
+    );
+  }
+
   async setujuiBap(c: CertificateOfPayment): Promise<void> {
+    if (!(await this.konfirmasi(c, 'setujuiBap'))) return;
     try {
       await firstValueFrom(this.service.setujuiBap(c.id, true));
+      this.kabarkan(c, 'setujuiBap');
       await this.muat();
     } catch (e) {
       this.pesan(e);
     }
   }
 
+  /*
+   * Sakelar, bukan keputusan sekali jalan — dapat dicabut dari layar yang
+   * sama. Karena itu tanpa konfirmasi: meminta konfirmasi pada tindakan yang
+   * mudah dibatalkan melatih orang menekan "Ya" tanpa membaca, dan
+   * konfirmasi pada HAPUS ikut kehilangan dayanya.
+   */
   async periksa(c: CertificateOfPayment, checked: boolean): Promise<void> {
     try {
       await firstValueFrom(this.service.periksa(c.id, checked));
+      this.kabarkan(c, checked ? 'periksa' : 'cabutPeriksa');
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -354,8 +401,10 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   async setujui(c: CertificateOfPayment): Promise<void> {
+    if (!(await this.konfirmasi(c, 'setujui'))) return;
     try {
       await firstValueFrom(this.service.setujui(c.id));
+      this.kabarkan(c, 'setujui');
       await this.muat();
     } catch (e) {
       this.pesan(e);
@@ -363,8 +412,13 @@ export class CertificateOfPaymentListComponent implements OnInit {
   }
 
   async hapus(c: CertificateOfPayment): Promise<void> {
+    if (!(await this.konfirmasi(c, 'hapus'))) return;
     try {
       await firstValueFrom(this.service.hapus(c.id));
+      // Dikabarkan SEBELUM memuat ulang: begitu daftarnya tergambar ulang,
+      // barisnya sudah hilang dan tidak ada lagi yang menunjukkan bahwa
+      // sesuatu memang terjadi.
+      this.kabarkan(c, 'hapus');
       await this.muat();
     } catch (e) {
       this.pesan(e);
