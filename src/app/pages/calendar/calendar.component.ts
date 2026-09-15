@@ -10,6 +10,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CalendarTableComponent } from './calendar-table/calendar-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RefreshButtonComponent } from '../../components/refresh-button/refresh-button.component';
 
 @Component({
@@ -25,6 +26,7 @@ import { RefreshButtonComponent } from '../../components/refresh-button/refresh-
     MatButtonModule,
     MatIconModule,
     RefreshButtonComponent,
+    MatTooltipModule,
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
@@ -38,7 +40,12 @@ export class CalendarComponent {
   bankAccounts: any[] = [];
   isLoadingData: boolean = false;
 
-  // mode tampilan calendar: 'expense' | 'income' | 'balance'
+  /*
+   * Mode tampilan: 'expense' | 'balance-plan' | 'balance-actual'.
+   *
+   * Bawaannya tetap `expense` — yang dibuka orang paling sering adalah
+   * "hari ini bayar apa saja", bukan proyeksinya.
+   */
   viewMode: FormControl = new FormControl('expense');
 
   /**

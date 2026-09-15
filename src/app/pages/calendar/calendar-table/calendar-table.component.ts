@@ -73,7 +73,35 @@ export class CalendarTableComponent {
   @Input('bankAccounts') bankAccounts: any[] = [];
   @Input('values') values: ICalendarValue[] = [];
   @Input('selectedDay') selectedDay: number | null = null;
-  @Input('viewMode') viewMode: 'expense' | 'income' | 'balance' = 'expense';
+  /**
+   * Mode tampilan kalender.
+   *
+   * KENAPA `income` HILANG, DAN `balance` JADI DUA
+   *
+   * Mode lama adalah Pengeluaran / Pemasukan / Saldo. Dua yang pertama
+   * menjawab "berapa yang bergerak hari itu", yang ketiga menjawab "posisi
+   * kasnya berapa" — tetapi hanya atas uang yang SUDAH bergerak. Padahal
+   * yang menentukan kasnya cukup atau tidak justru yang BELUM: rencana kas.
+   *
+   * Maka saldo dipecah menurut apa yang ikut dihitung:
+   *
+   *   `balance-actual` — hanya yang sudah terjadi. Angka yang dapat
+   *                      dipertanggungjawabkan; cocok dicocokkan ke rekening.
+   *   `balance-plan`   — ditambah rencana yang masih menunggu. Angka untuk
+   *                      MEMUTUSKAN: apakah bulan ini kasnya sampai.
+   *
+   * Keduanya ada karena keduanya menjawab pertanyaan berbeda, dan satu angka
+   * yang mencoba menjawab keduanya sekaligus tidak dapat dipercaya untuk
+   * salah satunya.
+   *
+   * `income` dilepas: pemasukan per hari sudah terbaca dari selisih saldo,
+   * dan mode yang jarang dibuka membuat dua mode yang penting jadi lebih
+   * jauh dijangkau.
+   */
+  @Input('viewMode') viewMode:
+    | 'expense'
+    | 'balance-plan'
+    | 'balance-actual' = 'expense';
 
   /**
    * Penanda muat-ulang.
@@ -262,12 +290,24 @@ export class CalendarTableComponent {
   /**
    * Total rencana bulan ini, DIPISAH menurut arahnya.
    *
-   * Yang terlewat tidak ikut: rencana yang tanggalnya lewat tanpa pernah
-   * ditandai terpakai praktis tidak terjadi, dan membiarkannya membuat
-   * angkanya menunjukkan uang yang tidak akan bergerak ke mana pun.
+   * YANG TERLEWAT IKUT DIHITUNG — ini berubah.
+   *
+   * Sebelumnya disaring keluar, dengan alasan rencana yang lewat tanpa
+   * pernah ditandai terpakai praktis tidak terjadi. Alasan itu tidak
+   * bertahan: rencana yang terlewat bukan rencana yang batal, melainkan
+   * kewajiban yang belum dikerjakan. Mengeluarkannya membuat angkanya
+   * terbaca lebih sehat justru pada bulan yang paling perlu diwaspadai.
+   *
+   * Dan sejak saldo (rencana) ikut menghitungnya, menyaringnya di sini
+   * berarti ringkasan bulan dan saldo di kisi kalender melaporkan dua angka
+   * berbeda dari data yang sama — tepat kelas kesalahan yang paling sulit
+   * disadari, karena keduanya sama-sama tampak masuk akal sendiri-sendiri.
+   *
+   * Yang terlewat tetap ditunjukkan terpisah lewat `rencanaTerlewat` dan
+   * spanduk peringatannya, jadi ia dihitung TANPA menjadi tidak terlihat.
    */
   private get rencanaDihitung(): any[] {
-    return this.rencanaMenunggu.filter((r) => !r.lewat);
+    return this.rencanaMenunggu;
   }
 
   get totalRencanaKeluar(): number {
@@ -569,23 +609,71 @@ export class CalendarTableComponent {
     );
   }
 
+  /** `YYYY-MM-DD` untuk satu tanggal di bulan yang sedang dibuka. */
+  private tanggalHari(day: number): string {
+    const dd = (n: number) => String(n).padStart(2, '0');
+    return `${this.year}-${dd(this.month + 1)}-${dd(day)}`;
+  }
+
+  /**
+   * Saldo pada AKHIR hari `day`.
+   *
+   * DUA HAL YANG BERUBAH DARI VERSI SEBELUMNYA, keduanya disengaja:
+   *
+   * 1. DIBANDINGKAN SEBAGAI TEKS, bukan lewat `Date`.
+   *
+   *    Sebelumnya: `new Date(x.date).getTime() < new Date(y, m, day).getTime()`.
+   *    Ruas kiri mengurai `"2026-09-15"` sebagai tengah malam UTC; ruas kanan
+   *    membangun tengah malam WAKTU SETEMPAT. Di Jakarta (UTC+7) transaksi
+   *    hari itu jatuh pada pukul 07:00 setempat sehingga TIDAK ikut; di zona
+   *    barat UTC ia jatuh sebelumnya sehingga IKUT. Saldo yang sama
+   *    menghasilkan angka berbeda tergantung jam komputer yang membukanya,
+   *    tanpa satu pun galat. `'YYYY-MM-DD' <= 'YYYY-MM-DD'` tidak punya zona
+   *    waktu untuk salah.
+   *
+   * 2. AKHIR hari, bukan awal hari.
+   *
+   *    Yang lama mengecualikan transaksi hari itu sendiri. Untuk mode yang
+   *    ada justru supaya orang tahu "tanggal 30 kasnya cukup atau tidak",
+   *    angka yang belum memperhitungkan pembayaran tanggal 30 tidak dapat
+   *    menjawabnya — dipnya baru terlihat di sel berikutnya, dan pada hari
+   *    terakhir bulan ia tidak terlihat sama sekali.
+   *
+   * `ikutRencana` menentukan apakah yang belum terjadi ikut dihitung. Rencana
+   * yang TERLEWAT tetap ikut: uangnya memang belum bergerak, kewajibannya
+   * belum hilang, dan spanduk peringatan di atas kalender sudah menyebutkan
+   * keberadaannya. Menyembunyikannya dari saldo membuat proyeksinya terbaca
+   * lebih sehat daripada keadaan sebenarnya.
+   */
+  private saldoSampai(day: number, ikutRencana: boolean): number {
+    const tgl = this.tanggalHari(day);
+    const sampai = (v: any) => String(v ?? '').slice(0, 10) <= tgl;
+
+    let saldo = Number(this.balance) || 0;
+
+    for (const x of this.data) {
+      if (sampai(x.date)) saldo -= Number(x.amount) || 0;
+    }
+    for (const x of this.incomeData) {
+      if (sampai(x.date)) saldo += Number(x.amount) || 0;
+    }
+
+    if (ikutRencana) {
+      for (const r of this.rencanaMenunggu) {
+        if (!sampai(r.date)) continue;
+        const n = Number(r.amount) || 0;
+        saldo += r.planType === 'masuk' ? n : -n;
+      }
+    }
+
+    return saldo;
+  }
+
   dataForDay(day: number): number {
-    const currentDate = new Date(this.year, this.month, day);
-
-    if (this.viewMode === 'balance') {
-      const previousExpenses = this.data
-        .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
-        .reduce((acc, x) => acc + x.amount, 0);
-      const previousIncomes = this.incomeData
-        .filter((x) => new Date(x.date).getTime() < currentDate.getTime())
-        .reduce((acc, x) => acc + x.amount, 0);
-
-      return this.balance - previousExpenses + previousIncomes;
-    } else if (this.viewMode === 'income') {
-      // total pemasukan di hari itu
-      return this.incomeData
-        .filter((x) => new Date(x.date).getDate() == day)
-        .reduce((acc, x) => acc + (Number(x.amount) || 0), 0);
+    if (this.viewMode === 'balance-actual') {
+      return this.saldoSampai(day, false);
+    } else if (this.viewMode === 'balance-plan') {
+      return this.saldoSampai(day, true);
     } else {
       // expense (default): total pengeluaran di hari itu
       const index = this.data.findIndex(
@@ -607,17 +695,15 @@ export class CalendarTableComponent {
   valueClass(day: number | null): string {
     if (day == null) return '';
     const v = this.dataForDay(day);
-    if (this.viewMode === 'income') {
-      return v > 0 ? 'is-income' : '';
-    }
     if (this.viewMode === 'expense') {
       return v > 0 ? 'is-expense' : '';
     }
-    // balance: hijau kalau positif, merah kalau minus
-    if (this.viewMode === 'balance') {
-      return v < 0 ? 'is-expense' : v > 0 ? 'is-income' : '';
-    }
-    return '';
+    // Kedua mode saldo: hijau kalau positif, merah kalau minus.
+    //
+    // Merahnya justru inti dari mode `balance-plan` — hari pertama saldo
+    // menembus nol adalah satu-satunya angka yang benar-benar dicari orang
+    // di layar ini.
+    return v < 0 ? 'is-expense' : v > 0 ? 'is-income' : '';
   }
 
   interpaymentExistsForDay(day: number | null): boolean {
@@ -820,8 +906,26 @@ export class CalendarTableComponent {
            * satu pembayaran mengurangi saldo dua kali. Yang batal sudah
            * disaring server.
            */
+          /*
+           * Berkasnya mengikuti MODE YANG SEDANG DIPILIH di layar.
+           *
+           * Sebelumnya berkasnya selalu menghitung rencana sementara layarnya
+           * tidak pernah — jadi Excel dan kalender melaporkan saldo berbeda
+           * untuk bulan yang sama, dan tidak ada yang memberi tahu mana yang
+           * dimaksud. Itu lebih buruk daripada salah satunya salah.
+           *
+           * Konsekuensinya yang harus diakui: dua orang dapat mengunduh
+           * "kalender September" dan mendapat angka berbeda. Karena itu mode
+           * yang dipakai DICETAK di berkasnya (`modeLabel` di bawah) — supaya
+           * perbedaannya dapat dijelaskan, bukan diperdebatkan.
+           */
+          const ikutRencana = this.viewMode !== 'balance-actual';
+          const modeLabel = this.translate.instant(
+            ikutRencana ? 'calendar.exportPlan' : 'calendar.exportActual',
+          );
+
           const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
-          for (const r of this.rencanaMenunggu) {
+          for (const r of ikutRencana ? this.rencanaMenunggu : []) {
             const t = String(r.date).slice(0, 10);
             (rencanaPerTanggal[t] ??= []).push(r);
           }
@@ -948,7 +1052,18 @@ export class CalendarTableComponent {
             });
           }
 
-          const nama = `Kalender_Kas_${namaBulan}_${year}`;
+          /*
+           * Mode ikut ke NAMA BERKAS, bukan hanya ke kopnya.
+           *
+           * Di sinilah perbedaannya paling cepat terlihat: dua berkas dengan
+           * angka berbeda tidak lagi punya nama yang sama persis, sehingga
+           * yang menerimanya tidak perlu membuka keduanya untuk tahu mana
+           * yang mana — dan tidak ada yang tanpa sadar menimpa yang satu
+           * dengan yang lain di folder yang sama.
+           */
+          const nama =
+            `Kalender_Kas_${namaBulan}_${year}_` +
+            (ikutRencana ? 'rencana' : 'aktual');
 
           if (format === 'pdf') {
             berkasKalenderPdf(
@@ -959,6 +1074,7 @@ export class CalendarTableComponent {
               year,
               hariPertama,
               totalHari,
+              modeLabel,
             )
               .then((blob) => saveAs(blob, `${nama}.pdf`))
               .catch(() =>
@@ -980,8 +1096,8 @@ export class CalendarTableComponent {
            * berarti yang membukanya harus menggulir tab lebih dulu setiap
            * kali, dan jumlah tabnya sebanyak rekeningnya.
            */
-          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year);
-          lembarRencana(wb, rencanaRekap, namaBulan, year);
+          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year, modeLabel);
+          lembarRencana(wb, rencanaRekap, namaBulan, year, modeLabel);
           for (const l of lampiran) {
             lembarKalender(
               wb,
@@ -993,6 +1109,7 @@ export class CalendarTableComponent {
               year,
               hariPertama,
               totalHari,
+              modeLabel,
             );
           }
 

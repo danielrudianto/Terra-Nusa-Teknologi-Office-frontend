@@ -55,8 +55,19 @@ export interface RencanaRekap {
   status: string;
 }
 
-const SUB = (bulan: string, tahun: number) =>
-  `PT Alpha Konstruksi Nusantara · ${bulan} ${tahun} · disusun ` +
+/**
+ * Baris kecil di bawah judul tiap lembar.
+ *
+ * `mode` menyebut DASAR PERHITUNGAN saldo berkas ini — dengan rencana kas
+ * atau hanya realisasi. Berkasnya mengikuti mode yang sedang dibuka di layar,
+ * jadi dua orang dapat mengunduh bulan yang sama dan mendapat saldo berbeda.
+ * Itu dapat diterima selama berkasnya MENGATAKANNYA; yang tidak dapat
+ * diterima adalah dua angka berbeda yang keduanya menyebut diri "saldo".
+ */
+const SUB = (bulan: string, tahun: number, mode = '') =>
+  `PT Alpha Konstruksi Nusantara · ${bulan} ${tahun}` +
+  (mode ? ` · ${mode}` : '') +
+  ' · disusun ' +
   new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
@@ -102,6 +113,7 @@ export function lembarHarian(
   saldoAwal: number,
   bulan: string,
   tahun: number,
+  mode = '',
 ): void {
   if (!harian.length) return;
 
@@ -120,7 +132,7 @@ export function lembarHarian(
     pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
   });
 
-  kop(sheet, kolom.length, 'RINGKASAN HARIAN', SUB(bulan, tahun));
+  kop(sheet, kolom.length, 'RINGKASAN HARIAN', SUB(bulan, tahun, mode));
   const AWAL = 4;
   kepala(sheet, AWAL, kolom);
 
@@ -255,6 +267,7 @@ export function lembarRencana(
   rencana: RencanaRekap[],
   bulan: string,
   tahun: number,
+  mode = '',
 ): void {
   if (!rencana.length) return;
 
@@ -274,7 +287,7 @@ export function lembarRencana(
     pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
   });
 
-  kop(sheet, kolom.length, 'RENCANA KAS', SUB(bulan, tahun));
+  kop(sheet, kolom.length, 'RENCANA KAS', SUB(bulan, tahun, mode));
   const AWAL = 4;
   kepala(sheet, AWAL, kolom);
 
@@ -436,6 +449,7 @@ export function lembarKalender(
   tahun: number,
   hariPertama: number,
   totalHari: number,
+  mode = '',
 ): void {
   // Nama lembar Excel dibatasi 31 karakter dan tidak boleh memuat `/ \ ? * [ ]`.
   const namaLembar = nomor.replace(/[\\/?*[\]]/g, '-').slice(0, 31);
@@ -466,7 +480,7 @@ export function lembarKalender(
     sheet,
     TOTAL_KOLOM,
     `KALENDER PEMBAYARAN — ${nomor}`,
-    `${atasNama} · ${SUB(bulan, tahun)}`,
+    `${atasNama} · ${SUB(bulan, tahun, mode)}`,
   );
 
   const hariNama = [

@@ -427,13 +427,23 @@ export async function berkasKalenderPdf(
   tahun: number,
   hariPertama: number,
   totalHari: number,
+  mode = '',
 ): Promise<Blob> {
   const disusun = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
-  const sub = `${bulan} ${tahun}`;
+  /*
+   * `mode` menyebut DASAR PERHITUNGAN saldo berkas ini.
+   *
+   * Berkasnya mengikuti mode yang sedang dibuka di layar, jadi dua orang
+   * dapat mengunduh bulan yang sama dan mendapat saldo berbeda. Itu dapat
+   * diterima selama berkasnya MENGATAKANNYA — dan karena kop ini terpasang
+   * pada SETIAP halaman, keterangannya ikut pada lembar yang dicetak
+   * terpisah dari halaman pertamanya.
+   */
+  const sub = `${bulan} ${tahun}` + (mode ? ` · ${mode}` : '');
 
   const ddHarian: any = {
     pageSize: 'A4',

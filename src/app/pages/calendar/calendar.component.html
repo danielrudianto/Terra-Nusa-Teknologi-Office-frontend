@@ -21,15 +21,29 @@
         class="cal-viewmode"
         hideSingleSelectionIndicator
       >
+        <!--
+          Tiga mode, dan saldonya DUA.
+
+          `balance-actual` hanya uang yang sudah bergerak — angka yang dapat
+          dicocokkan ke rekening. `balance-plan` ditambah rencana kas yang
+          masih menunggu — angka untuk memutuskan apakah kasnya sampai.
+
+          Urutannya disengaja: rencana lebih dulu, karena itu yang dibuka
+          orang saat memutuskan, dan aktual di ujung sebagai pembanding.
+        -->
         <mat-button-toggle value="expense">{{
           "calendar.expense" | translate
         }}</mat-button-toggle>
-        <mat-button-toggle value="income">{{
-          "calendar.income" | translate
-        }}</mat-button-toggle>
-        <mat-button-toggle value="balance">{{
-          "calendar.balance" | translate
-        }}</mat-button-toggle>
+        <mat-button-toggle
+          value="balance-plan"
+          [matTooltip]="'calendar.balancePlanHint' | translate"
+          >{{ "calendar.balancePlan" | translate }}</mat-button-toggle
+        >
+        <mat-button-toggle
+          value="balance-actual"
+          [matTooltip]="'calendar.balanceActualHint' | translate"
+          >{{ "calendar.balanceActual" | translate }}</mat-button-toggle
+        >
       </mat-button-toggle-group>
 
       <!--

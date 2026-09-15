@@ -32,13 +32,17 @@ sekarang maupun nanti.
 
 YANG DIJAGA
 
-  1. Jalur pin dipesan pada tombolnya, bukan pada span di dalamnya.
+  1. Jalur pin dipesan pada TOMBOLnya, bukan pada span di dalamnya — dan
+     hanya pada baris yang DIPIN, karena hanya di situ pin menetap.
   2. Lebar pesanan >= jangkauan pin (`right` + `width`). Ini yang membuat
      penjaga ini tidak sekadar mencocokkan teks: menggeser pinnya tanpa
      melebarkan jalurnya akan tertangkap.
-  3. Tidak ada lagi aturan `span { ... }` bertelanjang di dalam tombolnya yang
+  3. Pada baris yang TIDAK dipin jalurnya sengaja tidak dipesan (demi lebar
+     label), jadi lencana WAJIB menyingkir saat pin datang — pada `:hover`
+     maupun `:focus-within`.
+  4. Tidak ada lagi aturan `span { ... }` bertelanjang di dalam tombolnya yang
      menyetel jarak — kelas kerusakan yang sama, bentuk apa pun.
-  4. Labelnya punya kelas sendiri, supaya aturan label tidak perlu menebak.
+  5. Labelnya punya kelas sendiri, supaya aturan label tidak perlu menebak.
 """
 
 import os
@@ -108,15 +112,16 @@ def periksa():
 
     # --- 2. pesanan jalur ada, dan ada DI TOMBOLNYA ------------------------
     pesan = re.search(
-        r'\.snav-row\.punya-pin\s+\.side-navigation-button__wrapper\s*\{'
+        r'\.snav-row\.punya-pin\.dipin\s+\.side-navigation-button__wrapper\s*\{'
         r'[^}]*?\bpadding-right:\s*(\d+(?:\.\d+)?)px',
         scss, re.S,
     )
     if not pesan:
         masalah.append(
             'side-nav-item.component.scss: jalur pin tidak dipesan pada '
-            '`.snav-row.punya-pin .side-navigation-button__wrapper` — isi '
-            'tombol paling kanan (hari ini lencana) akan tertimpa pin'
+            '`.snav-row.punya-pin.dipin .side-navigation-button__wrapper` — '
+            'pada butir yang DIPIN, pin menetap berdampingan dengan lencana, '
+            'dan tanpa jalur itu keduanya bertindihan'
         )
     elif kanan is not None:
         perlu = kanan + lebar
@@ -142,12 +147,43 @@ def periksa():
                 'atau pesan ruangnya pada tombolnya'
             )
 
+    # --- 3b. di baris yang TIDAK dipin, lencana menyingkir saat pin datang -
+    #
+    # Di sana jalurnya sengaja TIDAK dipesan (demi lebar label), sehingga
+    # lencana dan pin menempati petak yang sama. Itu hanya aman selama salah
+    # satunya tidak terlihat pada saat yang sama.
+    sembunyi = re.search(
+        r'\.snav-row\.punya-pin:not\(\.dipin\):hover\s+\.snav-badge\b'
+        r'(?:[^{]*\{|[^{]*,[^{]*\{)',
+        scss, re.S,
+    )
+    if not sembunyi or not re.search(
+        r':hover\s+\.snav-badge[^{]*\{[^}]*opacity:\s*0', scss, re.S
+    ):
+        masalah.append(
+            'side-nav-item.component.scss: lencana tidak disembunyikan saat '
+            'barisnya disentuh — di baris yang tidak dipin jalur pin sengaja '
+            'tidak dipesan, jadi pin akan muncul menimpa lencana'
+        )
+    if ':focus-within' not in scss:
+        masalah.append(
+            'side-nav-item.component.scss: lencana hanya menyingkir pada '
+            '`:hover` — pin dapat dicapai dengan Tab, dan bagi yang tidak '
+            'memakai tetikus ia akan muncul menimpa lencana'
+        )
+
     # --- 4. label punya kelasnya sendiri ----------------------------------
     if 'snav-label' not in html:
         masalah.append(
             'side-nav-item.component.html: label tidak punya kelas '
             '`snav-label` — aturan label terpaksa menebak lewat `span`, dan '
             'tebakan itu ikut mengenai ikon serta lencana'
+        )
+    if 'dipin' not in html:
+        masalah.append(
+            'side-nav-item.component.html: `.snav-row` tidak menandai '
+            '`dipin` — baris yang dipin tidak dapat dibedakan, sehingga '
+            'jalur pin ikut dipesan (atau tidak dipesan) di tempat yang salah'
         )
     if 'punya-pin' not in html:
         masalah.append(

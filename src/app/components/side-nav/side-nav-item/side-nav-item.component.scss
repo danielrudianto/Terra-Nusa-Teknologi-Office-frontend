@@ -168,9 +168,47 @@
  * sekarang, apa pun nanti. Tabrakan yang sama tidak dapat lahir dua kali.
  *
  * Pin membentang 7px–31px dari tepi kanan; 34px menyisakan 3px napas.
+ *
+ * TETAPI JALUR ITU HANYA DIPESAN DI BARIS YANG BENAR-BENAR MEMBUTUHKANNYA.
+ *
+ * Pin cuma terlihat pada dua keadaan: saat barisnya disentuh, dan saat
+ * butirnya DIPIN (di situ ia menetap). Memesan jalur tetap di semua baris
+ * berarti membayar 34px pada setiap baris demi ikon yang pada kebanyakan
+ * baris tidak pernah muncul — padahal 34px itu justru yang membuat
+ * "Reimbursement" dan "Pembayaran Antar Rekening" terpotong.
+ *
+ * Jadi:
+ *   - baris DIPIN  -> jalurnya dipesan tetap; lencana dan pin hidup
+ *                     berdampingan, dan itu pilihan sadar penggunanya.
+ *   - baris lain   -> tidak ada jalur. Lencana memakai tepi kanan
+ *                     seluruhnya, dan saat barisnya disentuh ia MENYINGKIR
+ *                     supaya pin memakai tempat yang sama.
  */
-.snav-row.punya-pin .side-navigation-button__wrapper {
+.snav-row.punya-pin.dipin .side-navigation-button__wrapper {
   padding-right: 34px;
+}
+
+/*
+ * Lencana menyingkir saat pin datang.
+ *
+ * Keduanya tidak pernah dibutuhkan pada saat yang sama: lencana dibaca
+ * sambil MENYAPU menu dari jauh, pin dipakai saat kursor sudah berada di
+ * baris itu — dan yang hendak mem-pin tidak sedang menanyakan jumlahnya.
+ *
+ * `opacity`, BUKAN `display` atau `visibility` + lebar nol. Lencananya tetap
+ * menempati ruangnya, jadi labelnya tidak melebar-menyempit setiap kali
+ * kursor lewat. Yang bergeser hanya perhatian, bukan tata letaknya.
+ *
+ * `:focus-within` ikut: pin dapat dicapai dengan Tab, dan tanpa ini ia akan
+ * muncul menimpa lencana bagi yang tidak memakai tetikus.
+ */
+.snav-row.punya-pin:not(.dipin):hover .snav-badge,
+.snav-row.punya-pin:not(.dipin):focus-within .snav-badge {
+  opacity: 0;
+}
+
+.snav-badge {
+  transition: opacity 0.15s ease;
 }
 
 /* dark mode */
