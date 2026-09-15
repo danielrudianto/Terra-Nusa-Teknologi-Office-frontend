@@ -36,7 +36,17 @@
       filter 0.15s ease;
   }
 
-  span {
+  /*
+   * Pemotongan teks hanya untuk LABELNYA.
+   *
+   * Sebelumnya aturan ini ditulis `span { ... }`, sehingga berlaku ke SETIAP
+   * span di dalam tombol — termasuk ikon dan lencana, yang keduanya bukan
+   * teks dan tidak pernah perlu dipotong. Itu pula yang membuat `padding-right`
+   * di bawah dulu menempel ke ikon.
+   */
+  .snav-label {
+    flex: 0 1 auto;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -56,7 +66,7 @@
     background-color: var(--active-button-color);
     font-weight: 600;
 
-    span {
+    .snav-label {
       color: var(--on-active-button-color) !important;
     }
 
@@ -134,11 +144,33 @@
 /*
  * Ruang untuk ikon pin disediakan TETAP, bukan hanya saat hover.
  *
- * Sebelumnya padding baru ditambahkan ketika baris disentuh, sehingga label
- * bergeser 22px setiap kali kursor lewat.
+ * Kalau padding baru ditambahkan ketika baris disentuh, labelnya bergeser
+ * setiap kali kursor lewat.
+ *
+ * DIPESAN PADA TOMBOLNYA, BUKAN PADA ISINYA — ini yang dulu keliru.
+ *
+ * Versi lama menulisnya `.side-navigation-button__wrapper span`, dengan
+ * anggapan span satu-satunya di dalam tombol adalah labelnya. Sejak lencana
+ * masuk, anggapan itu tidak berlaku lagi, dan tiga hal terjadi sekaligus:
+ *
+ *   1. IKON ikut kena 22px. Ikon adalah `<span class="snav-ico">` juga.
+ *      Kotaknya membengkak dari 18px menjadi 40px — 22px ruang mati di antara
+ *      ikon dan label, di SETIAP baris menu, sejak lama dan tanpa gejala.
+ *   2. LABEL kena (yang memang dimaksud).
+ *   3. LENCANA tidak kena, karena `.snav-badge` menyetel `padding`-nya
+ *      sendiri dengan kekhususan lebih tinggi — jadi justru elemen paling
+ *      kanan, satu-satunya yang benar-benar bersinggungan dengan pin, adalah
+ *      yang TIDAK mendapat jarak. Lencananya duduk 10px dari tepi baris,
+ *      sementara pin membentang 7px–31px: bertindihan 21px.
+ *
+ * Memesannya pada `padding-right` tombol membuat pesanan itu berlaku untuk
+ * apa pun yang kebetulan menjadi elemen terakhir — label hari ini, lencana
+ * sekarang, apa pun nanti. Tabrakan yang sama tidak dapat lahir dua kali.
+ *
+ * Pin membentang 7px–31px dari tepi kanan; 34px menyisakan 3px napas.
  */
-.side-navigation-button__wrapper span {
-  padding-right: 22px;
+.snav-row.punya-pin .side-navigation-button__wrapper {
+  padding-right: 34px;
 }
 
 /* dark mode */
@@ -177,12 +209,15 @@
  */
 .side-navigation-button__wrapper .snav-badge {
   margin-left: auto;
-  /* Menarik kembali sebagian `gap: 12px` milik tombolnya. */
-  margin-right: -2px;
+  /*
+   * TANPA `margin-right` negatif.
+   *
+   * Dulu ada -2px untuk menarik kembali sebagian `gap: 12px`. Sekarang jalur
+   * pin dipesan pada tombolnya dan lebarnya dihitung pas; menariknya keluar
+   * 2px berarti menggerogoti napas 3px itu menjadi 1px, demi ruang yang sudah
+   * tidak dibutuhkan.
+   */
   flex: 0 0 auto;
-  /* Tidak ikut dipotong seperti label. */
-  overflow: visible;
-  text-overflow: clip;
 
   min-width: 16px;
   height: 16px;

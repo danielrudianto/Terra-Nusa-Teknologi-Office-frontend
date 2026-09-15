@@ -1,4 +1,10 @@
-<div class="snav-row">
+<!--
+  `punya-pin` memesan jalur kanan HANYA pada baris yang benar-benar punya pin.
+
+  Kelompok bawah (Pengaturan, Keluar) memakai `showPin=false`; sebelumnya jalur
+  itu tetap dipesan di sana dan 22px hilang tanpa ada yang menempatinya.
+-->
+<div class="snav-row" [class.punya-pin]="showPin">
   <button
     class="side-navigation-button__wrapper"
     type="button"
@@ -15,7 +21,7 @@
       class="snav-ico"
       [ngStyle]="{ '--snav-ico': 'url(' + iconSource + ')' }"
     ></span>
-    <span>{{ label | translate }}</span>
+    <span class="snav-label">{{ label | translate }}</span>
 
     <!--
       Lencana diletakkan DI DALAM tombolnya, sesudah labelnya.
