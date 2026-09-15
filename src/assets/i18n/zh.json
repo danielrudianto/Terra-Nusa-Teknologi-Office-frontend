@@ -1709,12 +1709,13 @@
     "dasarKet": "系统中的销售发票没有到期日，因此收入无法落在时间轴上。为避免出现失真的悲观曲线，支出同样只取自计划。此预测的准确度取决于所录入的内容。",
     "kosong": "未来三个月尚无现金计划。",
     "kasSekarang": "今日现金",
+    "jangkarKet": "折线起点，{{tanggal}}",
     "rencanaKeluar": "计划流出",
     "rencanaMasuk": "计划流入",
     "terendah": "最低余额",
-    "padaPekan": "所在周",
+    "padaPekan": "于",
     "seriBalance": "现金余额",
-    "minusSejak": "现金将在 {{pekan}} 当周跌破零 — 在此之前必须有款项到账。",
+    "minusSejak": "现金将在 {{pekan}} 跌破零 — 在此之前必须有款项到账。",
     "diLuar": "有 {{n}} 项计划落在这三个月之外，未绘入图表。"
   },
   "bank": {

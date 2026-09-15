@@ -1709,12 +1709,13 @@
     "dasarKet": "Faktur penjualan tidak punya tanggal jatuh tempo di sistem, jadi pemasukan tidak dapat ditempatkan di garis waktu. Supaya tidak pesimis palsu, pengeluaran pun hanya dari rencana. Proyeksinya sebaik yang Anda isi.",
     "kosong": "Belum ada rencana kas dalam tiga bulan ke depan.",
     "kasSekarang": "Kas hari ini",
+    "jangkarKet": "titik mulai garis, {{tanggal}}",
     "rencanaKeluar": "Rencana keluar",
     "rencanaMasuk": "Rencana masuk",
     "terendah": "Saldo terendah",
-    "padaPekan": "pada pekan",
+    "padaPekan": "pada",
     "seriBalance": "Saldo kas",
-    "minusSejak": "Kas menembus nol pada pekan {{pekan}} — sebelum itu sudah harus ada yang masuk.",
+    "minusSejak": "Kas menembus nol pada {{pekan}} — sebelum itu sudah harus ada yang masuk.",
     "diLuar": "{{n}} rencana jatuh di luar tiga bulan ini dan tidak ikut digambar."
   },
   "bank": {

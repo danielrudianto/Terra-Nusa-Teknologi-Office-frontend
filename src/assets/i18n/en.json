@@ -1709,12 +1709,13 @@
     "dasarKet": "Sales invoices carry no due date in the system, so incoming money cannot be placed on a timeline. To avoid a falsely pessimistic line, outgoing money comes from plans too. This projection is only as good as what you enter.",
     "kosong": "No cash plans in the next three months yet.",
     "kasSekarang": "Cash today",
+    "jangkarKet": "start of the line, {{tanggal}}",
     "rencanaKeluar": "Planned out",
     "rencanaMasuk": "Planned in",
     "terendah": "Lowest balance",
-    "padaPekan": "week of",
+    "padaPekan": "on",
     "seriBalance": "Cash balance",
-    "minusSejak": "Cash crosses zero in the week of {{pekan}} — something must land before then.",
+    "minusSejak": "Cash crosses zero on {{pekan}} — something must land before then.",
     "diLuar": "{{n}} plan(s) fall outside these three months and are not drawn."
   },
   "bank": {

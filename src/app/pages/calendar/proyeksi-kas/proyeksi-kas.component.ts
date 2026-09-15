@@ -35,14 +35,21 @@ import {
  */
 pastikanChart();
 
-/** Satu pekan pada garis proyeksi. */
+/** Satu titik pada garis proyeksi. */
 export interface TitikProyeksi {
-  /** Senin pekan itu, `YYYY-MM-DD`. */
-  mulai: string;
+  /**
+   * TANGGAL TITIK INI, `YYYY-MM-DD` — tanggal saldonya berlaku.
+   *
+   * Dulu bernama `mulai` dan berisi Senin AWAL pekan, sementara saldonya
+   * saldo AKHIR pekan. Lihat keterangan panjang di `titikProyeksi`.
+   */
+  tanggal: string;
   label: string;
+  /** Titik jangkar: kas hari ini, belum ada rencana yang diterapkan. */
+  sekarang?: boolean;
   masuk: number;
   keluar: number;
-  /** Saldo kas pada AKHIR pekan itu, kumulatif dari saldo hari ini. */
+  /** Saldo kas PADA `tanggal`, kumulatif dari kas hari ini. */
   saldo: number;
 }
 
@@ -51,30 +58,44 @@ const NAMA_BULAN = [
   'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
 ];
 
-/**
- * `YYYY-MM-DD` -> Senin pekan itu, tetap sebagai `YYYY-MM-DD`.
- *
- * Tanggalnya diurai menjadi angka lalu dibangun dengan `new Date(y, m, d)` —
- * konstruktor WAKTU SETEMPAT. Yang berbahaya adalah `new Date('2026-09-15')`,
- * yang diurai sebagai tengah malam UTC dan di zona barat UTC mundur sehari.
- * Kekeliruan itu sudah dua kali muncul di sistem ini; di sini akibatnya
- * memindahkan rencana ke pekan yang salah.
- */
-export function seninPekan(tgl: string): string {
+const satuHari = 86400000;
+
+function urai(tgl: string): Date {
   const [y, b, h] = tgl.split('-').map(Number);
-  const d = new Date(y, b - 1, h);
-  // getDay(): 0 = Minggu. Digeser supaya Senin menjadi awal pekan.
-  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  // Konstruktor WAKTU SETEMPAT. `new Date('2026-09-15')` diurai sebagai
+  // tengah malam UTC dan bergeser sehari di zona non-UTC — kekeliruan yang
+  // sudah dua kali muncul di sistem ini.
+  return new Date(y, b - 1, h);
+}
+
+function teks(d: Date): string {
   const dua = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${dua(d.getMonth() + 1)}-${dua(d.getDate())}`;
 }
 
+/** `YYYY-MM-DD` -> Senin pekan itu. */
+export function seninPekan(tgl: string): string {
+  const d = urai(tgl);
+  // getDay(): 0 = Minggu. Digeser supaya Senin menjadi awal pekan.
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return teks(d);
+}
+
+/** `YYYY-MM-DD` -> Minggu pekan itu, yaitu hari TERAKHIR pekannya. */
+export function mingguPekan(tgl: string): string {
+  const d = urai(seninPekan(tgl));
+  d.setDate(d.getDate() + 6);
+  return teks(d);
+}
+
+export function tambahHari(tgl: string, n: number): string {
+  const d = urai(tgl);
+  d.setDate(d.getDate() + n);
+  return teks(d);
+}
+
 function tambahPekan(tgl: string, n: number): string {
-  const [y, b, h] = tgl.split('-').map(Number);
-  const d = new Date(y, b - 1, h);
-  d.setDate(d.getDate() + n * 7);
-  const dua = (x: number) => String(x).padStart(2, '0');
-  return `${d.getFullYear()}-${dua(d.getMonth() + 1)}-${dua(d.getDate())}`;
+  return tambahHari(tgl, n * 7);
 }
 
 function labelPekan(tgl: string): string {
@@ -83,26 +104,52 @@ function labelPekan(tgl: string): string {
 }
 
 /**
- * Rencana kas -> garis proyeksi saldo, per PEKAN.
+ * Rencana kas -> garis proyeksi saldo.
  *
- * KENAPA PEKANAN, BUKAN BULANAN
+ * ------------------------------------------------------------------
+ * SETIAP TITIK DIBERI LABEL TANGGAL SALDONYA BERLAKU
+ * ------------------------------------------------------------------
  *
- * Jangkauannya tiga bulan. Bulanan berarti TIGA titik — itu bukan garis, itu
- * tiga angka yang dihubungkan. Pekanan memberi 13 titik: cukup untuk melihat
- * pekan mana kasnya menipis, dan itulah satu-satunya hal yang dicari orang di
- * grafik ini.
+ * Ini perbaikan atas kekeliruan yang dilaporkan: kalender menyebut saldo
+ * akhir 14 September 788 juta, sementara titik proyeksi berlabel "14 Sep"
+ * menyebut 777 juta. Keduanya benar; yang salah LABELNYA.
  *
- * RENCANA YANG SUDAH TERLEWAT MASUK KE PEKAN PERTAMA
+ * Versi sebelumnya memberi label SENIN AWAL pekan pada titik yang saldonya
+ * saldo AKHIR pekan itu — jadi setiap titik tertulis sampai enam hari lebih
+ * awal daripada keadaannya. Dan titik pertamanya lebih kacau lagi: jangkarnya
+ * kas HARI INI (15 Sep), embernya pekan 14–20 Sep, labelnya "14 Sep". Tiga
+ * tanggal berbeda dalam satu titik, dan tidak ada satu pun yang salah secara
+ * mencolok — angkanya masuk akal, garisnya mulus, cuma tidak menjawab
+ * pertanyaan yang tertulis di sumbunya.
  *
- * Bukan dibuang, dan bukan pula ditaruh di tanggal aslinya yang sudah lewat.
- * Uangnya memang belum bergerak, kewajibannya belum hilang, dan yang membaca
- * proyeksi perlu melihatnya sebagai beban yang menunggu SEKARANG. Dibuang, ia
- * membuat proyeksinya terbaca lebih sehat daripada keadaannya.
+ * Sekarang:
  *
+ *   * **Titik 0 = HARI INI.** Saldonya kas hari ini apa adanya, tanpa satu
+ *     rencana pun diterapkan. Ia dapat dicocokkan langsung dengan KPI "Kas
+ *     hari ini" dan dengan kalender — dan titik jangkar yang dapat dicocokkan
+ *     itulah yang membuat sisa garisnya dapat dipercaya.
+ *
+ *   * **Titik 1..n = MINGGU (hari terakhir) tiap pekan.** Saldonya saldo pada
+ *     tanggal itu, sesudah seluruh rencana sampai tanggal itu. Labelnya
+ *     tanggal itu juga.
+ *
+ * ------------------------------------------------------------------
+ * RENCANA YANG SUDAH TERLEWAT MASUK KE TITIK PERTAMA SESUDAH HARI INI
+ * ------------------------------------------------------------------
+ *
+ * Bukan dibuang, dan bukan ditaruh di tanggal aslinya yang sudah lewat.
+ * Uangnya memang belum bergerak — statusnya masih `rencana` — dan kewajibannya
+ * belum hilang. Dibuang, proyeksinya terbaca lebih sehat daripada keadaannya.
+ *
+ * Yang TIDAK boleh: menguranginya dari titik "hari ini". Kas hari ini adalah
+ * angka yang dapat dicocokkan ke rekening; mengurangi apa pun darinya membuat
+ * jangkarnya berhenti dapat dicocokkan.
+ *
+ * ------------------------------------------------------------------
  * SALDO AWALNYA KAS SUNGGUHAN HARI INI
+ * ------------------------------------------------------------------
  *
- * Bukan saldo awal bulan yang sedang dibuka di kalender. Proyeksi menjawab
- * "mulai dari posisi sekarang, cukup atau tidak" — dan kalau titik mulainya
+ * Bukan saldo awal bulan yang sedang dibuka di kalender. Kalau titik mulainya
  * bukan uang yang benar-benar ada di rekening, seluruh garisnya menggeser
  * sebanyak selisih itu tanpa ada yang menyadarinya.
  */
@@ -112,40 +159,77 @@ export function titikProyeksi(
   mulai: string,
   pekan: number,
 ): TitikProyeksi[] {
-  const awal = seninPekan(mulai);
+  const hariIni = String(mulai ?? '').slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(hariIni)) return [];
+
+  /*
+   * Batas tiap titik. Titik 0 hari ini; sisanya Minggu tiap pekan.
+   *
+   * Minggu pekan INI dilewati bila ia jatuh pada hari ini — kalau tidak, ada
+   * dua titik bertanggal sama dengan saldo berbeda, dan itu terbaca sebagai
+   * kekeliruan sistem.
+   */
+  const batas: string[] = [hariIni];
+  let m = mingguPekan(hariIni);
+  for (let i = 0; i < pekan; i++) {
+    if (m > hariIni) batas.push(m);
+    m = tambahPekan(m, 1);
+  }
 
   const ember = new Map<string, { masuk: number; keluar: number }>();
-  const kunci: string[] = [];
-  for (let i = 0; i < pekan; i++) {
-    const k = tambahPekan(awal, i);
-    kunci.push(k);
-    ember.set(k, { masuk: 0, keluar: 0 });
-  }
-  const akhir = kunci[kunci.length - 1];
+  for (const b of batas) ember.set(b, { masuk: 0, keluar: 0 });
+
+  const akhir = batas[batas.length - 1];
+  /** Titik pertama SESUDAH hari ini; ke sinilah yang terlewat dibebankan. */
+  const pertamaSesudahIni = batas.length > 1 ? batas[1] : null;
 
   for (const r of rencana ?? []) {
     if (r?.status !== 'rencana') continue;
 
     const tgl = String(r?.date ?? '').slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(tgl)) continue;
+    // Di luar jangkauan -> dilewati; jumlahnya dilaporkan terpisah oleh
+    // komponennya supaya tidak hilang diam-diam.
+    if (tgl > akhir) continue;
 
-    // Terlewat -> pekan pertama. Di luar jangkauan -> dilewati; jumlahnya
-    // dilaporkan terpisah oleh komponennya supaya tidak hilang diam-diam.
-    let k = seninPekan(tgl);
-    if (k < awal) k = awal;
-    if (k > akhir) continue;
+    /*
+     * Titik pertama yang tanggalnya >= tanggal rencana ini.
+     *
+     * Rencana TERLEWAT (tanggalnya <= hari ini) ikut ke titik pertama
+     * sesudah hari ini, BUKAN ke titik hari ini: titik hari ini adalah kas
+     * sungguhan, dan ia harus tetap cocok dengan rekening.
+     */
+    let kunci: string | null = null;
+    if (tgl <= hariIni) {
+      kunci = pertamaSesudahIni;
+    } else {
+      for (const b of batas) {
+        if (b >= tgl) {
+          kunci = b;
+          break;
+        }
+      }
+    }
+    if (!kunci || kunci === hariIni) continue;
 
-    const e = ember.get(k)!;
+    const e = ember.get(kunci)!;
     const n = Math.abs(Number(r?.amount) || 0);
     if (r?.planType === 'masuk') e.masuk += n;
     else e.keluar += n;
   }
 
   let saldo = Number(saldoAwal) || 0;
-  return kunci.map((k) => {
-    const e = ember.get(k)!;
+  return batas.map((b, i) => {
+    const e = ember.get(b)!;
     saldo += e.masuk - e.keluar;
-    return { mulai: k, label: labelPekan(k), masuk: e.masuk, keluar: e.keluar, saldo };
+    return {
+      tanggal: b,
+      label: labelPekan(b),
+      sekarang: i === 0,
+      masuk: e.masuk,
+      keluar: e.keluar,
+      saldo,
+    };
   });
 }
 
@@ -307,9 +391,16 @@ export class ProyeksiKasComponent implements OnChanges {
     this.titik().reduce((a, x) => a + x.masuk, 0),
   );
 
+  /** Tanggal titik jangkar — dicetak di kartu supaya dapat dicocokkan. */
+  readonly tanggalJangkar = computed<string>(() => this.titik()[0]?.label ?? '');
+
   /** Saldo TERENDAH sepanjang proyeksi, bukan saldo di ujungnya. */
   readonly titikTerendah = computed<TitikProyeksi | null>(() => {
-    const t = this.titik();
+    // Yang dicari titik terendah PROYEKSINYA; kas hari ini sudah punya
+    // KPI-nya sendiri di sebelah, dan menampilkannya dua kali saat ia
+    // kebetulan yang terendah membuat kartunya menyebut satu angka sebagai
+    // dua hal berbeda.
+    const t = this.titik().filter((x) => !x.sekarang);
     if (!t.length) return null;
     return t.reduce((a, b) => (b.saldo < a.saldo ? b : a));
   });
@@ -322,7 +413,9 @@ export class ProyeksiKasComponent implements OnChanges {
    * itulah yang harus dibereskan lebih dulu.
    */
   readonly pekanMinusPertama = computed<string | null>(() => {
-    const t = this.titik().find((x) => x.saldo < 0);
+    // Titik "hari ini" tidak ikut: ia kas sungguhan, bukan proyeksi. Kas yang
+    // sudah minus hari ini adalah keadaan, bukan peringatan tentang masa depan.
+    const t = this.titik().find((x) => !x.sekarang && x.saldo < 0);
     return t ? t.label : null;
   });
 
@@ -330,11 +423,19 @@ export class ProyeksiKasComponent implements OnChanges {
   readonly diLuarJangkauan = computed(() => {
     const t = this.titik();
     if (!t.length) return 0;
-    const akhir = t[t.length - 1].mulai;
+    const akhir = t[t.length - 1].tanggal;
+    /*
+     * Dibandingkan TANGGALNYA langsung, bukan Senin pekannya.
+     *
+     * `seninPekan(tgl) > akhir` menggeser perbandingannya sampai enam hari,
+     * sehingga rencana pada pekan terakhir yang SUDAH ikut digambar tetap
+     * terhitung sebagai "di luar jangkauan" — angkanya lalu menuduh ada
+     * rencana yang hilang padahal tidak.
+     */
     return this.rencana().filter((r) => {
       if (r?.status !== 'rencana') return false;
       const tgl = String(r?.date ?? '').slice(0, 10);
-      return /^\d{4}-\d{2}-\d{2}$/.test(tgl) && seninPekan(tgl) > akhir;
+      return /^\d{4}-\d{2}-\d{2}$/.test(tgl) && tgl > akhir;
     }).length;
   });
 

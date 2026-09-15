@@ -71,9 +71,20 @@
 
     <ng-container *ngIf="adaRencana()">
       <div class="pk-kpi">
+        <!--
+          Tanggal jangkarnya DICETAK.
+
+          Angka ini yang dicocokkan orang dengan kalender dan dengan
+          rekeningnya. Tanpa tanggalnya tertulis, tidak ada cara mengetahui
+          tanggal berapa yang harus dicocokkan — dan itulah yang dulu membuat
+          titik pertama grafik terbaca sebagai angka yang salah.
+        -->
         <div class="pk-sel">
           <div class="pk-label">{{ "proyeksiKas.kasSekarang" | translate }}</div>
           <div class="pk-nilai">{{ saldoSekarang() | number: "1.0-0" }}</div>
+          <div class="pk-ket">
+            {{ "proyeksiKas.jangkarKet" | translate: { tanggal: tanggalJangkar() } }}
+          </div>
         </div>
         <div class="pk-sel">
           <div class="pk-label">
