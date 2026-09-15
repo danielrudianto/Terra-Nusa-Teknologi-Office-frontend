@@ -22,7 +22,21 @@
       [label]="label"
       (onBookmarkClicked)="ubahSidenav()"
     />
-    <div class="dashboard__container__router">
+    <!--
+      Transisi halaman dipasang pada PEMBUNGKUS outlet, bukan pada outletnya.
+
+      `<router-outlet>` sendiri tidak merender apa pun — komponen halaman
+      disisipkan sebagai SAUDARA di sebelahnya, bukan sebagai anaknya. Trigger
+      yang dipasang di sana tidak akan menyentuh isi halaman sama sekali, dan
+      gejalanya persis seperti animasi yang tidak pernah menyala.
+    -->
+    <div
+      class="dashboard__container__router"
+      [@transisiRute]="{
+        value: kunciRute(),
+        params: { durasi: durasiTransisi, jeda: jedaJudul }
+      }"
+    >
       <router-outlet></router-outlet>
     </div>
   </mat-drawer-content>

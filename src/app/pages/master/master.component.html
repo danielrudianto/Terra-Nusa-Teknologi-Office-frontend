@@ -45,7 +45,7 @@
 
   <!-- content -->
   <section class="master-content">
-    <div class="master-anim" [@routeFade]="getRouteState(outlet)">
+    <div class="master-anim" [@transisiRuteBersarang]="{ value: getRouteState(outlet), params: { durasi: durasiTransisi } }">
       <router-outlet #outlet="outlet"></router-outlet>
     </div>
   </section>

@@ -5,7 +5,28 @@ $danger: var(--bad-fg, #e5484d);
 
 .dc {
   font-family: "Montserrat", sans-serif;
-  width: min(380px, 92vw);
+
+  /*
+   * MENGIKUTI lebar panelnya, tidak memaksakan lebarnya sendiri.
+   *
+   * Dulu `width: min(380px, 92vw)` — angka mati. Pemanggilnya membuka dialog
+   * dengan `width: '440px'` atau `'460px'`, jadi kartunya 380px di dalam
+   * panel 460px: 80px sisa. Dan karena ini blok tanpa margin otomatis,
+   * seluruh sisanya jatuh ke SATU sisi — ruang kosong di kanan, persis yang
+   * terlihat pada dialog hapus slip gaji.
+   *
+   * Tidak ada galat, dan pada pemanggil yang kebetulan tidak menyetel lebar
+   * tampilannya benar — sehingga cacatnya cuma muncul di sebagian dialog.
+   *
+   * `width: 100%` membuatnya mengisi panel berapa pun lebarnya; `max-width`
+   * tetap menjaga lebar baca; `margin-inline: auto` membuat sisa ruang —
+   * kalau panelnya memang lebih lebar dari itu — terbagi rata, bukan menumpuk
+   * di satu sisi.
+   */
+  width: 100%;
+  max-width: min(420px, 92vw);
+  margin-inline: auto;
+
   box-sizing: border-box;
   text-align: center;
   padding: 0.5rem 0.5rem 0.25rem;

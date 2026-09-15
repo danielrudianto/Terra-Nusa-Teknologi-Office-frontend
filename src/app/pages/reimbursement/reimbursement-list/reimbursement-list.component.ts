@@ -84,21 +84,56 @@ export class ReimbursementListComponent implements OnDestroy {
     'action',
   ];
 
+  /**
+   * Saringan status BAWAAN: disetujui + menunggu, tanpa yang ditolak.
+   *
+   * Reimbursement yang ditolak tidak menuntut tindakan apa pun — ia sudah
+   * selesai, dan selesainya dengan tidak terjadi. Menampilkannya secara
+   * bawaan membuat daftar yang dibuka untuk mengerjakan sesuatu berisi baris
+   * yang justru tidak dapat dikerjakan, dan pada bulan yang ramai baris
+   * itulah yang paling banyak.
+   *
+   * TIDAK disembunyikan: chip "Ditolak" tetap ada dan tinggal ditekan.
+   * Bedanya cuma pada apa yang muncul tanpa diminta.
+   *
+   * `isPaid`/`isUnpaid` sengaja dibiarkan mati — itu saringan PEMBAYARAN,
+   * bukan status, dan server memperlakukannya sebagai kelompok OR tersendiri.
+   * Menyalakannya ikut akan mempersempit daftarnya dua kali.
+   */
+  private static readonly SARINGAN_BAWAAN: Record<string, boolean> = {
+    isApprove: true,
+    isPending: true,
+    isDelete: false,
+    isPaid: false,
+    isUnpaid: false,
+  };
+
   filterFormGroup: FormGroup = new FormGroup({
-    isApprove: new FormControl(false, { nonNullable: true }),
-    isDelete: new FormControl(false, { nonNullable: true }),
-    isPending: new FormControl(false, { nonNullable: true }),
-    isPaid: new FormControl(false, { nonNullable: true }),
-    isUnpaid: new FormControl(false, { nonNullable: true }),
+    isApprove: new FormControl(
+      ReimbursementListComponent.SARINGAN_BAWAAN['isApprove'],
+      { nonNullable: true },
+    ),
+    isDelete: new FormControl(
+      ReimbursementListComponent.SARINGAN_BAWAAN['isDelete'],
+      { nonNullable: true },
+    ),
+    isPending: new FormControl(
+      ReimbursementListComponent.SARINGAN_BAWAAN['isPending'],
+      { nonNullable: true },
+    ),
+    isPaid: new FormControl(
+      ReimbursementListComponent.SARINGAN_BAWAAN['isPaid'],
+      { nonNullable: true },
+    ),
+    isUnpaid: new FormControl(
+      ReimbursementListComponent.SARINGAN_BAWAAN['isUnpaid'],
+      { nonNullable: true },
+    ),
   });
 
   // Add chip selections tracking
   chipSelections: { [key: string]: boolean } = {
-    isApprove: false,
-    isDelete: false,
-    isPending: false,
-    isPaid: false,
-    isUnpaid: false,
+    ...ReimbursementListComponent.SARINGAN_BAWAAN,
   };
 
   ngOnInit(): void {
@@ -136,16 +171,33 @@ export class ReimbursementListComponent implements OnDestroy {
           'isPaid',
           'isUnpaid',
         ];
+        /*
+         * Bawaan berlaku HANYA saat URL-nya belum menyebut saringan apa pun.
+         *
+         * Begitu seseorang menyentuh satu chip, pendengar di bawah menulis
+         * SELURUH kunci ke URL — jadi hadirnya satu kunci sudah berarti
+         * pilihannya disengaja, termasuk pilihan mengosongkan semuanya.
+         * Memaksakan bawaan di situ akan menyalakan kembali chip yang baru
+         * saja dimatikan orangnya, dan itu terbaca sebagai halaman yang
+         * menolak diatur.
+         */
+        const adaSaringanDiUrl = filterKeys.some(
+          (k) => params[k] !== undefined,
+        );
+
         filterKeys.forEach((key) => {
-          if (params[key] !== undefined) {
-            const value = params[key] === 'true';
-            this.filterFormGroup
-              .get(key)
-              ?.setValue(value, { emitEvent: false });
-            this.chipSelections[key] = value;
-          } else {
-            this.chipSelections[key] = false;
-          }
+          /*
+           * Cabang "tidak ada di URL" dulu HANYA menyetel `chipSelections`
+           * dan tidak menyentuh form controlnya — jadi chip dan saringan
+           * yang benar-benar dikirim bisa berbeda tanpa satu pun galat.
+           * Sekarang keduanya selalu disetel dari nilai yang sama.
+           */
+          const nilai = adaSaringanDiUrl
+            ? params[key] === 'true'
+            : ReimbursementListComponent.SARINGAN_BAWAAN[key];
+
+          this.filterFormGroup.get(key)?.setValue(nilai, { emitEvent: false });
+          this.chipSelections[key] = nilai;
         });
 
         // Fetch data with loaded state

@@ -1,4 +1,4 @@
-import { Component, computed, HostListener, inject } from '@angular/core';
+import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { PermissionService } from '../../services/permission.service';
 import { SideNavComponent } from '../../components/side-nav/side-nav.component';
 import { PanduanPanelComponent } from '../../components/panduan/panduan-panel/panduan-panel.component';
@@ -14,6 +14,11 @@ import {
 import { filter, map } from 'rxjs';
 import { VersiService } from 'src/app/services/versi.service';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  durasiHormatiGerak,
+  JEDA_JUDUL,
+  transisiRute,
+} from '../../animations/transisi-rute';
 
 @Component({
   selector: 'app-main',
@@ -29,6 +34,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   standalone: true,
+  animations: [transisiRute],
 })
 export class MainComponent {
   readonly versi = inject(VersiService);
@@ -70,6 +76,26 @@ export class MainComponent {
 
   isSidenavigationOpened: boolean = true;
   label: string = '';
+
+  /*
+   * Kunci yang menyalakan transisi halaman.
+   *
+   * Nilainya sendiri tidak berarti apa-apa — yang berarti adalah ia BERUBAH.
+   * Dipakai URL-nya, bukan `routeConfig.path`: beberapa rute di aplikasi ini
+   * ber-`path: ''`, jadi berpindah di antara keduanya menghasilkan kunci yang
+   * sama dan animasinya diam-diam tidak pernah jalan.
+   */
+  readonly kunciRute = signal('');
+
+  /*
+   * Durasi dibaca SEKALI saat komponennya dibuat.
+   *
+   * Yang menyalakan "kurangi gerak" di tengah sesi jarang terjadi, dan
+   * memasang pendengar `matchMedia` untuk itu berarti satu langganan lagi
+   * yang harus dibersihkan demi hal yang praktis tidak pernah berubah.
+   */
+  readonly durasiTransisi = durasiHormatiGerak();
+  readonly jedaJudul = JEDA_JUDUL;
 
   @HostListener('window:resize')
   sesuaikanLayar(): void {
@@ -145,6 +171,7 @@ export class MainComponent {
     this.permissionService.load();
 
     this.label = this.route.snapshot.firstChild!.data['title'];
+    this.kunciRute.set(this.router.url);
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -174,6 +201,7 @@ export class MainComponent {
       )
       .subscribe((route: ActivatedRoute) => {
         this.label = route.snapshot.data['title'];
+        this.kunciRute.set(this.router.url);
       });
   }
 

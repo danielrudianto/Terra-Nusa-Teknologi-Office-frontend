@@ -2,7 +2,10 @@ import { Component, inject } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { trigger, transition, style, animate } from '@angular/animations';
+import {
+  durasiHormatiGerak,
+  transisiRuteBersarang,
+} from '../../animations/transisi-rute';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PermissionService } from '../../services/permission.service';
 
@@ -27,20 +30,24 @@ interface MasterNavItem {
   imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
   templateUrl: './master.component.html',
   styleUrl: './master.component.scss',
-  animations: [
-    trigger('routeFade', [
-      transition('* => *', [
-        style({ opacity: 0, transform: 'translateY(8px)' }),
-        animate(
-          '260ms cubic-bezier(0.22, 1, 0.36, 1)',
-          style({ opacity: 1, transform: 'translateY(0)' }),
-        ),
-      ]),
-    ]),
-  ],
+  /*
+   * Definisinya dipindah ke `animations/transisi-rute.ts`.
+   *
+   * Dulu ditulis di sini, dan kerangka utama tidak punya transisi sama
+   * sekali — jadi berpindah DI DALAM Data Master ada gerakannya sementara
+   * berpindah lewat menu samping berganti begitu saja. Ketidakkonsistenan
+   * itu justru membuat yang tanpa gerakan terasa lebih kaku daripada kalau
+   * memang tidak ada di mana-mana.
+   *
+   * Versi bersarang TIDAK menganimasikan kemunculan pertamanya — lihat
+   * alasannya di berkas itu.
+   */
+  animations: [transisiRuteBersarang],
 })
 export class MasterComponent {
   constructor(private translate: TranslateService) {}
+
+  readonly durasiTransisi = durasiHormatiGerak();
 
   /**
    * Menu samping halaman master.
