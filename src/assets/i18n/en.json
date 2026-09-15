@@ -1707,6 +1707,8 @@
     "ket": "Starts from today's cash, not from the month shown above.",
     "dasarJudul": "Based on cash plans only. ",
     "dasarKet": "Sales invoices carry no due date in the system, so incoming money cannot be placed on a timeline. To avoid a falsely pessimistic line, outgoing money comes from plans too. This projection is only as good as what you enter.",
+    "rekening": "Computed from these accounts: {{daftar}}.",
+    "tanpaRekening": "No account is ticked, so nothing is computed. Tick at least one in the account picker above.",
     "kosong": "No cash plans in the next three months yet.",
     "kasSekarang": "Cash today",
     "jangkarKet": "start of the line, {{tanggal}}",

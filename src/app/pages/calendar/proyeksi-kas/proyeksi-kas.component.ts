@@ -274,6 +274,16 @@ export class ProyeksiKasComponent implements OnChanges {
   readonly terkunci = signal(false);
 
   /**
+   * Tidak ada satu pun rekening yang dicentang.
+   *
+   * Dibedakan dari "tidak ada rencana": yang ini bukan keadaan kas, melainkan
+   * saringan yang menutup semuanya. Menggambar grafik untuk keadaan ini
+   * berarti menebak — dan tebakan server adalah SELURUH rekening, yang
+   * kebalikan dari yang dimaksud.
+   */
+  readonly tanpaRekening = signal(false);
+
+  /**
    * Panelnya sedang terbuka. Tertutup secara bawaan — dan itu disengaja.
    *
    * Yang dijawab kartu ini pertanyaan yang tidak ditanyakan setiap kali
@@ -337,6 +347,27 @@ export class ProyeksiKasComponent implements OnChanges {
       .filter((x) => x?.selected)
       .map((x) => x.id);
 
+    /*
+     * TIDAK ADA rekening yang dicentang: berhenti, jangan menebak.
+     *
+     * Daftar kosong dikirim sebagai parameter yang HILANG SAMA SEKALI —
+     * `HttpParams` membuang larik kosong — dan server memperlakukan penyaring
+     * yang tidak ada sebagai "seluruh rekening". Jadi mencentang nol rekening
+     * justru menghasilkan angka TERBESAR yang mungkin, termasuk deposito dan
+     * escrow yang sengaja dikecualikan dari kalender.
+     *
+     * Itu kebalikan dari yang dimaksud siapa pun, dan tidak ada apa pun di
+     * layar yang menunjukkannya.
+     */
+    if (!idRekening.length) {
+      this.tanpaRekening.set(true);
+      this.saldoSekarang.set(null);
+      this.rencana.set([]);
+      this.memuat.set(false);
+      return;
+    }
+    this.tanpaRekening.set(false);
+
     forkJoin({
       posisi: this.api
         .get('dashboard/cash-position', { bankAccounts: idRekening })
@@ -355,7 +386,15 @@ export class ProyeksiKasComponent implements OnChanges {
        * dapat memindahkan baris yang memang ada di tangannya.
        */
       rencana: this.planService
-        .rentang(seninPekan(mulai), akhir)
+        /*
+         * Rekening yang SAMA dengan yang dipakai saldonya.
+         *
+         * Dulu tidak disaring sama sekali: saldonya dari rekening yang
+         * dicentang, rencananya dari seluruh rekening. Dua sisi dari satu
+         * perhitungan memakai kumpulan rekening yang berbeda — dan hasilnya
+         * tetap angka yang masuk akal, jadi tidak ada yang curiga.
+         */
+        .rentang(seninPekan(mulai), akhir, '', idRekening)
         .pipe(catchError(() => of({ data: [] }))),
     }).subscribe(({ posisi, rencana }: any) => {
       if (posisi?.__galat) {
@@ -393,6 +432,22 @@ export class ProyeksiKasComponent implements OnChanges {
 
   /** Tanggal titik jangkar — dicetak di kartu supaya dapat dicocokkan. */
   readonly tanggalJangkar = computed<string>(() => this.titik()[0]?.label ?? '');
+
+  /**
+   * Rekening yang ikut dihitung, untuk dicetak di kartunya.
+   *
+   * DASAR perhitungan disebut di muka. Kartu ini dan kisi di atasnya memakai
+   * saringan rekening yang sama, dan satu-satunya cara memastikannya bagi yang
+   * membacanya adalah kalau kartunya mengatakannya.
+   */
+  readonly rekeningDipakai = computed<string>(() => {
+    const dipilih = (this.bankAccounts ?? []).filter((x) => x?.selected);
+    const semua = (this.bankAccounts ?? []).length;
+    if (!semua || dipilih.length === semua) return '';
+    return dipilih
+      .map((x) => x?.bankName ?? x?.bankAccountName ?? '-')
+      .join(', ');
+  });
 
   /** Saldo TERENDAH sepanjang proyeksi, bukan saldo di ujungnya. */
   readonly titikTerendah = computed<TitikProyeksi | null>(() => {

@@ -64,7 +64,25 @@
     <span>{{ "common.loading" | translate }}</span>
   </div>
 
-  <ng-container *ngIf="!memuat()">
+  <!--
+    SARINGAN REKENINGNYA disebut, bukan didiamkan.
+
+    Kartu ini dan kisi di atasnya harus memakai kumpulan rekening yang sama;
+    kalau tidak, dua angka kas pada satu halaman berbeda karena alasan yang
+    tidak terlihat — dan itu cara tercepat membuat keduanya berhenti
+    dipercaya. Hanya ditampilkan bila TIDAK semua rekening ikut; kalau semua
+    ikut, menyebutnya cuma menambah baris yang tidak memberi tahu apa pun.
+  -->
+  <p class="pk-luar" *ngIf="!memuat() && rekeningDipakai()">
+    {{ "proyeksiKas.rekening" | translate: { daftar: rekeningDipakai() } }}
+  </p>
+
+  <div class="pk-peringatan" *ngIf="!memuat() && tanpaRekening()">
+    <mat-icon>filter_alt_off</mat-icon>
+    <span>{{ "proyeksiKas.tanpaRekening" | translate }}</span>
+  </div>
+
+  <ng-container *ngIf="!memuat() && !tanpaRekening()">
     <p class="pk-kosong" *ngIf="!adaRencana()">
       {{ "proyeksiKas.kosong" | translate }}
     </p>

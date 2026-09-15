@@ -1707,6 +1707,8 @@
     "ket": "Mulai dari kas hari ini, bukan dari bulan yang sedang dibuka di atas.",
     "dasarJudul": "Dihitung dari rencana kas saja. ",
     "dasarKet": "Faktur penjualan tidak punya tanggal jatuh tempo di sistem, jadi pemasukan tidak dapat ditempatkan di garis waktu. Supaya tidak pesimis palsu, pengeluaran pun hanya dari rencana. Proyeksinya sebaik yang Anda isi.",
+    "rekening": "Dihitung dari rekening: {{daftar}}.",
+    "tanpaRekening": "Tidak ada rekening yang dicentang, jadi tidak ada yang dihitung. Centang setidaknya satu di pemilih rekening di atas.",
     "kosong": "Belum ada rencana kas dalam tiga bulan ke depan.",
     "kasSekarang": "Kas hari ini",
     "jangkarKet": "titik mulai garis, {{tanggal}}",

@@ -110,11 +110,29 @@ export class PaymentPlanService {
    * Rentangnya WAJIB — servernya menolak tanpa itu. Tanpa batas, kalender
    * yang membuka bulan mana pun menarik seluruh riwayat perencanaan.
    */
-  rentang(awal: string, akhir: string, projectName = '') {
+  rentang(
+    awal: string,
+    akhir: string,
+    projectName = '',
+    /**
+     * Rekening yang ikut dihitung.
+     *
+     * WAJIB disebut oleh layar yang juga menyaring saldonya menurut rekening.
+     * Tanpa ini, saldo datang dari rekening yang dicentang sementara
+     * rencananya dari SELURUH rekening — termasuk yang sengaja dikecualikan
+     * dari kalender (deposito, escrow, penampung uang muka). Hasilnya tetap
+     * berupa angka yang masuk akal; yang salah cuma garisnya.
+     *
+     * Rencana yang rekeningnya belum ditentukan tetap ikut; itu diputuskan
+     * di server, bukan di sini.
+     */
+    bankAccounts: number[] | null = null,
+  ) {
     return this.api.get('payment-plans', {
       awal,
       akhir,
       ...(projectName ? { projectName } : {}),
+      ...(bankAccounts?.length ? { bankAccounts } : {}),
     });
   }
 
