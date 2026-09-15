@@ -19,7 +19,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
+import {
+  nominalSingkat,
+  pastikanChart,
+  rupiah,
+} from '../../../helpers/chart-dasar.helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { catchError, forkJoin, of } from 'rxjs';
@@ -56,9 +61,14 @@ import {
   type DataLaporanProyek,
 } from '../../../helpers/project-report-download';
 
-// Chart.js perlu didaftarkan sekali per bundel; sama seperti pada laporan
-// pembelian per proyek yang sudah memakainya.
-Chart.register(...registerables);
+/*
+ * Pendaftaran dan setelan dasar chart.js — alasannya di `chart-dasar.helper`.
+ *
+ * Dipanggil di tiap komponen grafik, bukan sekali di `app.config`: yang
+ * dijaga justru halaman yang dibuka TANPA halaman grafik lain pernah
+ * disentuh, dan itu hanya terjamin kalau berkasnya sendiri yang membawanya.
+ */
+pastikanChart();
 
 /** Satu titik pada kurva S: pekan, kemajuan, dan biaya terpakai. */
 interface TitikKurva {
@@ -1308,7 +1318,7 @@ export class ProjectReportComponent implements OnInit {
       tooltip: {
         callbacks: {
           label: (ctx) =>
-            `${ctx.dataset.label}: Rp ${Number(ctx.parsed.y).toLocaleString('id-ID')}`,
+            `${ctx.dataset.label}: ${rupiah(ctx.parsed.y)}`,
         },
       },
     },

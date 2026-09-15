@@ -64,8 +64,17 @@ export interface RencanaRekap {
  * Itu dapat diterima selama berkasnya MENGATAKANNYA; yang tidak dapat
  * diterima adalah dua angka berbeda yang keduanya menyebut diri "saldo".
  */
-const SUB = (bulan: string, tahun: number, mode = '') =>
-  `PT Alpha Konstruksi Nusantara · ${bulan} ${tahun}` +
+/*
+ * `periode` sudah berupa LABEL UTUH, bukan bulan + tahun terpisah.
+ *
+ * Sejak unduhannya dapat mencakup rentang tanggal, "bulan" dan "tahun" tidak
+ * lagi dapat menyebut isinya: berkas 15 Sep–20 Okt tidak punya satu bulan.
+ * Menyusunnya di sini dari dua angka berarti kop berkasnya berbohong tentang
+ * cakupannya — dan itu satu-satunya keterangan yang ikut saat lembarnya
+ * dicetak terpisah.
+ */
+const SUB = (periode: string, mode = '') =>
+  `PT Alpha Konstruksi Nusantara · ${periode}` +
   (mode ? ` · ${mode}` : '') +
   ' · disusun ' +
   new Date().toLocaleDateString('id-ID', {
@@ -111,8 +120,7 @@ export function lembarHarian(
   wb: ExcelJS.Workbook,
   harian: HarianRekap[],
   saldoAwal: number,
-  bulan: string,
-  tahun: number,
+  periode: string,
   mode = '',
 ): void {
   if (!harian.length) return;
@@ -132,7 +140,7 @@ export function lembarHarian(
     pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
   });
 
-  kop(sheet, kolom.length, 'RINGKASAN HARIAN', SUB(bulan, tahun, mode));
+  kop(sheet, kolom.length, 'RINGKASAN HARIAN', SUB(periode, mode));
   const AWAL = 4;
   kepala(sheet, AWAL, kolom);
 
@@ -265,8 +273,7 @@ export function lembarHarian(
 export function lembarRencana(
   wb: ExcelJS.Workbook,
   rencana: RencanaRekap[],
-  bulan: string,
-  tahun: number,
+  periode: string,
   mode = '',
 ): void {
   if (!rencana.length) return;
@@ -287,7 +294,7 @@ export function lembarRencana(
     pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1 },
   });
 
-  kop(sheet, kolom.length, 'RENCANA KAS', SUB(bulan, tahun, mode));
+  kop(sheet, kolom.length, 'RENCANA KAS', SUB(periode, mode));
   const AWAL = 4;
   kepala(sheet, AWAL, kolom);
 
@@ -445,14 +452,28 @@ export function lembarKalender(
   atasNama: string,
   saldoAwal: number,
   sel: SelKalender[],
-  bulan: string,
-  tahun: number,
+  /** Label bulan kisi ini, mis. `September 2026`. */
+  labelBulan: string,
   hariPertama: number,
   totalHari: number,
   mode = '',
+  /**
+   * Nama lembar, bila harus berbeda dari nomor rekeningnya.
+   *
+   * Rentang lintas bulan menghasilkan SATU kisi per bulan per rekening.
+   * Tanpa nama yang berbeda, lembar kedua memakai nama yang sama dengan yang
+   * pertama — dan ExcelJS menolak nama kembar, sehingga unduhannya gagal
+   * seluruhnya, bukan cuma lembar itu.
+   */
+  namaLembar_?: string,
+  /** Hari yang IKUT rentang; di luar ini selnya dikosongkan. */
+  dariHari = 1,
+  sampaiHari = 31,
 ): void {
   // Nama lembar Excel dibatasi 31 karakter dan tidak boleh memuat `/ \ ? * [ ]`.
-  const namaLembar = nomor.replace(/[\\/?*[\]]/g, '-').slice(0, 31);
+  const namaLembar = (namaLembar_ ?? nomor)
+    .replace(/[\\/?*[\]]/g, '-')
+    .slice(0, 31);
   const sheet = wb.addWorksheet(namaLembar, {
     /*
      * `paperSize` sengaja TIDAK disetel.
@@ -480,7 +501,7 @@ export function lembarKalender(
     sheet,
     TOTAL_KOLOM,
     `KALENDER PEMBAYARAN — ${nomor}`,
-    `${atasNama} · ${SUB(bulan, tahun, mode)}`,
+    `${atasNama} · ${SUB(labelBulan, mode)}`,
   );
 
   const hariNama = [
@@ -527,6 +548,25 @@ export function lembarKalender(
 
   const perHari: Record<number, SelKalender> = Object.create(null);
   for (const s of sel) perHari[s.hari] = s;
+
+  /*
+   * Nama bulan saja, untuk label tiap tanggal di dalam kisi.
+   *
+   * `labelBulan` memuat tahunnya (`September 2026`) karena kop lembarnya
+   * memerlukannya; sel tanggalnya tidak — `15 September 2026` di dalam kotak
+   * selebar 30 karakter mendorong keluar apa pun yang ada di sebelahnya.
+   */
+  const namaBulanSaja = labelBulan.replace(/\s+\d{4}$/, '');
+
+  /*
+   * Hari DI LUAR RENTANG tetap digambar, tetapi dikosongkan.
+   *
+   * Kisi tujuh kolom ini bentuk bulan; memotongnya membuat kolom harinya
+   * tidak lagi sejajar dengan tanggalnya, dan yang membacanya salah membaca
+   * hari. Yang dibuang isinya, bukan kotaknya — dan kotaknya diredupkan
+   * supaya "tidak ada transaksi" tidak tertukar dengan "tidak ikut diunduh".
+   */
+  const diLuarRentang = (d: number) => d < dariHari || d > sampaiHari;
 
   /*
    * Tinggi tiap pekan mengikuti hari TERPADAT di pekan itu.
@@ -585,15 +625,22 @@ export function lembarKalender(
        * menghitung kolom. Yang tebal hanya batas bloknya; di dalamnya tetap
        * samar supaya angkanya yang menonjol.
        */
+      const luar = diLuarRentang(d);
+
       const cTgl = sheet.getCell(baris, kiri);
-      cTgl.value = `${d} ${bulan}`;
-      cTgl.font = { name: 'Arial', size: 9, bold: true };
+      cTgl.value = `${d} ${namaBulanSaja}`;
+      cTgl.font = {
+        name: 'Arial',
+        size: 9,
+        bold: true,
+        color: luar ? { argb: ABU } : undefined,
+      };
       cTgl.alignment = { vertical: 'middle', indent: 1 };
       cTgl.border = tepiBlok({ kiri: true, atas: true });
       cTgl.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFF2F5FC' },
+        fgColor: { argb: luar ? 'FFF3F4F6' : 'FFF2F5FC' },
       };
 
       /*
@@ -612,8 +659,20 @@ export function lembarKalender(
         `${kolomNilai}${baris + 1}:${kolomNilai}${baris + maksTrx})`;
 
       const cSaldo = sheet.getCell(baris, kiri + 1);
-      cSaldo.value = { formula: rumusSaldo, result: isi?.saldoAkhir ?? 0 } as any;
-      alamatSaldoSebelumnya = `${kolomNilai}${baris}`;
+      /*
+       * Hari di luar rentang TIDAK menyambung rantai rumusnya.
+       *
+       * Diberi rumus, ia menjumlahkan sel-sel kosong dan menampilkan saldo
+       * untuk hari yang datanya memang tidak diambil — angka yang terlihat
+       * sah dan tidak berdasar apa pun.
+       */
+      if (!luar) {
+        cSaldo.value = {
+          formula: rumusSaldo,
+          result: isi?.saldoAkhir ?? 0,
+        } as any;
+        alamatSaldoSebelumnya = `${kolomNilai}${baris}`;
+      }
       cSaldo.numFmt = RP2;
       cSaldo.font = { name: 'Arial', size: 8, bold: true, color: { argb: ABU } };
       cSaldo.alignment = { horizontal: 'right', vertical: 'middle' };

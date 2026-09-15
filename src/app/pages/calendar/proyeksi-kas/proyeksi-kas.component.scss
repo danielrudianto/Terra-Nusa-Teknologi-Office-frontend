@@ -1,29 +1,67 @@
-.pk-kartu {
-  background: var(--surface, #fff);
-  border: 1px solid var(--line, #e6e9ef);
-  border-radius: 0.875rem;
-  box-shadow: var(--card-shadow, 0 1px 2px rgba(16, 24, 40, 0.05));
-  padding: 1.15rem 1.35rem;
+/*
+ * Panel yang dapat dilipat, TERTUTUP secara bawaan.
+ *
+ * Bentuknya tetap kartu — batas, sudut, dan bayangan yang sama dengan kartu
+ * lain di halaman ini — supaya ia tidak terbaca sebagai daerah yang berbeda
+ * hanya karena dapat dibuka.
+ */
+.pk-panel {
   margin-top: 1.25rem;
+  border: 1px solid var(--line, #e6e9ef);
+  border-radius: 0.875rem !important;
+  box-shadow: var(--card-shadow, 0 1px 2px rgba(16, 24, 40, 0.05)) !important;
+  background: var(--surface, #fff);
 }
 
-.pk-kepala {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+.pk-kepala-panel {
+  padding: 0 1.35rem;
 }
+
 .pk-judul {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+  margin-right: 1rem;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--ink, #212630);
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: var(--brand, #154dec);
+  }
 }
+
 .pk-ket {
-  margin: 0.2rem 0 0;
+  margin: 0;
   font-size: 0.76rem;
   color: var(--muted, #6b7280);
   line-height: 1.5;
+}
+
+/*
+ * Tempat memuat setinggi grafiknya.
+ *
+ * Kalau ia lebih pendek, panelnya menyusut lalu memanjang lagi saat datanya
+ * masuk — persoalan yang sama dengan yang dihilangkan di sini, cuma pindah
+ * tempat.
+ */
+.pk-muat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  height: 300px;
+  color: var(--muted, #6b7280);
+  font-size: 0.82rem;
+}
+@media (max-width: 640px) {
+  .pk-muat {
+    height: 230px;
+  }
 }
 
 /* Keterangan dasar — BUKAN warna peringatan.
@@ -97,7 +135,11 @@
   color: var(--ink, #212630);
   font-variant-numeric: tabular-nums;
 }
-.pk-ket {
+/* Keterangan di dalam sel KPI — DILINGKUPI selnya.
+   Tanpa lingkup, aturan ini menang atas `.pk-ket` keterangan panel di atas
+   semata-mata karena letaknya lebih bawah, dan keterangan panelnya mengecil
+   tanpa ada yang memintanya. */
+.pk-sel .pk-ket {
   font-size: 0.72rem;
   color: var(--muted, #6b7280);
 }

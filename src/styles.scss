@@ -324,6 +324,12 @@ html {
   --warn-fg: #a2651a;
   --bad-bg: #fdecec;
   --bad-fg: #b3322f;
+  /* Keterangan netral — BUKAN peringatan.
+     Dipakai spanduk yang menjelaskan dasar perhitungan (proyeksi kas, laporan
+     proyek, tender). Memakai warna peringatan untuk keterangan biasa membuat
+     peringatan yang sungguhan berhenti dibaca. */
+  --info-bg: #eef3ff;
+  --info-fg: #274690;
 
   /* existing shell vars */
   --base-color: rgba(247, 249, 251, 1);
@@ -408,6 +414,10 @@ html[data-theme="dark"] {
   --warn-fg: #e0a54e;
   --bad-bg: #331717;
   --bad-fg: #f08585;
+  /* Padanan gelapnya. Tanpa baris ini, spanduk keterangan tetap biru muda di
+     tema gelap — teks gelap di atas latar terang, di tengah halaman gelap. */
+  --info-bg: #16203a;
+  --info-fg: #9dbaff;
 
   /* shell */
   --base-color: #14161b;

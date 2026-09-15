@@ -1684,6 +1684,24 @@
     "scopeTitle": "现金流出仅涵盖采购与报销。",
     "scopeHint": "系统中的运营费用与薪资没有项目字段，无法归集到此处。该流出金额为下限，并非全貌。"
   },
+  "unduhKalender": {
+    "judul": "下载现金日历",
+    "sub": "先选范围，再选格式。",
+    "cakupan": "范围",
+    "perBulan": "单个月",
+    "perRentang": "日期区间",
+    "dari": "起始日期",
+    "sampai": "结束日期",
+    "hitungan": "已选 {{hari}} 天，最多 {{maks}} 天。",
+    "kepanjangan": "区间为 {{hari}} 天 — 最多 {{maks}} 天。文件在浏览器中生成，区间过长会让此标签页长时间没有任何反应。",
+    "terbalik": "结束日期早于起始日期。",
+    "format": "格式",
+    "excel": "Excel",
+    "excelKet": "可编辑，可自行筛选汇总",
+    "pdf": "PDF",
+    "pdfKet": "摘要 + 附件，可直接发送",
+    "dasarSaldo": "余额按此口径计算：{{mode}} — 与屏幕上显示的一致。"
+  },
   "proyeksiKas": {
     "judul": "现金预测 — 3 个月",
     "ket": "从今天的现金起算，而非上方所显示的月份。",

@@ -23,13 +23,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTreeModule } from '@angular/material/tree';
 import { BaseChartDirective } from 'ng2-charts';
-import {
-  Chart,
-  ChartConfiguration,
-  ChartData,
-  ChartType,
-  registerables,
-} from 'chart.js';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { pastikanChart } from 'src/app/helpers/chart-dasar.helper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderTitleComponent } from 'src/app/components/header-title/header-title.component';
@@ -64,7 +59,11 @@ interface TreeNode {
   expandable: boolean;
 }
 
-Chart.register(...registerables);
+/*
+ * Pendaftaran dan setelan dasar chart.js — alasannya di `chart-dasar.helper`.
+ * Dipanggil di tiap komponen grafik; lihat keterangannya di sana.
+ */
+pastikanChart();
 
 @Component({
   selector: 'app-purchase-report-project-report',

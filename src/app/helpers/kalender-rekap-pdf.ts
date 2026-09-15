@@ -256,10 +256,22 @@ function selHari(
   hari: number | null,
   bulan: string,
   isi: SelKalender | undefined,
+  /**
+   * Hari ini TIDAK ikut rentang yang diunduh.
+   *
+   * Kotaknya tetap digambar — kisi tujuh kolom ini bentuk bulan, dan
+   * memotongnya membuat kolom harinya tidak lagi sejajar dengan tanggalnya.
+   * Yang dihilangkan isinya, termasuk saldonya: menampilkan saldo untuk hari
+   * yang datanya tidak diambil berarti mencetak angka yang terlihat sah dan
+   * tidak berdasar apa pun.
+   */
+  luar = false,
 ) {
   if (hari === null) {
     return { text: '', fillColor: '#fafafa' };
   }
+
+  const latarKepala = luar ? '#f1f2f4' : '#e8eefb';
 
   const baris: any[] = [
     [
@@ -267,15 +279,16 @@ function selHari(
         text: `${hari} ${bulan}`,
         bold: true,
         fontSize: 7.5,
-        fillColor: '#e8eefb',
+        color: luar ? ABU : undefined,
+        fillColor: latarKepala,
       },
       {
-        text: rp(isi?.saldoAkhir ?? 0),
+        text: luar ? '' : rp(isi?.saldoAkhir ?? 0),
         bold: true,
         fontSize: 6.5,
         color: ABU,
         alignment: 'right',
-        fillColor: '#e8eefb',
+        fillColor: latarKepala,
       },
     ],
   ];
@@ -329,9 +342,14 @@ function kisiRekening(
   hariPertama: number,
   totalHari: number,
   pertama: boolean,
+  /** Hari yang IKUT rentang; di luar ini selnya dikosongkan. */
+  dariHari = 1,
+  sampaiHari = 31,
 ) {
   const perHari: Record<number, SelKalender> = Object.create(null);
   for (const s of sel) perHari[s.hari] = s;
+
+  const diLuar = (d: number) => d < dariHari || d > sampaiHari;
 
   const body: any[] = [
     HARI_NAMA.map((n) => ({
@@ -352,7 +370,11 @@ function kisiRekening(
       pekan[k] = hari++;
     }
     kolomAwal = 0;
-    body.push(pekan.map((d) => selHari(d, bulan, d ? perHari[d] : undefined)));
+    body.push(
+      pekan.map((d) =>
+        selHari(d, bulan, d ? perHari[d] : undefined, d ? diLuar(d) : false),
+      ),
+    );
   }
 
   return [
@@ -393,11 +415,29 @@ function kisiRekening(
   ];
 }
 
+/**
+ * Satu bulan dari lampiran sebuah rekening.
+ *
+ * Rentang yang melintasi bulan menghasilkan lebih dari satu; kisinya tetap
+ * sebulan penuh masing-masing.
+ */
+export interface BlokKisi {
+  /** `September 2026`. */
+  label: string;
+  /** 0 = Senin. */
+  hariPertama: number;
+  totalHari: number;
+  dariHari: number;
+  sampaiHari: number;
+  sel: SelKalender[];
+}
+
 /** Rekening beserta kisinya, satu lampiran per rekening. */
 export interface LampiranRekening {
   nomor: string;
   atasNama: string;
-  sel: SelKalender[];
+  /** Satu blok per bulan yang tersentuh rentangnya, berurutan. */
+  blok: BlokKisi[];
   /** Dipakai lembar Excel-nya; PDF membaca saldo dari tiap selnya. */
   saldoAwal: number;
 }
@@ -423,10 +463,15 @@ export async function berkasKalenderPdf(
   harian: HarianRekap[],
   saldoAwal: number,
   lampiran: LampiranRekening[],
-  bulan: string,
-  tahun: number,
-  hariPertama: number,
-  totalHari: number,
+  /**
+   * Label cakupan berkas ini — `September 2026`, atau `15 Sep – 20 Okt 2026`.
+   *
+   * Menggantikan pasangan `bulan` + `tahun`: sejak unduhannya dapat mencakup
+   * rentang, tidak ada satu bulan yang dapat menyebut isinya, dan kop yang
+   * menyebut satu bulan untuk berkas dua bulan adalah keterangan yang salah
+   * pada SETIAP halaman.
+   */
+  periode: string,
   mode = '',
 ): Promise<Blob> {
   const disusun = new Date().toLocaleDateString('id-ID', {
@@ -443,7 +488,7 @@ export async function berkasKalenderPdf(
    * pada SETIAP halaman, keterangannya ikut pada lembar yang dicetak
    * terpisah dari halaman pertamanya.
    */
-  const sub = `${bulan} ${tahun}` + (mode ? ` · ${mode}` : '');
+  const sub = periode + (mode ? ` · ${mode}` : '');
 
   const ddHarian: any = {
     pageSize: 'A4',
@@ -457,7 +502,7 @@ export async function berkasKalenderPdf(
 
   const dokumen: Uint8Array[] = [await buatPdf(ddHarian)];
 
-  if (lampiran.length) {
+  if (lampiran.some((l) => l.blok.length)) {
     const ddKisi: any = {
       // A3: tujuh kolom hari yang memuat daftar nama beserta nominalnya
       // tidak muat pada A4 tanpa mengecilkan hurufnya sampai tidak terbaca.
@@ -467,17 +512,33 @@ export async function berkasKalenderPdf(
       defaultStyle: { font: 'Calibri', fontSize: 7 },
       header: kop('LAMPIRAN — KALENDER PER REKENING', sub, disusun)(24),
       footer: kaki(24),
-      content: lampiran.flatMap((l, i) =>
-        kisiRekening(
-          l.nomor,
-          l.atasNama,
-          l.sel,
-          bulan,
-          hariPertama,
-          totalHari,
-          i === 0,
+      /*
+       * Satu kisi per BULAN per rekening, bukan satu kisi per rekening.
+       *
+       * Rentang 15 Sep–20 Okt menyentuh dua bulan, dan kisi tujuh kolom itu
+       * memang bentuk bulan — memaksanya menjadi satu kisi 36 hari membuat
+       * kolom harinya berhenti sejajar dengan tanggalnya di tengah jalan.
+       *
+       * `pertama` dihitung atas SELURUH daftar yang sudah diratakan, bukan
+       * per rekening: yang menentukan halaman baru adalah "kisi keberapa",
+       * dan `i === 0` per rekening membuat kisi bulan kedua menempel di
+       * bawah kisi bulan pertama pada halaman yang sama.
+       */
+      content: lampiran
+        .flatMap((l) => l.blok.map((b) => ({ l, b })))
+        .flatMap(({ l, b }, i) =>
+          kisiRekening(
+            l.nomor,
+            l.atasNama,
+            b.sel,
+            b.label,
+            b.hariPertama,
+            b.totalHari,
+            i === 0,
+            b.dariHari,
+            b.sampaiHari,
+          ),
         ),
-      ),
     };
     dokumen.push(await buatPdf(ddKisi));
   }

@@ -1684,6 +1684,24 @@
     "scopeTitle": "Kas keluar dihitung dari pembelian dan reimbursement saja. ",
     "scopeHint": "Beban operasional dan gaji tidak punya kolom proyek di sistem, jadi tidak dapat dirunut ke sini. Angka kas keluarnya batas bawah, bukan angka utuh."
   },
+  "unduhKalender": {
+    "judul": "Unduh kalender kas",
+    "sub": "Pilih cakupannya dulu, formatnya belakangan.",
+    "cakupan": "Cakupan",
+    "perBulan": "Satu bulan",
+    "perRentang": "Rentang tanggal",
+    "dari": "Dari tanggal",
+    "sampai": "Sampai tanggal",
+    "hitungan": "{{hari}} hari terpilih, dari maksimum {{maks}} hari.",
+    "kepanjangan": "Rentangnya {{hari}} hari — maksimum {{maks}} hari. Berkasnya dirakit di peramban, dan rentang yang lebih panjang membuat tab ini diam lama tanpa pesan apa pun.",
+    "terbalik": "Tanggal akhir mendahului tanggal mulai.",
+    "format": "Format",
+    "excel": "Excel",
+    "excelKet": "Dapat disunting dan dijumlah sendiri",
+    "pdf": "PDF",
+    "pdfKet": "Ringkasan + lampiran, siap dikirim",
+    "dasarSaldo": "Saldo dihitung dengan dasar: {{mode}} — sama seperti yang sedang tampil di layar."
+  },
   "proyeksiKas": {
     "judul": "Proyeksi kas — 3 bulan",
     "ket": "Mulai dari kas hari ini, bukan dari bulan yang sedang dibuka di atas.",

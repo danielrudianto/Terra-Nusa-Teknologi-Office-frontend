@@ -11,28 +11,29 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ChartConfiguration, ChartData } from 'chart.js';
 
 import { ApiService } from 'src/app/services/api.service';
 import { PaymentPlanService } from 'src/app/services/payment-plan.service';
+import {
+  nominalSingkat,
+  pastikanChart,
+  rupiah,
+} from 'src/app/helpers/chart-dasar.helper';
 
 /*
- * Controller chart.js WAJIB didaftarkan, dan kegagalannya TIDAK TERLIHAT.
+ * Pendaftaran chart.js DIPANGGIL DI TINGKAT MODUL, bukan di dalam kelas.
  *
- * chart.js versi 4 tidak mendaftarkan apa pun sendiri. Tanpa baris ini,
- * `type: 'line'` tidak punya controller — kanvasnya tetap ada, tingginya
- * tetap 300px, dan yang tampil adalah kotak kosong. Tidak ada spanduk galat,
- * tidak ada pesan di layar; kartunya terlihat seperti grafik yang belum
- * selesai dibuat.
- *
- * Dua komponen grafik lain di aplikasi ini memanggilnya di tingkat modul juga.
- * Selama kebetulan salah satunya sudah termuat, grafik di halaman lain ikut
- * jalan — dan itu yang membuat kekeliruan ini menipu: ia hanya muncul pada
- * halaman yang dibuka TANPA halaman grafik lain pernah disentuh lebih dulu.
- * Persis yang terjadi di kalender.
+ * Alasannya dan kelas kegagalannya ada di `chart-dasar.helper` — ringkasnya:
+ * tanpa ini kanvasnya kosong tanpa satu pun galat, dan kosongnya hanya bagi
+ * yang membuka halaman ini lebih dulu.
  */
-Chart.register(...registerables);
+pastikanChart();
 
 /** Satu pekan pada garis proyeksi. */
 export interface TitikProyeksi {
@@ -157,6 +158,8 @@ export function titikProyeksi(
     MatTooltipModule,
     TranslatePipe,
     BaseChartDirective,
+    MatExpansionModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './proyeksi-kas.component.html',
   styleUrl: './proyeksi-kas.component.scss',
@@ -186,8 +189,38 @@ export class ProyeksiKasComponent implements OnChanges {
    */
   readonly terkunci = signal(false);
 
+  /**
+   * Panelnya sedang terbuka. Tertutup secara bawaan — dan itu disengaja.
+   *
+   * Yang dijawab kartu ini pertanyaan yang tidak ditanyakan setiap kali
+   * kalender dibuka. Terbuka secara bawaan, ia menarik dua permintaan dan
+   * menggeser seluruh halaman ke bawah untuk setiap orang yang sebenarnya
+   * cuma mau melihat bulan ini.
+   */
+  readonly dibuka = signal(false);
+
+  /**
+   * Datanya sudah tidak sesuai dengan saringan yang sekarang.
+   *
+   * Saat panelnya tertutup, perubahan rekening atau bulan TIDAK langsung
+   * menarik ulang — ditandai saja, lalu ditarik pada saat dibuka. Menarik
+   * ulang untuk panel yang tidak terlihat berarti satu permintaan tiap kali
+   * orang mencentang rekening, dan tidak ada yang melihat hasilnya.
+   */
+  private basi = true;
+
   ngOnChanges(_: SimpleChanges): void {
-    this.muat();
+    this.basi = true;
+    if (this.dibuka()) this.muat();
+  }
+
+  onBuka(): void {
+    this.dibuka.set(true);
+    if (this.basi) this.muat();
+  }
+
+  onTutup(): void {
+    this.dibuka.set(false);
   }
 
   private hariIni(): string {
@@ -196,8 +229,23 @@ export class ProyeksiKasComponent implements OnChanges {
     return `${d.getFullYear()}-${dua(d.getMonth() + 1)}-${dua(d.getDate())}`;
   }
 
+  /**
+   * Menarik KEDUA sumbernya sekaligus, dan menyetel keduanya BERSAMAAN.
+   *
+   * Sebelumnya dua langganan terpisah, dan `memuat` hanya mengikuti yang
+   * kedua. Saldo dan rencana karena itu tiba pada saat yang berbeda, dan
+   * grafiknya digambar ulang di antaranya: sekali dengan saldo awal nol,
+   * sekali lagi setelah saldonya datang. Sumbu Y-nya berubah skala di antara
+   * keduanya, jadi seluruh garisnya melompat — terlihat seperti kedipan, dan
+   * tidak ada galat apa pun yang menyebabkannya.
+   *
+   * `forkJoin` menunggu keduanya. Dua `set` pada akhir berada dalam satu
+   * putaran deteksi perubahan, jadi grafiknya digambar SEKALI, sudah utuh.
+   */
   private muat(): void {
     this.memuat.set(true);
+    this.basi = false;
+
     const mulai = this.hariIni();
     const akhir = tambahPekan(seninPekan(mulai), this.PEKAN);
 
@@ -205,36 +253,37 @@ export class ProyeksiKasComponent implements OnChanges {
       .filter((x) => x?.selected)
       .map((x) => x.id);
 
-    this.api
-      .get('dashboard/cash-position', { bankAccounts: idRekening })
-      .subscribe({
-        next: (r: any) => {
-          this.terkunci.set(false);
-          this.saldoSekarang.set(Number(r?.totalBalance) || 0);
-        },
-        error: (err: any) => {
-          this.terkunci.set(err?.status === 403);
-          this.saldoSekarang.set(null);
-        },
-      });
+    forkJoin({
+      posisi: this.api
+        .get('dashboard/cash-position', { bankAccounts: idRekening })
+        .pipe(
+          // Galatnya diubah menjadi nilai supaya `forkJoin` tidak gugur
+          // seluruhnya; 403 tetap dibedakan, karena itu yang menentukan
+          // kartunya disembunyikan atau tidak.
+          catchError((err: any) => of({ __galat: true, status: err?.status })),
+        ),
+      /*
+       * Rentangnya dimulai dari SENIN pekan ini, bukan dari hari ini.
+       *
+       * Rencana yang jatuh Senin-kemarin sementara hari ini Rabu tetap masuk
+       * pekan pertama — dan kalau rentang permintaannya mulai hari ini, baris
+       * itu tidak pernah terambil. Saringan "terlewat" di `titikProyeksi` hanya
+       * dapat memindahkan baris yang memang ada di tangannya.
+       */
+      rencana: this.planService
+        .rentang(seninPekan(mulai), akhir)
+        .pipe(catchError(() => of({ data: [] }))),
+    }).subscribe(({ posisi, rencana }: any) => {
+      if (posisi?.__galat) {
+        this.terkunci.set(posisi.status === 403);
+        this.saldoSekarang.set(null);
+      } else {
+        this.terkunci.set(false);
+        this.saldoSekarang.set(Number(posisi?.totalBalance) || 0);
+      }
 
-    /*
-     * Rentangnya dimulai dari SENIN pekan ini, bukan dari hari ini.
-     *
-     * Rencana yang jatuh Senin-kemarin sementara hari ini Rabu tetap masuk
-     * pekan pertama — dan kalau rentang permintaannya mulai hari ini, baris
-     * itu tidak pernah terambil. Saringan "terlewat" di `titikProyeksi` hanya
-     * dapat memindahkan baris yang memang ada di tangannya.
-     */
-    this.planService.rentang(seninPekan(mulai), akhir).subscribe({
-      next: (res: any) => {
-        this.rencana.set(Array.isArray(res?.data) ? res.data : []);
-        this.memuat.set(false);
-      },
-      error: () => {
-        this.rencana.set([]);
-        this.memuat.set(false);
-      },
+      this.rencana.set(Array.isArray(rencana?.data) ? rencana.data : []);
+      this.memuat.set(false);
     });
   }
 
@@ -319,8 +368,7 @@ export class ProyeksiKasComponent implements OnChanges {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (ctx) =>
-            `Rp ${Number(ctx.parsed.y).toLocaleString('id-ID')}`,
+          label: (ctx) => rupiah(ctx.parsed.y),
         },
       },
     },
@@ -328,12 +376,7 @@ export class ProyeksiKasComponent implements OnChanges {
       y: {
         // TIDAK dikunci mulai nol — saldo yang menembus nol justru yang dicari.
         ticks: {
-          callback: (v) => {
-            const jt = Number(v) / 1_000_000;
-            return Math.abs(jt) >= 1000
-              ? `${(jt / 1000).toFixed(1)} M`
-              : `${jt.toFixed(0)} jt`;
-          },
+          callback: (v) => nominalSingkat(v),
         },
         grid: {
           color: (ctx: any) =>

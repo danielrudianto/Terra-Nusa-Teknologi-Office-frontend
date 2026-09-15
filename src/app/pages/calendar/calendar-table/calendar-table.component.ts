@@ -41,7 +41,23 @@ import {
   berkasKalenderPdf,
 } from 'src/app/helpers/kalender-rekap-pdf';
 import { mutasiInterpayment } from 'src/app/helpers/kalender-mutasi.helper';
+import {
+  blokBulan,
+  daftarTanggal,
+  hariDalamBulan,
+  labelBerkas,
+  labelPeriode,
+  teksTanggal,
+  uraiTanggal,
+} from 'src/app/helpers/kalender-periode';
 import { MatMenuModule } from '@angular/material/menu';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import {
+  DataUnduhKalender,
+  HasilUnduhKalender,
+  UnduhKalenderDialogComponent,
+} from '../unduh-kalender-dialog/unduh-kalender-dialog.component';
 
 @Component({
   selector: 'app-calendar-table',
@@ -733,405 +749,548 @@ export class CalendarTableComponent {
    * memuat hal sama tiga kali membuat penerimanya harus memilih mana yang
    * dipercaya.
    */
-  onCalendarDownload(format: 'xlsx' | 'pdf' = 'xlsx') {
+  /**
+   * Membuka dialog unduhan: CAKUPAN dulu, format belakangan.
+   *
+   * Sebelumnya menu ini hanya menawarkan format, dan cakupannya diam-diam
+   * mengikuti bulan yang sedang dibuka. Yang butuh dua bulan sekaligus harus
+   * mengunduh dua kali lalu menggabungkannya sendiri — dan saldo awal lembar
+   * kedua tidak menyambung ke saldo akhir lembar pertama, sehingga hasil
+   * gabungannya salah tanpa satu pun angka yang terlihat ganjil.
+   */
+  bukaDialogUnduh(): void {
+    if (this.isDownloading) return;
+
+    const ikutRencana = this.viewMode !== 'balance-actual';
+
+    this.dialog
+      .open(UnduhKalenderDialogComponent, {
+        data: <DataUnduhKalender>{
+          month: this.month,
+          year: this.year,
+          modeSaldo: this.translate.instant(
+            ikutRencana ? 'calendar.exportPlan' : 'calendar.exportActual',
+          ),
+        },
+      })
+      .afterClosed()
+      .subscribe((hasil: HasilUnduhKalender | undefined) => {
+        if (hasil) this.onCalendarDownload(hasil);
+      });
+  }
+
+  /**
+   * Unduh kalender kas — Excel atau PDF, dari data yang SAMA.
+   *
+   * Formatnya hanya menentukan bentuk akhirnya; seluruh perhitungan di
+   * bawah — saldo berjalan, rencana yang ikut, transfer antar rekening yang
+   * dikecualikan — berlaku untuk keduanya. Menyalinnya menjadi dua jalur
+   * berarti dua tempat yang harus dijaga tetap sepakat, dan pada saat
+   * salah satunya diperbaiki, yang lain diam-diam melaporkan angka lain.
+   *
+   * Isinya terbatas pada dua hal yang benar-benar dibaca: RINGKASAN HARIAN,
+   * dan kisi kalender tiap rekening sebagai lampiran.
+   *
+   * CAKUPANNYA kini rentang tanggal, bukan bulan. Perulangan
+   * `hari = 1..totalHari` yang dulu dipakai tiga kali di sini tidak sekadar
+   * membatasi — ia membuat rentang lintas bulan mustahil dinyatakan.
+   * Penyusunan tanggalnya seluruhnya pindah ke `kalender-periode.helper`
+   * supaya ketiga tempat itu tidak dapat lagi berbeda.
+   */
+  onCalendarDownload(pilihan: HasilUnduhKalender): void {
     if (this.isDownloading) return;
     this.isDownloading = true;
 
-    this.apiService
-      .get('calendar/download', {
-        month: this.month + 1,
-        year: this.year,
-        bankAccounts: this.bankAccounts
-          .filter((x) => x.selected)
-          .map((x) => x.id),
-      })
-      .subscribe({
-        next: (data: any) => {
-          const month = this.month + 1;
-          const year = this.year;
-          const dd = (n: number) => String(n).padStart(2, '0');
-          const totalHari = new Date(year, month, 0).getDate();
-          const namaBulan = new Date(year, month - 1, 1).toLocaleString(
-            'id-ID',
-            { month: 'long' },
+    const format = pilihan.format;
+
+    const mulaiDiminta =
+      pilihan.mode === 'bulan'
+        ? teksTanggal(pilihan.year, pilihan.month + 1, 1)
+        : pilihan.mulai;
+    const akhirDiminta =
+      pilihan.mode === 'bulan'
+        ? teksTanggal(
+            pilihan.year,
+            pilihan.month + 1,
+            hariDalamBulan(pilihan.year, pilihan.month + 1),
+          )
+        : pilihan.akhir;
+
+    const rekening = this.bankAccounts.filter((x) => x.selected).map((x) => x.id);
+
+    /*
+     * RENCANA KAS ikut ditarik ulang untuk rentangnya, tidak dipinjam dari
+     * layar.
+     *
+     * `this.rencana` hanya memuat bulan yang sedang dibuka. Dipakai apa
+     * adanya untuk unduhan dua bulan, rencana bulan kedua hilang seluruhnya
+     * dari berkasnya — dan berkas itu tetap terbuka, tetap rapi, dan
+     * saldonya tetap terbaca masuk akal. Tidak ada yang akan menyadarinya
+     * sampai ada yang mencocokkannya dengan layar.
+     */
+    forkJoin({
+      data: this.apiService.get('calendar/download', {
+        start: mulaiDiminta,
+        end: akhirDiminta,
+        bankAccounts: rekening,
+      }),
+      rencana: this.planService.rentang(mulaiDiminta, akhirDiminta).pipe(
+        // Gagal memuat rencana TIDAK menggagalkan unduhannya; yang sudah
+        // terjadi tetap dapat diunduh.
+        catchError(() => of({ data: [] })),
+      ),
+    }).subscribe({
+      next: ({ data, rencana }: any) => {
+        /*
+         * Rentangnya diambil dari JAWABAN SERVER, bukan dari yang dikirim.
+         *
+         * Servernya menegakkan batas 60 hari sendiri. Kalau ia memotong atau
+         * menolak sebagian, berkas yang dirakit dari tanggal yang dikirim
+         * peramban akan memuat baris kosong untuk hari yang datanya memang
+         * tidak pernah datang — dan barisnya terlihat seperti hari tanpa
+         * transaksi.
+         */
+        const mulai = String(data?.start ?? mulaiDiminta).slice(0, 10);
+        const akhir = String(data?.end ?? akhirDiminta).slice(0, 10);
+
+        const tanggalRentang = daftarTanggal(mulai, akhir);
+        const blok = blokBulan(mulai, akhir);
+        const periode = labelPeriode(mulai, akhir);
+
+        if (!tanggalRentang.length) {
+          this.snackBar.open(
+            this.translate.instant('notify.downloadFailed'),
+            'Close',
+            { duration: 4000 },
           );
-          // 0 = Senin, mengikuti susunan kolom kalendernya.
-          const hariPertama = (new Date(year, month - 1, 1).getDay() + 6) % 7;
+          this.isDownloading = false;
+          return;
+        }
+
+        /*
+         * Rekening yang IKUT DIHITUNG pada rekap ini.
+         *
+         * Bukan seluruh rekening yang ada, melainkan yang tercentang di
+         * pemilih rekening — rekening yang ditandai dikecualikan tidak ikut.
+         * Inilah yang menentukan apakah sebuah transfer sekadar berpindah
+         * saku atau uangnya benar-benar meninggalkan rekap.
+         */
+        const dalamKalender = new Set<number>(
+          (data.bank_accounts ?? []).map((a: any) => Number(a.id)),
+        );
+
+        /*
+         * Satu bentuk transaksi untuk SELURUH lembar.
+         *
+         * Sebelumnya masing-masing lembar menyusunnya sendiri dari bidang
+         * yang berbeda-beda — dan yang satu memakai `opponent`, yang lain
+         * `accountName`, sehingga lembar yang sama menampilkan nama yang
+         * berbeda untuk transaksi yang sama.
+         */
+        const mutasiRekening = (bankID: number) => {
+          const bayar = (data.payments || [])
+            .filter((t: any) => t.bankAccountID === bankID && this.mutasiSah(t))
+            .map((t: any) => ({
+              date: String(t.date).slice(0, 10),
+              lawan: this.lawanMutasi(t) || t.opponent || '-',
+              keterangan: this.ketMutasi(t) || t.documentName || '',
+              proyek: this.proyekMutasi(t),
+              nilai: -Math.abs(Number(t.amount || 0)),
+              antar: false,
+            }));
+
+          const masuk = (data.incomes || [])
+            .filter((t: any) => t.bankAccountID === bankID)
+            .map((t: any) => ({
+              date: String(t.date).slice(0, 10),
+              lawan: t.opponent || '-',
+              keterangan: t.document_name || '',
+              proyek: '',
+              nilai: Math.abs(Number(t.amount || 0)),
+              antar: false,
+            }));
 
           /*
-           * Satu bentuk transaksi untuk SELURUH lembar.
+           * Transfer antar rekening — meniadakan HANYA bila kedua sisinya
+           * ikut dihitung; kalau tidak, uangnya benar-benar keluar.
            *
-           * Sebelumnya masing-masing lembar menyusunnya sendiri dari bidang
-           * yang berbeda-beda — dan yang satu memakai `opponent`, yang lain
-           * `accountName`, sehingga lembar yang sama menampilkan nama yang
-           * berbeda untuk transaksi yang sama.
+           * Aturannya di `kalender-mutasi.helper`, beserta alasannya.
            */
-          /*
-           * Rekening yang IKUT DIHITUNG pada rekap ini.
-           *
-           * Bukan seluruh rekening yang ada, melainkan yang tercentang di
-           * pemilih rekening — rekening yang ditandai dikecualikan tidak ikut.
-           * Inilah yang menentukan apakah sebuah transfer sekadar berpindah
-           * saku atau uangnya benar-benar meninggalkan rekap.
-           */
-          const dalamKalender = new Set<number>(
-            (data.bank_accounts ?? []).map((a: any) => Number(a.id)),
+          const antar = (data.interpayments || [])
+            .map((t: any) => mutasiInterpayment(t, bankID, dalamKalender))
+            .filter(Boolean) as any[];
+
+          return [...bayar, ...masuk, ...antar].sort((a, b) =>
+            a.date.localeCompare(b.date),
           );
+        };
 
-          const mutasiRekening = (bankID: number) => {
-            const bayar = (data.payments || [])
-              .filter(
-                (t: any) => t.bankAccountID === bankID && this.mutasiSah(t),
-              )
-              .map((t: any) => ({
-                date: String(t.date).slice(0, 10),
-                lawan: this.lawanMutasi(t) || t.opponent || '-',
-                keterangan: this.ketMutasi(t) || t.documentName || '',
-                proyek: this.proyekMutasi(t),
-                nilai: -Math.abs(Number(t.amount || 0)),
-                antar: false,
-              }));
+        /*
+         * Berkasnya mengikuti MODE YANG SEDANG DIPILIH di layar.
+         *
+         * Sebelumnya berkasnya selalu menghitung rencana sementara layarnya
+         * tidak pernah — jadi Excel dan kalender melaporkan saldo berbeda
+         * untuk bulan yang sama, dan tidak ada yang memberi tahu mana yang
+         * dimaksud. Itu lebih buruk daripada salah satunya salah.
+         *
+         * Konsekuensinya yang harus diakui: dua orang dapat mengunduh
+         * "kalender September" dan mendapat angka berbeda. Karena itu mode
+         * yang dipakai DICETAK di berkasnya (`modeLabel` di bawah) — supaya
+         * perbedaannya dapat dijelaskan, bukan diperdebatkan.
+         */
+        const ikutRencana = this.viewMode !== 'balance-actual';
+        const modeLabel = this.translate.instant(
+          ikutRencana ? 'calendar.exportPlan' : 'calendar.exportActual',
+        );
 
-            const masuk = (data.incomes || [])
-              .filter((t: any) => t.bankAccountID === bankID)
-              .map((t: any) => ({
-                date: String(t.date).slice(0, 10),
-                lawan: t.opponent || '-',
-                keterangan: t.document_name || '',
-                proyek: '',
-                nilai: Math.abs(Number(t.amount || 0)),
-                antar: false,
-              }));
+        const semuaRencana: any[] = rencana?.data ?? [];
+        const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
+        for (const r of ikutRencana
+          ? semuaRencana.filter((r: any) => r.status === 'rencana')
+          : []) {
+          const t = String(r.date).slice(0, 10);
+          (rencanaPerTanggal[t] ??= []).push(r);
+        }
 
-            /*
-             * Transfer antar rekening — meniadakan HANYA bila kedua sisinya
-             * ikut dihitung; kalau tidak, uangnya benar-benar keluar.
-             *
-             * Aturannya di `kalender-mutasi.helper`, beserta alasannya.
-             */
-            const antar = (data.interpayments || [])
-              .map((t: any) => mutasiInterpayment(t, bankID, dalamKalender))
-              .filter(Boolean) as any[];
+        /** Sel kisi satu rekening, dikelompokkan per bulan: `YYYY-MM`. */
+        const kunciBulan = (tgl: string) => tgl.slice(0, 7);
 
-            return [...bayar, ...masuk, ...antar].sort((a, b) =>
-              a.date.localeCompare(b.date),
-            );
-          };
+        const akun: AkunRekap[] = [];
+        const perTanggal: Record<
+          string,
+          { masuk: number; keluar: number; ketMasuk: string[]; ketKeluar: string[] }
+        > = Object.create(null);
 
-          const akun: AkunRekap[] = [];
-          const perTanggal: Record<
-            string,
-            { masuk: number; keluar: number; ketMasuk: string[]; ketKeluar: string[] }
-          > = Object.create(null);
+        for (const a of data.bank_accounts ?? []) {
+          const mutasi = mutasiRekening(a.id);
+          const awal = this.getOpeningBalance(data.balances, a.id);
 
-          for (const a of data.bank_accounts ?? []) {
-            const mutasi = mutasiRekening(a.id);
-            const awal = this.getOpeningBalance(data.balances, a.id);
+          let saldo = awal;
+          const harianSaldo: number[] = [];
 
-            let saldo = awal;
-            const sel: SelKalender[] = [];
-            const harianSaldo: number[] = [];
+          for (const tgl of tanggalRentang) {
+            const hariIni = mutasi.filter((t: any) => t.date === tgl);
 
-            for (let hari = 1; hari <= totalHari; hari++) {
-              const tgl = `${year}-${dd(month)}-${dd(hari)}`;
-              const hariIni = mutasi.filter((t: any) => t.date === tgl);
+            for (const t of hariIni) {
+              saldo += t.nilai;
 
-              for (const t of hariIni) {
-                saldo += t.nilai;
-
-                // Transfer antar rekening TIDAK masuk ringkasan gabungan:
-                // uangnya tidak keluar dari perusahaan, hanya berpindah.
-                if (t.antar) continue;
-                const g = (perTanggal[tgl] ??= {
-                  masuk: 0,
-                  keluar: 0,
-                  ketMasuk: [],
-                  ketKeluar: [],
-                });
-                if (t.nilai > 0) {
-                  g.masuk += t.nilai;
-                  if (t.lawan && !g.ketMasuk.includes(t.lawan)) {
-                    g.ketMasuk.push(t.lawan);
-                  }
-                } else {
-                  g.keluar += Math.abs(t.nilai);
-                  if (t.lawan && !g.ketKeluar.includes(t.lawan)) {
-                    g.ketKeluar.push(t.lawan);
-                  }
+              // Transfer antar rekening TIDAK masuk ringkasan gabungan:
+              // uangnya tidak keluar dari perusahaan, hanya berpindah.
+              if (t.antar) continue;
+              const g = (perTanggal[tgl] ??= {
+                masuk: 0,
+                keluar: 0,
+                ketMasuk: [],
+                ketKeluar: [],
+              });
+              if (t.nilai > 0) {
+                g.masuk += t.nilai;
+                if (t.lawan && !g.ketMasuk.includes(t.lawan)) {
+                  g.ketMasuk.push(t.lawan);
+                }
+              } else {
+                g.keluar += Math.abs(t.nilai);
+                if (t.lawan && !g.ketKeluar.includes(t.lawan)) {
+                  g.ketKeluar.push(t.lawan);
                 }
               }
-
-              harianSaldo.push(saldo);
-              if (hariIni.length) {
-                sel.push({
-                  hari,
-                  transaksi: hariIni.map((t: any) => ({
-                    lawan: t.lawan,
-                    nilai: t.nilai,
-                  })),
-                  saldoAkhir: saldo,
-                });
-              } else {
-                sel.push({ hari, transaksi: [], saldoAkhir: saldo });
-              }
             }
 
-            akun.push({
-              id: a.id,
-              nomor: a.bankAccountNumber,
-              atasNama: a.bankAccountName ?? '',
-              bank: a.bankName ?? '(tanpa nama bank)',
-              saldoAwal: awal,
-              harian: harianSaldo,
-            });
+            harianSaldo.push(saldo);
           }
 
-          const saldoAwalGabungan = akun.reduce((x, a) => x + a.saldoAwal, 0);
+          akun.push({
+            id: a.id,
+            nomor: a.bankAccountNumber,
+            atasNama: a.bankAccountName ?? '',
+            bank: a.bankName ?? '(tanpa nama bank)',
+            saldoAwal: awal,
+            harian: harianSaldo,
+          });
+        }
 
-          // Ringkasan harian gabungan: saldonya berjalan lintas rekening.
-          let saldoGabungan = saldoAwalGabungan;
-          const harian: HarianRekap[] = [];
+        const saldoAwalGabungan = akun.reduce((x, a) => x + a.saldoAwal, 0);
+
+        // Ringkasan harian gabungan: saldonya berjalan lintas rekening.
+        let saldoGabungan = saldoAwalGabungan;
+        const harian: HarianRekap[] = [];
+
+        /*
+         * RENCANA KAS ikut ke ringkasan harian, sebagai barisnya SENDIRI
+         * di bawah realisasi tanggal yang sama.
+         *
+         * Yang dicari lembar ini bukan sekadar "sudah keluar berapa",
+         * melainkan "saldonya nanti jadi berapa" — dan itu tidak terjawab
+         * tanpa yang belum terjadi. Saldo gabungannya karena itu berjalan
+         * MELEWATI baris rencana juga.
+         *
+         * Hanya yang berstatus `rencana` yang ikut. Yang sudah ditandai
+         * TERPAKAI uangnya sudah bergerak dan sudah tampil sebagai
+         * transaksi sungguhan di baris atasnya — menghitungnya lagi berarti
+         * satu pembayaran mengurangi saldo dua kali.
+         */
+        for (const tgl of tanggalRentang) {
+          const g = perTanggal[tgl];
+          const masuk = g?.masuk ?? 0;
+          const keluar = g?.keluar ?? 0;
+          saldoGabungan += masuk - keluar;
+          harian.push({
+            tanggal: tgl,
+            ketMasuk: (g?.ketMasuk ?? []).join(', '),
+            masuk,
+            ketKeluar: (g?.ketKeluar ?? []).join(', '),
+            keluar,
+            selisih: masuk - keluar,
+            saldoGabungan,
+          });
+
           /*
-           * RENCANA KAS ikut ke ringkasan harian, sebagai barisnya SENDIRI
-           * di bawah realisasi tanggal yang sama.
+           * Satu baris per rencana, tidak digabung menjadi satu.
            *
-           * Yang dicari lembar ini bukan sekadar "sudah keluar berapa",
-           * melainkan "saldonya nanti jadi berapa" — dan itu tidak terjawab
-           * tanpa yang belum terjadi. Saldo gabungannya karena itu berjalan
-           * MELEWATI baris rencana juga.
-           *
-           * Hanya yang berstatus `rencana` yang ikut. Yang sudah ditandai
-           * TERPAKAI uangnya sudah bergerak dan sudah tampil sebagai
-           * transaksi sungguhan di baris atasnya — menghitungnya lagi berarti
-           * satu pembayaran mengurangi saldo dua kali. Yang batal sudah
-           * disaring server.
+           * Keterangannya yang membuat barisnya berguna: "Tunas Ruang" dan
+           * "sewa crane ke-2" pada hari yang sama adalah dua keputusan
+           * berbeda, dan digabung menjadi satu angka keduanya berhenti
+           * dapat ditindaklanjuti.
            */
-          /*
-           * Berkasnya mengikuti MODE YANG SEDANG DIPILIH di layar.
-           *
-           * Sebelumnya berkasnya selalu menghitung rencana sementara layarnya
-           * tidak pernah — jadi Excel dan kalender melaporkan saldo berbeda
-           * untuk bulan yang sama, dan tidak ada yang memberi tahu mana yang
-           * dimaksud. Itu lebih buruk daripada salah satunya salah.
-           *
-           * Konsekuensinya yang harus diakui: dua orang dapat mengunduh
-           * "kalender September" dan mendapat angka berbeda. Karena itu mode
-           * yang dipakai DICETAK di berkasnya (`modeLabel` di bawah) — supaya
-           * perbedaannya dapat dijelaskan, bukan diperdebatkan.
-           */
-          const ikutRencana = this.viewMode !== 'balance-actual';
-          const modeLabel = this.translate.instant(
-            ikutRencana ? 'calendar.exportPlan' : 'calendar.exportActual',
-          );
-
-          const rencanaPerTanggal: Record<string, any[]> = Object.create(null);
-          for (const r of ikutRencana ? this.rencanaMenunggu : []) {
-            const t = String(r.date).slice(0, 10);
-            (rencanaPerTanggal[t] ??= []).push(r);
-          }
-
-          for (let hari = 1; hari <= totalHari; hari++) {
-            const tgl = `${year}-${dd(month)}-${dd(hari)}`;
-            const g = perTanggal[tgl];
-            const masuk = g?.masuk ?? 0;
-            const keluar = g?.keluar ?? 0;
-            saldoGabungan += masuk - keluar;
+          for (const r of rencanaPerTanggal[tgl] ?? []) {
+            const nilai = Number(r.amount || 0);
+            const keMasuk = r.planType === 'masuk';
+            const masukR = keMasuk ? nilai : 0;
+            const keluarR = keMasuk ? 0 : nilai;
+            saldoGabungan += masukR - keluarR;
             harian.push({
               tanggal: tgl,
-              ketMasuk: (g?.ketMasuk ?? []).join(', '),
-              masuk,
-              ketKeluar: (g?.ketKeluar ?? []).join(', '),
-              keluar,
-              selisih: masuk - keluar,
+              ketMasuk: keMasuk ? r.description || '' : '',
+              masuk: masukR,
+              ketKeluar: keMasuk ? '' : r.description || '',
+              keluar: keluarR,
+              selisih: masukR - keluarR,
               saldoGabungan,
+              // Menandai barisnya agar lembarnya menyorotnya beda warna.
+              rencana: true,
             });
+          }
+        }
+
+        const rencanaRekap: RencanaRekap[] = semuaRencana.map((r: any) => ({
+          date: String(r.date).slice(0, 10),
+          arah: r.planType === 'masuk' ? 'masuk' : 'keluar',
+          keterangan: r.description ?? '',
+          kategori: r.category ?? '',
+          proyek: r.projectName ?? '',
+          rekening: r.bankName ?? '',
+          nilai: Number(r.amount || 0),
+          status: r.lewat ? 'Terlewat' : (r.status ?? 'rencana'),
+        }));
+
+        /*
+         * Kisi tiap rekening disusun SEKALI, sebelum formatnya dipilih.
+         *
+         * Excel dan PDF menampilkan kisi yang sama; menyusunnya di dalam
+         * masing-masing cabang berarti saldo berjalan dan penyaringan
+         * rencananya ditulis dua kali, dan perbaikan pada satu format
+         * diam-diam tidak sampai ke yang lain.
+         *
+         * SATU BLOK PER BULAN yang tersentuh rentangnya. Kisi tujuh kolom
+         * itu memang bentuk bulan; memaksa rentang 36 hari menjadi satu kisi
+         * membuat kolom harinya berhenti sejajar dengan tanggalnya di tengah
+         * jalan, dan yang membacanya salah membaca hari.
+         */
+        const lampiran: LampiranRekening[] = [];
+
+        for (const a of data.bank_accounts ?? []) {
+          const isi = akun.find((x) => x.id === a.id);
+          if (!isi) continue;
+          const mutasi = mutasiRekening(a.id);
+
+          const selPerBulan: Record<string, SelKalender[]> = Object.create(null);
+          let saldo = isi.saldoAwal;
+
+          for (const tgl of tanggalRentang) {
+            const hariIni = mutasi.filter((t: any) => t.date === tgl);
+            for (const t of hariIni) saldo += t.nilai;
 
             /*
-             * Satu baris per rencana, tidak digabung menjadi satu.
+             * Rencana kas rekening INI, menyusul di bawah realisasinya.
              *
-             * Keterangannya yang membuat barisnya berguna: "Tunas Ruang" dan
-             * "sewa crane ke-2" pada hari yang sama adalah dua keputusan
-             * berbeda, dan digabung menjadi satu angka keduanya berhenti
-             * dapat ditindaklanjuti.
+             * Disaring menurut rekeningnya: kisi ini menyatakan keadaan
+             * SATU rekening, dan rencana yang belum ditentukan rekeningnya
+             * tidak dapat dibebankan ke salah satunya — ia tetap tampil di
+             * Ringkasan Harian, yang memang lintas rekening.
+             *
+             * Saldo akhirnya berjalan melewati rencana, sama seperti pada
+             * ringkasan harian: yang dicari kisi ini "nanti jadi berapa".
              */
-            for (const r of rencanaPerTanggal[tgl] ?? []) {
+            const rencanaHariIni = (rencanaPerTanggal[tgl] ?? []).filter(
+              (r: any) => Number(r.bankAccountID) === Number(a.id),
+            );
+            const barisRencana = rencanaHariIni.map((r: any) => {
               const nilai = Number(r.amount || 0);
-              const keMasuk = r.planType === 'masuk';
-              const masukR = keMasuk ? nilai : 0;
-              const keluarR = keMasuk ? 0 : nilai;
-              saldoGabungan += masukR - keluarR;
-              harian.push({
-                tanggal: tgl,
-                ketMasuk: keMasuk ? r.description || '' : '',
-                masuk: masukR,
-                ketKeluar: keMasuk ? '' : r.description || '',
-                keluar: keluarR,
-                selisih: masukR - keluarR,
-                saldoGabungan,
-                // Menandai barisnya agar lembarnya menyorotnya beda warna.
+              return {
+                lawan: r.description || '-',
+                nilai: r.planType === 'masuk' ? nilai : -nilai,
                 rencana: true,
-              });
-            }
-          }
+              };
+            });
+            for (const t of barisRencana) saldo += t.nilai;
 
-          const rencanaRekap: RencanaRekap[] = (this.rencana ?? []).map(
-            (r: any) => ({
-              date: String(r.date).slice(0, 10),
-              arah: r.planType === 'masuk' ? 'masuk' : 'keluar',
-              keterangan: r.description ?? '',
-              kategori: r.category ?? '',
-              proyek: r.projectName ?? '',
-              rekening: r.bankName ?? '',
-              nilai: Number(r.amount || 0),
-              status: r.lewat ? 'Terlewat' : (r.status ?? 'rencana'),
-            }),
-          );
-
-          /*
-           * Kisi tiap rekening disusun SEKALI, sebelum formatnya dipilih.
-           *
-           * Excel dan PDF menampilkan kisi yang sama; menyusunnya di dalam
-           * masing-masing cabang berarti saldo berjalan dan penyaringan
-           * rencananya ditulis dua kali, dan perbaikan pada satu format
-           * diam-diam tidak sampai ke yang lain.
-           */
-          const lampiran: LampiranRekening[] = [];
-
-          for (const a of data.bank_accounts ?? []) {
-            const isi = akun.find((x) => x.id === a.id);
-            if (!isi) continue;
-            const mutasi = mutasiRekening(a.id);
-            const sel: SelKalender[] = [];
-            let saldo = isi.saldoAwal;
-            for (let hari = 1; hari <= totalHari; hari++) {
-              const tgl = `${year}-${dd(month)}-${dd(hari)}`;
-              const hariIni = mutasi.filter((t: any) => t.date === tgl);
-              for (const t of hariIni) saldo += t.nilai;
-
-              /*
-               * Rencana kas rekening INI, menyusul di bawah realisasinya.
-               *
-               * Disaring menurut rekeningnya: kisi ini menyatakan keadaan
-               * SATU rekening, dan rencana yang belum ditentukan rekeningnya
-               * tidak dapat dibebankan ke salah satunya — ia tetap tampil di
-               * Ringkasan Harian, yang memang lintas rekening.
-               *
-               * Saldo akhirnya berjalan melewati rencana, sama seperti pada
-               * ringkasan harian: yang dicari kisi ini "nanti jadi berapa".
-               */
-              const rencanaHariIni = (rencanaPerTanggal[tgl] ?? []).filter(
-                (r: any) => Number(r.bankAccountID) === Number(a.id),
-              );
-              const barisRencana = rencanaHariIni.map((r: any) => {
-                const nilai = Number(r.amount || 0);
-                return {
-                  lawan: r.description || '-',
-                  nilai: r.planType === 'masuk' ? nilai : -nilai,
-                  rencana: true,
-                };
-              });
-              for (const t of barisRencana) saldo += t.nilai;
-
-              sel.push({
-                hari,
-                transaksi: [
-                  ...hariIni.map((t: any) => ({
-                    lawan: t.lawan,
-                    nilai: t.nilai,
-                  })),
-                  ...barisRencana,
-                ],
-                saldoAkhir: saldo,
-              });
-            }
-            lampiran.push({
-              nomor: a.bankAccountNumber,
-              atasNama: a.bankAccountName ?? '',
-              sel,
-              saldoAwal: isi.saldoAwal,
+            const urai = uraiTanggal(tgl);
+            (selPerBulan[kunciBulan(tgl)] ??= []).push({
+              hari: urai ? urai[2] : 1,
+              transaksi: [
+                ...hariIni.map((t: any) => ({
+                  lawan: t.lawan,
+                  nilai: t.nilai,
+                })),
+                ...barisRencana,
+              ],
+              saldoAkhir: saldo,
             });
           }
 
-          /*
-           * Mode ikut ke NAMA BERKAS, bukan hanya ke kopnya.
-           *
-           * Di sinilah perbedaannya paling cepat terlihat: dua berkas dengan
-           * angka berbeda tidak lagi punya nama yang sama persis, sehingga
-           * yang menerimanya tidak perlu membuka keduanya untuk tahu mana
-           * yang mana — dan tidak ada yang tanpa sadar menimpa yang satu
-           * dengan yang lain di folder yang sama.
-           */
-          const nama =
-            `Kalender_Kas_${namaBulan}_${year}_` +
-            (ikutRencana ? 'rencana' : 'aktual');
+          lampiran.push({
+            nomor: a.bankAccountNumber,
+            atasNama: a.bankAccountName ?? '',
+            saldoAwal: isi.saldoAwal,
+            blok: blok.map((b) => ({
+              label: b.label,
+              hariPertama: b.hariPertama,
+              totalHari: b.totalHari,
+              dariHari: b.dariHari,
+              sampaiHari: b.sampaiHari,
+              sel: selPerBulan[`${b.tahun}-${String(b.bulan).padStart(2, '0')}`] ?? [],
+            })),
+          });
+        }
 
-          if (format === 'pdf') {
-            berkasKalenderPdf(
-              harian,
-              saldoAwalGabungan,
-              lampiran,
-              namaBulan,
-              year,
-              hariPertama,
-              totalHari,
-              modeLabel,
+        /*
+         * Cakupan dan mode ikut ke NAMA BERKAS, bukan hanya ke kopnya.
+         *
+         * Di sinilah perbedaannya paling cepat terlihat: dua berkas dengan
+         * angka berbeda tidak lagi punya nama yang sama persis, sehingga
+         * yang menerimanya tidak perlu membuka keduanya untuk tahu mana
+         * yang mana — dan tidak ada yang tanpa sadar menimpa yang satu
+         * dengan yang lain di folder yang sama.
+         */
+        const nama =
+          `Kalender_Kas_${labelBerkas(mulai, akhir)}_` +
+          (ikutRencana ? 'rencana' : 'aktual');
+
+        if (format === 'pdf') {
+          berkasKalenderPdf(harian, saldoAwalGabungan, lampiran, periode, modeLabel)
+            .then((blob) => saveAs(blob, `${nama}.pdf`))
+            .catch(() =>
+              this.snackBar.open(
+                this.translate.instant('notify.downloadFailed'),
+                'Close',
+                { duration: 4000 },
+              ),
             )
-              .then((blob) => saveAs(blob, `${nama}.pdf`))
-              .catch(() =>
-                this.snackBar.open(
-                  this.translate.instant('notify.downloadFailed'),
-                  'Close',
-                  { duration: 4000 },
-                ),
-              )
-              .finally(() => (this.isDownloading = false));
-            return;
-          }
+            .finally(() => (this.isDownloading = false));
+          return;
+        }
 
-          const wb = new ExcelJS.Workbook();
-          /*
-           * Urutan lembar mengikuti seberapa sering dibuka.
-           *
-           * Excel membuka lembar PERTAMA; menaruh kisi kalender di depan
-           * berarti yang membukanya harus menggulir tab lebih dulu setiap
-           * kali, dan jumlah tabnya sebanyak rekeningnya.
-           */
-          lembarHarian(wb, harian, saldoAwalGabungan, namaBulan, year, modeLabel);
-          lembarRencana(wb, rencanaRekap, namaBulan, year, modeLabel);
-          for (const l of lampiran) {
+        const wb = new ExcelJS.Workbook();
+        /*
+         * Urutan lembar mengikuti seberapa sering dibuka.
+         *
+         * Excel membuka lembar PERTAMA; menaruh kisi kalender di depan
+         * berarti yang membukanya harus menggulir tab lebih dulu setiap
+         * kali, dan jumlah tabnya sebanyak rekeningnya.
+         */
+        lembarHarian(wb, harian, saldoAwalGabungan, periode, modeLabel);
+        lembarRencana(wb, rencanaRekap, periode, modeLabel);
+
+        /*
+         * Nama lembar dibuat UNIK sendiri, tidak diserahkan ke nomor
+         * rekeningnya.
+         *
+         * Rentang dua bulan menghasilkan dua kisi untuk rekening yang sama.
+         * Dengan nama yang sama, ExcelJS menolak lembar kedua dan seluruh
+         * unduhannya gagal — bukan cuma lembar itu. Dan nomor rekening
+         * sendiri sudah bisa kembar antar bank.
+         */
+        const terpakai = new Set<string>();
+        const namaUnik = (dasar: string): string => {
+          const bersih = dasar.replace(/[\\/?*[\]]/g, '-').slice(0, 31);
+          if (!terpakai.has(bersih)) {
+            terpakai.add(bersih);
+            return bersih;
+          }
+          for (let n = 2; n < 100; n++) {
+            const alt = `${bersih.slice(0, 31 - String(n).length - 1)} ${n}`;
+            if (!terpakai.has(alt)) {
+              terpakai.add(alt);
+              return alt;
+            }
+          }
+          return bersih;
+        };
+
+        for (const l of lampiran) {
+          for (const b of l.blok) {
+            // Bulan disebut di nama lembar HANYA bila rentangnya lebih dari
+            // satu bulan; kalau tidak, seluruh tab jadi bertele-tele untuk
+            // membedakan sesuatu yang tidak perlu dibedakan.
+            const dasar =
+              lampiran[0].blok.length > 1
+                ? `${l.nomor} ${b.label.slice(0, 3)}`
+                : l.nomor;
             lembarKalender(
               wb,
               l.nomor,
               l.atasNama,
               l.saldoAwal,
-              l.sel,
-              namaBulan,
-              year,
-              hariPertama,
-              totalHari,
+              b.sel,
+              b.label,
+              b.hariPertama,
+              b.totalHari,
               modeLabel,
+              namaUnik(dasar),
+              b.dariHari,
+              b.sampaiHari,
             );
           }
+        }
 
-          wb.xlsx
-            .writeBuffer()
-            .then((buf) => {
-              const blob = new Blob([buf], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-              });
-              saveAs(blob, `${nama}.xlsx`);
-            })
-            .finally(() => (this.isDownloading = false));
-        },
-        error: () => {
-          this.snackBar.open(
-            this.translate.instant('notify.loadFailed'),
-            'Close',
-            { duration: 3000 },
-          );
-          this.isDownloading = false;
-        },
-      });
+        wb.xlsx
+          .writeBuffer()
+          .then((buf) => {
+            const blob = new Blob([buf], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+            saveAs(blob, `${nama}.xlsx`);
+          })
+          .finally(() => (this.isDownloading = false));
+      },
+      /*
+       * Alasan penolakan dari SERVER ditampilkan apa adanya, bukan ditelan.
+       *
+       * Batas 60 hari ditegakkan di dua tempat — dialognya dan servernya.
+       * Kalau suatu saat keduanya tidak lagi sepakat (salah satunya diubah,
+       * yang lain tidak), pesan `notify.loadFailed` yang generik membuat
+       * dialognya tampak rusak: rentang yang jelas-jelas boleh dipilih
+       * ditolak tanpa alasan. Pesan servernya menyebut angkanya sendiri,
+       * jadi ketidaksepakatan itu terbaca sebagai apa adanya.
+       */
+      error: (err: any) => {
+        const alasan =
+          err?.status === 400
+            ? (err?.error?.detail?.error ??
+              err?.error?.detail ??
+              err?.error?.error)
+            : null;
+
+        this.snackBar.open(
+          typeof alasan === 'string' && alasan
+            ? alasan
+            : this.translate.instant('notify.loadFailed'),
+          'Close',
+          { duration: 5000 },
+        );
+        this.isDownloading = false;
+      },
+    });
   }
 
 

@@ -1,0 +1,174 @@
+<div class="uk">
+  <div class="uk-head dlg__head" mat-dialog-title appDialogGeser>
+    <span class="dlg__head-icon"><mat-icon>download</mat-icon></span>
+    <div class="dlg__head-text">
+      <h2 class="dlg__title">{{ "unduhKalender.judul" | translate }}</h2>
+      <span class="dlg__sub">{{ "unduhKalender.sub" | translate }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="uk-content">
+    <!--
+      CAKUPAN dipilih lebih dulu, format belakangan.
+
+      Yang menentukan isi berkasnya cakupannya; formatnya cuma menentukan
+      bentuk akhirnya. Menaruh format di atas membuat orang memutuskan
+      pembungkusnya sebelum tahu apa yang dibungkus.
+    -->
+    <div class="uk-label">{{ "unduhKalender.cakupan" | translate }}</div>
+    <div class="uk-pilih uk-pilih--2">
+      <label class="uk-kartu" [class.on]="mode() === 'bulan'">
+        <input
+          type="radio"
+          name="uk-mode"
+          [checked]="mode() === 'bulan'"
+          (change)="mode.set('bulan')"
+        />
+        <mat-icon>calendar_month</mat-icon>
+        <span>{{ "unduhKalender.perBulan" | translate }}</span>
+      </label>
+      <label class="uk-kartu" [class.on]="mode() === 'rentang'">
+        <input
+          type="radio"
+          name="uk-mode"
+          [checked]="mode() === 'rentang'"
+          (change)="mode.set('rentang')"
+        />
+        <mat-icon>date_range</mat-icon>
+        <span>{{ "unduhKalender.perRentang" | translate }}</span>
+      </label>
+    </div>
+
+    @if (mode() === "bulan") {
+      <div class="uk-bulan">
+        <app-calendar-month-selector
+          [month]="month"
+          [year]="year"
+          (onMonthYearSelected)="onBulanBerubah($event)"
+        />
+      </div>
+    } @else {
+      <div class="uk-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "unduhKalender.dari" | translate }}</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pMulai"
+            [ngModel]="mulai()"
+            (ngModelChange)="mulai.set($event)"
+            name="mulai"
+            readonly
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="pMulai" />
+          <mat-datepicker #pMulai />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "unduhKalender.sampai" | translate }}</mat-label>
+          <!--
+            `max` MENCEGAH rentang yang kepanjangan, bukan menegurnya.
+
+            Pesan di bawah tetap ada karena `dari` masih dapat digeser
+            SESUDAH `sampai` dipilih — dan pada saat itu batasnya sudah
+            terlampaui tanpa ada yang menyentuh isian ini.
+          -->
+          <input
+            matInput
+            [matDatepicker]="pAkhir"
+            [min]="mulai()"
+            [max]="maksAkhir()"
+            [ngModel]="akhir()"
+            (ngModelChange)="akhir.set($event)"
+            name="akhir"
+            readonly
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="pAkhir" />
+          <mat-datepicker #pAkhir />
+        </mat-form-field>
+      </div>
+
+      @if (terbalik()) {
+        <div class="uk-banner uk-banner--salah">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ "unduhKalender.terbalik" | translate }}</span>
+        </div>
+      } @else if (kepanjangan()) {
+        <div class="uk-banner uk-banner--salah">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{
+            "unduhKalender.kepanjangan"
+              | translate: { hari: hari(), maks: MAKS }
+          }}</span>
+        </div>
+      } @else {
+        <div class="uk-banner">
+          <mat-icon>info_outline</mat-icon>
+          <span>{{
+            "unduhKalender.hitungan" | translate: { hari: hari(), maks: MAKS }
+          }}</span>
+        </div>
+      }
+    }
+
+    <div class="uk-label uk-label--atas">
+      {{ "unduhKalender.format" | translate }}
+    </div>
+    <div class="uk-pilih uk-pilih--2">
+      <label class="uk-kartu" [class.on]="format() === 'xlsx'">
+        <input
+          type="radio"
+          name="uk-format"
+          [checked]="format() === 'xlsx'"
+          (change)="format.set('xlsx')"
+        />
+        <mat-icon>table_chart</mat-icon>
+        <span>{{ "unduhKalender.excel" | translate }}</span>
+        <small>{{ "unduhKalender.excelKet" | translate }}</small>
+      </label>
+      <label class="uk-kartu" [class.on]="format() === 'pdf'">
+        <input
+          type="radio"
+          name="uk-format"
+          [checked]="format() === 'pdf'"
+          (change)="format.set('pdf')"
+        />
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>{{ "unduhKalender.pdf" | translate }}</span>
+        <small>{{ "unduhKalender.pdfKet" | translate }}</small>
+      </label>
+    </div>
+
+    <!--
+      DASAR SALDO-nya disebut di sini, bukan cuma tercetak di dalam berkas.
+
+      Berkasnya mengikuti mode yang sedang dibuka di layar, jadi dua orang
+      dapat mengunduh bulan yang sama dan mendapat saldo berbeda. Yang
+      mengunduhnya harus tahu itu SEBELUM mengirimkannya ke orang lain, bukan
+      sesudah.
+    -->
+    @if (modeSaldo) {
+      <div class="uk-banner uk-banner--dasar">
+        <mat-icon>calculate</mat-icon>
+        <span>{{
+          "unduhKalender.dasarSaldo" | translate: { mode: modeSaldo }
+        }}</span>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="uk-actions">
+    <button mat-button mat-dialog-close type="button">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="!sah()"
+      (click)="unduh()"
+    >
+      <mat-icon>download</mat-icon>
+      {{ "hardcoded.download" | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

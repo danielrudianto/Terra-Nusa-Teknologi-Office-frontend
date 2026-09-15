@@ -1684,6 +1684,24 @@
     "scopeTitle": "Cash out covers purchases and reimbursements only. ",
     "scopeHint": "Operating expenses and payroll have no project column in the system, so they cannot be traced here. This cash-out figure is a lower bound, not the full picture."
   },
+  "unduhKalender": {
+    "judul": "Download cash calendar",
+    "sub": "Pick the coverage first, the format after.",
+    "cakupan": "Coverage",
+    "perBulan": "One month",
+    "perRentang": "Date range",
+    "dari": "From date",
+    "sampai": "To date",
+    "hitungan": "{{hari}} days selected, out of a maximum of {{maks}}.",
+    "kepanjangan": "The range is {{hari}} days — the maximum is {{maks}}. The file is assembled in the browser, and a longer range leaves this tab silent for a long time with no message at all.",
+    "terbalik": "The end date comes before the start date.",
+    "format": "Format",
+    "excel": "Excel",
+    "excelKet": "Editable, filter and total it yourself",
+    "pdf": "PDF",
+    "pdfKet": "Summary + attachments, ready to send",
+    "dasarSaldo": "Balances are computed on this basis: {{mode}} — the same one shown on screen."
+  },
   "proyeksiKas": {
     "judul": "Cash projection — 3 months",
     "ket": "Starts from today's cash, not from the month shown above.",

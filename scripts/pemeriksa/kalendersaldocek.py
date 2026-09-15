@@ -79,7 +79,21 @@ def periksa():
             'ada yang menyebutkannya'
         )
 
-    if not re.search(r'for \(const r of ikutRencana \? this\.rencanaMenunggu : \[\]\)', s):
+    # Rencana masuk ke `rencanaPerTanggal` HANYA lewat cabang `ikutRencana`.
+    #
+    # Yang diperiksa bentuk perulangannya, bukan sekadar kehadiran kata
+    # `ikutRencana`: yang harus dijaga adalah bahwa pada mode "aktual"
+    # wadahnya benar-benar KOSONG. Kalau saringannya pindah ke tempat lain
+    # (atau hilang), mode aktual tetap menghitung rencana ke dalam saldonya —
+    # dan berkasnya tetap terbuka, tetap rapi, dengan angka yang berbeda dari
+    # layar tanpa satu pun keterangan.
+    # `[^)]` TIDAK dapat dipakai: cabang benarnya memuat `.filter((r) => ...)`,
+    # yang penuh kurung tutup, sehingga polanya berhenti di kurung pertama dan
+    # tidak pernah sampai ke `: []`. Bentuk yang lolos itu akan terbaca sebagai
+    # "saringannya hilang" padahal ada — pemeriksa yang merah tanpa sebab
+    # dimatikan orang, dan sesudah itu ia tidak menjaga apa pun.
+    pola_saring = r'for \(const r of ikutRencana\s*\?.*?:\s*\[\]\s*\)'
+    if not re.search(pola_saring, s, re.S):
         masalah.append(
             'calendar-table: rencana tidak lagi disaring oleh `ikutRencana` '
             'saat menyusun berkas — mode "aktual" akan tetap menghitung '

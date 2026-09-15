@@ -1,0 +1,148 @@
+.uk-content {
+  padding: 1.5rem !important;
+  /*
+   * Lebar dipatok di ISINYA, bukan diserahkan ke dialognya.
+   *
+   * Dialog Material melebar mengikuti lebar layar bila tidak diberi batas,
+   * dan isinya yang sempit lalu menggantung di kiri dengan ruang kosong
+   * lebar di kanan — persis keluhan pada dialog hapus slip gaji.
+   */
+  width: 100%;
+  max-width: min(520px, 92vw);
+  box-sizing: border-box;
+}
+
+.uk-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--faint, #8a8f98);
+  margin-bottom: 0.5rem;
+}
+.uk-label--atas {
+  margin-top: 1.25rem;
+}
+
+/*
+ * Kartu pilihan — radio aslinya disembunyikan, kartunya yang jadi sasaran
+ * tekan. Lingkaran radio hanya ~16px, di bawah ambang 24px yang nyaman
+ * disentuh. Pola yang sama dipakai pemilih arah kas di dialog rencana.
+ */
+.uk-pilih {
+  display: grid;
+  gap: 0.6rem;
+}
+.uk-pilih--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.uk-kartu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.85rem 0.6rem;
+  border: 1px solid var(--border, #e3e6eb);
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  input {
+    /* Disembunyikan tanpa `display: none`, supaya tetap terjangkau papan
+       ketik dan pembaca layar. */
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  small {
+    font-weight: 400;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--faint, #8a8f98);
+  }
+
+  &.on {
+    border-width: 2px;
+    /* Tebalnya bertambah 1px; paddingnya dikurangi 1px supaya kartunya tidak
+       bergeser saat dipilih. */
+    padding: calc(0.85rem - 1px) calc(0.6rem - 1px);
+    border-color: var(--brand, #154dec);
+    background: var(--brand-soft, #e7ecfb);
+    color: var(--brand-ink, #0f3fd0);
+
+    small {
+      color: var(--brand-ink, #0f3fd0);
+    }
+  }
+}
+
+.uk-bulan {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+
+.uk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+  margin-top: 0.9rem;
+}
+
+/* Banner (ikon + teks), bukan hint: hint tercetak kecil di bawah kotak lalu
+   hilang begitu isiannya disentuh — tepat saat keterangannya paling perlu. */
+.uk-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: var(--brand-soft, #e7ecfb);
+  color: var(--brand-ink, #0f3fd0);
+  font-size: 0.8rem;
+  line-height: 1.5;
+
+  .mat-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.uk-banner--salah {
+  background: var(--bad-bg, #fdeceb);
+  color: var(--bad-fg, #b3261e);
+}
+
+.uk-banner--dasar {
+  margin-top: 1.25rem;
+  background: var(--surface-2, #f6f8ff);
+  color: var(--muted, #6b7280);
+}
+
+.uk-actions {
+  padding: 1rem 1.5rem !important;
+}
+
+@media (max-width: 640px) {
+  .uk-grid {
+    grid-template-columns: 1fr;
+  }
+}
